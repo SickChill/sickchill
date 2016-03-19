@@ -226,7 +226,7 @@ def bind_values(clause):
 def _quote_ddl_expr(element):
     if isinstance(element, util.string_types):
         element = element.replace("'", "''")
-        return "'%s'" % element
+        return "'{0!s}'".format(element)
     else:
         return repr(element)
 

@@ -84,7 +84,7 @@ class BasicIFDEntry(FieldSet):
 
         if not issubclass(self.value_cls, Bytes) \
           and self["count"].value > MAX_COUNT:
-            raise ParserError("EXIF: Invalid count value (%s)" % self["count"].value)
+            raise ParserError("EXIF: Invalid count value ({0!s})".format(self["count"].value))
 
         count = self['count'].value
         totalsize = self.value_size * count
@@ -326,12 +326,12 @@ class IFD(SeekableFieldSet):
             yield self.EntryClass(self, "entry[]")
         yield UInt32(self, "next", "Offset to next IFD")
         for i in xrange(count):
-            entry = self['entry[%d]'%i]
+            entry = self['entry[{0:d}]'.format(i)]
             if 'offset' not in entry:
                 continue
             self.seekByte(entry['offset'].value+self.base_addr//8, relative=False)
             count = entry['count'].value
-            name = "value[%s]"%i
+            name = "value[{0!s}]".format(i)
             if issubclass(entry.value_cls, Bytes):
                 yield entry.value_cls(self, name, count)
             else:
@@ -343,7 +343,7 @@ class IFD(SeekableFieldSet):
     def getEntryValues(self, entry):
         n = int(entry.name.rsplit('[',1)[1].strip(']'))
         if 'offset' in entry:
-            field = 'value[%d]'%n
+            field = 'value[{0:d}]'.format(n)
             base = self
         else:
             field = 'value'

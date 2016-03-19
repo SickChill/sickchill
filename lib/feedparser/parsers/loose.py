@@ -69,4 +69,4 @@ class _LooseFeedParser(object):
         return data
 
     def strattrs(self, attrs):
-        return ''.join([' %s="%s"' % (n,v.replace('"','&quot;')) for n,v in attrs])
+        return ''.join([' {0!s}="{1!s}"'.format(n, v.replace('"','&quot;')) for n,v in attrs])

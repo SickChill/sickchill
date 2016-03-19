@@ -75,7 +75,7 @@ class CaseInsensitiveDict(collections.MutableMapping):
         return CaseInsensitiveDict(self._store.values())
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, dict(self.items()))
+        return '{0!s}({1!r})'.format(self.__class__.__name__, dict(self.items()))
 
 
 class LanguageConverter(object):

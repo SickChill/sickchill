@@ -123,14 +123,14 @@ class Chunk(FieldSet):
         FieldSet.__init__(self, *args)
 
         # Set description
-        self._description = "Chunk: %s" % self["type"].display
+        self._description = "Chunk: {0!s}".format(self["type"].display)
 
         # Set name based on type field
         type = self["type"].value
         if type in Chunk.chunk_id_by_type:
             self._name = Chunk.chunk_id_by_type[type]
         else:
-            self._name = "chunk_%04x" % type
+            self._name = "chunk_{0:04x}".format(type)
 
         # Guess chunk size
         self._size = self["size"].value * 8

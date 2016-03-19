@@ -63,7 +63,7 @@ def dump(obj, serialize_method=None, ignore_attribute=None, ignore=[]):
     class_name = obj.__class__.__name__
     json_class = class_name
     if module_name not in ['', '__main__']:
-        json_class = '%s.%s' % (module_name, json_class)
+        json_class = '{0!s}.{1!s}'.format(module_name, json_class)
     return_obj = {"__jsonclass__":[json_class,]}
     # If a serialization method is defined..
     if serialize_method in dir(obj):
@@ -111,15 +111,15 @@ def load(obj):
         raise TranslationError('Module name empty.')
     json_module_clean = re.sub(invalid_module_chars, '', orig_module_name)
     if json_module_clean != orig_module_name:
-        raise TranslationError('Module name %s has invalid characters.' %
-                               orig_module_name)
+        raise TranslationError('Module name {0!s} has invalid characters.'.format(
+                               orig_module_name))
     json_module_parts = json_module_clean.split('.')
     json_class = None
     if len(json_module_parts) == 1:
         # Local class name -- probably means it won't work
         if json_module_parts[0] not in config.classes.keys():
-            raise TranslationError('Unknown class or module %s.' %
-                                   json_module_parts[0])
+            raise TranslationError('Unknown class or module {0!s}.'.format(
+                                   json_module_parts[0]))
         json_class = config.classes[json_module_parts[0]]
     else:
         json_class_name = json_module_parts.pop()
@@ -127,8 +127,7 @@ def load(obj):
         try:
             temp_module = __import__(json_module_tree)
         except ImportError:
-            raise TranslationError('Could not import %s from module %s.' %
-                                   (json_class_name, json_module_tree))
+            raise TranslationError('Could not import {0!s} from module {1!s}.'.format(json_class_name, json_module_tree))
         json_class = getattr(temp_module, json_class_name)
     # Creating the object...
     new_obj = None

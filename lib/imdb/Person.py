@@ -225,7 +225,7 @@ class Person(_Container):
     def __repr__(self):
         """String representation of a Person object."""
         # XXX: add also currentRole and notes, if present?
-        r = '<Person id:%s[%s] name:_%s_>' % (self.personID, self.accessSystem,
+        r = '<Person id:{0!s}[{1!s}] name:_{2!s}_>'.format(self.personID, self.accessSystem,
                                         self.get('long imdb canonical name'))
         if isinstance(r, unicode): r = r.encode('utf_8', 'replace')
         return r
@@ -241,35 +241,35 @@ class Person(_Container):
     def summary(self):
         """Return a string with a pretty-printed summary for the person."""
         if not self: return u''
-        s = u'Person\n=====\nName: %s\n' % \
-                                self.get('long imdb canonical name', u'')
+        s = u'Person\n=====\nName: {0!s}\n'.format( \
+                                self.get('long imdb canonical name', u''))
         bdate = self.get('birth date')
         if bdate:
-            s += u'Birth date: %s' % bdate
+            s += u'Birth date: {0!s}'.format(bdate)
             bnotes = self.get('birth notes')
             if bnotes:
-                s += u' (%s)' % bnotes
+                s += u' ({0!s})'.format(bnotes)
             s += u'.\n'
         ddate = self.get('death date')
         if ddate:
-            s += u'Death date: %s' % ddate
+            s += u'Death date: {0!s}'.format(ddate)
             dnotes = self.get('death notes')
             if dnotes:
-                s += u' (%s)' % dnotes
+                s += u' ({0!s})'.format(dnotes)
             s += u'.\n'
         bio = self.get('mini biography')
         if bio:
-            s += u'Biography: %s\n' % bio[0]
+            s += u'Biography: {0!s}\n'.format(bio[0])
         director = self.get('director')
         if director:
             d_list = [x.get('long imdb canonical title', u'')
                         for x in director[:3]]
-            s += u'Last movies directed: %s.\n' % u'; '.join(d_list)
+            s += u'Last movies directed: {0!s}.\n'.format(u'; '.join(d_list))
         act = self.get('actor') or self.get('actress')
         if act:
             a_list = [x.get('long imdb canonical title', u'')
                         for x in act[:5]]
-            s += u'Last movies acted: %s.\n' % u'; '.join(a_list)
+            s += u'Last movies acted: {0!s}.\n'.format(u'; '.join(a_list))
         return s
 
 

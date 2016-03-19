@@ -49,7 +49,7 @@ def buildDateHandler(v):
     m,d=divmod(md,100)
     if y < 60: y=2000+y
     else: y=1900+y
-    return "%04i-%02i-%02i"%(y,m,d)
+    return "{0:04d}-{1:02d}-{2:02d}".format(y, m, d)
 
 class LongArray(FieldSet):
     def createFields(self):

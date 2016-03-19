@@ -320,10 +320,10 @@ class HTMLUnicodeInputStream(object):
             if __debug__:
                 for c in characters:
                     assert(ord(c) < 128)
-            regex = "".join(["\\x%02x" % ord(c) for c in characters])
+            regex = "".join(["\\x{0:02x}".format(ord(c)) for c in characters])
             if not opposite:
-                regex = "^%s" % regex
-            chars = charsUntilRegEx[(characters, opposite)] = re.compile("[%s]+" % regex)
+                regex = "^{0!s}".format(regex)
+            chars = charsUntilRegEx[(characters, opposite)] = re.compile("[{0!s}]+".format(regex))
 
         rv = []
 
@@ -500,7 +500,7 @@ class HTMLBinaryInputStream(HTMLUnicodeInputStream):
             self.rawStream.seek(0)
             self.reset()
             self.charEncoding = (newEncoding, "certain")
-            raise ReparseException("Encoding changed from %s to %s" % (self.charEncoding[0], newEncoding))
+            raise ReparseException("Encoding changed from {0!s} to {1!s}".format(self.charEncoding[0], newEncoding))
 
     def detectBOM(self):
         """Attempts to detect at BOM at the start of the stream. If

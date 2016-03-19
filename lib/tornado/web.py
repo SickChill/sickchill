@@ -280,7 +280,7 @@ class RequestHandler(object):
     def clear(self):
         """Resets all headers and content for this response."""
         self._headers = httputil.HTTPHeaders({
-            "Server": "TornadoServer/%s" % tornado.version,
+            "Server": "TornadoServer/{0!s}".format(tornado.version),
             "Content-Type": "text/html; charset=UTF-8",
             "Date": httputil.format_timestamp(time.time()),
         })
@@ -360,7 +360,7 @@ class RequestHandler(object):
         elif isinstance(value, datetime.datetime):
             return httputil.format_timestamp(value)
         else:
-            raise TypeError("Unsupported header value %r" % value)
+            raise TypeError("Unsupported header value {0!r}".format(value))
         # If \n is allowed into the header, it is possible to inject
         # additional headers or split the request. Also cap length to
         # prevent obviously erroneous values.
@@ -492,8 +492,7 @@ class RequestHandler(object):
         try:
             return _unicode(value)
         except UnicodeDecodeError:
-            raise HTTPError(400, "Invalid unicode in %s: %r" %
-                            (name or "url", value[:40]))
+            raise HTTPError(400, "Invalid unicode in {0!s}: {1!r}".format(name or "url", value[:40]))
 
     @property
     def cookies(self):
@@ -521,7 +520,7 @@ class RequestHandler(object):
         value = escape.native_str(value)
         if re.search(r"[\x00-\x20]", name + value):
             # Don't let us accidentally inject bad stuff
-            raise ValueError("Invalid cookie %r: %r" % (name, value))
+            raise ValueError("Invalid cookie {0!r}: {1!r}".format(name, value))
         if not hasattr(self, "_new_cookie"):
             self._new_cookie = Cookie.SimpleCookie()
         if name in self._new_cookie:
@@ -1308,7 +1307,7 @@ class RequestHandler(object):
         hasher = hashlib.sha1()
         for part in self._write_buffer:
             hasher.update(part)
-        return '"%s"' % hasher.hexdigest()
+        return '"{0!s}"'.format(hasher.hexdigest())
 
     def set_etag_header(self):
         """Sets the response's Etag header using ``self.compute_etag()``.
@@ -1391,7 +1390,7 @@ class RequestHandler(object):
             if is_future(result):
                 result = yield result
             if result is not None:
-                raise TypeError("Expected None, got %r" % result)
+                raise TypeError("Expected None, got {0!r}".format(result))
             if self._prepared_future is not None:
                 # Tell the Application we've finished with prepare()
                 # and are ready for the body to arrive.
@@ -1414,7 +1413,7 @@ class RequestHandler(object):
             if is_future(result):
                 result = yield result
             if result is not None:
-                raise TypeError("Expected None, got %r" % result)
+                raise TypeError("Expected None, got {0!r}".format(result))
             if self._auto_finish and not self._finished:
                 self.finish()
         except Exception as e:
@@ -1446,7 +1445,7 @@ class RequestHandler(object):
         self.application.log_request(self)
 
     def _request_summary(self):
-        return "%s %s (%s)" % (self.request.method, self.request.uri,
+        return "{0!s} {1!s} ({2!s})".format(self.request.method, self.request.uri,
                                self.request.remote_ip)
 
     def _handle_request_exception(self, e):
@@ -1884,7 +1883,7 @@ class Application(httputil.HTTPServerConnectionDelegate):
         """
         if name in self.named_handlers:
             return self.named_handlers[name].reverse(*args)
-        raise KeyError("%s not found in named urls" % name)
+        raise KeyError("{0!s} not found in named urls".format(name))
 
     def log_request(self, handler):
         """Writes a completed HTTP request to the logs.
@@ -1939,8 +1938,7 @@ class _RequestDispatcher(httputil.HTTPMessageDelegate):
         handlers = app._get_host_handlers(self.request)
         if not handlers:
             self.handler_class = RedirectHandler
-            self.handler_kwargs = dict(url="%s://%s/"
-                                       % (self.request.protocol,
+            self.handler_kwargs = dict(url="{0!s}://{1!s}/".format(self.request.protocol,
                                           app.default_host))
             return
         for spec in handlers:
@@ -2052,7 +2050,7 @@ class HTTPError(Exception):
             self.log_message = log_message.replace('%', '%%')
 
     def __str__(self):
-        message = "HTTP %d: %s" % (
+        message = "HTTP {0:d}: {1!s}".format(
             self.status_code,
             self.reason or httputil.responses.get(self.status_code, 'Unknown'))
         if self.log_message:
@@ -2090,7 +2088,7 @@ class MissingArgumentError(HTTPError):
     """
     def __init__(self, arg_name):
         super(MissingArgumentError, self).__init__(
-            400, 'Missing argument %s' % arg_name)
+            400, 'Missing argument {0!s}'.format(arg_name))
         self.arg_name = arg_name
 
 
@@ -2239,7 +2237,7 @@ class StaticFileHandler(RequestHandler):
                 # content, or when a suffix with length 0 is specified
                 self.set_status(416)  # Range Not Satisfiable
                 self.set_header("Content-Type", "text/plain")
-                self.set_header("Content-Range", "bytes */%s" % (size, ))
+                self.set_header("Content-Range", "bytes */{0!s}".format(size ))
                 return
             if start is not None and start < 0:
                 start += size
@@ -2293,7 +2291,7 @@ class StaticFileHandler(RequestHandler):
         version_hash = self._get_cached_version(self.absolute_path)
         if not version_hash:
             return None
-        return '"%s"' % (version_hash, )
+        return '"{0!s}"'.format(version_hash )
 
     def set_headers(self):
         """Sets the content and caching headers on the response.
@@ -2541,7 +2539,7 @@ class StaticFileHandler(RequestHandler):
         if not version_hash:
             return url
 
-        return '%s?v=%s' % (url, version_hash)
+        return '{0!s}?v={1!s}'.format(url, version_hash)
 
     def parse_url_path(self, url_path):
         """Converts a static URL path into a filesystem path.
@@ -2917,8 +2915,7 @@ class URLSpec(object):
         self._path, self._group_count = self._find_groups()
 
     def __repr__(self):
-        return '%s(%r, %s, kwargs=%r, name=%r)' % \
-            (self.__class__.__name__, self.regex.pattern,
+        return '{0!s}({1!r}, {2!s}, kwargs={3!r}, name={4!r})'.format(self.__class__.__name__, self.regex.pattern,
              self.handler_class, self.kwargs, self.name)
 
     def _find_groups(self):
@@ -3011,7 +3008,7 @@ def create_signed_value(secret, name, value, version=None, clock=None,
         # - value (base64-encoded)
         # - signature (hex-encoded; no length prefix)
         def format_field(s):
-            return utf8("%d:" % len(s)) + utf8(s)
+            return utf8("{0:d}:".format(len(s))) + utf8(s)
         to_sign = b"|".join([
             b"2",
             format_field(str(key_version or 0)),
@@ -3028,7 +3025,7 @@ def create_signed_value(secret, name, value, version=None, clock=None,
         signature = _create_signature_v2(secret, to_sign)
         return to_sign + signature
     else:
-        raise ValueError("Unsupported version %d" % version)
+        raise ValueError("Unsupported version {0:d}".format(version))
 
 # A leading version number in decimal
 # with no leading zeros, followed by a pipe.
@@ -3065,7 +3062,7 @@ def decode_signed_value(secret, name, value, max_age_days=31,
     if min_version is None:
         min_version = DEFAULT_SIGNED_VALUE_MIN_VERSION
     if min_version > 2:
-        raise ValueError("Unsupported min_version %d" % min_version)
+        raise ValueError("Unsupported min_version {0:d}".format(min_version))
     if not value:
         return None
 

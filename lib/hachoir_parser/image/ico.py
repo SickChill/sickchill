@@ -23,8 +23,7 @@ class IconHeader(FieldSet):
         yield UInt32(self, "offset", "Data offset")
 
     def createDescription(self):
-        return "Icon: %ux%u pixels, %u bits/pixel" % \
-            (self["width"].value, self["height"].value, self["bpp"].value)
+        return "Icon: {0:d}x{1:d} pixels, {2:d} bits/pixel".format(self["width"].value, self["height"].value, self["bpp"].value)
 
     def isValid(self):
         if self["nb_color"].value == 0:
@@ -100,7 +99,7 @@ class IcoFile(Parser):
             if field.name.startswith("icon_header"):
                 index += 1
                 if not field.isValid():
-                    return "Invalid header #%u" % index
+                    return "Invalid header #{0:d}".format(index)
             elif 0 <= index:
                 break
         return True
@@ -120,13 +119,13 @@ class IcoFile(Parser):
             yield IconData(self, "icon_data[]", header)
 
     def createDescription(self):
-        desc = "Microsoft Windows %s" % self["type"].display
+        desc = "Microsoft Windows {0!s}".format(self["type"].display)
         size = []
         for header in self.array("icon_header"):
-            size.append("%ux%ux%u" % (header["width"].value,
+            size.append("{0:d}x{1:d}x{2:d}".format(header["width"].value,
                 header["height"].value, header["bpp"].value))
         if size:
-            return "%s: %s" % (desc, ", ".join(size))
+            return "{0!s}: {1!s}".format(desc, ", ".join(size))
         else:
             return desc
 
@@ -134,6 +133,6 @@ class IcoFile(Parser):
         count = self["nb_items"].value
         if not count:
             return None
-        field = self["icon_data[%u]" % (count-1)]
+        field = self["icon_data[{0:d}]".format((count-1))]
         return field.absolute_address + field.size
 

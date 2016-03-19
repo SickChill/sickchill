@@ -80,7 +80,7 @@ class RarInfo(object):
             arcName = self.rarfile.archiveName
         except ReferenceError:
             arcName = "[ARCHIVE_NO_LONGER_LOADED]"
-        return '<RarInfo "%s" in "%s">' % (self.filename, arcName)
+        return '<RarInfo "{0!s}" in "{1!s}">'.format(self.filename, arcName)
 
 class RarFile(RarFileImplementation):
 

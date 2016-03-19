@@ -130,7 +130,7 @@ class AppEngineManager(RequestMethods):
 
         except urlfetch.InvalidMethodError as e:
             raise AppEnginePlatformError(
-                "URLFetch does not support method: %s" % method, e)
+                "URLFetch does not support method: {0!s}".format(method), e)
 
         http_response = self._urlfetch_response_to_http_response(
             response, **response_kw)
@@ -144,7 +144,7 @@ class AppEngineManager(RequestMethods):
         if retries.is_forced_retry(method, status_code=http_response.status):
             retries = retries.increment(
                 method, url, response=http_response, _pool=self)
-            log.info("Forced retry: %s" % url)
+            log.info("Forced retry: {0!s}".format(url))
             retries.sleep()
             return self.urlopen(
                 method, url,

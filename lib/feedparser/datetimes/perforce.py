@@ -19,7 +19,7 @@ def _parse_date_perforce(aDateString):
         return None
     dow, year, month, day, hour, minute, second, tz = m.groups()
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    dateString = "%s, %s %s %s %s:%s:%s %s" % (dow, day, months[int(month) - 1], year, hour, minute, second, tz)
+    dateString = "{0!s}, {1!s} {2!s} {3!s} {4!s}:{5!s}:{6!s} {7!s}".format(dow, day, months[int(month) - 1], year, hour, minute, second, tz)
     tm = rfc822.parsedate_tz(dateString)
     if tm:
         return time.gmtime(rfc822.mktime_tz(tm))

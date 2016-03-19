@@ -534,7 +534,7 @@ class Connection(Connectable):
 
         if name is None:
             self.__savepoint_seq += 1
-            name = 'sa_savepoint_%s' % self.__savepoint_seq
+            name = 'sa_savepoint_{0!s}'.format(self.__savepoint_seq)
         if self._still_open_and_connection_is_valid:
             self.engine.dialect.do_savepoint(self, name)
             return name
@@ -714,8 +714,8 @@ class Connection(Connectable):
             meth = object._execute_on_connection
         except AttributeError:
             raise exc.InvalidRequestError(
-                                "Unexecutable object type: %s" %
-                                type(object))
+                                "Unexecutable object type: {0!s}".format(
+                                type(object)))
         else:
             return meth(self, multiparams, params)
 
@@ -1500,7 +1500,7 @@ class Engine(Connectable, log.Identified):
     echo = log.echo_property()
 
     def __repr__(self):
-        return 'Engine(%r)' % self.url
+        return 'Engine({0!r})'.format(self.url)
 
     def dispose(self):
         """Dispose of the connection pool used by this :class:`.Engine`.

@@ -111,9 +111,9 @@ class Condition(_TimeoutGarbageCollector):
         self.io_loop = ioloop.IOLoop.current()
 
     def __repr__(self):
-        result = '<%s' % (self.__class__.__name__, )
+        result = '<{0!s}'.format(self.__class__.__name__ )
         if self._waiters:
-            result += ' waiters[%s]' % len(self._waiters)
+            result += ' waiters[{0!s}]'.format(len(self._waiters))
         return result + '>'
 
     def wait(self, timeout=None):
@@ -193,7 +193,7 @@ class Event(object):
         self._future = Future()
 
     def __repr__(self):
-        return '<%s %s>' % (
+        return '<{0!s} {1!s}>'.format(
             self.__class__.__name__, 'set' if self.is_set() else 'clear')
 
     def is_set(self):
@@ -429,7 +429,7 @@ class Lock(object):
         self._block = BoundedSemaphore(value=1)
 
     def __repr__(self):
-        return "<%s _block=%s>" % (
+        return "<{0!s} _block={1!s}>".format(
             self.__class__.__name__,
             self._block)
 

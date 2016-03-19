@@ -43,7 +43,7 @@ class BlockState(Bit):
         self.__class__.block_nb += 1
 
     def createDescription(self):
-        return "State of the block %d" %  self.block_nb
+        return "State of the block {0:d}".format(self.block_nb)
 
     def createDisplay(self):
         return self.STATE[Bit.createValue(self)]

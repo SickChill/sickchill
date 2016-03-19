@@ -42,7 +42,7 @@ class Extension(object):
         :return: A string representation of the target of the entry point in
             'dotted.module:object' format.
         """
-        return '%s:%s' % (self.entry_point.module_name,
+        return '{0!s}:{1!s}'.format(self.entry_point.module_name,
                           self.entry_point.attrs[0])
 
 
@@ -219,7 +219,7 @@ class ExtensionManager(object):
         """
         if not self.extensions:
             # FIXME: Use a more specific exception class here.
-            raise NoMatches('No %s extensions found' % self.namespace)
+            raise NoMatches('No {0!s} extensions found'.format(self.namespace))
         response = []
         for e in self.extensions:
             self._invoke_one_plugin(response.append, func, e, args, kwds)

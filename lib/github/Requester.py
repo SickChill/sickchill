@@ -332,7 +332,7 @@ class Requester:
             conn = self.__connectionClass(url.hostname, url.port, **kwds)
             headers = {}
             if url.username and url.password:
-                auth = '%s:%s' % (url.username, url.password)
+                auth = '{0!s}:{1!s}'.format(url.username, url.password)
                 headers['Proxy-Authorization'] = 'Basic ' + base64.b64encode(auth)
             conn.set_tunnel(self.__hostname, self.__port, headers)
         else:

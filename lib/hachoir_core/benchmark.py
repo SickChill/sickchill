@@ -9,7 +9,7 @@ class BenchmarkError(Exception):
     """
     def __init__(self, message):
         Exception.__init__(self,
-            "Benchmark internal error: %s" % message)
+            "Benchmark internal error: {0!s}".format(message))
 
 class BenchmarkStat:
     """

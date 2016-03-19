@@ -26,8 +26,7 @@ class StaticFieldSet(FieldSet):
     def _computeItemSize(item):
         item_class = item[0]
         if item_class.static_size is None:
-            raise ParserError("Unable to get static size of field type: %s"
-                % item_class.__name__)
+            raise ParserError("Unable to get static size of field type: {0!s}".format(item_class.__name__))
         if callable(item_class.static_size):
             if isinstance(item[-1], dict):
                 return item_class.static_size(*item[1:-1], **item[-1])

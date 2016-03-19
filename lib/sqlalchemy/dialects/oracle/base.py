@@ -382,13 +382,13 @@ class OracleTypeCompiler(compiler.GenericTypeCompiler):
             return self.visit_VARCHAR2(type_)
 
     def visit_INTERVAL(self, type_):
-        return "INTERVAL DAY%s TO SECOND%s" % (
+        return "INTERVAL DAY{0!s} TO SECOND{1!s}".format(
             type_.day_precision is not None and
-                "(%d)" % type_.day_precision or
+                "({0:d})".format(type_.day_precision) or
                 "",
             type_.second_precision is not None and
-                "(%d)" % type_.second_precision or
-                "",
+                "({0:d})".format(type_.second_precision) or
+                ""
         )
 
     def visit_LONG(self, type_):
@@ -437,7 +437,7 @@ class OracleTypeCompiler(compiler.GenericTypeCompiler):
 
     def _visit_varchar(self, type_, n, num):
         if not type_.length:
-            return "%(n)sVARCHAR%(two)s" % {'two': num, 'n': n}
+            return "{n!s}VARCHAR{two!s}".format(**{'two': num, 'n': n})
         elif not n and self.dialect._supports_char_length:
             varchar = "VARCHAR%(two)s(%(length)s CHAR)"
             return varchar % {'length': type_.length, 'two': num}
@@ -465,7 +465,7 @@ class OracleTypeCompiler(compiler.GenericTypeCompiler):
 
     def visit_RAW(self, type_):
         if type_.length:
-            return "RAW(%(length)s)" % {'length': type_.length}
+            return "RAW({length!s})".format(**{'length': type_.length})
         else:
             return "RAW"
 
@@ -492,7 +492,7 @@ class OracleCompiler(compiler.SQLCompiler):
         super(OracleCompiler, self).__init__(*args, **kwargs)
 
     def visit_mod_binary(self, binary, operator, **kw):
-        return "mod(%s, %s)" % (self.process(binary.left, **kw),
+        return "mod({0!s}, {1!s})".format(self.process(binary.left, **kw),
                                 self.process(binary.right, **kw))
 
     def visit_now_func(self, fn, **kw):
@@ -502,7 +502,7 @@ class OracleCompiler(compiler.SQLCompiler):
         return "LENGTH" + self.function_argspec(fn, **kw)
 
     def visit_match_op_binary(self, binary, operator, **kw):
-        return "CONTAINS (%s, %s)" % (self.process(binary.left),
+        return "CONTAINS ({0!s}, {1!s})".format(self.process(binary.left),
                                         self.process(binary.right))
 
     def visit_true(self, expr, **kw):
@@ -513,7 +513,7 @@ class OracleCompiler(compiler.SQLCompiler):
 
     def get_select_hint_text(self, byfroms):
         return " ".join(
-            "/*+ %s */" % text for table, text in byfroms.items()
+            "/*+ {0!s} */".format(text) for table, text in byfroms.items()
         )
 
     def function_argspec(self, fn, **kw):
@@ -604,7 +604,7 @@ class OracleCompiler(compiler.SQLCompiler):
                 col_expr = column.type.column_expression(column)
             else:
                 col_expr = column
-            outparam = sql.outparam("ret_%d" % i, type_=column.type)
+            outparam = sql.outparam("ret_{0:d}".format(i), type_=column.type)
             self.binds[outparam.key] = outparam
             binds.append(self.bindparam_string(self._truncate_bindparam(outparam)))
             columns.append(self.process(col_expr, within_columns_clause=False))
@@ -653,7 +653,7 @@ class OracleCompiler(compiler.SQLCompiler):
                 # Wrap the middle select and add the hint
                 limitselect = sql.select([c for c in select.c])
                 if select._limit and self.dialect.optimize_limits:
-                    limitselect = limitselect.prefix_with("/*+ FIRST_ROWS(%d) */" % select._limit)
+                    limitselect = limitselect.prefix_with("/*+ FIRST_ROWS({0:d}) */".format(select._limit))
 
                 limitselect._oracle_visit = True
                 limitselect._is_wrapper = True
@@ -664,7 +664,7 @@ class OracleCompiler(compiler.SQLCompiler):
                     if select._offset is not None:
                         max_row += select._offset
                     if not self.dialect.use_binds_for_limits:
-                        max_row = sql.literal_column("%d" % max_row)
+                        max_row = sql.literal_column("{0:d}".format(max_row))
                     limitselect.append_whereclause(
                             sql.literal_column("ROWNUM") <= max_row)
 
@@ -685,7 +685,7 @@ class OracleCompiler(compiler.SQLCompiler):
 
                     offset_value = select._offset
                     if not self.dialect.use_binds_for_limits:
-                        offset_value = sql.literal_column("%d" % offset_value)
+                        offset_value = sql.literal_column("{0:d}".format(offset_value))
                     offsetselect.append_whereclause(
                              sql.literal_column("ora_rn") > offset_value)
 
@@ -721,7 +721,7 @@ class OracleDDLCompiler(compiler.DDLCompiler):
     def define_constraint_cascades(self, constraint):
         text = ""
         if constraint.ondelete is not None:
-            text += " ON DELETE %s" % constraint.ondelete
+            text += " ON DELETE {0!s}".format(constraint.ondelete)
 
         # oracle has no ON UPDATE CASCADE -
         # its only available via triggers http://asktom.oracle.com/tkyte/update_cascade/index.html
@@ -1033,8 +1033,7 @@ class OracleDialect(default.DefaultDialect):
                 try:
                     coltype = self.ischema_names[coltype]
                 except KeyError:
-                    util.warn("Did not recognize type '%s' of column '%s'" %
-                              (coltype, colname))
+                    util.warn("Did not recognize type '{0!s}' of column '{1!s}'".format(coltype, colname))
                     coltype = sqltypes.NULLTYPE
 
             cdict = {

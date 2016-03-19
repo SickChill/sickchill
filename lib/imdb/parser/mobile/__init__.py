@@ -83,7 +83,7 @@ def _getTagsWith(s, cont, toClosure=False, maxRes=None):
             else:
                 spaceidx = s[btag:].find(' ')
                 if spaceidx != -1:
-                    ctag = '</%s>' % s[btag+1:btag+spaceidx]
+                    ctag = '</{0!s}>'.format(s[btag+1:btag+spaceidx])
                     closeidx = s[bi:].find(ctag)
                     if closeidx != -1:
                         endidx = bi+closeidx+len(ctag)
@@ -242,7 +242,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
         cont = self._mretrieve(self.urls['movie_main'] % movieID + 'maindetails')
         title = _findBetween(cont, '<title>', '</title>', maxRes=1)
         if not title:
-            raise IMDbDataAccessError('unable to get movieID "%s"' % movieID)
+            raise IMDbDataAccessError('unable to get movieID "{0!s}"'.format(movieID))
         title = _unHtml(title[0])
         if title.endswith(' - IMDb'):
             title = title[:-7]
@@ -320,7 +320,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
                                         '<br/> <br/>'), maxRes=1)
             if creator:
                 creator = creator[0]
-                if creator.find('tn15more'): creator = '%s>' % creator
+                if creator.find('tn15more'): creator = '{0!s}>'.format(creator)
                 creator = self._getPersons(creator)
                 if creator: d['creator'] = creator
         writers = _findBetween(cont, '<h5>Writer', ('</div>', '<br/> <br/>'),
@@ -426,26 +426,26 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
         country = _findBetween(cont, 'Country:</h5>', '</div>', maxRes=1)
         if country:
             country[:] = country[0].split(' | ')
-            country[:] = ['<a %s' % x for x in country if x]
+            country[:] = ['<a {0!s}'.format(x) for x in country if x]
             country[:] = [_unHtml(x.replace(' <i>', '::')) for x in country]
             if country: d['countries'] = country
         lang = _findBetween(cont, 'Language:</h5>', '</div>', maxRes=1)
         if lang:
             lang[:] = lang[0].split(' | ')
-            lang[:] = ['<a %s' % x for x in lang if x]
+            lang[:] = ['<a {0!s}'.format(x) for x in lang if x]
             lang[:] = [_unHtml(x.replace(' <i>', '::')) for x in lang]
             if lang: d['languages'] = lang
         col = _findBetween(cont, '"/search/title?colors=', '</div>')
         if col:
             col[:] = col[0].split(' | ')
-            col[:] = ['<a %s' % x for x in col if x]
+            col[:] = ['<a {0!s}'.format(x) for x in col if x]
             col[:] = [_unHtml(x.replace(' <i>', '::')) for x in col]
             if col: d['color info'] = col
         sm = _findBetween(cont, '/search/title?sound_mixes=', '</div>',
                             maxRes=1)
         if sm:
             sm[:] = sm[0].split(' | ')
-            sm[:] = ['<a %s' % x for x in sm if x]
+            sm[:] = ['<a {0!s}'.format(x) for x in sm if x]
             sm[:] = [_unHtml(x.replace(' <i>', '::')) for x in sm]
             if sm: d['sound mix'] = sm
         cert = _findBetween(cont, 'Certification:</h5>', '</div>', maxRes=1)
@@ -475,8 +475,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
             p = plot[i]
             wbyidx = p.rfind(' Written by ')
             if wbyidx != -1:
-                plot[i] = '%s::%s' % \
-                        (p[:wbyidx].rstrip(),
+                plot[i] = '{0!s}::{1!s}'.format(p[:wbyidx].rstrip(),
                     p[wbyidx+12:].rstrip().replace('{','<').replace('}','>'))
         if plot: return {'data': {'plot': plot}}
         return {'data': {}}
@@ -538,7 +537,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
         if not name:
             if _parseChr: w = 'characterID'
             else: w = 'personID'
-            raise IMDbDataAccessError('unable to get %s "%s"' % (w, personID))
+            raise IMDbDataAccessError('unable to get {0!s} "{1!s}"'.format(w, personID))
         name = _unHtml(name[0].replace(' - IMDb', ''))
         if _parseChr:
             name = name.replace('(Character)', '').strip()
@@ -547,7 +546,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
             name = name.replace('- Filmography by', '').strip()
         r = analyze_name(name, canonical=not _parseChr)
         for dKind in ('Born', 'Died'):
-            date = _findBetween(s, '%s:</h4>' % dKind.capitalize(),
+            date = _findBetween(s, '{0!s}:</h4>'.format(dKind.capitalize()),
                                 ('<div class', '</div>', '<br/><br/>'), maxRes=1)
             if date:
                 date = _unHtml(date[0])
@@ -563,9 +562,9 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
                     if dKind == 'Died':
                         dtitle = 'death'
                     if date:
-                        r['%s date' % dtitle] = date
+                        r['{0!s} date'.format(dtitle)] = date
                     if notes:
-                        r['%s notes' % dtitle] = notes
+                        r['{0!s} notes'.format(dtitle)] = notes
         akas = _findBetween(s, 'Alternate Names:</h4>', ('</div>',
                             '<br/><br/>'), maxRes=1)
         if akas:
@@ -615,7 +614,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
             if _parseChr and sect == 'filmography':
                 inisect = s.find('<div class="filmo">')
             else:
-                inisect = s.find('<a name="%s' % sect)
+                inisect = s.find('<a name="{0!s}'.format(sect))
             if inisect != -1:
                 endsect = s[inisect:].find('<div id="filmo-head-')
                 if endsect == -1:
@@ -666,7 +665,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
                 year = _findBetween(m, 'year_column">', '</span>', maxRes=1)
                 if year:
                     year = year[0]
-                    m = m.replace('<span class="year_column">%s</span>' % year,
+                    m = m.replace('<span class="year_column">{0!s}</span>'.format(year),
                             '')
                 else:
                     year = None
@@ -761,7 +760,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
                         bioAuth = bio[:byidx].rstrip()
                     else:
                         bioAuth = 'Anonymous'
-                    bio = u'%s::%s' % (bioAuth, bio[byidx+23:].lstrip())
+                    bio = u'{0!s}::{1!s}'.format(bioAuth, bio[byidx+23:].lstrip())
                     ndata.append(bio)
                 data[:] = ndata
                 if 'mini biography' in d:
@@ -795,7 +794,7 @@ class IMDbMobileAccessSystem(IMDbHTTPAccessSystem):
             lis = _findBetween(cont, '<td class="result_text"',
                                 ['<small', '</td>', '<br'])
             for li in lis:
-                li = '<%s' % li
+                li = '<{0!s}'.format(li)
                 pid = re_imdbID.findall(li)
                 pname = _unHtml(li)
                 if not (pid and pname):

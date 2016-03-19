@@ -153,7 +153,7 @@ class IMDbURLopener(FancyURLopener):
         self.set_header('Accept-Language', 'en-us,en;q=0.5')
         # XXX: This class is used also to perform "Exact Primary
         #      [Title|Name]" searches, and so by default the cookie is set.
-        c_header = 'uu=%s; id=%s' % (_cookie_uu, _cookie_id)
+        c_header = 'uu={0!s}; id={1!s}'.format(_cookie_uu, _cookie_id)
         self.set_header('Cookie', c_header)
 
     def get_proxy(self):
@@ -167,7 +167,7 @@ class IMDbURLopener(FancyURLopener):
                 del self.proxies['http']
         else:
             if not proxy.lower().startswith('http://'):
-                proxy = 'http://%s' % proxy
+                proxy = 'http://{0!s}'.format(proxy)
             self.proxies['http'] = proxy
 
     def set_header(self, header, value, _overwrite=True):
@@ -198,7 +198,7 @@ class IMDbURLopener(FancyURLopener):
         encode = None
         try:
             if size != -1:
-                self.set_header('Range', 'bytes=0-%d' % size)
+                self.set_header('Range', 'bytes=0-{0:d}'.format(size))
             uopener = self.open(url)
             kwds = {}
             if PY_VERSION > (2, 3) and not IN_GAE:
@@ -247,7 +247,7 @@ class IMDbURLopener(FancyURLopener):
             self._logger.warn('404 code returned for %s: %s (headers: %s)',
                                 url, errmsg, headers)
             return _FakeURLOpener(url, headers)
-        raise IMDbDataAccessError({'url': 'http:%s' % url,
+        raise IMDbDataAccessError({'url': 'http:{0!s}'.format(url),
                                     'errcode': errcode,
                                     'errmsg': errmsg,
                                     'headers': headers,
@@ -341,32 +341,30 @@ class IMDbHTTPAccessSystem(IMDbBase):
     def _normalize_movieID(self, movieID):
         """Normalize the given movieID."""
         try:
-            return '%07d' % int(movieID)
+            return '{0:07d}'.format(int(movieID))
         except ValueError, e:
-            raise IMDbParserError('invalid movieID "%s": %s' % (movieID, e))
+            raise IMDbParserError('invalid movieID "{0!s}": {1!s}'.format(movieID, e))
 
     def _normalize_personID(self, personID):
         """Normalize the given personID."""
         try:
-            return '%07d' % int(personID)
+            return '{0:07d}'.format(int(personID))
         except ValueError, e:
-            raise IMDbParserError('invalid personID "%s": %s' % (personID, e))
+            raise IMDbParserError('invalid personID "{0!s}": {1!s}'.format(personID, e))
 
     def _normalize_characterID(self, characterID):
         """Normalize the given characterID."""
         try:
-            return '%07d' % int(characterID)
+            return '{0:07d}'.format(int(characterID))
         except ValueError, e:
-            raise IMDbParserError('invalid characterID "%s": %s' % \
-                    (characterID, e))
+            raise IMDbParserError('invalid characterID "{0!s}": {1!s}'.format(characterID, e))
 
     def _normalize_companyID(self, companyID):
         """Normalize the given companyID."""
         try:
-            return '%07d' % int(companyID)
+            return '{0:07d}'.format(int(companyID))
         except ValueError, e:
-            raise IMDbParserError('invalid companyID "%s": %s' % \
-                    (companyID, e))
+            raise IMDbParserError('invalid companyID "{0!s}": {1!s}'.format(companyID, e))
 
     def get_imdbMovieID(self, movieID):
         """Translate a movieID in an imdbID; in this implementation
@@ -418,7 +416,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
 
     def set_cookies(self, cookie_id, cookie_uu):
         """Set a cookie to access an IMDb's account."""
-        c_header = 'id=%s; uu=%s' % (cookie_id, cookie_uu)
+        c_header = 'id={0!s}; uu={1!s}'.format(cookie_id, cookie_uu)
         self.urlOpener.set_header('Cookie', c_header)
 
     def del_cookies(self):
@@ -471,7 +469,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
                 except Exception, e:
                     pass
         ##params = 'q=%s&%s=on&mx=%s' % (quote_plus(ton), kind, str(results))
-        params = 'q=%s&s=%s&mx=%s' % (quote_plus(ton), kind, str(results))
+        params = 'q={0!s}&s={1!s}&mx={2!s}'.format(quote_plus(ton), kind, str(results))
         if kind == 'ep':
             params = params.replace('s=ep&', 's=tt&ttype=ep&', 1)
         cont = self._retrieve(self.urls['find'] % params)
@@ -481,7 +479,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
             return cont
         # The retrieved page contains no results, because too many
         # titles or names contain the string we're looking for.
-        params = 'q=%s&ls=%s&lm=0' % (quote_plus(ton), kind)
+        params = 'q={0!s}&ls={1!s}&lm=0'.format(quote_plus(ton), kind)
         size = 131072 + results * 512
         return self._retrieve(self.urls['find'] % params, size=size)
 

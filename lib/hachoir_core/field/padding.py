@@ -36,12 +36,12 @@ class PaddingBits(Bits):
             self.warning("padding contents doesn't look normal (invalid pattern)")
             return False
         if self.MAX_SIZE < self._size:
-            self.info("only check first %u bits" % self.MAX_SIZE)
+            self.info("only check first {0:d} bits".format(self.MAX_SIZE))
         return True
 
     def createDisplay(self):
         if self._display_pattern:
-            return u"<padding pattern=%s>" % self.pattern
+            return u"<padding pattern={0!s}>".format(self.pattern)
         else:
             return Bits.createDisplay(self)
 
@@ -75,7 +75,7 @@ class PaddingBytes(Bytes):
             return False
 
         if self.MAX_SIZE < self._size/8:
-            self.info("only check first %s of padding" % humanFilesize(self.MAX_SIZE))
+            self.info("only check first {0!s} of padding".format(humanFilesize(self.MAX_SIZE)))
             content = self._parent.stream.readBytes(
                 self.absolute_address, self.MAX_SIZE)
         else:
@@ -94,7 +94,7 @@ class PaddingBytes(Bytes):
 
     def createDisplay(self):
         if self._display_pattern:
-            return u"<padding pattern=%s>" % makePrintable(self.pattern, "ASCII", quote="'")
+            return u"<padding pattern={0!s}>".format(makePrintable(self.pattern, "ASCII", quote="'"))
         else:
             return Bytes.createDisplay(self)
 

@@ -109,7 +109,7 @@ def render_flags(flags, bit_list):
     n = 0
     while unknown:
         if unknown & 1:
-            res.append("UNK_%04x" % (1 << n))
+            res.append("UNK_{0:04x}".format((1 << n)))
         unknown = unknown >> 1
         n += 1
 
@@ -134,7 +134,7 @@ def get_generic_flags(flags):
 def fmt_time(t):
     if isinstance(t, datetime):
         return t.isoformat(' ')
-    return "%04d-%02d-%02d %02d:%02d:%02d" % t
+    return "{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(*t)
 
 def show_item(h):
     st = rarType(h.type)
@@ -146,9 +146,9 @@ def show_item(h):
         xprint("  unknown: %s", hexlify(dat))
     if h.type in (rf.RAR_BLOCK_FILE, rf.RAR_BLOCK_SUB):
         if h.host_os == rf.RAR_OS_UNIX:
-            s_mode = "0%o" % h.mode
+            s_mode = "0{0:o}".format(h.mode)
         else:
-            s_mode = "0x%x" % h.mode
+            s_mode = "0x{0:x}".format(h.mode)
         xprint("  flags=0x%04x:%s", h.flags, get_file_flags(h.flags))
         if h.host_os >= 0 and h.host_os < len(os_list):
             s_os = os_list[h.host_os]

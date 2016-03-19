@@ -57,15 +57,14 @@ if sys.version_info[:2] <= (2, 6):
             if isinstance(expected_regexp, basestring):
                 expected_regexp = re.compile(expected_regexp)
             if not expected_regexp.search(str(exc_value)):
-                raise self.failureException('"%s" does not match "%s"' %
-                         (expected_regexp.pattern, str(exc_value)))
+                raise self.failureException('"{0!s}" does not match "{1!s}"'.format(expected_regexp.pattern, str(exc_value)))
             return True
 
     class _Py26FixTestCase(object):
         def assertIsNone(self, obj, msg=None):
             """Same as self.assertTrue(obj is None), with a nicer default message."""
             if obj is not None:
-                standardMsg = '%s is not None' % (safe_repr(obj),)
+                standardMsg = '{0!s} is not None'.format(safe_repr(obj))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertIsNotNone(self, obj, msg=None):
@@ -77,28 +76,28 @@ if sys.version_info[:2] <= (2, 6):
         def assertIn(self, member, container, msg=None):
             """Just like self.assertTrue(a in b), but with a nicer default message."""
             if member not in container:
-                standardMsg = '%s not found in %s' % (safe_repr(member),
+                standardMsg = '{0!s} not found in {1!s}'.format(safe_repr(member),
                                                       safe_repr(container))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertNotIn(self, member, container, msg=None):
             """Just like self.assertTrue(a not in b), but with a nicer default message."""
             if member in container:
-                standardMsg = '%s unexpectedly found in %s' % (safe_repr(member),
+                standardMsg = '{0!s} unexpectedly found in {1!s}'.format(safe_repr(member),
                                                             safe_repr(container))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertIs(self, expr1, expr2, msg=None):
             """Just like self.assertTrue(a is b), but with a nicer default message."""
             if expr1 is not expr2:
-                standardMsg = '%s is not %s' % (safe_repr(expr1),
+                standardMsg = '{0!s} is not {1!s}'.format(safe_repr(expr1),
                                                  safe_repr(expr2))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertIsNot(self, expr1, expr2, msg=None):
             """Just like self.assertTrue(a is not b), but with a nicer default message."""
             if expr1 is expr2:
-                standardMsg = 'unexpectedly identical: %s' % (safe_repr(expr1),)
+                standardMsg = 'unexpectedly identical: {0!s}'.format(safe_repr(expr1))
                 self.fail(self._formatMessage(msg, standardMsg))
 
 else:

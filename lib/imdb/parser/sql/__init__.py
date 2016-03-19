@@ -180,7 +180,7 @@ def scan_names(name_list, name1, name2, name3, results=0, ro_thresold=None,
         if not _scan_character:
             nils = nil.split(', ', 1)
             surname = nils[0]
-            if len(nils) == 2: namesurname = '%s %s' % (nils[1], surname)
+            if len(nils) == 2: namesurname = '{0!s} {1!s}'.format(nils[1], surname)
         else:
             nils = nil.split(' ', 1)
             surname = nils[-1]
@@ -512,7 +512,7 @@ def getSingleInfo(table, movieID, infoType, notAList=False):
         info = r.info
         note = r.note
         if note:
-            info += u'::%s' % note
+            info += u'::{0!s}'.format(note)
         retList.append(info)
     if not retList:
         return {}
@@ -565,7 +565,7 @@ class IMDbSqlAccessSystem(IMDbBase):
                                                 setConnection, AND, OR, IN, \
                                                 ISNULL, CONTAINSSTRING, toUTF8
                 else:
-                    self._sql_logger.warn('unknown module "%s"' % mod)
+                    self._sql_logger.warn('unknown module "{0!s}"'.format(mod))
                     continue
                 self._sql_logger.info('using %s ORM', mod)
                 # XXX: look ma'... black magic!  It's used to make
@@ -581,19 +581,19 @@ class IMDbSqlAccessSystem(IMDbBase):
                 for t in DB_TABLES:
                     globals()[t._imdbpyName] = t
                 if _gotError:
-                    self._sql_logger.warn('falling back to "%s"' % mod)
+                    self._sql_logger.warn('falling back to "{0!s}"'.format(mod))
                 break
             except ImportError, e:
                 if idx+1 >= nrMods:
-                    raise IMDbError('unable to use any ORM in %s: %s' % (
+                    raise IMDbError('unable to use any ORM in {0!s}: {1!s}'.format(
                                                     str(useORM), str(e)))
                 else:
-                    self._sql_logger.warn('unable to use "%s": %s' % (mod,
+                    self._sql_logger.warn('unable to use "{0!s}": {1!s}'.format(mod,
                                                                     str(e)))
                     _gotError = True
                 continue
         else:
-            raise IMDbError('unable to use any ORM in %s' % str(useORM))
+            raise IMDbError('unable to use any ORM in {0!s}'.format(str(useORM)))
         # Set the connection to the database.
         self._sql_logger.debug('connecting to %s', uri)
         try:
@@ -601,7 +601,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         except AssertionError, e:
             raise IMDbDataAccessError( \
                     'unable to connect to the database server; ' + \
-                    'complete message: "%s"' % str(e))
+                    'complete message: "{0!s}"'.format(str(e)))
         self.Error = self._connection.module.Error
         # Maps some IDs to the corresponding strings.
         self._kind = {}
@@ -793,32 +793,30 @@ class IMDbSqlAccessSystem(IMDbBase):
         try:
             return int(movieID)
         except (ValueError, OverflowError):
-            raise IMDbError('movieID "%s" can\'t be converted to integer' % \
-                            movieID)
+            raise IMDbError('movieID "{0!s}" can\'t be converted to integer'.format( \
+                            movieID))
 
     def _normalize_personID(self, personID):
         """Normalize the given personID."""
         try:
             return int(personID)
         except (ValueError, OverflowError):
-            raise IMDbError('personID "%s" can\'t be converted to integer' % \
-                            personID)
+            raise IMDbError('personID "{0!s}" can\'t be converted to integer'.format( \
+                            personID))
 
     def _normalize_characterID(self, characterID):
         """Normalize the given characterID."""
         try:
             return int(characterID)
         except (ValueError, OverflowError):
-            raise IMDbError('characterID "%s" can\'t be converted to integer' \
-                            % characterID)
+            raise IMDbError('characterID "{0!s}" can\'t be converted to integer'.format(characterID))
 
     def _normalize_companyID(self, companyID):
         """Normalize the given companyID."""
         try:
             return int(companyID)
         except (ValueError, OverflowError):
-            raise IMDbError('companyID "%s" can\'t be converted to integer' \
-                            % companyID)
+            raise IMDbError('companyID "{0!s}" can\'t be converted to integer'.format(companyID))
 
     def get_imdbMovieID(self, movieID):
         """Translate a movieID in an imdbID.
@@ -828,7 +826,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         try: movie = Title.get(movieID)
         except NotFoundError: return None
         imdbID = movie.imdbID
-        if imdbID is not None: return '%07d' % imdbID
+        if imdbID is not None: return '{0:07d}'.format(imdbID)
         m_dict = get_movie_data(movie.id, self._kind)
         titline = build_title(m_dict, ptdf=0)
         imdbID = self.title2imdbID(titline, m_dict['kind'])
@@ -850,7 +848,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         try: person = Name.get(personID)
         except NotFoundError: return None
         imdbID = person.imdbID
-        if imdbID is not None: return '%07d' % imdbID
+        if imdbID is not None: return '{0:07d}'.format(imdbID)
         n_dict = {'name': person.name, 'imdbIndex': person.imdbIndex}
         namline = build_name(n_dict, canonical=False)
         imdbID = self.name2imdbID(namline)
@@ -867,7 +865,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         try: character = CharName.get(characterID)
         except NotFoundError: return None
         imdbID = character.imdbID
-        if imdbID is not None: return '%07d' % imdbID
+        if imdbID is not None: return '{0:07d}'.format(imdbID)
         n_dict = {'name': character.name, 'imdbIndex': character.imdbIndex}
         namline = build_name(n_dict, canonical=False)
         imdbID = self.character2imdbID(namline)
@@ -884,7 +882,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         try: company = CompanyName.get(companyID)
         except NotFoundError: return None
         imdbID = company.imdbID
-        if imdbID is not None: return '%07d' % imdbID
+        if imdbID is not None: return '{0:07d}'.format(imdbID)
         n_dict = {'name': company.name, 'country': company.countryCode}
         namline = build_company_name(n_dict)
         imdbID = self.company2imdbID(namline)
@@ -985,7 +983,7 @@ class IMDbSqlAccessSystem(IMDbBase):
             qr += q2
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to search the database: "%s"' % str(e))
+                    'unable to search the database: "{0!s}"'.format(str(e)))
 
         resultsST = results * 3
         res = scan_titles(qr, title1, title2, title3, resultsST,
@@ -1032,9 +1030,9 @@ class IMDbSqlAccessSystem(IMDbBase):
             res = get_movie_data(movieID, self._kind)
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to get movieID "%s": "%s"' % (movieID, str(e)))
+                    'unable to get movieID "{0!s}": "{1!s}"'.format(movieID, str(e)))
         if not res:
-            raise IMDbDataAccessError('unable to get movieID "%s"' % movieID)
+            raise IMDbDataAccessError('unable to get movieID "{0!s}"'.format(movieID))
         # Collect cast information.
         castdata = [[cd.personID, cd.personRoleID, cd.note, cd.nrOrder,
                     self._role[cd.roleID]]
@@ -1078,7 +1076,7 @@ class IMDbSqlAccessSystem(IMDbBase):
             sect = group[0][0]
             for mdata in group:
                 data = mdata[1]
-                if mdata[2]: data += '::%s' % mdata[2]
+                if mdata[2]: data += '::{0!s}'.format(mdata[2])
                 res.setdefault(sect, []).append(data)
         # Companies info about a movie.
         cinfo = [(self._compType[m.companyTypeID], m.companyID, m.note) for m
@@ -1090,7 +1088,7 @@ class IMDbSqlAccessSystem(IMDbBase):
                 cDb = CompanyName.get(mdata[1])
                 cDbTxt = cDb.name
                 if cDb.countryCode:
-                    cDbTxt += ' %s' % cDb.countryCode
+                    cDbTxt += ' {0!s}'.format(cDb.countryCode)
                 company = Company(name=cDbTxt,
                                 companyID=mdata[1],
                                 notes=mdata[2] or u'',
@@ -1106,7 +1104,7 @@ class IMDbSqlAccessSystem(IMDbBase):
                 if note:
                     net = self._changeAKAencoding(note, nt)
                     if net is not None: nt = net
-                    nt += '::%s' % note
+                    nt += '::{0!s}'.format(note)
                 if nt not in res['akas']: res['akas'].append(nt)
         # Complete cast/crew.
         compcast = [(self._compcast[cc.subjectID], self._compcast[cc.statusID])
@@ -1114,7 +1112,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         if compcast:
             for entry in compcast:
                 val = unicode(entry[1])
-                res[u'complete %s' % entry[0]] = val
+                res[u'complete {0!s}'.format(entry[0])] = val
         # Movie connections.
         mlinks = [[ml.linkedMovieID, self._link[ml.linkTypeID]]
                     for ml in MovieLink.select(MovieLink.q.movieID == movieID)]
@@ -1245,7 +1243,7 @@ class IMDbSqlAccessSystem(IMDbBase):
             qr += q2
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to search the database: "%s"' % str(e))
+                    'unable to search the database: "{0!s}"'.format(str(e)))
 
         res = scan_names(qr, name1, name2, name3, results)
         res[:] = [x[1] for x in res]
@@ -1286,11 +1284,11 @@ class IMDbSqlAccessSystem(IMDbBase):
             p = Name.get(personID)
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to get personID "%s": "%s"' % (personID, str(e)))
+                    'unable to get personID "{0!s}": "{1!s}"'.format(personID, str(e)))
         res = {'name': p.name, 'imdbIndex': p.imdbIndex}
         if res['imdbIndex'] is None: del res['imdbIndex']
         if not res:
-            raise IMDbDataAccessError('unable to get personID "%s"' % personID)
+            raise IMDbDataAccessError('unable to get personID "{0!s}"'.format(personID))
         # Collect cast information.
         castdata = [(cd.movieID, cd.personRoleID, cd.note,
                     self._role[cd.roleID],
@@ -1308,8 +1306,8 @@ class IMDbSqlAccessSystem(IMDbBase):
                 if 'episode of' in mdata[4]:
                     duty = 'episodes'
                     if orig_duty not in ('actor', 'actress'):
-                        if note: note = ' %s' % note
-                        note = '[%s]%s' % (orig_duty, note)
+                        if note: note = ' {0!s}'.format(note)
+                        note = '[{0!s}]{1!s}'.format(orig_duty, note)
                 curRole = mdata[1]
                 curRoleID = None
                 if curRole is not None:
@@ -1344,7 +1342,7 @@ class IMDbSqlAccessSystem(IMDbBase):
             sect = group[0][0]
             for pdata in group:
                 data = pdata[1]
-                if pdata[2]: data += '::%s' % pdata[2]
+                if pdata[2]: data += '::{0!s}'.format(pdata[2])
                 res.setdefault(sect, []).append(data)
         # AKA names.
         akan = [(an.name, an.imdbIndex)
@@ -1396,7 +1394,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         soundexName2 = None
         nsplit = s_name.split()
         if len(nsplit) > 1:
-            name2 = '%s %s' % (nsplit[-1], ' '.join(nsplit[:-1]))
+            name2 = '{0!s} {1!s}'.format(nsplit[-1], ' '.join(nsplit[:-1]))
             if s_name == name2:
                 name2 = ''
             else:
@@ -1421,7 +1419,7 @@ class IMDbSqlAccessSystem(IMDbBase):
                     for q in CharName.select(condition)]
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to search the database: "%s"' % str(e))
+                    'unable to search the database: "{0!s}"'.format(str(e)))
         res = scan_names(qr, s_name, name2, '', results,
                         _scan_character=True)
         res[:] = [x[1] for x in res]
@@ -1441,12 +1439,12 @@ class IMDbSqlAccessSystem(IMDbBase):
             c = CharName.get(characterID)
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to get characterID "%s": "%s"' % (characterID, e))
+                    'unable to get characterID "{0!s}": "{1!s}"'.format(characterID, e))
         res = {'name': c.name, 'imdbIndex': c.imdbIndex}
         if res['imdbIndex'] is None: del res['imdbIndex']
         if not res:
-            raise IMDbDataAccessError('unable to get characterID "%s"' % \
-                                        characterID)
+            raise IMDbDataAccessError('unable to get characterID "{0!s}"'.format( \
+                                        characterID))
         # Collect filmography information.
         items = CastInfo.select(CastInfo.q.personRoleID == characterID)
         if results > 0:
@@ -1496,7 +1494,7 @@ class IMDbSqlAccessSystem(IMDbBase):
                     for q in CompanyName.select(condition)]
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to search the database: "%s"' % str(e))
+                    'unable to search the database: "{0!s}"'.format(str(e)))
         qr[:] = [(x[0], build_company_name(x[1])) for x in qr]
         res = scan_company_names(qr, name, results)
         res[:] = [x[1] for x in res]
@@ -1517,12 +1515,12 @@ class IMDbSqlAccessSystem(IMDbBase):
             c = CompanyName.get(companyID)
         except NotFoundError, e:
             raise IMDbDataAccessError( \
-                    'unable to get companyID "%s": "%s"' % (companyID, e))
+                    'unable to get companyID "{0!s}": "{1!s}"'.format(companyID, e))
         res = {'name': c.name, 'country': c.countryCode}
         if res['country'] is None: del res['country']
         if not res:
-            raise IMDbDataAccessError('unable to get companyID "%s"' % \
-                                        companyID)
+            raise IMDbDataAccessError('unable to get companyID "{0!s}"'.format( \
+                                        companyID))
         # Collect filmography information.
         items = MovieCompanies.select(MovieCompanies.q.companyID == companyID)
         if results > 0:

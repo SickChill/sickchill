@@ -90,7 +90,7 @@ class BeautifulSoupHTMLParser(HTMLParser):
         if character is not None:
             data = character
         else:
-            data = "&%s;" % name
+            data = "&{0!s};".format(name)
         self.handle_data(data)
 
     def handle_comment(self, data):
@@ -239,8 +239,7 @@ if major == 3 and minor == 2 and not CONSTRUCTOR_TAKES_STRICT:
             else:
                 offset = offset + len(self.__starttag_text)
             if self.strict:
-                self.error("junk characters in start tag: %r"
-                           % (rawdata[k:endpos][:20],))
+                self.error("junk characters in start tag: {0!r}".format(rawdata[k:endpos][:20]))
             self.handle_data(rawdata[i:endpos])
             return endpos
         if end.endswith('/>'):
@@ -254,7 +253,7 @@ if major == 3 and minor == 2 and not CONSTRUCTOR_TAKES_STRICT:
 
     def set_cdata_mode(self, elem):
         self.cdata_elem = elem.lower()
-        self.interesting = re.compile(r'</\s*%s\s*>' % self.cdata_elem, re.I)
+        self.interesting = re.compile(r'</\s*{0!s}\s*>'.format(self.cdata_elem), re.I)
 
     BeautifulSoupHTMLParser.parse_starttag = parse_starttag
     BeautifulSoupHTMLParser.set_cdata_mode = set_cdata_mode

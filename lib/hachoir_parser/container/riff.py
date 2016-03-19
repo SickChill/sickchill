@@ -134,7 +134,7 @@ def formatSerialNumber(field):
     Eg. 0x00085C48 => "0008-5C48"
     """
     sn = field.value
-    return "%04X-%04X" % (sn >> 16, sn & 0xFFFF)
+    return "{0:04X}-{1:04X}".format(sn >> 16, sn & 0xFFFF)
 
 def parseCDDA(self):
     """
@@ -155,7 +155,7 @@ def parseCDDA(self):
 def parseWAVFormat(self):
     size = self["size"].value
     if size not in (16, 18):
-        self.warning("Format with size of %s bytes is not supported!" % size)
+        self.warning("Format with size of {0!s} bytes is not supported!".format(size))
     yield Enum(UInt16(self, "codec", "Audio codec"), audio_codec_name)
     yield UInt16(self, "nb_channel", "Number of audio channel")
     yield UInt32(self, "sample_per_sec", "Sample per second")
@@ -289,7 +289,7 @@ class Chunk(FieldSet):
 
     def createDescription(self):
         tag = self["tag"].display
-        return u"Chunk (tag %s)" % tag
+        return u"Chunk (tag {0!s})".format(tag)
 
 class ChunkAVI(Chunk):
     TAG_INFO = Chunk.TAG_INFO.copy()
@@ -318,7 +318,7 @@ class ChunkWAVE(Chunk):
 def parseAnimationHeader(self):
     yield UInt32(self, "hdr_size", "Size of header (36 bytes)")
     if self["hdr_size"].value != 36:
-        self.warning("Animation header with unknown size (%s)" % self["size"].value)
+        self.warning("Animation header with unknown size ({0!s})".format(self["size"].value))
     yield UInt32(self, "nb_frame", "Number of unique Icons in this cursor")
     yield UInt32(self, "nb_step", "Number of Blits before the animation cycles")
     yield UInt32(self, "cx")
@@ -413,10 +413,10 @@ class RiffFile(Parser):
             desc = u"Microsoft AVI video"
             if "headers/avi_hdr" in self:
                 header = self["headers/avi_hdr"]
-                desc += ": %ux%u pixels" % (header["width"].value, header["height"].value)
+                desc += ": {0:d}x{1:d} pixels".format(header["width"].value, header["height"].value)
                 microsec = header["microsec_per_frame"].value
                 if microsec:
-                    desc += ", %.1f fps" % (1000000.0 / microsec)
+                    desc += ", {0:.1f} fps".format((1000000.0 / microsec))
                     if "total_frame" in header and header["total_frame"].value:
                         delta = timedelta(seconds=float(header["total_frame"].value) * microsec)
                         desc += ", " + humanDuration(delta)

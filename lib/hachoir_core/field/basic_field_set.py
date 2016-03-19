@@ -62,7 +62,7 @@ class BasicFieldSet(Field):
         # Sanity checks (post-conditions)
         assert self.endian in (BIG_ENDIAN, LITTLE_ENDIAN, MIDDLE_ENDIAN)
         if (self._size is not None) and (self._size <= 0):
-            raise ParserError("Invalid parser '%s' size: %s" % (self.path, self._size))
+            raise ParserError("Invalid parser '{0!s}' size: {1!s}".format(self.path, self._size))
 
     def reset(self):
         self._field_array_count = {}
@@ -91,7 +91,7 @@ class BasicFieldSet(Field):
             # Callback prototype: def f(field, new_value)
             # Called to ask to set new value
             "set-field-value"
-        ), "Event name %r is invalid" % event_name
+        ), "Event name {0!r} is invalid".format(event_name)
         if local:
             if self._event_handler is None:
                 self._event_handler = EventHandler()
@@ -116,7 +116,7 @@ class BasicFieldSet(Field):
             self._field_array_count[key] += 1
         except KeyError:
             self._field_array_count[key] = 0
-        field._name = key + "[%u]" % self._field_array_count[key]
+        field._name = key + "[{0:d}]".format(self._field_array_count[key])
 
     def readFirstFields(self, number):
         """

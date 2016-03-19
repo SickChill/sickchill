@@ -59,8 +59,7 @@ def floatFactory(name, format, mantissa_bits, exponent_bits, doc):
                 try:
                     return struct.unpack(self.struct_format, raw)[0]
                 except struct.error, err:
-                    raise ValueError("[%s] conversion error: %s" %
-                        (self.__class__.__name__, err))
+                    raise ValueError("[{0!s}] conversion error: {1!s}".format(self.__class__.__name__, err))
             else:
                 try:
                     value = self["mantissa"].value * (2.0 ** float(self["exponent"].value))
@@ -69,8 +68,8 @@ def floatFactory(name, format, mantissa_bits, exponent_bits, doc):
                     else:
                         return value
                 except OverflowError:
-                    raise ValueError("[%s] floating point overflow" %
-                        self.__class__.__name__)
+                    raise ValueError("[{0!s}] floating point overflow".format(
+                        self.__class__.__name__))
 
         def createFields(self):
             yield Bit(self, "negative")

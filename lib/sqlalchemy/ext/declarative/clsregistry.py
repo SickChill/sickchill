@@ -193,8 +193,7 @@ class _GetColumns(object):
         if mp:
             if key not in mp.all_orm_descriptors:
                 raise exc.InvalidRequestError(
-                            "Class %r does not have a mapped column named %r"
-                            % (self.cls, key))
+                            "Class {0!r} does not have a mapped column named {1!r}".format(self.cls, key))
 
             desc = mp.all_orm_descriptors[key]
             if desc.extension_type is interfaces.NOT_EXTENSION:

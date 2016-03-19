@@ -241,7 +241,7 @@ class BaseIOStream(object):
             self._try_inline_read()
         except UnsatisfiableReadError as e:
             # Handle this the same way as in _handle_events.
-            gen_log.info("Unsatisfiable read, closing connection: %s" % e)
+            gen_log.info("Unsatisfiable read, closing connection: {0!s}".format(e))
             self.close(exc_info=True)
             return future
         except:
@@ -274,7 +274,7 @@ class BaseIOStream(object):
             self._try_inline_read()
         except UnsatisfiableReadError as e:
             # Handle this the same way as in _handle_events.
-            gen_log.info("Unsatisfiable read, closing connection: %s" % e)
+            gen_log.info("Unsatisfiable read, closing connection: {0!s}".format(e))
             self.close(exc_info=True)
             return future
         except:
@@ -536,7 +536,7 @@ class BaseIOStream(object):
                 self._state = state
                 self.io_loop.update_handler(self.fileno(), self._state)
         except UnsatisfiableReadError as e:
-            gen_log.info("Unsatisfiable read, closing connection: %s" % e)
+            gen_log.info("Unsatisfiable read, closing connection: {0!s}".format(e))
             self.close(exc_info=True)
         except Exception:
             gen_log.error("Uncaught exception, closing connection.",
@@ -814,7 +814,7 @@ class BaseIOStream(object):
         if (self._read_max_bytes is not None and
                 size > self._read_max_bytes):
             raise UnsatisfiableReadError(
-                "delimiter %r not found within %d bytes" % (
+                "delimiter {0!r} not found within {1:d} bytes".format(
                     delimiter, self._read_max_bytes))
 
     def _handle_write(self):

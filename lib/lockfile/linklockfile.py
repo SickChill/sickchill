@@ -17,7 +17,7 @@ class LinkLockFile(LockBase):
         try:
             open(self.unique_name, "wb").close()
         except IOError:
-            raise LockFailed("failed to create %s" % self.unique_name)
+            raise LockFailed("failed to create {0!s}".format(self.unique_name))
 
         timeout = timeout if timeout is not None else self.timeout
         end_time = time.time()
@@ -44,8 +44,8 @@ class LinkLockFile(LockBase):
                                               " lock for %s" %
                                               self.path)
                         else:
-                            raise AlreadyLocked("%s is already locked" %
-                                                self.path)
+                            raise AlreadyLocked("{0!s} is already locked".format(
+                                                self.path))
                     time.sleep(timeout is not None and timeout/10 or 0.1)
             else:
                 # Link creation succeeded.  We're good to go.
@@ -53,9 +53,9 @@ class LinkLockFile(LockBase):
 
     def release(self):
         if not self.is_locked():
-            raise NotLocked("%s is not locked" % self.path)
+            raise NotLocked("{0!s} is not locked".format(self.path))
         elif not os.path.exists(self.unique_name):
-            raise NotMyLock("%s is locked, but not by me" % self.path)
+            raise NotMyLock("{0!s} is locked, but not by me".format(self.path))
         os.unlink(self.unique_name)
         os.unlink(self.lock_file)
 

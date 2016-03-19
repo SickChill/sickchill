@@ -109,7 +109,7 @@ class PMGL_Entry(FieldSet):
         yield filesizeHandler(CWord(self, "length", "Length of the data"))
 
     def createDescription(self):
-        return "%s (%s)" % (self["name"].value, self["length"].display)
+        return "{0!s} ({1!s})".format(self["name"].value, self["length"].display)
 
 class PMGL(FieldSet):
     def createFields(self):
@@ -138,7 +138,7 @@ class PMGL(FieldSet):
         if padding:
             yield PaddingBytes(self, "padding", padding)
         for i in range(num_quickref*quickref_frequency, 0, -quickref_frequency):
-            yield UInt16(self, "quickref[%i]"%i)
+            yield UInt16(self, "quickref[{0:d}]".format(i))
         yield UInt16(self, "entry_count")
 
 class PMGI_Entry(FieldSet):
@@ -148,7 +148,7 @@ class PMGI_Entry(FieldSet):
         yield CWord(self, "page")
 
     def createDescription(self):
-        return "%s (page #%u)" % (self["name"].value, self["page"].value)
+        return "{0!s} (page #{1:d})".format(self["name"].value, self["page"].value)
 
 class PMGI(FieldSet):
     def createFields(self):
@@ -197,9 +197,9 @@ class ControlData(FieldSet):
         version=self["version"].value
         if version==1: block='bytes'
         else: block='32KB blocks'
-        yield UInt32(self, "reset_interval", "LZX: Reset interval in %s"%block)
-        yield UInt32(self, "window_size", "LZX: Window size in %s"%block)
-        yield UInt32(self, "cache_size", "LZX: Cache size in %s"%block)
+        yield UInt32(self, "reset_interval", "LZX: Reset interval in {0!s}".format(block))
+        yield UInt32(self, "window_size", "LZX: Window size in {0!s}".format(block))
+        yield UInt32(self, "cache_size", "LZX: Cache size in {0!s}".format(block))
         yield UInt32(self, "unknown[]")
 
 class ResetTable(FieldSet):
@@ -238,7 +238,7 @@ class SystemEntry(FieldSet):
         yield UInt16(self, "length", "Length of entry")
         yield RawBytes(self, "data", self["length"].value)
     def createDescription(self):
-        return '#SYSTEM Entry, Type %s'%self["type"].display
+        return '#SYSTEM Entry, Type {0!s}'.format(self["type"].display)
         
 class SystemFile(FieldSet):
     def createFields(self):
@@ -290,16 +290,16 @@ class ChmFile(HachoirParser, RootSeekableFieldSet):
                 elif name.startswith('::DataSpace/Storage/'):
                     sectname = str(name.split('/')[2])
                     if name.endswith('/SpanInfo'):
-                        yield UInt64(self, "%s_spaninfo"%sectname, "Size of uncompressed data in the %s section"%sectname)
+                        yield UInt64(self, "{0!s}_spaninfo".format(sectname), "Size of uncompressed data in the {0!s} section".format(sectname))
                     elif name.endswith('/ControlData'):
-                        yield ControlData(self, "%s_controldata"%sectname, "Data about the compression scheme", size=entry["length"].value*8)
+                        yield ControlData(self, "{0!s}_controldata".format(sectname), "Data about the compression scheme", size=entry["length"].value*8)
                     elif name.endswith('/Transform/List'):
-                        yield String(self, "%s_transform_list"%sectname, 38, description="Transform/List element", charset="UTF-16-LE")
+                        yield String(self, "{0!s}_transform_list".format(sectname), 38, description="Transform/List element", charset="UTF-16-LE")
                     elif name.endswith('/Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/InstanceData/ResetTable'):
-                        yield ResetTable(self, "%s_reset_table"%sectname, "LZX Reset Table", size=entry["length"].value*8)
+                        yield ResetTable(self, "{0!s}_reset_table".format(sectname), "LZX Reset Table", size=entry["length"].value*8)
                     elif name.endswith('/Content'):
                         # eventually, a LZX wrapper will appear here, we hope!
-                        yield RawBytes(self, "%s_content"%sectname, entry["length"].value, "Content for the %s section"%sectname)
+                        yield RawBytes(self, "{0!s}_content".format(sectname), entry["length"].value, "Content for the {0!s} section".format(sectname))
                     else:
                         yield RawBytes(self, "entry_data[]", entry["length"].value, name)
                 elif name=="/#SYSTEM":
@@ -313,11 +313,11 @@ class ChmFile(HachoirParser, RootSeekableFieldSet):
             for entry in self['/dir/pmgi'].array('entry'):
                 if entry['name'].value <= filename:
                     page=entry['page'].value
-        pmgl=self['/dir/pmgl[%i]'%page]
+        pmgl=self['/dir/pmgl[{0:d}]'.format(page)]
         for entry in pmgl.array('entry'):
             if entry['name'].value == filename:
                 return entry
-        raise ParserError("File '%s' not found!"%filename)
+        raise ParserError("File '{0!s}' not found!".format(filename))
 
     def createContentSize(self):
         return self["file_size/file_size"].value * 8

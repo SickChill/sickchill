@@ -161,7 +161,7 @@ class LanguageParamType(click.ParamType):
         try:
             return Language.fromietf(value)
         except BabelfishError:
-            self.fail('%s is not a valid language' % value)
+            self.fail('{0!s} is not a valid language'.format(value))
 
 LANGUAGE = LanguageParamType()
 
@@ -187,7 +187,7 @@ class AgeParamType(click.ParamType):
     def convert(self, value, param, ctx):
         match = re.match(r'^(?:(?P<weeks>\d+?)w)?(?:(?P<days>\d+?)d)?(?:(?P<hours>\d+?)h)?$', value)
         if not match:
-            self.fail('%s is not a valid age' % value)
+            self.fail('{0!s} is not a valid age'.format(value))
 
         return timedelta(**{k: int(v) for k, v in match.groupdict(0).items()})
 
@@ -343,12 +343,12 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
     # output errored paths
     if verbose > 0:
         for p in errored_paths:
-            click.secho('%s errored' % p, fg='red')
+            click.secho('{0!s} errored'.format(p), fg='red')
 
     # output ignored videos
     if verbose > 1:
         for video in ignored_videos:
-            click.secho('%s ignored - subtitles: %s / age: %d day%s' % (
+            click.secho('{0!s} ignored - subtitles: {1!s} / age: {2:d} day{3!s}'.format(
                 os.path.split(video.name)[1],
                 ', '.join(str(s) for s in video.subtitle_languages) or 'none',
                 video.age.days,
@@ -356,13 +356,13 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
             ), fg='yellow')
 
     # report collected videos
-    click.echo('%s video%s collected / %s video%s ignored / %s error%s' % (
+    click.echo('{0!s} video{1!s} collected / {2!s} video{3!s} ignored / {4!s} error{5!s}'.format(
         click.style(str(len(videos)), bold=True, fg='green' if videos else None),
         's' if len(videos) > 1 else '',
         click.style(str(len(ignored_videos)), bold=True, fg='yellow' if ignored_videos else None),
         's' if len(ignored_videos) > 1 else '',
         click.style(str(len(errored_paths)), bold=True, fg='red' if errored_paths else None),
-        's' if len(errored_paths) > 1 else '',
+        's' if len(errored_paths) > 1 else ''
     ))
 
     # exit if no video collected
@@ -389,7 +389,7 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
         total_subtitles += len(saved_subtitles)
 
         if verbose > 0:
-            click.echo('%s subtitle%s downloaded for %s' % (click.style(str(len(saved_subtitles)), bold=True),
+            click.echo('{0!s} subtitle{1!s} downloaded for {2!s}'.format(click.style(str(len(saved_subtitles)), bold=True),
                                                             's' if len(saved_subtitles) > 1 else '',
                                                             os.path.split(v.name)[1]))
 
@@ -425,12 +425,12 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
                 # echo some nice colored output
                 click.echo('  - [{score}] {language} subtitle from {provider_name} (match on {matches})'.format(
                     score=click.style('{:5.1f}'.format(scaled_score), fg=score_color, bold=score >= scores['hash']),
-                    language=s.language.name if s.language.country is None else '%s (%s)' % (s.language.name,
+                    language=s.language.name if s.language.country is None else '{0!s} ({1!s})'.format(s.language.name,
                                                                                              s.language.country.name),
                     provider_name=s.provider_name,
                     matches=', '.join(sorted(matches, key=scores.get, reverse=True))
                 ))
 
     if verbose == 0:
-        click.echo('Downloaded %s subtitle%s' % (click.style(str(total_subtitles), bold=True),
+        click.echo('Downloaded {0!s} subtitle{1!s}'.format(click.style(str(total_subtitles), bold=True),
                                                  's' if total_subtitles > 1 else ''))

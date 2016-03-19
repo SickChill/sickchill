@@ -11,13 +11,13 @@ _dsep = r'[-/ \.]'
 _dsep_bis = r'[-/ \.x]'
 
 date_regexps = [
-    re.compile(r'%s((\d{8}))%s' % (_dsep, _dsep), re.IGNORECASE),
-    re.compile(r'%s((\d{6}))%s' % (_dsep, _dsep), re.IGNORECASE),
-    re.compile(r'(?:^|[^\d])((\d{2})%s(\d{1,2})%s(\d{1,2}))(?:$|[^\d])' % (_dsep, _dsep), re.IGNORECASE),
-    re.compile(r'(?:^|[^\d])((\d{1,2})%s(\d{1,2})%s(\d{2}))(?:$|[^\d])' % (_dsep, _dsep), re.IGNORECASE),
-    re.compile(r'(?:^|[^\d])((\d{4})%s(\d{1,2})%s(\d{1,2}))(?:$|[^\d])' % (_dsep_bis, _dsep), re.IGNORECASE),
-    re.compile(r'(?:^|[^\d])((\d{1,2})%s(\d{1,2})%s(\d{4}))(?:$|[^\d])' % (_dsep, _dsep_bis), re.IGNORECASE),
-    re.compile(r'(?:^|[^\d])((\d{1,2}(?:st|nd|rd|th)?%s(?:[a-z]{3,10})%s\d{4}))(?:$|[^\d])' % (_dsep, _dsep),
+    re.compile(r'{0!s}((\d{{8}})){1!s}'.format(_dsep, _dsep), re.IGNORECASE),
+    re.compile(r'{0!s}((\d{{6}})){1!s}'.format(_dsep, _dsep), re.IGNORECASE),
+    re.compile(r'(?:^|[^\d])((\d{{2}}){0!s}(\d{{1,2}}){1!s}(\d{{1,2}}))(?:$|[^\d])'.format(_dsep, _dsep), re.IGNORECASE),
+    re.compile(r'(?:^|[^\d])((\d{{1,2}}){0!s}(\d{{1,2}}){1!s}(\d{{2}}))(?:$|[^\d])'.format(_dsep, _dsep), re.IGNORECASE),
+    re.compile(r'(?:^|[^\d])((\d{{4}}){0!s}(\d{{1,2}}){1!s}(\d{{1,2}}))(?:$|[^\d])'.format(_dsep_bis, _dsep), re.IGNORECASE),
+    re.compile(r'(?:^|[^\d])((\d{{1,2}}){0!s}(\d{{1,2}}){1!s}(\d{{4}}))(?:$|[^\d])'.format(_dsep, _dsep_bis), re.IGNORECASE),
+    re.compile(r'(?:^|[^\d])((\d{{1,2}}(?:st|nd|rd|th)?{0!s}(?:[a-z]{{3,10}}){1!s}\d{{4}}))(?:$|[^\d])'.format(_dsep, _dsep),
                re.IGNORECASE)]
 
 

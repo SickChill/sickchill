@@ -40,16 +40,16 @@ class Node(object):
         self._flags = []
 
     def __str__(self):
-        attributesStr = " ".join(["%s=\"%s\"" % (name, value)
+        attributesStr = " ".join(["{0!s}=\"{1!s}\"".format(name, value)
                                   for name, value in
                                   self.attributes.items()])
         if attributesStr:
-            return "<%s %s>" % (self.name, attributesStr)
+            return "<{0!s} {1!s}>".format(self.name, attributesStr)
         else:
-            return "<%s>" % (self.name)
+            return "<{0!s}>".format((self.name))
 
     def __repr__(self):
-        return "<%s>" % (self.name)
+        return "<{0!s}>".format((self.name))
 
     def appendChild(self, node):
         """Insert node as a child of the current node
@@ -285,7 +285,7 @@ class TreeBuilder(object):
 
     def insertElementNormal(self, token):
         name = token["name"]
-        assert isinstance(name, text_type), "Element %s not unicode" % name
+        assert isinstance(name, text_type), "Element {0!s} not unicode".format(name)
         namespace = token.get("namespace", self.defaultNamespace)
         element = self.elementClass(name, namespace)
         element.attributes = token["data"]

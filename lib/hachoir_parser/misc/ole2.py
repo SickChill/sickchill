@@ -99,7 +99,7 @@ class Property(FieldSet):
     def createDescription(self):
         name = self["name"].display
         size = self["size"].display
-        return "Property: %s (%s)" % (name, size)
+        return "Property: {0!s} ({1!s})".format(name, size)
 
 class DIFat(SeekableFieldSet):
     def __init__(self, parent, name, db_start, db_count, description=None):
@@ -109,7 +109,7 @@ class DIFat(SeekableFieldSet):
 
     def createFields(self):
         for index in xrange(NB_DIFAT):
-            yield SECT(self, "index[%u]" % index)
+            yield SECT(self, "index[{0:d}]".format(index))
 
         difat_sect = self.start
         index = NB_DIFAT
@@ -118,9 +118,9 @@ class DIFat(SeekableFieldSet):
             # this is relative to real DIFAT start
             self.seekBit(NB_DIFAT*SECT.static_size + self.parent.sector_size*difat_sect)
             for sect_index in xrange(entries_per_sect):
-                yield SECT(self, "index[%u]" % (index+sect_index))
+                yield SECT(self, "index[{0:d}]".format((index+sect_index)))
             index += entries_per_sect
-            next = SECT(self, "difat[%u]" % ctr)
+            next = SECT(self, "difat[{0:d}]".format(ctr))
             yield next
             difat_sect = next.value
 
@@ -155,7 +155,7 @@ class SectFat(FieldSet):
 
     def createFields(self):
         for i in xrange(self.start, self.start + self.count):
-            yield SECT(self, "index[%u]" % i)
+            yield SECT(self, "index[{0:d}]".format(i))
 
 class OLE2_File(HachoirParser, RootSeekableFieldSet):
     PARSER_TAGS = {
@@ -187,14 +187,13 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
         if self["ole_id"].value != "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1":
             return "Invalid magic"
         if self["header/ver_maj"].value not in (3, 4):
-            return "Unknown major version (%s)" % self["header/ver_maj"].value
+            return "Unknown major version ({0!s})".format(self["header/ver_maj"].value)
         if self["header/endian"].value not in ("\xFF\xFE", "\xFE\xFF"):
-            return "Unknown endian (%s)" % self["header/endian"].raw_display
+            return "Unknown endian ({0!s})".format(self["header/endian"].raw_display)
         if not(MIN_BIG_BLOCK_LOG2 <= self["header/bb_shift"].value <= MAX_BIG_BLOCK_LOG2):
-            return "Invalid (log 2 of) big block size (%s)" % self["header/bb_shift"].value
+            return "Invalid (log 2 of) big block size ({0!s})".format(self["header/bb_shift"].value)
         if self["header/bb_shift"].value < self["header/sb_shift"].value:
-            return "Small block size (log2=%s) is bigger than big block size (log2=%s)!" \
-                % (self["header/sb_shift"].value, self["header/bb_shift"].value)
+            return "Small block size (log2={0!s}) is bigger than big block size (log2={1!s})!".format(self["header/sb_shift"].value, self["header/bb_shift"].value)
         return True
 
     def createFields(self):
@@ -251,7 +250,7 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             return
         if property["size"].value < self["header/threshold"].value and name_prefix!='root':
             return
-        name = "%s[]" % name_prefix
+        name = "{0!s}[]".format(name_prefix)
         first = None
         previous = None
         size = 0
@@ -275,8 +274,8 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             if first is None:
                 break
             self.seekBlock(first)
-            desc = "Big blocks %s..%s (%s)" % (first, previous, previous-first+1)
-            desc += " of %s bytes" % (self.sector_size // 8)
+            desc = "Big blocks {0!s}..{1!s} ({2!s})".format(first, previous, previous-first+1)
+            desc += " of {0!s} bytes".format((self.sector_size // 8))
             field = CustomFragment(self, name, size, parser, desc, fragment_group)
             if not fragment_group:
                 fragment_group = field.group
@@ -303,15 +302,15 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
         previous = block
         while block != SECT.END_OF_CHAIN:
             if block in SECT.SPECIALS:
-                raise ParserError("%s: Invalid block index (0x%08x), previous=%s" % (err_prefix, block, previous))
+                raise ParserError("{0!s}: Invalid block index (0x{1:08x}), previous={2!s}".format(err_prefix, block, previous))
             if block in block_set:
-                raise ParserError("%s: Found a loop (%s=>%s)" % (err_prefix, previous, block))
+                raise ParserError("{0!s}: Found a loop ({1!s}=>{2!s})".format(err_prefix, previous, block))
             block_set.add(block)
             yield block
             previous = block
             index = block // items_per_fat
             try:
-                block = fat[index]["index[%u]" % block].value
+                block = fat[index]["index[{0:d}]".format(block)].value
             except LookupError, err:
                 break
 
@@ -324,8 +323,7 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             if block == SECT.UNUSED:
                 break
 
-            desc = "FAT %u/%u at block %u" % \
-                (1+index, self["header/bb_count"].value, block)
+            desc = "FAT {0:d}/{1:d} at block {2:d}".format(1+index, self["header/bb_count"].value, block)
 
             self.seekBlock(block)
             field = SectFat(self, "bbfat[]", start, count, desc)
@@ -343,8 +341,7 @@ class OLE2_File(HachoirParser, RootSeekableFieldSet):
             self.seekBlock(block)
             field = SectFat(self, "sfat[]", \
                 start, count, \
-                "SFAT %u/%u at block %u" % \
-                (1+index, self["header/sb_count"].value, block))
+                "SFAT {0:d}/{1:d} at block {2:d}".format(1+index, self["header/sb_count"].value, block))
             yield field
             self.ss_fat.append(field)
             start += count

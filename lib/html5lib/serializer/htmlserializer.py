@@ -63,7 +63,7 @@ else:
                     if not e.endswith(";"):
                         res.append(";")
                 else:
-                    res.append("&#x%s;" % (hex(cp)[2:]))
+                    res.append("&#x{0!s};".format((hex(cp)[2:])))
             return ("".join(res), exc.end)
         else:
             return xmlcharrefreplace_errors(exc)
@@ -199,10 +199,10 @@ class HTMLSerializer(object):
         for token in treewalker:
             type = token["type"]
             if type == "Doctype":
-                doctype = "<!DOCTYPE %s" % token["name"]
+                doctype = "<!DOCTYPE {0!s}".format(token["name"])
 
                 if token["publicId"]:
-                    doctype += ' PUBLIC "%s"' % token["publicId"]
+                    doctype += ' PUBLIC "{0!s}"'.format(token["publicId"])
                 elif token["systemId"]:
                     doctype += " SYSTEM"
                 if token["systemId"]:
@@ -212,7 +212,7 @@ class HTMLSerializer(object):
                         quote_char = "'"
                     else:
                         quote_char = '"'
-                    doctype += " %s%s%s" % (quote_char, token["systemId"], quote_char)
+                    doctype += " {0!s}{1!s}{2!s}".format(quote_char, token["systemId"], quote_char)
 
                 doctype += ">"
                 yield self.encodeStrict(doctype)
@@ -227,7 +227,7 @@ class HTMLSerializer(object):
 
             elif type in ("StartTag", "EmptyTag"):
                 name = token["name"]
-                yield self.encodeStrict("<%s" % name)
+                yield self.encodeStrict("<{0!s}".format(name))
                 if name in rcdataElements and not self.escape_rcdata:
                     in_cdata = True
                 elif in_cdata:
@@ -280,23 +280,23 @@ class HTMLSerializer(object):
                     in_cdata = False
                 elif in_cdata:
                     self.serializeError(_("Unexpected child element of a CDATA element"))
-                yield self.encodeStrict("</%s>" % name)
+                yield self.encodeStrict("</{0!s}>".format(name))
 
             elif type == "Comment":
                 data = token["data"]
                 if data.find("--") >= 0:
                     self.serializeError(_("Comment contains --"))
-                yield self.encodeStrict("<!--%s-->" % token["data"])
+                yield self.encodeStrict("<!--{0!s}-->".format(token["data"]))
 
             elif type == "Entity":
                 name = token["name"]
                 key = name + ";"
                 if not key in entities:
-                    self.serializeError(_("Entity %s not recognized" % name))
+                    self.serializeError(_("Entity {0!s} not recognized".format(name)))
                 if self.resolve_entities and key not in xmlEntities:
                     data = entities[key]
                 else:
-                    data = "&%s;" % name
+                    data = "&{0!s};".format(name)
                 yield self.encodeStrict(data)
 
             else:

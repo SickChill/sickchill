@@ -41,7 +41,7 @@ def parse(code, mode='exec', **exception_kwargs):
         return _ast_util.parse(code, '<unknown>', mode)
     except Exception:
         raise exceptions.SyntaxException(
-            "(%s) %s (%r)" % (
+            "({0!s}) {1!s} ({2!r})".format(
                 compat.exception_as().__class__.__name__,
                 compat.exception_as(),
                 code[0:50]

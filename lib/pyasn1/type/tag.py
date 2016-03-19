@@ -18,16 +18,16 @@ class Tag:
     def __init__(self, tagClass, tagFormat, tagId):
         if tagId < 0:
             raise error.PyAsn1Error(
-                'Negative tag ID (%s) not allowed' % (tagId,)
+                'Negative tag ID ({0!s}) not allowed'.format(tagId)
                 )
         self.__tag = (tagClass, tagFormat, tagId)
         self.uniq = (tagClass, tagId)
         self.__hashedUniqTag = hash(self.uniq)
 
     def __repr__(self):
-        return '%s(tagClass=%s, tagFormat=%s, tagId=%s)' % (
+        return '{0!s}(tagClass={1!s}, tagFormat={2!s}, tagId={3!s})'.format(*(
             (self.__class__.__name__,) + self.__tag
-            )
+            ))
     # These is really a hotspot -- expose public "uniq" attribute to save on
     # function calls
     def __eq__(self, other): return self.uniq == other.uniq
@@ -64,7 +64,7 @@ class TagSet:
         self.__lenOfSuperTags = len(superTags)
         
     def __repr__(self):
-        return '%s(%s)' % (
+        return '{0!s}({1!s})'.format(
             self.__class__.__name__,
             ', '.join([repr(x) for x in self.__superTags])
             )

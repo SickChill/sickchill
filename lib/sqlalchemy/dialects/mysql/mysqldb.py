@@ -74,8 +74,7 @@ class MySQLDialect_mysqldb(MySQLDBConnector, MySQLDialect):
         # specific issue w/ the utf8_bin collation and unicode returns
 
         has_utf8_bin = connection.scalar(
-                                "show collation where %s = 'utf8' and %s = 'utf8_bin'"
-                                    % (
+                                "show collation where {0!s} = 'utf8' and {1!s} = 'utf8_bin'".format(
                                     self.identifier_preparer.quote("Charset"),
                                     self.identifier_preparer.quote("Collation")
                                 ))

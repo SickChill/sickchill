@@ -218,7 +218,7 @@ class MapperProperty(_MappedAttribute, _InspectionAttr):
         return operator(self.comparator, value)
 
     def __repr__(self):
-        return '<%s at 0x%x; %s>' % (
+        return '<{0!s} at 0x{1:x}; {2!s}>'.format(
             self.__class__.__name__,
             id(self), getattr(self, 'key', 'no key'))
 
@@ -317,7 +317,7 @@ class PropComparator(operators.ColumnOperators):
         self._adapt_to_entity = adapt_to_entity
 
     def __clause_element__(self):
-        raise NotImplementedError("%r" % self)
+        raise NotImplementedError("{0!r}".format(self))
 
     def _query_clause_element(self):
         return self.__clause_element__()
@@ -502,7 +502,7 @@ class StrategizedProperty(MapperProperty):
                     return strategies[key]
                 except KeyError:
                     pass
-        raise Exception("can't locate strategy for %s %s" % (cls, key))
+        raise Exception("can't locate strategy for {0!s} {1!s}".format(cls, key))
 
 
 class MapperOption(object):

@@ -63,7 +63,7 @@ class Bzip2Bitmap(FieldSet):
 
     def createFields(self):
         for i in xrange(self.start_index, self.start_index+self.nb_items):
-            yield Bit(self, "symbol_used[%i]"%i, "Is the symbol %i (%r) used?"%(i, chr(i)))
+            yield Bit(self, "symbol_used[{0:d}]".format(i), "Is the symbol {0:d} ({1!r}) used?".format(i, chr(i)))
 
 class Bzip2Lengths(FieldSet):
     def __init__(self, parent, name, symbols, *args, **kwargs):
@@ -76,12 +76,12 @@ class Bzip2Lengths(FieldSet):
         lengths = []
         for i in xrange(self.symbols):
             while True:
-                bit = Bit(self, "change_length[%i][]"%i, "Should the length be changed for symbol %i?"%i)
+                bit = Bit(self, "change_length[{0:d}][]".format(i), "Should the length be changed for symbol {0:d}?".format(i))
                 yield bit
                 if not bit.value:
                     break
                 else:
-                    bit = Enum(Bit(self, "length_decrement[%i][]"%i, "Decrement the value?"), {True: "Decrement", False: "Increment"})
+                    bit = Enum(Bit(self, "length_decrement[{0:d}][]".format(i), "Decrement the value?"), {True: "Decrement", False: "Increment"})
                     yield bit
                     if bit.value:
                         length -= 1
@@ -101,7 +101,7 @@ class Bzip2Selectors(FieldSet):
             field = ZeroTerminatedNumber(self, "selector_list[]")
             move_to_front(self.groups, field.value)
             field.realvalue = self.groups[0]
-            field._description = "MTF'ed selector index: raw value %i, real value %i"%(field.value, field.realvalue)
+            field._description = "MTF'ed selector index: raw value {0:d}, real value {1:d}".format(field.value, field.realvalue)
             yield field
 
 class Bzip2Block(FieldSet):
@@ -117,7 +117,7 @@ class Bzip2Block(FieldSet):
         for index, block_used in enumerate(self["huffman_used_map"].array('block_used')):
             if block_used.value:
                 start_index = index*16
-                field = Bzip2Bitmap(self, "huffman_used_bitmap[%i]"%index, 16, start_index, "Bitmap for block %i (literals %i to %i) showing which symbols are in use"%(index, start_index, start_index + 15))
+                field = Bzip2Bitmap(self, "huffman_used_bitmap[{0:d}]".format(index), 16, start_index, "Bitmap for block {0:d} (literals {1:d} to {2:d}) showing which symbols are in use".format(index, start_index, start_index + 15))
                 yield field
                 for i, used in enumerate(field):
                     if used.value:
@@ -144,15 +144,15 @@ class Bzip2Block(FieldSet):
                     rle_power = 1
                 rle_run += (field.realvalue + 1) * rle_power
                 rle_power <<= 1
-                field._description = "RLE Run Code %i (for %r); Total accumulated run %i (Huffman Code %i)" % (field.realvalue, chr(symbols_used[0]), rle_run, field.value)
+                field._description = "RLE Run Code {0:d} (for {1!r}); Total accumulated run {2:d} (Huffman Code {3:d})".format(field.realvalue, chr(symbols_used[0]), rle_run, field.value)
             elif field.realvalue == len(symbols_used)+1:
-                field._description = "Block Terminator (%i) (Huffman Code %i)"%(field.realvalue, field.value)
+                field._description = "Block Terminator ({0:d}) (Huffman Code {1:d})".format(field.realvalue, field.value)
                 yield field
                 break
             else:
                 rle_run = 0
                 move_to_front(symbols_used, field.realvalue-1)
-                field._description = "Literal %r (value %i) (Huffman Code %i)"%(chr(symbols_used[0]), field.realvalue, field.value)
+                field._description = "Literal {0!r} (value {1:d}) (Huffman Code {2:d})".format(chr(symbols_used[0]), field.realvalue, field.value)
             yield field
             if field.realvalue == len(symbols_used)+1:
                 break
@@ -175,7 +175,7 @@ class Bzip2Stream(FieldSet):
                     yield PaddingBits(self, "padding[]", padding)
                 end = True
             else:
-                raise ParserError("Invalid marker 0x%02X!"%marker)
+                raise ParserError("Invalid marker 0x{0:02X}!".format(marker))
 
 class Bzip2Parser(Parser):
     PARSER_TAGS = {

@@ -118,19 +118,16 @@ class PathStep:
     """A location step in a location path.
     """
 
-    AXIS_PATTERN          = r"""(%s)::|@""" % '|'.join(AXES)
+    AXIS_PATTERN          = r"""({0!s})::|@""".format('|'.join(AXES))
     NODE_TEST_PATTERN     = r"""\w+(\(\))?"""
     PREDICATE_PATTERN     = r"""\[(.*?)\]"""
-    LOCATION_STEP_PATTERN = r"""(%s)?(%s)((%s)*)""" \
-                          % (AXIS_PATTERN, NODE_TEST_PATTERN, PREDICATE_PATTERN)
+    LOCATION_STEP_PATTERN = r"""({0!s})?({1!s})(({2!s})*)""".format(AXIS_PATTERN, NODE_TEST_PATTERN, PREDICATE_PATTERN)
 
     _re_location_step = re.compile(LOCATION_STEP_PATTERN)
 
     PREDICATE_NOT_PATTERN = r"""not\((.*?)\)"""
-    PREDICATE_AXIS_PATTERN = r"""(%s)?(%s)(='(.*?)')?""" \
-                           % (AXIS_PATTERN, NODE_TEST_PATTERN)
-    PREDICATE_FUNCTION_PATTERN = r"""(%s)\(([^,]+(,\s*[^,]+)*)?\)(=(.*))?""" \
-                               % '|'.join(XPATH_FUNCTIONS)
+    PREDICATE_AXIS_PATTERN = r"""({0!s})?({1!s})(='(.*?)')?""".format(AXIS_PATTERN, NODE_TEST_PATTERN)
+    PREDICATE_FUNCTION_PATTERN = r"""({0!s})\(([^,]+(,\s*[^,]+)*)?\)(=(.*))?""".format('|'.join(XPATH_FUNCTIONS))
 
     _re_predicate_not = re.compile(PREDICATE_NOT_PATTERN)
     _re_predicate_axis = re.compile(PREDICATE_AXIS_PATTERN)

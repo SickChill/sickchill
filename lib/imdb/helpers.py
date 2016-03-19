@@ -57,8 +57,8 @@ _re_hrefsub = _re_href.sub
 def makeCgiPrintEncoding(encoding):
     """Make a function to pretty-print strings for the web."""
     def cgiPrint(s):
-        """Encode the given string using the %s encoding, and replace
-        chars outside the given charset with XML char references.""" % encoding
+        """Encode the given string using the {0!s} encoding, and replace
+        chars outside the given charset with XML char references.""".format(encoding)
         s = escape(s, quote=1)
         if isinstance(s, unicode):
             s = s.encode(encoding, 'xmlcharrefreplace')
@@ -146,8 +146,7 @@ def makeObject2Txt(movieTxt=None, personTxt=None, characterTxt=None,
                                 for o in obj])
         elif isinstance(obj, dict):
             # XXX: not exactly nice, neither useful, I fear.
-            return joiner.join([u'%s::%s' %
-                            (object2txt(k, _limitRecursion=_limitRecursion),
+            return joiner.join([u'{0!s}::{1!s}'.format(object2txt(k, _limitRecursion=_limitRecursion),
                             object2txt(v, _limitRecursion=_limitRecursion))
                             for k, v in obj.items()])
         objData = {}
@@ -267,10 +266,10 @@ modHtmlLinksASCII = makeModCGILinks(movieTxt=_movieTxt, personTxt=_personTxt,
 everyentcharrefs = entcharrefs.copy()
 for k, v in {'lt':u'<','gt':u'>','amp':u'&','quot':u'"','apos':u'\''}.items():
     everyentcharrefs[k] = v
-    everyentcharrefs['#%s' % ord(v)] = v
+    everyentcharrefs['#{0!s}'.format(ord(v))] = v
 everyentcharrefsget = everyentcharrefs.get
-re_everyentcharrefs = re.compile('&(%s|\#160|\#\d{1,5});' %
-                            '|'.join(map(re.escape, everyentcharrefs)))
+re_everyentcharrefs = re.compile('&({0!s}|\#160|\#\d{{1,5}});'.format(
+                            '|'.join(map(re.escape, everyentcharrefs))))
 re_everyentcharrefssub = re_everyentcharrefs.sub
 
 def _replAllXMLRef(match):
@@ -506,7 +505,7 @@ def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None,
         if tag.notes:
             notes = (tag.notes.string or u'').strip()
             if notes:
-                tagStr += u'::%s' % notes
+                tagStr += u'::{0!s}'.format(notes)
         else:
             tagStr = _valueWithType(tag, tagStr)
         return tagStr

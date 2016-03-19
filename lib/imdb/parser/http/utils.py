@@ -120,13 +120,13 @@ entcharrefs['#38'] = u'&amp;'
 entcharrefs['#x26'] = u'&amp;'
 entcharrefs['#x26'] = u'&amp;'
 
-re_entcharrefs = re.compile('&(%s|\#160|\#\d{1,5}|\#x[0-9a-f]{1,4});' %
-                            '|'.join(map(re.escape, entcharrefs)), re.I)
+re_entcharrefs = re.compile('&({0!s}|\#160|\#\d{{1,5}}|\#x[0-9a-f]{{1,4}});'.format(
+                            '|'.join(map(re.escape, entcharrefs))), re.I)
 re_entcharrefssub = re_entcharrefs.sub
 
 sgmlentity.update(dict([('#34', u'"'), ('#38', u'&'),
                         ('#60', u'<'), ('#62', u'>'), ('#39', u"'")]))
-re_sgmlref = re.compile('&(%s);' % '|'.join(map(re.escape, sgmlentity)))
+re_sgmlref = re.compile('&({0!s});'.format('|'.join(map(re.escape, sgmlentity))))
 re_sgmlrefsub = re_sgmlref.sub
 
 # Matches XML-only single tags, like <br/> ; they are invalid in HTML,
@@ -335,7 +335,7 @@ def build_movie(txt, movieID=None, roleID=None, status=None,
         # Else, in parentheses there are some notes.
         # XXX: should the notes in the role half be kept separated
         #      from the notes in the movie title half?
-        if notes: notes = '%s %s' % (title[nidx:], notes)
+        if notes: notes = '{0!s} {1!s}'.format(title[nidx:], notes)
         else: notes = title[nidx:]
         title = title[:nidx].rstrip()
     if year:
@@ -343,10 +343,10 @@ def build_movie(txt, movieID=None, roleID=None, status=None,
         if title[-1:] == ')':
             fpIdx = title.rfind('(')
             if fpIdx != -1:
-                if notes: notes = '%s %s' % (title[fpIdx:], notes)
+                if notes: notes = '{0!s} {1!s}'.format(title[fpIdx:], notes)
                 else: notes = title[fpIdx:]
                 title = title[:fpIdx].rstrip()
-        title = u'%s (%s)' % (title, year)
+        title = u'{0!s} ({1!s})'.format(title, year)
     if _parsingCharacter and roleID and not role:
         roleID = None
     if not roleID:
@@ -455,25 +455,24 @@ class DOMParserBase(object):
                     self._is_xml_unicode = True
                     self.usingModule = 'beautifulsoup'
                 else:
-                    self._logger.warn('unknown module "%s"' % mod)
+                    self._logger.warn('unknown module "{0!s}"'.format(mod))
                     continue
                 self.fromstring = fromstring
                 self._tostring = tostring
                 if _gotError:
-                    warnings.warn('falling back to "%s"' % mod)
+                    warnings.warn('falling back to "{0!s}"'.format(mod))
                 break
             except ImportError, e:
                 if idx+1 >= nrMods:
                     # Raise the exception, if we don't have any more
                     # options to try.
-                    raise IMDbError('unable to use any parser in %s: %s' % \
-                                    (str(useModule), str(e)))
+                    raise IMDbError('unable to use any parser in {0!s}: {1!s}'.format(str(useModule), str(e)))
                 else:
-                    warnings.warn('unable to use "%s": %s' % (mod, str(e)))
+                    warnings.warn('unable to use "{0!s}": {1!s}'.format(mod, str(e)))
                     _gotError = True
                 continue
         else:
-            raise IMDbError('unable to use parsers in %s' % str(useModule))
+            raise IMDbError('unable to use parsers in {0!s}'.format(str(useModule)))
         # Fall-back defaults.
         self._modFunct = None
         self._as = 'http'
@@ -737,16 +736,16 @@ class DOMParserBase(object):
     def add_refs(self, data):
         """Modify data according to the expected output."""
         if self.getRefs:
-            titl_re = ur'(%s)' % '|'.join([re.escape(x) for x
-                                            in self._titlesRefs.keys()])
+            titl_re = ur'({0!s})'.format('|'.join([re.escape(x) for x
+                                            in self._titlesRefs.keys()]))
             if titl_re != ur'()': re_titles = re.compile(titl_re, re.U)
             else: re_titles = None
-            nam_re = ur'(%s)' % '|'.join([re.escape(x) for x
-                                            in self._namesRefs.keys()])
+            nam_re = ur'({0!s})'.format('|'.join([re.escape(x) for x
+                                            in self._namesRefs.keys()]))
             if nam_re != ur'()': re_names = re.compile(nam_re, re.U)
             else: re_names = None
-            chr_re = ur'(%s)' % '|'.join([re.escape(x) for x
-                                            in self._charactersRefs.keys()])
+            chr_re = ur'({0!s})'.format('|'.join([re.escape(x) for x
+                                            in self._charactersRefs.keys()]))
             if chr_re != ur'()': re_characters = re.compile(chr_re, re.U)
             else: re_characters = None
             _putRefs(data, re_titles, re_names, re_characters)
@@ -815,7 +814,7 @@ def _parse_ref(text, link, info):
     if link.find('/title/tt') != -1:
         yearK = re_yearKind_index.match(info)
         if yearK and yearK.start() == 0:
-            text += ' %s' % info[:yearK.end()]
+            text += ' {0!s}'.format(info[:yearK.end()])
     return (text.replace('\n', ' '), link)
 
 

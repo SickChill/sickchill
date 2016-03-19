@@ -47,7 +47,7 @@ class _PGNumeric(sqltypes.Numeric):
                 return None
             else:
                 raise exc.InvalidRequestError(
-                            "Unknown PG numeric type: %d" % coltype)
+                            "Unknown PG numeric type: {0:d}".format(coltype))
         else:
             if coltype in _FLOAT_TYPES:
                 # pg8000 returns float natively for 701
@@ -56,7 +56,7 @@ class _PGNumeric(sqltypes.Numeric):
                 return processors.to_float
             else:
                 raise exc.InvalidRequestError(
-                            "Unknown PG numeric type: %d" % coltype)
+                            "Unknown PG numeric type: {0:d}".format(coltype))
 
 
 class _PGNumericNoBind(_PGNumeric):

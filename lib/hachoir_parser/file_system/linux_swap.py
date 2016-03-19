@@ -34,7 +34,7 @@ class UUID(Bytes):
         Bytes.__init__(self, parent, name, 16)
     def createDisplay(self):
         text = str2hex(self.value, format=r"%02x")
-        return "%s-%s-%s-%s-%s" % (
+        return "{0!s}-{1!s}-{2!s}-{3!s}-{4!s}".format(
             text[:8], text[8:12], text[12:16], text[16:20], text[20:])
 
 class LinuxSwapFile(Parser):
@@ -57,7 +57,7 @@ class LinuxSwapFile(Parser):
         if magic not in ("SWAP-SPACE", "SWAPSPACE2", "S1SUSPEND\0"):
             return "Unknown magic string"
         if MAX_SWAP_BADPAGES < self["nb_badpage"].value:
-            return "Invalid number of bad page (%u)" % self["nb_badpage"].value
+            return "Invalid number of bad page ({0:d})".format(self["nb_badpage"].value)
         return True
 
     def getPageCount(self):
@@ -76,7 +76,7 @@ class LinuxSwapFile(Parser):
         else:
             text = "Linux swap file version 1"
         nb_page = self.getPageCount()
-        return "%s, page size: %s, %s pages" % (
+        return "{0!s}, page size: {1!s}, {2!s} pages".format(
             text, humanFilesize(PAGE_SIZE), nb_page)
 
     def createFields(self):
@@ -95,7 +95,7 @@ class LinuxSwapFile(Parser):
         count = self["nb_badpage"].value
         if count:
             if MAX_SWAP_BADPAGES < count:
-                raise ParserError("Invalid number of bad page (%u)" % count)
+                raise ParserError("Invalid number of bad page ({0:d})".format(count))
             yield GenericVector(self, "badpages", count, UInt32, "badpage")
 
         # Read magic

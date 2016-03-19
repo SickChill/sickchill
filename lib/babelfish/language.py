@@ -79,7 +79,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         if unknown is not None and language not in LANGUAGES:
             language = unknown
         if language not in LANGUAGES:
-            raise ValueError('%r is not a valid language' % language)
+            raise ValueError('{0!r} is not a valid language'.format(language))
         self.alpha3 = language
         self.country = None
         if isinstance(country, Country):
@@ -132,7 +132,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
                 language.script = Script(subtag.capitalize())
             if language.script is not None:
                 if subtags:
-                    raise ValueError('Wrong IETF format. Unmatched subtags: %r' % subtags)
+                    raise ValueError('Wrong IETF format. Unmatched subtags: {0!r}'.format(subtags))
                 break
         return language
 
@@ -171,7 +171,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     __nonzero__ = __bool__
 
     def __repr__(self):
-        return '<Language [%s]>' % self
+        return '<Language [{0!s}]>'.format(self)
 
     def __str__(self):
         try:

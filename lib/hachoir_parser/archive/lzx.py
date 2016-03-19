@@ -24,7 +24,7 @@ class LZXPreTreeEncodedTree(FieldSet):
     def createFields(self):
         for i in xrange(20):
             yield Bits(self, "pretree_lengths[]", 4)
-        pre_tree = build_tree([self['pretree_lengths[%d]'%x].value for x in xrange(20)])
+        pre_tree = build_tree([self['pretree_lengths[{0:d}]'.format(x)].value for x in xrange(20)])
         if not hasattr(self.root, "lzx_tree_lengths_"+self.name):
             self.lengths = [0] * self.num_elements
             setattr(self.root, "lzx_tree_lengths_"+self.name, self.lengths)
@@ -35,7 +35,7 @@ class LZXPreTreeEncodedTree(FieldSet):
             field = HuffmanCode(self, "tree_code[]", pre_tree)
             if field.realvalue <= 16:
                 self.lengths[i] = (self.lengths[i] - field.realvalue) % 17
-                field._description = "Literal tree delta length %i (new length value %i for element %i)" % (
+                field._description = "Literal tree delta length {0:d} (new length value {1:d} for element {2:d})".format(
                         field.realvalue, self.lengths[i], i)
                 i += 1
                 yield field
@@ -44,7 +44,7 @@ class LZXPreTreeEncodedTree(FieldSet):
                 yield field
                 extra = Bits(self, "extra[]", 4)
                 zeros = 4 + extra.value
-                extra._description = "Extra bits: zeros for %i elements (elements %i through %i)" % (zeros, i, i+zeros-1)
+                extra._description = "Extra bits: zeros for {0:d} elements (elements {1:d} through {2:d})".format(zeros, i, i+zeros-1)
                 yield extra
                 self.lengths[i:i+zeros] = [0] * zeros
                 i += zeros
@@ -53,7 +53,7 @@ class LZXPreTreeEncodedTree(FieldSet):
                 yield field
                 extra = Bits(self, "extra[]", 5)
                 zeros = 20 + extra.value
-                extra._description = "Extra bits: zeros for %i elements (elements %i through %i)" % (zeros, i, i+zeros-1)
+                extra._description = "Extra bits: zeros for {0:d} elements (elements {1:d} through {2:d})".format(zeros, i, i+zeros-1)
                 yield extra
                 self.lengths[i:i+zeros] = [0] * zeros
                 i += zeros
@@ -62,11 +62,11 @@ class LZXPreTreeEncodedTree(FieldSet):
                 yield field
                 extra = Bits(self, "extra[]", 1)
                 run = 4 + extra.value
-                extra._description = "Extra bits: run for %i elements (elements %i through %i)" % (run, i, i+run-1)
+                extra._description = "Extra bits: run for {0:d} elements (elements {1:d} through {2:d})".format(run, i, i+run-1)
                 yield extra
                 newfield = HuffmanCode(self, "tree_code[]", pre_tree)
                 assert newfield.realvalue <= 16
-                newfield._description = "Literal tree delta length %i (new length value %i for elements %i through %i)" % (
+                newfield._description = "Literal tree delta length {0:d} (new length value {1:d} for elements {2:d} through {3:d})".format(
                         newfield.realvalue, self.lengths[i], i, i+run-1)
                 self.lengths[i:i+run] = [(self.lengths[i] - newfield.realvalue) % 17] * run
                 i += run
@@ -143,7 +143,7 @@ class LZXBlock(FieldSet):
             if self.block_type == 2:
                 for i in xrange(8):
                     yield Bits(self, "aligned_len[]", 3)
-                aligned_tree = build_tree([self['aligned_len[%d]'%i].value for i in xrange(8)])
+                aligned_tree = build_tree([self['aligned_len[{0:d}]'.format(i)].value for i in xrange(8)])
             yield LZXPreTreeEncodedTree(self, "main_tree_start", 256)
             yield LZXPreTreeEncodedTree(self, "main_tree_rest", self.window_size * 8)
             main_tree = build_tree(self["main_tree_start"].lengths + self["main_tree_rest"].lengths)
@@ -157,7 +157,7 @@ class LZXBlock(FieldSet):
                         yield PaddingBits(self, "padding[]", padding)
                 field = HuffmanCode(self, "main_code[]", main_tree)
                 if field.realvalue < 256:
-                    field._description = "Literal value %r" % chr(field.realvalue)
+                    field._description = "Literal value {0!r}".format(chr(field.realvalue))
                     current_decoded_size += 1
                     self.parent.uncompressed_data += chr(field.realvalue)
                     yield field
@@ -167,53 +167,53 @@ class LZXBlock(FieldSet):
                 if info[2] == 0:
                     if info[0] == 0:
                         position = self.parent.r0
-                        field._description = "Position Slot %i, Position [R0] (%i)" % (position_header, position)
+                        field._description = "Position Slot {0:d}, Position [R0] ({1:d})".format(position_header, position)
                     elif info[0] == 1:
                         position = self.parent.r1
                         self.parent.r1 = self.parent.r0
                         self.parent.r0 = position
-                        field._description = "Position Slot %i, Position [R1] (%i)" % (position_header, position)
+                        field._description = "Position Slot {0:d}, Position [R1] ({1:d})".format(position_header, position)
                     elif info[0] == 2:
                         position = self.parent.r2
                         self.parent.r2 = self.parent.r0
                         self.parent.r0 = position
-                        field._description = "Position Slot %i, Position [R2] (%i)" % (position_header, position)
+                        field._description = "Position Slot {0:d}, Position [R2] ({1:d})".format(position_header, position)
                     else:
                         position = info[0] - 2
                         self.parent.r2 = self.parent.r1
                         self.parent.r1 = self.parent.r0
                         self.parent.r0 = position
-                        field._description = "Position Slot %i, Position %i" % (position_header, position)
+                        field._description = "Position Slot {0:d}, Position {1:d}".format(position_header, position)
                 else:
-                    field._description = "Position Slot %i, Positions %i to %i" % (position_header, info[0] - 2, info[1] - 2)
+                    field._description = "Position Slot {0:d}, Positions {1:d} to {2:d}".format(position_header, info[0] - 2, info[1] - 2)
                 if length_header == 7:
                     field._description += ", Length Values 9 and up"
                     yield field
                     length_field = HuffmanCode(self, "length_code[]", length_tree)
                     length = length_field.realvalue + 9
-                    length_field._description = "Length Code %i, total length %i" % (length_field.realvalue, length)
+                    length_field._description = "Length Code {0:d}, total length {1:d}".format(length_field.realvalue, length)
                     yield length_field
                 else:
-                    field._description += ", Length Value %i (Huffman Code %i)"%(length_header + 2, field.value)
+                    field._description += ", Length Value {0:d} (Huffman Code {1:d})".format(length_header + 2, field.value)
                     yield field
                     length = length_header + 2
                 if info[2]:
                     if self.block_type == 1 or info[2] < 3: # verbatim
-                        extrafield = Bits(self, "position_extra[%s" % field.name.split('[')[1], info[2])
+                        extrafield = Bits(self, "position_extra[{0!s}".format(field.name.split('[')[1]), info[2])
                         position = extrafield.value + info[0] - 2
-                        extrafield._description = "Position Extra Bits (%i), total position %i"%(extrafield.value, position)
+                        extrafield._description = "Position Extra Bits ({0:d}), total position {1:d}".format(extrafield.value, position)
                         yield extrafield
                     else: # aligned offset
                         position = info[0] - 2
                         if info[2] > 3:
-                            extrafield = Bits(self, "position_verbatim[%s" % field.name.split('[')[1], info[2]-3)
+                            extrafield = Bits(self, "position_verbatim[{0!s}".format(field.name.split('[')[1]), info[2]-3)
                             position += extrafield.value*8
-                            extrafield._description = "Position Verbatim Bits (%i), added position %i"%(extrafield.value, extrafield.value*8)
+                            extrafield._description = "Position Verbatim Bits ({0:d}), added position {1:d}".format(extrafield.value, extrafield.value*8)
                             yield extrafield
                         if info[2] >= 3:
-                            extrafield = HuffmanCode(self, "position_aligned[%s" % field.name.split('[')[1], aligned_tree)
+                            extrafield = HuffmanCode(self, "position_aligned[{0!s}".format(field.name.split('[')[1]), aligned_tree)
                             position += extrafield.realvalue
-                            extrafield._description = "Position Aligned Bits (%i), total position %i"%(extrafield.realvalue, position)
+                            extrafield._description = "Position Aligned Bits ({0:d}), total position {1:d}".format(extrafield.realvalue, position)
                             yield extrafield
                     self.parent.r2 = self.parent.r1
                     self.parent.r1 = self.parent.r0
@@ -238,7 +238,7 @@ class LZXBlock(FieldSet):
             if self["block_size"].value % 2:
                 yield PaddingBits(self, "padding", 8)
         else:
-            raise ParserError("Unknown block type %d!"%self.block_type)
+            raise ParserError("Unknown block type {0:d}!".format(self.block_type))
 
 class LZXStream(Parser):
     endian = MIDDLE_ENDIAN

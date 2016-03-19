@@ -60,7 +60,7 @@ class MissingSignature(Error):
 
 def build_authenticate_header(realm=''):
     """Optional WWW-Authenticate header (401 error)"""
-    return {'WWW-Authenticate': 'OAuth realm="%s"' % realm}
+    return {'WWW-Authenticate': 'OAuth realm="{0!s}"'.format(realm)}
 
 
 def escape(s):
@@ -166,9 +166,9 @@ class Token(object):
             parts = urlparse.urlparse(self.callback)
             scheme, netloc, path, params, query, fragment = parts[:6]
             if query:
-                query = '%s&oauth_verifier=%s' % (query, self.verifier)
+                query = '{0!s}&oauth_verifier={1!s}'.format(query, self.verifier)
             else:
-                query = 'oauth_verifier=%s' % self.verifier
+                query = 'oauth_verifier={0!s}'.format(self.verifier)
             return urlparse.urlunparse((scheme, netloc, path, params,
                 query, fragment))
         return self.callback
@@ -276,9 +276,9 @@ class Request(dict):
             netloc = netloc[:-4]
 
         if scheme != 'http' and scheme != 'https':
-            raise ValueError("Unsupported URL %s (%s)." % (value, scheme))
+            raise ValueError("Unsupported URL {0!s} ({1!s}).".format(value, scheme))
 
-        value = '%s://%s%s' % (scheme, netloc, path)
+        value = '{0!s}://{1!s}{2!s}'.format(scheme, netloc, path)
         self.__dict__['url'] = value
  
     @setter
@@ -298,12 +298,12 @@ class Request(dict):
         oauth_params = ((k, v) for k, v in self.items() 
                             if k.startswith('oauth_'))
         stringy_params = ((k, escape(str(v))) for k, v in oauth_params)
-        header_params = ('%s="%s"' % (k, v) for k, v in stringy_params)
+        header_params = ('{0!s}="{1!s}"'.format(k, v) for k, v in stringy_params)
         params_header = ', '.join(header_params)
  
-        auth_header = 'OAuth realm="%s"' % realm
+        auth_header = 'OAuth realm="{0!s}"'.format(realm)
         if params_header:
-            auth_header = "%s, %s" % (auth_header, params_header)
+            auth_header = "{0!s}, {1!s}".format(auth_header, params_header)
  
         return {'Authorization': auth_header}
  
@@ -319,12 +319,12 @@ class Request(dict):
 
     def to_url(self):
         """Serialize as a URL for a GET request."""
-        return '%s?%s' % (self.url, self.to_postdata())
+        return '{0!s}?{1!s}'.format(self.url, self.to_postdata())
 
     def get_parameter(self, parameter):
         ret = self.get(parameter)
         if ret is None:
-            raise Error('Parameter not found: %s' % parameter)
+            raise Error('Parameter not found: {0!s}'.format(parameter))
 
         return ret
  
@@ -487,7 +487,7 @@ class Server(object):
 
     def build_authenticate_header(self, realm=''):
         """Optional support for the authenticate header."""
-        return {'WWW-Authenticate': 'OAuth realm="%s"' % realm}
+        return {'WWW-Authenticate': 'OAuth realm="{0!s}"'.format(realm)}
 
     def _get_version(self, request):
         """Verify the correct version request for this server."""
@@ -497,7 +497,7 @@ class Server(object):
             version = VERSION
 
         if version and version != self.version:
-            raise Error('OAuth version %s not supported.' % str(version))
+            raise Error('OAuth version {0!s} not supported.'.format(str(version)))
 
         return version
 
@@ -513,7 +513,7 @@ class Server(object):
             signature_method = self.signature_methods[signature_method]
         except:
             signature_method_names = ', '.join(self.signature_methods.keys())
-            raise Error('Signature method %s not supported try one of the following: %s' % (signature_method, signature_method_names))
+            raise Error('Signature method {0!s} not supported try one of the following: {1!s}'.format(signature_method, signature_method_names))
 
         return signature_method
 
@@ -665,7 +665,7 @@ class SignatureMethod_HMAC_SHA1(SignatureMethod):
             escape(request.get_normalized_parameters()),
         )
 
-        key = '%s&' % escape(consumer.secret)
+        key = '{0!s}&'.format(escape(consumer.secret))
         if token:
             key += escape(token.secret)
         raw = '&'.join(sig)
@@ -693,7 +693,7 @@ class SignatureMethod_PLAINTEXT(SignatureMethod):
     def signing_base(self, request, consumer, token):
         """Concatenates the consumer key and secret with the token's
         secret."""
-        sig = '%s&' % escape(consumer.secret)
+        sig = '{0!s}&'.format(escape(consumer.secret))
         if token:
             sig = sig + escape(token.secret)
         return sig, sig

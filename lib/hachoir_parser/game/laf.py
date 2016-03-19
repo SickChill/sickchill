@@ -57,13 +57,13 @@ class LafFile(Parser):
 
   def validate(self):
     if self["num_chars"].value != 256:
-        return "Invalid number of characters (%u)" % self["num_chars"].value
+        return "Invalid number of characters ({0:d})".format(self["num_chars"].value)
     if self["first_char_code"].value != 0:
-        return "Invalid of code of first character code (%u)" % self["first_char_code"].value
+        return "Invalid of code of first character code ({0:d})".format(self["first_char_code"].value)
     if self["last_char_code"].value != 255:
-        return "Invalid of code of last character code (%u)" % self["last_char_code"].value
+        return "Invalid of code of last character code ({0:d})".format(self["last_char_code"].value)
     if self["char_codes/char[0]"].value != 0:
-        return "Invalid character code #0 (%u)" % self["char_codes/char[0]"].value
+        return "Invalid character code #0 ({0:d})".format(self["char_codes/char[0]"].value)
     if self["chars/char[0]/data_offset"].value != 0:
         return "Invalid character #0 offset"
     return True

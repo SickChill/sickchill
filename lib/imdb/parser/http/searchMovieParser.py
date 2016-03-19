@@ -130,14 +130,14 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
         if not res: return u''
         res = res['data']
         if not (res and res[0]): return u''
-        link = '%s%s' % (self._linkPrefix, res[0][0])
+        link = '{0!s}{1!s}'.format(self._linkPrefix, res[0][0])
         #    # Tries to cope with companies for which links to pro.imdb.com
         #    # are missing.
         #    link = self.url.replace(imdbURL_base[:-1], '')
         title = self._titleBuilder(res[0][1])
         if not (link and title): return u''
         link = link.replace('http://pro.imdb.com', '')
-        new_html = '<td class="result_text"><a href="%s">%s</a></td>' % (link,
+        new_html = '<td class="result_text"><a href="{0!s}">{1!s}</a></td>'.format(link,
                                                                     title)
         return new_html
 

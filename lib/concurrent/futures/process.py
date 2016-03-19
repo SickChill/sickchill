@@ -263,7 +263,7 @@ def _check_system_limits():
         # minimum number of semaphores available
         # according to POSIX
         return
-    _system_limited = "system provides too few semaphores (%d available, 256 necessary)" % nsems_max
+    _system_limited = "system provides too few semaphores ({0:d} available, 256 necessary)".format(nsems_max)
     raise NotImplementedError(_system_limited)
 
 class ProcessPoolExecutor(_base.Executor):

@@ -59,15 +59,14 @@ class MSDialect_adodbapi(MSDialect):
 
         connectors = ["Provider=SQLOLEDB"]
         if 'port' in keys:
-            connectors.append("Data Source=%s, %s" %
-                                (keys.get("host"), keys.get("port")))
+            connectors.append("Data Source={0!s}, {1!s}".format(keys.get("host"), keys.get("port")))
         else:
-            connectors.append("Data Source=%s" % keys.get("host"))
-        connectors.append("Initial Catalog=%s" % keys.get("database"))
+            connectors.append("Data Source={0!s}".format(keys.get("host")))
+        connectors.append("Initial Catalog={0!s}".format(keys.get("database")))
         user = keys.get("user")
         if user:
-            connectors.append("User Id=%s" % user)
-            connectors.append("Password=%s" % keys.get("password", ""))
+            connectors.append("User Id={0!s}".format(user))
+            connectors.append("Password={0!s}".format(keys.get("password", "")))
         else:
             connectors.append("Integrated Security=SSPI")
         return [[";".join(connectors)], {}]

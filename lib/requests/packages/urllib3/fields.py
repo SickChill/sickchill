@@ -33,7 +33,7 @@ def format_header_param(name, value):
         The value of the parameter, provided as a unicode string.
     """
     if not any(ch in value for ch in '"\\\r\n'):
-        result = '%s="%s"' % (name, value)
+        result = '{0!s}="{1!s}"'.format(name, value)
         try:
             result.encode('ascii')
         except UnicodeEncodeError:
@@ -43,7 +43,7 @@ def format_header_param(name, value):
     if not six.PY3:  # Python 2:
         value = value.encode('utf-8')
     value = email.utils.encode_rfc2231(value, 'utf-8')
-    value = '%s*=%s' % (name, value)
+    value = '{0!s}*={1!s}'.format(name, value)
     return value
 
 
@@ -144,12 +144,12 @@ class RequestField(object):
         sort_keys = ['Content-Disposition', 'Content-Type', 'Content-Location']
         for sort_key in sort_keys:
             if self.headers.get(sort_key, False):
-                lines.append('%s: %s' % (sort_key, self.headers[sort_key]))
+                lines.append('{0!s}: {1!s}'.format(sort_key, self.headers[sort_key]))
 
         for header_name, header_value in self.headers.items():
             if header_name not in sort_keys:
                 if header_value:
-                    lines.append('%s: %s' % (header_name, header_value))
+                    lines.append('{0!s}: {1!s}'.format(header_name, header_value))
 
         lines.append('\r\n')
         return '\r\n'.join(lines)

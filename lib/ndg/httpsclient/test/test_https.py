@@ -30,7 +30,7 @@ class TestHTTPSConnection(unittest.TestCase):
         conn.connect()
         conn.request('GET', '/')
         resp = conn.getresponse()
-        print('Response = %s' % resp.read())
+        print('Response = {0!s}'.format(resp.read()))
         conn.close()
 
     def test02_open_fails(self):
@@ -73,7 +73,7 @@ class TestHTTPSConnection(unittest.TestCase):
         conn.connect()
         conn.request('GET', '/')
         resp = conn.getresponse()
-        print('Response = %s' % resp.read())
+        print('Response = {0!s}'.format(resp.read()))
 
     def test04_ssl_verification_with_subj_alt_name(self):
         ctx = SSL.Context(SSL.SSLv3_METHOD)
@@ -91,7 +91,7 @@ class TestHTTPSConnection(unittest.TestCase):
         conn.connect()
         conn.request('GET', '/')
         resp = conn.getresponse()
-        print('Response = %s' % resp.read())
+        print('Response = {0!s}'.format(resp.read()))
 
     def test04_ssl_verification_with_subj_common_name(self):
         ctx = SSL.Context(SSL.SSLv3_METHOD)
@@ -112,7 +112,7 @@ class TestHTTPSConnection(unittest.TestCase):
         conn.connect()
         conn.request('GET', '/')
         resp = conn.getresponse()
-        print('Response = %s' % resp.read())
+        print('Response = {0!s}'.format(resp.read()))
 
         
 if __name__ == "__main__":

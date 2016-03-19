@@ -119,7 +119,7 @@ class Load(Generative, MapperOption):
                 if default_token:
                     self.propagate_to_loaders = False
                 if wildcard_key:
-                    attr = "%s:%s" % (wildcard_key, attr)
+                    attr = "{0!s}:{1!s}".format(wildcard_key, attr)
                 return path.token(attr)
 
             try:
@@ -224,7 +224,7 @@ class Load(Generative, MapperOption):
 
                 if i == 0 and c_token.endswith(':' + _DEFAULT_TOKEN):
                     return to_chop
-                elif c_token != 'relationship:%s' % (_WILDCARD_TOKEN,) and c_token != p_token.key:
+                elif c_token != 'relationship:{0!s}'.format(_WILDCARD_TOKEN) and c_token != p_token.key:
                     return None
 
             if c_token is p_token:
@@ -259,7 +259,7 @@ class _UnboundLoad(Load):
                 attr in (_WILDCARD_TOKEN, _DEFAULT_TOKEN):
             if attr == _DEFAULT_TOKEN:
                 self.propagate_to_loaders = False
-            attr = "%s:%s" % (wildcard_key, attr)
+            attr = "{0!s}:{1!s}".format(wildcard_key, attr)
 
         return path + (attr, )
 
@@ -324,7 +324,7 @@ class _UnboundLoad(Load):
             if isinstance(c_token, util.string_types):
                 if i == 0 and c_token.endswith(':' + _DEFAULT_TOKEN):
                     return to_chop
-                elif c_token != 'relationship:%s' % (_WILDCARD_TOKEN,) and c_token != p_prop.key:
+                elif c_token != 'relationship:{0!s}'.format(_WILDCARD_TOKEN) and c_token != p_prop.key:
                     return None
             elif isinstance(c_token, PropComparator):
                 if c_token.property is not p_prop:
@@ -459,7 +459,7 @@ class loader_option(object):
         self.name = name = fn.__name__
         self.fn = fn
         if hasattr(Load, name):
-            raise TypeError("Load class already has a %s method." % (name))
+            raise TypeError("Load class already has a {0!s} method.".format((name)))
         setattr(Load, name, fn)
 
         return self
@@ -468,28 +468,28 @@ class loader_option(object):
         self._unbound_fn = fn
         fn_doc = self.fn.__doc__
         self.fn.__doc__ = """Produce a new :class:`.Load` object with the
-:func:`.orm.%(name)s` option applied.
+:func:`.orm.{name!s}` option applied.
 
-See :func:`.orm.%(name)s` for usage examples.
+See :func:`.orm.{name!s}` for usage examples.
 
-""" % {"name": self.name}
+""".format(**{"name": self.name})
 
         fn.__doc__ = fn_doc
         return self
 
     def _add_unbound_all_fn(self, fn):
         self._unbound_all_fn = fn
-        fn.__doc__ = """Produce a standalone "all" option for :func:`.orm.%(name)s`.
+        fn.__doc__ = """Produce a standalone "all" option for :func:`.orm.{name!s}`.
 
 .. deprecated:: 0.9.0
 
     The "_all()" style is replaced by method chaining, e.g.::
 
         session.query(MyClass).options(
-            %(name)s("someattribute").%(name)s("anotherattribute")
+            {name!s}("someattribute").{name!s}("anotherattribute")
         )
 
-""" % {"name": self.name}
+""".format(**{"name": self.name})
         return self
 
 @loader_option()

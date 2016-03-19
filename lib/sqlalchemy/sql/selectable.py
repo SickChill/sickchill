@@ -599,7 +599,7 @@ class Join(FromClause):
 
     @property
     def description(self):
-        return "Join object on %s(%d) and %s(%d)" % (
+        return "Join object on {0!s}({1:d}) and {2!s}({3:d})".format(
             self.left.description,
             id(self.left),
             self.right.description,
@@ -948,7 +948,7 @@ class Alias(FromClause):
         if name is None:
             if self.original.named_with_column:
                 name = getattr(self.original, 'name', None)
-            name = _anonymous_label('%%(%d %s)s' % (id(self), name
+            name = _anonymous_label('%({0:d} {1!s})s'.format(id(self), name
                     or 'anon'))
         self.name = name
 
@@ -1303,7 +1303,7 @@ class ForUpdateArg(ClauseElement):
         elif arg == 'read_nowait':
             read = nowait = True
         elif arg is not True:
-            raise exc.ArgumentError("Unknown for_update argument: %r" % arg)
+            raise exc.ArgumentError("Unknown for_update argument: {0!r}".format(arg))
 
         return ForUpdateArg(read=read, nowait=nowait)
 
@@ -1987,8 +1987,8 @@ class HasPrefixes(object):
         """
         dialect = kw.pop('dialect', None)
         if kw:
-            raise exc.ArgumentError("Unsupported argument(s): %s" %
-                            ",".join(kw))
+            raise exc.ArgumentError("Unsupported argument(s): {0!s}".format(
+                            ",".join(kw)))
         self._setup_prefixes(expr, dialect)
 
     def _setup_prefixes(self, prefixes, dialect=None):

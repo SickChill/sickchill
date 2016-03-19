@@ -1069,7 +1069,7 @@ class GenWebTest(AsyncHTTPTestCase):
         self.assertEqual(response.body, b"123")
 
     def test_task_handler(self):
-        response = self.fetch('/task?url=%s' % url_escape(self.get_url('/sequence')))
+        response = self.fetch('/task?url={0!s}'.format(url_escape(self.get_url('/sequence'))))
         self.assertEqual(response.body, b"got response: 123")
 
     def test_exception_handler(self):

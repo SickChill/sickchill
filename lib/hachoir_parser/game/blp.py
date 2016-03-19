@@ -20,7 +20,7 @@ from hachoir_core.tools import alignValue
 
 class PaletteIndex(UInt8):
     def createDescription(self):
-        return "Palette index %i (%s)" % (self.value, self["/palette/color[%i]" % self.value].description)
+        return "Palette index {0:d} ({1!s})".format(self.value, self["/palette/color[{0:d}]".format(self.value)].description)
 
 class Generic2DArray(FieldSet):
     def __init__(self, parent, name, width, height, item_class, row_name="row", item_name="item", *args, **kwargs):
@@ -91,11 +91,11 @@ class BLP1File(Parser):
             if padding:
                 yield padding
             if compression == 0:
-                yield RawBytes(self, "mipmap[%i]" % i, sizes[i].value, "JPEG data, append to header to recover complete image")
+                yield RawBytes(self, "mipmap[{0:d}]".format(i), sizes[i].value, "JPEG data, append to header to recover complete image")
             elif compression == 1:
-                yield Generic2DArray(self, "mipmap_indexes[%i]" % i, width, height, PaletteIndex, "row", "index", "Indexes into the palette")
+                yield Generic2DArray(self, "mipmap_indexes[{0:d}]".format(i), width, height, PaletteIndex, "row", "index", "Indexes into the palette")
                 if image_type in (3, 4):
-                    yield Generic2DArray(self, "mipmap_alphas[%i]" % i, width, height, UInt8, "row", "alpha", "Alpha values")
+                    yield Generic2DArray(self, "mipmap_alphas[{0:d}]".format(i), width, height, UInt8, "row", "alpha", "Alpha values")
             width /= 2
             height /= 2
 
@@ -118,7 +118,7 @@ def color_name(data, bits):
     """Color names in #RRGGBB format, given the number of bits for each component."""
     ret = ["#"]
     for i in range(3):
-        ret.append("%02X" % (data[i] << (8-bits[i])))
+        ret.append("{0:02X}".format((data[i] << (8-bits[i]))))
     return ''.join(ret)
 
 class DXT1(FieldSet):
@@ -133,28 +133,28 @@ class DXT1(FieldSet):
             yield Bits(self, "blue[]", 5)
             yield Bits(self, "green[]", 6)
             yield Bits(self, "red[]", 5)
-            values[i] = [self["red[%i]" % i].value,
-                         self["green[%i]" % i].value,
-                         self["blue[%i]" % i].value]
+            values[i] = [self["red[{0:d}]".format(i)].value,
+                         self["green[{0:d}]".format(i)].value,
+                         self["blue[{0:d}]".format(i)].value]
         if values[0] > values[1] or self.dxt2_mode:
             values += interp_avg(values[0], values[1], 3)
         else:
             values += interp_avg(values[0], values[1], 2)
             values.append(None) # transparent
         for i in xrange(16):
-            pixel = Bits(self, "pixel[%i][%i]" % divmod(i, 4), 2)
+            pixel = Bits(self, "pixel[{0:d}][{1:d}]".format(*divmod(i, 4)), 2)
             color = values[pixel.value]
             if color is None:
                 pixel._description = "Transparent"
             else:
-                pixel._description = "RGB color: %s" % color_name(color, [5, 6, 5])
+                pixel._description = "RGB color: {0!s}".format(color_name(color, [5, 6, 5]))
             yield pixel
 
 class DXT3Alpha(FieldSet):
     static_size = 64
     def createFields(self):
         for i in xrange(16):
-            yield Bits(self, "alpha[%i][%i]" % divmod(i, 4), 4)
+            yield Bits(self, "alpha[{0:d}][{1:d}]".format(*divmod(i, 4)), 4)
 
 class DXT3(FieldSet):
     static_size = 128
@@ -176,9 +176,9 @@ class DXT5Alpha(FieldSet):
             values += interp_avg(values[0], values[1], 5)
             values += [0, 255]
         for i in xrange(16):
-            pixel = Bits(self, "alpha[%i][%i]" % divmod(i, 4), 3)
+            pixel = Bits(self, "alpha[{0:d}][{1:d}]".format(*divmod(i, 4)), 3)
             alpha = values[pixel.value]
-            pixel._description = "Alpha value: %i" % alpha
+            pixel._description = "Alpha value: {0:d}".format(alpha)
             yield pixel
 
 class DXT5(FieldSet):
@@ -249,21 +249,21 @@ class BLP2File(Parser):
             if padding:
                 yield padding
             if compression == 0:
-                yield RawBytes(self, "mipmap[%i]" % i, sizes[i].value, "JPEG data, append to header to recover complete image")
+                yield RawBytes(self, "mipmap[{0:d}]".format(i), sizes[i].value, "JPEG data, append to header to recover complete image")
             elif compression == 1 and encoding == 1:
-                yield Generic2DArray(self, "mipmap_indexes[%i]" % i, height, width, PaletteIndex, "row", "index", "Indexes into the palette")
+                yield Generic2DArray(self, "mipmap_indexes[{0:d}]".format(i), height, width, PaletteIndex, "row", "index", "Indexes into the palette")
                 if alpha_depth == 1:
-                    yield GenericVector(self, "mipmap_alphas[%i]" % i, height, width, Bit, "row", "is_opaque", "Alpha values")
+                    yield GenericVector(self, "mipmap_alphas[{0:d}]".format(i), height, width, Bit, "row", "is_opaque", "Alpha values")
                 elif alpha_depth == 8:
-                    yield GenericVector(self, "mipmap_alphas[%i]" % i, height, width, UInt8, "row", "alpha", "Alpha values")
+                    yield GenericVector(self, "mipmap_alphas[{0:d}]".format(i), height, width, UInt8, "row", "alpha", "Alpha values")
             elif compression == 1 and encoding == 2:
                 block_height = alignValue(height, 4) // 4
                 block_width = alignValue(width, 4) // 4
                 if alpha_depth in [0, 1] and alpha_encoding == 0:
-                    yield Generic2DArray(self, "mipmap[%i]" % i, block_height, block_width, DXT1, "row", "block", "DXT1-compressed image blocks")
+                    yield Generic2DArray(self, "mipmap[{0:d}]".format(i), block_height, block_width, DXT1, "row", "block", "DXT1-compressed image blocks")
                 elif alpha_depth == 8 and alpha_encoding == 1:
-                    yield Generic2DArray(self, "mipmap[%i]" % i, block_height, block_width, DXT3, "row", "block", "DXT3-compressed image blocks")
+                    yield Generic2DArray(self, "mipmap[{0:d}]".format(i), block_height, block_width, DXT3, "row", "block", "DXT3-compressed image blocks")
                 elif alpha_depth == 8 and alpha_encoding == 7:
-                    yield Generic2DArray(self, "mipmap[%i]" % i, block_height, block_width, DXT5, "row", "block", "DXT5-compressed image blocks")
+                    yield Generic2DArray(self, "mipmap[{0:d}]".format(i), block_height, block_width, DXT5, "row", "block", "DXT5-compressed image blocks")
             width /= 2
             height /= 2

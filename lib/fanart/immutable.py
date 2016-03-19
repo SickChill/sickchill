@@ -20,7 +20,7 @@ class Immutable(object):
         return hash(repr(self))
 
     def __repr__(self):
-        return '%s(%s)' % (
+        return '{0!s}({1!s})'.format(
             self.__class__.__name__,
             ', '.join(['{0}={1}'.format(k, repr(v)) for k, v in self])
         )

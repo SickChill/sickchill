@@ -100,7 +100,7 @@ class Timeout(object):
         self._start_connect = None
 
     def __str__(self):
-        return '%s(connect=%r, read=%r, total=%r)' % (
+        return '{0!s}(connect={1!r}, read={2!r}, total={3!r})'.format(
             type(self).__name__, self._connect, self._read, self.total)
 
     @classmethod

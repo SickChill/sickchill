@@ -101,7 +101,7 @@ class Markup(text_type):
         return self.__class__(text_type.__mod__(self, arg))
 
     def __repr__(self):
-        return '%s(%s)' % (
+        return '{0!s}({1!s})'.format(
             self.__class__.__name__,
             text_type.__repr__(self)
         )

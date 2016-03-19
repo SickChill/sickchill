@@ -457,7 +457,7 @@ class PostSortRec(object):
         self.execute(uow)
 
     def __repr__(self):
-        return "%s(%s)" % (
+        return "{0!s}({1!s})".format(
             self.__class__.__name__,
             ",".join(str(x) for x in self.__dict__.values())
         )
@@ -486,7 +486,7 @@ class ProcessAll(IterateMappersMixin, PostSortRec):
         return iter([])
 
     def __repr__(self):
-        return "%s(%s, delete=%s)" % (
+        return "{0!s}({1!s}, delete={2!s})".format(
             self.__class__.__name__,
             self.dependency_processor,
             self.delete
@@ -590,7 +590,7 @@ class ProcessState(PostSortRec):
             dependency_processor.process_saves(uow, states)
 
     def __repr__(self):
-        return "%s(%s, %s, delete=%s)" % (
+        return "{0!s}({1!s}, {2!s}, delete={3!s})".format(
             self.__class__.__name__,
             self.dependency_processor,
             orm_util.state_str(self.state),
@@ -616,7 +616,7 @@ class SaveUpdateState(PostSortRec):
                         uow)
 
     def __repr__(self):
-        return "%s(%s)" % (
+        return "{0!s}({1!s})".format(
             self.__class__.__name__,
             orm_util.state_str(self.state)
         )
@@ -640,7 +640,7 @@ class DeleteState(PostSortRec):
                         uow)
 
     def __repr__(self):
-        return "%s(%s)" % (
+        return "{0!s}({1!s})".format(
             self.__class__.__name__,
             orm_util.state_str(self.state)
         )

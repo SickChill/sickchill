@@ -196,12 +196,12 @@ class Github(object):
         """
         assert isinstance(full_name_or_id, (str, unicode, int, long)), full_name_or_id
         url_base = "/repositories/" if isinstance(full_name_or_id, int) or isinstance(full_name_or_id, long) else "/repos/"
-        url = "%s%s" % (url_base, full_name_or_id)
+        url = "{0!s}{1!s}".format(url_base, full_name_or_id)
         if lazy:
             return Repository.Repository(self.__requester, {}, {"url": url}, completed=False)
         headers, data = self.__requester.requestJsonAndCheck(
             "GET",
-            "%s%s" % (url_base, full_name_or_id)
+            "{0!s}{1!s}".format(url_base, full_name_or_id)
         )
         return Repository.Repository(self.__requester, headers, data, completed=True)
 
@@ -318,7 +318,7 @@ class Github(object):
             query_chunks.append(query)
 
         for qualifier, value in qualifiers.items():
-            query_chunks.append("%s:%s" % (qualifier, value))
+            query_chunks.append("{0!s}:{1!s}".format(qualifier, value))
 
         url_parameters["q"] = ' '.join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
@@ -353,7 +353,7 @@ class Github(object):
             query_chunks.append(query)
 
         for qualifier, value in qualifiers.items():
-            query_chunks.append("%s:%s" % (qualifier, value))
+            query_chunks.append("{0!s}:{1!s}".format(qualifier, value))
 
         url_parameters["q"] = ' '.join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
@@ -388,7 +388,7 @@ class Github(object):
             query_chunks.append(query)
 
         for qualifier, value in qualifiers.items():
-            query_chunks.append("%s:%s" % (qualifier, value))
+            query_chunks.append("{0!s}:{1!s}".format(qualifier, value))
 
         url_parameters["q"] = ' '.join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
@@ -423,7 +423,7 @@ class Github(object):
             query_chunks.append(query)
 
         for qualifier, value in qualifiers.items():
-            query_chunks.append("%s:%s" % (qualifier, value))
+            query_chunks.append("{0!s}:{1!s}".format(qualifier, value))
 
         url_parameters["q"] = ' '.join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"

@@ -107,7 +107,7 @@ class Lexer(object):
                                re.S)
             if match:
                 continue
-            match = self.match(r'(%s)' % text_re)
+            match = self.match(r'({0!s})'.format(text_re))
             if match:
                 if match.group(1) == '}' and brace_level > 0:
                     brace_level -= 1
@@ -116,14 +116,14 @@ class Lexer(object):
                     self.text[startpos:
                               self.match_position - len(match.group(1))],\
                     match.group(1)
-            match = self.match(r"(.*?)(?=\"|\'|#|%s)" % text_re, re.S)
+            match = self.match(r"(.*?)(?=\"|\'|#|{0!s})".format(text_re), re.S)
             if match:
                 brace_level += match.group(1).count('{')
                 brace_level -= match.group(1).count('}')
                 continue
             raise exceptions.SyntaxException(
-                "Expected: %s" %
-                ','.join(text),
+                "Expected: {0!s}".format(
+                ','.join(text)),
                 **self.exception_kwargs)
 
     def append_node(self, nodecls, *args, **kwargs):
@@ -164,8 +164,7 @@ class Lexer(object):
             elif self.control_line and \
                     not self.control_line[-1].is_ternary(node.keyword):
                 raise exceptions.SyntaxException(
-                    "Keyword '%s' not a legal ternary for keyword '%s'" %
-                    (node.keyword, self.control_line[-1].keyword),
+                    "Keyword '{0!s}' not a legal ternary for keyword '{1!s}'".format(node.keyword, self.control_line[-1].keyword),
                     **self.exception_kwargs)
 
     _coding_re = re.compile(r'#.*coding[:=]\s*([-\w.]+).*\r?\n')
@@ -203,8 +202,8 @@ class Lexer(object):
                 text = text.decode(parsed_encoding)
             except UnicodeDecodeError:
                 raise exceptions.CompileException(
-                    "Unicode decode operation of encoding '%s' failed" %
-                    parsed_encoding,
+                    "Unicode decode operation of encoding '{0!s}' failed".format(
+                    parsed_encoding),
                     text.decode('utf-8', 'ignore'),
                     0, 0, filename)
 
@@ -252,13 +251,13 @@ class Lexer(object):
             raise exceptions.CompileException("assertion failed")
 
         if len(self.tag):
-            raise exceptions.SyntaxException("Unclosed tag: <%%%s>" %
-                                             self.tag[-1].keyword,
+            raise exceptions.SyntaxException("Unclosed tag: <%{0!s}>".format(
+                                             self.tag[-1].keyword),
                                              **self.exception_kwargs)
         if len(self.control_line):
             raise exceptions.SyntaxException(
-                "Unterminated control keyword: '%s'" %
-                self.control_line[-1].keyword,
+                "Unterminated control keyword: '{0!s}'".format(
+                self.control_line[-1].keyword),
                 self.text,
                 self.control_line[-1].lineno,
                 self.control_line[-1].pos, self.filename)
@@ -300,8 +299,8 @@ class Lexer(object):
                     match = self.match(r'(.*?)(?=\</%text>)', re.S)
                     if not match:
                         raise exceptions.SyntaxException(
-                            "Unclosed tag: <%%%s>" %
-                            self.tag[-1].keyword,
+                            "Unclosed tag: <%{0!s}>".format(
+                            self.tag[-1].keyword),
                             **self.exception_kwargs)
                     self.append_node(parsetree.Text, match.group(1))
                     return self.match_tag_end()
@@ -314,13 +313,12 @@ class Lexer(object):
         if match:
             if not len(self.tag):
                 raise exceptions.SyntaxException(
-                    "Closing tag without opening tag: </%%%s>" %
-                    match.group(1),
+                    "Closing tag without opening tag: </%{0!s}>".format(
+                    match.group(1)),
                     **self.exception_kwargs)
             elif self.tag[-1].keyword != match.group(1):
                 raise exceptions.SyntaxException(
-                    "Closing tag </%%%s> does not match tag: <%%%s>" %
-                    (match.group(1), self.tag[-1].keyword),
+                    "Closing tag </%{0!s}> does not match tag: <%{1!s}>".format(match.group(1), self.tag[-1].keyword),
                     **self.exception_kwargs)
             self.tag.pop()
             return True
@@ -409,8 +407,8 @@ class Lexer(object):
                 m2 = re.match(r'(end)?(\w+)\s*(.*)', text)
                 if not m2:
                     raise exceptions.SyntaxException(
-                        "Invalid control line: '%s'" %
-                        text,
+                        "Invalid control line: '{0!s}'".format(
+                        text),
                         **self.exception_kwargs)
                 isend, keyword = m2.group(1, 2)
                 isend = (isend is not None)
@@ -418,13 +416,11 @@ class Lexer(object):
                 if isend:
                     if not len(self.control_line):
                         raise exceptions.SyntaxException(
-                            "No starting keyword '%s' for '%s'" %
-                            (keyword, text),
+                            "No starting keyword '{0!s}' for '{1!s}'".format(keyword, text),
                             **self.exception_kwargs)
                     elif self.control_line[-1].keyword != keyword:
                         raise exceptions.SyntaxException(
-                            "Keyword '%s' doesn't match keyword '%s'" %
-                            (text, self.control_line[-1].keyword),
+                            "Keyword '{0!s}' doesn't match keyword '{1!s}'".format(text, self.control_line[-1].keyword),
                             **self.exception_kwargs)
                 self.append_node(parsetree.ControlLine, keyword, isend, text)
             else:

@@ -15,7 +15,7 @@ from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
 
 def underline(string):
-    return "\033[4m%s\033[0m" % string
+    return "\033[4m{0!s}\033[0m".format(string)
 
 
 class TimeAwareArgumentParser(argparse.ArgumentParser):
@@ -105,7 +105,7 @@ class SubRipShifter(object):
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
         parser.add_argument('-e', '--output-encoding', metavar=underline('encoding'), action='store', dest='output_encoding',
             type=self.parse_encoding, help=self.ENCODING_HELP)
-        parser.add_argument('-v', '--version', action='version', version='%%(prog)s %s' % VERSION_STRING)
+        parser.add_argument('-v', '--version', action='version', version='%(prog)s {0!s}'.format(VERSION_STRING))
         subparsers = parser.add_subparsers(title='commands')
 
         shift_parser = subparsers.add_parser('shift', help="Shift subtitles by specified time offset", epilog=self.SHIFT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
@@ -164,7 +164,7 @@ class SubRipShifter(object):
         limits = [0] + self.arguments.limits + [self.input_file[-1].end.ordinal + 1]
         base_name, extension = os.path.splitext(self.arguments.file)
         for index, (start, end) in enumerate(zip(limits[:-1], limits[1:])):
-            file_name = '%s.%s%s' % (base_name, index + 1, extension)
+            file_name = '{0!s}.{1!s}{2!s}'.format(base_name, index + 1, extension)
             part_file = self.input_file.slice(ends_after=start, starts_before=end)
             part_file.shift(milliseconds=-start)
             part_file.clean_indexes()
@@ -178,7 +178,7 @@ class SubRipShifter(object):
         self.arguments.file = backup_file
 
     def break_lines(self):
-        split_re = re.compile(r'(.{,%i})(?:\s+|$)' % self.arguments.length)
+        split_re = re.compile(r'(.{{,{0:d}}})(?:\s+|$)'.format(self.arguments.length))
         for item in self.input_file:
             item.text = '\n'.join(split_re.split(item.text)[1::2])
         self.input_file.write_into(self.output_file)
