@@ -185,11 +185,12 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
     def selectSeries(allSeries):
         try:
             # try to pick a show that's in my show list
-            show_id_list = [int(x.indexerid) for x in sickbeard.showList]
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
             for curShow in allSeries:
                 if int(curShow['id']) in show_id_list:
                     return curShow
         except Exception:
+            # Maybe curShow doesnt have id? Ignore it
             pass
 
         # if nothing matches then return first result
