@@ -182,7 +182,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
 
         logger.log(u'Calling ' + self.name + ' Client', logger.DEBUG)
 
-        if not self.auth or self._get_auth():
+        if not (self.auth or self._get_auth()):
             logger.log(self.name + u': Authentication Failed', logger.WARNING)
             return r_code
 
