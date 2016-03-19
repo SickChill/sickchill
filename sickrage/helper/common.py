@@ -208,9 +208,9 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
             scalar, units = size_tuple[0], size_tuple[1:]
             units = units[0].upper() if units else default_units
         else:
-            regex_units = re.search(r'(\w+)', size, re.IGNORECASE)
-            units = regex_units.group() if regex_units else default_units
-            scalar = size.strip(units)
+            regex_scalar = re.search(r'([\d. ]+)', size, re.IGNORECASE)
+            scalar = regex_scalar.group() if regex_scalar else -1
+            units = size.strip(scalar) if scalar != -1 else 'B'
 
         scalar = float(scalar)
         scalar *= (1024 if not use_decimal else 1000) ** scale.index(units)
