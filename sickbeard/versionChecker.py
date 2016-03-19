@@ -138,10 +138,10 @@ class CheckVersion(object):
         if not backupDir:
             return False
         source = [
-            ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'),
             sickbeard.CONFIG_FILE,
-            ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
-            ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')
+            sickbeard.db.dbFilename(),
+            sickbeard.db.dbFilename('failed.db'),
+            sickbeard.db.dbFilename('cache.db')
         ]
         target = ek(os.path.join, backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 

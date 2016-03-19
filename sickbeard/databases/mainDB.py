@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=too-many-ancestors, too-many-lines
 
 import datetime
 
@@ -315,12 +316,12 @@ class InitialSchema(db.SchemaUpgrade):
         if not self.hasTable("tv_shows") and not self.hasTable("db_version"):
             queries = [
                 "CREATE TABLE db_version(db_version INTEGER);",
-                "CREATE TABLE history(action NUMERIC, date NUMERIC, showid NUMERIC, season NUMERIC, episode NUMERIC, quality NUMERIC, resource TEXT, provider TEXT, version NUMERIC DEFAULT -1);",
+                "CREATE TABLE history(action NUMERIC, date NUMERIC, showid NUMERIC, season NUMERIC, episode NUMERIC, quality NUMERIC, resource TEXT, provider TEXT, version NUMERIC DEFAULT -1, hash TEXT, size NUMERIC DEFAULT -1, link TEXT);",
                 "CREATE TABLE imdb_info(indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC);",
                 "CREATE TABLE info(last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC);",
                 "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, absolute_number NUMERIC, scene_absolute_number NUMERIC, PRIMARY KEY(indexer_id, season, episode));",
-                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1);",
-                "CREATE TABLE tv_episodes(episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC, absolute_number NUMERIC, scene_absolute_number NUMERIC, version NUMERIC DEFAULT -1, release_group TEXT);",
+                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1, search_method TEXT, actors TEXT, description TEXT, users TEXT);",
+                "CREATE TABLE tv_episodes(episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC, absolute_number NUMERIC, scene_absolute_number NUMERIC, version NUMERIC DEFAULT -1, release_group TEXT, hash, TEXT, client TEXT, actors TEXT, watched NUMERIC);",
                 "CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER);",
@@ -340,18 +341,20 @@ class InitialSchema(db.SchemaUpgrade):
             cur_db_version = self.checkDBVersion()
 
             if cur_db_version < MIN_DB_VERSION:
-                logger.log_error_and_exit(u"Your database version (" +
-                                          str(cur_db_version) + ") is too old to migrate from what this version of SickRage supports (" +
-                                          str(MIN_DB_VERSION) + ").\n" +
-                                          "Upgrade using a previous version (tag) build 496 to build 501 of SickRage first or remove database file to begin fresh."
-                                          )
+                logger.log_error_and_exit(
+                    u"Your database version (" +
+                    str(cur_db_version) + ") is too old to migrate from what this version of SickRage supports (" +
+                    str(MIN_DB_VERSION) + ").\n" +
+                    "Upgrade using a previous version (tag) build 496 to build 501 of SickRage first or remove database file to begin fresh."
+                )
 
             if cur_db_version > MAX_DB_VERSION:
-                logger.log_error_and_exit(u"Your database version (" +
-                                          str(cur_db_version) + ") has been incremented past what this version of SickRage supports (" +
-                                          str(MAX_DB_VERSION) + ").\n" +
-                                          "If you have used other forks of SickRage, your database may be unusable due to their modifications."
-                                          )
+                logger.log_error_and_exit(
+                    u"Your database version (" +
+                    str(cur_db_version) + ") has been incremented past what this version of SickRage supports (" +
+                    str(MAX_DB_VERSION) + ").\n" +
+                    "If you have used other forks of SickRage, your database may be unusable due to their modifications."
+                )
 
 
 class AddSizeAndSceneNameFields(InitialSchema):
@@ -510,7 +513,8 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         (status, quality) = common.Quality.splitCompositeStatus(old_status)
         return common.Quality.compositeStatus(status, self._update_quality(quality))
 
-    def _update_quality(self, old_quality):
+    @staticmethod
+    def _update_quality(old_quality):
         """Update bitwise flags to reflect new quality values
 
         Check flag bits (clear old then set their new locations) starting
@@ -1144,8 +1148,41 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
     def execute(self):
         backupDatabase(self.checkDBVersion())
 
-        logger.log(u"Add minor version numbers to database")
+        logger.log(u"Adding minor version numbers to database")
         self.addColumn(b'db_version', b'db_minor_version')
+
+        self.inc_minor_version()
+
+        logger.log('Updated to: %d.%d' % self.connection.version)
+
+
+class Addv43Columns(AddMinorVersion):
+    def test(self):
+        return self.connection.version > (42, 1)
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+
+        new_columns = [
+            # tv_episodes changes
+            ('tv_episodes', 'hash', 'TEXT'),
+            ('tv_episodes', 'client', 'TEXT'),
+            ('tv_episodes', 'actors', 'TEXT'),
+            ('tv_episodes', 'watched', 'NUMERIC'),
+            # history changes
+            ('history', 'hash', 'TEXT'),
+            ('history', 'size', 'NUMERIC', -1),
+            ('history', 'link', 'TEXT'),
+            # tv_shows changes
+            ('tv_shows', 'search_method', 'TEXT'),
+            ('tv_shows', 'actors', 'TEXT'),
+            ('tv_shows', 'description', 'TEXT'),
+            ('tv_shows', 'users', 'TEXT')
+        ]
+        for new_column in new_columns:
+            if not self.hasColumn(new_column[0], new_column[1]):
+                logger.log(u"Adding {}.{} to database".format(new_column[0], new_column[1]))
+                self.addColumn(*new_column)
 
         self.inc_minor_version()
 

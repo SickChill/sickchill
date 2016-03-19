@@ -188,7 +188,7 @@ class SickRage(object):
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
         except (AttributeError, LookupError):
             sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
-                     'or find another way to force Python to use %s for string encoding.' % sickbeard.SYS_ENCODING)
+                     'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
 
         # Need console logging for SickBeard.py and SickBeard-console.exe
         self.console_logging = (not hasattr(sys, 'frozen')) or (sickbeard.MY_NAME.lower().find('-console') > 0)
@@ -224,7 +224,7 @@ class SickRage(object):
                 try:
                     self.forced_port = int(value)
                 except ValueError:
-                    sys.exit('Port: %s is not a number. Exiting.' % value)
+                    sys.exit('Port: {} is not a number. Exiting.'.format(value))
 
             # Run as a double forked daemon
             if option in ('-d', '--daemon'):
@@ -243,7 +243,7 @@ class SickRage(object):
 
                 # If the pid file already exists, SickRage may still be running, so exit
                 if ek(os.path.exists, self.pid_file):
-                    sys.exit('PID file: %s already exists. Exiting.' % self.pid_file)
+                    sys.exit('PID file: {} already exists. Exiting.'.format(self.pid_file))
 
             # Specify folder to load the config file from
             if option in ('--config',):
@@ -262,9 +262,9 @@ class SickRage(object):
             if self.run_as_daemon:
                 pid_dir = ek(os.path.dirname, self.pid_file)
                 if not ek(os.access, pid_dir, os.F_OK):
-                    sys.exit('PID dir: %s doesn\'t exist. Exiting.' % pid_dir)
+                    sys.exit('PID dir: {} doesn\'t exist. Exiting.'.format(pid_dir))
                 if not ek(os.access, pid_dir, os.W_OK):
-                    sys.exit('PID dir: %s must be writable (write permissions). Exiting.' % pid_dir)
+                    sys.exit('PID dir: {} must be writable (write permissions). Exiting.'.format(pid_dir))
 
             else:
                 if self.console_logging:
@@ -281,18 +281,22 @@ class SickRage(object):
             try:
                 ek(os.makedirs, sickbeard.DATA_DIR, 0o744)
             except os.error:
-                raise SystemExit('Unable to create data directory: %s' % sickbeard.DATA_DIR)
+                raise SystemExit('Unable to create data directory: {}'.format(sickbeard.DATA_DIR))
 
         # Make sure we can write to the data dir
         if not ek(os.access, sickbeard.DATA_DIR, os.W_OK):
-            raise SystemExit('Data directory must be writeable: %s' % sickbeard.DATA_DIR)
+            raise SystemExit('Data directory must be writeable: {}'.format(sickbeard.DATA_DIR))
+
+        # Rename sickrage.db to sickbeard.db
+        self.rename_db()
 
         # Make sure we can write to the config file
         if not ek(os.access, sickbeard.CONFIG_FILE, os.W_OK):
             if ek(os.path.isfile, sickbeard.CONFIG_FILE):
-                raise SystemExit('Config file must be writeable: %s' % sickbeard.CONFIG_FILE)
+                raise SystemExit('Config file must be writeable: {}'.format(sickbeard.CONFIG_FILE))
             elif not ek(os.access, ek(os.path.dirname, sickbeard.CONFIG_FILE), os.W_OK):
-                raise SystemExit('Config file root dir must be writeable: %s' % ek(os.path.dirname, sickbeard.CONFIG_FILE))
+                raise SystemExit('Config file root dir must be writeable: {}'.format
+                                 (ek(os.path.dirname, sickbeard.CONFIG_FILE)))
 
         ek(os.chdir, sickbeard.DATA_DIR)
 
@@ -301,11 +305,13 @@ class SickRage(object):
         if ek(os.path.exists, restore_dir):
             success = self.restore_db(restore_dir, sickbeard.DATA_DIR)
             if self.console_logging:
-                sys.stdout.write('Restore: restoring DB and config.ini %s!\n' % ('FAILED', 'SUCCESSFUL')[success])
+                sys.stdout.write('Restore: restoring DB and config.ini {}!\n'.format
+                                 (('FAILED', 'SUCCESSFUL')[success]))
 
         # Load the config and publish it to the sickbeard package
         if self.console_logging and not ek(os.path.isfile, sickbeard.CONFIG_FILE):
-            sys.stdout.write('Unable to find %s, all settings will be default!\n' % sickbeard.CONFIG_FILE)
+            sys.stdout.write('Unable to find {}, all settings will be default!\n'.format
+                             (sickbeard.CONFIG_FILE))
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
@@ -430,7 +436,7 @@ class SickRage(object):
 
             try:
                 with io.open(self.pid_file, 'w') as f_pid:
-                    f_pid.write('%s\n' % pid)
+                    f_pid.write('{}\n'.format(pid))
             except EnvironmentError as error:
                 logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
                                           (filename=self.pid_file, error_num=error.errno, error_message=error.strerror))
@@ -465,6 +471,17 @@ class SickRage(object):
         return True
 
     @staticmethod
+    def rename_db():
+        """
+        move sickrage.db to sickbeard.db
+        """
+        old = sickbeard.db.dbFilename(filename="sickrage.db")
+        new = sickbeard.db.dbFilename()
+        if ek(os.path.exists, old) and not ek(os.path.exists, new):
+            logger.log('Renaming {} to {}'.format(old, new), logger.DEBUG)  # pylint: disable=no-member
+            ek(os.rename, old, new)
+
+    @staticmethod
     def load_shows_from_db():
         """
         Populates the showList with shows from the database
@@ -495,15 +512,17 @@ class SickRage(object):
         :return:
         """
         try:
-            files_list = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
+            files_list = ['sickrage.db', 'sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in files_list:
                 src_file = ek(os.path.join, src_dir, filename)
-                dst_file = ek(os.path.join, dst_dir, filename)
-                bak_file = ek(os.path.join, dst_dir, '%s.bak-%s' % (filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-                if ek(os.path.isfile, dst_file):
-                    shutil.move(dst_file, bak_file)
-                shutil.move(src_file, dst_file)
+                if ek(os.path.exists, src_file):
+                    dst_file = ek(os.path.join, dst_dir, filename).replace('sickrage.db', 'sickbeard.db')
+                    bak_file = ek(os.path.join, dst_dir, '{}.bak-{}'.format
+                                  (filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
+                    if ek(os.path.isfile, dst_file):
+                        ek(shutil.move, dst_file, bak_file)
+                    ek(shutil.move, src_file, dst_file)
             return True
         except Exception:  # pylint: disable=broad-except
             return False
