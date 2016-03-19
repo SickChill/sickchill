@@ -127,7 +127,23 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    labels = ["Type", "Name", "Download", "Files", "Comments", "Added date", "Size", "Snatched", "Seeders", "Leechers", "Upped by"]
+                    # "Type", "Name", "Download", "Files", "Comments", "Added", "Size", "Snatched", "Seeders", "Leechers", "Upped by"
+                    labels = []
+
+                    columns = html.find_all("div", class_="colhead")
+                    for column in columns:
+                        lbl = column.get_text(strip=True)
+                        if lbl:
+                          labels.append(str(lbl))
+                        else:
+                          lbl = column.find("img")
+                          if lbl:
+                            if lbl.has_attr("alt"):
+                              lbl = lbl['alt']
+                              labels.append(str(lbl))
+                          else:
+                            lbl = "Download"
+                            labels.append(lbl)
 
                     # Skip column headers
                     for result in torrent_rows:
