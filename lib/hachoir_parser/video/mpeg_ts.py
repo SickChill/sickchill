@@ -51,7 +51,7 @@ class Packet(FieldSet):
             yield RawBytes(self, "error_correction", 16)
 
     def createDescription(self):
-        text = "Packet: PID %s" % self["pid"].display
+        text = "Packet: PID {0!s}".format(self["pid"].display)
         if self["payload_unit_start"].value:
             text += ", start of payload"
         return text
@@ -61,7 +61,7 @@ class Packet(FieldSet):
             return u"No payload and no adaptation"
         pid = self["pid"].value
         if (0x0002 <= pid <= 0x000f) or (0x2000 <= pid):
-            return u"Invalid program identifier (%s)" % self["pid"].display
+            return u"Invalid program identifier ({0!s})".format(self["pid"].display)
         return ""
 
 class MPEG_TS(Parser):
@@ -80,15 +80,15 @@ class MPEG_TS(Parser):
             return "Unable to find synchronization byte"
         for index in xrange(5):
             try:
-                packet = self["packet[%u]" % index]
+                packet = self["packet[{0:d}]".format(index)]
             except (ParserError, MissingField):
                 if index and self.eof:
                     return True
                 else:
-                    return "Unable to get packet #%u" % index
+                    return "Unable to get packet #{0:d}".format(index)
             err = packet.isValid()
             if err:
-                return "Packet #%u is invalid: %s" % (index, err)
+                return "Packet #{0:d} is invalid: {1!s}".format(index, err)
         return True
 
     def createFields(self):

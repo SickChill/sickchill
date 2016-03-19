@@ -60,8 +60,7 @@ def addIndexes(cls, ifNotExists=True):
     try:
         cls.createIndexes(ifNotExists)
     except dberrors.OperationalError, e:
-        _object_logger.warn('Skipping creation of the %s.%s index: %s' %
-                            (cls.sqlmeta.table, col.name, e))
+        _object_logger.warn('Skipping creation of the {0!s}.{1!s} index: {2!s}'.format(cls.sqlmeta.table, col.name, e))
 addIndexes = classmethod(addIndexes)
 
 
@@ -107,7 +106,7 @@ def addForeignKeys(cls, mapTables, ifNotExists=True):
     # Do not even try, if there are no FK, in this table.
     if not filter(None, [col.foreignKey for col in cls._imdbpySchema.cols]):
         return
-    fakeTableName = 'myfaketable%s' % cls.sqlmeta.table
+    fakeTableName = 'myfaketable{0!s}'.format(cls.sqlmeta.table)
     if fakeTableName in FAKE_TABLES_REPOSITORY:
         newcls = FAKE_TABLES_REPOSITORY[fakeTableName]
     else:

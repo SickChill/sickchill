@@ -38,11 +38,11 @@ class CascadeOptions(frozenset):
 
         if values.difference(cls._allowed_cascades):
             raise sa_exc.ArgumentError(
-                    "Invalid cascade option(s): %s" %
+                    "Invalid cascade option(s): {0!s}".format(
                     ", ".join([repr(x) for x in
                         sorted(
                             values.difference(cls._allowed_cascades)
-                    )])
+                    )]))
             )
 
         if "all" in values:
@@ -65,9 +65,9 @@ class CascadeOptions(frozenset):
         return self
 
     def __repr__(self):
-        return "CascadeOptions(%r)" % (
+        return "CascadeOptions({0!r})".format((
             ",".join([x for x in sorted(self)])
-        )
+        ))
 
 
 def _validator_events(desc, key, validator, include_removes, include_backrefs):
@@ -248,16 +248,14 @@ def identity_key(*args, **kwargs):
             raise sa_exc.ArgumentError("expected up to three "
                 "positional arguments, got %s" % len(args))
         if kwargs:
-            raise sa_exc.ArgumentError("unknown keyword arguments: %s"
-                % ", ".join(kwargs))
+            raise sa_exc.ArgumentError("unknown keyword arguments: {0!s}".format(", ".join(kwargs)))
         mapper = class_mapper(class_)
         if "ident" in locals():
             return mapper.identity_key_from_primary_key(util.to_list(ident))
         return mapper.identity_key_from_row(row)
     instance = kwargs.pop("instance")
     if kwargs:
-        raise sa_exc.ArgumentError("unknown keyword arguments: %s"
-            % ", ".join(kwargs.keys))
+        raise sa_exc.ArgumentError("unknown keyword arguments: {0!s}".format(", ".join(kwargs.keys)))
     mapper = object_mapper(instance)
     return mapper.identity_key_from_instance(instance)
 
@@ -360,7 +358,7 @@ class AliasedClass(object):
             adapt_on_names
         )
 
-        self.__name__ = 'AliasedClass_%s' % mapper.class_.__name__
+        self.__name__ = 'AliasedClass_{0!s}'.format(mapper.class_.__name__)
 
     def __getattr__(self, key):
         try:
@@ -398,7 +396,7 @@ class AliasedClass(object):
             return attr
 
     def __repr__(self):
-        return '<AliasedClass at 0x%x; %s>' % (
+        return '<AliasedClass at 0x{0:x}; {1!s}>'.format(
             id(self), self._aliased_insp._target.__name__)
 
 
@@ -522,10 +520,10 @@ class AliasedInsp(_InspectionAttr):
         elif mapper.isa(self.mapper):
             return self
         else:
-            assert False, "mapper %s doesn't correspond to %s" % (mapper, self)
+            assert False, "mapper {0!s} doesn't correspond to {1!s}".format(mapper, self)
 
     def __repr__(self):
-        return '<AliasedInsp at 0x%x; %s>' % (
+        return '<AliasedInsp at 0x{0:x}; {1!s}>'.format(
             id(self), self.class_.__name__)
 
 

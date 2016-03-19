@@ -221,7 +221,7 @@ class OggPage(FieldSet):
     def createFields(self):
         yield String(self, 'capture_pattern', 4, charset="ASCII")
         if self['capture_pattern'].value != self.MAGIC:
-            self.warning('Invalid signature. An Ogg page must start with "%s".' % self.MAGIC)
+            self.warning('Invalid signature. An Ogg page must start with "{0!s}".'.format(self.MAGIC))
         yield UInt8(self, 'stream_structure_version')
         yield Bit(self, 'continued_packet')
         yield Bit(self, 'first_page')
@@ -240,7 +240,7 @@ class OggPage(FieldSet):
         if self['capture_pattern'].value != self.MAGIC:
             return "Wrong signature"
         if self['stream_structure_version'].value != 0:
-            return "Unknown structure version (%s)" % self['stream_structure_version'].value
+            return "Unknown structure version ({0!s})".format(self['stream_structure_version'].value)
         return ""
 
 class OggFile(Parser):
@@ -272,12 +272,12 @@ class OggFile(Parser):
             except MissingField:
                 if self.done:
                     return True
-                return "Unable to get page #%u" % index
+                return "Unable to get page #{0:d}".format(index)
             except (InputStreamError, ParserError):
-                return "Unable to create page #%u" % index
+                return "Unable to create page #{0:d}".format(index)
             err = page.validate()
             if err:
-                return "Invalid page #%s: %s" % (index, err)
+                return "Invalid page #{0!s}: {1!s}".format(index, err)
         return True
 
     def createMimeType(self):

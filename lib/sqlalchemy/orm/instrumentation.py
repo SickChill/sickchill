@@ -337,7 +337,7 @@ class ClassManager(dict):
     __nonzero__ = __bool__
 
     def __repr__(self):
-        return '<%s of %r at %x>' % (
+        return '<{0!s} of {1!r} at {2:x}>'.format(
             self.__class__.__name__, self.class_, id(self))
 
 class _SerializeManager(object):

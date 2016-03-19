@@ -21,9 +21,9 @@ class RuntimeException(MakoException):
 
 def _format_filepos(lineno, pos, filename):
     if filename is None:
-        return " at line: %d char: %d" % (lineno, pos)
+        return " at line: {0:d} char: {1:d}".format(lineno, pos)
     else:
-        return " in file '%s' at line: %d char: %d" % (filename, lineno, pos)
+        return " in file '{0!s}' at line: {1:d} char: {2:d}".format(filename, lineno, pos)
 
 
 class CompileException(MakoException):

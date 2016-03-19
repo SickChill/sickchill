@@ -66,9 +66,9 @@ def moduleFactoryFactory(factory):
 
     def moduleFactory(baseModule, *args, **kwargs):
         if isinstance(ModuleType.__name__, type("")):
-            name = "_%s_factory" % baseModule.__name__
+            name = "_{0!s}_factory".format(baseModule.__name__)
         else:
-            name = b"_%s_factory" % baseModule.__name__
+            name = b"_{0!s}_factory".format(baseModule.__name__)
 
         if name in moduleCache:
             return moduleCache[name]

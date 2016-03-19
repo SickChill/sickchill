@@ -15,10 +15,10 @@ class NamedValues:
                 name = namedValue
                 val = automaticVal
             if name in self.nameToValIdx:
-                raise error.PyAsn1Error('Duplicate name %s' % (name,))
+                raise error.PyAsn1Error('Duplicate name {0!s}'.format(name))
             self.nameToValIdx[name] = val
             if val in self.valToNameIdx:
-                raise error.PyAsn1Error('Duplicate value %s=%s' % (name, val))
+                raise error.PyAsn1Error('Duplicate value {0!s}={1!s}'.format(name, val))
             self.valToNameIdx[val] = name
             self.namedValues = self.namedValues + ((name, val),)
             automaticVal = automaticVal + 1

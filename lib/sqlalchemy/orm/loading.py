@@ -534,8 +534,8 @@ def _configure_subclass_mapper(mapper, context, path, adapter):
             sub_mapper = mapper.polymorphic_map[discriminator]
         except KeyError:
             raise AssertionError(
-                    "No such polymorphic_identity %r is defined" %
-                    discriminator)
+                    "No such polymorphic_identity {0!r} is defined".format(
+                    discriminator))
         if sub_mapper is mapper:
             return None
 

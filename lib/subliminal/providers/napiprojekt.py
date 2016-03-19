@@ -30,7 +30,7 @@ def get_subhash(hash):
         i = idx[i]
         t = a + int(hash[i], 16)
         v = int(hash[t:t + 2], 16)
-        b.append(('%x' % (v * m))[-1])
+        b.append(('{0:x}'.format((v * m)))[-1])
 
     return ''.join(b)
 
@@ -63,7 +63,7 @@ class NapiProjektProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
+        self.session.headers['User-Agent'] = 'Subliminal/{0!s}'.format(__short_version__)
 
     def terminate(self):
         self.session.close()

@@ -66,8 +66,8 @@ class TornadoTextTestRunner(unittest.TextTestRunner):
         if result.skipped:
             skip_reasons = set(reason for (test, reason) in result.skipped)
             self.stream.write(textwrap.fill(
-                "Some tests were skipped because: %s" %
-                ", ".join(sorted(skip_reasons))))
+                "Some tests were skipped because: {0!s}".format(
+                ", ".join(sorted(skip_reasons)))))
             self.stream.write("\n")
         return result
 

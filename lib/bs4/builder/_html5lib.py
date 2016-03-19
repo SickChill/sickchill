@@ -64,7 +64,7 @@ class HTML5TreeBuilder(HTMLTreeBuilder):
 
     def test_fragment_to_document(self, fragment):
         """See `TreeBuilder`."""
-        return u'<html><head></head><body>%s</body></html>' % fragment
+        return u'<html><head></head><body>{0!s}</body></html>'.format(fragment)
 
 
 class TreeBuilderForHtml5lib(html5lib.treebuilders._base.TreeBuilder):

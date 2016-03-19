@@ -51,7 +51,7 @@ class SubRipItem(ComparableMixin):
             return 0.0
 
     def __str__(self):
-        position = ' %s' % self.position if self.position.strip() else ''
+        position = ' {0!s}'.format(self.position) if self.position.strip() else ''
         return self.ITEM_PATTERN % (self.index, self.start, self.end,
                                     position, self.text)
     if is_py2:

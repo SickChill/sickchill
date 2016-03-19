@@ -29,7 +29,7 @@ class Frame(namedtuple('Frame', ['lineno', 'package', 'name', 'filename'])):
     __slots__ = ()
 
     def __repr__(self):
-        return "%s#L%s" % (os.path.basename(self.filename), self.lineno)
+        return "{0!s}#L{1!s}".format(os.path.basename(self.filename), self.lineno)
 
 
 def defined_at():

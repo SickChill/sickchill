@@ -207,8 +207,7 @@ def profile(fn=None, skip=0, filename=None, immediate=False, dirs=False,
             profiler_class = AVAILABLE_PROFILERS[p]
             break
     else:
-        raise ValueError('only these profilers are available: %s'
-                             % ', '.join(AVAILABLE_PROFILERS))
+        raise ValueError('only these profilers are available: {0!s}'.format(', '.join(AVAILABLE_PROFILERS)))
     fp = profiler_class(fn, skip=skip, filename=filename,
                         immediate=immediate, dirs=dirs,
                         sort=sort, entries=entries)
@@ -337,10 +336,10 @@ class FuncProfile(object):
         lineno = self.fn.func_code.co_firstlineno
         print
         print "*** PROFILER RESULTS ***"
-        print "%s (%s:%s)" % (funcname, filename, lineno)
-        print "function called %d times" % self.ncalls,
+        print "{0!s} ({1!s}:{2!s})".format(funcname, filename, lineno)
+        print "function called {0:d} times".format(self.ncalls),
         if self.skipped:
-            print "(%d calls not profiled)" % self.skipped
+            print "({0:d} calls not profiled)".format(self.skipped)
         else:
             print
         print
@@ -440,10 +439,10 @@ if hotshot is not None:
             lineno = self.fn.func_code.co_firstlineno
             print
             print "*** PROFILER RESULTS ***"
-            print "%s (%s:%s)" % (funcname, filename, lineno)
-            print "function called %d times" % self.ncalls,
+            print "{0!s} ({1!s}:{2!s})".format(funcname, filename, lineno)
+            print "function called {0:d} times".format(self.ncalls),
             if self.skipped:
-                print "(%d calls not profiled)" % self.skipped
+                print "({0:d} calls not profiled)".format(self.skipped)
             else:
                 print
             print
@@ -503,8 +502,8 @@ if hotshot is not None:
             lineno = self.fn.func_code.co_firstlineno
             print
             print "*** COVERAGE RESULTS ***"
-            print "%s (%s:%s)" % (funcname, filename, lineno)
-            print "function called %d times" % self.ncalls
+            print "{0!s} ({1!s}:{2!s})".format(funcname, filename, lineno)
+            print "function called {0:d} times".format(self.ncalls)
             print
             fs = FuncSource(self.fn)
             reader = hotshot.log.LogReader(self.logfilename)
@@ -577,8 +576,8 @@ class TraceFuncCoverage:
         lineno = self.fn.func_code.co_firstlineno
         print
         print "*** COVERAGE RESULTS ***"
-        print "%s (%s:%s)" % (funcname, filename, lineno)
-        print "function called %d times" % self.ncalls
+        print "{0!s} ({1!s}:{2!s})".format(funcname, filename, lineno)
+        print "function called {0:d} times".format(self.ncalls)
         print
         fs = FuncSource(self.fn)
         for (filename, lineno), count in self.tracer.counts.items():
@@ -588,7 +587,7 @@ class TraceFuncCoverage:
         print fs
         never_executed = fs.count_never_executed()
         if never_executed:
-            print "%d lines were not executed." % never_executed
+            print "{0:d} lines were not executed.".format(never_executed)
 
 
 class FuncSource:
@@ -647,7 +646,7 @@ class FuncSource:
                 else:
                     prefix = '>' * 6 + ' '
             else:
-                prefix = '%5d: ' % counter
+                prefix = '{0:5d}: '.format(counter)
             lines.append(prefix + line)
             lineno += 1
         return ''.join(lines)
@@ -718,7 +717,7 @@ class FuncTimer(object):
                 funcname = fn.__name__
                 filename = fn.func_code.co_filename
                 lineno = fn.func_code.co_firstlineno
-                print >> sys.stderr, "\n  %s (%s:%s):\n    %.3f seconds\n" % (
+                print >> sys.stderr, "\n  {0!s} ({1!s}:{2!s}):\n    {3:.3f} seconds\n".format(
                                         funcname, filename, lineno, duration)
     def atexit(self):
         if not self.ncalls:

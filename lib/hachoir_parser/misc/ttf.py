@@ -77,7 +77,7 @@ class TableHeader(FieldSet):
         yield filesizeHandler(UInt32(self, "size"))
 
     def createDescription(self):
-         return "Table entry: %s (%s)" % (self["tag"].display, self["size"].display)
+         return "Table entry: {0!s} ({1!s})".format(self["tag"].display, self["size"].display)
 
 class NameHeader(FieldSet):
     def createFields(self):
@@ -94,13 +94,13 @@ class NameHeader(FieldSet):
         try:
             return CHARSET_MAP[platform][encoding]
         except KeyError:
-            self.warning("TTF: Unknown charset (%s,%s)" % (platform, encoding))
+            self.warning("TTF: Unknown charset ({0!s},{1!s})".format(platform, encoding))
             return "ISO-8859-1"
 
     def createDescription(self):
         platform = self["platformID"].display
         name = self["nameID"].display
-        return "Name record: %s (%s)" % (name, platform)
+        return "Name record: {0!s} ({1!s})".format(name, platform)
 
 def parseFontHeader(self):
     yield UInt16(self, "maj_ver", "Major version")
@@ -160,12 +160,11 @@ def parseNames(self):
     # Read header
     yield UInt16(self, "format")
     if self["format"].value != 0:
-        raise ParserError("TTF (names): Invalid format (%u)" % self["format"].value)
+        raise ParserError("TTF (names): Invalid format ({0:d})".format(self["format"].value))
     yield UInt16(self, "count")
     yield UInt16(self, "offset")
     if MAX_NAME_COUNT < self["count"].value:
-        raise ParserError("Invalid number of names (%s)"
-            % self["count"].value)
+        raise ParserError("Invalid number of names ({0!s})".format(self["count"].value))
 
     # Read name index
     entries = []
@@ -183,14 +182,14 @@ def parseNames(self):
         # Skip duplicates values
         new = (entry["offset"].value, entry["length"].value)
         if last and last == new:
-            self.warning("Skip duplicate %s %s" % (entry.name, new))
+            self.warning("Skip duplicate {0!s} {1!s}".format(entry.name, new))
             continue
         last = (entry["offset"].value, entry["length"].value)
 
         # Skip negative offset
         offset = entry["offset"].value + self["offset"].value
         if offset < self.current_size//8:
-            self.warning("Skip value %s (negative offset)" % entry.name)
+            self.warning("Skip value {0!s} (negative offset)".format(entry.name))
             continue
 
         # Add padding if any
@@ -230,7 +229,7 @@ class Table(FieldSet):
             yield RawBytes(self, "content", self.size//8)
 
     def createDescription(self):
-        return "Table %s (%s)" % (self.table["tag"].value, self.table.path)
+        return "Table {0!s} ({1!s})".format(self.table["tag"].value, self.table.path)
 
 class TrueTypeFontFile(Parser):
     endian = BIG_ENDIAN
@@ -244,11 +243,11 @@ class TrueTypeFontFile(Parser):
 
     def validate(self):
         if self["maj_ver"].value != 1:
-            return "Invalid major version (%u)" % self["maj_ver"].value
+            return "Invalid major version ({0:d})".format(self["maj_ver"].value)
         if self["min_ver"].value != 0:
-            return "Invalid minor version (%u)" % self["min_ver"].value
+            return "Invalid minor version ({0:d})".format(self["min_ver"].value)
         if not (MIN_NB_TABLE <= self["nb_table"].value <= MAX_NB_TABLE):
-            return "Invalid number of table (%u)" % self["nb_table"].value
+            return "Invalid number of table ({0:d})".format(self["nb_table"].value)
         return True
 
     def createFields(self):

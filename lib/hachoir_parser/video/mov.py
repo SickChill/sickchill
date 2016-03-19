@@ -353,7 +353,7 @@ class EditList(FieldSet):
         elif version == 1:
             UInt, Int = UInt64, Int64
         else:
-            raise ParserError("elst version %d not supported"%version)
+            raise ParserError("elst version {0:d} not supported".format(version))
         for i in xrange(self['count'].value):
             yield UInt(self, "duration[]", "Duration of this edit segment")
             yield Int(self, "time[]", "Starting time of this edit segment within the media (-1 = empty edit)")
@@ -427,38 +427,38 @@ class TrackFragmentRandomAccess(FieldSet):
         yield UInt32(self, "number_of_entry")
         for i in xrange(self['number_of_entry'].value):
             if self['version'].value == 1:
-                yield UInt64(self, "time[%i]" % i)
-                yield UInt64(self, "moof_offset[%i]" %i)
+                yield UInt64(self, "time[{0:d}]".format(i))
+                yield UInt64(self, "moof_offset[{0:d}]".format(i))
             else:
-                yield UInt32(self, "time[%i]" %i)
-                yield UInt32(self, "moof_offset[%i]" %i)
+                yield UInt32(self, "time[{0:d}]".format(i))
+                yield UInt32(self, "moof_offset[{0:d}]".format(i))
 
             if self['length_size_of_traf_num'].value == 3:
-                yield UInt64(self, "traf_number[%i]" %i) 
+                yield UInt64(self, "traf_number[{0:d}]".format(i)) 
             elif self['length_size_of_traf_num'].value == 2:
-                yield UInt32(self, "traf_number[%i]" %i) 
+                yield UInt32(self, "traf_number[{0:d}]".format(i)) 
             elif self['length_size_of_traf_num'].value == 1:
-                yield UInt16(self, "traf_number[%i]" %i) 
+                yield UInt16(self, "traf_number[{0:d}]".format(i)) 
             else:
-                yield UInt8(self, "traf_number[%i]" %i) 
+                yield UInt8(self, "traf_number[{0:d}]".format(i)) 
 
             if self['length_size_of_trun_num'].value == 3:
-                yield UInt64(self, "trun_number[%i]" %i) 
+                yield UInt64(self, "trun_number[{0:d}]".format(i)) 
             elif self['length_size_of_trun_num'].value == 2:
-                yield UInt32(self, "trun_number[%i]" %i) 
+                yield UInt32(self, "trun_number[{0:d}]".format(i)) 
             elif self['length_size_of_trun_num'].value == 1:
-                yield UInt16(self, "trun_number[%i]" %i) 
+                yield UInt16(self, "trun_number[{0:d}]".format(i)) 
             else:
-                yield UInt8(self, "trun_number[%i]" %i) 
+                yield UInt8(self, "trun_number[{0:d}]".format(i)) 
 
             if self['length_size_of_sample_num'].value == 3:
-                yield UInt64(self, "sample_number[%i]" %i) 
+                yield UInt64(self, "sample_number[{0:d}]".format(i)) 
             elif self['length_size_of_sample_num'].value == 2:
-                yield UInt32(self, "sample_number[%i]" %i) 
+                yield UInt32(self, "sample_number[{0:d}]".format(i)) 
             elif self['length_size_of_sample_num'].value == 1:
-                yield UInt16(self, "sample_number[%i]" %i) 
+                yield UInt16(self, "sample_number[{0:d}]".format(i)) 
             else:
-                yield UInt8(self, "sample_number[%i]" %i) 
+                yield UInt8(self, "sample_number[{0:d}]".format(i)) 
 
 class MovieFragmentRandomAccessOffset(FieldSet):
     def createFields(self):
@@ -822,7 +822,7 @@ class Atom(FieldSet):
     def createDescription(self):
         if self["tag"].value == "uuid":
             return "Atom: uuid: "+self["usertag"].value
-        return "Atom: %s" % self["tag"].value
+        return "Atom: {0!s}".format(self["tag"].value)
 
 class MovFile(Parser):
     PARSER_TAGS = {

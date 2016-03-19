@@ -269,8 +269,7 @@ class CacheRegion(object):
             proxy = proxy()
 
         if not issubclass(type(proxy), ProxyBackend):
-            raise TypeError("Type %s is not a valid ProxyBackend"
-                            % type(proxy))
+            raise TypeError("Type {0!s} is not a valid ProxyBackend".format(type(proxy)))
 
         self.backend = proxy.wrap(self.backend)
 
@@ -365,13 +364,13 @@ class CacheRegion(object):
         """
         config_dict = coerce_string_conf(config_dict)
         return self.configure(
-            config_dict["%sbackend" % prefix],
+            config_dict["{0!s}backend".format(prefix)],
             expiration_time=config_dict.get(
-                "%sexpiration_time" % prefix, None),
+                "{0!s}expiration_time".format(prefix), None),
             _config_argument_dict=config_dict,
-            _config_prefix="%sarguments." % prefix,
+            _config_prefix="{0!s}arguments.".format(prefix),
             wrap=config_dict.get(
-                "%swrap" % prefix, None),
+                "{0!s}wrap".format(prefix), None),
         )
 
     @memoized_property

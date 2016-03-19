@@ -29,10 +29,10 @@ class AbstractConstraint:
             self._testValue(value, idx)
         except error.ValueConstraintError:
             raise error.ValueConstraintError(
-               '%s failed at: \"%s\"' % (self, sys.exc_info()[1])
+               '{0!s} failed at: \"{1!s}\"'.format(self, sys.exc_info()[1])
             )
     def __repr__(self):
-        return '%s(%s)' % (
+        return '{0!s}({1!s})'.format(
             self.__class__.__name__,
             ', '.join([repr(x) for x in self._values])
         )
@@ -88,12 +88,12 @@ class ValueRangeConstraint(AbstractConstraint):
     def _setValues(self, values):
         if len(values) != 2:
             raise error.PyAsn1Error(
-                '%s: bad constraint values' % (self.__class__.__name__,)
+                '{0!s}: bad constraint values'.format(self.__class__.__name__)
                 )
         self.start, self.stop = values
         if self.start > self.stop:
             raise error.PyAsn1Error(
-                '%s: screwed constraint values (start > stop): %s > %s' % (
+                '{0!s}: screwed constraint values (start > stop): {1!s} > {2!s}'.format(
                     self.__class__.__name__,
                     self.start, self.stop
                 )
@@ -193,7 +193,7 @@ class ConstraintsUnion(AbstractConstraintSet):
             else:
                 return
         raise error.ValueConstraintError(
-            'all of %s failed for \"%s\"' % (self._values, value)
+            'all of {0!s} failed for \"{1!s}\"'.format(self._values, value)
             )
 
 # XXX

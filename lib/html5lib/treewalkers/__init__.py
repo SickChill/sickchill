@@ -38,7 +38,7 @@ def getTreeWalker(treeType, implementation=None, **kwargs):
     treeType = treeType.lower()
     if treeType not in treeWalkerCache:
         if treeType in ("dom", "pulldom"):
-            name = "%s.%s" % (__name__, treeType)
+            name = "{0!s}.{1!s}".format(__name__, treeType)
             __import__(name)
             mod = sys.modules[name]
             treeWalkerCache[treeType] = mod.TreeWalker

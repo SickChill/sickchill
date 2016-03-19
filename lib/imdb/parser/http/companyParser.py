@@ -64,8 +64,7 @@ class DOMCompanyParser(DOMParserBase):
                                 'year': "./text()[1]"
                                 },
                             postprocess=lambda x:
-                                build_movie(u'%s %s' % \
-                                (x.get('title'), x.get('year').strip()),
+                                build_movie(u'{0!s} {1!s}'.format(x.get('title'), x.get('year').strip()),
                                 movieID=analyze_imdbid(x.get('link') or u''),
                                 _parsingCompany=True))),
             ]

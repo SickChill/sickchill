@@ -154,7 +154,7 @@ class InodeLink(Link):
             return Link.createValue(self)
 
     def createDisplay(self):
-        return "/%s[0]" % self._getTargetPath()
+        return "/{0!s}[0]".format(self._getTargetPath())
 
 
 class FileEntry(FieldSet):
@@ -199,9 +199,9 @@ class FileEntry(FieldSet):
             except ValueError:
                 pass
             seq_no = self["seq_no"].value
-            return "Long filename part: '%s' [%u]" % (name, seq_no)
+            return "Long filename part: '{0!s}' [{1:d}]".format(name, seq_no)
         else:
-            return "File: '%s'" % self.getFilename()
+            return "File: '{0!s}'".format(self.getFilename())
 
     def getCluster(self):
         cluster = self["cluster_lo"].value
@@ -294,7 +294,7 @@ class InodeGen:
                 return
             field = File(self.root, name, size=size)
             if prev.first is None:
-                field._description = 'File size: %s' % humanFilesize(self.filesize//8)
+                field._description = 'File size: {0!s}'.format(humanFilesize(self.filesize//8))
                 field.setSubIStream(self.createInputStream)
             field.datasize = min(self.filesize - self.done, size)
             self.done += field.datasize
@@ -302,7 +302,7 @@ class InodeGen:
             field = Directory(self.root, name, size=size)
         padding = self.root.getFieldByAddress(address, feed=False)
         if not isinstance(padding, (PaddingBytes, RawBytes)):
-            error("(FAT) address %u doesn't point to a padding field" % address)
+            error("(FAT) address {0:d} doesn't point to a padding field".format(address))
             return
         if last:
             next = None
@@ -322,8 +322,8 @@ class FAT_FS(Parser):
     }
 
     def _validate(self, type_offset):
-        if self.stream.readBytes(type_offset*8, 8) != ("FAT%-5u" % self.version):
-            return "Invalid FAT%u signature" % self.version
+        if self.stream.readBytes(type_offset*8, 8) != ("FAT{0:<5d}".format(self.version)):
+            return "Invalid FAT{0:d} signature".format(self.version)
         if self.stream.readBytes(510*8, 2) != "\x55\xAA":
             return "Invalid BIOS signature"
         return True

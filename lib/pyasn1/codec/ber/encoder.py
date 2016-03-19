@@ -35,7 +35,7 @@ class AbstractItemEncoder:
                 length = length >> 8
             substrateLen = len(substrate)
             if substrateLen > 126:
-                raise Error('Length octets overflow (%d)' % substrateLen)
+                raise Error('Length octets overflow ({0:d})'.format(substrateLen))
             return int2oct(0x80 | substrateLen) + substrate
 
     def encodeValue(self, encodeFun, value, defMode, maxChunkSize):
@@ -164,12 +164,12 @@ class ObjectIdentifierEncoder(AbstractItemEncoder):
             index = 5
         else:
             if len(oid) < 2:
-                raise error.PyAsn1Error('Short OID %s' % (value,))
+                raise error.PyAsn1Error('Short OID {0!s}'.format(value))
 
             # Build the first twos
             if oid[0] > 6 or oid[1] > 39 or oid[0] == 6 and oid[1] > 15:
                 raise error.PyAsn1Error(
-                    'Initial sub-ID overflow %s in OID %s' % (oid[:2], value)
+                    'Initial sub-ID overflow {0!s} in OID {1!s}'.format(oid[:2], value)
                     )
             octets = (oid[0] * 40 + oid[1],)
             index = 2
@@ -181,7 +181,7 @@ class ObjectIdentifierEncoder(AbstractItemEncoder):
                 octets = octets + (subid & 0x7f,)
             elif subid < 0 or subid > 0xFFFFFFFF:
                 raise error.PyAsn1Error(
-                    'SubId overflow %s in %s' % (subid, value)
+                    'SubId overflow {0!s} in {1!s}'.format(subid, value)
                     )
             else:
                 # Pack large Sub-Object IDs
@@ -206,7 +206,7 @@ class RealEncoder(AbstractItemEncoder):
         if not m:
             return null, 0
         if b == 10:
-            return str2octs('\x03%dE%s%d' % (m, e == 0 and '+' or '', e)), 0
+            return str2octs('\x03{0:d}E{1!s}{2:d}'.format(m, e == 0 and '+' or '', e)), 0
         elif b == 2:
             fo = 0x80                 # binary enoding
             if m < 0:
@@ -243,7 +243,7 @@ class RealEncoder(AbstractItemEncoder):
             substrate = int2oct(fo) + eo + po
             return substrate, 0
         else:
-            raise error.PyAsn1Error('Prohibited Real base %s' % b)
+            raise error.PyAsn1Error('Prohibited Real base {0!s}'.format(b))
 
 class SequenceEncoder(AbstractItemEncoder):
     def encodeValue(self, encodeFun, value, defMode, maxChunkSize):
@@ -328,7 +328,7 @@ class Encoder:
         self.__typeMap = typeMap
 
     def __call__(self, value, defMode=1, maxChunkSize=0):
-        debug.logger & debug.flagEncoder and debug.logger('encoder called in %sdef mode, chunk size %s for type %s, value:\n%s' % (not defMode and 'in' or '', maxChunkSize, value.__class__.__name__, value.prettyPrint()))
+        debug.logger & debug.flagEncoder and debug.logger('encoder called in {0!s}def mode, chunk size {1!s} for type {2!s}, value:\n{3!s}'.format(not defMode and 'in' or '', maxChunkSize, value.__class__.__name__, value.prettyPrint()))
         tagSet = value.getTagSet()
         if len(tagSet) > 1:
             concreteEncoder = explicitlyTaggedItemEncoder
@@ -342,12 +342,12 @@ class Encoder:
                 if tagSet in self.__tagMap:
                     concreteEncoder = self.__tagMap[tagSet]
                 else:
-                    raise Error('No encoder for %s' % (value,))
-        debug.logger & debug.flagEncoder and debug.logger('using value codec %s chosen by %r' % (concreteEncoder.__class__.__name__, tagSet))
+                    raise Error('No encoder for {0!s}'.format(value))
+        debug.logger & debug.flagEncoder and debug.logger('using value codec {0!s} chosen by {1!r}'.format(concreteEncoder.__class__.__name__, tagSet))
         substrate = concreteEncoder.encode(
             self, value, defMode, maxChunkSize
             )
-        debug.logger & debug.flagEncoder and debug.logger('built %s octets of substrate: %s\nencoder completed' % (len(substrate), debug.hexdump(substrate)))
+        debug.logger & debug.flagEncoder and debug.logger('built {0!s} octets of substrate: {1!s}\nencoder completed'.format(len(substrate), debug.hexdump(substrate)))
         return substrate
 
 encode = Encoder(tagMap, typeMap)

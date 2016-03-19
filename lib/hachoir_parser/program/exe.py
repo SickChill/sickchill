@@ -81,8 +81,7 @@ class ExeFile(HachoirParser, RootSeekableFieldSet):
             return "Invalid MSDOS header: "+err
         if self.isPE():
             if MAX_NB_SECTION < self["pe_header/nb_section"].value:
-                return "Invalid number of section (%s)" \
-                    % self["pe_header/nb_section"].value
+                return "Invalid number of section ({0!s})".format(self["pe_header/nb_section"].value)
         return True
 
     def createFields(self):
@@ -190,7 +189,7 @@ class ExeFile(HachoirParser, RootSeekableFieldSet):
                 info.append(hdr["subsystem"].display)
             if self["pe_header/is_stripped"].value:
                 info.append(u"stripped")
-            return u"%s: %s" % (text, ", ".join(info))
+            return u"{0!s}: {1!s}".format(text, ", ".join(info))
         elif self.isNE():
             return u"New-style Executable (NE) for Microsoft MS Windows 3.x"
         else:
@@ -200,7 +199,7 @@ class ExeFile(HachoirParser, RootSeekableFieldSet):
         if self.isPE():
             size = 0
             for index in xrange(self["pe_header/nb_section"].value):
-                section = self["section_hdr[%u]" % index]
+                section = self["section_hdr[{0:d}]".format(index)]
                 section_size = section["phys_size"].value
                 if not section_size:
                     continue

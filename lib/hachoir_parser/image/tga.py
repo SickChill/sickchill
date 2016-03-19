@@ -30,7 +30,7 @@ class Pixels(FieldSet):
         else:
             RANGE = xrange(self["/height"].value)
         for y in RANGE:
-            yield Line(self, "line[%u]" % y)
+            yield Line(self, "line[{0:d}]".format(y))
 
 class TargaFile(Parser):
     PARSER_TAGS = {

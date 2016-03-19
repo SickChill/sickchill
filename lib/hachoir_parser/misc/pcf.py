@@ -45,7 +45,7 @@ class TOC(FieldSet):
         yield UInt32(self, "offset")
 
     def createDescription(self):
-        return "%s at %s (%s)" % (
+        return "{0!s} at {1!s} ({2!s})".format(
             self["type"].display, self["offset"].value, self["size"].display)
 
 class PropertiesFormat(FieldSet):
@@ -66,8 +66,8 @@ class Property(FieldSet):
 
     def createDescription(self):
         # FIXME: Use link or any better way to read name value
-        name = self["../name[%s]" % (self.index-2)].value
-        return "Property %s" % name
+        name = self["../name[{0!s}]".format((self.index-2))].value
+        return "Property {0!s}".format(name)
 
 class GlyphNames(FieldSet):
     def __init__(self, parent, name, toc, description, size=None):
@@ -117,9 +117,9 @@ class Properties(GlyphNames):
             padding = self.seekByte(offset0+property["name_offset"].value)
             if padding:
                 yield padding
-            yield CString(self, "name[]", "Name of %s" % property.name)
+            yield CString(self, "name[]", "Name of {0!s}".format(property.name))
             if property["is_string"].value:
-                yield CString(self, "value[]", "Value of %s" % property.name)
+                yield CString(self, "value[]", "Value of {0!s}".format(property.name))
         padding = (self.size - self.current_size) // 8
         if padding:
             yield NullBytes(self, "end_padding", padding)
@@ -157,7 +157,7 @@ class PcfFile(Parser):
                 yield padding
             maxsize = (self.size-self.current_size)//8
             if maxsize < size:
-                self.warning("Truncate content of %s to %s bytes (was %s)" % (entry.path, maxsize, size))
+                self.warning("Truncate content of {0!s} to {1!s} bytes (was {2!s})".format(entry.path, maxsize, size))
                 size = maxsize
             if not size:
                 continue
@@ -166,5 +166,5 @@ class PcfFile(Parser):
             elif entry["type"].value == 128:
                 yield GlyphNames(self, "glyph_names", entry, "Glyph names", size=size*8)
             else:
-                yield RawBytes(self, "data[]", size, "Content of %s" % entry.path)
+                yield RawBytes(self, "data[]", size, "Content of {0!s}".format(entry.path))
 

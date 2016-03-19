@@ -81,13 +81,13 @@ def parseTimeSignature(parser, size):
 class Command(FieldSet):
     COMMAND = {}
     for channel in xrange(16):
-        COMMAND[0x80+channel] = ("Note off (channel %u)" % channel, parseNote)
-        COMMAND[0x90+channel] = ("Note on (channel %u)" % channel, parseNote)
-        COMMAND[0xA0+channel] = ("Key after-touch (channel %u)" % channel, parseNote)
-        COMMAND[0xB0+channel] = ("Control change (channel %u)" % channel, parseControl)
-        COMMAND[0xC0+channel] = ("Program (patch) change (channel %u)" % channel, parsePatch)
-        COMMAND[0xD0+channel] = ("Channel after-touch (channel %u)" % channel, parseChannel)
-        COMMAND[0xE0+channel] = ("Pitch wheel change (channel %u)" % channel, parsePitch)
+        COMMAND[0x80+channel] = ("Note off (channel {0:d})".format(channel), parseNote)
+        COMMAND[0x90+channel] = ("Note on (channel {0:d})".format(channel), parseNote)
+        COMMAND[0xA0+channel] = ("Key after-touch (channel {0:d})".format(channel), parseNote)
+        COMMAND[0xB0+channel] = ("Control change (channel {0:d})".format(channel), parseControl)
+        COMMAND[0xC0+channel] = ("Program (patch) change (channel {0:d})".format(channel), parsePatch)
+        COMMAND[0xD0+channel] = ("Channel after-touch (channel {0:d})".format(channel), parseChannel)
+        COMMAND[0xE0+channel] = ("Pitch wheel change (channel {0:d})".format(channel), parsePitch)
     COMMAND_DESC = createDict(COMMAND, 0)
     COMMAND_PARSER = createDict(COMMAND, 1)
 
@@ -150,7 +150,7 @@ class Command(FieldSet):
                     yield RawBytes(self, "data", size)
         else:
             if self.command not in self.COMMAND_PARSER:
-                raise ParserError("Unknown command: %s" % self["command"].display)
+                raise ParserError("Unknown command: {0!s}".format(self["command"].display))
             parser = self.COMMAND_PARSER[self.command]
             for field in parser(self):
                 yield field
@@ -203,7 +203,7 @@ class Header(FieldSet):
         yield UInt16(self, "delta_time", "Delta-time ticks per quarter note")
 
     def createDescription(self):
-        return "%s; %s tracks" % (
+        return "{0!s}; {1!s} tracks".format(
             self["file_format"].display, self["nb_track"].value)
 
 class MidiFile(Parser):
@@ -233,11 +233,11 @@ class MidiFile(Parser):
             yield Track(self, "track[]")
 
     def createDescription(self):
-        return "MIDI audio: %s" % self["header"].description
+        return "MIDI audio: {0!s}".format(self["header"].description)
 
     def createContentSize(self):
         count = self["/header/nb_track"].value - 1
-        start = self["track[%u]" % count].absolute_address
+        start = self["track[{0:d}]".format(count)].absolute_address
         # Search "End of track" of last track
         end = self.stream.searchBytes("\xff\x2f\x00", start, MAX_FILESIZE*8)
         if end is not None:

@@ -195,7 +195,7 @@ class PythonPrinter(object):
         stripspace is a string of space that will be truncated from the
         start of the line before indenting."""
 
-        return re.sub(r"^%s" % stripspace, self.indentstring
+        return re.sub(r"^{0!s}".format(stripspace), self.indentstring
                       * self.indent, line)
 
     def _reset_multi_line_flags(self):
@@ -267,11 +267,11 @@ def adjust_whitespace(text):
 
         while line:
             if state[triplequoted]:
-                m, line = match(r"%s" % state[triplequoted], line)
+                m, line = match(r"{0!s}".format(state[triplequoted]), line)
                 if m:
                     state[triplequoted] = False
                 else:
-                    m, line = match(r".*?(?=%s|$)" % state[triplequoted], line)
+                    m, line = match(r".*?(?={0!s}|$)".format(state[triplequoted]), line)
             else:
                 m, line = match(r'#', line)
                 if m:
@@ -287,7 +287,7 @@ def adjust_whitespace(text):
         return start_state
 
     def _indent_line(line, stripspace=''):
-        return re.sub(r"^%s" % stripspace, '', line)
+        return re.sub(r"^{0!s}".format(stripspace), '', line)
 
     lines = []
     stripspace = None

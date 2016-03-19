@@ -34,7 +34,7 @@ class Command:
         self.waiter.acquire()
 
     def __repr__(self):
-        return "Command(%s,%s) %s\n%s\n" % (repr(self.tag), repr(self.command), repr(self.parameters), self.raw_data())
+        return "Command({0!s},{1!s}) {2!s}\n{3!s}\n".format(repr(self.tag), repr(self.command), repr(self.parameters), self.raw_data())
 
     def authorize(self, mode, tag, session, callback):
         self.mode = mode
@@ -60,7 +60,7 @@ class Command:
         for key, value in parameters.iteritems():
             if value == None:
                 continue
-            tmp.append("%s=%s" % (self.escape(key), self.escape(value)))
+            tmp.append("{0!s}={1!s}".format(self.escape(key), self.escape(value)))
         return ' '.join([command, '&'.join(tmp)])
 
     def escape(self, data):

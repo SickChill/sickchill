@@ -8,7 +8,7 @@ class NamedType:
     isDefaulted = 0
     def __init__(self, name, t):
         self.__name = name; self.__type = t
-    def __repr__(self): return '%s(%s, %s)' % (
+    def __repr__(self): return '{0!s}({1!s}, {2!s})'.format(
         self.__class__.__name__, self.__name, self.__type
         )
     def getType(self): return self.__type
@@ -33,9 +33,9 @@ class NamedTypes:
         self.__ambigiousTypes = {}
 
     def __repr__(self):
-        r = '%s(' % self.__class__.__name__
+        r = '{0!s}('.format(self.__class__.__name__)
         for n in self.__namedTypes:
-            r = r + '%r, ' % (n,)
+            r = r + '{0!r}, '.format(n)
         return r + ')'
     
     def __getitem__(self, idx): return self.__namedTypes[idx]
@@ -60,12 +60,12 @@ class NamedTypes:
                 tagMap = self.__namedTypes[idx].getType().getTagMap()
                 for t in tagMap.getPosMap():
                     if t in self.__tagToPosIdx:
-                        raise error.PyAsn1Error('Duplicate type %s' % (t,))
+                        raise error.PyAsn1Error('Duplicate type {0!s}'.format(t))
                     self.__tagToPosIdx[t] = idx
         try:
             return self.__tagToPosIdx[tagSet]
         except KeyError:
-            raise error.PyAsn1Error('Type %s not found' % (tagSet,))
+            raise error.PyAsn1Error('Type {0!s} not found'.format(tagSet))
         
     def getNameByPosition(self, idx):
         try:
@@ -79,12 +79,12 @@ class NamedTypes:
                 idx = idx - 1
                 n = self.__namedTypes[idx].getName()
                 if n in self.__nameToPosIdx:
-                    raise error.PyAsn1Error('Duplicate name %s' % (n,))
+                    raise error.PyAsn1Error('Duplicate name {0!s}'.format(n))
                 self.__nameToPosIdx[n] = idx
         try:
             return self.__nameToPosIdx[name]
         except KeyError:
-            raise error.PyAsn1Error('Name %s not found' % (name,))
+            raise error.PyAsn1Error('Name {0!s} not found'.format(name))
 
     def __buildAmbigiousTagMap(self):
         ambigiousTypes = ()

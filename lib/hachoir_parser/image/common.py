@@ -19,7 +19,7 @@ class RGB(FieldSet):
         rgb = self["red"].value, self["green"].value, self["blue"].value
         name = self.color_name.get(rgb)
         if not name:
-            name = "#%02X%02X%02X" % rgb
+            name = "#{0:02X}{1:02X}{2:02X}".format(*rgb)
         return "RGB color: " + name
 
 class RGBA(RGB):
@@ -34,16 +34,16 @@ class RGBA(RGB):
     def createDescription(self):
         description = RGB.createDescription(self)
         opacity = self["alpha"].value*100/255
-        return "%s (opacity: %s%%)" % (description, opacity)
+        return "{0!s} (opacity: {1!s}%)".format(description, opacity)
 
 class PaletteRGB(UserVector):
     item_class = RGB
     item_name = "color"
     def createDescription(self):
-        return "Palette of %u RGB colors" % len(self)
+        return "Palette of {0:d} RGB colors".format(len(self))
 
 class PaletteRGBA(PaletteRGB):
     item_class = RGBA
     def createDescription(self):
-        return "Palette of %u RGBA colors" % len(self)
+        return "Palette of {0:d} RGBA colors".format(len(self))
 

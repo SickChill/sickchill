@@ -55,6 +55,6 @@ def hexadecimal(field):
     assert hasattr(field, "value") and hasattr(field, "size")
     size = field.size
     padding = alignValue(size, 4) // 4
-    pattern = u"0x%%0%ux" % padding
+    pattern = u"0x%0{0:d}x".format(padding)
     return pattern % field.value
 

@@ -55,7 +55,7 @@ def _indent(text, indent):
 def _standard_listen_example(dispatch_descriptor, sample_target, fn):
     example_kw_arg = _indent(
             "\n".join(
-                "%(arg)s = kw['%(arg)s']" % {"arg": arg}
+                "{arg!s} = kw['{arg!s}']".format(**{"arg": arg})
                 for arg in dispatch_descriptor.arg_names[0:2]
             ),
             "    ")
@@ -85,8 +85,8 @@ def _standard_listen_example(dispatch_descriptor, sample_target, fn):
         )
 
     text %= {
-                "current_since": " (arguments as of %s)" %
-                                current_since if current_since else "",
+                "current_since": " (arguments as of {0!s})".format(
+                                current_since) if current_since else "",
                 "event_name": fn.__name__,
                 "has_kw_arguments": ", **kw" if dispatch_descriptor.has_kw else "",
                 "named_event_arguments": ", ".join(dispatch_descriptor.arg_names),

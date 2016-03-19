@@ -130,4 +130,4 @@ class IdentitySet(MutableSet):  # pragma: no cover
             self.add(elem)
 
     def __repr__(self):  # pragma: no cover
-        return "%s(%s)" % (type(self).__name__, list(self))
+        return "{0!s}({1!s})".format(type(self).__name__, list(self))

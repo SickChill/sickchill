@@ -298,7 +298,7 @@ class _OracleNumeric(sqltypes.Numeric):
 
         if dialect.supports_native_decimal:
             if self.asdecimal:
-                fstring = "%%.%df" % self._effective_decimal_return_scale
+                fstring = "%.{0:d}f".format(self._effective_decimal_return_scale)
 
                 def to_decimal(value):
                     if value is None:
@@ -450,7 +450,7 @@ class OracleCompiler_cx_oracle(OracleCompiler):
         quote = getattr(name, 'quote', None)
         if quote is True or quote is not False and \
             self.preparer._bindparam_requires_quotes(name):
-            quoted_name = '"%s"' % name
+            quoted_name = '"{0!s}"'.format(name)
             self._quoted_bind_names[name] = quoted_name
             return OracleCompiler.bindparam_string(self, quoted_name, **kw)
         else:
@@ -592,12 +592,12 @@ class ReturningResultProxy(_result.FullyBufferedResultProxy):
     def _cursor_description(self):
         returning = self.context.compiled.returning
         return [
-            ("ret_%d" % i, None)
+            ("ret_{0:d}".format(i), None)
             for i, col in enumerate(returning)
         ]
 
     def _buffer_rows(self):
-        return collections.deque([tuple(self._returning_params["ret_%d" % i]
+        return collections.deque([tuple(self._returning_params["ret_{0:d}".format(i)]
                     for i, c in enumerate(self._returning_params))])
 
 
@@ -908,7 +908,7 @@ class OracleDialect_cx_oracle(OracleDialect):
         do_commit_twophase().  its format is unspecified."""
 
         id = random.randint(0, 2 ** 128)
-        return (0x1234, "%032x" % id, "%032x" % 9)
+        return (0x1234, "{0:032x}".format(id), "{0:032x}".format(9))
 
     def do_executemany(self, cursor, statement, parameters, context=None):
         if isinstance(parameters, tuple):

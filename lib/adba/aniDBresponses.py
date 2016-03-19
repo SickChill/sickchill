@@ -59,7 +59,7 @@ class Response:
         self.maper = AniDBMaper()
 
     def __repr__(self):
-        tmp = "%s(%s,%s,%s) %s\n" % (
+        tmp = "{0!s}({1!s},{2!s},{3!s}) {4!s}\n".format(
         self.__class__.__name__, repr(self.restag), repr(self.rescode), repr(self.resstr), repr(self.attrs))
 
         m = 0
@@ -71,7 +71,7 @@ class Response:
         for line in self.datalines:
             tmp += "  Line:\n"
             for k, v in line.iteritems():
-                tmp += "    %s:%s %s\n" % (k, (m - len(k)) * ' ', v)
+                tmp += "    {0!s}:{1!s} {2!s}\n".format(k, (m - len(k)) * ' ', v)
         return tmp
 
     def parse(self):

@@ -53,7 +53,7 @@ class Metadata(Logger):
         try:
             return self.__data[key]
         except LookupError:
-            raise ValueError("Metadata has no value '%s'" % key)
+            raise ValueError("Metadata has no value '{0!s}'".format(key))
 
     def getItem(self, key, index):
         try:
@@ -79,7 +79,7 @@ class Metadata(Logger):
         item = self.getItem(key, index)
         if item is None:
             if default is None:
-                raise ValueError("Metadata has no value '%s' (index %s)" % (key, index))
+                raise ValueError("Metadata has no value '{0!s}' (index {1!s})".format(key, index))
             else:
                 return default
         return item.value
@@ -88,7 +88,7 @@ class Metadata(Logger):
         try:
             data = self.__data[key]
         except LookupError:
-            raise ValueError("Metadata has no value '%s'" % key)
+            raise ValueError("Metadata has no value '{0!s}'".format(key))
         return [ item.value for item in data ]
 
     def getText(self, key, default=None, index=0):
@@ -176,7 +176,7 @@ class Metadata(Logger):
             priority = MAX_PRIORITY
         if not title:
             title = self.header
-        text = ["%s:" % title]
+        text = ["{0!s}:".format(title)]
         for data in sorted(self):
             if priority < data.priority:
                 break
@@ -191,7 +191,7 @@ class Metadata(Logger):
                     value = item.text
                 else:
                     value = makeUnicode(item.value)
-                text.append("%s%s: %s" % (line_prefix, title, value))
+                text.append("{0!s}{1!s}: {2!s}".format(line_prefix, title, value))
         if 1 < len(text):
             return text
         else:
@@ -232,7 +232,7 @@ class MultipleMetadata(RootMetadata):
         Returns False if the group is skipped, True if it has been added.
         """
         if not metadata:
-            self.warning("Skip empty group %s" % key)
+            self.warning("Skip empty group {0!s}".format(key))
             return False
         if key.endswith("[]"):
             key = key[:-2]
@@ -240,7 +240,7 @@ class MultipleMetadata(RootMetadata):
                 self.__key_counter[key] += 1
             else:
                 self.__key_counter[key] = 1
-            key += "[%u]" % self.__key_counter[key]
+            key += "[{0:d}]".format(self.__key_counter[key])
         if header:
             metadata.setHeader(header)
         self.__groups.append(key, metadata)
@@ -283,10 +283,10 @@ def extractMetadata(parser, quality=QUALITY_NORMAL):
     try:
         metadata.extract(parser)
     except HACHOIR_ERRORS, err:
-        error("Error during metadata extraction: %s" % unicode(err))
+        error("Error during metadata extraction: {0!s}".format(unicode(err)))
         return None
     except Exception, err:
-        error("Error during metadata extraction: %s" % unicode(err))
+        error("Error during metadata extraction: {0!s}".format(unicode(err)))
         return None
     if metadata:
         metadata.mime_type = parser.mime_type

@@ -6,8 +6,7 @@ class GenericVector(FieldSet):
         assert issubclass(item_class, Field)
         assert isinstance(item_class.static_size, (int, long))
         if not(0 < nb_items):
-            raise ParserError('Unable to create empty vector "%s" in %s' \
-                % (name, parent.path))
+            raise ParserError('Unable to create empty vector "{0!s}" in {1!s}'.format(name, parent.path))
         size = nb_items * item_class.static_size
         self.__nb_items = nb_items
         self._item_class = item_class

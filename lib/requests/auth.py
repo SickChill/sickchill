@@ -28,7 +28,7 @@ def _basic_auth_str(username, password):
     """Returns a Basic Auth string."""
 
     authstr = 'Basic ' + to_native_string(
-        b64encode(('%s:%s' % (username, password)).encode('latin1')).strip()
+        b64encode(('{0!s}:{1!s}'.format(username, password)).encode('latin1')).strip()
     )
 
     return authstr
@@ -103,7 +103,7 @@ class HTTPDigestAuth(AuthBase):
                 return hashlib.sha1(x).hexdigest()
             hash_utf8 = sha_utf8
 
-        KD = lambda s, d: hash_utf8("%s:%s" % (s, d))
+        KD = lambda s, d: hash_utf8("{0!s}:{1!s}".format(s, d))
 
         if hash_utf8 is None:
             return None
@@ -116,8 +116,8 @@ class HTTPDigestAuth(AuthBase):
         if p_parsed.query:
             path += '?' + p_parsed.query
 
-        A1 = '%s:%s:%s' % (self.username, realm, self.password)
-        A2 = '%s:%s' % (method, path)
+        A1 = '{0!s}:{1!s}:{2!s}'.format(self.username, realm, self.password)
+        A2 = '{0!s}:{1!s}'.format(method, path)
 
         HA1 = hash_utf8(A1)
         HA2 = hash_utf8(A2)
@@ -126,7 +126,7 @@ class HTTPDigestAuth(AuthBase):
             self._thread_local.nonce_count += 1
         else:
             self._thread_local.nonce_count = 1
-        ncvalue = '%08x' % self._thread_local.nonce_count
+        ncvalue = '{0:08x}'.format(self._thread_local.nonce_count)
         s = str(self._thread_local.nonce_count).encode('utf-8')
         s += nonce.encode('utf-8')
         s += time.ctime().encode('utf-8')
@@ -134,12 +134,12 @@ class HTTPDigestAuth(AuthBase):
 
         cnonce = (hashlib.sha1(s).hexdigest()[:16])
         if _algorithm == 'MD5-SESS':
-            HA1 = hash_utf8('%s:%s:%s' % (HA1, nonce, cnonce))
+            HA1 = hash_utf8('{0!s}:{1!s}:{2!s}'.format(HA1, nonce, cnonce))
 
         if not qop:
-            respdig = KD(HA1, "%s:%s" % (nonce, HA2))
+            respdig = KD(HA1, "{0!s}:{1!s}".format(nonce, HA2))
         elif qop == 'auth' or 'auth' in qop.split(','):
-            noncebit = "%s:%s:%s:%s:%s" % (
+            noncebit = "{0!s}:{1!s}:{2!s}:{3!s}:{4!s}".format(
                 nonce, ncvalue, cnonce, 'auth', HA2
                 )
             respdig = KD(HA1, noncebit)
@@ -153,15 +153,15 @@ class HTTPDigestAuth(AuthBase):
         base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
                'response="%s"' % (self.username, realm, nonce, path, respdig)
         if opaque:
-            base += ', opaque="%s"' % opaque
+            base += ', opaque="{0!s}"'.format(opaque)
         if algorithm:
-            base += ', algorithm="%s"' % algorithm
+            base += ', algorithm="{0!s}"'.format(algorithm)
         if entdig:
-            base += ', digest="%s"' % entdig
+            base += ', digest="{0!s}"'.format(entdig)
         if qop:
-            base += ', qop="auth", nc=%s, cnonce="%s"' % (ncvalue, cnonce)
+            base += ', qop="auth", nc={0!s}, cnonce="{1!s}"'.format(ncvalue, cnonce)
 
-        return 'Digest %s' % (base)
+        return 'Digest {0!s}'.format((base))
 
     def handle_redirect(self, r, **kwargs):
         """Reset num_401_calls counter on redirects."""

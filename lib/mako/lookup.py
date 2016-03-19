@@ -256,7 +256,7 @@ class TemplateLookup(TemplateCollection):
                     return self._load(srcfile, uri)
             else:
                 raise exceptions.TopLevelLookupException(
-                    "Cant locate template for uri %r" % uri)
+                    "Cant locate template for uri {0!r}".format(uri))
 
     def adjust_uri(self, uri, relativeto):
         """Adjust the given ``uri`` based on the given relative URI."""
@@ -344,7 +344,7 @@ class TemplateLookup(TemplateCollection):
         except OSError:
             self._collection.pop(uri, None)
             raise exceptions.TemplateLookupException(
-                "Cant locate template for uri %r" % uri)
+                "Cant locate template for uri {0!r}".format(uri))
 
     def put_string(self, uri, text):
         """Place a new :class:`.Template` object into this

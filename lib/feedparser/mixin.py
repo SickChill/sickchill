@@ -244,7 +244,7 @@ class _FeedParserMixin(
                     attrs.append(('xmlns',namespace))
             if tag == 'svg':
                 self.svgOK += 1
-            return self.handle_data('<%s%s>' % (tag, self.strattrs(attrs)), escape=0)
+            return self.handle_data('<{0!s}{1!s}>'.format(tag, self.strattrs(attrs)), escape=0)
 
         # match namespaces
         if tag.find(':') != -1:
@@ -307,7 +307,7 @@ class _FeedParserMixin(
             self.contentparams['type'] = 'application/xhtml+xml'
         if self.incontent and self.contentparams.get('type') == 'application/xhtml+xml':
             tag = tag.split(':')[-1]
-            self.handle_data('</%s>' % tag, escape=0)
+            self.handle_data('</{0!s}>'.format(tag), escape=0)
 
         # track xml:base and xml:lang going out of scope
         if self.basestack:
@@ -327,7 +327,7 @@ class _FeedParserMixin(
             return
         ref = ref.lower()
         if ref in ('34', '38', '39', '60', '62', 'x22', 'x26', 'x27', 'x3c', 'x3e'):
-            text = '&#%s;' % ref
+            text = '&#{0!s};'.format(ref)
         else:
             if ref[0] == 'x':
                 c = int(ref[1:], 16)
@@ -341,7 +341,7 @@ class _FeedParserMixin(
         if not self.elementstack:
             return
         if ref in ('lt', 'gt', 'quot', 'amp', 'apos'):
-            text = '&%s;' % ref
+            text = '&{0!s};'.format(ref)
         elif ref in self.entities:
             text = self.entities[ref]
             if text.startswith('&#') and text.endswith(';'):
@@ -350,7 +350,7 @@ class _FeedParserMixin(
             try:
                 name2codepoint[ref]
             except KeyError:
-                text = '&%s;' % ref
+                text = '&{0!s};'.format(ref)
             else:
                 text = chr(name2codepoint[ref]).encode('utf-8')
         self.elementstack[-1][2].append(text)
@@ -429,7 +429,7 @@ class _FeedParserMixin(
         return data
 
     def strattrs(self, attrs):
-        return ''.join([' %s="%s"' % (t[0],_xmlescape(t[1],{'"':'&quot;'})) for t in attrs])
+        return ''.join([' {0!s}="{1!s}"'.format(t[0], _xmlescape(t[1],{'"':'&quot;'})) for t in attrs])
 
     def push(self, element, expectingText):
         self.elementstack.append([element, expectingText, []])
@@ -699,12 +699,12 @@ class _FeedParserMixin(
 
     def _sync_author_detail(self, key='author'):
         context = self._getContext()
-        detail = context.get('%ss' % key, [FeedParserDict()])[-1]
+        detail = context.get('{0!s}s'.format(key), [FeedParserDict()])[-1]
         if detail:
             name = detail.get('name')
             email = detail.get('email')
             if name and email:
-                context[key] = '%s (%s)' % (name, email)
+                context[key] = '{0!s} ({1!s})'.format(name, email)
             elif name:
                 context[key] = name
             elif email:
@@ -728,7 +728,7 @@ class _FeedParserMixin(
                     author = author[:-1]
                 author = author.strip()
             if author or email:
-                context.setdefault('%s_detail' % key, detail)
+                context.setdefault('{0!s}_detail'.format(key), detail)
             if author:
                 detail['name'] = author
             if email:

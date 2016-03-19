@@ -441,7 +441,7 @@ class IOLoop(Configurable):
         if timeout is not None:
             self.remove_timeout(timeout_handle)
         if not future_cell[0].done():
-            raise TimeoutError('Operation timed out after %s seconds' % timeout)
+            raise TimeoutError('Operation timed out after {0!s} seconds'.format(timeout))
         return future_cell[0].result()
 
     def time(self):
@@ -491,7 +491,7 @@ class IOLoop(Configurable):
             return self.call_at(self.time() + timedelta_to_seconds(deadline),
                                 callback, *args, **kwargs)
         else:
-            raise TypeError("Unsupported deadline %r" % deadline)
+            raise TypeError("Unsupported deadline {0!r}".format(deadline))
 
     def call_later(self, delay, callback, *args, **kwargs):
         """Runs the ``callback`` after ``delay`` seconds have passed.
@@ -951,7 +951,7 @@ class _Timeout(object):
 
     def __init__(self, deadline, callback, io_loop):
         if not isinstance(deadline, numbers.Real):
-            raise TypeError("Unsupported deadline %r" % deadline)
+            raise TypeError("Unsupported deadline {0!r}".format(deadline))
         self.deadline = deadline
         self.callback = callback
         self.tiebreaker = next(io_loop._timeout_counter)

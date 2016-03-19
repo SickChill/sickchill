@@ -417,19 +417,19 @@ class Status(object):
         if delta < (1 * fudge):
             return 'about a second ago'
         elif delta < (60 * (1 / fudge)):
-            return 'about %d seconds ago' % (delta)
+            return 'about {0:d} seconds ago'.format((delta))
         elif delta < (60 * fudge):
             return 'about a minute ago'
         elif delta < (60 * 60 * (1 / fudge)):
-            return 'about %d minutes ago' % (delta / 60)
+            return 'about {0:d} minutes ago'.format((delta / 60))
         elif delta < (60 * 60 * fudge) or delta / (60 * 60) == 1:
             return 'about an hour ago'
         elif delta < (60 * 60 * 24 * (1 / fudge)):
-            return 'about %d hours ago' % (delta / (60 * 60))
+            return 'about {0:d} hours ago'.format((delta / (60 * 60)))
         elif delta < (60 * 60 * 24 * fudge) or delta / (60 * 60 * 24) == 1:
             return 'about a day ago'
         else:
-            return 'about %d days ago' % (delta / (60 * 60 * 24))
+            return 'about {0:d} days ago'.format((delta / (60 * 60 * 24)))
 
     relative_created_at = property(GetRelativeCreatedAt,
                                                                  doc = 'Get a human readable string representing '
@@ -2181,7 +2181,7 @@ class Trend(object):
         self.url = url
 
     def __str__(self):
-        return 'Name: %s\nQuery: %s\nTimestamp: %s\nSearch URL: %s\n' % (self.name, self.query, self.timestamp, self.url)
+        return 'Name: {0!s}\nQuery: {1!s}\nTimestamp: {2!s}\nSearch URL: {3!s}\n'.format(self.name, self.query, self.timestamp, self.url)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -2518,7 +2518,7 @@ class Api(object):
             parameters['result_type'] = result_type
 
         # Make and send requests
-        url = '%s/search/tweets.json' % self.base_url
+        url = '{0!s}/search/tweets.json'.format(self.base_url)
         json = self._FetchUrl(url, parameters = parameters)
         data = self._ParseAndCheckTwitter(json)
 
@@ -2566,7 +2566,7 @@ class Api(object):
             raise TwitterError("count must be an integer")
 
         # Make and send requests
-        url = '%s/users/search.json' % self.base_url
+        url = '{0!s}/users/search.json'.format(self.base_url)
         json = self._FetchUrl(url, parameters = parameters)
         data = self._ParseAndCheckTwitter(json)
         return [User.NewFromJsonDict(x) for x in data]
@@ -2598,7 +2598,7 @@ class Api(object):
         Returns:
             A list with 10 entries. Each entry contains a trend.
         '''
-        url = '%s/trends/place.json' % (self.base_url)
+        url = '{0!s}/trends/place.json'.format((self.base_url))
         parameters = {'id': id}
 
         if exclude:
@@ -2669,7 +2669,7 @@ class Api(object):
         Returns:
             A sequence of twitter.Status instances, one for each message
         '''
-        url = '%s/statuses/home_timeline.json' % self.base_url
+        url = '{0!s}/statuses/home_timeline.json'.format(self.base_url)
 
         if not self._oauth_consumer:
             raise TwitterError("API must be authenticated.")
@@ -2756,7 +2756,7 @@ class Api(object):
         '''
         parameters = {}
 
-        url = '%s/statuses/user_timeline.json' % (self.base_url)
+        url = '{0!s}/statuses/user_timeline.json'.format((self.base_url))
 
         if user_id:
             parameters['user_id'] = user_id
@@ -2824,7 +2824,7 @@ class Api(object):
         Returns:
             A twitter.Status instance representing that status message
         '''
-        url = '%s/statuses/show.json' % (self.base_url)
+        url = '{0!s}/statuses/show.json'.format((self.base_url))
 
         if not self._oauth_consumer:
             raise TwitterError("API must be authenticated.")
@@ -2867,7 +2867,7 @@ class Api(object):
             post_data = {'id': long(id)}
         except:
             raise TwitterError("id must be an integer")
-        url = '%s/statuses/destroy/%s.json' % (self.base_url, id)
+        url = '{0!s}/statuses/destroy/{1!s}.json'.format(self.base_url, id)
         if trim_user:
             post_data['trim_user'] = 1
         json = self._FetchUrl(url, post_data = post_data)
@@ -2876,7 +2876,7 @@ class Api(object):
 
     @classmethod
     def _calculate_status_length(cls, status, linksize = 19):
-        dummy_link_replacement = 'https://-%d-chars%s/' % (linksize, '-' * (linksize - 18))
+        dummy_link_replacement = 'https://-{0:d}-chars{1!s}/'.format(linksize, '-' * (linksize - 18))
         shortened = ' '.join([x if not (x.startswith('http://') or
                                                                         x.startswith('https://'))
                                                         else
@@ -2927,7 +2927,7 @@ class Api(object):
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
 
-        url = '%s/statuses/update.json' % self.base_url
+        url = '{0!s}/statuses/update.json'.format(self.base_url)
 
         if isinstance(status, unicode) or self._input_encoding is None:
             u_status = status
@@ -3012,7 +3012,7 @@ class Api(object):
         except ValueError:
                 raise TwitterError("'original_id' must be an integer")
 
-        url = '%s/statuses/retweet/%s.json' % (self.base_url, original_id)
+        url = '{0!s}/statuses/retweet/{1!s}.json'.format(self.base_url, original_id)
 
         data = {'id': original_id}
         if trim_user:
@@ -3092,7 +3092,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instsance must be authenticated.")
-        url = '%s/statuses/retweets/%s.json' % (self.base_url, statusid)
+        url = '{0!s}/statuses/retweets/{1!s}.json'.format(self.base_url, statusid)
         parameters = {}
         if trim_user:
             parameters['trim_user'] = 'true'
@@ -3132,7 +3132,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
-        url = '%s/statuses/retweets_of_me.json' % self.base_url
+        url = '{0!s}/statuses/retweets_of_me.json'.format(self.base_url)
         parameters = {}
         if count is not None:
             try:
@@ -3182,7 +3182,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("twitter.Api instance must be authenticated")
-        url = '%s/friends/list.json' % self.base_url
+        url = '{0!s}/friends/list.json'.format(self.base_url)
         result = []
         parameters = {}
         if user_id is not None:
@@ -3231,7 +3231,7 @@ class Api(object):
             Returns:
                 A list of integers, one for each user id.
             '''
-            url = '%s/friends/ids.json' % self.base_url
+            url = '{0!s}/friends/ids.json'.format(self.base_url)
             if not self._oauth_consumer:
                     raise TwitterError("twitter.Api instance must be authenticated")
             parameters = {}
@@ -3292,7 +3292,7 @@ class Api(object):
             Returns:
                 A list of integers, one for each user id.
             '''
-            url = '%s/followers/ids.json' % self.base_url
+            url = '{0!s}/followers/ids.json'.format(self.base_url)
             if not self._oauth_consumer:
                     raise TwitterError("twitter.Api instance must be authenticated")
             parameters = {}
@@ -3350,7 +3350,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("twitter.Api instance must be authenticated")
-        url = '%s/followers/list.json' % self.base_url
+        url = '{0!s}/followers/list.json'.format(self.base_url)
         result = []
         parameters = {}
         if user_id is not None:
@@ -3407,7 +3407,7 @@ class Api(object):
             raise TwitterError("The twitter.Api instance must be authenticated.")
         if not user_id and not screen_name and not users:
             raise TwitterError("Specify at least one of user_id, screen_name, or users.")
-        url = '%s/users/lookup.json' % self.base_url
+        url = '{0!s}/users/lookup.json'.format(self.base_url)
         parameters = {}
         uids = list()
         if user_id:
@@ -3415,7 +3415,7 @@ class Api(object):
         if users:
             uids.extend([u.id for u in users])
         if len(uids):
-            parameters['user_id'] = ','.join(["%s" % u for u in uids])
+            parameters['user_id'] = ','.join(["{0!s}".format(u) for u in uids])
         if screen_name:
             parameters['screen_name'] = ','.join(screen_name)
         if not include_entities:
@@ -3454,7 +3454,7 @@ class Api(object):
         Returns:
             A twitter.User instance representing that user
         '''
-        url = '%s/users/show.json' % (self.base_url)
+        url = '{0!s}/users/show.json'.format((self.base_url))
         parameters = {}
 
         if not self._oauth_consumer:
@@ -3504,7 +3504,7 @@ class Api(object):
         Returns:
             A sequence of twitter.DirectMessage instances
         '''
-        url = '%s/direct_messages.json' % self.base_url
+        url = '{0!s}/direct_messages.json'.format(self.base_url)
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
         parameters = {}
@@ -3555,7 +3555,7 @@ class Api(object):
         Returns:
             A sequence of twitter.DirectMessage instances
         '''
-        url = '%s/direct_messages/sent.json' % self.base_url
+        url = '{0!s}/direct_messages/sent.json'.format(self.base_url)
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
         parameters = {}
@@ -3596,7 +3596,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
-        url = '%s/direct_messages/new.json' % self.base_url
+        url = '{0!s}/direct_messages/new.json'.format(self.base_url)
         data = {'text': text}
         if user_id:
             data['user_id'] = user_id
@@ -3621,7 +3621,7 @@ class Api(object):
         Returns:
             A twitter.DirectMessage instance representing the message destroyed
         '''
-        url = '%s/direct_messages/destroy.json' % self.base_url
+        url = '{0!s}/direct_messages/destroy.json'.format(self.base_url)
         data = {'id': id}
         if not include_entities:
             data['include_entities'] = 'false'
@@ -3644,7 +3644,7 @@ class Api(object):
         Returns:
             A twitter.User instance representing the befriended user.
         '''
-        url = '%s/friendships/create.json' % (self.base_url)
+        url = '{0!s}/friendships/create.json'.format((self.base_url))
         data = {}
         if user_id:
             data['user_id'] = user_id
@@ -3673,7 +3673,7 @@ class Api(object):
         Returns:
             A twitter.User instance representing the discontinued friend.
         '''
-        url = '%s/friendships/destroy.json' % self.base_url
+        url = '{0!s}/friendships/destroy.json'.format(self.base_url)
         data = {}
         if user_id:
             data['user_id'] = user_id
@@ -3703,7 +3703,7 @@ class Api(object):
         Returns:
             A twitter.Status instance representing the newly-marked favorite.
         '''
-        url = '%s/favorites/create.json' % self.base_url
+        url = '{0!s}/favorites/create.json'.format(self.base_url)
         data = {}
         if id:
             data['id'] = id
@@ -3735,7 +3735,7 @@ class Api(object):
         Returns:
             A twitter.Status instance representing the newly-unmarked favorite.
         '''
-        url = '%s/favorites/destroy.json' % self.base_url
+        url = '{0!s}/favorites/destroy.json'.format(self.base_url)
         data = {}
         if id:
             data['id'] = id
@@ -3770,7 +3770,7 @@ class Api(object):
         '''
         parameters = {}
 
-        url = '%s/favorites/list.json' % self.base_url
+        url = '{0!s}/favorites/list.json'.format(self.base_url)
 
         if user_id:
             parameters['user_id'] = user_id
@@ -3843,7 +3843,7 @@ class Api(object):
             A sequence of twitter.Status instances, one for each mention of the user.
         '''
 
-        url = '%s/statuses/mentions_timeline.json' % self.base_url
+        url = '{0!s}/statuses/mentions_timeline.json'.format(self.base_url)
 
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
@@ -3893,7 +3893,7 @@ class Api(object):
         Returns:
             A twitter.List instance representing the new list
         '''
-        url = '%s/lists/create.json' % self.base_url
+        url = '{0!s}/lists/create.json'.format(self.base_url)
 
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
@@ -3931,7 +3931,7 @@ class Api(object):
         Returns:
             A twitter.List instance representing the removed list.
         '''
-        url = '%s/lists/destroy.json' % self.base_url
+        url = '{0!s}/lists/destroy.json'.format(self.base_url)
         data = {}
         if list_id:
             try:
@@ -3979,7 +3979,7 @@ class Api(object):
         Returns:
             A twitter.List instance representing the list subscribed to
         '''
-        url = '%s/lists/subscribers/create.json' % (self.base_url)
+        url = '{0!s}/lists/subscribers/create.json'.format((self.base_url))
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
         data = {}
@@ -4028,7 +4028,7 @@ class Api(object):
         Returns:
             A twitter.List instance representing the removed list.
         '''
-        url = '%s/lists/subscribers/destroy.json' % (self.base_url)
+        url = '{0!s}/lists/subscribers/destroy.json'.format((self.base_url))
         if not self._oauth_consumer:
             raise TwitterError("The twitter.Api instance must be authenticated.")
         data = {}
@@ -4082,7 +4082,7 @@ class Api(object):
         if not self._oauth_consumer:
             raise TwitterError("twitter.Api instance must be authenticated")
 
-        url = '%s/lists/subscriptions.json' % (self.base_url)
+        url = '{0!s}/lists/subscriptions.json'.format((self.base_url))
         parameters = {}
 
         try:
@@ -4136,7 +4136,7 @@ class Api(object):
         if not self._oauth_consumer:
             raise TwitterError("twitter.Api instance must be authenticated")
 
-        url = '%s/lists/ownerships.json' % self.base_url
+        url = '{0!s}/lists/ownerships.json'.format(self.base_url)
         result = []
         parameters = {}
         if user_id is not None:
@@ -4174,7 +4174,7 @@ class Api(object):
         '''
         if not self._oauth_consumer:
             raise TwitterError("Api instance must first be given user credentials.")
-        url = '%s/account/verify_credentials.json' % self.base_url
+        url = '{0!s}/account/verify_credentials.json'.format(self.base_url)
         try:
             json = self._FetchUrl(url, no_cache = True)
         except urllib2.HTTPError, http_error:
@@ -4275,7 +4275,7 @@ class Api(object):
         if resources is not None:
             parameters['resources'] = resources
 
-        url = '%s/application/rate_limit_status.json' % self.base_url
+        url = '{0!s}/application/rate_limit_status.json'.format(self.base_url)
         json = self._FetchUrl(url, parameters = parameters, no_cache = True)
         data = self._ParseAndCheckTwitter(json)
         return data
@@ -4342,8 +4342,7 @@ class Api(object):
             self._request_headers = {}
 
     def _InitializeUserAgent(self):
-        user_agent = 'Python-urllib/%s (python-twitter/%s)' % \
-                                 (self._urllib.__version__, __version__)
+        user_agent = 'Python-urllib/{0!s} (python-twitter/{1!s})'.format(self._urllib.__version__, __version__)
         self.SetUserAgent(user_agent)
 
     def _InitializeDefaultParameters(self):
@@ -4581,14 +4580,13 @@ class _FileCache(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
         if not os.path.isdir(directory):
-            raise _FileCacheError('%s exists but is not a directory' % directory)
+            raise _FileCacheError('{0!s} exists but is not a directory'.format(directory))
         temp_fd, temp_path = tempfile.mkstemp()
         temp_fp = os.fdopen(temp_fd, 'w')
         temp_fp.write(data)
         temp_fp.close()
         if not path.startswith(self._root_directory):
-            raise _FileCacheError('%s does not appear to live under %s' %
-                                                        (path, self._root_directory))
+            raise _FileCacheError('{0!s} does not appear to live under {1!s}'.format(path, self._root_directory))
         if os.path.exists(path):
             os.remove(path)
         os.rename(temp_path, path)
@@ -4596,8 +4594,7 @@ class _FileCache(object):
     def Remove(self, key):
         path = self._GetPath(key)
         if not path.startswith(self._root_directory):
-            raise _FileCacheError('%s does not appear to live under %s' %
-                                                        (path, self._root_directory))
+            raise _FileCacheError('{0!s} does not appear to live under {1!s}'.format(path, self._root_directory))
         if os.path.exists(path):
             os.remove(path)
 
@@ -4631,8 +4628,8 @@ class _FileCache(object):
         if not os.path.exists(root_directory):
             os.mkdir(root_directory)
         if not os.path.isdir(root_directory):
-            raise _FileCacheError('%s exists but is not a directory' %
-                                                        root_directory)
+            raise _FileCacheError('{0!s} exists but is not a directory'.format(
+                                                        root_directory))
         self._root_directory = root_directory
 
     def _GetPath(self, key):

@@ -113,8 +113,8 @@ class ConventionDict(object):
     def __getitem__(self, key):
         if key in self.convention:
             return self.convention[key](self.const, self.table)
-        elif hasattr(self, '_key_%s' % key):
-            return getattr(self, '_key_%s' % key)()
+        elif hasattr(self, '_key_{0!s}'.format(key)):
+            return getattr(self, '_key_{0!s}'.format(key))()
         else:
             col_template = re.match(r".*_?column_(\d+)_.+", key)
             if col_template:

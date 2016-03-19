@@ -66,9 +66,9 @@ class Crc16(UInt16):
     def createDescription(self):
         crc = CRC16().checksum(self.targetBytes, 0xffff)
         if crc == self.value:
-            return "matches CRC of %d bytes" % len(self.targetBytes)
+            return "matches CRC of {0:d} bytes".format(len(self.targetBytes))
         else:
-            return "mismatch (calculated CRC %d for %d bytes)" % (crc, len(self.targetBytes))
+            return "mismatch (calculated CRC {0:d} for {1:d} bytes)".format(crc, len(self.targetBytes))
 
 
 class FileNameDirTable(FieldSet):
@@ -79,7 +79,7 @@ class FileNameDirTable(FieldSet):
         yield UInt16(self, "parent_id")
 
     def createDescription(self):
-        return "first file id: %d; parent directory id: %d (%d)" % (self["entry_file_id"].value, self["parent_id"].value, self["parent_id"].value & 0xFFF)
+        return "first file id: {0:d}; parent directory id: {1:d} ({2:d})".format(self["entry_file_id"].value, self["parent_id"].value, self["parent_id"].value & 0xFFF)
 
 class FileNameEntry(FieldSet):
     def createFields(self):
@@ -118,7 +118,7 @@ class FileNameTable(SeekableFieldSet):
             yield FileNameDirTable(self, "dir_table[]")
 
         for i in range(0, numDirs):
-            dt = self["dir_table[%d]" % i]
+            dt = self["dir_table[{0:d}]".format(i)]
             offset = self.startOffset + dt["entry_start"].value
             self.seekByte(offset, relative=False)
             yield Directory(self, "directory[]")
@@ -131,7 +131,7 @@ class FATFileEntry(FieldSet):
         yield UInt32(self, "end")
 
     def createDescription(self):
-        return "start: %d; size: %d" % (self["start"].value, self["end"].value - self["start"].value)
+        return "start: {0:d}; size: {1:d}".format(self["start"].value, self["end"].value - self["start"].value)
 
 class FATContent(FieldSet):
     def createFields(self):
@@ -146,14 +146,14 @@ class BannerTile(FieldSet):
     def createFields(self):
         for y in range(8):
             for x in range(8):
-                yield Bits(self, "pixel[%d,%d]" % (x,y), 4)
+                yield Bits(self, "pixel[{0:d},{1:d}]".format(x, y), 4)
 
 class BannerIcon(FieldSet):
     static_size = 16*32*8
     def createFields(self):
         for y in range(4):
             for x in range(4):
-                yield BannerTile(self, "tile[%d,%d]" % (x,y))
+                yield BannerTile(self, "tile[{0:d},{1:d}]".format(x, y))
 
 class NdsColor(FieldSet):
     static_size = 16
@@ -164,7 +164,7 @@ class NdsColor(FieldSet):
         yield NullBits(self, "pad", 1)
 
     def createDescription(self):
-        return "#%02x%02x%02x" % (self["red"].value << 3, self["green"].value << 3, self["blue"].value << 3)
+        return "#{0:02x}{1:02x}{2:02x}".format(self["red"].value << 3, self["green"].value << 3, self["blue"].value << 3)
 
 class Banner(FieldSet):
     static_size = 2112*8
@@ -197,7 +197,7 @@ class Overlay(FieldSet):
         yield RawBytes(self, "reserved[]", 4)
 
     def createDescription(self):
-        return "file #%d, %d (+%d) bytes to 0x%08x" % (
+        return "file #{0:d}, {1:d} (+{2:d}) bytes to 0x{3:08x}".format(
             self["file_id"].value, self["ram_size"].value, self["bss_size"].value, self["ram_address"].value)
 
 
@@ -216,7 +216,7 @@ class SecureArea(FieldSet):
 
 class DeviceSize(UInt8):
     def createDescription(self):
-        return "%d Mbit" % ((2**(20+self.value)) / (1024*1024))
+        return "{0:d} Mbit".format(((2**(20+self.value)) / (1024*1024)))
 
 class Header(FieldSet):
     def createFields(self):

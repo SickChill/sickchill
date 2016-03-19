@@ -449,8 +449,7 @@ class SQLCompiler(Compiled):
                             (bindparam.key, _group_number))
                     else:
                         raise exc.InvalidRequestError(
-                            "A value is required for bind parameter %r"
-                            % bindparam.key)
+                            "A value is required for bind parameter {0!r}".format(bindparam.key))
                 else:
                     pd[name] = bindparam.effective_value
             return pd
@@ -465,8 +464,7 @@ class SQLCompiler(Compiled):
                             (bindparam.key, _group_number))
                     else:
                         raise exc.InvalidRequestError(
-                            "A value is required for bind parameter %r"
-                            % bindparam.key)
+                            "A value is required for bind parameter {0!r}".format(bindparam.key))
                 pd[self.bind_names[bindparam]] = bindparam.effective_value
             return pd
 
@@ -622,7 +620,7 @@ class SQLCompiler(Compiled):
 
         text = self.process(taf.element, **kw)
         if asfrom and parens:
-            text = "(%s)" % text
+            text = "({0!s})".format(text)
         return text
 
 
@@ -698,15 +696,14 @@ class SQLCompiler(Compiled):
         return x
 
     def visit_cast(self, cast, **kwargs):
-        return "CAST(%s AS %s)" % \
-                    (cast.clause._compiler_dispatch(self, **kwargs),
+        return "CAST({0!s} AS {1!s})".format(cast.clause._compiler_dispatch(self, **kwargs),
                     cast.typeclause._compiler_dispatch(self, **kwargs))
 
     def visit_over(self, over, **kwargs):
-        return "%s OVER (%s)" % (
+        return "{0!s} OVER ({1!s})".format(
             over.func._compiler_dispatch(self, **kwargs),
             ' '.join(
-                 '%s BY %s' % (word, clause._compiler_dispatch(self, **kwargs))
+                 '{0!s} BY {1!s}'.format(word, clause._compiler_dispatch(self, **kwargs))
                  for word, clause in (
                      ('PARTITION', over.partition_by),
                      ('ORDER', over.order_by)
@@ -717,7 +714,7 @@ class SQLCompiler(Compiled):
 
     def visit_extract(self, extract, **kwargs):
         field = self.extract_map.get(extract.field, extract.field)
-        return "EXTRACT(%s FROM %s)" % (field,
+        return "EXTRACT({0!s} FROM {1!s})".format(field,
                             extract.expr._compiler_dispatch(self, **kwargs))
 
     def visit_function(self, func, add_to_result_map=None, **kwargs):
@@ -726,7 +723,7 @@ class SQLCompiler(Compiled):
                 func.name, func.name, (), func.type
             )
 
-        disp = getattr(self, "visit_%s_func" % func.name.lower(), None)
+        disp = getattr(self, "visit_{0!s}_func".format(func.name.lower()), None)
         if disp:
             return disp(func, **kwargs)
         else:
@@ -739,8 +736,8 @@ class SQLCompiler(Compiled):
 
     def visit_sequence(self, sequence):
         raise NotImplementedError(
-            "Dialect '%s' does not support sequence increments." %
-            self.dialect.name
+            "Dialect '{0!s}' does not support sequence increments.".format(
+            self.dialect.name)
         )
 
     def function_argspec(self, func, **kwargs):
@@ -793,16 +790,16 @@ class SQLCompiler(Compiled):
                 raise exc.CompileError(
                         "Unary expression does not support operator "
                         "and modifier simultaneously")
-            disp = getattr(self, "visit_%s_unary_operator" %
-                                    unary.operator.__name__, None)
+            disp = getattr(self, "visit_{0!s}_unary_operator".format(
+                                    unary.operator.__name__), None)
             if disp:
                 return disp(unary, unary.operator, **kw)
             else:
                 return self._generate_generic_unary_operator(unary,
                                     OPERATORS[unary.operator], **kw)
         elif unary.modifier:
-            disp = getattr(self, "visit_%s_unary_modifier" %
-                                    unary.modifier.__name__, None)
+            disp = getattr(self, "visit_{0!s}_unary_modifier".format(
+                                    unary.modifier.__name__), None)
             if disp:
                 return disp(unary, unary.modifier, **kw)
             else:
@@ -816,13 +813,13 @@ class SQLCompiler(Compiled):
         if self.dialect.supports_native_boolean:
             return self.process(element.element, **kw)
         else:
-            return "%s = 1" % self.process(element.element, **kw)
+            return "{0!s} = 1".format(self.process(element.element, **kw))
 
     def visit_isfalse_unary_operator(self, element, operator, **kw):
         if self.dialect.supports_native_boolean:
-            return "NOT %s" % self.process(element.element, **kw)
+            return "NOT {0!s}".format(self.process(element.element, **kw))
         else:
-            return "%s = 0" % self.process(element.element, **kw)
+            return "{0!s} = 0".format(self.process(element.element, **kw))
 
     def visit_binary(self, binary, **kw):
         # don't allow "? = ?" to render
@@ -832,7 +829,7 @@ class SQLCompiler(Compiled):
             kw['literal_binds'] = True
 
         operator = binary.operator
-        disp = getattr(self, "visit_%s_binary" % operator.__name__, None)
+        disp = getattr(self, "visit_{0!s}_binary".format(operator.__name__), None)
         if disp:
             return disp(binary, operator, **kw)
         else:
@@ -914,7 +911,7 @@ class SQLCompiler(Compiled):
         escape = binary.modifiers.get("escape", None)
 
         # TODO: use ternary here, not "and"/ "or"
-        return '%s LIKE %s' % (
+        return '{0!s} LIKE {1!s}'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw)) \
             + (
@@ -925,7 +922,7 @@ class SQLCompiler(Compiled):
 
     def visit_notlike_op_binary(self, binary, operator, **kw):
         escape = binary.modifiers.get("escape", None)
-        return '%s NOT LIKE %s' % (
+        return '{0!s} NOT LIKE {1!s}'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw)) \
             + (
@@ -936,7 +933,7 @@ class SQLCompiler(Compiled):
 
     def visit_ilike_op_binary(self, binary, operator, **kw):
         escape = binary.modifiers.get("escape", None)
-        return 'lower(%s) LIKE lower(%s)' % (
+        return 'lower({0!s}) LIKE lower({1!s})'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw)) \
             + (
@@ -947,7 +944,7 @@ class SQLCompiler(Compiled):
 
     def visit_notilike_op_binary(self, binary, operator, **kw):
         escape = binary.modifiers.get("escape", None)
-        return 'lower(%s) NOT LIKE lower(%s)' % (
+        return 'lower({0!s}) NOT LIKE lower({1!s})'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw)) \
             + (
@@ -1023,7 +1020,7 @@ class SQLCompiler(Compiled):
             return processor(value)
         else:
             raise NotImplementedError(
-                        "Don't know how to literal-quote value %r" % value)
+                        "Don't know how to literal-quote value {0!r}".format(value))
 
     def _truncate_bindparam(self, bindparam):
         if bindparam in self.bind_names:
@@ -1127,9 +1124,9 @@ class SQLCompiler(Compiled):
                             util.unique_list(col_source.inner_columns)
                                 if c is not None]
 
-                text += "(%s)" % (", ".join(
+                text += "({0!s})".format((", ".join(
                                     self.preparer.format_column(ident)
-                                    for ident in recur_cols))
+                                    for ident in recur_cols)))
             text += " AS \n" + \
                         cte.original._compiler_dispatch(
                                 self, asfrom=True, **kwargs
@@ -1698,8 +1695,8 @@ class SQLCompiler(Compiled):
         text += table_text
 
         if colparams_single or not supports_default_values:
-            text += " (%s)" % ', '.join([preparer.format_column(c[0])
-                       for c in colparams_single])
+            text += " ({0!s})".format(', '.join([preparer.format_column(c[0])
+                       for c in colparams_single]))
 
         if self.returning or insert_stmt._returning:
             self.returning = self.returning or insert_stmt._returning
@@ -1710,21 +1707,21 @@ class SQLCompiler(Compiled):
                 text += " " + returning_clause
 
         if insert_stmt.select is not None:
-            text += " %s" % self.process(insert_stmt.select, **kw)
+            text += " {0!s}".format(self.process(insert_stmt.select, **kw))
         elif not colparams and supports_default_values:
             text += " DEFAULT VALUES"
         elif insert_stmt._has_multi_parameters:
-            text += " VALUES %s" % (
+            text += " VALUES {0!s}".format((
                         ", ".join(
-                            "(%s)" % (
+                            "({0!s})".format((
                                 ', '.join(c[1] for c in colparam_set)
-                            )
+                            ))
                             for colparam_set in colparams
                             )
-                        )
+                        ))
         else:
-            text += " VALUES (%s)" % \
-                     ', '.join([c[1] for c in colparams])
+            text += " VALUES ({0!s})".format( \
+                     ', '.join([c[1] for c in colparams]))
 
         if self.returning and not self.returning_precedes_values:
             text += " " + returning_clause
@@ -1872,7 +1869,7 @@ class SQLCompiler(Compiled):
                     return col.key
             def _col_bind_name(col):
                 if col.table in _et:
-                    return "%s_%s" % (col.table.name, col.key)
+                    return "{0!s}_{1!s}".format(col.table.name, col.key)
                 else:
                     return col.key
 
@@ -2041,7 +2038,7 @@ class SQLCompiler(Compiled):
                                     c, value, required=value is REQUIRED,
                                     name=_col_bind_name(c)
                                         if not stmt._has_multi_parameters
-                                        else "%s_0" % _col_bind_name(c)
+                                        else "{0!s}_0".format(_col_bind_name(c))
                                     )
                 else:
                     if isinstance(value, elements.BindParameter) and \
@@ -2181,8 +2178,8 @@ class SQLCompiler(Compiled):
             ).difference(check_columns)
             if check:
                 raise exc.CompileError(
-                    "Unconsumed column names: %s" %
-                    (", ".join("%s" % c for c in check))
+                    "Unconsumed column names: {0!s}".format(
+                    (", ".join("{0!s}".format(c) for c in check)))
                 )
 
         if stmt._has_multi_parameters:
@@ -2195,7 +2192,7 @@ class SQLCompiler(Compiled):
                         c,
                             self._create_crud_bind_param(
                                     c, row[c.key],
-                                    name="%s_%d" % (c.key, i + 1)
+                                    name="{0!s}_{1:d}".format(c.key, i + 1)
                             )
                             if c.key in row else param
                     )
@@ -2261,15 +2258,15 @@ class SQLCompiler(Compiled):
         return text
 
     def visit_savepoint(self, savepoint_stmt):
-        return "SAVEPOINT %s" % self.preparer.format_savepoint(savepoint_stmt)
+        return "SAVEPOINT {0!s}".format(self.preparer.format_savepoint(savepoint_stmt))
 
     def visit_rollback_to_savepoint(self, savepoint_stmt):
-        return "ROLLBACK TO SAVEPOINT %s" % \
-                self.preparer.format_savepoint(savepoint_stmt)
+        return "ROLLBACK TO SAVEPOINT {0!s}".format( \
+                self.preparer.format_savepoint(savepoint_stmt))
 
     def visit_release_savepoint(self, savepoint_stmt):
-        return "RELEASE SAVEPOINT %s" % \
-                self.preparer.format_savepoint(savepoint_stmt)
+        return "RELEASE SAVEPOINT {0!s}".format( \
+                self.preparer.format_savepoint(savepoint_stmt))
 
 
 class DDLCompiler(Compiled):
@@ -2356,7 +2353,7 @@ class DDLCompiler(Compiled):
         if const:
             text += ", \n\t" + const
 
-        text += "\n)%s\n\n" % self.post_create_table(table)
+        text += "\n){0!s}\n\n".format(self.post_create_table(table))
         return text
 
     def visit_create_column(self, create, first_pk=False):
@@ -2420,8 +2417,7 @@ class DDLCompiler(Compiled):
         text = "CREATE "
         if index.unique:
             text += "UNIQUE "
-        text += "INDEX %s ON %s (%s)" \
-                    % (
+        text += "INDEX {0!s} ON {1!s} ({2!s})".format(
                         self._prepared_index_name(index,
                                 include_schema=include_schema),
                        preparer.format_table(index.table,
@@ -2462,26 +2458,26 @@ class DDLCompiler(Compiled):
         return index_name
 
     def visit_add_constraint(self, create):
-        return "ALTER TABLE %s ADD %s" % (
+        return "ALTER TABLE {0!s} ADD {1!s}".format(
             self.preparer.format_table(create.element.table),
             self.process(create.element)
         )
 
     def visit_create_sequence(self, create):
-        text = "CREATE SEQUENCE %s" % \
-                self.preparer.format_sequence(create.element)
+        text = "CREATE SEQUENCE {0!s}".format( \
+                self.preparer.format_sequence(create.element))
         if create.element.increment is not None:
-            text += " INCREMENT BY %d" % create.element.increment
+            text += " INCREMENT BY {0:d}".format(create.element.increment)
         if create.element.start is not None:
-            text += " START WITH %d" % create.element.start
+            text += " START WITH {0:d}".format(create.element.start)
         return text
 
     def visit_drop_sequence(self, drop):
-        return "DROP SEQUENCE %s" % \
-                self.preparer.format_sequence(drop.element)
+        return "DROP SEQUENCE {0!s}".format( \
+                self.preparer.format_sequence(drop.element))
 
     def visit_drop_constraint(self, drop):
-        return "ALTER TABLE %s DROP CONSTRAINT %s%s" % (
+        return "ALTER TABLE {0!s} DROP CONSTRAINT {1!s}{2!s}".format(
             self.preparer.format_table(drop.element.table),
             self.preparer.format_constraint(drop.element),
             drop.cascade and " CASCADE" or ""
@@ -2504,7 +2500,7 @@ class DDLCompiler(Compiled):
     def get_column_default_string(self, column):
         if isinstance(column.server_default, schema.DefaultClause):
             if isinstance(column.server_default.arg, util.string_types):
-                return "'%s'" % column.server_default.arg
+                return "'{0!s}'".format(column.server_default.arg)
             else:
                 return self.sql_compiler.process(column.server_default.arg)
         else:
@@ -2513,20 +2509,20 @@ class DDLCompiler(Compiled):
     def visit_check_constraint(self, constraint):
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                        self.preparer.format_constraint(constraint)
-        text += "CHECK (%s)" % self.sql_compiler.process(constraint.sqltext,
+            text += "CONSTRAINT {0!s} ".format( \
+                        self.preparer.format_constraint(constraint))
+        text += "CHECK ({0!s})".format(self.sql_compiler.process(constraint.sqltext,
                                                             include_table=False,
-                                                            literal_binds=True)
+                                                            literal_binds=True))
         text += self.define_constraint_deferrability(constraint)
         return text
 
     def visit_column_check_constraint(self, constraint):
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                        self.preparer.format_constraint(constraint)
-        text += "CHECK (%s)" % constraint.sqltext
+            text += "CONSTRAINT {0!s} ".format( \
+                        self.preparer.format_constraint(constraint))
+        text += "CHECK ({0!s})".format(constraint.sqltext)
         text += self.define_constraint_deferrability(constraint)
         return text
 
@@ -2535,11 +2531,11 @@ class DDLCompiler(Compiled):
             return ''
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                    self.preparer.format_constraint(constraint)
+            text += "CONSTRAINT {0!s} ".format( \
+                    self.preparer.format_constraint(constraint))
         text += "PRIMARY KEY "
-        text += "(%s)" % ', '.join(self.preparer.quote(c.name)
-                                       for c in constraint)
+        text += "({0!s})".format(', '.join(self.preparer.quote(c.name)
+                                       for c in constraint))
         text += self.define_constraint_deferrability(constraint)
         return text
 
@@ -2547,10 +2543,10 @@ class DDLCompiler(Compiled):
         preparer = self.dialect.identifier_preparer
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                        preparer.format_constraint(constraint)
+            text += "CONSTRAINT {0!s} ".format( \
+                        preparer.format_constraint(constraint))
         remote_table = list(constraint._elements.values())[0].column.table
-        text += "FOREIGN KEY(%s) REFERENCES %s (%s)" % (
+        text += "FOREIGN KEY({0!s}) REFERENCES {1!s} ({2!s})".format(
             ', '.join(preparer.quote(f.parent.name)
                       for f in constraint._elements.values()),
             self.define_constraint_remote_table(
@@ -2573,20 +2569,20 @@ class DDLCompiler(Compiled):
             return ''
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                    self.preparer.format_constraint(constraint)
-        text += "UNIQUE (%s)" % (
+            text += "CONSTRAINT {0!s} ".format( \
+                    self.preparer.format_constraint(constraint))
+        text += "UNIQUE ({0!s})".format((
                     ', '.join(self.preparer.quote(c.name)
-                            for c in constraint))
+                            for c in constraint)))
         text += self.define_constraint_deferrability(constraint)
         return text
 
     def define_constraint_cascades(self, constraint):
         text = ""
         if constraint.ondelete is not None:
-            text += " ON DELETE %s" % constraint.ondelete
+            text += " ON DELETE {0!s}".format(constraint.ondelete)
         if constraint.onupdate is not None:
-            text += " ON UPDATE %s" % constraint.onupdate
+            text += " ON UPDATE {0!s}".format(constraint.onupdate)
         return text
 
     def define_constraint_deferrability(self, constraint):
@@ -2597,13 +2593,13 @@ class DDLCompiler(Compiled):
             else:
                 text += " NOT DEFERRABLE"
         if constraint.initially is not None:
-            text += " INITIALLY %s" % constraint.initially
+            text += " INITIALLY {0!s}".format(constraint.initially)
         return text
 
     def define_constraint_match(self, constraint):
         text = ""
         if constraint.match is not None:
-            text += " MATCH %s" % constraint.match
+            text += " MATCH {0!s}".format(constraint.match)
         return text
 
 
@@ -2619,23 +2615,23 @@ class GenericTypeCompiler(TypeCompiler):
         if type_.precision is None:
             return "NUMERIC"
         elif type_.scale is None:
-            return "NUMERIC(%(precision)s)" % \
-                        {'precision': type_.precision}
+            return "NUMERIC({precision!s})".format(** \
+                        {'precision': type_.precision})
         else:
-            return "NUMERIC(%(precision)s, %(scale)s)" % \
+            return "NUMERIC({precision!s}, {scale!s})".format(** \
                         {'precision': type_.precision,
-                        'scale': type_.scale}
+                        'scale': type_.scale})
 
     def visit_DECIMAL(self, type_):
         if type_.precision is None:
             return "DECIMAL"
         elif type_.scale is None:
-            return "DECIMAL(%(precision)s)" % \
-                        {'precision': type_.precision}
+            return "DECIMAL({precision!s})".format(** \
+                        {'precision': type_.precision})
         else:
-            return "DECIMAL(%(precision)s, %(scale)s)" % \
+            return "DECIMAL({precision!s}, {scale!s})".format(** \
                         {'precision': type_.precision,
-                        'scale': type_.scale}
+                        'scale': type_.scale})
 
     def visit_INTEGER(self, type_):
         return "INTEGER"
@@ -2668,9 +2664,9 @@ class GenericTypeCompiler(TypeCompiler):
 
         text = name
         if type_.length:
-            text += "(%d)" % type_.length
+            text += "({0:d})".format(type_.length)
         if type_.collation:
-            text += ' COLLATE "%s"' % type_.collation
+            text += ' COLLATE "{0!s}"'.format(type_.collation)
         return text
 
     def visit_CHAR(self, type_):
@@ -2692,10 +2688,10 @@ class GenericTypeCompiler(TypeCompiler):
         return "BLOB"
 
     def visit_BINARY(self, type_):
-        return "BINARY" + (type_.length and "(%d)" % type_.length or "")
+        return "BINARY" + (type_.length and "({0:d})".format(type_.length) or "")
 
     def visit_VARBINARY(self, type_):
-        return "VARBINARY" + (type_.length and "(%d)" % type_.length or "")
+        return "VARBINARY" + (type_.length and "({0:d})".format(type_.length) or "")
 
     def visit_BOOLEAN(self, type_):
         return "BOOLEAN"

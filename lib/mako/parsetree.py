@@ -50,7 +50,7 @@ class TemplateNode(Node):
         return self.nodes
 
     def __repr__(self):
-        return "TemplateNode(%s, %r)" % (
+        return "TemplateNode({0!s}, {1!r})".format(
             util.sorted_dict_repr(self.page_attributes),
             self.nodes)
 
@@ -104,7 +104,7 @@ class ControlLine(Node):
         }.get(self.keyword, [])
 
     def __repr__(self):
-        return "ControlLine(%r, %r, %r, %r)" % (
+        return "ControlLine({0!r}, {1!r}, {2!r}, {3!r})".format(
             self.keyword,
             self.text,
             self.isend,
@@ -121,7 +121,7 @@ class Text(Node):
         self.content = content
 
     def __repr__(self):
-        return "Text(%r, %r)" % (self.content, (self.lineno, self.pos))
+        return "Text({0!r}, {1!r})".format(self.content, (self.lineno, self.pos))
 
 
 class Code(Node):
@@ -155,7 +155,7 @@ class Code(Node):
         return self.code.undeclared_identifiers
 
     def __repr__(self):
-        return "Code(%r, %r, %r)" % (
+        return "Code({0!r}, {1!r}, {2!r})".format(
             self.text,
             self.ismodule,
             (self.lineno, self.pos)
@@ -175,7 +175,7 @@ class Comment(Node):
         self.text = text
 
     def __repr__(self):
-        return "Comment(%r, %r)" % (self.text, (self.lineno, self.pos))
+        return "Comment({0!r}, {1!r})".format(self.text, (self.lineno, self.pos))
 
 
 class Expression(Node):
@@ -205,7 +205,7 @@ class Expression(Node):
         ).difference(self.code.declared_identifiers)
 
     def __repr__(self):
-        return "Expression(%r, %r, %r)" % (
+        return "Expression({0!r}, {1!r}, {2!r})".format(
             self.text,
             self.escapes_code.args,
             (self.lineno, self.pos)
@@ -234,7 +234,7 @@ class _TagMeta(type):
             cls = _TagMeta._classmap[keyword]
         except KeyError:
             raise exceptions.CompileException(
-                "No such tag: '%s'" % keyword,
+                "No such tag: '{0!s}'".format(keyword),
                 source=kwargs['source'],
                 lineno=kwargs['lineno'],
                 pos=kwargs['pos'],
@@ -284,8 +284,8 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
         missing = [r for r in required if r not in self.parsed_attributes]
         if len(missing):
             raise exceptions.CompileException(
-                "Missing attribute(s): %s" %
-                ",".join([repr(m) for m in missing]),
+                "Missing attribute(s): {0!s}".format(
+                ",".join([repr(m) for m in missing])),
                 **self.exception_kwargs)
         self.parent = None
         self.nodes = []
@@ -315,7 +315,7 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
                         undeclared_identifiers = \
                             undeclared_identifiers.union(
                                 code.undeclared_identifiers)
-                        expr.append('(%s)' % m.group(1))
+                        expr.append('({0!s})'.format(m.group(1)))
                     else:
                         if x:
                             expr.append(repr(x))
@@ -329,8 +329,7 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
                 self.parsed_attributes[key] = repr(self.attributes[key])
             else:
                 raise exceptions.CompileException(
-                    "Invalid attribute for tag '%s': '%s'" %
-                    (self.keyword, key),
+                    "Invalid attribute for tag '{0!s}': '{1!s}'".format(self.keyword, key),
                     **self.exception_kwargs)
         self.expression_undeclared_identifiers = undeclared_identifiers
 
@@ -341,7 +340,7 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
         return self.expression_undeclared_identifiers
 
     def __repr__(self):
-        return "%s(%r, %s, %r, %r)" % (self.__class__.__name__,
+        return "{0!s}({1!r}, {2!s}, {3!r}, {4!r})".format(self.__class__.__name__,
                                        self.keyword,
                                        util.sorted_dict_repr(self.attributes),
                                        (self.lineno, self.pos),
@@ -359,7 +358,7 @@ class IncludeTag(Tag):
             ('file', 'import', 'args'),
             (), ('file',), **kwargs)
         self.page_args = ast.PythonCode(
-            "__DUMMY(%s)" % attributes.get('args', ''),
+            "__DUMMY({0!s})".format(attributes.get('args', '')),
             **self.exception_kwargs)
 
     def declared_identifiers(self):
@@ -384,7 +383,7 @@ class NamespaceTag(Tag):
              'import', 'module'),
             (), **kwargs)
 
-        self.name = attributes.get('name', '__anon_%s' % hex(abs(id(self))))
+        self.name = attributes.get('name', '__anon_{0!s}'.format(hex(abs(id(self)))))
         if 'name' not in attributes and 'import' not in attributes:
             raise exceptions.CompileException(
                 "'name' and/or 'import' attributes are required "
@@ -517,7 +516,7 @@ class BlockTag(Tag):
 
     @property
     def funcname(self):
-        return self.name or "__M_anon_%d" % (self.lineno, )
+        return self.name or "__M_anon_{0:d}".format(self.lineno )
 
     def get_argument_expressions(self, **kw):
         return self.body_decl.get_argument_expressions(**kw)
@@ -562,10 +561,10 @@ class CallNamespaceTag(Tag):
             (),
             **kwargs)
 
-        self.expression = "%s.%s(%s)" % (
+        self.expression = "{0!s}.{1!s}({2!s})".format(
             namespace,
             defname,
-            ",".join(["%s=%s" % (k, v) for k, v in
+            ",".join(["{0!s}={1!s}".format(k, v) for k, v in
                       self.parsed_attributes.items()
                       if k != 'args'])
         )

@@ -280,7 +280,7 @@ def ssl_wrap_socket(sock, keyfile=None, certfile=None, cert_reqs=None,
         try:
             ctx.load_verify_locations(ca_certs, ca_cert_dir)
         except OpenSSL.SSL.Error as e:
-            raise ssl.SSLError('bad ca_certs: %r' % ca_certs, e)
+            raise ssl.SSLError('bad ca_certs: {0!r}'.format(ca_certs), e)
     else:
         ctx.set_default_verify_paths()
 
@@ -303,7 +303,7 @@ def ssl_wrap_socket(sock, keyfile=None, certfile=None, cert_reqs=None,
                 raise timeout('select timed out')
             continue
         except OpenSSL.SSL.Error as e:
-            raise ssl.SSLError('bad handshake: %r' % e)
+            raise ssl.SSLError('bad handshake: {0!r}'.format(e))
         break
 
     return WrappedSocket(cnx, sock)

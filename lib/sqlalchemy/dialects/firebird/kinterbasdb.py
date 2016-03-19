@@ -114,7 +114,7 @@ class FBDialect_kinterbasdb(FBDialect):
     def create_connect_args(self, url):
         opts = url.translate_connect_args(username='user')
         if opts.get('port'):
-            opts['host'] = "%s/%s" % (opts['host'], opts['port'])
+            opts['host'] = "{0!s}/{1!s}".format(opts['host'], opts['port'])
             del opts['port']
         opts.update(url.query)
 
@@ -158,7 +158,7 @@ class FBDialect_kinterbasdb(FBDialect):
         m = match('\w+-V(\d+)\.(\d+)\.(\d+)\.(\d+)( \w+ (\d+)\.(\d+))?', version)
         if not m:
             raise AssertionError(
-                    "Could not determine version from string '%s'" % version)
+                    "Could not determine version from string '{0!s}'".format(version))
 
         if m.group(5) != None:
             return tuple([int(x) for x in m.group(6, 7, 4)] + ['firebird'])

@@ -15,7 +15,7 @@ class PoolError(HTTPError):
     "Base exception for errors caused within a pool."
     def __init__(self, pool, message):
         self.pool = pool
-        HTTPError.__init__(self, "%s: %s" % (pool, message))
+        HTTPError.__init__(self, "{0!s}: {1!s}".format(pool, message))
 
     def __reduce__(self):
         # For pickling purposes.
@@ -72,7 +72,7 @@ class MaxRetryError(RequestError):
     def __init__(self, pool, url, reason=None):
         self.reason = reason
 
-        message = "Max retries exceeded with url: %s (Caused by %r)" % (
+        message = "Max retries exceeded with url: {0!s} (Caused by {1!r})".format(
             url, reason)
 
         RequestError.__init__(self, pool, url, message)
@@ -82,7 +82,7 @@ class HostChangedError(RequestError):
     "Raised when an existing pool gets a request for a foreign host."
 
     def __init__(self, pool, url, retries=3):
-        message = "Tried to open a foreign host with url: %s" % url
+        message = "Tried to open a foreign host with url: {0!s}".format(url)
         RequestError.__init__(self, pool, url, message)
         self.retries = retries
 
@@ -135,7 +135,7 @@ class LocationParseError(LocationValueError):
     "Raised when get_host or similar fails to parse the URL input."
 
     def __init__(self, location):
-        message = "Failed to parse: %s" % location
+        message = "Failed to parse: {0!s}".format(location)
         HTTPError.__init__(self, message)
 
         self.location = location
@@ -182,12 +182,12 @@ class ProxySchemeUnknown(AssertionError, ValueError):
     # TODO(t-8ch): Stop inheriting from AssertionError in v2.0.
 
     def __init__(self, scheme):
-        message = "Not supported proxy scheme %s" % scheme
+        message = "Not supported proxy scheme {0!s}".format(scheme)
         super(ProxySchemeUnknown, self).__init__(message)
 
 
 class HeaderParsingError(HTTPError):
     "Raised by assert_header_parsing, but we convert it to a log.warning statement."
     def __init__(self, defects, unparsed_data):
-        message = '%s, unparsed data: %r' % (defects or 'Unknown', unparsed_data)
+        message = '{0!s}, unparsed data: {1!r}'.format(defects or 'Unknown', unparsed_data)
         super(HeaderParsingError, self).__init__(message)

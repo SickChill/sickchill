@@ -57,7 +57,7 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
     """
     def __init__(self, country):
         if country not in COUNTRIES:
-            raise ValueError('%r is not a valid country' % country)
+            raise ValueError('{0!r} is not a valid country'.format(country))
 
         #: ISO-3166 2-letter country code
         self.alpha2 = country
@@ -101,7 +101,7 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         return not self == other
 
     def __repr__(self):
-        return '<Country [%s]>' % self
+        return '<Country [{0!s}]>'.format(self)
 
     def __str__(self):
         return self.alpha2

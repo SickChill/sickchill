@@ -34,7 +34,7 @@ class Command(FieldSet):
         start = self.absolute_address
         size = self.stream.searchBytesLength("\0", False, start)
         if size > 0:
-            self.info("Command: %s" % self.stream.readBytes(start, size))
+            self.info("Command: {0!s}".format(self.stream.readBytes(start, size)))
             yield String(self, "command", size, strip='\0')
         yield RawBytes(self, "parameter", (self._size//8)-size)
 
@@ -219,14 +219,13 @@ class MPField(FieldSet):
                 yield cls(self, "value")
 
     def createDescription(self):
-        return "Element '%s', size %i" % \
-               (self["code"]._description, self["data_size"].value)
+        return "Element '{0!s}', size {1:d}".format(self["code"]._description, self["data_size"].value)
 
 def parseFields(parser):
     # Determine field names
     ext = EXTENSIONS[parser["block_type"].value]
     if ext == None:
-        raise ParserError("Unknown parent '%s'" % parser["block_type"].value)
+        raise ParserError("Unknown parent '{0!s}'".format(parser["block_type"].value))
 
     # Parse fields
     addr = parser.absolute_address + parser.current_size
@@ -236,8 +235,7 @@ def parseFields(parser):
         addr += field._size
 
     # Abort on unknown codes
-    parser.info("End of extension '%s' when finding '%s'" %
-           (parser["block_type"].value, parser.stream.readBytes(addr, 4)))
+    parser.info("End of extension '{0!s}' when finding '{1!s}'".format(parser["block_type"].value, parser.stream.readBytes(addr, 4)))
 
 class ModplugBlock(FieldSet):
     BLOCK_INFO = {

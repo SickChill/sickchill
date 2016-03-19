@@ -39,7 +39,7 @@ class TorrentMetadata(RootMetadata):
             value = field.value
             setattr(self, key, value)
         elif field.name == "piece_length":
-            self.comment = "Piece length: %s" % field.display
+            self.comment = "Piece length: {0!s}".format(field.display)
 
 class TTF_Metadata(RootMetadata):
     NAMEID_TO_ATTR = {
@@ -61,8 +61,8 @@ class TTF_Metadata(RootMetadata):
     def extractHeader(self, header):
         self.creation_date = header["created"].value
         self.last_modification = header["modified"].value
-        self.comment = u"Smallest readable size in pixels: %s pixels" % header["lowest"].value
-        self.comment = u"Font direction: %s" % header["font_dir"].display
+        self.comment = u"Smallest readable size in pixels: {0!s} pixels".format(header["lowest"].value)
+        self.comment = u"Font direction: {0!s}".format(header["font_dir"].display)
 
     @fault_tolerant
     def extractNames(self, names):
@@ -158,7 +158,7 @@ class OLE2_Metadata(RootMetadata):
 
     @fault_tolerant
     def useWordDocument(self, doc):
-        self.comment = "Encrypted: %s" % doc["FIB/fEncrypted"].value
+        self.comment = "Encrypted: {0!s}".format(doc["FIB/fEncrypted"].value)
 
     @fault_tolerant
     def useProperty(self, summary, property, is_doc_summary):
@@ -201,7 +201,7 @@ class OLE2_Metadata(RootMetadata):
             and (not field):
                 # Ignore null time delta
                 return
-            value = "%s: %s" % (prefix, value)
+            value = "{0!s}: {1!s}".format(prefix, value)
         else:
             if (key == "last_modification") and (not field):
                 # Ignore null timestamp
@@ -238,7 +238,7 @@ class PcfMetadata(RootMetadata):
                 continue
             name = name.value
             if name not in self.PROP_TO_KEY:
-                warning("Skip %s=%r" % (name, value))
+                warning("Skip {0!s}={1!r}".format(name, value))
                 continue
             key = self.PROP_TO_KEY[name]
             setattr(self, key, value)
@@ -247,9 +247,9 @@ class SwfMetadata(RootMetadata):
     def extract(self, swf):
         self.height = swf["rect/ymax"].value # twips
         self.width = swf["rect/xmax"].value # twips
-        self.format_version = "flash version %s" % swf["version"].value
+        self.format_version = "flash version {0!s}".format(swf["version"].value)
         self.frame_rate = swf["frame_rate"].value
-        self.comment = "Frame count: %s" % swf["frame_count"].value
+        self.comment = "Frame count: {0!s}".format(swf["frame_count"].value)
 
 registerExtractor(TorrentFile, TorrentMetadata)
 registerExtractor(TrueTypeFontFile, TTF_Metadata)

@@ -178,6 +178,6 @@ class Dict(object):
         self._value_list.insert(index, value)
 
     def __repr__(self):
-        items = ( "%r: %r" % (key, value) for key, value in self.iteritems() )
-        return "{%s}" % ", ".join(items)
+        items = ( "{0!r}: {1!r}".format(key, value) for key, value in self.iteritems() )
+        return "{{{0!s}}}".format(", ".join(items))
 

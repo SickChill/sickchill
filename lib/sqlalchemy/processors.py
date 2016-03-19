@@ -83,7 +83,7 @@ def py_fallback():
         return process
 
     def to_decimal_processor_factory(target_class, scale):
-        fstring = "%%.%df" % scale
+        fstring = "%.{0:d}f".format(scale)
 
         def process(value):
             if value is None:
@@ -146,7 +146,7 @@ try:
         # For example, the Python implementation might return
         # Decimal('5.00000') whereas the C implementation will
         # return Decimal('5'). These are equivalent of course.
-        return DecimalResultProcessor(target_class, "%%.%df" % scale).process
+        return DecimalResultProcessor(target_class, "%.{0:d}f".format(scale)).process
 
 except ImportError:
     globals().update(py_fallback())

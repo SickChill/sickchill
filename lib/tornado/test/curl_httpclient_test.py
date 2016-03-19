@@ -54,10 +54,10 @@ class DigestAuthHandler(RequestHandler):
             assert param_dict['nonce'] == nonce
             assert param_dict['username'] == username
             assert param_dict['uri'] == self.request.path
-            h1 = md5(utf8('%s:%s:%s' % (username, realm, password))).hexdigest()
-            h2 = md5(utf8('%s:%s' % (self.request.method,
+            h1 = md5(utf8('{0!s}:{1!s}:{2!s}'.format(username, realm, password))).hexdigest()
+            h2 = md5(utf8('{0!s}:{1!s}'.format(self.request.method,
                                      self.request.path))).hexdigest()
-            digest = md5(utf8('%s:%s:%s' % (h1, nonce, h2))).hexdigest()
+            digest = md5(utf8('{0!s}:{1!s}:{2!s}'.format(h1, nonce, h2))).hexdigest()
             if digest == param_dict['response']:
                 self.write('ok')
             else:
@@ -65,8 +65,7 @@ class DigestAuthHandler(RequestHandler):
         else:
             self.set_status(401)
             self.set_header('WWW-Authenticate',
-                            'Digest realm="%s", nonce="%s", opaque="%s"' %
-                            (realm, nonce, opaque))
+                            'Digest realm="{0!s}", nonce="{1!s}", opaque="{2!s}"'.format(realm, nonce, opaque))
 
 
 class CustomReasonHandler(RequestHandler):

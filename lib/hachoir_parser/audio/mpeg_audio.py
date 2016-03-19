@@ -73,7 +73,7 @@ class Frame(FieldSet):
         if not self._size:
             frame_size = self.getFrameSize()
             if not frame_size:
-                raise ParserError("MPEG audio: Invalid frame %s" % self.path)
+                raise ParserError("MPEG audio: Invalid frame {0!s}".format(self.path))
             self._size = min(frame_size * 8, self.parent.size - self.address)
 
     def createFields(self):
@@ -163,14 +163,14 @@ class Frame(FieldSet):
         return self.NB_CHANNEL[ self["channel_mode"].value ]
 
     def createDescription(self):
-        info = ["layer %s" % self["layer"].display]
+        info = ["layer {0!s}".format(self["layer"].display)]
         bit_rate = self.getBitRate()
         if bit_rate:
-            info.append("%s/sec" % humanBitSize(bit_rate))
+            info.append("{0!s}/sec".format(humanBitSize(bit_rate)))
         sampling_rate = self.getSampleRate()
         if sampling_rate:
             info.append(humanFrequency(sampling_rate))
-        return "MPEG-%s %s" % (self["version"].display, ", ".join(info))
+        return "MPEG-{0!s} {1!s}".format(self["version"].display, ", ".join(info))
 
 def findSynchronizeBits(parser, start, max_size):
     """
@@ -260,7 +260,7 @@ class Frames(FieldSet):
             text = "(looks like) Constant bit rate (CBR)"
         else:
             text = "Variable bit rate (VBR)"
-        return "Frames: %s" % text
+        return "Frames: {0!s}".format(text)
 
 def createMpegAudioMagic():
 
@@ -306,26 +306,26 @@ class MpegAudioFile(Parser):
         # Validate first 5 frames
         for index in xrange(5):
             try:
-                frame = self["frames/frame[%u]" % index]
+                frame = self["frames/frame[{0:d}]".format(index)]
             except MissingField:
                 # Require a least one valid frame
                 if (1 <= index) \
                 and self["frames"].done:
                     return True
-                return "Unable to get frame #%u" % index
+                return "Unable to get frame #{0:d}".format(index)
             except (InputStreamError, ParserError):
-                return "Unable to create frame #%u" % index
+                return "Unable to create frame #{0:d}".format(index)
 
             # Check first frame values
             if not frame.isValid():
-                return "Frame #%u is invalid" % index
+                return "Frame #{0:d} is invalid".format(index)
 
             # Check that all frames are similar
             if not index:
                 frame0 = frame
             else:
                 if frame0["channel_mode"].value != frame["channel_mode"].value:
-                    return "Frame #%u channel mode is different" % index
+                    return "Frame #{0:d} channel mode is different".format(index)
         return True
 
     def createFields(self):
@@ -357,7 +357,7 @@ class MpegAudioFile(Parser):
     def createDescription(self):
         if "frames" in self:
             frame = self["frames/frame[0]"]
-            return "%s, %s" % (frame.description, frame["channel_mode"].display)
+            return "{0!s}, {1!s}".format(frame.description, frame["channel_mode"].display)
         elif "id3v2" in self:
             return self["id3v2"].description
         elif "id3v1" in self:

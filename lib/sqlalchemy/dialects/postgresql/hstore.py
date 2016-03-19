@@ -47,7 +47,7 @@ def _parse_error(hstore_str, pos):
     if len(residual) > ctx:
         residual = residual[:-1] + '[...]'
 
-    return "After %r, could not parse residual at position %d: %r" % (
+    return "After {0!r}, could not parse residual at position {1:d}: {2!r}".format(
         parsed_tail, pos, residual)
 
 
@@ -98,12 +98,11 @@ def _serialize_hstore(val):
         if position == 'value' and s is None:
             return 'NULL'
         elif isinstance(s, util.string_types):
-            return '"%s"' % s.replace("\\", "\\\\").replace('"', r'\"')
+            return '"{0!s}"'.format(s.replace("\\", "\\\\").replace('"', r'\"'))
         else:
-            raise ValueError("%r in %s position is not a string." %
-                             (s, position))
+            raise ValueError("{0!r} in {1!s} position is not a string.".format(s, position))
 
-    return ', '.join('%s=>%s' % (esc(k, 'key'), esc(v, 'value'))
+    return ', '.join('{0!s}=>{1!s}'.format(esc(k, 'key'), esc(v, 'value'))
                      for k, v in val.items())
 
 

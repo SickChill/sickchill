@@ -59,26 +59,25 @@ def headerParse(parent):
     yield UInt8(parent, "interlace", "Interlace method")
 
 def headerDescription(parent):
-    return "Header: %ux%u pixels and %u bits/pixel" % \
-        (parent["width"].value, parent["height"].value, getBitsPerPixel(parent))
+    return "Header: {0:d}x{1:d} pixels and {2:d} bits/pixel".format(parent["width"].value, parent["height"].value, getBitsPerPixel(parent))
 
 def paletteParse(parent):
     size = parent["size"].value
     if (size % 3) != 0:
-        raise ParserError("Palette have invalid size (%s), should be 3*n!" % size)
+        raise ParserError("Palette have invalid size ({0!s}), should be 3*n!".format(size))
     nb_colors = size // 3
     for index in xrange(nb_colors):
         yield RGB(parent, "color[]")
 
 def paletteDescription(parent):
-    return "Palette: %u colors" % (parent["size"].value // 3)
+    return "Palette: {0:d} colors".format((parent["size"].value // 3))
 
 def gammaParse(parent):
     yield UInt32(parent, "gamma", "Gamma (x100,000)")
 def gammaValue(parent):
     return float(parent["gamma"].value) / 100000
 def gammaDescription(parent):
-    return "Gamma: %.3f" % parent.value
+    return "Gamma: {0:.3f}".format(parent.value)
 
 def textParse(parent):
     yield CString(parent, "keyword", "Keyword", charset="ISO-8859-1")
@@ -88,7 +87,7 @@ def textParse(parent):
 
 def textDescription(parent):
     if "text" in parent:
-        return u'Text: %s' % parent["text"].display
+        return u'Text: {0!s}'.format(parent["text"].display)
     else:
         return u'Text'
 
@@ -114,7 +113,7 @@ def physicalParse(parent):
 def physicalDescription(parent):
     x = parent["pixel_per_unit_x"].value
     y = parent["pixel_per_unit_y"].value
-    desc = "Physical: %ux%u pixels" % (x,y)
+    desc = "Physical: {0:d}x{1:d} pixels".format(x, y)
     if parent["unit"].value == 1:
         desc += " per meter"
     return desc
@@ -128,15 +127,15 @@ def backgroundColorDesc(parent):
     rgb = parent["red"].value, parent["green"].value, parent["blue"].value
     name = RGB.color_name.get(rgb)
     if not name:
-        name = "#%02X%02X%02X" % rgb
-    return "Background color: %s" % name
+        name = "#{0:02X}{1:02X}{2:02X}".format(*rgb)
+    return "Background color: {0!s}".format(name)
 
 
 class ImageData(Fragment):
     def __init__(self, parent, name="compressed_data"):
         Fragment.__init__(self, parent, name, None, 8*parent["size"].value)
         data = parent.name.split('[')
-        data, next = "../%s[%%u]" % data[0], int(data[1][:-1]) + 1
+        data, next = "../{0!s}[%u]".format(data[0]), int(data[1][:-1]) + 1
         first = parent.getField(data % 0)
         if first is parent:
             first = None
@@ -153,7 +152,7 @@ class ImageData(Fragment):
 
 def parseTransparency(parent):
     for i in range(parent["size"].value):
-        yield UInt8(parent, "alpha_value[]", "Alpha value for palette entry %i"%i)
+        yield UInt8(parent, "alpha_value[]", "Alpha value for palette entry {0:d}".format(i))
 
 def getBitsPerPixel(header):
     nr_component = 1
@@ -187,8 +186,7 @@ class Chunk(FieldSet):
         FieldSet.__init__(self, parent, name, description)
         self._size = (self["size"].value + 3*4) * 8
         if MAX_CHUNK_SIZE < (self._size//8):
-            raise ParserError("PNG: Chunk is too big (%s)"
-                % humanFilesize(self._size//8))
+            raise ParserError("PNG: Chunk is too big ({0!s})".format(humanFilesize(self._size//8)))
         tag = self["tag"].value
         self.desc_func = None
         self.value_func = None
@@ -223,7 +221,7 @@ class Chunk(FieldSet):
         if self.desc_func:
             return self.desc_func(self)
         else:
-            return "Chunk: %s" % self["tag"].display
+            return "Chunk: {0!s}".format(self["tag"].display)
 
 class PngFile(Parser):
     PARSER_TAGS = {
@@ -251,7 +249,7 @@ class PngFile(Parser):
 
     def createDescription(self):
         header = self["header"]
-        desc = "PNG picture: %ux%ux%u" % (
+        desc = "PNG picture: {0:d}x{1:d}x{2:d}".format(
             header["width"].value, header["height"].value, getBitsPerPixel(header))
         if header["has_alpha"].value:
             desc += " (alpha layer)"

@@ -323,7 +323,7 @@ class AsfFile(Parser):
             return "Invalid magic"
         header = self[0]
         if not(30 <= header["size"].value  <= MAX_HEADER_SIZE):
-            return "Invalid header size (%u)" % header["size"].value
+            return "Invalid header size ({0:d})".format(header["size"].value)
         return True
 
     def createMimeType(self):

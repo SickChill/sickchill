@@ -32,7 +32,7 @@ def _simple_list(mgr):
         ext = mgr[name]
         doc = _get_docstring(ext.plugin) or '\n'
         summary = doc.splitlines()[0].strip()
-        yield('* %s -- %s' % (ext.name, summary),
+        yield('* {0!s} -- {1!s}'.format(ext.name, summary),
               ext.entry_point.module_name)
 
 
@@ -52,8 +52,7 @@ def _detailed_list(mgr, over='', under='-', titlecase=False):
         if doc:
             yield (doc, ext.entry_point.module_name)
         else:
-            yield ('.. warning:: No documentation found in %s'
-                   % ext.entry_point,
+            yield ('.. warning:: No documentation found in {0!s}'.format(ext.entry_point),
                    ext.entry_point.module_name)
         yield ('\n', ext.entry_point.module_name)
 
@@ -76,12 +75,12 @@ class ListPluginsDirective(rst.Directive):
         app = env.app
 
         namespace = ' '.join(self.content).strip()
-        app.info('documenting plugins from %r' % namespace)
+        app.info('documenting plugins from {0!r}'.format(namespace))
         overline_style = self.options.get('overline-style', '')
         underline_style = self.options.get('underline-style', '=')
 
         def report_load_failure(mgr, ep, err):
-            app.warn(u'Failed to load %s: %s' % (ep.module_name, err))
+            app.warn(u'Failed to load {0!s}: {1!s}'.format(ep.module_name, err))
 
         mgr = extension.ExtensionManager(
             namespace,

@@ -137,7 +137,7 @@ class ColumnProperty(StrategizedProperty):
 
         if kwargs:
             raise TypeError(
-                "%s received unexpected keyword argument(s): %s" % (
+                "{0!s} received unexpected keyword argument(s): {1!s}".format(
                     self.__class__.__name__,
                     ', '.join(sorted(kwargs.keys()))))
 

@@ -40,7 +40,7 @@ class ServerSSLCertVerification(object):
         'userid':                   'UID'
     }
     SUBJ_ALT_NAME_EXT_NAME = 'subjectAltName'
-    PARSER_RE_STR = '/(%s)=' % '|'.join(DN_LUT.keys() + DN_LUT.values())
+    PARSER_RE_STR = '/({0!s})='.format('|'.join(DN_LUT.keys() + DN_LUT.values()))
     PARSER_RE = re.compile(PARSER_RE_STR)
 
     __slots__ = ('__hostname', '__certDN', '__subj_alt_name_match')
@@ -201,7 +201,7 @@ class ServerSSLCertVerification(object):
 
             dnFields = self.__class__.PARSER_RE.split(certDN)
             if len(dnFields) < 2:
-                raise TypeError('Error parsing DN string: "%s"' % certDN)
+                raise TypeError('Error parsing DN string: "{0!s}"'.format(certDN))
 
             self.__certDN = zip(dnFields[1::2], dnFields[2::2])
             self.__certDN.sort()

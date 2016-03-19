@@ -68,7 +68,7 @@ class MakoPlugin(CacheImpl):
         try:
             return self.regions[region]
         except KeyError:
-            raise KeyError("No such region '%s'" % region)
+            raise KeyError("No such region '{0!s}'".format(region))
 
     def get_and_replace(self, key, creation_function, **kw):
         expiration_time = kw.pop("timeout", None)

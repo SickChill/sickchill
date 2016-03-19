@@ -83,13 +83,13 @@ class ConsoleUI(BaseUI):
         print "TVDB Search Results:"
         for i, cshow in enumerate(toshow):
             i_show = i + 1 # Start at more human readable number 1 (not 0)
-            log().debug('Showing allSeries[%s], series %s)' % (i_show, allSeries[i]['seriesname']))
+            log().debug('Showing allSeries[{0!s}], series {1!s})'.format(i_show, allSeries[i]['seriesname']))
             if i == 0:
                 extra = " (default)"
             else:
                 extra = ""
 
-            print "%s -> %s [%s] # http://thetvdb.com/?tab=series&id=%s&lid=%s%s" % (
+            print "{0!s} -> {1!s} [{2!s}] # http://thetvdb.com/?tab=series&id={3!s}&lid={4!s}{5!s}".format(
                 i_show,
                 cshow['seriesname'].encode("UTF-8", "ignore"),
                 cshow['language'].encode("UTF-8", "ignore"),
@@ -119,7 +119,7 @@ class ConsoleUI(BaseUI):
             except EOFError:
                 raise tvdb_userabort("User aborted (EOF received)")
 
-            log().debug('Got choice of: %s' % (ans))
+            log().debug('Got choice of: {0!s}'.format((ans)))
             try:
                 selected_id = int(ans) - 1 # The human entered 1 as first result, not zero
             except ValueError: # Input was not number
@@ -141,9 +141,9 @@ class ConsoleUI(BaseUI):
                 elif ans.lower() in ["a", "all"]:
                     self._displaySeries(allSeries, limit = None)
                 else:
-                    log().debug('Unknown keypress %s' % (ans))
+                    log().debug('Unknown keypress {0!s}'.format((ans)))
             else:
-                log().debug('Trying to return ID: %d' % (selected_id))
+                log().debug('Trying to return ID: {0:d}'.format((selected_id)))
                 try:
                     return allSeries[selected_id]
                 except IndexError:

@@ -89,7 +89,7 @@ class _DialectArgView(collections.MutableMapping):
 
     def __iter__(self):
         return (
-            "%s_%s" % (dialect_name, value_name)
+            "{0!s}_{1!s}".format(dialect_name, value_name)
             for dialect_name in self.obj.dialect_options
             for value_name in self.obj.dialect_options[dialect_name]._non_defaults
         )
@@ -610,9 +610,9 @@ def _bind_or_error(schemaitem, msg=None):
         label = getattr(schemaitem, 'fullname',
                         getattr(schemaitem, 'name', None))
         if label:
-            item = '%s object %r' % (name, label)
+            item = '{0!s} object {1!r}'.format(name, label)
         else:
-            item = '%s object' % name
+            item = '{0!s} object'.format(name)
         if msg is None:
             msg = "%s is not bound to an Engine or Connection.  "\
                    "Execution can not proceed without a database to execute "\

@@ -108,8 +108,7 @@ def _manageRoles(mo):
             roleID = u'/'
         else:
             roleID += u'/'
-        newRoles.append(u'<div class="_imdbpyrole" roleid="%s">%s</div>' % \
-                (roleID, role.strip()))
+        newRoles.append(u'<div class="_imdbpyrole" roleid="{0!s}">{1!s}</div>'.format(roleID, role.strip()))
     return firstHalf + u' / '.join(newRoles) + mo.group(3)
 
 
@@ -416,7 +415,7 @@ class DOMHTMLMovieParser(DOMParserBase):
             for a in self.xpath(b, "./following::h5/a[@class='glossary']"):
                 name = a.get('name')
                 if name:
-                    a.set('name', 'series %s' % name)
+                    a.set('name', 'series {0!s}'.format(name))
         # Remove links to IMDbPro.
         for proLink in self.xpath(dom, "//span[@class='pro-link']"):
             proLink.drop_tree()
@@ -486,7 +485,7 @@ class DOMHTMLMovieParser(DOMParserBase):
                 if episode or type(season) is type(0):
                     data['episode'] = episode
         for k in ('writer', 'director'):
-            t_k = 'thin %s' % k
+            t_k = 'thin {0!s}'.format(k)
             if t_k not in data:
                 continue
             if k not in data:
@@ -533,7 +532,7 @@ def _process_plotsummary(x):
     xauthor = x.get('author')
     xplot = x.get('plot', u'').strip()
     if xauthor:
-        xplot += u'::%s' % xauthor
+        xplot += u'::{0!s}'.format(xauthor)
     return xplot
 
 class DOMHTMLPlotParser(DOMParserBase):
@@ -968,7 +967,7 @@ class DOMHTMLReleaseinfoParser(DOMParserBase):
             date = date.strip()
             if not (country and date): continue
             notes = i['notes']
-            info = u'%s::%s' % (country, date)
+            info = u'{0!s}::{1!s}'.format(country, date)
             if notes:
                 info += notes
             rl.append(info)
@@ -987,7 +986,7 @@ class DOMHTMLReleaseinfoParser(DOMParserBase):
                 nakas.append(title)
             else:
                 for country in countries:
-                    nakas.append('%s::%s' % (title, country.strip()))
+                    nakas.append('{0!s}::{1!s}'.format(title, country.strip()))
         if akas:
             del data['akas']
         if nakas:
@@ -1132,10 +1131,10 @@ class DOMHTMLEpisodesRatings(DOMParserBase):
             except:
                 pass
             ept = ept.strip()
-            ept = u'%s {%s' % (title, ept)
+            ept = u'{0!s} {{{1!s}'.format(title, ept)
             nr = i['nr']
             if nr:
-                ept += u' (#%s)' % nr.strip()
+                ept += u' (#{0!s})'.format(nr.strip())
             ept += '}'
             if movieID is not None:
                 movieID = str(movieID)
@@ -1153,7 +1152,7 @@ def _normalize_href(href):
     if (href is not None) and (not href.lower().startswith('http://')):
         if href.startswith('/'): href = href[1:]
         # TODO: imdbURL_base may be set by the user!
-        href = '%s%s' % (imdbURL_base, href)
+        href = '{0!s}{1!s}'.format(imdbURL_base, href)
     return href
 
 class DOMHTMLCriticReviewsParser(DOMParserBase):
@@ -1271,7 +1270,7 @@ class DOMHTMLLocationsParser(DOMParserBase):
                                 path={'place': ".//text()",
                                         'note': "./following-sibling::dd[1]" \
                                                 "//text()"},
-                                postprocess=lambda x: (u'%s::%s' % (
+                                postprocess=lambda x: (u'{0!s}::{1!s}'.format(
                                     x['place'].strip(),
                                     (x['note'] or u'').strip())).strip(':')))]
 
@@ -1443,7 +1442,7 @@ def _parse_review(x):
     if x.get('item') is not None:
         item = x.get('item').strip()
         review = review[len(item):].strip()
-        review = "%s: %s" % (item, review)
+        review = "{0!s}: {1!s}".format(item, review)
     result['review'] = review
     return result
 
@@ -1486,7 +1485,7 @@ class DOMHTMLSeasonEpisodesParser(DOMParserBase):
                 path=".",
                 group="//div[@class='info']",
                 group_key=".//meta/@content",
-                group_key_normalize=lambda x: 'episode %s' % x,
+                group_key_normalize=lambda x: 'episode {0!s}'.format(x),
                 attrs=[Attribute(key=None,
                             multi=True,
                             path={
@@ -1516,9 +1515,9 @@ class DOMHTMLSeasonEpisodesParser(DOMParserBase):
         if 'episode -1' in data:
           counter = 1
           for episode in data['episode -1']:
-            while 'episode %d' % counter in data:
+            while 'episode {0:d}'.format(counter) in data:
               counter += 1
-            k = 'episode %d' % counter
+            k = 'episode {0:d}'.format(counter)
             data[k] = [episode]
           del data['episode -1']
         for episode_nr, episode in data.iteritems():
@@ -1692,7 +1691,7 @@ class DOMHTMLEpisodesParser(DOMParserBase):
                     if not isinstance(episode_key, int):
                         episode_key = ep_counter
                         ep_counter += 1
-                    cast_key = 'Season %s, Episode %s:' % (season_key,
+                    cast_key = 'Season {0!s}, Episode {1!s}:'.format(season_key,
                                                             episode_key)
                     if data.has_key(cast_key):
                         cast = data[cast_key]
@@ -1744,7 +1743,7 @@ class DOMHTMLFaqsParser(DOMParserBase):
                     'question': "./h3/a/span/text()",
                     'answer': "../following-sibling::div[1]//text()"
                 },
-                postprocess=lambda x: u'%s::%s' % (x.get('question').strip(),
+                postprocess=lambda x: u'{0!s}::{1!s}'.format(x.get('question').strip(),
                                     '\n\n'.join(x.get('answer').replace(
                                         '\n\n', '\n').strip().split('||')))))
         ]
@@ -1816,7 +1815,7 @@ class DOMHTMLAiringParser(DOMParserBase):
                         continue
                     epsID = seriesID
                 else:
-                    epsTitle = '%s {%s}' % (data['series title'],
+                    epsTitle = '{0!s} {{{1!s}}}'.format(data['series title'],
                                             airing['title'])
                     epsID = analyze_imdbid(airing['link'])
                 e = Movie(title=epsTitle, movieID=epsID)

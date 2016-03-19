@@ -34,10 +34,10 @@ class BasicAuthTransport(xmlrpclib.Transport):
 
     def send_auth(self, h):
         if self.username is not None and self.password is not None:
-            h.putheader('AUTHORIZATION', "Basic %s" % string.replace(
-                encodestring("%s:%s" % (self.username, self.password)),
+            h.putheader('AUTHORIZATION', "Basic {0!s}".format(string.replace(
+                encodestring("{0!s}:{1!s}".format(self.username, self.password)),
                 "\012", ""
-            ))
+            )))
 
     def single_request(self, host, handler, request_body, verbose=0):
         # issue XML-RPC request

@@ -557,8 +557,7 @@ class WebSocketProtocol13(WebSocketProtocol):
             selected = self.handler.select_subprotocol(subprotocols)
             if selected:
                 assert selected in subprotocols
-                subprotocol_header = ("Sec-WebSocket-Protocol: %s\r\n"
-                                      % selected)
+                subprotocol_header = ("Sec-WebSocket-Protocol: {0!s}\r\n".format(selected))
 
         extension_header = ''
         extensions = self._parse_extensions_header(self.request.headers)
@@ -573,9 +572,9 @@ class WebSocketProtocol13(WebSocketProtocol):
                     # Don't echo an offered client_max_window_bits
                     # parameter with no value.
                     del ext[1]['client_max_window_bits']
-                extension_header = ('Sec-WebSocket-Extensions: %s\r\n' %
+                extension_header = ('Sec-WebSocket-Extensions: {0!s}\r\n'.format(
                                     httputil._encode_header(
-                                        'permessage-deflate', ext[1]))
+                                        'permessage-deflate', ext[1])))
                 break
 
         if self.stream.closed():
@@ -640,7 +639,7 @@ class WebSocketProtocol13(WebSocketProtocol):
                             'client_max_window_bits'])
         for key in agreed_parameters:
             if key not in allowed_keys:
-                raise ValueError("unsupported compression parameter %r" % key)
+                raise ValueError("unsupported compression parameter {0!r}".format(key))
         other_side = 'client' if (side == 'server') else 'server'
         self._compressor = _PerMessageDeflateCompressor(
             **self._get_compressor_options(side, agreed_parameters))

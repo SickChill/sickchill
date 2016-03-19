@@ -87,7 +87,7 @@ class BlockMap(FieldSet):
         yield UInt32(self, "len")
 
     def createDescription(self):
-        return "%d blocks of %s" % (
+        return "{0:d} blocks of {1!s}".format(
             self["num_blocks"].value, humanFilesize(self["len"].value))
 
 
@@ -174,7 +174,7 @@ class File(FieldSet):
             yield FileSection(self, "section[]")
 
     def createDescription(self):
-        return "%s: %s containing %d section(s)" % (
+        return "{0!s}: {1!s} containing {2:d} section(s)".format(
             self["name"].value,
             self["type"].display,
             len(self.array("section")))
@@ -213,7 +213,7 @@ class FirmwareVolume(FieldSet):
             yield File(self, "file[]")
 
     def createDescription(self):
-        return "Firmware Volume containing %d file(s)" % len(self.array("file"))
+        return "Firmware Volume containing {0:d} file(s)".format(len(self.array("file")))
 
 
 class PIFVFile(Parser):
@@ -224,7 +224,7 @@ class PIFVFile(Parser):
         "category": "program",
         "file_ext": ("bin", ""),
         "min_size": 64*8, # smallest possible header
-        "magic_regex": (("\0{16}.{24}%s" % MAGIC, 0), ),
+        "magic_regex": (("\0{{16}}.{{24}}{0!s}".format(MAGIC), 0), ),
         "description": "EFI Platform Initialization Firmware Volume",
     }
 

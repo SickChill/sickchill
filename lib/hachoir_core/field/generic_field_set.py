@@ -92,8 +92,7 @@ class GenericFieldSet(BasicFieldSet):
         self._array_cache = {}
 
     def __str__(self):
-        return '<%s path=%s, current_size=%s, current length=%s>' % \
-            (self.__class__.__name__, self.path, self._current_size, len(self._fields))
+        return '<{0!s} path={1!s}, current_size={2!s}, current length={3!s}>'.format(self.__class__.__name__, self.path, self._current_size, len(self._fields))
 
     def __len__(self):
         """
@@ -146,18 +145,16 @@ class GenericFieldSet(BasicFieldSet):
         May raise a StopIteration() on error
         """
         if not issubclass(field.__class__, Field):
-            raise ParserError("Field type (%s) is not a subclass of 'Field'!"
-                % field.__class__.__name__)
+            raise ParserError("Field type ({0!s}) is not a subclass of 'Field'!".format(field.__class__.__name__))
         assert isinstance(field._name, str)
         if field._name.endswith("[]"):
             self.setUniqueFieldName(field)
         if config.debug:
-            self.info("[+] DBG: _addField(%s)" % field.name)
+            self.info("[+] DBG: _addField({0!s})".format(field.name))
 
         # required for the msoffice parser
         if field._address != self._current_size:
-            self.warning("Fix address of %s to %s (was %s)" %
-                (field.path, self._current_size, field._address))
+            self.warning("Fix address of {0!s} to {1!s} (was {2!s})".format(field.path, self._current_size, field._address))
             field._address = self._current_size
 
         ask_stop = False
@@ -167,11 +164,11 @@ class GenericFieldSet(BasicFieldSet):
             field_size = field.size
         except HACHOIR_ERRORS, err:
             if field.is_field_set and field.current_length and field.eof:
-                self.warning("Error when getting size of '%s': %s" % (field.name, err))
+                self.warning("Error when getting size of '{0!s}': {1!s}".format(field.name, err))
                 field._stopFeeding()
                 ask_stop = True
             else:
-                self.warning("Error when getting size of '%s': delete it" % field.name)
+                self.warning("Error when getting size of '{0!s}': delete it".format(field.name))
                 self.__is_feeding = False
                 raise
         self.__is_feeding = False
@@ -182,7 +179,7 @@ class GenericFieldSet(BasicFieldSet):
             if self.autofix and self._current_size:
                 self._fixFieldSize(field, field.size + dsize)
             else:
-                raise ParserError("Field %s is too large!" % field.path)
+                raise ParserError("Field {0!s} is too large!".format(field.path))
 
         self._current_size += field.size
         try:
@@ -204,7 +201,7 @@ class GenericFieldSet(BasicFieldSet):
             # Don't add the field <=> delete item
             if self._size is None:
                 self._size = self._current_size + new_size
-        self.warning("[Autofix] Delete '%s' (too large)" % field.path)
+        self.warning("[Autofix] Delete '{0!s}' (too large)".format(field.path))
         raise StopIteration()
 
     def _getField(self, name, const):
@@ -273,7 +270,7 @@ class GenericFieldSet(BasicFieldSet):
         # If last field is too big, delete it
         while self._size < self._current_size:
             field = self._deleteField(len(self._fields)-1)
-            message.append("delete field %s" % field.path)
+            message.append("delete field {0!s}".format(field.path))
         assert self._current_size <= self._size
 
         # If field size current is smaller: add a raw field
@@ -299,7 +296,7 @@ class GenericFieldSet(BasicFieldSet):
             if self.autofix:
                 new_field = self._fixLastField()
             else:
-                raise ParserError("Invalid parser \"%s\" size!" % self.path)
+                raise ParserError("Invalid parser \"{0!s}\" size!".format(self.path))
         self._field_generator = None
         return new_field
 
@@ -319,8 +316,7 @@ class GenericFieldSet(BasicFieldSet):
         """
         if self.__is_feeding \
         or (self._field_generator and self._field_generator.gi_running):
-            self.warning("Unable to get %s (and generator is already running)"
-                % field_name)
+            self.warning("Unable to get {0!s} (and generator is already running)".format(field_name))
             return None
         try:
             while True:
@@ -441,7 +437,7 @@ class GenericFieldSet(BasicFieldSet):
         # TODO: Check in self and not self.field
         # Problem is that "generator is already executing"
         if name not in self._fields:
-            raise ParserError("Unable to replace %s: field doesn't exist!" % name)
+            raise ParserError("Unable to replace {0!s}: field doesn't exist!".format(name))
         assert 1 <= len(new_fields)
         old_field = self[name]
         total_size = sum( (field.size for field in new_fields) )
@@ -455,8 +451,7 @@ class GenericFieldSet(BasicFieldSet):
         field._address = old_field.address
         if field.name != name and field.name in self._fields:
             raise ParserError(
-                "Unable to replace %s: name \"%s\" is already used!"
-                % (name, field.name))
+                "Unable to replace {0!s}: name \"{1!s}\" is already used!".format(name, field.name))
         self._fields.replace(name, field.name, field)
         self.raiseEvent("field-replaced", old_field, field)
         if 1 < len(new_fields):
@@ -468,8 +463,7 @@ class GenericFieldSet(BasicFieldSet):
                 field._address = address
                 if field.name in self._fields:
                     raise ParserError(
-                        "Unable to replace %s: name \"%s\" is already used!"
-                        % (name, field.name))
+                        "Unable to replace {0!s}: name \"{1!s}\" is already used!".format(name, field.name))
                 self._fields.insert(index, field.name, field)
                 self.raiseEvent("field-inserted", index, field)
                 index += 1

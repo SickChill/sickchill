@@ -66,7 +66,7 @@ class HelloWorldRequestHandler(RequestHandler):
         self.finish("Hello world")
 
     def post(self):
-        self.finish("Got %d bytes in POST" % len(self.request.body))
+        self.finish("Got {0:d} bytes in POST".format(len(self.request.body)))
 
 
 # In pre-1.0 versions of openssl, SSLv23 clients always send SSLv2
@@ -205,7 +205,7 @@ class HTTPConnectionTest(AsyncHTTPTestCase):
             self.wait()
             stream.write(
                 newline.join(headers +
-                             [utf8("Content-Length: %d" % len(body))]) +
+                             [utf8("Content-Length: {0:d}".format(len(body)))]) +
                 newline + newline + body)
             read_stream_body(stream, self.stop)
             headers, body = self.wait()
@@ -316,7 +316,7 @@ class TypeCheckHandler(RequestHandler):
     def check_type(self, name, obj, expected_type):
         actual_type = type(obj)
         if expected_type != actual_type:
-            self.errors[name] = "expected %s, got %s" % (expected_type,
+            self.errors[name] = "expected {0!s}, got {1!s}".format(expected_type,
                                                          actual_type)
 
 

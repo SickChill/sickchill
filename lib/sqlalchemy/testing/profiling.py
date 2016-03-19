@@ -58,14 +58,14 @@ def profiled(target=None, **target_opts):
 
         graphic = target_opts.get('graphic', profile_config['graphic'])
         if graphic:
-            os.system("runsnake %s" % filename)
+            os.system("runsnake {0!s}".format(filename))
         else:
             report = target_opts.get('report', profile_config['report'])
             if report:
                 sort_ = target_opts.get('sort', profile_config['sort'])
                 limit = target_opts.get('limit', profile_config['limit'])
-                print(("Profile report for target '%s'" % (
-                    target, )
+                print(("Profile report for target '{0!s}'".format(
+                    target )
                     ))
 
                 stats = load_stats()
@@ -210,17 +210,17 @@ class ProfileStatsFile(object):
         profile_f.close()
 
     def _write(self):
-        print(("Writing profile file %s" % self.fname))
+        print(("Writing profile file {0!s}".format(self.fname)))
         profile_f = open(self.fname, "w")
         profile_f.write(self._header())
         for test_key in sorted(self.data):
 
             per_fn = self.data[test_key]
-            profile_f.write("\n# TEST: %s\n\n" % test_key)
+            profile_f.write("\n# TEST: {0!s}\n\n".format(test_key))
             for platform_key in sorted(per_fn):
                 per_platform = per_fn[platform_key]
                 c = ",".join(str(count) for count in per_platform['counts'])
-                profile_f.write("%s %s %s\n" % (test_key, platform_key, c))
+                profile_f.write("{0!s} {1!s} {2!s}\n".format(test_key, platform_key, c))
         profile_f.close()
 
 
@@ -265,7 +265,7 @@ def function_call_count(variance=0.05):
             else:
                 line_no, expected_count = expected
 
-            print(("Pstats calls: %d Expected %s" % (
+            print(("Pstats calls: {0:d} Expected {1!s}".format(
                     callcount,
                     expected_count
                 )
@@ -294,7 +294,7 @@ def function_call_count(variance=0.05):
 
 
 def _profile(fn, *args, **kw):
-    filename = "%s.prof" % fn.__name__
+    filename = "{0!s}.prof".format(fn.__name__)
 
     def load_stats():
         st = pstats.Stats(filename)

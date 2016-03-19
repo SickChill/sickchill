@@ -72,7 +72,7 @@ class URL(object):
             s += "@"
         if self.host is not None:
             if ':' in self.host:
-                s += "[%s]" % self.host
+                s += "[{0!s}]".format(self.host)
             else:
                 s += self.host
         if self.port is not None:
@@ -82,7 +82,7 @@ class URL(object):
         if self.query:
             keys = list(self.query)
             keys.sort()
-            s += '?' + "&".join("%s=%s" % (k, self.query[k]) for k in keys)
+            s += '?' + "&".join("{0!s}={1!s}".format(k, self.query[k]) for k in keys)
         return s
 
     def __str__(self):
@@ -208,11 +208,11 @@ def _parse_rfc1738_args(name):
         return URL(name, **components)
     else:
         raise exc.ArgumentError(
-            "Could not parse rfc1738 URL from string '%s'" % name)
+            "Could not parse rfc1738 URL from string '{0!s}'".format(name))
 
 
 def _rfc_1738_quote(text):
-    return re.sub(r'[:@/]', lambda m: "%%%X" % ord(m.group(0)), text)
+    return re.sub(r'[:@/]', lambda m: "%{0:X}".format(ord(m.group(0))), text)
 
 def _rfc_1738_unquote(text):
     return util.unquote(text)

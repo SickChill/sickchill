@@ -183,7 +183,7 @@ def open_url(url, config, data=None, handlers=None):
         log.debug("Not using proxy")
     elif config.proxies:
         handlers.append(urllib2.ProxyHandler(config.proxies))
-        log.debug("Configuring proxies: %s" % config.proxies)
+        log.debug("Configuring proxies: {0!s}".format(config.proxies))
 
     opener = build_opener(*handlers, ssl_context=config.ssl_context)
     
@@ -207,12 +207,12 @@ def open_url(url, config, data=None, handlers=None):
                 
     except urllib2.HTTPError, exc:
         return_code = exc.code
-        return_message = "Error: %s" % exc.msg
+        return_message = "Error: {0!s}".format(exc.msg)
         if log.isEnabledFor(logging.DEBUG):
             log.debug("%s %s", exc.code, exc.msg)
             
     except Exception, exc:
-        return_message = "Error: %s" % exc.__str__()
+        return_message = "Error: {0!s}".format(exc.__str__())
         if log.isEnabledFor(logging.DEBUG):
             import traceback
             log.debug(traceback.format_exc())
@@ -251,8 +251,7 @@ def _url_as_string(url):
     elif isinstance(url, basestring):
         return url
     else:
-        raise TypeError("Expected type %r or %r" %
-                        (basestring, urllib2.Request))
+        raise TypeError("Expected type {0!r} or {1!r}".format(basestring, urllib2.Request))
 
 
 class Configuration(object):

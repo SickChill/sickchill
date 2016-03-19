@@ -53,7 +53,7 @@ class RECT(FieldSet):
         return math.ceil(float(self["ymax"].value) / TWIPS)
 
     def createDescription(self):
-        return "Rectangle: %ux%u" % (self.getWidth(), self.getHeight())
+        return "Rectangle: {0:d}x{1:d}".format(self.getWidth(), self.getHeight())
 
 class FixedFloat16(FieldSet):
     def createFields(self):
@@ -362,7 +362,7 @@ class Tag(FieldSet):
                 yield RawBytes(self, "data", size)
 
     def createDescription(self):
-        return "Tag: %s (%s)" % (self["code"].display, self["length"].display)
+        return "Tag: {0!s} ({1!s})".format(self["code"].display, self["length"].display)
 
 class SwfFile(Parser):
     VALID_VERSIONS = set(xrange(1, 10+1))
@@ -387,7 +387,7 @@ class SwfFile(Parser):
         if self["version"].value not in self.VALID_VERSIONS:
             return "Unknown version"
         if MAX_FILE_SIZE < self["filesize"].value:
-            return "File too big (%u)" % self["filesize"].value
+            return "File too big ({0:d})".format(self["filesize"].value)
         if self["signature"].value == "FWS":
             if self["rect/padding"].value != 0:
                 return "Unknown rectangle padding value"
@@ -419,10 +419,10 @@ class SwfFile(Parser):
                 yield Bytes(self, "compressed_data", size)
 
     def createDescription(self):
-        desc = ["version %u" % self["version"].value]
+        desc = ["version {0:d}".format(self["version"].value)]
         if self["signature"].value == "CWS":
             desc.append("compressed")
-        return u"Macromedia Flash data: %s" % (", ".join(desc))
+        return u"Macromedia Flash data: {0!s}".format((", ".join(desc)))
 
     def createContentSize(self):
         if self["signature"].value == "FWS":

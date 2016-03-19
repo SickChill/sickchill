@@ -17,10 +17,10 @@ class TheSubDBConverter(LanguageReverseConverter):
         if (alpha3,) in self.to_thesubdb:
             return self.to_thesubdb[(alpha3,)]
 
-        raise ConfigurationError('Unsupported language for thesubdb: %s, %s, %s' % (alpha3, country, script))
+        raise ConfigurationError('Unsupported language for thesubdb: {0!s}, {1!s}, {2!s}'.format(alpha3, country, script))
 
     def reverse(self, thesubdb):
         if thesubdb in self.from_thesubdb:
             return self.from_thesubdb[thesubdb]
 
-        raise ConfigurationError('Unsupported language code for thesubdb: %s' % thesubdb)
+        raise ConfigurationError('Unsupported language code for thesubdb: {0!s}'.format(thesubdb))

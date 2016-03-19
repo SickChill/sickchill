@@ -80,7 +80,7 @@ class Bar(object):
             other.y == self.y
 
     def __str__(self):
-        return "Bar(%d, %d)" % (self.x, self.y)
+        return "Bar({0:d}, {1:d})".format(self.x, self.y)
 
 
 class OldSchool:
@@ -109,7 +109,7 @@ class BarWithoutCompare(object):
         self.y = y
 
     def __str__(self):
-        return "Bar(%d, %d)" % (self.x, self.y)
+        return "Bar({0:d}, {1:d})".format(self.x, self.y)
 
 
 class NotComparable(object):

@@ -120,7 +120,7 @@ def eat_descriptor(descr):
         try:
             type = code_to_type_name[descr[0]]
         except KeyError:
-            raise ParserError("Not a valid descriptor string: %s" % descr)
+            raise ParserError("Not a valid descriptor string: {0!s}".format(descr))
     return (type.replace("/", ".") + array_dim * "[]", descr[1:])
 
 def parse_field_descriptor(descr, name=None):
@@ -151,9 +151,9 @@ def parse_method_descriptor(descr, name=None):
     assert not tail
     params = ", ".join(params_list)
     if name:
-        return "%s %s(%s)" % (type, name, params)
+        return "{0!s} {1!s}({2!s})".format(type, name, params)
     else:
-        return "%s (%s)" % (type, params)
+        return "{0!s} ({1!s})".format(type, params)
 
 def parse_any_descriptor(descr, name=None):
     """
@@ -186,7 +186,7 @@ class FieldArray(FieldSet):
 
     def createFields(self):
         for i in range(0, self.array_length):
-            yield self.array_elements_class(self, "%s[%d]" % (self.name, i),
+            yield self.array_elements_class(self, "{0!s}[{1:d}]".format(self.name, i),
                     **self.array_elements_extra_args)
 
 class ConstantPool(FieldSet):
@@ -201,7 +201,7 @@ class ConstantPool(FieldSet):
     def createFields(self):
         i = 1
         while i < self.constant_pool_length:
-            name = "%s[%d]" % (self.name, i)
+            name = "{0!s}[{1:d}]".format(self.name, i)
             yield CPInfo(self, name)
             i += 1
             if self[name].constant_type in ("Long", "Double"):
@@ -246,7 +246,7 @@ class CPIndex(UInt16):
         """
         assert self.value < self["/constant_pool_count"].value
         if self.allow_zero and not self.value: return None
-        cp_entry = self["/constant_pool/constant_pool[%d]" % self.value]
+        cp_entry = self["/constant_pool/constant_pool[{0:d}]".format(self.value)]
         assert isinstance(cp_entry, CPInfo)
         if self.target_types:
             assert cp_entry.constant_type in self.target_types
@@ -279,7 +279,7 @@ class OpcodeCPIndex(JavaOpcode):
         yield UInt8(self, "opcode")
         yield CPIndex(self, "index")
     def createDisplay(self):
-        return "%s(%i)"%(self.op, self["index"].value)
+        return "{0!s}({1:d})".format(self.op, self["index"].value)
         
 class OpcodeCPIndexShort(JavaOpcode):
     OPSIZE = 2
@@ -287,7 +287,7 @@ class OpcodeCPIndexShort(JavaOpcode):
         yield UInt8(self, "opcode")
         yield UInt8(self, "index")
     def createDisplay(self):
-        return "%s(%i)"%(self.op, self["index"].value)
+        return "{0!s}({1:d})".format(self.op, self["index"].value)
 
 class OpcodeIndex(JavaOpcode):
     OPSIZE = 2
@@ -295,7 +295,7 @@ class OpcodeIndex(JavaOpcode):
         yield UInt8(self, "opcode")
         yield UInt8(self, "index")
     def createDisplay(self):
-        return "%s(%i)"%(self.op, self["index"].value)
+        return "{0!s}({1:d})".format(self.op, self["index"].value)
 
 class OpcodeShortJump(JavaOpcode):
     OPSIZE = 3
@@ -303,7 +303,7 @@ class OpcodeShortJump(JavaOpcode):
         yield UInt8(self, "opcode")
         yield Int16(self, "offset")
     def createDisplay(self):
-        return "%s(%s)"%(self.op, self["offset"].value)
+        return "{0!s}({1!s})".format(self.op, self["offset"].value)
 
 class OpcodeLongJump(JavaOpcode):
     OPSIZE = 5
@@ -311,7 +311,7 @@ class OpcodeLongJump(JavaOpcode):
         yield UInt8(self, "opcode")
         yield Int32(self, "offset")
     def createDisplay(self):
-        return "%s(%s)"%(self.op, self["offset"].value)
+        return "{0!s}({1!s})".format(self.op, self["offset"].value)
 
 class OpcodeSpecial_bipush(JavaOpcode):
     OPSIZE = 2
@@ -319,7 +319,7 @@ class OpcodeSpecial_bipush(JavaOpcode):
         yield UInt8(self, "opcode")
         yield Int8(self, "value")
     def createDisplay(self):
-        return "%s(%s)"%(self.op, self["value"].value)
+        return "{0!s}({1!s})".format(self.op, self["value"].value)
 
 class OpcodeSpecial_sipush(JavaOpcode):
     OPSIZE = 3
@@ -327,7 +327,7 @@ class OpcodeSpecial_sipush(JavaOpcode):
         yield UInt8(self, "opcode")
         yield Int16(self, "value")
     def createDisplay(self):
-        return "%s(%s)"%(self.op, self["value"].value)
+        return "{0!s}({1!s})".format(self.op, self["value"].value)
 
 class OpcodeSpecial_iinc(JavaOpcode):
     OPSIZE = 3
@@ -336,7 +336,7 @@ class OpcodeSpecial_iinc(JavaOpcode):
         yield UInt8(self, "index")
         yield Int8(self, "value")
     def createDisplay(self):
-        return "%s(%i,%i)"%(self.op, self["index"].value, self["value"].value)
+        return "{0!s}({1:d},{2:d})".format(self.op, self["index"].value, self["value"].value)
 
 class OpcodeSpecial_wide(JavaOpcode):
     def createFields(self):
@@ -347,9 +347,9 @@ class OpcodeSpecial_wide(JavaOpcode):
         yield UInt16(self, "index")
         if op == "iinc":
             yield Int16(self, "value")
-            self.createDisplay = lambda self: "%s(%i,%i)"%(self.op, self["index"].value, self["value"].value)
+            self.createDisplay = lambda self: "{0!s}({1:d},{2:d})".format(self.op, self["index"].value, self["value"].value)
         else:
-            self.createDisplay = lambda self: "%s(%i)"%(self.op, self["index"].value)
+            self.createDisplay = lambda self: "{0!s}({1:d})".format(self.op, self["index"].value)
 
 class OpcodeSpecial_invokeinterface(JavaOpcode):
     OPSIZE = 5
@@ -359,7 +359,7 @@ class OpcodeSpecial_invokeinterface(JavaOpcode):
         yield UInt8(self, "count")
         yield UInt8(self, "zero", "Must be zero.")
     def createDisplay(self):
-        return "%s(%i,%i,%i)"%(self.op, self["index"].value, self["count"].value, self["zero"].value)
+        return "{0!s}({1:d},{2:d},{3:d})".format(self.op, self["index"].value, self["count"].value, self["zero"].value)
 
 class OpcodeSpecial_newarray(JavaOpcode):
     OPSIZE = 2
@@ -374,7 +374,7 @@ class OpcodeSpecial_newarray(JavaOpcode):
                                            10:"int",
                                            11:"long"})
     def createDisplay(self):
-        return "%s(%s)"%(self.op, self["atype"].createDisplay())
+        return "{0!s}({1!s})".format(self.op, self["atype"].createDisplay())
 
 class OpcodeSpecial_multianewarray(JavaOpcode):
     OPSIZE = 4
@@ -383,7 +383,7 @@ class OpcodeSpecial_multianewarray(JavaOpcode):
         yield CPIndex(self, "index")
         yield UInt8(self, "dimensions")
     def createDisplay(self):
-        return "%s(%i,%i)"%(self.op, self["index"].value, self["dimensions"].value)
+        return "{0!s}({1:d},{2:d})".format(self.op, self["index"].value, self["dimensions"].value)
 
 class OpcodeSpecial_tableswitch(JavaOpcode):
     def createFields(self):
@@ -399,7 +399,7 @@ class OpcodeSpecial_tableswitch(JavaOpcode):
         for i in range(high.value-low.value+1):
             yield Int32(self, "offset[]")
     def createDisplay(self):
-        return "%s(%i,%i,%i,...)"%(self.op, self["default"].value, self["low"].value, self["high"].value)
+        return "{0!s}({1:d},{2:d},{3:d},...)".format(self.op, self["default"].value, self["low"].value, self["high"].value)
 
 class OpcodeSpecial_lookupswitch(JavaOpcode):
     def createFields(self):
@@ -414,7 +414,7 @@ class OpcodeSpecial_lookupswitch(JavaOpcode):
             yield Int32(self, "match[]")
             yield Int32(self, "offset[]")
     def createDisplay(self):
-        return "%s(%i,%i,...)"%(self.op, self["default"].value, self["npairs"].value)
+        return "{0!s}({1:d},{2:d},...)".format(self.op, self["default"].value, self["npairs"].value)
 
 class JavaBytecode(FieldSet):
     OPCODE_TABLE = {
@@ -640,7 +640,7 @@ class CPInfo(FieldSet):
     def createFields(self):
         yield Enum(UInt8(self, "tag"), self.root.CONSTANT_TYPES)
         if self["tag"].value not in self.root.CONSTANT_TYPES:
-            raise ParserError("Java: unknown constant type (%s)" % self["tag"].value)
+            raise ParserError("Java: unknown constant type ({0!s})".format(self["tag"].value))
         self.constant_type = self.root.CONSTANT_TYPES[self["tag"].value]
         if self.constant_type == "Utf8":
             yield PascalString16(self, "bytes", charset="UTF-8")
@@ -688,11 +688,11 @@ class CPInfo(FieldSet):
         elif self.constant_type == "String":
             return str(self["string_index"].get_cp_entry())
         elif self.constant_type == "Fieldref":
-            return "%s (from %s)" % (self["name_and_type_index"], self["class_index"])
+            return "{0!s} (from {1!s})".format(self["name_and_type_index"], self["class_index"])
         elif self.constant_type == "Methodref":
-            return "%s (from %s)" % (self["name_and_type_index"], self["class_index"])
+            return "{0!s} (from {1!s})".format(self["name_and_type_index"], self["class_index"])
         elif self.constant_type == "InterfaceMethodref":
-             return "%s (from %s)" % (self["name_and_type_index"], self["class_index"])
+             return "{0!s} (from {1!s})".format(self["name_and_type_index"], self["class_index"])
         elif self.constant_type == "NameAndType":
             return parse_any_descriptor(
                     str(self["descriptor_index"].get_cp_entry()),
@@ -791,8 +791,7 @@ class AttributeInfo(FieldSet):
         # }
         if attr_name == "ConstantValue":
             if self["attribute_length"].value != 2:
-                    raise ParserError("Java: Invalid attribute %s length (%s)" \
-                        % (self.path, self["attribute_length"].value))
+                    raise ParserError("Java: Invalid attribute {0!s} length ({1!s})".format(self.path, self["attribute_length"].value))
             yield CPIndex(self, "constantvalue_index",
                     target_types=("Long","Float","Double","Integer","String"))
 
@@ -1036,17 +1035,17 @@ class JavaCompiledClassFile(Parser):
     def validate(self):
         if self["magic"].value != self.MAGIC:
             return "Wrong magic signature!"
-        version = "%d.%d" % (self["major_version"].value, self["minor_version"].value)
+        version = "{0:d}.{1:d}".format(self["major_version"].value, self["minor_version"].value)
         if version not in self.KNOWN_VERSIONS:
-            return "Unknown version (%s)" % version
+            return "Unknown version ({0!s})".format(version)
         return True
 
     def createDescription(self):
-        version = "%d.%d" % (self["major_version"].value, self["minor_version"].value)
+        version = "{0:d}.{1:d}".format(self["major_version"].value, self["minor_version"].value)
         if version in self.KNOWN_VERSIONS:
-            return "Compiled Java class, %s" % self.KNOWN_VERSIONS[version]
+            return "Compiled Java class, {0!s}".format(self.KNOWN_VERSIONS[version])
         else:
-            return "Compiled Java class, version %s" % version
+            return "Compiled Java class, version {0!s}".format(version)
 
     def createFields(self):
         yield textHandler(UInt32(self, "magic", "Java compiled class signature"),

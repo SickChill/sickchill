@@ -138,7 +138,7 @@ class FeedParserDict(dict):
         try:
             return self.__getitem__(key)
         except KeyError:
-            raise AttributeError("object has no attribute '%s'" % key)
+            raise AttributeError("object has no attribute '{0!s}'".format(key))
 
     def __hash__(self):
         return id(self)

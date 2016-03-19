@@ -78,7 +78,7 @@ class TVsubtitlesProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
+        self.session.headers['User-Agent'] = 'Subliminal/{0!s}'.format(__short_version__)
 
     def terminate(self):
         self.session.close()
@@ -130,7 +130,7 @@ class TVsubtitlesProvider(Provider):
         """
         # get the page of the season of the show
         logger.info('Getting the page of show id %d, season %d', show_id, season)
-        r = self.session.get(self.server_url + 'tvshow-%d-%d.html' % (show_id, season), timeout=10)
+        r = self.session.get(self.server_url + 'tvshow-{0:d}-{1:d}.html'.format(show_id, season), timeout=10)
         soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
 
         # loop over episode rows
@@ -168,7 +168,7 @@ class TVsubtitlesProvider(Provider):
 
         # get the episode page
         logger.info('Getting the page for episode %d', episode_ids[episode])
-        r = self.session.get(self.server_url + 'episode-%d.html' % episode_ids[episode], timeout=10)
+        r = self.session.get(self.server_url + 'episode-{0:d}.html'.format(episode_ids[episode]), timeout=10)
         soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
 
         # loop over subtitles rows
@@ -177,7 +177,7 @@ class TVsubtitlesProvider(Provider):
             # read the item
             language = Language.fromtvsubtitles(row.h5.img['src'][13:-4])
             subtitle_id = int(row.parent['href'][10:-5])
-            page_link = self.server_url + 'subtitle-%d.html' % subtitle_id
+            page_link = self.server_url + 'subtitle-{0:d}.html'.format(subtitle_id)
             rip = row.find('p', title='rip').text.strip() or None
             release = row.find('p', title='release').text.strip() or None
 
@@ -194,7 +194,7 @@ class TVsubtitlesProvider(Provider):
     def download_subtitle(self, subtitle):
         # download as a zip
         logger.info('Downloading subtitle %r', subtitle)
-        r = self.session.get(self.server_url + 'download-%d.html' % subtitle.subtitle_id, timeout=10)
+        r = self.session.get(self.server_url + 'download-{0:d}.html'.format(subtitle.subtitle_id), timeout=10)
         r.raise_for_status()
 
         # open the zip

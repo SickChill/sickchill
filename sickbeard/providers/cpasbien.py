@@ -66,7 +66,7 @@ class CpasbienProvider(TorrentProvider):
                             title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
                             title = re.sub(r' Saison', ' Season', title, flags=re.IGNORECASE)
                             tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
-                            download_url = (self.url + '/telechargement/%s' % tmp)
+                            download_url = (self.url + '/telechargement/{0!s}'.format(tmp))
                             if not all([title, download_url]):
                                 continue
 
@@ -85,7 +85,7 @@ class CpasbienProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                         except StandardError:

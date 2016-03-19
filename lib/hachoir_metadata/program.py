@@ -61,7 +61,7 @@ class ExeMetadata(RootMetadata):
     @fault_tolerant
     def usePE_Header(self, hdr):
         self.creation_date = hdr["creation_date"].value
-        self.comment = "CPU: %s" % hdr["cpu"].display
+        self.comment = "CPU: {0!s}".format(hdr["cpu"].display)
         if hdr["is_dll"].value:
             self.format_version = u"Portable Executable: Dynamic-link library (DLL)"
         else:
@@ -69,7 +69,7 @@ class ExeMetadata(RootMetadata):
 
     @fault_tolerant
     def usePE_OptHeader(self, hdr):
-        self.comment = "Subsystem: %s" % hdr["subsystem"].display
+        self.comment = "Subsystem: {0!s}".format(hdr["subsystem"].display)
 
     def readVersionInfo(self, info):
         values = {}
@@ -94,7 +94,7 @@ class ExeMetadata(RootMetadata):
             if key in self.KEY_TO_ATTR:
                 setattr(self, self.KEY_TO_ATTR[key], value)
             elif key not in self.SKIP_KEY:
-                self.comment = "%s=%s" % (key, value)
+                self.comment = "{0!s}={1!s}".format(key, value)
 
 registerExtractor(ExeFile, ExeMetadata)
 

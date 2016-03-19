@@ -73,7 +73,7 @@ class ConnectionPool(object):
         self.port = port
 
     def __str__(self):
-        return '%s(host=%r, port=%r)' % (type(self).__name__,
+        return '{0!s}(host={1!r}, port={2!r})'.format(type(self).__name__,
                                          self.host, self.port)
 
     def __enter__(self):
@@ -203,8 +203,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         Return a fresh :class:`HTTPConnection`.
         """
         self.num_connections += 1
-        log.info("Starting new HTTP connection (%d): %s" %
-                 (self.num_connections, self.host))
+        log.info("Starting new HTTP connection ({0:d}): {1!s}".format(self.num_connections, self.host))
 
         conn = self.ConnectionCls(host=self.host, port=self.port,
                                   timeout=self.timeout.connect_timeout,
@@ -239,7 +238,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
 
         # If this is a persistent connection, check if it got disconnected
         if conn and is_connection_dropped(conn):
-            log.info("Resetting dropped connection: %s" % self.host)
+            log.info("Resetting dropped connection: {0!s}".format(self.host))
             conn.close()
             if getattr(conn, 'auto_open', 1) == 0:
                 # This is a proxied connection that has been mutated by
@@ -272,8 +271,8 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         except Full:
             # This should never happen if self.block == True
             log.warning(
-                "Connection pool is full, discarding connection: %s" %
-                self.host)
+                "Connection pool is full, discarding connection: {0!s}".format(
+                self.host))
 
         # Connection never got put back into the pool, close it.
         if conn:
@@ -305,18 +304,18 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         """Is the error actually a timeout? Will raise a ReadTimeout or pass"""
 
         if isinstance(err, SocketTimeout):
-            raise ReadTimeoutError(self, url, "Read timed out. (read timeout=%s)" % timeout_value)
+            raise ReadTimeoutError(self, url, "Read timed out. (read timeout={0!s})".format(timeout_value))
 
         # See the above comment about EAGAIN in Python 3. In Python 2 we have
         # to specifically catch it and throw the timeout error
         if hasattr(err, 'errno') and err.errno in _blocking_errnos:
-            raise ReadTimeoutError(self, url, "Read timed out. (read timeout=%s)" % timeout_value)
+            raise ReadTimeoutError(self, url, "Read timed out. (read timeout={0!s})".format(timeout_value))
 
         # Catch possible read timeouts thrown as SSL errors. If not the
         # case, rethrow the original. We need to do this because of:
         # http://bugs.python.org/issue10272
         if 'timed out' in str(err) or 'did not complete (read)' in str(err):  # Python 2.6
-            raise ReadTimeoutError(self, url, "Read timed out. (read timeout=%s)" % timeout_value)
+            raise ReadTimeoutError(self, url, "Read timed out. (read timeout={0!s})".format(timeout_value))
 
     def _make_request(self, conn, method, url, timeout=_Default,
                       **httplib_request_kw):
@@ -364,7 +363,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
             # timeouts, check for a zero timeout before making the request.
             if read_timeout == 0:
                 raise ReadTimeoutError(
-                    self, url, "Read timed out. (read timeout=%s)" % read_timeout)
+                    self, url, "Read timed out. (read timeout={0!s})".format(read_timeout))
             if read_timeout is Timeout.DEFAULT_TIMEOUT:
                 conn.sock.settimeout(socket.getdefaulttimeout())
             else:  # None or a value
@@ -382,7 +381,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
 
         # AppEngine doesn't have a version attr.
         http_version = getattr(conn, '_http_vsn_str', 'HTTP/?')
-        log.debug("\"%s %s %s\" %s %s" % (method, url, http_version,
+        log.debug("\"{0!s} {1!s} {2!s}\" {3!s} {4!s}".format(method, url, http_version,
                                           httplib_response.status,
                                           httplib_response.length))
 
@@ -644,7 +643,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
                     raise
                 return response
 
-            log.info("Redirecting %s -> %s" % (url, redirect_location))
+            log.info("Redirecting {0!s} -> {1!s}".format(url, redirect_location))
             return self.urlopen(method, redirect_location, body, headers,
                     retries=retries, redirect=redirect,
                     assert_same_host=assert_same_host,
@@ -655,7 +654,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
         if retries.is_forced_retry(method, status_code=response.status):
             retries = retries.increment(method, url, response=response, _pool=self)
             retries.sleep()
-            log.info("Forced retry: %s" % url)
+            log.info("Forced retry: {0!s}".format(url))
             return self.urlopen(method, url, body, headers,
                     retries=retries, redirect=redirect,
                     assert_same_host=assert_same_host,
@@ -752,8 +751,7 @@ class HTTPSConnectionPool(HTTPConnectionPool):
         Return a fresh :class:`httplib.HTTPSConnection`.
         """
         self.num_connections += 1
-        log.info("Starting new HTTPS connection (%d): %s"
-                 % (self.num_connections, self.host))
+        log.info("Starting new HTTPS connection ({0:d}): {1!s}".format(self.num_connections, self.host))
 
         if not self.ConnectionCls or self.ConnectionCls is DummyConnection:
             raise SSLError("Can't connect to HTTPS URL because the SSL "

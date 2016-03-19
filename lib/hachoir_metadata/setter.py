@@ -149,7 +149,7 @@ def setTrackTotal(meta, key, total):
     try:
         return int(total)
     except ValueError:
-        meta.warning("Invalid track total: %r" % total)
+        meta.warning("Invalid track total: {0!r}".format(total))
         return None
 
 def setTrackNumber(meta, key, number):
@@ -161,7 +161,7 @@ def setTrackNumber(meta, key, number):
     try:
         return int(number)
     except ValueError:
-        meta.warning("Invalid track number: %r" % number)
+        meta.warning("Invalid track number: {0!r}".format(number))
         return None
 
 def normalizeString(text):

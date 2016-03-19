@@ -37,8 +37,7 @@ class PluginLoader(object):
             else:
                 from mako import exceptions
                 raise exceptions.RuntimeException(
-                    "Can't load plugin %s %s" %
-                    (self.group, name))
+                    "Can't load plugin {0!s} {1!s}".format(self.group, name))
 
     def register(self, name, modulepath, objname):
         def load():
@@ -282,7 +281,7 @@ def sorted_dict_repr(d):
     """
     keys = list(d.keys())
     keys.sort()
-    return "{" + ", ".join(["%r: %r" % (k, d[k]) for k in keys]) + "}"
+    return "{" + ", ".join(["{0!r}: {1!r}".format(k, d[k]) for k in keys]) + "}"
 
 
 def restore__ast(_ast):

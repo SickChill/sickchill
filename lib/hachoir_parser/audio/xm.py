@@ -24,7 +24,7 @@ from hachoir_parser.audio.modplug import ParseModplugMetadata
 from hachoir_parser.common.tracker import NOTE_NAME
 
 def parseSigned(val):
-    return "%i" % (val.value-128)
+    return "{0:d}".format((val.value-128))
 
 # From dumb
 SEMITONE_BASE = 1.059463094359295309843105314939748495817
@@ -58,8 +58,7 @@ class SampleHeader(FieldSet):
         bytes = 1+self["type/16bits"].value
         C5_speed = int(16726.0*pow(SEMITONE_BASE, self["relative_note"].value)
                        *pow(PITCH_BASE, self["fine_tune"].value*2))
-        return "%s, %ubits, %u samples, %uHz" % \
-               (self["name"].display, 8*bytes, self["length"].value/bytes, C5_speed)
+        return "{0!s}, {1:d}bits, {2:d} samples, {3:d}Hz".format(self["name"].display, 8*bytes, self["length"].value/bytes, C5_speed)
 
 class StuffType(StaticFieldSet):
     format = (
@@ -152,8 +151,7 @@ class Instrument(FieldSet):
                 yield field
 
     def createDescription(self):
-        return "Instrument '%s': %i samples, header %i bytes" % \
-               (self["name"].value, self["samples"].value, self["size"].value)
+        return "Instrument '{0!s}': {1:d} samples, header {2:d} bytes".format(self["name"].value, self["samples"].value, self["size"].value)
 
 VOLUME_NAME = (
     "Volume slide down", "Volume slide up", "Fine volume slide down",
@@ -164,7 +162,7 @@ VOLUME_NAME = (
 def parseVolume(val):
     val = val.value
     if 0x10<=val<=0x50:
-        return "Volume %i" % val-16
+        return "Volume {0:d}".format(val)-16
     else:
         return VOLUME_NAME[val/16 - 6]
 
@@ -212,7 +210,7 @@ class Effect(RawBits):
         t = self.parent.stream.readBits(self.absolute_address, 8, LITTLE_ENDIAN)
         param = self.parent.stream.readBits(self.absolute_address+8, 8, LITTLE_ENDIAN)
         if t == 0x0E:
-            return EFFECT_E_NAME[param>>4] + " %i" % (param&0x07)
+            return EFFECT_E_NAME[param>>4] + " {0:d}".format((param&0x07))
         elif t == 0x21:
             return ("Extra fine porta up", "Extra fine porta down")[param>>4]
         else:
@@ -236,8 +234,8 @@ class Note(FieldSet):
 
     def createFields(self):
         # This stupid shit gets the LSB, not the MSB...
-        self.info("Note info: 0x%02X" %
-                  self.stream.readBits(self.absolute_address, 8, LITTLE_ENDIAN))
+        self.info("Note info: 0x{0:02X}".format(
+                  self.stream.readBits(self.absolute_address, 8, LITTLE_ENDIAN)))
         yield RealBit(self, "is_extended")
         if self["is_extended"].value:
             info = NoteInfo(self, "info")
@@ -266,19 +264,19 @@ class Note(FieldSet):
             if info["has_note"].value:
                 desc.append(self["note"].display)
             if info["has_instrument"].value:
-                desc.append("instrument %i" % self["instrument"].value)
+                desc.append("instrument {0:d}".format(self["instrument"].value))
             if info["has_volume"].value:
                 desc.append(self["has_volume"].display)
             if info["has_type"].value:
-                desc.append("effect %s" % self["effect_type"].value)
+                desc.append("effect {0!s}".format(self["effect_type"].value))
             if info["has_parameter"].value:
-                desc.append("parameter %i" % self["effect_parameter"].value)
+                desc.append("parameter {0:d}".format(self["effect_parameter"].value))
         else:
-            desc = (self["note"].display, "instrument %i" % self["instrument"].value,
-                self["has_volume"].display, "effect %s" % self["effect_type"].value,
-                "parameter %i" % self["effect_parameter"].value)
+            desc = (self["note"].display, "instrument {0:d}".format(self["instrument"].value),
+                self["has_volume"].display, "effect {0!s}".format(self["effect_type"].value),
+                "parameter {0:d}".format(self["effect_parameter"].value))
         if desc:
-            return "Note %s" % ", ".join(desc)
+            return "Note {0!s}".format(", ".join(desc))
         else:
             return "Note"
 
@@ -302,12 +300,12 @@ class Pattern(FieldSet):
         yield UInt16(self, "rows", r"Number of rows in pattern (1..256)")
         yield UInt16(self, "data_size", r"Packed patterndata size")
         rows = self["rows"].value
-        self.info("Pattern: %i rows" % rows)
+        self.info("Pattern: {0:d} rows".format(rows))
         for index in xrange(rows):
             yield Row(self, "row[]")
 
     def createDescription(self):
-        return "Pattern with %i rows" % self["rows"].value
+        return "Pattern with {0:d} rows".format(self["rows"].value)
 
 class Header(FieldSet):
     MAGIC = "Extended Module: "
@@ -334,7 +332,7 @@ class Header(FieldSet):
         yield GenericVector(self, "pattern_order", 256, UInt8, "order")
 
     def createDescription(self):
-        return "'%s' by '%s'" % (
+        return "'{0!s}' by '{1!s}'".format(
             self["title"].value, self["tracker_name"].value)
 
 class XMModule(Parser):
@@ -354,9 +352,9 @@ class XMModule(Parser):
     def validate(self):
         header = self.stream.readBytes(0, 17)
         if header != Header.MAGIC:
-            return "Invalid signature '%s'" % header
+            return "Invalid signature '{0!s}'".format(header)
         if self["/header/header_size"].value != 276:
-            return "Unknown header size (%u)" % self["/header/header_size"].value
+            return "Unknown header size ({0:d})".format(self["/header/header_size"].value)
         return True
 
     def createFields(self):
