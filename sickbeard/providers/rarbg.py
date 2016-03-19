@@ -69,7 +69,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
-        self.token = response.get("token", None)
+        self.token = response.get("token")
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
