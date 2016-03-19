@@ -145,26 +145,25 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
         series_names = []
 
         # get all available shows
-        if allSeries:
-            if 'searchterm' in self.config:
-                search_term = self.config['searchterm']
-                # try to pick a show that's in my show list
-                for curShow in allSeries:
-                    if curShow in search_results:
-                        continue
+        if allSeries and 'searchterm' in self.config:
+            search_term = self.config['searchterm']
+            # try to pick a show that's in my show list
+            for curShow in allSeries:
+                if curShow in search_results:
+                    continue
 
-                    if 'seriesname' in curShow:
-                        series_names.append(curShow['seriesname'])
-                    if 'aliasnames' in curShow:
-                        series_names.extend(curShow['aliasnames'].split('|'))
+                if 'seriesname' in curShow:
+                    series_names.append(curShow['seriesname'])
+                if 'aliasnames' in curShow:
+                    series_names.extend(curShow['aliasnames'].split('|'))
 
-                    for name in series_names:
-                        if search_term.lower() in name.lower():
-                            if 'firstaired' not in curShow:
-                                curShow['firstaired'] = 'Unknown'
+                for name in series_names:
+                    if search_term.lower() in name.lower():
+                        if 'firstaired' not in curShow:
+                            curShow['firstaired'] = 'Unknown'
 
-                            if curShow not in search_results:
-                                search_results += [curShow]
+                        if curShow not in search_results:
+                            search_results += [curShow]
 
         return search_results
 
@@ -186,11 +185,12 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
     def selectSeries(allSeries):
         try:
             # try to pick a show that's in my show list
-            show_id_list = [int(x.indexerid) for x in sickbeard.showList]
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
             for curShow in allSeries:
                 if int(curShow['id']) in show_id_list:
                     return curShow
         except Exception:
+            # Maybe curShow doesnt have id? Ignore it
             pass
 
         # if nothing matches then return first result

@@ -32,7 +32,7 @@ import uuid
 
 from hachoir_parser import createParser  # pylint: disable=import-error
 from hachoir_metadata import extractMetadata  # pylint: disable=import-error
-from hachoir_core.log import log as hachoir_log # pylint: disable=import-error
+from hachoir_core.log import log as hachoir_log  # pylint: disable=import-error
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
@@ -356,9 +356,8 @@ class Quality(object):
                         result = Quality.RAWHDTV
                 elif all([ep.vres == 720, ep.tv == u'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
-            elif (ep.res == u'1080i') and ep.tv == u'hd':
-                if ep.mpeg or (ep.raw and ep.avc_non_free):
-                    result = Quality.RAWHDTV
+            elif (ep.res == u'1080i') and ep.tv == u'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
+                result = Quality.RAWHDTV
         elif ep.hrws:
             result = Quality.HDTV
 

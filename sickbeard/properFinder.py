@@ -243,7 +243,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                  historyLimit.strftime(History.date_format)])
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
-            if len(historyResults) == 0:
+            if not historyResults:
                 logger.log(
                     u"Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
                 continue
@@ -296,7 +296,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_proper_search FROM info")
 
-        if len(sql_results) == 0:
+        if not sql_results:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
                                [0, 0, str(when)])
         else:

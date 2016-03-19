@@ -83,7 +83,14 @@ def super_len(o):
                 )
 
     if hasattr(o, 'tell'):
-        current_position = o.tell()
+        try:
+            current_position = o.tell()
+        except (OSError, IOError):
+            # This can happen in some weird situations, such as when the file
+            # is actually a special file descriptor like stdin. In this
+            # instance, we don't know what the length is, so set it to zero and
+            # let requests chunk it instead.
+            current_position = total_length
 
     return max(0, total_length - current_position)
 
@@ -115,8 +122,12 @@ def get_netrc_auth(url, raise_errors=False):
 
         ri = urlparse(url)
 
-        # Strip port numbers from netloc
-        host = ri.netloc.split(':')[0]
+        # Strip port numbers from netloc. This weird `if...encode`` dance is
+        # used for Python 3.2, which doesn't support unicode literals.
+        splitstr = b':'
+        if isinstance(url, str):
+            splitstr = splitstr.decode('ascii')
+        host = ri.netloc.split(splitstr)[0]
 
         try:
             _netrc = netrc(netrc_path).authenticators(host)

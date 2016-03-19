@@ -83,7 +83,7 @@ def indentXML(elem, level=0):
     Does our pretty printing, makes Matt very happy
     """
     i = "\n" + level * "  "
-    if len(elem):
+    if elem:
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
@@ -390,7 +390,13 @@ def link(src, dst):
     """
 
     if os.name == 'nt':
-        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0:
+        if isinstance(src, bytes):
+            src = src.decode(sickbeard.SYS_ENCODING)
+
+        if isinstance(dst, bytes):
+            dst = dst.decode(sickbeard.SYS_ENCODING)
+
+        if not ctypes.windll.kernel32.CreateHardLinkW(dst, src, 0) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
@@ -1307,7 +1313,7 @@ def mapIndexersToShow(showObj):
                     "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
                     [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 

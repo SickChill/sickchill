@@ -101,7 +101,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'Could not download {0!s}'.format(url), logger.WARNING)
                 remove_file_failed(filename)
 
-        if len(urls):
+        if urls:
             logger.log(u'Failed to download any results', logger.WARNING)
 
         return False
@@ -304,7 +304,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             else:
                 results[episode_number].append(result)
 
-        if len(cl) > 0:
+        if cl:
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             db = self.cache._getDB()

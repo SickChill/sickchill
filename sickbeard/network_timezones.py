@@ -111,11 +111,10 @@ def get_network_timezone(network):
     :return: network timezone if found, or sb_timezone
     """
 
-    network_tz_name = network_dict.get(network, None)
-    if not (network_tz_name or network in missing_network_timezones):
-        if network:
-            missing_network_timezones.add(network)
-            logger.log(u'Missing time zone for network: {}'.format(network), logger.ERROR)
+    network_tz_name = network_dict.get(network)
+    if network and not (network_tz_name or network in missing_network_timezones):
+        missing_network_timezones.add(network)
+        logger.log(u'Missing time zone for network: {}'.format(network), logger.ERROR)
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone
