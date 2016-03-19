@@ -69,7 +69,7 @@ def sortedProviderList(randomize=False):
 
 
 def makeProviderList():
-    return [x.provider for x in [getProviderModule(y) for y in __all__] if x]
+    return [x.provider for x in (getProviderModule(y) for y in __all__) if x]
 
 
 def getProviderModule(name):

@@ -106,7 +106,7 @@ class BacklogSearcher(object):
                 sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
-                logger.log(u"Nothing needs to be downloaded for %s, skipping" % curShow.name, logger.DEBUG)
+                logger.log(u"Nothing needs to be downloaded for {0!s}, skipping".format(curShow.name), logger.DEBUG)
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -138,12 +138,12 @@ class BacklogSearcher(object):
     def _get_segments(self, show, fromDate):
         wanted = {}
         if show.paused:
-            logger.log(u"Skipping backlog for %s because the show is paused" % show.name, logger.DEBUG)
+            logger.log(u"Skipping backlog for {0!s} because the show is paused".format(show.name), logger.DEBUG)
             return wanted
 
         allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
 
-        logger.log(u"Seeing if we need anything from %s" % show.name, logger.DEBUG)
+        logger.log(u"Seeing if we need anything from {0!s}".format(show.name), logger.DEBUG)
 
         con = db.DBConnection()
         sql_results = con.select(

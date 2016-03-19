@@ -242,7 +242,7 @@ class TVCache(object):
             try:
                 parse_result = NameParser(showObj=showObj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log(u"{}".format(error), logger.DEBUG)
+                logger.log(u"{0}".format(error), logger.DEBUG)
                 return None
 
             if not parse_result or not parse_result.series_name:

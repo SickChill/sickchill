@@ -98,7 +98,7 @@ class HistoryTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0!s}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(HistoryTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

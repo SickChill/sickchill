@@ -76,11 +76,11 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         for mode in search_params:
             items = []
-            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
 
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {}'.format
+                    logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
 
                 post_data = {
@@ -106,7 +106,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                     for item in json_items.get('torrents', []):
                         title = item.pop('name', '')
-                        download_url = '{}{}'.format(
+                        download_url = '{0}{1}'.format(
                             self.urls['download'],
                             urlencode({'id': item.pop('id', ''), 'passkey': self.passkey}))
 
@@ -127,7 +127,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
-                            logger.log('Found result: {} with {} seeders and {} leechers'.format(
+                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(
                                 title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)

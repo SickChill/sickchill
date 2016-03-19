@@ -699,14 +699,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if GIT_USERNAME and GIT_PASSWORD:
                 gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
         except Exception as error:
-            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {}'.format(error), logger.WARNING)
+            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {0}'.format(error), logger.WARNING)
             gh = None
 
         if not gh:
             try:
                 gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
             except Exception as error:
-                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {}'.format(error), logger.WARNING)
+                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {0}'.format(error), logger.WARNING)
                 gh = None
 
         # git reset on update
@@ -718,7 +718,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # git_remote
         GIT_REMOTE = check_setting_str(CFG, 'General', 'git_remote', 'origin')
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
-                                           'https://github.com/%s/%s.git' % (GIT_ORG, GIT_REPO))
+                                           'https://github.com/{0!s}/{1!s}.git'.format(GIT_ORG, GIT_REPO))
 
         if 'sickragetv' in GIT_REMOTE_URL.lower():
             GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
@@ -762,7 +762,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                         shutil.move(srcDir, dstDir)
                         logger.log(u"Restore: restoring cache successful", logger.INFO)
                     except Exception as e:
-                        logger.log(u"Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
+                        logger.log(u"Restore: restoring cache failed: {0}".format(e), logger.ERROR)
 
                 restoreCache(ek(os.path.join, restoreDir, 'cache'), CACHE_DIR)
         except Exception as e:
@@ -793,7 +793,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         except Exception:
             WEB_PORT = 8081
 
-        if WEB_PORT < 21 or WEB_PORT > 65535:
+        if 21 > WEB_PORT > 65535:
             WEB_PORT = 8081
 
         WEB_HOST = check_setting_str(CFG, 'General', 'web_host', '0.0.0.0')
@@ -1583,7 +1583,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.log(u"Waiting for the %s thread to exit" % t.name)
+                logger.log(u"Waiting for the {0!s} thread to exit".format(t.name))
                 try:
                     t.join(10)
                 except Exception:
@@ -1604,7 +1604,7 @@ def halt():
 def sig_handler(signum=None, frame=None):
     _ = frame
     if not isinstance(signum, type(None)):
-        logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
+        logger.log(u"Signal {0:d} caught, saving and exiting...".format(int(signum)))
         Shutdown.stop(PID)
 
 
@@ -2211,7 +2211,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
     if not startPort:
         startPort = WEB_PORT
 
-    browserURL = '%s://localhost:%d%s/home/' % (protocol, startPort, web_root)
+    browserURL = '{0!s}://localhost:{1:d}{2!s}/home/'.format(protocol, startPort, web_root)
 
     try:
         webbrowser.open(browserURL, 2, 1)

@@ -53,7 +53,6 @@ Public Methods:
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
-    md5_for_file
     get_lan_ip
     check_url
     anon_url
@@ -415,13 +414,6 @@ class HelpersFileTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_md5_for_file(self):
-        """
-        Test md5_for_file
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_touch_file(self):
         """
         Test touchFile
@@ -690,7 +682,7 @@ if __name__ == '__main__':
     print("==================")
     print("######################################################################")
     for name, test_data in TEST_CASES.items():
-        test_name = 'test_%s' % name
+        test_name = 'test_{0!s}'.format(name)
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)
 

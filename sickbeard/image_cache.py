@@ -40,7 +40,8 @@ class ImageCache(object):
     def __del__(self):
         pass
 
-    def _cache_dir(self):
+    @staticmethod
+    def _cache_dir():
         """
         Builds up the full path to the image cache directory
         """

@@ -322,8 +322,8 @@ class BasicTests(test.SickbeardTestDBCase):
                 print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result
-            self.assertEqual(test_result.which_regex, [section], '%s : %s != %s' % (cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '%s : %s != %s' % (cur_test, str(test_result), str(result)))
+            self.assertEqual(test_result.which_regex, [section], '{0!s} : {1!s} != {2!s}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(str(test_result), str(result), '{0!s} : {1!s} != {2!s}'.format(cur_test, str(test_result), str(result)))
 
     def test_standard_names(self):
         """
@@ -486,8 +486,8 @@ class BasicFailedTests(test.SickbeardTestDBCase):
                 print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result
-            self.assertEqual(test_result.which_regex, [section], '%s : %s != %s' % (cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '%s : %s != %s' % (cur_test, str(test_result), str(result)))
+            self.assertEqual(test_result.which_regex, [section], '{0!s} : {1!s} != {2!s}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(str(test_result), str(result), '{0!s} : {1!s} != {2!s}'.format(cur_test, str(test_result), str(result)))
 
     def test_no_s_names(self):
         """

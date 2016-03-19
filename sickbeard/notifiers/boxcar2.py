@@ -48,7 +48,7 @@ class Notifier(object):
 
         post_data = {
             'user_credentials': accesstoken,
-            'notification[title]': 'SickRage : {}: {}'.format(title, msg),
+            'notification[title]': 'SickRage : {0}: {1}'.format(title, msg),
             'notification[long_message]': msg,
             'notification[sound]': 'notifier-2',
             'notification[source_name]': 'SickRage',
@@ -100,6 +100,6 @@ class Notifier(object):
 
         accesstoken = accesstoken or sickbeard.BOXCAR2_ACCESSTOKEN
 
-        logger.log('Sending notification for {}'.format(message), logger.DEBUG)
+        logger.log('Sending notification for {0}'.format(message), logger.DEBUG)
 
         return self._sendBoxcar2(message, title, accesstoken)

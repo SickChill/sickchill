@@ -55,11 +55,11 @@ class MainSanityCheck(db.DBSanityCheck):
         logger.log(u'Checking for archived episodes not qualified', logger.DEBUG)
 
         query = "SELECT episode_id, showid, status, location, season, episode " + \
-                "FROM tv_episodes WHERE status = %s" % common.ARCHIVED
+                "FROM tv_episodes WHERE status = {0!s}".format(common.ARCHIVED)
 
         sql_results = self.connection.select(query)
         if sql_results:
-            logger.log(u"Found %i shows with bare archived status, attempting automatic conversion..." % len(sql_results), logger.WARNING)
+            logger.log(u"Found {0:d} shows with bare archived status, attempting automatic conversion...".format(len(sql_results)), logger.WARNING)
 
         for archivedEp in sql_results:
             fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
@@ -75,60 +75,53 @@ class MainSanityCheck(db.DBSanityCheck):
                         location=archivedEp['location'] if archivedEp['location'] else 'unknown location',
                         result=('NOT FOUND', 'EXISTS')[bool(existing)]))
 
-            self.connection.action("UPDATE tv_episodes SET status = %i WHERE episode_id = %i" % (fixedStatus, archivedEp['episode_id']))
+            self.connection.action("UPDATE tv_episodes SET status = {0:d} WHERE episode_id = {1:d}".format(fixedStatus, archivedEp['episode_id']))
 
     def convert_tvrage_to_tvdb(self):
         logger.log(u"Checking for shows with tvrage id's, since tvrage is gone", logger.DEBUG)
         from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
         from sickbeard.indexers.indexer_config import INDEXER_TVDB
 
-        sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = %i" % INDEXER_TVRAGE)
+        sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = {0:d}".format(INDEXER_TVRAGE))
 
         if sql_results:
-            logger.log(u"Found %i shows with TVRage ID's, attempting automatic conversion..." % len(sql_results), logger.WARNING)
+            logger.log(u"Found {0:d} shows with TVRage ID's, attempting automatic conversion...".format(len(sql_results)), logger.WARNING)
 
         for tvrage_show in sql_results:
-            logger.log(u"Processing %s at %s" % (tvrage_show['show_name'], tvrage_show['location']))
-            mapping = self.connection.select("SELECT mindexer_id FROM indexer_mapping WHERE indexer_id=%i AND indexer=%i AND mindexer=%i" %
-                                             (tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
+            logger.log(u"Processing {0!s} at {1!s}".format(tvrage_show['show_name'], tvrage_show['location']))
+            mapping = self.connection.select("SELECT mindexer_id FROM indexer_mapping WHERE indexer_id={0:d} AND indexer={1:d} AND mindexer={2:d}".format(tvrage_show['indexer_id'], INDEXER_TVRAGE, INDEXER_TVDB))
 
             if len(mapping) != 1:
-                logger.log(u"Error mapping show from tvrage to tvdb for %s (%s), found %i mapping results. Cannot convert automatically!" %
-                           (tvrage_show['show_name'], tvrage_show['location'], len(mapping)), logger.WARNING)
+                logger.log(u"Error mapping show from tvrage to tvdb for {0!s} ({1!s}), found {2:d} mapping results. Cannot convert automatically!".format(tvrage_show['show_name'], tvrage_show['location'], len(mapping)), logger.WARNING)
                 logger.log(u"Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'", logger.WARNING)
-                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
-                self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
+                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(tvrage_show['indexer_id'], INDEXER_TVRAGE))
+                self.connection.action("DELETE FROM tv_episodes WHERE showid = {0:d}".format(tvrage_show['indexer_id']))
                 continue
 
             logger.log(u'Checking if there is already a show with id:%i in the show list')
-            duplicate = self.connection.select("SELECT show_name, indexer_id, location, FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (mapping[0]['mindexer_id'], INDEXER_TVDB))
+            duplicate = self.connection.select("SELECT show_name, indexer_id, location, FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(mapping[0]['mindexer_id'], INDEXER_TVDB))
             if duplicate:
-                logger.log(u'Found %s which has the same id as %s, cannot convert automatically so I am pausing %s' %
-                           (duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
-                self.connection.action("UPDATE tv_shows SET paused=1 WHERE indexer=%i AND indexer_id=%i" %
-                                       (INDEXER_TVDB, duplicate[0]['indexer_id']))
+                logger.log(u'Found {0!s} which has the same id as {1!s}, cannot convert automatically so I am pausing {2!s}'.format(duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
+                self.connection.action("UPDATE tv_shows SET paused=1 WHERE indexer={0:d} AND indexer_id={1:d}".format(INDEXER_TVDB, duplicate[0]['indexer_id']))
 
-                logger.log(u"Removing %s and it's episodes from the DB" % tvrage_show['show_name'], logger.WARNING)
-                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = %i AND indexer = %i" % (tvrage_show['indexer_id'], INDEXER_TVRAGE))
-                self.connection.action("DELETE FROM tv_episodes WHERE showid = %i" % tvrage_show['indexer_id'])
-                logger.log(u'Manually move the season folders from %s into %s, and delete %s before rescanning %s and unpausing it' %
-                           (tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
+                logger.log(u"Removing {0!s} and it's episodes from the DB".format(tvrage_show['show_name']), logger.WARNING)
+                self.connection.action("DELETE FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(tvrage_show['indexer_id'], INDEXER_TVRAGE))
+                self.connection.action("DELETE FROM tv_episodes WHERE showid = {0:d}".format(tvrage_show['indexer_id']))
+                logger.log(u'Manually move the season folders from {0!s} into {1!s}, and delete {2!s} before rescanning {3!s} and unpausing it'.format(tvrage_show['location'], duplicate[0]['location'], tvrage_show['location'], duplicate[0]['show_name']), logger.WARNING)
                 continue
 
-            logger.log(u'Mapping %s to tvdb id %i' % (tvrage_show['show_name'], mapping[0]['mindexer_id']))
+            logger.log(u'Mapping {0!s} to tvdb id {1:d}'.format(tvrage_show['show_name'], mapping[0]['mindexer_id']))
 
             self.connection.action(
-                "UPDATE tv_shows SET indexer=%i, indexer_id=%i WHERE indexer_id=%i" %
-                (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+                "UPDATE tv_shows SET indexer={0:d}, indexer_id={1:d} WHERE indexer_id={2:d}".format(INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
             )
 
             logger.log(u'Relinking episodes to show')
             self.connection.action(
-                "UPDATE tv_episodes SET indexer=%i, showid=%i, indexerid=0 WHERE showid=%i" %
-                (INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
+                "UPDATE tv_episodes SET indexer={0:d}, showid={1:d}, indexerid=0 WHERE showid={2:d}".format(INDEXER_TVDB, mapping[0]['mindexer_id'], tvrage_show['indexer_id'])
             )
 
-            logger.log(u'Please perform a full update on %s' % tvrage_show['show_name'], logger.WARNING)
+            logger.log(u'Please perform a full update on {0!s}'.format(tvrage_show['show_name']), logger.WARNING)
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -217,7 +210,7 @@ class MainSanityCheck(db.DBSanityCheck):
             [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
         for cur_unaired in sql_results:
-            logger.log(u"Fixing unaired episode status for episode_id: %s" % cur_unaired["episode_id"])
+            logger.log(u"Fixing unaired episode status for episode_id: {0!s}".format(cur_unaired["episode_id"]))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                                    [common.UNAIRED, cur_unaired["episode_id"]])
 
@@ -276,13 +269,11 @@ class MainSanityCheck(db.DBSanityCheck):
         for sql_result in sql_results:
             langs = []
 
-            logger.log(u"Checking subtitle codes for episode_id: %s, codes: %s" %
-                       (sql_result['episode_id'], sql_result['subtitles']), logger.DEBUG)
+            logger.log(u"Checking subtitle codes for episode_id: {0!s}, codes: {1!s}".format(sql_result['episode_id'], sql_result['subtitles']), logger.DEBUG)
 
             for subcode in sql_result['subtitles'].split(','):
                 if not len(subcode) == 3 or subcode not in subtitles.subtitle_code_filter():
-                    logger.log(u"Fixing subtitle codes for episode_id: %s, invalid code: %s" %
-                               (sql_result['episode_id'], subcode), logger.DEBUG)
+                    logger.log(u"Fixing subtitle codes for episode_id: {0!s}, invalid code: {1!s}".format(sql_result['episode_id'], subcode), logger.DEBUG)
                     continue
 
                 langs.append(subcode)
@@ -1149,4 +1140,4 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
 
         self.inc_minor_version()
 
-        logger.log('Updated to: %d.%d' % self.connection.version)
+        logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))

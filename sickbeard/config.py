@@ -419,7 +419,7 @@ def checkbox_to_value(option, value_on=1, value_off=0):
     if isinstance(option, list):
         option = option[-1]
 
-    if option == 'on' or option == 'true':
+    if option in ('on', 'true', value_on):
         return value_on
 
     return value_off
@@ -632,9 +632,8 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                u"""Your config version (%i) has been incremented past what this version of SickRage supports (%i).
-                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""" %
-                (self.config_version, self.expected_config_version)
+                u"""Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
+                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(self.config_version, self.expected_config_version)
             )
 
         sickbeard.CONFIG_VERSION = self.config_version

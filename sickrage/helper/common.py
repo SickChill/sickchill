@@ -121,7 +121,7 @@ def http_code_description(http_code):
     description = http_status_code.get(try_int(http_code), None)
 
     if isinstance(description, list):
-        return '(%s)' % ', '.join(description)
+        return '({0!s})'.format(', '.join(description))
 
     return description
 
@@ -177,7 +177,7 @@ def pretty_file_size(size, use_decimal=False, **kwargs):
     block = 1024. if not use_decimal else 1000.
     for unit in units:
         if remaining_size < block:
-            return '%3.2f %s' % (remaining_size, unit)
+            return '{0:3.2f} {1!s}'.format(remaining_size, unit)
         remaining_size /= block
     return size
 
@@ -208,9 +208,9 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
             scalar, units = size_tuple[0], size_tuple[1:]
             units = units[0].upper() if units else default_units
         else:
-            regex_units = re.search(r'(\w+)', size, re.IGNORECASE)
-            units = regex_units.group() if regex_units else default_units
-            scalar = size.strip(units)
+            regex_scalar = re.search(r'([\d. ]+)', size, re.IGNORECASE)
+            scalar = regex_scalar.group() if regex_scalar else -1
+            units = size.strip(scalar) if scalar != -1 else 'B'
 
         scalar = float(scalar)
         scalar *= (1024 if not use_decimal else 1000) ** scale.index(units)
@@ -264,7 +264,7 @@ def replace_extension(filename, new_extension):
         basename, _, _ = filename.rpartition('.')
 
         if basename:
-            return '%s.%s' % (basename, new_extension)
+            return '{0!s}.{1!s}'.format(basename, new_extension)
 
     return filename
 

@@ -95,7 +95,7 @@ class NameParser(object):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
                 except re.error, errormsg:
-                    logger.log(u"WARNING: Invalid episode_pattern using %s regexs, %s. %s" % (dbg_str, errormsg, cur_pattern))
+                    logger.log(u"WARNING: Invalid episode_pattern using {0!s} regexs, {1!s}. {2!s}".format(dbg_str, errormsg, cur_pattern))
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
@@ -459,12 +459,12 @@ class NameParser(object):
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         if not final_result.show:
-            raise InvalidShowException("Unable to match {} to a show in your database".format
+            raise InvalidShowException("Unable to match {0} to a show in your database".format
                                        (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
-            raise InvalidNameException("Unable to parse {} to a valid episode".format
+            raise InvalidNameException("Unable to parse {0} to a valid episode".format
                                        (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
 
         if cache_result:

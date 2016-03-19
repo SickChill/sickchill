@@ -146,7 +146,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
                 logger.log(u"Torrent file content is empty", logger.WARNING)
                 dlResult = False
     else:
-        logger.log(u"Unknown result type, unable to download it (%r)" % result.resultType, logger.ERROR)
+        logger.log(u"Unknown result type, unable to download it ({0!r})".format(result.resultType), logger.ERROR)
         dlResult = False
 
     if not dlResult:
@@ -173,7 +173,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch("{} from {}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
+                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
@@ -334,7 +334,7 @@ def wantedEpisodes(show, fromDate):
     """
     wanted = []
     if show.paused:
-        logger.log(u"Not checking for episodes of %s because the show is paused" % show.name, logger.DEBUG)
+        logger.log(u"Not checking for episodes of {0!s} because the show is paused".format(show.name), logger.DEBUG)
         return wanted
 
     allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
@@ -419,7 +419,7 @@ def searchForNeededEpisodes():
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
             if not curEp.show or curEp.show.paused:
-                logger.log(u"Skipping %s because the show is paused " % curEp.prettyName(), logger.DEBUG)
+                logger.log(u"Skipping {0!s} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
                 continue
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
@@ -502,25 +502,25 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
             except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                logger.log(u"Connection timed out (sockets) while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 break
             except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
-                logger.log(u"HTTP error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                logger.log(u"HTTP error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.ConnectionError as e:
-                logger.log(u"Connection error while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                logger.log(u"Connection error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.Timeout as e:
-                logger.log(u"Connection timed out while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                logger.log(u"Connection timed out while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 break
             except requests.exceptions.ContentDecodingError:
-                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 break
             except Exception as e:
                 if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
-                    logger.log(u"Connection reseted by peer while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.DEBUG)
+                    logger.log(u"Connection reseted by peer while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
                 else:
-                    logger.log(u"Unknown exception while searching %s. Error: %r" % (curProvider.name, ex(e)), logger.ERROR)
+                    logger.log(u"Unknown exception while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.ERROR)
                     logger.log(traceback.format_exc(), logger.DEBUG)
                 break
 
@@ -577,13 +577,13 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                                   [show.indexerid])]
 
-            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))
+            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0!s} AND season in  {1!s}]".format(show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
             allWanted = True
             anyWanted = False
             for curEpNum in allEps:
-                for season in set([x.season for x in episodes]):
+                for season in {x.season for x in episodes}:
                     if not show.wantEpisode(season, curEpNum, seasonQual, downCurQuality):
                         allWanted = False
                     else:
@@ -595,7 +595,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                     u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.provider_type + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
-                    for season in set([x.season for x in episodes]):
+                    for season in {x.season for x in episodes}:
                         epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
 
@@ -635,7 +635,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                         u"Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!")
                     epObjs = []
                     for curEpNum in allEps:
-                        for season in set([x.season for x in episodes]):
+                        for season in {x.season for x in episodes}:
                             epObjs.append(show.getEpisode(season, curEpNum))
                     bestSeasonResult.episodes = epObjs
 
