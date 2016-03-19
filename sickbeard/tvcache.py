@@ -122,7 +122,7 @@ class TVCache(object):
                     if ci is not None:
                         cl.append(ci)
 
-                if len(cl) > 0:
+                if cl:
                     cache_db_con = self._getDB()
                     cache_db_con.mass_action(cl)
 

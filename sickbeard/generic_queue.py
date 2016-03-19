@@ -33,6 +33,8 @@ class QueuePriorities(object):
 class GenericQueue(object):
     def __init__(self):
 
+        self.amActive = False
+
         self.currentItem = None
 
         self.queue = []
@@ -72,6 +74,8 @@ class GenericQueue(object):
 
         :param force: Force queue processing (currently not implemented)
         """
+        self.amActive = True
+
         with self.lock:
             # only start a new task if one isn't already going
             if self.currentItem is None or not self.currentItem.isAlive():
@@ -82,7 +86,7 @@ class GenericQueue(object):
                     self.currentItem = None
 
                 # if there's something in the queue then run it in a thread and take it out of the queue
-                if len(self.queue) > 0:
+                if self.queue:
 
                     # sort by priority
                     def sorter(x, y):

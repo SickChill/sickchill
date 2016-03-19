@@ -49,7 +49,7 @@ class Notifier(object):
         if sickbeard.PROWL_NOTIFY_ONSNATCH:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:
@@ -61,7 +61,7 @@ class Notifier(object):
         if sickbeard.PROWL_NOTIFY_ONDOWNLOAD:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:
@@ -73,7 +73,7 @@ class Notifier(object):
         if sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:

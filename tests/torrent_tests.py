@@ -64,7 +64,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
         bitcannon.api_key = ""
 
-        if len(bitcannon.custom_url) > 0:
+        if bitcannon.custom_url:
             # pylint: disable=protected-access
             search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
