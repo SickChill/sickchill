@@ -278,7 +278,7 @@ class TVCache(object):
 
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
-        return neededEps[episode] if episode in neededEps else []
+        return neededEps.get(episode, [])
 
     def listPropers(self, date=None):
         cache_db_con = self._getDB()
