@@ -131,18 +131,14 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         # Check to see if there is more than 1 page of results
                         pager = init_soup.find('div', {'class': 'pager'})
-                        if pager:
-                            page_links = pager.find_all('a', href=True)
-                        else:
-                            page_links = []
+                        page_links = pager.find_all('a', href=True) if pager else []
 
-                        if len(page_links) > 0:
-                            for lnk in page_links:
-                                link_text = lnk.text.strip()
-                                if link_text.isdigit():
-                                    page_int = int(link_text)
-                                    if page_int > max_page_number:
-                                        max_page_number = page_int
+                        for lnk in page_links:
+                            link_text = lnk.text.strip()
+                            if link_text.isdigit():
+                                page_int = int(link_text)
+                                if page_int > max_page_number:
+                                    max_page_number = page_int
 
                         # limit page number to 15 just in case something goes wrong
                         if max_page_number > 15:
@@ -179,7 +175,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
 
                             # Continue only if a Release is found
-                            if len(torrent_rows) == 0:
+                            if not torrent_rows:
                                 logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                                 continue
 

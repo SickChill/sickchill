@@ -8,6 +8,7 @@ requests.utils imports from here, so be careful with imports.
 
 import copy
 import time
+import calendar
 import collections
 from .compat import cookielib, urlparse, urlunparse, Morsel
 
@@ -276,6 +277,12 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
                 dictionary[cookie.name] = cookie.value
         return dictionary
 
+    def __contains__(self, name):
+        try:
+            return super(RequestsCookieJar, self).__contains__(name)
+        except CookieConflictError:
+            return True
+
     def __getitem__(self, name):
         """Dict-like __getitem__() for compatibility with client code. Throws
         exception if there are more than one cookie with name. In that case,
@@ -424,8 +431,9 @@ def morsel_to_cookie(morsel):
             raise TypeError('max-age: %s must be integer' % morsel['max-age'])
     elif morsel['expires']:
         time_template = '%a, %d-%b-%Y %H:%M:%S GMT'
-        expires = int(time.mktime(
-            time.strptime(morsel['expires'], time_template)) - time.timezone)
+        expires = calendar.timegm(
+            time.strptime(morsel['expires'], time_template)
+        )
     return create_cookie(
         comment=morsel['comment'],
         comment_url=bool(morsel['comment']),

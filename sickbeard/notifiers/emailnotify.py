@@ -68,7 +68,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -114,7 +114,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -160,7 +160,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -200,7 +200,7 @@ class Notifier(object):
         '''
         if sickbeard.USE_EMAIL:
             to = self._generate_recipients(None)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:

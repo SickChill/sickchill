@@ -22,7 +22,6 @@ import datetime
 import socket
 import os
 import re
-import os.path
 import shutil
 import shutil_custom
 import random

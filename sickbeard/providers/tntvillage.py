@@ -174,7 +174,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         img_all = (torrent_rows.find_all('td'))[1].find_all('img')
 
-        if len(img_all) > 0:
+        if img_all:
             for img_type in img_all:
                 try:
                     file_quality = file_quality + " " + img_type['src'].replace("style_images/mkportal-636/", "").replace(".gif", "").replace(".png", "")
@@ -194,7 +194,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         hdOptions = checkName(["720p"], any)
         fullHD = checkName(["1080p", "fullHD"], any)
 
-        if len(img_all) > 0:
+        if img_all:
             file_quality = (torrent_rows.find_all('td'))[1].get_text()
 
         webdl = checkName(["webdl", "webmux", "webrip", "dl-webmux", "web-dlmux", "webdl-mux", "web-dl", "webdlmux", "dlmux"], any)

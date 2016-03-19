@@ -99,7 +99,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
                 sql_l.append(ep.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
         else:
