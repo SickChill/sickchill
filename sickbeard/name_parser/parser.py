@@ -358,9 +358,8 @@ class NameParser(object):
 
     @staticmethod
     def _unicodify(obj, encoding="utf-8"):
-        if isinstance(obj, basestring):
-            if not isinstance(obj, unicode):
-                obj = unicode(obj, encoding, 'replace')
+        if isinstance(obj, bytes):
+            obj = unicode(obj, encoding, 'replace')
         return obj
 
     @staticmethod

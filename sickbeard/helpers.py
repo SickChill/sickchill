@@ -390,7 +390,13 @@ def link(src, dst):
     """
 
     if os.name == 'nt':
-        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0:
+        if isinstance(src, bytes):
+            src = src.decode(sickbeard.SYS_ENCODING)
+
+        if isinstance(dst, bytes):
+            dst = dst.decode(sickbeard.SYS_ENCODING)
+
+        if not ctypes.windll.kernel32.CreateHardLinkW(dst, src, 0) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
