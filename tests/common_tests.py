@@ -41,66 +41,84 @@ class QualityStringTests(unittest.TestCase):
     """
     Test Case for strings in common.Quality
     """
-    # TODO: Add more test cases
     test_cases = {
-        'sd_tv': ["Test.Show.S01E02.PDTV.XViD-GROUP",
-                  "Test.Show.S01E02.PDTV.x264-GROUP",
-                  "Test.Show.S01E02.HDTV.XViD-GROUP",
-                  "Test.Show.S01E02.HDTV.x264-GROUP",
-                  "Test.Show.S01E02.DSR.XViD-GROUP",
-                  "Test.Show.S01E02.DSR.x264-GROUP",
-                  "Test.Show.S01E02.TVRip.XViD-GROUP",
-                  "Test.Show.S01E02.TVRip.x264-GROUP",
-                  "Test.Show.S01E02.WEBRip.XViD-GROUP",
-                  "Test.Show.S01E02.WEBRip.x264-GROUP",
-                  "Test.Show.S01E02.WEB-DL.x264-GROUP",
-                  "Test.Show.S01E02.WEB-DL.AAC2.0.H.264-GROUP",
-                  "Test.Show.S01E02 WEB-DL H 264-GROUP",
-                  "Test.Show.S01E02_WEB-DL_H_264-GROUP",
-                  "Test.Show.S01E02.WEB-DL.AAC2.0.H264-GROUP", ],
-        'sd_dvd': ["Test.Show.S01E02.480P.DVDrip.HEVC.X265",
-                   "Test.Show.S01E02.DVDRiP.XViD-GROUP",
-                   "Test.Show.S01E02.DVDRiP.DiVX-GROUP",
-                   "Test.Show.S01E02.DVDRiP.x264-GROUP",
-                   "Test.Show.S01E02.DVDRip.WS.XViD-GROUP",
-                   "Test.Show.S01E02.DVDRip.WS.DiVX-GROUP",
-                   "Test.Show.S01E02.DVDRip.WS.x264-GROUP",
-                   "Test.Show.S01E02.BDRIP.XViD-GROUP",
-                   "Test.Show.S01E02.BDRIP.DiVX-GROUP",
-                   "Test.Show.S01E02.BDRIP.x264-GROUP",
-                   "Test.Show.S01E02.BDRIP.WS.XViD-GROUP",
-                   "Test.Show.S01E02.BDRIP.WS.DiVX-GROUP",
-                   "Test.Show.S01E02.BDRIP.WS.x264-GROUP", ],
-        'hd_tv': ["Test.Show.S01E02.720p.HDTV.x264-GROUP",
-                  "Test.Show.S01E02.HR.WS.PDTV.x264-GROUP", ],
-        'raw_hd_tv': ["Test.Show.S01E02.720p.HDTV.DD5.1.MPEG2-GROUP",
-                      "Test.Show.S01E02.1080i.HDTV.DD2.0.MPEG2-GROUP",
-                      "Test.Show.S01E02.1080i.HDTV.H.264.DD2.0-GROUP",
-                      "Test Show - S01E02 - 1080i HDTV MPA1.0 H.264 - GROUP",
-                      "Test.Show.S01E02.1080i.HDTV.DD.5.1.h264-GROUP", ],
-        'full_hd_tv': ["Test.Show.S01E02.1080p.HDTV.x264-GROUP", ],
-        'hd_web_dl': ["Test.Show.S01E02.720p.WEB-DL-GROUP",
-                      "Test.Show.S01E02.720p.WEBRip-GROUP",
-                      "Test.Show.S01E02.WEBRip.720p.H.264.AAC.2.0-GROUP",
-                      "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H.264-GROUP",
-                      "Test Show S01E02 720p WEB-DL AAC2 0 H 264-GROUP",
-                      "Test_Show.S01E02_720p_WEB-DL_AAC2.0_H264-GROUP",
-                      "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H264-GROUP",
-                      "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP", ],
-        'full_hd_web_dl': ["Test.Show.S01E02.1080p.WEB-DL-GROUP",
-                           "Test.Show.S01E02.1080p.WEBRip-GROUP",
-                           "Test.Show.S01E02.WEBRip.1080p.H.264.AAC.2.0-GROUP",
-                           "Test.Show.S01E02.WEBRip.1080p.H264.AAC.2.0-GROUP",
-                           "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
-                           "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
-                           "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP", ],
-        'hd_bluray': ["Test.Show.S01E02.720p.BluRay.x264-GROUP",
-                      "Test.Show.S01E02.720p.HDDVD.x264-GROUP", ],
-        'full_hd_bluray': ["Test.Show.S01E02.1080p.BluRay.x264-GROUP",
-                           "Test.Show.S01E02.1080p.HDDVD.x264-GROUP", ],
-        'unknown': ["Test.Show.S01E02-SiCKBEARD",
-                    "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
-                    ],
+        'sd_tv': [
+            "Test.Show.S01E02.PDTV.XViD-GROUP",
+            "Test.Show.S01E02.PDTV.x264-GROUP",
+            "Test.Show.S01E02.HDTV.XViD-GROUP",
+            "Test.Show.S01E02.HDTV.x264-GROUP",
+            "Test.Show.S01E02.DSR.XViD-GROUP",
+            "Test.Show.S01E02.DSR.x264-GROUP",
+            "Test.Show.S01E02.TVRip.XViD-GROUP",
+            "Test.Show.S01E02.TVRip.x264-GROUP",
+            "Test.Show.S01E02.WEBRip.XViD-GROUP",
+            "Test.Show.S01E02.WEBRip.x264-GROUP",
+            "Test.Show.S01E02.WEB-DL.x264-GROUP",
+            "Test.Show.S01E02.WEB-DL.AAC2.0.H.264-GROUP",
+            "Test.Show.S01E02 WEB-DL H 264-GROUP",
+            "Test.Show.S01E02_WEB-DL_H_264-GROUP",
+            "Test.Show.S01E02.WEB-DL.AAC2.0.H264-GROUP"
+        ],
+        'sd_dvd': [
+            "Test.Show.S01E02.480P.DVDrip.HEVC.X265",
+            "Test.Show.S01E02.DVDRiP.XViD-GROUP",
+            "Test.Show.S01E02.DVDRiP.DiVX-GROUP",
+            "Test.Show.S01E02.DVDRiP.x264-GROUP",
+            "Test.Show.S01E02.DVDRip.WS.XViD-GROUP",
+            "Test.Show.S01E02.DVDRip.WS.DiVX-GROUP",
+            "Test.Show.S01E02.DVDRip.WS.x264-GROUP",
+            "Test.Show.S01E02.BDRIP.XViD-GROUP",
+            "Test.Show.S01E02.BDRIP.DiVX-GROUP",
+            "Test.Show.S01E02.BDRIP.x264-GROUP",
+            "Test.Show.S01E02.BDRIP.WS.XViD-GROUP",
+            "Test.Show.S01E02.BDRIP.WS.DiVX-GROUP",
+            "Test.Show.S01E02.BDRIP.WS.x264-GROUP"
+        ],
+        'hd_tv': [
+            "Test.Show.S01E02.720p.HDTV.x264-GROUP",
+            "Test.Show.S01E02.HR.WS.PDTV.x264-GROUP"
+        ],
+        'raw_hd_tv': [
+            "Test.Show.S01E02.720p.HDTV.DD5.1.MPEG2-GROUP",
+            "Test.Show.S01E02.1080i.HDTV.DD2.0.MPEG2-GROUP",
+            "Test.Show.S01E02.1080i.HDTV.H.264.DD2.0-GROUP",
+            "Test Show - S01E02 - 1080i HDTV MPA1.0 H.264 - GROUP",
+            "Test.Show.S01E02.1080i.HDTV.DD.5.1.h264-GROUP"
+        ],
+        'full_hd_tv': [
+            "Test.Show.S01E02.1080p.HDTV.x264-GROUP"
+        ],
+        'hd_web_dl': [
+            "Test.Show.S01E02.720p.WEB-DL-GROUP",
+            "Test.Show.S01E02.720p.WEBRip-GROUP",
+            "Test.Show.S01E02.WEBRip.720p.H.264.AAC.2.0-GROUP",
+            "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H.264-GROUP",
+            "Test Show S01E02 720p WEB-DL AAC2 0 H 264-GROUP",
+            "Test_Show.S01E02_720p_WEB-DL_AAC2.0_H264-GROUP",
+            "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H264-GROUP",
+            "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP"
+        ],
+        'full_hd_web_dl': [
+            "Test.Show.S01E02.1080p.WEB-DL-GROUP",
+            "Test.Show.S01E02.1080p.WEBRip-GROUP",
+            "Test.Show.S01E02.WEBRip.1080p.H.264.AAC.2.0-GROUP",
+            "Test.Show.S01E02.WEBRip.1080p.H264.AAC.2.0-GROUP",
+            "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
+            "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
+            "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP"
+        ],
+        'hd_bluray': [
+            "Test.Show.S01E02.720p.BluRay.x264-GROUP",
+            "Test.Show.S01E02.720p.HDDVD.x264-GROUP"
+        ],
+        'full_hd_bluray': [
+            "Test.Show.S01E02.1080p.BluRay.x264-GROUP",
+            "Test.Show.S01E02.1080p.HDDVD.x264-GROUP"
+        ],
+        'unknown': [
+            "Test.Show.S01E02-SiCKBEARD",
+            "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
+        ],
     }
 
     def test_sd_tv(self):
@@ -398,9 +416,6 @@ class StatusStringsTests(unittest.TestCase):
     """
     # TODO: Split tests into separate tests and add additional tests
 
-    # Until .has_key() is removed from SickRage, we will test that it still works as expected
-    # pylint disable:W0402
-    # Use of a deprecated module
     def test_all(self):
         """
         Run all status strings tests
@@ -422,14 +437,10 @@ class StatusStringsTests(unittest.TestCase):
         for i in status_strings:
             self.assertEqual(status_strings[i], status_strings[str(i)])
             self.assertEqual(i in status_strings, str(i) in status_strings)
-            self.assertEqual(status_strings.has_key(i), status_strings.has_key(str(i)))
-            self.assertEqual(i in status_strings, status_strings.has_key(i))
 
         for i in status_strings.qualities:
             self.assertEqual(status_strings[i], status_strings[str(i)])
             self.assertEqual(i in status_strings, str(i) in status_strings)
-            self.assertEqual(status_strings.has_key(i), status_strings.has_key(str(i)))
-            self.assertEqual(i in status_strings, status_strings.has_key(i))
 
         for i in invalid:
             with self.assertRaises(TypeError):
