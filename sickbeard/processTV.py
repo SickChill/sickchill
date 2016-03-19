@@ -400,14 +400,14 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             NameParser().parse(video, cache_result=False)
             return True
         except (InvalidNameException, InvalidShowException) as error:
-            result.output += logHelper(u"{}".format(error), logger.DEBUG)
+            result.output += logHelper(u"{0}".format(error), logger.DEBUG)
 
     for proc_dir in allDirs:
         try:
             NameParser().parse(proc_dir, cache_result=False)
             return True
         except (InvalidNameException, InvalidShowException) as error:
-            result.output += logHelper(u"{}".format(error), logger.DEBUG)
+            result.output += logHelper(u"{0}".format(error), logger.DEBUG)
 
     if sickbeard.UNPACK:
         # Search for packed release
@@ -418,7 +418,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
                 NameParser().parse(packed, cache_result=False)
                 return True
             except (InvalidNameException, InvalidShowException) as error:
-                result.output += logHelper(u"{}".format(error), logger.DEBUG)
+                result.output += logHelper(u"{0}".format(error), logger.DEBUG)
 
     result.output += logHelper(u"%s : No processable items found in folder" % dirName, logger.DEBUG)
     return False
@@ -484,8 +484,8 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 failure = (ex(e), u'Unpacking failed for an unknown reason')
 
             if failure is not None:
-                result.output += logHelper(u'Failed Unrar archive {}: {}'.format(archive, failure[0]), logger.ERROR)
-                result.missedfiles.append(u'{} : Unpacking failed: {}'.format(archive, failure[1]))
+                result.output += logHelper(u'Failed Unrar archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)
+                result.missedfiles.append(u'{0} : Unpacking failed: {1}'.format(archive, failure[1]))
                 result.result = False
                 continue
 
@@ -656,7 +656,7 @@ def subtitles_enabled(video):
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
-        logger.log(u'Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {}'.format(video), logger.WARNING)
+        logger.log(u'Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video), logger.WARNING)
         return False
 
     if parse_result.show.indexerid:
@@ -664,5 +664,5 @@ def subtitles_enabled(video):
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
         return bool(sql_results[0]["subtitles"]) if sql_results else False
     else:
-        logger.log(u'Empty indexer ID for: {}'.format(video), logger.WARNING)
+        logger.log(u'Empty indexer ID for: {0}'.format(video), logger.WARNING)
         return False

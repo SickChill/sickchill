@@ -110,7 +110,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 continue
             except Exception as e:
                 if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
-                    logger.log(u"Connection reseted by peer accessing {}".format(curProvider.name), logger.DEBUG)
+                    logger.log(u"Connection reseted by peer accessing {0}".format(curProvider.name), logger.DEBUG)
                 else:
                     logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                     logger.log(traceback.format_exc(), logger.DEBUG)
@@ -139,7 +139,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             try:
                 parse_result = NameParser(False).parse(curProper.name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log(u"{}".format(error), logger.DEBUG)
+                logger.log(u"{0}".format(error), logger.DEBUG)
                 continue
 
             if not parse_result.series_name:

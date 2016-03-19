@@ -97,11 +97,11 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
-                    logger.log('Search string: {}'.format(search_string.decode('utf-8')),
+                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')),
                                logger.DEBUG)
 
                 data = self.get_url(self.urls['api'], params=search_params, returns='json')
@@ -116,7 +116,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.log('Found result: {}'.format(item.get('title')), logger.DEBUG)
+                    logger.log('Found result: {0}'.format(item.get('title')), logger.DEBUG)
                     items.append(item)
 
             results += items

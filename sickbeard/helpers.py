@@ -354,9 +354,9 @@ def copyFile(srcFile, destFile):
     try:
         ek(shutil.copyfile, srcFile, destFile)
     except (SpecialFileError, Error) as error:
-        logger.log(u'{}'.format(error), logger.WARNING)
+        logger.log(u'{0}'.format(error), logger.WARNING)
     except Exception as error:
-        logger.log(u'{}'.format(error), logger.ERROR)
+        logger.log(u'{0}'.format(error), logger.ERROR)
     else:
         try:
             ek(shutil.copymode, srcFile, destFile)
@@ -800,7 +800,7 @@ def arithmeticEval(s):
         elif isinstance(node, ast.BinOp):
             return _binOps[type(node.op)](_eval(node.left), _eval(node.right))
         else:
-            raise Exception('Unsupported type {}'.format(node))
+            raise Exception('Unsupported type {0}'.format(node))
 
     return _eval(node.body)
 

@@ -120,7 +120,7 @@ class Notifier(object):
 
         failed = response.pop('error', {})
         if failed:
-            logger.log('Pushbullet notification failed: {}'.format(failed.pop('message')), logger.WARNING)
+            logger.log('Pushbullet notification failed: {0}'.format(failed.pop('message')), logger.WARNING)
         else:
             logger.log('Pushbullet notification sent.', logger.DEBUG)
 

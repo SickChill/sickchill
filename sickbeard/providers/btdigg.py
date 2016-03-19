@@ -49,12 +49,12 @@ class BTDiggProvider(TorrentProvider):
         search_params = {"p": 0}
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 search_params["q"] = search_string
                 if mode != "RSS":
                     search_params["order"] = 0
-                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
                 else:
                     search_params["order"] = 2
@@ -72,12 +72,12 @@ class BTDiggProvider(TorrentProvider):
                             continue
 
                         if float(torrent.pop("ff")):
-                            logger.log("Ignoring result for {} since it's been reported as fake (level = {})".format
+                            logger.log("Ignoring result for {0} since it's been reported as fake (level = {1})".format
                                        (title, torrent["ff"]), logger.DEBUG)
                             continue
 
                         if not int(torrent.pop("files")):
-                            logger.log("Ignoring result for {} because it has no files".format
+                            logger.log("Ignoring result for {0} because it has no files".format
                                        (title), logger.DEBUG)
                             continue
 

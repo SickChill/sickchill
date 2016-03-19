@@ -80,24 +80,24 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         if self.provider is None:
             return u'Invalid provider, unable to print self'
 
-        my_string = u'{} @ {}\n'.format(self.provider.name, self.url)
+        my_string = u'{0} @ {1}\n'.format(self.provider.name, self.url)
         my_string += u'Extra Info:\n'
         for extra in self.extraInfo:
-            my_string += u' {}\n'.format(extra)
+            my_string += u' {0}\n'.format(extra)
 
         my_string += u'Episodes:\n'
         for ep in self.episodes:
-            my_string += u' {}\n'.format(ep)
+            my_string += u' {0}\n'.format(ep)
 
-        my_string += u'Quality: {}\n'.format(Quality.qualityStrings[self.quality])
-        my_string += u'Name: {}\n'.format(self.name)
-        my_string += u'Size: {}\n'.format(self.size)
-        my_string += u'Release Group: {}\n'.format(self.release_group)
+        my_string += u'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += u'Name: {0}\n'.format(self.name)
+        my_string += u'Size: {0}\n'.format(self.size)
+        my_string += u'Release Group: {0}\n'.format(self.release_group)
 
         return my_string
 
     def fileName(self):
-        return u'{}.{}'.format(self.episodes[0].prettyName(), self.resultType)
+        return u'{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
 class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods

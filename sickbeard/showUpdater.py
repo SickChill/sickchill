@@ -59,10 +59,10 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         network_timezones.update_network_dict()
 
-        url = 'http://thetvdb.com/api/Updates.php?type=series&time={}'.format(last_update)
+        url = 'http://thetvdb.com/api/Updates.php?type=series&time={0}'.format(last_update)
         data = helpers.getURL(url, session=self.session, returns='text', hooks={'response': self.request_hook})
         if not data:
-            logger.log('Could not get the recently updated show data from {}. Retrying later. Url was: {}'.format(sickbeard.indexerApi(INDEXER_TVDB).name, url))
+            logger.log('Could not get the recently updated show data from {0}. Retrying later. Url was: {1}'.format(sickbeard.indexerApi(INDEXER_TVDB).name, url))
             self.amActive = False
             return
 
@@ -77,7 +77,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         pi_list = []
         for cur_show in sickbeard.showList:
             if int(cur_show.indexer) in [INDEXER_TVRAGE]:
-                logger.log('Indexer is no longer available for show [{}] '.format(cur_show.name), logger.WARNING)
+                logger.log('Indexer is no longer available for show [{0}] '.format(cur_show.name), logger.WARNING)
                 continue
 
             try:
@@ -88,7 +88,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                     else:
                         pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
-                logger.log('Automatic update failed: {}'.format(ex(error)), logger.DEBUG)
+                logger.log('Automatic update failed: {0}'.format(ex(error)), logger.DEBUG)
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator('Daily Update', pi_list))
 
@@ -99,7 +99,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def request_hook(response, **kwargs):
         _ = kwargs
-        logger.log('{} URL: {} [Status: {}]'.format
+        logger.log('{0} URL: {1} [Status: {2}]'.format
                    (response.request.method, response.request.url, response.status_code), logger.DEBUG)
 
     def __del__(self):
