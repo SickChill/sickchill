@@ -89,7 +89,6 @@ class RegistrableExtensionManager(ExtensionManager):
 #: Provider manager
 provider_manager = RegistrableExtensionManager('subliminal.providers', [
     'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
-    'itasa = subliminal.providers.itasa:ItaSAProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
     'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
@@ -100,6 +99,6 @@ provider_manager = RegistrableExtensionManager('subliminal.providers', [
 #: Refiner manager
 refiner_manager = RegistrableExtensionManager('subliminal.refiners', [
     'metadata = subliminal.refiners.metadata:refine',
-    'tvdb = subliminal.refiners.tvdb:refine',
-    'omdb = subliminal.refiners.omdb:refine'
+    'omdb = subliminal.refiners.omdb:refine',
+    'tvdb = subliminal.refiners.tvdb:refine'
 ])
