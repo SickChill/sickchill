@@ -2,9 +2,6 @@
 <%!
     import sickbeard
     from sickbeard import common
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
-    from sickrage.helper import exceptions
 %>
 
 <%block name="scripts">
@@ -163,8 +160,8 @@
                                 <span class="component-desc">
                                     <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
                                         <option value="keep">&lt; Keep &gt;</option>
-                                        % for curStatus in [WANTED, SKIPPED, IGNORED]:
-                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${statusStrings[curStatus]}</option>
+                                        % for curStatus in [common.WANTED, common.SKIPPED, common.IGNORED]:
+                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${common.statusStrings[curStatus]}</option>
                                         % endfor
                                     </select><br>
                                     This will set the status for future episodes.

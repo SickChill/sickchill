@@ -3,14 +3,11 @@
     import sickbeard
     import os.path
     import datetime
-    import re
-    import time
 
-    from sickbeard import providers
-    from sickbeard import sbdatetime
+    from sickbeard import providers, sbdatetime
 
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED, DOWNLOADED, SUBTITLED
-    from sickbeard.common import Quality, statusStrings, Overview
+    from sickbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
+    from sickbeard.common import Quality, statusStrings
 
     from sickrage.show.History import History
     from sickrage.helper.encoding import ek

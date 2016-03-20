@@ -3,8 +3,6 @@
     import sickbeard
     import re
     from sickbeard.helpers import anon_url
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, MULTI_EP_STRINGS
 %>
 <%block name="content">
 % if not header is UNDEFINED:
