@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickbeard import common
     import sickbeard
+    from sickbeard import common
 %>
 <%block name="scripts">
 % if whichStatus or (whichStatus and ep_counts):

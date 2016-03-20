@@ -1,8 +1,7 @@
 <%
     import sickbeard
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings
-    from sickbeard import subtitles
+    from sickbeard.common import SKIPPED, WANTED, IGNORED
+    from sickbeard.common import Quality, statusStrings
 %>
 
         <div class="field-pair alt">

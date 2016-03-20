@@ -1,7 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    from sickbeard import classes
     from sickbeard.logger import LOGGING_LEVELS
 %>
 <%block name="css">

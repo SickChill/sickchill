@@ -1,9 +1,4 @@
 <%inherit file="/layouts/main.mako"/>
-<%!
-    import os.path
-    import urllib
-    import sickbeard
-%>
 <%block name="content">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>

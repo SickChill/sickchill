@@ -1,12 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
-    import os.path
-    import datetime
-    import re
     from sickbeard import providers
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings, statusStrings, Overview
     from sickrage.providers.GenericProvider import GenericProvider
 %>
 <%block name="content">

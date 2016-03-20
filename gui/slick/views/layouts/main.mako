@@ -1,6 +1,6 @@
 <%!
-    import datetime
     import re
+    import datetime
     import sickbeard
     from sickrage.helper.common import pretty_file_size
     from sickrage.show.Show import Show

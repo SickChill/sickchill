@@ -2,7 +2,6 @@
 <%!
     import datetime
     import urllib
-    import ntpath
     import sickbeard
     from sickbeard import subtitles, sbdatetime, network_timezones
     import sickbeard.helpers

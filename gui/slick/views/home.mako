@@ -112,7 +112,7 @@
     download_stat_tip = ''
     display_status = curShow.status
 
-    if None is not display_status:
+    if display_status:
         if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
             display_status = 'Continuing'
         elif re.search(r'(?i)(?:nded)', curShow.status):

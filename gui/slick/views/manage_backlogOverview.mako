@@ -1,11 +1,10 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
     import datetime
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Overview, Quality, qualityPresets, qualityPresetStrings
-    from sickrage.helper.common import episode_num
+    import sickbeard
     from sickbeard import sbdatetime, network_timezones
+    from sickbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
+    from sickrage.helper.common import episode_num
 %>
 <%block name="scripts">
 <script type="text/javascript">

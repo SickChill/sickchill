@@ -1,12 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    import calendar
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
-    from sickbeard import db, sbdatetime, network_timezones
-    import datetime
-    import re
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${srRoot}/js/testRename.js"></script>
@@ -22,11 +16,13 @@
 
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
-% if int(show.air_by_date) == 1 and sickbeard.NAMING_CUSTOM_ABD:
+% if show.air_by_date and sickbeard.NAMING_CUSTOM_ABD:
     ${sickbeard.NAMING_ABD_PATTERN}
-% elif int(show.sports) == 1 and sickbeard.NAMING_CUSTOM_SPORTS:
+% elif show.is_sports and sickbeard.NAMING_CUSTOM_SPORTS:
     ${sickbeard.NAMING_SPORTS_PATTERN}
-% else:
+% elif show.is_anime and sickbeard.NAMING_CUSTOM_ANIME:
+    ${sickbeard.NAMING_CUSTOM_ANIME}
+%else:
     ${sickbeard.NAMING_PATTERN}
 % endif
 </blockquote>
