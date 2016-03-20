@@ -3,8 +3,6 @@
     import sickbeard
     import re
     from sickbeard.helpers import anon_url
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets, MULTI_EP_STRINGS
 %>
 <%block name="content">
 % if not header is UNDEFINED:
@@ -1103,7 +1101,7 @@
                 <div class="component-group">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-nma" alt="" title="NMA"></span>
-                        <h3><a href="${anon_url('http://nma.usk.bz')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Notify My Android</a></h3>
+                        <h3><a href="${anon_url('http://www.notifymyandroid.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Notify My Android</a></h3>
                         <p>Notify My Android is a Prowl-like Android App and API that offers an easy way to send notifications from your application directly to your Android device.</p>
                     </div>
                     <fieldset class="component-group-list">

@@ -102,12 +102,12 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != "RSS":
-                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                     categories = ["2", "7", "35"]
@@ -162,7 +162,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != "RSS":
-                                logger.log("Found result: {} with {} seeders and {} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)

@@ -6,16 +6,16 @@ import os
 import re
 
 from babelfish import Language, language_converters
-from datetime import datetime
 from guessit import guessit
 from rarfile import RarFile, is_rarfile
 from requests import Session
 from zipfile import ZipFile, is_zipfile
 
 from . import ParserBeautifulSoup, Provider
+from .. import __short_version__
 from ..cache import region, EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME
 from ..exceptions import AuthenticationError, ConfigurationError
-from ..subtitle import SUBTITLE_EXTENSIONS, Subtitle, fix_line_ending, guess_matches, sanitize
+from ..subtitle import Subtitle, fix_line_ending, guess_matches, sanitize, SUBTITLE_EXTENSIONS
 from ..video import Episode, Movie
 
 TIMEOUT = 10
@@ -77,6 +77,7 @@ class LegendasTvProvider(Provider):
 
     def initialize(self):
         self.session = Session()
+        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
 
         # login
         if self.username is not None and self.password is not None:
@@ -85,7 +86,7 @@ class LegendasTvProvider(Provider):
             r = self.session.post('%s/login' % self.server_url, data, allow_redirects=False, timeout=TIMEOUT)
             r.raise_for_status()
 
-            soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
+            soup = ParserBeautifulSoup(r.content, ['html.parser'])
             auth_error = soup.find('div', {'class': 'alert-error'}, text=re.compile(u'.*Usuário ou senha inválidos.*'))
 
             if auth_error:
@@ -170,13 +171,6 @@ class LegendasTvProvider(Provider):
         :rtype: list of dict
 
         """
-        results = dict()
-        for keyword in {sanitize(title), title.lower().replace(':', '')}:
-            logger.info('Searching candidates using the keyword %s', keyword)
-            r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
-            r.raise_for_status()
-            results.update({item['_id']: item for item in json.loads(r.text)})
-
         # get the shows/movies out of the suggestions.
         # json sample:
         # [
@@ -225,6 +219,18 @@ class LegendasTvProvider(Provider):
         #  tipo: Defines if the entry is a movie or a tv show (or a collection??)
         #  imdb_id: Sometimes it appears as a number and sometimes as a string prefixed with tt
         #  temporada: Sometimes is ``null`` and season information should be extracted from dsc_nome_br
+
+        # /legenda/sugestao endpoint:
+        #   - doesn't accept titles with colon
+        #   - doesn't ignore single quotes
+        keywords = {k.lower().replace(':', '') for k in [title,  title.replace('\'', '')]}
+        results = dict()
+
+        for keyword in keywords:
+            logger.info('Searching candidates using the keyword %s', keyword)
+            r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
+            r.raise_for_status()
+            results.update({item['_id']: item for item in json.loads(r.text)})
 
         # type, title, series, season, year: should follow guessit properties names
         mapping = dict(
@@ -325,7 +331,7 @@ class LegendasTvProvider(Provider):
                 r = self.session.get(page_url, timeout=TIMEOUT)
                 r.raise_for_status()
 
-                soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
+                soup = ParserBeautifulSoup(r.content, ['html.parser'])
                 div_tags = soup.find_all('div', {'class': 'f_left'})
 
                 # loop over each div which contains information about a single subtitle
@@ -348,8 +354,7 @@ class LegendasTvProvider(Provider):
                     rating_text = rating_info_match.group(2) if rating_info_match else None
                     rating = int(rating_text) if rating_text and rating_text.isdigit() else None
                     timestamp_info_match = timestamp_info_re.search(div.text)
-                    timestamp_text = timestamp_info_match.group(1) if timestamp_info_match else None
-                    timestamp = datetime.strptime(timestamp_text, '%d/%m/%Y - %H:%M') if timestamp_text else None
+                    timestamp = timestamp_info_match.group(1) if timestamp_info_match else None
 
                     # Using the candidate name to filter out bad candidates
                     # (wrong type, wrong episode, wrong season or even wrong title)
@@ -421,10 +426,12 @@ class LegendasTvProvider(Provider):
         :rtype: `list` of `string`
 
         """
-        return self._uncompress(
-            content,
-            lambda cf: [f for f in cf.namelist()
-                        if 'legendas.tv' not in f.lower() and f.lower().endswith(SUBTITLE_EXTENSIONS)])
+        cf = self.get_compressed_file(content)
+        if cf:
+            # open the compressed file
+            with cf:
+                return [f for f in cf.namelist()
+                        if 'legendas.tv' not in f.lower() and f.lower().endswith(SUBTITLE_EXTENSIONS)]
 
     def extract_subtitle(self, content, subtitle_name):
         """
@@ -437,14 +444,16 @@ class LegendasTvProvider(Provider):
         :rtype : `string`
 
         """
-        return self._uncompress(content, lambda cf, name: fix_line_ending(cf.read(name)), subtitle_name)
+        cf = self.get_compressed_file(content)
+        if cf:
+            # open the compressed file
+            with cf:
+                return fix_line_ending(cf.read(subtitle_name))
 
-    def _uncompress(self, content, function, *args, **kwargs):
+    def get_compressed_file(self, content):
         bc = io.BytesIO(content)
 
-        cf = RarFile(bc) if is_rarfile(bc) else (ZipFile(bc) if is_zipfile(bc) else None)
-
-        return function(cf, *args, **kwargs) if cf else None
+        return RarFile(bc) if is_rarfile(bc) else (ZipFile(bc) if is_zipfile(bc) else None)
 
     def download_content(self, subtitle_id, timestamp):
         """

@@ -68,7 +68,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -98,9 +98,9 @@ class Notifier(object):
                 msg[b'Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log('Snatch notification sent to [{}] for "{}"'.format(to, ep_name), logger.DEBUG)
+                    logger.log('Snatch notification sent to [{0}] for "{1}"'.format(to, ep_name), logger.DEBUG)
                 else:
-                    logger.log('Snatch notification error: {}'.format(self.last_err), logger.WARNING)
+                    logger.log('Snatch notification error: {0}'.format(self.last_err), logger.WARNING)
 
     def notify_download(self, ep_name, title='Completed:'):  # pylint: disable=unused-argument
         '''
@@ -114,7 +114,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -144,9 +144,9 @@ class Notifier(object):
                 msg[b'Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log('Download notification sent to [{}] for "{}"'.format(to, ep_name), logger.DEBUG)
+                    logger.log('Download notification sent to [{0}] for "{1}"'.format(to, ep_name), logger.DEBUG)
                 else:
-                    logger.log('Download notification error: {}'.format(self.last_err), logger.WARNING)
+                    logger.log('Download notification error: {0}'.format(self.last_err), logger.WARNING)
 
     def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):  # pylint: disable=unused-argument
         '''
@@ -160,7 +160,7 @@ class Notifier(object):
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -189,9 +189,9 @@ class Notifier(object):
                 msg[b'To'] = ','.join(to)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log('Download notification sent to [{}] for "{}"'.format(to, ep_name), logger.DEBUG)
+                    logger.log('Download notification sent to [{0}] for "{1}"'.format(to, ep_name), logger.DEBUG)
                 else:
-                    logger.log('Download notification error: {}'.format(self.last_err), logger.WARNING)
+                    logger.log('Download notification error: {0}'.format(self.last_err), logger.WARNING)
 
     def notify_git_update(self, new_version='??'):
         '''
@@ -200,7 +200,7 @@ class Notifier(object):
         '''
         if sickbeard.USE_EMAIL:
             to = self._generate_recipients(None)
-            if len(to) == 0:
+            if not to:
                 logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
             else:
                 try:
@@ -220,15 +220,15 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText('SickRage updated')
 
-                msg[b'Subject'] = 'Updated: {}'.format(new_version)
+                msg[b'Subject'] = 'Updated: {0}'.format(new_version)
                 msg[b'From'] = sickbeard.EMAIL_FROM
                 msg[b'To'] = ','.join(to)
                 msg[b'Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log('Update notification sent to [{}]'.format(to), logger.DEBUG)
+                    logger.log('Update notification sent to [{0}]'.format(to), logger.DEBUG)
                 else:
-                    logger.log('Update notification error: {}'.format(self.last_err), logger.WARNING)
+                    logger.log('Update notification error: {0}'.format(self.last_err), logger.WARNING)
 
     def notify_login(self, ipaddress=''):
         '''
@@ -257,15 +257,15 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText('SickRage Remote Login')
 
-                msg[b'Subject'] = 'New Login from IP: {}'.format(ipaddress)
+                msg[b'Subject'] = 'New Login from IP: {0}'.format(ipaddress)
                 msg[b'From'] = sickbeard.EMAIL_FROM
                 msg[b'To'] = ','.join(to)
                 msg[b'Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log('Login notification sent to [{}]'.format(to), logger.DEBUG)
+                    logger.log('Login notification sent to [{0}]'.format(to), logger.DEBUG)
                 else:
-                    logger.log('Login notification error: {}'.format(self.last_err), logger.WARNING)
+                    logger.log('Login notification error: {0}'.format(self.last_err), logger.WARNING)
 
     @staticmethod
     def _generate_recipients(show):  # pylint: disable=too-many-branches
@@ -294,18 +294,18 @@ class Notifier(object):
                                     addrs.append(addr)
 
         addrs = set(addrs)
-        logger.log('Notification recipients: {}'.format(addrs), logger.DEBUG)
+        logger.log('Notification recipients: {0}'.format(addrs), logger.DEBUG)
         return addrs
 
     def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):  # pylint: disable=too-many-arguments
-        logger.log('HOST: {}; PORT: {}; FROM: {}, TLS: {}, USER: {}, PWD: {}, TO: {}'.format(
+        logger.log('HOST: {0}; PORT: {1}; FROM: {2}, TLS: {3}, USER: {4}, PWD: {5}, TO: {6}'.format(
             host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         try:
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
             logger.log('Exception generated while sending e-mail: ' + str(e), logger.WARNING)
             # logger.log(traceback.format_exc(), logger.DEBUG)
-            self.last_err = '{}'.format(e)
+            self.last_err = '{0}'.format(e)
             return False
 
         if smtpDebug:
@@ -326,7 +326,7 @@ class Notifier(object):
             srv.quit()
             return True
         except Exception as e:
-            self.last_err = '{}'.format(e)
+            self.last_err = '{0}'.format(e)
             return False
 
     @staticmethod
@@ -336,5 +336,5 @@ class Notifier(object):
         sep = ' - '
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)
-        logger.log('TITLES: {}'.format(titles), logger.DEBUG)
+        logger.log('TITLES: {0}'.format(titles), logger.DEBUG)
         return titles

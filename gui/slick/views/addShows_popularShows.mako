@@ -30,7 +30,7 @@
     </select>
 </div>
 
-<% imdb_tt = [show.imdbid for show in sickbeard.showList if show.imdbid] %>
+<% imdb_tt = {show.imdbid for show in sickbeard.showList if show.imdbid} %>
 
 <br>
 <div id="popularShows">

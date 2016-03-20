@@ -1,14 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import datetime
-    import locale
     import sickbeard
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
-    from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard import config
-    from sickbeard import metadata
-    from sickbeard.metadata.generic import GenericMetadata
 %>
 <%block name="content">
 % if not header is UNDEFINED:

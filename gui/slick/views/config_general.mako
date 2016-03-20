@@ -1,14 +1,9 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
-    import locale
     import sickbeard
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, qualityPresetStrings, cpu_presets
+    from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard import config
-    from sickbeard import metadata
-    from sickbeard.metadata.generic import GenericMetadata
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
@@ -19,11 +14,6 @@
     <h1 class="header">${header}</h1>
 % else:
     <h1 class="title">${title}</h1>
-% endif
-
-<% indexer = 0 %>
-% if sickbeard.INDEXER_DEFAULT:
-    <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
 
 <div id="config">
@@ -142,7 +132,7 @@
                                 <span class="component-title">Use initial indexer set to</span>
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                        <option value="0" ${('', 'selected="selected"')[indexer == 0]}>All Indexers</option>
+                                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>All Indexers</option>
                                         % for indexer in sickbeard.indexerApi().indexers:
                                         <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor

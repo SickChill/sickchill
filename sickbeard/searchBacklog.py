@@ -51,6 +51,7 @@ class BacklogSearcher(object):
         self.amActive = False
         self.amPaused = False
         self.amWaiting = False
+        self.currentSearchInfo = {'title': 'Initializing'}
 
         self._resetPI()
 
@@ -87,7 +88,7 @@ class BacklogSearcher(object):
         curDate = datetime.date.today().toordinal()
         fromDate = datetime.date.fromordinal(1)
 
-        if not which_shows and not ((curDate - self._lastBacklog) >= self.cycleTime):
+        if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
             logger.log(u"Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
             fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
 
@@ -106,7 +107,7 @@ class BacklogSearcher(object):
                 sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
-                logger.log(u"Nothing needs to be downloaded for %s, skipping" % curShow.name, logger.DEBUG)
+                logger.log(u"Nothing needs to be downloaded for {0!s}, skipping".format(curShow.name), logger.DEBUG)
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -123,7 +124,7 @@ class BacklogSearcher(object):
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        if len(sql_results) == 0:
+        if not sql_results:
             lastBacklog = 1
         elif sql_results[0]["last_backlog"] is None or sql_results[0]["last_backlog"] == "":
             lastBacklog = 1
@@ -135,15 +136,16 @@ class BacklogSearcher(object):
         self._lastBacklog = lastBacklog
         return self._lastBacklog
 
-    def _get_segments(self, show, fromDate):
+    @staticmethod
+    def _get_segments(show, fromDate):
         wanted = {}
         if show.paused:
-            logger.log(u"Skipping backlog for %s because the show is paused" % show.name, logger.DEBUG)
+            logger.log(u"Skipping backlog for {0!s} because the show is paused".format(show.name), logger.DEBUG)
             return wanted
 
         allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
 
-        logger.log(u"Seeing if we need anything from %s" % show.name, logger.DEBUG)
+        logger.log(u"Seeing if we need anything from {0!s}".format(show.name), logger.DEBUG)
 
         con = db.DBConnection()
         sql_results = con.select(
@@ -174,14 +176,15 @@ class BacklogSearcher(object):
 
         return wanted
 
-    def _set_lastBacklog(self, when):
+    @staticmethod
+    def _set_lastBacklog(when):
 
         logger.log(u"Setting the last backlog in the DB to " + str(when), logger.DEBUG)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        if len(sql_results) == 0:
+        if not sql_results:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
         else:
             main_db_con.action("UPDATE info SET last_backlog=" + str(when))

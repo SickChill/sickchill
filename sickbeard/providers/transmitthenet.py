@@ -97,7 +97,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 search_params = {
@@ -119,14 +119,14 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', {'id': 'torrent_table'})
                         if not torrent_table:
-                            logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
+                            logger.log(u"Data returned from {0!s} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
                         torrent_rows = torrent_table.findAll('tr', {'class': 'torrent'})
 
                         # Continue only if one Release is found
                         if not torrent_rows:
-                            logger.log(u"Data returned from %s does not contain any torrents" % self.name, logger.DEBUG)
+                            logger.log(u"Data returned from {0!s} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
                         for torrent_row in torrent_rows:
@@ -134,8 +134,17 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             if self.freeleech and not freeleech:
                                 continue
 
+                            #Normal Download Link
                             download_item = torrent_row.find('a', {'title': 'Download Torrent'})
+                            
                             if not download_item:
+                                #If the user has downloaded it
+                                download_item = torrent_row.find('a', {'title': 'Previously Grabbed Torrent File'})
+                            if not download_item:
+                                #If the user is seeding
+                                download_item = torrent_row.find('a', {'title': 'Currently Seeding Torrent'})
+                            if not download_item:
+                                #If there are none
                                 continue
 
                             download_url = urljoin(self.url, download_item['href'])
@@ -167,12 +176,12 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

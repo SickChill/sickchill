@@ -86,13 +86,13 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 search_url = self.urls["search"] if mode != "RSS" else self.urls["rss"]
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url: {}".format(self.custom_url), logger.WARNING)
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -139,14 +139,14 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
                                 if mode != "RSS":
-                                    logger.log("Found result {} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                    logger.log("Found result {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
                                 continue
 
                             # Convert size after all possible skip scenarios
@@ -156,7 +156,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != "RSS":
-                                logger.log("Found result: {} with {} seeders and {} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)

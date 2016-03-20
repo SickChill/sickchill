@@ -62,11 +62,11 @@ class BitCannonProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 search_params["q"] = search_string
                 if mode != "RSS":
-                    logger.log("Search string: {}".format(search_string), logger.DEBUG)
+                    logger.log("Search string: {0}".format(search_string), logger.DEBUG)
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")
@@ -103,7 +103,7 @@ class BitCannonProvider(TorrentProvider):
                         size = convert_size(result.pop("size", -1)) or -1
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                         if mode != "RSS":
-                            logger.log("Found result: {} with {} seeders and {} leechers".format
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)

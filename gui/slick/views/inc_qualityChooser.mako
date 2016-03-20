@@ -4,7 +4,7 @@
 %>
 
 <%
-if not show is UNDEFINED:
+if show is not UNDEFINED:
     __quality = int(show.quality)
 else:
     __quality = int(sickbeard.QUALITY_DEFAULT)

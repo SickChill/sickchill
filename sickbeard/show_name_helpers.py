@@ -52,7 +52,7 @@ def containsAtLeastOneWord(name, words):
     """
     if isinstance(words, basestring):
         words = words.split(',')
-    items = [(re.compile(r'(^|[\W_])%s($|[\W_])' % re.escape(word.strip()), re.I), word.strip()) for word in words]
+    items = [(re.compile(r'(^|[\W_]){0!s}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
     for regexp, word in items:
         if regexp.search(name):
             return word
@@ -73,7 +73,7 @@ def filterBadReleases(name, parse=True):
         if parse:
             NameParser().parse(name)
     except InvalidNameException as error:
-        logger.log(u"{}".format(error), logger.DEBUG)
+        logger.log(u"{0}".format(error), logger.DEBUG)
         return False
     except InvalidShowException:
         pass

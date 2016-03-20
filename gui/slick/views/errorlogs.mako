@@ -1,7 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    from sickbeard import classes
 %>
 <%block name="css">
 <style>
@@ -15,10 +14,10 @@ pre {
 <%block name="content">
 <%
     if logLevel == sickbeard.logger.WARNING:
-        errors = classes.WarningViewer.errors
+        errors = sickbeard.classes.WarningViewer.errors
         title = 'WARNING logs'
     else:
-        errors = classes.ErrorViewer.errors
+        errors = sickbeard.classes.ErrorViewer.errors
         title = 'ERROR logs'
 %>
 <h1 class="header">${title}</h1>

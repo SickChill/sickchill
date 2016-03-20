@@ -113,9 +113,9 @@ class Notification(object):
 
 class ProgressIndicator(object):
 
-    def __init__(self, percentComplete=0, currentStatus={'title': ''}):
+    def __init__(self, percentComplete=0, currentStatus=None):
         self.percentComplete = percentComplete
-        self.currentStatus = currentStatus
+        self.currentStatus = currentStatus or {'title': ''}
 
 
 class ProgressIndicators(object):

@@ -9,6 +9,7 @@ import pysrt
 from .video import Episode, Movie
 from .utils import sanitize, sanitize_release_group
 
+
 logger = logging.getLogger(__name__)
 
 #: Subtitle extensions

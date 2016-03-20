@@ -167,8 +167,7 @@ class ApiHandler(RequestHandler):
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{"result": "%s", "message": "error while composing output: %s"}' % \
-                  (result_type_map[RESULT_ERROR], ex(e))
+            out = '{{"result": "{0!s}", "message": "error while composing output: {1!s}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
@@ -420,12 +419,11 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.log(u'API :: Invalid param type: "%s" can not be checked. Ignoring it.' % str(arg_type), logger.ERROR)
+            logger.log(u'API :: Invalid param type: "{0!s}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(u'param "%s" with given value "%s" could not be parsed into "%s"'
-                           % (str(name), str(value), str(arg_type)))
+            raise ApiError(u'param "{0!s}" with given value "{1!s}" could not be parsed into "{2!s}"'.format(str(name), str(value), str(arg_type)))
 
         return value
 
@@ -909,7 +907,7 @@ class CMD_EpisodeSetStatus(ApiCall):
                     start_backlog = True
                 ep_results.append(_ep_result(RESULT_SUCCESS, ep_obj))
 
-        if len(sql_l) > 0:
+        if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
@@ -970,7 +968,7 @@ class CMD_SubtitleSearch(ApiCall):
 
         if new_subtitles:
             new_languages = [sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
-            status = 'New subtitles downloaded: %s' % ', '.join(new_languages)
+            status = 'New subtitles downloaded: {0!s}'.format(', '.join(new_languages))
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
@@ -1267,7 +1265,7 @@ class CMD_LogsClear(ApiCall):
 
             classes.WarningViewer.clear()
         else:
-            return _responds(RESULT_FAILURE, msg="Unknown log level: %s" % self.level)
+            return _responds(RESULT_FAILURE, msg="Unknown log level: {0!s}".format(self.level))
 
         return _responds(RESULT_SUCCESS, msg=msg)
 
@@ -1317,7 +1315,7 @@ class CMD_PostProcess(ApiCall):
         if not self.return_data:
             data = ""
 
-        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for %s" % self.path)
+        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0!s}".format(self.path))
 
 
 class CMD_SickBeard(ApiCall):
@@ -2286,7 +2284,7 @@ class CMD_ShowDelete(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='%s has been queued to be deleted' % show.name)
+        return _responds(RESULT_SUCCESS, msg='{0!s} has been queued to be deleted'.format(show.name))
 
 
 class CMD_ShowGetQuality(ApiCall):
@@ -2451,7 +2449,7 @@ class CMD_ShowPause(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='%s has been %s' % (show.name, ('resumed', 'paused')[show.paused]))
+        return _responds(RESULT_SUCCESS, msg='{0!s} has been {1!s}'.format(show.name, ('resumed', 'paused')[show.paused]))
 
 
 class CMD_ShowRefresh(ApiCall):
@@ -2479,7 +2477,7 @@ class CMD_ShowRefresh(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='%s has queued to be refreshed' % show.name)
+        return _responds(RESULT_SUCCESS, msg='{0!s} has queued to be refreshed'.format(show.name))
 
 
 class CMD_ShowSeasonList(ApiCall):
@@ -2577,7 +2575,7 @@ class CMD_ShowSeasons(ApiCall):
             sql_results = main_db_con.select(
                 "SELECT name, episode, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND season = ?",
                 [self.indexerid, self.season])
-            if len(sql_results) == 0:
+            if not sql_results:
                 return _responds(RESULT_FAILURE, msg="Season not found")
             seasons = {}
             for row in sql_results:
@@ -2798,7 +2796,7 @@ class CMD_ShowUpdate(ApiCall):
             sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log(u"API::Unable to update show: {0}".format(str(e)), logger.DEBUG)
+            logger.log(u"API::Unable to update show: {0}".format(e), logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 

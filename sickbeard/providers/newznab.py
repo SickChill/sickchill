@@ -82,8 +82,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
     @staticmethod
     def get_providers_list(data):
-        default_list = [x for x in [NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')] if x]
-        providers_list = [x for x in [NewznabProvider._make_provider(x) for x in data.split('!!!')] if x]
+        default_list = [x for x in (NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')) if x]
+        providers_list = [x for x in (NewznabProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
         providers_set = []
 
@@ -162,19 +162,19 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         data = self.get_url(urljoin(self.url, 'api'), params=url_params, returns='text')
         if not data:
-            error_string = 'Error getting caps xml for [{}]'.format(self.name)
+            error_string = 'Error getting caps xml for [{0}]'.format(self.name)
             logger.log(error_string, logger.WARNING)
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
             if not html.find('categories'):
-                error_string = 'Error parsing caps xml for [{}]'.format(self.name)
+                error_string = 'Error parsing caps xml for [{0}]'.format(self.name)
                 logger.log(error_string, logger.DEBUG)
                 return False, return_categories, error_string
 
             self.set_caps(html.find('searching'))
             if just_caps:
-                return
+                return True, return_categories, 'Just checking caps!'
 
             for category in html.find_all('category'):
                 if 'TV' in category.get('name', '') and category.get('id', ''):
@@ -185,7 +185,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
             return True, return_categories, ''
 
-        error_string = 'Error getting xml for [{}]'.format(self.name)
+        error_string = 'Error getting xml for [{0}]'.format(self.name)
         logger.log(error_string, logger.WARNING)
         return False, return_categories, error_string
 
@@ -250,7 +250,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 category_ids = values[3]
                 enabled = values[4]
         except ValueError:
-            logger.log('Skipping Newznab provider string: \'{}\', incorrect format'.format(config), logger.ERROR)
+            logger.log('Skipping Newznab provider string: \'{0}\', incorrect format'.format(config), logger.ERROR)
             return None
 
         new_provider = NewznabProvider(
@@ -306,10 +306,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     search_params.pop('ep', '')
 
             items = []
-            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
                     if search_params['t'] != 'tvsearch':
                         search_params['q'] = search_string

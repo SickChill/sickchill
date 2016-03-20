@@ -16,15 +16,15 @@
 
 <div id="config-content">
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
-    % if sr_version:
     <tr><td class="infoTableHeader" style="vertical-align: top;"><i class="icon16-config-sickrage"></i> SickRage Info:</td>
         <td class="infoTableCell">
         Branch: <a href="${anon_url('https://github.com/SickRage/SickRage/tree/%s' % sickbeard.BRANCH)}">${sickbeard.BRANCH}</a><br>
         Commit: <a href="${anon_url('https://github.com/SickRage/SickRage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">${sickbeard.CUR_COMMIT_HASH}</a><br>
+        % if sr_version:
         Version: <a href="${anon_url('https://github.com/SickRage/SickRage/releases/tag/%s' % sr_version)}">${sr_version}</a>
+        % endif
         </td>
     </tr>
-    % endif
     <tr><td class="infoTableHeader"><i class="icon16-config-python"></i> Python Version:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-ssl"></i> SSL Version:</td><td class="infoTableCell">${ssl_version}</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-os"></i> OS:</td><td class="infoTableCell">${platform.platform()}</td></tr>
@@ -46,7 +46,7 @@
     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr class="infoTableSeperator"><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-web"></i> Website:</td><td class="infoTableCell"><a href="${anon_url('http://sickrage.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">http://sickrage.github.io/</a></td></tr>
-    <tr><td class="infoTableHeader"><i class="icon16-config-wiki"></i> Wiki:</td><td class="infoTableCell"><a href="${anon_url('https://github.com/SickRage/sickrage-issues/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickRage/sickrage-issues/wiki</a></td></tr>
+    <tr><td class="infoTableHeader"><i class="icon16-config-wiki"></i> Wiki:</td><td class="infoTableCell"><a href="${anon_url('https://github.com/SickRage/SickRage/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickRage/SickRage/wiki</a></td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-github"></i> Source:</td><td class="infoTableCell"><a href="${anon_url('https://github.com/SickRage/SickRage/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickRage/SickRage/</a></td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-mirc"></i> IRC Chat:</td><td class="infoTableCell"><a href="irc://irc.freenode.net/#sickrage-issues" rel="noreferrer"><i>#sickrage-issues</i> on <i>irc.freenode.net</i></a></td></tr>
 </table>

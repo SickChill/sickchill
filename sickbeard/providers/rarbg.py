@@ -69,7 +69,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
-        self.token = response.get("token", None)
+        self.token = response.get("token")
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
@@ -98,7 +98,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             if mode == "RSS":
                 search_params["sort"] = "last"
                 search_params["mode"] = "list"
@@ -116,7 +116,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             for search_string in search_strings[mode]:
                 if mode != "RSS":
                     search_params["search_string"] = search_string
-                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
+                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
                                logger.DEBUG)
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
@@ -159,7 +159,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         size = convert_size(torrent_size) or -1
 
                         if mode != "RSS":
-                            logger.log("Found result: {} with {} seeders and {} leechers".format
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)
 
                         result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}

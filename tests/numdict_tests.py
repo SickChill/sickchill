@@ -353,9 +353,6 @@ class NumDictTest(unittest.TestCase):
         self.assertTrue(None in num_dict_2)
         self.assertEqual(None in num_dict_2, None in dict_2)
 
-        self.assertEqual(num_dict_2.has_key(None), None in dict_2)
-        if not PY3:
-            self.assertEqual(num_dict_2.has_key(None), dict_2.has_key(None))
         self.assertFalse('Penguin' in num_dict_2)
 
         # Test update

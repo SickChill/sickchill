@@ -20,7 +20,7 @@
 import threading
 import sickbeard
 from sickbeard import db
-from sickbeard import logger
+# from sickbeard import logger
 
 nameCache = {}
 nameCacheLock = threading.Lock()
@@ -61,7 +61,7 @@ def clearCache(indexerid=0):
     cache_db_con = db.DBConnection('cache.db')
     cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ? OR indexer_id = ?", (indexerid, 0))
 
-    toRemove = [key for key, value in nameCache.iteritems() if value == 0 or value == indexerid]
+    toRemove = [key for key, value in nameCache.iteritems() if value in (0, indexerid)]
     for key in toRemove:
         del nameCache[key]
 
@@ -96,4 +96,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)
+        # logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)

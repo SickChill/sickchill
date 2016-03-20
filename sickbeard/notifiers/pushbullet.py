@@ -98,10 +98,10 @@ class Notifier(object):
         pushbullet_api = pushbullet_api or sickbeard.PUSHBULLET_API
         pushbullet_device = pushbullet_device or sickbeard.PUSHBULLET_DEVICE
 
-        logger.log('Pushbullet event: %r' % event, logger.DEBUG)
-        logger.log('Pushbullet message: %r' % message, logger.DEBUG)
-        logger.log('Pushbullet api: %r' % pushbullet_api, logger.DEBUG)
-        logger.log('Pushbullet devices: %r' % pushbullet_device, logger.DEBUG)
+        logger.log('Pushbullet event: {0!r}'.format(event), logger.DEBUG)
+        logger.log('Pushbullet message: {0!r}'.format(message), logger.DEBUG)
+        logger.log('Pushbullet api: {0!r}'.format(pushbullet_api), logger.DEBUG)
+        logger.log('Pushbullet devices: {0!r}'.format(pushbullet_device), logger.DEBUG)
 
         post_data = {
             'title': event,
@@ -120,7 +120,7 @@ class Notifier(object):
 
         failed = response.pop('error', {})
         if failed:
-            logger.log('Pushbullet notification failed: {}'.format(failed.pop('message')), logger.WARNING)
+            logger.log('Pushbullet notification failed: {0}'.format(failed.pop('message')), logger.WARNING)
         else:
             logger.log('Pushbullet notification sent.', logger.DEBUG)
 

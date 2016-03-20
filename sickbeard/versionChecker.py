@@ -105,7 +105,7 @@ class CheckVersion(object):
                 ui.notifications.message('Backup', 'Config backup failed, aborting update')
                 return False
         except Exception as e:
-            logger.log(u'Update: Config backup failed. Error: %s' % ex(e), logger.ERROR)
+            logger.log(u'Update: Config backup failed. Error: {0!s}'.format(ex(e)), logger.ERROR)
             ui.notifications.message('Backup', 'Config backup failed, aborting update')
             return False
 
@@ -173,10 +173,10 @@ class CheckVersion(object):
                 if result in message:
                     logger.log(message[result]['text'], message[result]['type'])  # unpack the result message into a log entry
                 else:
-                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: %s" % result, logger.ERROR)
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: {0!s}".format(result), logger.ERROR)
                 return result in ['equal']  # add future True results to the list
             except Exception as error:
-                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: %s" % repr(error), logger.ERROR)
+                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: {0!s}".format(repr(error)), logger.ERROR)
                 return False
 
         def postprocessor_safe():
@@ -210,11 +210,11 @@ class CheckVersion(object):
         try:
             self.updater.need_update()
             cur_hash = str(self.updater.get_newest_commit_hash())
-            assert len(cur_hash) == 40, "Commit hash wrong length: %s hash: %s" % (len(cur_hash), cur_hash)
+            assert len(cur_hash) == 40, "Commit hash wrong length: {0!s} hash: {1!s}".format(len(cur_hash), cur_hash)
 
-            check_url = "http://cdn.rawgit.com/%s/%s/%s/sickbeard/databases/mainDB.py" % (sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
+            check_url = "http://cdn.rawgit.com/{0!s}/{1!s}/{2!s}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
             response = helpers.getURL(check_url, session=self.session, returns='text')
-            assert response, "Empty response from %s" % check_url
+            assert response, "Empty response from {0!s}".format(check_url)
 
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
             branchDestDBversion = int(match.group('version'))
@@ -373,7 +373,7 @@ class GitUpdateManager(UpdateManager):
         return self._newest_commit_hash
 
     def get_cur_version(self):
-        return self._run_git(self._git_path, 'describe --abbrev=0 {}'.format(self._cur_commit_hash))[0]
+        return self._run_git(self._git_path, 'describe --abbrev=0 {0}'.format(self._cur_commit_hash))[0]
 
     def get_newest_version(self):
         if self._newest_commit_hash:
@@ -528,7 +528,7 @@ class GitUpdateManager(UpdateManager):
         self.update_remote_origin()
 
         # get all new info from github
-        output, _, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
+        output, _, exit_status = self._run_git(self._git_path, 'fetch {0!s}'.format(sickbeard.GIT_REMOTE))
         if not exit_status == 0:
             logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
@@ -561,8 +561,7 @@ class GitUpdateManager(UpdateManager):
                 logger.log(u"git didn't return numbers for behind and ahead, not using it", logger.DEBUG)
                 return
 
-        logger.log(u"cur_commit = %s, newest_commit = %s, num_commits_behind = %s, num_commits_ahead = %s" %
-                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead), logger.DEBUG)
+        logger.log(u"cur_commit = {0!s}, newest_commit = {1!s}, num_commits_behind = {2!s}, num_commits_ahead = {3!s}".format(self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead), logger.DEBUG)
 
     def set_newest_text(self):
 
@@ -628,7 +627,7 @@ class GitUpdateManager(UpdateManager):
             self.reset()
 
         if self.branch == self._find_installed_branch():
-            _, _, exit_status = self._run_git(self._git_path, 'pull -f %s %s' % (sickbeard.GIT_REMOTE, self.branch))  # @UnusedVariable
+            _, _, exit_status = self._run_git(self._git_path, 'pull -f {0!s} {1!s}'.format(sickbeard.GIT_REMOTE, self.branch))  # @UnusedVariable
         else:
             _, _, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
@@ -675,16 +674,16 @@ class GitUpdateManager(UpdateManager):
         self.update_remote_origin()
         sickbeard.BRANCH = self._find_installed_branch()
 
-        branches, _, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
+        branches, _, exit_status = self._run_git(self._git_path, 'ls-remote --heads {0!s}'.format(sickbeard.GIT_REMOTE))  # @UnusedVariable
         if exit_status == 0 and branches:
             if branches:
                 return re.findall(r'refs/heads/(.*)', branches)
         return []
 
     def update_remote_origin(self):
-        self._run_git(self._git_path, 'config remote.%s.url %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL))
+        self._run_git(self._git_path, 'config remote.{0!s}.url {1!s}'.format(sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL))
         if sickbeard.GIT_USERNAME:
-            self._run_git(self._git_path, 'config remote.%s.pushurl %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME, 1)))
+            self._run_git(self._git_path, 'config remote.{0!s}.pushurl {1!s}'.format(sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME, 1)))
 
 
 class SourceUpdateManager(UpdateManager):

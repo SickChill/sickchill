@@ -171,7 +171,7 @@ def get_scene_exception_by_name_multiple(show_name):
                 cur_exception_name.lower(),
                 sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
 
-            logger.log(u"Scene exception lookup got indexer id {}, using that".format
+            logger.log(u"Scene exception lookup got indexer id {0}, using that".format
                        (cur_indexer_id), logger.DEBUG)
 
             out.append((cur_indexer_id, int(cur_exception["season"])))
@@ -195,7 +195,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
     if do_refresh:
         loc = sickbeard.indexerApi(INDEXER_TVDB).config['scene_loc']
-        logger.log(u"Checking for scene exception updates from {}".format(loc))
+        logger.log(u"Checking for scene exception updates from {0}".format(loc))
 
         try:
             jdata = helpers.getURL(loc, session=sickbeard.indexerApi(INDEXER_TVDB).session, returns='json')
@@ -204,7 +204,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
         if not jdata:
             # When jdata is None, trouble connecting to github, or reading file failed
-            logger.log(u"Check scene exceptions update failed. Unable to update from {}".format(loc), logger.DEBUG)
+            logger.log(u"Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
         else:
             for indexer in sickbeard.indexerApi().indexers:
                 try:
@@ -300,14 +300,14 @@ xem_session = helpers.make_session()
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
-            logger.log(u"Checking for XEM scene exception updates for {}".format
+            logger.log(u"Checking for XEM scene exception updates for {0}".format
                        (sickbeard.indexerApi(indexer).name))
 
-            url = "http://thexem.de/map/allNames?origin={}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
 
             parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsedJSON:
-                logger.log(u"Check scene exceptions update failed for {}, Unable to get URL: {}".format
+                logger.log(u"Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
                            (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)
                 continue
 
@@ -318,8 +318,8 @@ def _xem_exceptions_fetcher():
                 try:
                     xem_exception_dict[int(indexerid)] = names
                 except Exception as error:
-                    logger.log(u"XEM: Rejected entry: indexerid:{}; names:{}".format(indexerid, names), logger.WARNING)
-                    logger.log(u"XEM: Rejected entry error message:{}".format(error), logger.DEBUG)
+                    logger.log(u"XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
+                    logger.log(u"XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
 
         setLastRefresh('xem')
 

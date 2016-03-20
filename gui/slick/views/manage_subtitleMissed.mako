@@ -1,9 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickbeard import subtitles
     import datetime
     import sickbeard
-    from sickbeard import common
+    from sickbeard import subtitles
 %>
 <%block name="content">
     <div id="content960">

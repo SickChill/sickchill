@@ -80,24 +80,24 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         if self.provider is None:
             return u'Invalid provider, unable to print self'
 
-        my_string = u'{} @ {}\n'.format(self.provider.name, self.url)
+        my_string = u'{0} @ {1}\n'.format(self.provider.name, self.url)
         my_string += u'Extra Info:\n'
         for extra in self.extraInfo:
-            my_string += u' {}\n'.format(extra)
+            my_string += u' {0}\n'.format(extra)
 
         my_string += u'Episodes:\n'
         for ep in self.episodes:
-            my_string += u' {}\n'.format(ep)
+            my_string += u' {0}\n'.format(ep)
 
-        my_string += u'Quality: {}\n'.format(Quality.qualityStrings[self.quality])
-        my_string += u'Name: {}\n'.format(self.name)
-        my_string += u'Size: {}\n'.format(self.size)
-        my_string += u'Release Group: {}\n'.format(self.release_group)
+        my_string += u'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += u'Name: {0}\n'.format(self.name)
+        my_string += u'Size: {0}\n'.format(self.size)
+        my_string += u'Release Group: {0}\n'.format(self.release_group)
 
         return my_string
 
     def fileName(self):
-        return u'{}.{}'.format(self.episodes[0].prettyName(), self.resultType)
+        return u'{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
 class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -145,26 +145,25 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
         series_names = []
 
         # get all available shows
-        if allSeries:
-            if 'searchterm' in self.config:
-                search_term = self.config['searchterm']
-                # try to pick a show that's in my show list
-                for curShow in allSeries:
-                    if curShow in search_results:
-                        continue
+        if allSeries and 'searchterm' in self.config:
+            search_term = self.config['searchterm']
+            # try to pick a show that's in my show list
+            for curShow in allSeries:
+                if curShow in search_results:
+                    continue
 
-                    if 'seriesname' in curShow:
-                        series_names.append(curShow['seriesname'])
-                    if 'aliasnames' in curShow:
-                        series_names.extend(curShow['aliasnames'].split('|'))
+                if 'seriesname' in curShow:
+                    series_names.append(curShow['seriesname'])
+                if 'aliasnames' in curShow:
+                    series_names.extend(curShow['aliasnames'].split('|'))
 
-                    for name in series_names:
-                        if search_term.lower() in name.lower():
-                            if 'firstaired' not in curShow:
-                                curShow['firstaired'] = 'Unknown'
+                for name in series_names:
+                    if search_term.lower() in name.lower():
+                        if 'firstaired' not in curShow:
+                            curShow['firstaired'] = 'Unknown'
 
-                            if curShow not in search_results:
-                                search_results += [curShow]
+                        if curShow not in search_results:
+                            search_results += [curShow]
 
         return search_results
 
@@ -186,11 +185,12 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
     def selectSeries(allSeries):
         try:
             # try to pick a show that's in my show list
-            show_id_list = [int(x.indexerid) for x in sickbeard.showList]
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
             for curShow in allSeries:
                 if int(curShow['id']) in show_id_list:
                     return curShow
         except Exception:
+            # Maybe curShow doesnt have id? Ignore it
             pass
 
         # if nothing matches then return first result
