@@ -67,7 +67,7 @@ class DispatchExtensionManager(EnabledExtensionManager):
         """
         if not self.extensions:
             # FIXME: Use a more specific exception class here.
-            raise NoMatches('No %s extensions found' % self.namespace)
+            raise NoMatches('No {0!s} extensions found'.format(self.namespace))
         response = []
         for e in self.extensions:
             if filter_func(e, *args, **kwds):

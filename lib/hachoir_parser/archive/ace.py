@@ -135,7 +135,7 @@ def fileBody(self):
         yield RawBytes(self, "compressed_data", size, "Compressed data")
 
 def fileDesc(self):
-    return "File entry: %s (%s)" % (self["filename"].value, self["compressed_size"].display)
+    return "File entry: {0!s} ({1!s})".format(self["filename"].value, self["compressed_size"].display)
 
 def recoveryHeader(self):
     yield filesizeHandler(UInt32(self, "rec_blk_size", "Size of recovery data"))
@@ -151,11 +151,11 @@ def recoveryHeader(self):
     # The ultimate data is the xor data of all those blocks
     size = self["size_blocks"].value
     for index in xrange(self["num_blocks"].value):
-        yield RawBytes(self, "data[]", size, "Recovery block %i" % index)
+        yield RawBytes(self, "data[]", size, "Recovery block {0:d}".format(index))
     yield RawBytes(self, "xor_data", size, "The XOR value of the above data blocks")
 
 def recoveryDesc(self):
-    return "Recovery block, size=%u" % self["body_size"].display
+    return "Recovery block, size={0:d}".format(self["body_size"].display)
 
 def newRecoveryHeader(self):
     """
@@ -211,7 +211,7 @@ class Block(FieldSet):
                 else:
                     self.desc_func = desc
         else:
-            self.warning("Processing as unknown block block of type %u" % type)
+            self.warning("Processing as unknown block block of type {0:d}".format(type))
         if not self.parseFlags:
             self.parseFlags = parseFlags
         if not self.parseHeader:
@@ -243,7 +243,7 @@ class Block(FieldSet):
         if self.desc_func:
             return self.desc_func(self)
         else:
-            return "Block: %s" % self["type"].display
+            return "Block: {0!s}".format(self["type"].display)
 
 class AceFile(Parser):
     endian = LITTLE_ENDIAN

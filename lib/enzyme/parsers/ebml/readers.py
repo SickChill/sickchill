@@ -24,7 +24,7 @@ def _read(stream, size):
     """
     data = stream.read(size)
     if len(data) < size:
-        raise ReadError('Less than %d bytes read (%d)' % (size, len(data)))
+        raise ReadError('Less than {0:d} bytes read ({1:d})'.format(size, len(data)))
     return data
 
 

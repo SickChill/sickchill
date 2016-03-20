@@ -89,7 +89,7 @@ class JpegMetadata(RootMetadata):
     def startOfFrame(self, sof):
         # Set compression method
         key = sof["../type"].value
-        self.compression = "JPEG (%s)" % JpegChunk.START_OF_FRAME[key]
+        self.compression = "JPEG ({0!s})".format(JpegChunk.START_OF_FRAME[key])
 
         # Read image size and bits/pixel
         self.width = sof["width"].value
@@ -140,16 +140,15 @@ class JpegMetadata(RootMetadata):
         # Find the JPEG quality
         for index in xrange(100):
             if (hashval >= hashtable[index]) or (sumcoeff >= sumtable[index]):
-                quality = "%s%%" % (index + 1)
+                quality = "{0!s}%".format((index + 1))
                 if (hashval > hashtable[index]) or (sumcoeff > sumtable[index]):
                     quality += " " + _("(approximate)")
-                self.comment = "JPEG quality: %s" % quality
+                self.comment = "JPEG quality: {0!s}".format(quality)
                 return
 
     @fault_tolerant
     def extractAPP0(self, app0):
-        self.format_version = u"JFIF %u.%02u" \
-            % (app0["ver_maj"].value, app0["ver_min"].value)
+        self.format_version = u"JFIF {0:d}.{1:02d}".format(app0["ver_maj"].value, app0["ver_min"].value)
         if "y_density" in app0:
             self.width_dpi = app0["x_density"].value
             self.height_dpi = app0["y_density"].value
@@ -176,9 +175,9 @@ class JpegMetadata(RootMetadata):
             if not value:
                 return
             if isinstance(value, float):
-                value = (value, u"1/%g" % (1/value))
+                value = (value, u"1/{0:g}".format((1/value)))
         elif entry["type"].value in (BasicIFDEntry.TYPE_RATIONAL, BasicIFDEntry.TYPE_SIGNED_RATIONAL):
-            value = (value, u"%.3g" % value)
+            value = (value, u"{0:.3g}".format(value))
 
         # Store information
         setattr(self, key, value)
@@ -265,7 +264,7 @@ class JpegMetadata(RootMetadata):
                 continue
             if tag not in self.IPTC_KEY:
                 if tag != 0:
-                    self.warning("Skip IPTC key %s: %s" % (
+                    self.warning("Skip IPTC key {0!s}: {1!s}".format(
                         field["tag"].display, makeUnicode(value)))
                 continue
             setattr(self, self.IPTC_KEY[tag], value)

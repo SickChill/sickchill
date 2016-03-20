@@ -91,7 +91,7 @@ class Addic7edProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
+        self.session.headers['User-Agent'] = 'Subliminal/{0!s}'.format(__short_version__)
 
         # login
         if self.username is not None and self.password is not None:
@@ -153,7 +153,7 @@ class Addic7edProvider(Provider):
         series = series.replace('\'', ' ')
 
         # build the params
-        series_year = '%s %d' % (series, year) if year is not None else series
+        series_year = '{0!s} {1:d}'.format(series, year) if year is not None else series
         params = {'search': series_year, 'Submit': 'Search'}
 
         # make the search
@@ -196,12 +196,12 @@ class Addic7edProvider(Provider):
         # attempt with country
         if not show_id and country_code:
             logger.debug('Getting show id with country')
-            show_id = show_ids.get('%s %s' % (series_sanitized, country_code.lower()))
+            show_id = show_ids.get('{0!s} {1!s}'.format(series_sanitized, country_code.lower()))
 
         # attempt with year
         if not show_id and year:
             logger.debug('Getting show id with year')
-            show_id = show_ids.get('%s %d' % (series_sanitized, year))
+            show_id = show_ids.get('{0!s} {1:d}'.format(series_sanitized, year))
 
         # attempt clean
         if not show_id:
@@ -224,7 +224,7 @@ class Addic7edProvider(Provider):
 
         # get the page of the season of the show
         logger.info('Getting the page of show id %d, season %d', show_id, season)
-        r = self.session.get(self.server_url + 'show/%d' % show_id, params={'season': season}, timeout=10)
+        r = self.session.get(self.server_url + 'show/{0:d}'.format(show_id), params={'season': season}, timeout=10)
         r.raise_for_status()
         if r.status_code == 304:
             raise TooManyRequests()

@@ -197,7 +197,7 @@ class FBTypeCompiler(compiler.GenericTypeCompiler):
         if charset is None:
             return basic
         else:
-            return '%s CHARACTER SET %s' % (basic, charset)
+            return '{0!s} CHARACTER SET {1!s}'.format(basic, charset)
 
     def visit_CHAR(self, type_):
         basic = super(FBTypeCompiler, self).visit_CHAR(type_)
@@ -206,8 +206,8 @@ class FBTypeCompiler(compiler.GenericTypeCompiler):
     def visit_VARCHAR(self, type_):
         if not type_.length:
             raise exc.CompileError(
-                    "VARCHAR requires a length on dialect %s" %
-                    self.dialect.name)
+                    "VARCHAR requires a length on dialect {0!s}".format(
+                    self.dialect.name))
         basic = super(FBTypeCompiler, self).visit_VARCHAR(type_)
         return self._extend_string(type_, basic)
 
@@ -227,17 +227,17 @@ class FBCompiler(sql.compiler.SQLCompiler):
         return "CURRENT_TIMESTAMP"
 
     def visit_startswith_op_binary(self, binary, operator, **kw):
-        return '%s STARTING WITH %s' % (
+        return '{0!s} STARTING WITH {1!s}'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw))
 
     def visit_notstartswith_op_binary(self, binary, operator, **kw):
-        return '%s NOT STARTING WITH %s' % (
+        return '{0!s} NOT STARTING WITH {1!s}'.format(
                             binary.left._compiler_dispatch(self, **kw),
                             binary.right._compiler_dispatch(self, **kw))
 
     def visit_mod_binary(self, binary, operator, **kw):
-        return "mod(%s, %s)" % (
+        return "mod({0!s}, {1!s})".format(
                                 self.process(binary.left, **kw),
                                 self.process(binary.right, **kw))
 
@@ -265,9 +265,9 @@ class FBCompiler(sql.compiler.SQLCompiler):
         start = self.process(func.clauses.clauses[1])
         if len(func.clauses.clauses) > 2:
             length = self.process(func.clauses.clauses[2])
-            return "SUBSTRING(%s FROM %s FOR %s)" % (s, start, length)
+            return "SUBSTRING({0!s} FROM {1!s} FOR {2!s})".format(s, start, length)
         else:
-            return "SUBSTRING(%s FROM %s)" % (s, start)
+            return "SUBSTRING({0!s} FROM {1!s})".format(s, start)
 
     def visit_length_func(self, function, **kw):
         if self.dialect._version_two:
@@ -291,7 +291,7 @@ class FBCompiler(sql.compiler.SQLCompiler):
         return " FROM rdb$database"
 
     def visit_sequence(self, seq):
-        return "gen_id(%s, 1)" % self.preparer.format_sequence(seq)
+        return "gen_id({0!s}, 1)".format(self.preparer.format_sequence(seq))
 
     def get_select_precolumns(self, select):
         """Called when building a ``SELECT`` statement, position is just
@@ -301,9 +301,9 @@ class FBCompiler(sql.compiler.SQLCompiler):
 
         result = ""
         if select._limit:
-            result += "FIRST %s " % self.process(sql.literal(select._limit))
+            result += "FIRST {0!s} ".format(self.process(sql.literal(select._limit)))
         if select._offset:
-            result += "SKIP %s " % self.process(sql.literal(select._offset))
+            result += "SKIP {0!s} ".format(self.process(sql.literal(select._offset)))
         if select._distinct:
             result += "DISTINCT "
         return result
@@ -338,21 +338,21 @@ class FBDDLCompiler(sql.compiler.DDLCompiler):
                         "Firebird SEQUENCE doesn't support INCREMENT BY")
 
         if self.dialect._version_two:
-            return "CREATE SEQUENCE %s" % \
-                        self.preparer.format_sequence(create.element)
+            return "CREATE SEQUENCE {0!s}".format( \
+                        self.preparer.format_sequence(create.element))
         else:
-            return "CREATE GENERATOR %s" % \
-                        self.preparer.format_sequence(create.element)
+            return "CREATE GENERATOR {0!s}".format( \
+                        self.preparer.format_sequence(create.element))
 
     def visit_drop_sequence(self, drop):
         """Generate a ``DROP GENERATOR`` statement for the sequence."""
 
         if self.dialect._version_two:
-            return "DROP SEQUENCE %s" % \
-                        self.preparer.format_sequence(drop.element)
+            return "DROP SEQUENCE {0!s}".format( \
+                        self.preparer.format_sequence(drop.element))
         else:
-            return "DROP GENERATOR %s" % \
-                        self.preparer.format_sequence(drop.element)
+            return "DROP GENERATOR {0!s}".format( \
+                        self.preparer.format_sequence(drop.element))
 
 
 class FBIdentifierPreparer(sql.compiler.IdentifierPreparer):
@@ -370,8 +370,8 @@ class FBExecutionContext(default.DefaultExecutionContext):
         """Get the next value from the sequence using ``gen_id()``."""
 
         return self._execute_scalar(
-                "SELECT gen_id(%s, 1) FROM rdb$database" %
-                self.dialect.identifier_preparer.format_sequence(seq),
+                "SELECT gen_id({0!s}, 1) FROM rdb$database".format(
+                self.dialect.identifier_preparer.format_sequence(seq)),
                 type_
                 )
 
@@ -608,8 +608,7 @@ class FBDialect(default.DefaultDialect):
             colspec = row['ftype'].rstrip()
             coltype = self.ischema_names.get(colspec)
             if coltype is None:
-                util.warn("Did not recognize type '%s' of column '%s'" %
-                          (colspec, name))
+                util.warn("Did not recognize type '{0!s}' of column '{1!s}'".format(colspec, name))
                 coltype = sqltypes.NULLTYPE
             elif issubclass(coltype, Integer) and row['fprec'] != 0:
                 coltype = NUMERIC(
@@ -636,8 +635,8 @@ class FBDialect(default.DefaultDialect):
                 # (see also http://tracker.firebirdsql.org/browse/CORE-356)
                 defexpr = row['fdefault'].lstrip()
                 assert defexpr[:8].rstrip().upper() == \
-                            'DEFAULT', "Unrecognized default value: %s" % \
-                            defexpr
+                            'DEFAULT', "Unrecognized default value: {0!s}".format( \
+                            defexpr)
                 defvalue = defexpr[8:].strip()
                 if defvalue == 'NULL':
                     # Redundant

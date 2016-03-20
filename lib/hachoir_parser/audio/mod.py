@@ -47,7 +47,7 @@ def getFineTune(val):
             "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1")[val.value]
 
 def getVolume(val):
-    return "%.1f dB" % (20.0*log10(val.value/64.0))
+    return "{0:.1f} dB".format((20.0*log10(val.value/64.0)))
 
 class SampleInfo(FieldSet):
     static_size = 30*8
@@ -119,8 +119,8 @@ class AmigaModule(Parser):
     def validate(self):
         t = self.stream.readBytes(1080*8, 4)
         if t not in MODULE_TYPE:
-            return "Invalid module type '%s'" % t
-        self.createValue = lambda t: "%s module, %u channels" % MODULE_TYPE[t]
+            return "Invalid module type '{0!s}'".format(t)
+        self.createValue = lambda t: "{0!s} module, {1:d} channels".format(*MODULE_TYPE[t])
         return True
 
     def createFields(self):
@@ -132,7 +132,7 @@ class AmigaModule(Parser):
         patterns = 0
         for index in xrange(128):
             patterns = max(patterns,
-                           header["patterns/position[%u]" % index].value)
+                           header["patterns/position[{0:d}]".format(index)].value)
         patterns += 1
 
         # Yield patterns
@@ -141,9 +141,9 @@ class AmigaModule(Parser):
 
         # Yield samples
         for index in xrange(31):
-            count = header["samples/info[%u]/sample_count" % index].value
+            count = header["samples/info[{0:d}]/sample_count".format(index)].value
             if count:
-                self.info("Yielding sample %u: %u samples" % (index, count))
+                self.info("Yielding sample {0:d}: {1:d} samples".format(index, count))
                 yield RawBytes(self, "sample_data[]", 2*count, \
-                               "Sample %u" % index)
+                               "Sample {0:d}".format(index))
 

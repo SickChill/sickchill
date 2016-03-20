@@ -583,8 +583,8 @@ class HTTPResponse(object):
             raise self.error
 
     def __repr__(self):
-        args = ",".join("%s=%r" % i for i in sorted(self.__dict__.items()))
-        return "%s(%s)" % (self.__class__.__name__, args)
+        args = ",".join("{0!s}={1!r}".format(*i) for i in sorted(self.__dict__.items()))
+        return "{0!s}({1!s})".format(self.__class__.__name__, args)
 
 
 class HTTPError(Exception):
@@ -605,7 +605,7 @@ class HTTPError(Exception):
         self.code = code
         message = message or httputil.responses.get(code, "Unknown")
         self.response = response
-        Exception.__init__(self, "HTTP %d: %s" % (self.code, message))
+        Exception.__init__(self, "HTTP {0:d}: {1!s}".format(self.code, message))
 
 
 class _RequestProxy(object):

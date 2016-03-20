@@ -94,14 +94,12 @@ class DriverManager(NamedExtensionManager):
 
         if not self.extensions:
             name = self._names[0]
-            raise NoMatches('No %r driver found, looking for %r' %
-                            (self.namespace, name))
+            raise NoMatches('No {0!r} driver found, looking for {1!r}'.format(self.namespace, name))
         if len(self.extensions) > 1:
             discovered_drivers = ','.join(e.entry_point_target
                                           for e in self.extensions)
 
-            raise MultipleMatches('Multiple %r drivers found: %s' %
-                                  (self.namespace, discovered_drivers))
+            raise MultipleMatches('Multiple {0!r} drivers found: {1!s}'.format(self.namespace, discovered_drivers))
 
     def __call__(self, func, *args, **kwds):
         """Invokes func() for the single loaded extension.

@@ -18,8 +18,8 @@ class Constants(object):
     PORT = 4443
     PORT2 = 4444
     HOSTNAME = 'localhost'
-    TEST_URI = 'https://%s:%d' % (HOSTNAME, PORT)
-    TEST_URI2 = 'https://%s:%d' % (HOSTNAME, PORT2)
+    TEST_URI = 'https://{0!s}:{1:d}'.format(HOSTNAME, PORT)
+    TEST_URI2 = 'https://{0!s}:{1:d}'.format(HOSTNAME, PORT2)
 
     UNITTEST_DIR = os.path.dirname(os.path.abspath(__file__))
     CACERT_DIR = os.path.join(UNITTEST_DIR, 'pki', 'ca')

@@ -130,7 +130,7 @@ class ElfHeader(FieldSet):
         if self["class"].value not in self.CLASS_NAME:
             return "Unknown class"
         if self["endian"].value not in self.ENDIAN_NAME:
-            return "Unknown endian (%s)" % self["endian"].value
+            return "Unknown endian ({0!s})".format(self["endian"].value)
         return ""
 
 class SectionFlags(FieldSet):
@@ -194,8 +194,7 @@ class SectionHeader32(FieldSet):
         yield UInt32(self, "entry_size", "Size of each entry in section")
 
     def createDescription(self):
-        return "Section header (name: %s, type: %s)" % \
-            (self["name"].display, self["type"].display)
+        return "Section header (name: {0!s}, type: {1!s})".format(self["name"].display, self["type"].display)
 
 class SectionHeader64(SectionHeader32):
     static_size = 64*8
@@ -259,7 +258,7 @@ class ProgramHeader32(FieldSet):
         yield UInt32(self, "align", "Alignment padding")
 
     def createDescription(self):
-        return "Program Header (%s)" % self["type"].display
+        return "Program Header ({0!s})".format(self["type"].display)
 
 class ProgramHeader64(ProgramHeader32):
     static_size = 56*8
@@ -336,6 +335,6 @@ class ElfFile(HachoirParser, RootSeekableFieldSet):
                 yield RawBytes(self, "section["+str(index)+"]", field['size'].value)
 
     def createDescription(self):
-        return "ELF Unix/BSD program/library: %s" % (
-            self["header/class"].display)
+        return "ELF Unix/BSD program/library: {0!s}".format((
+            self["header/class"].display))
 

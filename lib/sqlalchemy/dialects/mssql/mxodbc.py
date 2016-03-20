@@ -59,7 +59,7 @@ class _MSDate_mxodbc(_MSDate):
     def bind_processor(self, dialect):
         def process(value):
             if value is not None:
-                return "%s-%s-%s" % (value.year, value.month, value.day)
+                return "{0!s}-{1!s}-{2!s}".format(value.year, value.month, value.day)
             else:
                 return None
         return process
@@ -69,7 +69,7 @@ class _MSTime_mxodbc(_MSTime):
     def bind_processor(self, dialect):
         def process(value):
             if value is not None:
-                return "%s:%s:%s" % (value.hour, value.minute, value.second)
+                return "{0!s}:{1!s}:{2!s}".format(value.hour, value.minute, value.second)
             else:
                 return None
         return process

@@ -56,10 +56,10 @@ class TorrentString(FieldSet):
         except ValueError:
             len = -1
         if len < 0:
-            raise ParserError("Invalid string length (%s)" % makePrintable(val.value, "ASCII", to_unicode=True))
+            raise ParserError("Invalid string length ({0!s})".format(makePrintable(val.value, "ASCII", to_unicode=True)))
         yield String(self, "separator", 1, "String length/value separator")
         if not len:
-            self.info("Empty string: len=%i" % len)
+            self.info("Empty string: len={0:d}".format(len))
             return
         if len<512:
             yield String(self, "value", len, "String value", charset="ISO-8859-1")
@@ -136,7 +136,7 @@ def Entry(parent, name):
     addr = parent.absolute_address + parent.current_size
     tag = parent.stream.readBytes(addr, 1)
     if tag not in TAGS:
-        raise ParserError("Torrent: Entry of type %r not handled" % type)
+        raise ParserError("Torrent: Entry of type {0!r} not handled".format(type))
     cls = TAGS[tag]
     return cls(parent, name)
 

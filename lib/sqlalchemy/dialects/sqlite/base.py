@@ -212,7 +212,7 @@ class _DateTimeMixin(object):
     def literal_processor(self, dialect):
         bp = self.bind_processor(dialect)
         def process(value):
-            return "'%s'" % bp(value)
+            return "'{0!s}'".format(bp(value))
         return process
 
 
@@ -499,7 +499,7 @@ class SQLiteCompiler(compiler.SQLCompiler):
         return '0'
 
     def visit_char_length_func(self, fn, **kw):
-        return "length%s" % self.function_argspec(fn)
+        return "length{0!s}".format(self.function_argspec(fn))
 
     def visit_cast(self, cast, **kwargs):
         if self.dialect.supports_cast:
@@ -509,13 +509,13 @@ class SQLiteCompiler(compiler.SQLCompiler):
 
     def visit_extract(self, extract, **kw):
         try:
-            return "CAST(STRFTIME('%s', %s) AS INTEGER)" % (
+            return "CAST(STRFTIME('{0!s}', {1!s}) AS INTEGER)".format(
                 self.extract_map[extract.field],
                 self.process(extract.expr, **kw)
             )
         except KeyError:
             raise exc.CompileError(
-                "%s is not a valid extract argument." % extract.field)
+                "{0!s} is not a valid extract argument.".format(extract.field))
 
     def limit_clause(self, select):
         text = ""
@@ -715,7 +715,7 @@ class SQLiteDialect(default.DefaultDialect):
                 (level, self.name, ", ".join(self._isolation_lookup))
                 )
         cursor = connection.cursor()
-        cursor.execute("PRAGMA read_uncommitted = %d" % isolation_level)
+        cursor.execute("PRAGMA read_uncommitted = {0:d}".format(isolation_level))
         cursor.close()
 
     def get_isolation_level(self, connection):
@@ -738,7 +738,7 @@ class SQLiteDialect(default.DefaultDialect):
         elif value == 1:
             return "READ UNCOMMITTED"
         else:
-            assert False, "Unknown isolation level %s" % value
+            assert False, "Unknown isolation level {0!s}".format(value)
 
     def on_connect(self):
         if self.isolation_level is not None:
@@ -752,7 +752,7 @@ class SQLiteDialect(default.DefaultDialect):
     def get_table_names(self, connection, schema=None, **kw):
         if schema is not None:
             qschema = self.identifier_preparer.quote_identifier(schema)
-            master = '%s.sqlite_master' % qschema
+            master = '{0!s}.sqlite_master'.format(qschema)
             s = ("SELECT name FROM %s "
                  "WHERE type='table' ORDER BY name") % (master,)
             rs = connection.execute(s)
@@ -773,11 +773,11 @@ class SQLiteDialect(default.DefaultDialect):
     def has_table(self, connection, table_name, schema=None):
         quote = self.identifier_preparer.quote_identifier
         if schema is not None:
-            pragma = "PRAGMA %s." % quote(schema)
+            pragma = "PRAGMA {0!s}.".format(quote(schema))
         else:
             pragma = "PRAGMA "
         qtable = quote(table_name)
-        statement = "%stable_info(%s)" % (pragma, qtable)
+        statement = "{0!s}table_info({1!s})".format(pragma, qtable)
         cursor = _pragma_cursor(connection.execute(statement))
         row = cursor.fetchone()
 
@@ -792,7 +792,7 @@ class SQLiteDialect(default.DefaultDialect):
     def get_view_names(self, connection, schema=None, **kw):
         if schema is not None:
             qschema = self.identifier_preparer.quote_identifier(schema)
-            master = '%s.sqlite_master' % qschema
+            master = '{0!s}.sqlite_master'.format(qschema)
             s = ("SELECT name FROM %s "
                  "WHERE type='view' ORDER BY name") % (master,)
             rs = connection.execute(s)
@@ -814,7 +814,7 @@ class SQLiteDialect(default.DefaultDialect):
     def get_view_definition(self, connection, view_name, schema=None, **kw):
         if schema is not None:
             qschema = self.identifier_preparer.quote_identifier(schema)
-            master = '%s.sqlite_master' % qschema
+            master = '{0!s}.sqlite_master'.format(qschema)
             s = ("SELECT sql FROM %s WHERE name = '%s'"
                  "AND type='view'") % (master, view_name)
             rs = connection.execute(s)
@@ -839,11 +839,11 @@ class SQLiteDialect(default.DefaultDialect):
     def get_columns(self, connection, table_name, schema=None, **kw):
         quote = self.identifier_preparer.quote_identifier
         if schema is not None:
-            pragma = "PRAGMA %s." % quote(schema)
+            pragma = "PRAGMA {0!s}.".format(quote(schema))
         else:
             pragma = "PRAGMA "
         qtable = quote(table_name)
-        statement = "%stable_info(%s)" % (pragma, qtable)
+        statement = "{0!s}table_info({1!s})".format(pragma, qtable)
         c = _pragma_cursor(connection.execute(statement))
 
         rows = c.fetchall()
@@ -937,11 +937,11 @@ class SQLiteDialect(default.DefaultDialect):
     def get_foreign_keys(self, connection, table_name, schema=None, **kw):
         quote = self.identifier_preparer.quote_identifier
         if schema is not None:
-            pragma = "PRAGMA %s." % quote(schema)
+            pragma = "PRAGMA {0!s}.".format(quote(schema))
         else:
             pragma = "PRAGMA "
         qtable = quote(table_name)
-        statement = "%sforeign_key_list(%s)" % (pragma, qtable)
+        statement = "{0!s}foreign_key_list({1!s})".format(pragma, qtable)
         c = _pragma_cursor(connection.execute(statement))
         fkeys = []
         fks = {}
@@ -986,12 +986,12 @@ class SQLiteDialect(default.DefaultDialect):
     def get_indexes(self, connection, table_name, schema=None, **kw):
         quote = self.identifier_preparer.quote_identifier
         if schema is not None:
-            pragma = "PRAGMA %s." % quote(schema)
+            pragma = "PRAGMA {0!s}.".format(quote(schema))
         else:
             pragma = "PRAGMA "
         include_auto_indexes = kw.pop('include_auto_indexes', False)
         qtable = quote(table_name)
-        statement = "%sindex_list(%s)" % (pragma, qtable)
+        statement = "{0!s}index_list({1!s})".format(pragma, qtable)
         c = _pragma_cursor(connection.execute(statement))
         indexes = []
         while True:
@@ -1007,7 +1007,7 @@ class SQLiteDialect(default.DefaultDialect):
             indexes.append(dict(name=row[1], column_names=[], unique=row[2]))
         # loop thru unique indexes to get the column names.
         for idx in indexes:
-            statement = "%sindex_info(%s)" % (pragma, quote(idx['name']))
+            statement = "{0!s}index_info({1!s})".format(pragma, quote(idx['name']))
             c = connection.execute(statement)
             cols = idx['column_names']
             while True:

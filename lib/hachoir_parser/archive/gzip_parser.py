@@ -52,7 +52,7 @@ class GzipParser(Parser):
         if self["signature"].value != '\x1F\x8B':
             return "Invalid signature"
         if self["compression"].value not in self.COMPRESSION_NAME:
-            return "Unknown compression method (%u)" % self["compression"].value
+            return "Unknown compression method ({0:d})".format(self["compression"].value)
         if self["reserved[0]"].value != 0:
             return "Invalid reserved[0] value"
         if self["reserved[1]"].value != 0:
@@ -120,10 +120,10 @@ class GzipParser(Parser):
         desc = u"gzip archive"
         info = []
         if "filename" in self:
-            info.append('filename "%s"' % self["filename"].value)
+            info.append('filename "{0!s}"'.format(self["filename"].value))
         if "size" in self:
-            info.append("was %s" % self["size"].display)
+            info.append("was {0!s}".format(self["size"].display))
         if self["mtime"].value:
             info.append(self["mtime"].display)
-        return "%s: %s" % (desc, ", ".join(info))
+        return "{0!s}: {1!s}".format(desc, ", ".join(info))
 

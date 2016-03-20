@@ -110,10 +110,10 @@ Foo
             logging.debug("trying filename %r", filename)
             data = """\
 --1234
-Content-Disposition: form-data; name="files"; filename="%s"
+Content-Disposition: form-data; name="files"; filename="{0!s}"
 
 Foo
---1234--""" % filename.replace('\\', '\\\\').replace('"', '\\"')
+--1234--""".format(filename.replace('\\', '\\\\').replace('"', '\\"'))
             data = utf8(data.replace("\n", "\r\n"))
             args = {}
             files = {}

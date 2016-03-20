@@ -76,12 +76,12 @@ def rle_repr(l):
         if isinstance(previous, (list, tuple)):
             previous = rle_repr(previous)
         if runlen>1:
-            result.append('[%s]*%i'%(previous, runlen))
+            result.append('[{0!s}]*{1:d}'.format(previous, runlen))
         else:
             if result and '*' not in result[-1]:
-                result[-1] = '[%s, %s]'%(result[-1][1:-1], previous)
+                result[-1] = '[{0!s}, {1!s}]'.format(result[-1][1:-1], previous)
             else:
-                result.append('[%s]'%previous)
+                result.append('[{0!s}]'.format(previous))
     iterable = iter(l)
     runlen = 1
     result = []
@@ -125,11 +125,11 @@ class GifImageBlock(Parser):
                 dictionary = {}
                 compress_code = CLEAR_CODE + 2
                 obuf = []
-                code._description = "Reset Code (LZW code %i)" % code.value
+                code._description = "Reset Code (LZW code {0:d})".format(code.value)
                 yield code
                 continue
             elif code.value == END_CODE:
-                code._description = "End of Information Code (LZW code %i)" % code.value
+                code._description = "End of Information Code (LZW code {0:d})".format(code.value)
                 yield code
                 break
             if code.value < CLEAR_CODE: # literal
@@ -139,19 +139,19 @@ class GifImageBlock(Parser):
                     compress_code += 1
                 obuf = [code.value]
                 output.append(code.value)
-                code._description = "Literal Code %i" % code.value
+                code._description = "Literal Code {0:d}".format(code.value)
             elif code.value >= CLEAR_CODE + 2:
                 if code.value in dictionary:
                     chain = dictionary[code.value]
-                    code._description = "Compression Code %i (found in dictionary as %s)" % (code.value, rle_repr(chain))
+                    code._description = "Compression Code {0:d} (found in dictionary as {1!s})".format(code.value, rle_repr(chain))
                 else:
                     chain = obuf + [obuf[0]]
-                    code._description = "Compression Code %i (not found in dictionary; guessed to be %s)" % (code.value, rle_repr(chain))
+                    code._description = "Compression Code {0:d} (not found in dictionary; guessed to be {1!s})".format(code.value, rle_repr(chain))
                 dictionary[compress_code] = obuf + [chain[0]]
                 compress_code += 1
                 obuf = chain
                 output += chain
-            code._description += "; Current Decoded Length %i"%len(output)
+            code._description += "; Current Decoded Length {0:d}".format(len(output))
             yield code
         padding = paddingSize(self.current_size, 8)
         if padding:
@@ -186,7 +186,7 @@ class Image(FieldSet):
         yield NullBytes(self, "terminator", 1, "Terminator (0)")
 
     def createDescription(self):
-        return "Image: %ux%u pixels at (%u,%u)" % (
+        return "Image: {0:d}x{1:d} pixels at ({2:d},{3:d})".format(
             self["width"].value, self["height"].value,
             self["left"].value, self["top"].value)
 
@@ -285,7 +285,7 @@ class Extension(FieldSet):
             yield field
 
     def createDescription(self):
-        return "Extension: function %s" % self["func"].display
+        return "Extension: function {0!s}".format(self["func"].display)
 
 class ScreenDescriptor(FieldSet):
     def createFields(self):
@@ -298,15 +298,14 @@ class ScreenDescriptor(FieldSet):
         yield UInt8(self, "background", "Background color")
         field = UInt8(self, "pixel_aspect_ratio")
         if field.value:
-            field._description = "Pixel aspect ratio: %f (stored as %i)"%((field.value + 15)/64., field.value)
+            field._description = "Pixel aspect ratio: {0:f} (stored as {1:d})".format((field.value + 15)/64., field.value)
         else:
             field._description = "Pixel aspect ratio: not specified"
         yield field
 
     def createDescription(self):
         colors = 1 << (self["size_global_map"].value+1)
-        return "Screen descriptor: %ux%u pixels %u colors" \
-            % (self["width"].value, self["height"].value, colors)
+        return "Screen descriptor: {0:d}x{1:d} pixels {2:d} colors".format(self["width"].value, self["height"].value, colors)
 
 class GifFile(Parser):
     endian = LITTLE_ENDIAN
@@ -331,9 +330,9 @@ class GifFile(Parser):
         if self["screen/width"].value == 0 or self["screen/height"].value == 0:
             return "Invalid image size"
         if MAX_WIDTH < self["screen/width"].value:
-            return "Image width too big (%u)" % self["screen/width"].value
+            return "Image width too big ({0:d})".format(self["screen/width"].value)
         if MAX_HEIGHT < self["screen/height"].value:
-            return "Image height too big (%u)" % self["screen/height"].value
+            return "Image height too big ({0:d})".format(self["screen/height"].value)
         return True
 
     def createFields(self):
@@ -362,7 +361,7 @@ class GifFile(Parser):
                 # GIF Terminator
                 break
             else:
-                raise ParserError("Wrong GIF image separator: 0x%02X" % ord(code))
+                raise ParserError("Wrong GIF image separator: 0x{0:02X}".format(ord(code)))
 
     def createContentSize(self):
         field = self["image[0]"]

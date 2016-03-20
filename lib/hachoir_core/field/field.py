@@ -22,7 +22,7 @@ def joinPath(path, name):
     if path != "/":
         return "/".join((path, name))
     else:
-        return "/%s" % name
+        return "/{0!s}".format(name)
 
 class MissingField(KeyError, FieldError):
     def __init__(self, field, key):
@@ -31,10 +31,10 @@ class MissingField(KeyError, FieldError):
         self.key = key
 
     def __str__(self):
-        return 'Can\'t get field "%s" from %s' % (self.key, self.field.path)
+        return 'Can\'t get field "{0!s}" from {1!s}'.format(self.key, self.field.path)
 
     def __unicode__(self):
-        return u'Can\'t get field "%s" from %s' % (self.key, self.field.path)
+        return u'Can\'t get field "{0!s}" from {1!s}'.format(self.key, self.field.path)
 
 class Field(Logger):
     # static size can have two differents value: None (no static size), an
@@ -101,7 +101,7 @@ class Field(Logger):
     def __unicode__(self):
         return self.display
     def __repr__(self):
-        return "<%s path=%r, address=%s, size=%s>" % (
+        return "<{0!s} path={1!r}, address={2!s}, size={3!s}>".format(
             self.__class__.__name__, self.path, self._address, self._size)
 
     def hasValue(self):
@@ -129,7 +129,7 @@ class Field(Logger):
             try:
                 self.__display = self.createDisplay()
             except HACHOIR_ERRORS, err:
-                self.error("Unable to create display: %s" % err)
+                self.error("Unable to create display: {0!s}".format(err))
                 self.__display = u""
         return self.__display
     display = property(lambda self: self._getDisplay(),
@@ -146,7 +146,7 @@ class Field(Logger):
             try:
                 self.__raw_display = self.createRawDisplay()
             except HACHOIR_ERRORS, err:
-                self.error("Unable to create raw display: %s" % err)
+                self.error("Unable to create raw display: {0!s}".format(err))
                 self.__raw_display = u""
         return self.__raw_display
     raw_display = property(lambda self: self._getRawDisplay(),

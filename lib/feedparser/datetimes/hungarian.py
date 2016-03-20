@@ -36,8 +36,8 @@ def _parse_date_hungarian(dateString):
     hour = m.group(4)
     if len(hour) == 1:
         hour = '0' + hour
-    w3dtfdate = '%(year)s-%(month)s-%(day)sT%(hour)s:%(minute)s%(zonediff)s' % \
+    w3dtfdate = '{year!s}-{month!s}-{day!s}T{hour!s}:{minute!s}{zonediff!s}'.format(** \
                 {'year': m.group(1), 'month': month, 'day': day,\
                  'hour': hour, 'minute': m.group(5),\
-                 'zonediff': m.group(6)}
+                 'zonediff': m.group(6)})
     return _parse_date_w3dtf(w3dtfdate)

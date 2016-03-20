@@ -81,10 +81,10 @@ def display_properties(options):
         properties_list = list(sorted(properties.keys()))
         for property_name in properties_list:
             property_values = properties.get(property_name)
-            print(2 * ' ' + '[+] %s' % (property_name,))
+            print(2 * ' ' + '[+] {0!s}'.format(property_name))
             if property_values and options.values:
                 for property_value in property_values:
-                    print(4 * ' ' + '[!] %s' % (property_value,))
+                    print(4 * ' ' + '[!] {0!s}'.format(property_value))
 
 
 def main(args=None):  # pylint:disable=too-many-branches

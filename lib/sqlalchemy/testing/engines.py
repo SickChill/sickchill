@@ -148,7 +148,7 @@ def all_dialects(exclude=None):
         mod = getattr(d, name, None)
         if not mod:
             mod = getattr(__import__(
-                'sqlalchemy.databases.%s' % name).databases, name)
+                'sqlalchemy.databases.{0!s}'.format(name)).databases, name)
         yield mod.dialect()
 
 

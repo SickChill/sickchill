@@ -297,7 +297,7 @@ class InterpolationLoopError(InterpolationError):
     def __init__(self, option):
         InterpolationError.__init__(
             self,
-            'interpolation loop detected in value "%s".' % option)
+            'interpolation loop detected in value "{0!s}".'.format(option))
 
 
 class RepeatSectionError(ConfigObjError):
@@ -313,7 +313,7 @@ class MissingInterpolationOption(InterpolationError):
     def __init__(self, option):
         InterpolationError.__init__(
             self,
-            'missing option "%s" in interpolation.' % option)
+            'missing option "{0!s}" in interpolation.'.format(option))
 
 
 class UnreprError(ConfigObjError):
@@ -601,7 +601,7 @@ class Section(dict):
         creating a new sub-section.
         """
         if not isinstance(key, basestring):
-            raise ValueError('The key "%s" is not a string.' % key)
+            raise ValueError('The key "{0!s}" is not a string.'.format(key))
         
         # add the comment
         if not self.comments.has_key(key):
@@ -639,9 +639,9 @@ class Section(dict):
                 elif isinstance(value, (list, tuple)):
                     for entry in value:
                         if not isinstance(entry, basestring):
-                            raise TypeError('Value is not a string "%s".' % entry)
+                            raise TypeError('Value is not a string "{0!s}".'.format(entry))
                 else:
-                    raise TypeError('Value is not a string "%s".' % value)
+                    raise TypeError('Value is not a string "{0!s}".'.format(value))
             dict.__setitem__(self, key, value)
 
 
@@ -761,8 +761,8 @@ class Section(dict):
 
     def __repr__(self):
         """x.__repr__() <==> repr(x)"""
-        return '{%s}' % ', '.join([('%s: %s' % (repr(key), repr(self[key])))
-            for key in (self.scalars + self.sections)])
+        return '{{{0!s}}}'.format(', '.join([('{0!s}: {1!s}'.format(repr(key), repr(self[key])))
+            for key in (self.scalars + self.sections)]))
 
     __str__ = __repr__
     __str__.__doc__ = "x.__str__() <==> str(x)"
@@ -839,7 +839,7 @@ class Section(dict):
         elif oldkey in self.sections:
             the_list = self.sections
         else:
-            raise KeyError('Key "%s" not found.' % oldkey)
+            raise KeyError('Key "{0!s}" not found.'.format(oldkey))
         pos = the_list.index(oldkey)
         #
         val = self[oldkey]
@@ -981,7 +981,7 @@ class Section(dict):
                 else:
                     return self.main._bools[val.lower()]
             except KeyError:
-                raise ValueError('Value "%s" is neither True nor False' % val)
+                raise ValueError('Value "{0!s}" is neither True nor False'.format(val))
 
 
     def as_int(self, key):
@@ -1209,7 +1209,7 @@ class ConfigObj(Section):
         # TODO: check the values too.
         for entry in options:
             if entry not in defaults:
-                raise TypeError('Unrecognised option "%s".' % entry)
+                raise TypeError('Unrecognised option "{0!s}".'.format(entry))
         
         # Add any explicit options to the defaults
         defaults.update(options)
@@ -1228,7 +1228,7 @@ class ConfigObj(Section):
                 h.close()
             elif self.file_error:
                 # raise an error if the file doesn't exist
-                raise IOError('Config file not found: "%s".' % self.filename)
+                raise IOError('Config file not found: "{0!s}".'.format(self.filename))
             else:
                 # file doesn't already exist
                 if self.create_empty:
@@ -1288,9 +1288,9 @@ class ConfigObj(Section):
         self._parse(infile)
         # if we had any errors, now is the time to raise them
         if self._errors:
-            info = "at line %s." % self._errors[0].line_number
+            info = "at line {0!s}.".format(self._errors[0].line_number)
             if len(self._errors) > 1:
-                msg = "Parsing failed with several errors.\nFirst error %s" % info
+                msg = "Parsing failed with several errors.\nFirst error {0!s}".format(info)
                 error = ConfigObjError(msg)
             else:
                 error = self._errors[0]
@@ -1342,9 +1342,9 @@ class ConfigObj(Section):
         
         
     def __repr__(self):
-        return ('ConfigObj({%s})' % 
-                ', '.join([('%s: %s' % (repr(key), repr(self[key]))) 
-                for key in (self.scalars + self.sections)]))
+        return ('ConfigObj({{{0!s}}})'.format( 
+                ', '.join([('{0!s}: {1!s}'.format(repr(key), repr(self[key]))) 
+                for key in (self.scalars + self.sections)])))
     
     
     def _handle_bom(self, infile):
@@ -1743,7 +1743,7 @@ class ConfigObj(Section):
             if self.stringify:
                 value = str(value)
             else:
-                raise TypeError('Value "%s" is not a string.' % value)
+                raise TypeError('Value "{0!s}" is not a string.'.format(value))
 
         if not value:
             return '""'
@@ -1760,7 +1760,7 @@ class ConfigObj(Section):
             # for normal values either single or double quotes will do
             elif '\n' in value:
                 # will only happen if multiline is off - e.g. '\n' in key
-                raise ConfigObjError('Value "%s" cannot be safely quoted.' % value)
+                raise ConfigObjError('Value "{0!s}" cannot be safely quoted.'.format(value))
             elif ((value[0] not in wspace_plus) and
                     (value[-1] not in wspace_plus) and
                     (',' not in value)):
@@ -1779,7 +1779,7 @@ class ConfigObj(Section):
     
     def _get_single_quote(self, value):
         if ("'" in value) and ('"' in value):
-            raise ConfigObjError('Value "%s" cannot be safely quoted.' % value)
+            raise ConfigObjError('Value "{0!s}" cannot be safely quoted.'.format(value))
         elif '"' in value:
             quot = squot
         else:
@@ -1789,7 +1789,7 @@ class ConfigObj(Section):
     
     def _get_triple_quote(self, value):
         if (value.find('"""') != -1) and (value.find("'''") != -1):
-            raise ConfigObjError('Value "%s" cannot be safely quoted.' % value)
+            raise ConfigObjError('Value "{0!s}" cannot be safely quoted.'.format(value))
         if value.find('"""') == -1:
             quot = tdquot
         else:
@@ -1894,9 +1894,9 @@ class ConfigObj(Section):
             except ConfigObjError, e:
                 # FIXME: Should these errors have a reference
                 #        to the already parsed ConfigObj ?
-                raise ConfigspecError('Parsing configspec failed: %s' % e)
+                raise ConfigspecError('Parsing configspec failed: {0!s}'.format(e))
             except IOError, e:
-                raise IOError('Reading configspec failed: %s' % e)
+                raise IOError('Reading configspec failed: {0!s}'.format(e))
         
         self.configspec = configspec
             
@@ -1936,7 +1936,7 @@ class ConfigObj(Section):
             val = self._decode_element(self._quote(this_entry))
         else:
             val = repr(this_entry)
-        return '%s%s%s%s%s' % (indent_string,
+        return '{0!s}{1!s}{2!s}{3!s}{4!s}'.format(indent_string,
                                self._decode_element(self._quote(entry, multiline=False)),
                                self._a_to_u(' = '),
                                val,
@@ -1945,7 +1945,7 @@ class ConfigObj(Section):
 
     def _write_marker(self, indent_string, depth, entry, comment):
         """Write a section marker line"""
-        return '%s%s%s%s%s' % (indent_string,
+        return '{0!s}{1!s}{2!s}{3!s}{4!s}'.format(indent_string,
                                self._a_to_u('[' * depth),
                                self._quote(self._decode_element(entry), multiline=False),
                                self._a_to_u(']' * depth),
@@ -2228,7 +2228,7 @@ class ConfigObj(Section):
                 out[entry] = False
             else:
                 ret_false = False
-                msg = 'Value %r was provided as a section' % entry
+                msg = 'Value {0!r} was provided as a section'.format(entry)
                 out[entry] = validator.baseErrorClass(msg)
         for entry in incorrect_sections:
             ret_true = False
@@ -2236,7 +2236,7 @@ class ConfigObj(Section):
                 out[entry] = False
             else:
                 ret_false = False
-                msg = 'Section %r was provided as a single value' % entry
+                msg = 'Section {0!r} was provided as a single value'.format(entry)
                 out[entry] = validator.baseErrorClass(msg)
                 
         # Missing sections will have been created as empty ones when the

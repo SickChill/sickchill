@@ -87,11 +87,11 @@ class PIDLockFile(LockBase):
                                               " lock for %s" %
                                               self.path)
                         else:
-                            raise AlreadyLocked("%s is already locked" %
-                                                self.path)
+                            raise AlreadyLocked("{0!s} is already locked".format(
+                                                self.path))
                     time.sleep(timeout is not None and timeout/10 or 0.1)
                 else:
-                    raise LockFailed("failed to create %s" % self.path)
+                    raise LockFailed("failed to create {0!s}".format(self.path))
             else:
                 return
 
@@ -103,9 +103,9 @@ class PIDLockFile(LockBase):
 
             """
         if not self.is_locked():
-            raise NotLocked("%s is not locked" % self.path)
+            raise NotLocked("{0!s} is not locked".format(self.path))
         if not self.i_am_locking():
-            raise NotMyLock("%s is locked, but not by me" % self.path)
+            raise NotMyLock("{0!s} is locked, but not by me".format(self.path))
         remove_existing_pidfile(self.path)
 
     def break_lock(self):
@@ -171,7 +171,7 @@ def write_pid_to_pidfile(pidfile_path):
     #   would contain three characters: two, five, and newline.
 
     pid = os.getpid()
-    line = "%(pid)d\n" % vars()
+    line = "{pid:d}\n".format(**vars())
     pidfile.write(line)
     pidfile.close()
 

@@ -186,7 +186,7 @@ class PoolManager(RequestMethods):
         kw['retries'] = retries
         kw['redirect'] = redirect
 
-        log.info("Redirecting %s -> %s" % (url, redirect_location))
+        log.info("Redirecting {0!s} -> {1!s}".format(url, redirect_location))
         return self.urlopen(method, redirect_location, **kw)
 
 
@@ -221,7 +221,7 @@ class ProxyManager(PoolManager):
                  proxy_headers=None, **connection_pool_kw):
 
         if isinstance(proxy_url, HTTPConnectionPool):
-            proxy_url = '%s://%s:%i' % (proxy_url.scheme, proxy_url.host,
+            proxy_url = '{0!s}://{1!s}:{2:d}'.format(proxy_url.scheme, proxy_url.host,
                                         proxy_url.port)
         proxy = parse_url(proxy_url)
         if not proxy.port:

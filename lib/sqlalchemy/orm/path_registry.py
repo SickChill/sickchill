@@ -127,7 +127,7 @@ class PathRegistry(object):
         elif token.endswith(":" + _DEFAULT_TOKEN):
             return TokenRegistry(self.root, token)
         else:
-            raise exc.ArgumentError("invalid token: %s" % token)
+            raise exc.ArgumentError("invalid token: {0!s}".format(token))
 
     def __add__(self, other):
         return util.reduce(
@@ -135,7 +135,7 @@ class PathRegistry(object):
                     other.path, self)
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.path, )
+        return "{0!s}({1!r})".format(self.__class__.__name__, self.path )
 
 
 class RootRegistry(PathRegistry):
@@ -195,7 +195,7 @@ class PropRegistry(PathRegistry):
         """
         return ("loader",
                 self.parent.token(
-                    "%s:%s" % (self.prop.strategy_wildcard_key, _WILDCARD_TOKEN)
+                    "{0!s}:{1!s}".format(self.prop.strategy_wildcard_key, _WILDCARD_TOKEN)
                     ).path
                 )
 
@@ -203,7 +203,7 @@ class PropRegistry(PathRegistry):
     def _default_path_loader_key(self):
         return ("loader",
                 self.parent.token(
-                    "%s:%s" % (self.prop.strategy_wildcard_key, _DEFAULT_TOKEN)
+                    "{0!s}:{1!s}".format(self.prop.strategy_wildcard_key, _DEFAULT_TOKEN)
                     ).path
                 )
 

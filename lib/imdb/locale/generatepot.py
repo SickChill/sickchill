@@ -50,7 +50,7 @@ msgstr ""
 """
 
 if len(sys.argv) != 2:
-    print "Usage: %s dtd_file" % sys.argv[0]
+    print "Usage: {0!s} dtd_file".format(sys.argv[0])
     sys.exit()
 
 dtdfilename = sys.argv[1]
@@ -64,10 +64,10 @@ print POT_HEADER_TEMPLATE % {
 }
 for element in sorted(elements):
     if element in DEFAULT_MESSAGES:
-        print '# Default: %s' % DEFAULT_MESSAGES[element]
+        print '# Default: {0!s}'.format(DEFAULT_MESSAGES[element])
     else:
-        print '# Default: %s' % element.replace('-', ' ').capitalize()
-    print 'msgid "%s"' % element
+        print '# Default: {0!s}'.format(element.replace('-', ' ').capitalize())
+    print 'msgid "{0!s}"'.format(element)
     print 'msgstr ""'
     # use this part instead of the line above to generate the po file for English
     #if element in DEFAULT_MESSAGES:

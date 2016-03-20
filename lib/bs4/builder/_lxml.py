@@ -219,7 +219,7 @@ class LXMLTreeBuilderForXML(TreeBuilder):
 
     def test_fragment_to_document(self, fragment):
         """See `TreeBuilder`."""
-        return u'<?xml version="1.0" encoding="utf-8"?>\n%s' % fragment
+        return u'<?xml version="1.0" encoding="utf-8"?>\n{0!s}'.format(fragment)
 
 
 class LXMLTreeBuilder(HTMLTreeBuilder, LXMLTreeBuilderForXML):
@@ -245,4 +245,4 @@ class LXMLTreeBuilder(HTMLTreeBuilder, LXMLTreeBuilderForXML):
 
     def test_fragment_to_document(self, fragment):
         """See `TreeBuilder`."""
-        return u'<html><body>%s</body></html>' % fragment
+        return u'<html><body>{0!s}</body></html>'.format(fragment)

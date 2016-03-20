@@ -43,8 +43,7 @@ class NTLMConnectionPool(HTTPSConnectionPool):
         # Performs the NTLM handshake that secures the connection. The socket
         # must be kept open while requests are performed.
         self.num_connections += 1
-        log.debug('Starting NTLM HTTPS connection no. %d: https://%s%s' %
-                  (self.num_connections, self.host, self.authurl))
+        log.debug('Starting NTLM HTTPS connection no. {0:d}: https://{1!s}{2!s}'.format(self.num_connections, self.host, self.authurl))
 
         headers = {}
         headers['Connection'] = 'Keep-Alive'
@@ -55,14 +54,14 @@ class NTLMConnectionPool(HTTPSConnectionPool):
 
         # Send negotiation message
         headers[req_header] = (
-            'NTLM %s' % ntlm.create_NTLM_NEGOTIATE_MESSAGE(self.rawuser))
-        log.debug('Request headers: %s' % headers)
+            'NTLM {0!s}'.format(ntlm.create_NTLM_NEGOTIATE_MESSAGE(self.rawuser)))
+        log.debug('Request headers: {0!s}'.format(headers))
         conn.request('GET', self.authurl, None, headers)
         res = conn.getresponse()
         reshdr = dict(res.getheaders())
-        log.debug('Response status: %s %s' % (res.status, res.reason))
-        log.debug('Response headers: %s' % reshdr)
-        log.debug('Response data: %s [...]' % res.read(100))
+        log.debug('Response status: {0!s} {1!s}'.format(res.status, res.reason))
+        log.debug('Response headers: {0!s}'.format(reshdr))
+        log.debug('Response data: {0!s} [...]'.format(res.read(100)))
 
         # Remove the reference to the socket, so that it can not be closed by
         # the response object (we want to keep the socket open)
@@ -75,8 +74,7 @@ class NTLMConnectionPool(HTTPSConnectionPool):
             if s[:5] == 'NTLM ':
                 auth_header_value = s[5:]
         if auth_header_value is None:
-            raise Exception('Unexpected %s response header: %s' %
-                            (resp_header, reshdr[resp_header]))
+            raise Exception('Unexpected {0!s} response header: {1!s}'.format(resp_header, reshdr[resp_header]))
 
         # Send authentication message
         ServerChallenge, NegotiateFlags = \
@@ -86,19 +84,18 @@ class NTLMConnectionPool(HTTPSConnectionPool):
                                                          self.domain,
                                                          self.pw,
                                                          NegotiateFlags)
-        headers[req_header] = 'NTLM %s' % auth_msg
-        log.debug('Request headers: %s' % headers)
+        headers[req_header] = 'NTLM {0!s}'.format(auth_msg)
+        log.debug('Request headers: {0!s}'.format(headers))
         conn.request('GET', self.authurl, None, headers)
         res = conn.getresponse()
-        log.debug('Response status: %s %s' % (res.status, res.reason))
-        log.debug('Response headers: %s' % dict(res.getheaders()))
-        log.debug('Response data: %s [...]' % res.read()[:100])
+        log.debug('Response status: {0!s} {1!s}'.format(res.status, res.reason))
+        log.debug('Response headers: {0!s}'.format(dict(res.getheaders())))
+        log.debug('Response data: {0!s} [...]'.format(res.read()[:100]))
         if res.status != 200:
             if res.status == 401:
                 raise Exception('Server rejected request: wrong '
                                 'username or password')
-            raise Exception('Wrong server response: %s %s' %
-                            (res.status, res.reason))
+            raise Exception('Wrong server response: {0!s} {1!s}'.format(res.status, res.reason))
 
         res.fp = None
         log.debug('Connection established')

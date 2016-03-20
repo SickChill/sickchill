@@ -32,8 +32,7 @@ class RawBits(Field):
         if self._size < config.max_bit_length:
             return unicode(self.value)
         else:
-            return _("<%s size=%u>" %
-                (self.__class__.__name__, self._size))
+            return _("<{0!s} size={1:d}>".format(self.__class__.__name__, self._size))
     createRawDisplay = createDisplay
 
 class Bits(RawBits):

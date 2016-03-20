@@ -255,7 +255,7 @@ class Pattern(object):
         defined = ""
         if self.defined_at:
             defined = "@" + six.text_type(self.defined_at)
-        return "<%s%s:%s>" % (self.__class__.__name__, defined, self.patterns)
+        return "<{0!s}{1!s}:{2!s}>".format(self.__class__.__name__, defined, self.patterns)
 
 
 class StringPattern(Pattern):

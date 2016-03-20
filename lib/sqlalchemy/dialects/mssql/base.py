@@ -504,7 +504,7 @@ class MSTypeCompiler(compiler.GenericTypeCompiler):
         """
 
         if getattr(type_, 'collation', None):
-            collation = 'COLLATE %s' % type_.collation
+            collation = 'COLLATE {0!s}'.format(type_.collation)
         else:
             collation = None
 
@@ -512,7 +512,7 @@ class MSTypeCompiler(compiler.GenericTypeCompiler):
             length = type_.length
 
         if length:
-            spec = spec + "(%s)" % length
+            spec = spec + "({0!s})".format(length)
 
         return ' '.join([c for c in (spec, collation)
             if c is not None])
@@ -522,28 +522,28 @@ class MSTypeCompiler(compiler.GenericTypeCompiler):
         if precision is None:
             return "FLOAT"
         else:
-            return "FLOAT(%(precision)s)" % {'precision': precision}
+            return "FLOAT({precision!s})".format(**{'precision': precision})
 
     def visit_TINYINT(self, type_):
         return "TINYINT"
 
     def visit_DATETIMEOFFSET(self, type_):
         if type_.precision:
-            return "DATETIMEOFFSET(%s)" % type_.precision
+            return "DATETIMEOFFSET({0!s})".format(type_.precision)
         else:
             return "DATETIMEOFFSET"
 
     def visit_TIME(self, type_):
         precision = getattr(type_, 'precision', None)
         if precision:
-            return "TIME(%s)" % precision
+            return "TIME({0!s})".format(precision)
         else:
             return "TIME"
 
     def visit_DATETIME2(self, type_):
         precision = getattr(type_, 'precision', None)
         if precision:
-            return "DATETIME2(%s)" % precision
+            return "DATETIME2({0!s})".format(precision)
         else:
             return "DATETIME2"
 
@@ -644,8 +644,8 @@ class MSExecutionContext(default.DefaultExecutionContext):
 
             if self._enable_identity_insert:
                 self.root_connection._cursor_execute(self.cursor,
-                    "SET IDENTITY_INSERT %s ON" %
-                    self.dialect.identifier_preparer.format_table(tbl),
+                    "SET IDENTITY_INSERT {0!s} ON".format(
+                    self.dialect.identifier_preparer.format_table(tbl)),
                     (), self)
 
     def post_exec(self):
@@ -669,9 +669,9 @@ class MSExecutionContext(default.DefaultExecutionContext):
 
         if self._enable_identity_insert:
             conn._cursor_execute(self.cursor,
-                        "SET IDENTITY_INSERT %s OFF" %
+                        "SET IDENTITY_INSERT {0!s} OFF".format(
                             self.dialect.identifier_preparer.
-                                format_table(self.compiled.statement.table),
+                                format_table(self.compiled.statement.table)),
                         (), self)
 
     def get_lastrowid(self):
@@ -681,9 +681,9 @@ class MSExecutionContext(default.DefaultExecutionContext):
         if self._enable_identity_insert:
             try:
                 self.cursor.execute(
-                        "SET IDENTITY_INSERT %s OFF" %
+                        "SET IDENTITY_INSERT {0!s} OFF".format(
                             self.dialect.identifier_preparer.\
-                            format_table(self.compiled.statement.table)
+                            format_table(self.compiled.statement.table))
                         )
             except:
                 pass
@@ -718,14 +718,13 @@ class MSSQLCompiler(compiler.SQLCompiler):
         return "GETDATE()"
 
     def visit_length_func(self, fn, **kw):
-        return "LEN%s" % self.function_argspec(fn, **kw)
+        return "LEN{0!s}".format(self.function_argspec(fn, **kw))
 
     def visit_char_length_func(self, fn, **kw):
-        return "LEN%s" % self.function_argspec(fn, **kw)
+        return "LEN{0!s}".format(self.function_argspec(fn, **kw))
 
     def visit_concat_op_binary(self, binary, operator, **kw):
-        return "%s + %s" % \
-                (self.process(binary.left, **kw),
+        return "{0!s} + {1!s}".format(self.process(binary.left, **kw),
                 self.process(binary.right, **kw))
 
     def visit_true(self, expr, **kw):
@@ -735,7 +734,7 @@ class MSSQLCompiler(compiler.SQLCompiler):
         return '0'
 
     def visit_match_op_binary(self, binary, operator, **kw):
-        return "CONTAINS (%s, %s)" % (
+        return "CONTAINS ({0!s}, {1!s})".format(
                                         self.process(binary.left, **kw),
                                         self.process(binary.right, **kw))
 
@@ -749,7 +748,7 @@ class MSSQLCompiler(compiler.SQLCompiler):
             # so have to use literal here.
             if select._limit is not None:
                 if not select._offset:
-                    s += "TOP %d " % select._limit
+                    s += "TOP {0:d} ".format(select._limit)
             return s
         return compiler.SQLCompiler.get_select_precolumns(self, select)
 
@@ -820,15 +819,13 @@ class MSSQLCompiler(compiler.SQLCompiler):
 
     def visit_extract(self, extract, **kw):
         field = self.extract_map.get(extract.field, extract.field)
-        return 'DATEPART("%s", %s)' % \
-                        (field, self.process(extract.expr, **kw))
+        return 'DATEPART("{0!s}", {1!s})'.format(field, self.process(extract.expr, **kw))
 
     def visit_savepoint(self, savepoint_stmt):
-        return "SAVE TRANSACTION %s" % self.preparer.format_savepoint(savepoint_stmt)
+        return "SAVE TRANSACTION {0!s}".format(self.preparer.format_savepoint(savepoint_stmt))
 
     def visit_rollback_to_savepoint(self, savepoint_stmt):
-        return ("ROLLBACK TRANSACTION %s"
-                % self.preparer.format_savepoint(savepoint_stmt))
+        return ("ROLLBACK TRANSACTION {0!s}".format(self.preparer.format_savepoint(savepoint_stmt)))
 
     def visit_column(self, column, add_to_result_map=None, **kwargs):
         if column.table is not None and \
@@ -943,14 +940,14 @@ class MSSQLStrictCompiler(MSSQLCompiler):
 
     def visit_in_op_binary(self, binary, operator, **kw):
         kw['literal_binds'] = True
-        return "%s IN %s" % (
+        return "{0!s} IN {1!s}".format(
                                 self.process(binary.left, **kw),
                                 self.process(binary.right, **kw)
             )
 
     def visit_notin_op_binary(self, binary, operator, **kw):
         kw['literal_binds'] = True
-        return "%s NOT IN %s" % (
+        return "{0!s} NOT IN {1!s}".format(
                                 self.process(binary.left, **kw),
                                 self.process(binary.right, **kw)
             )
@@ -999,7 +996,7 @@ class MSDDLCompiler(compiler.DDLCompiler):
             else:
                 start = column.default.start or 1
 
-            colspec += " IDENTITY(%s,%s)" % (start, column.default.increment or 1)
+            colspec += " IDENTITY({0!s},{1!s})".format(start, column.default.increment or 1)
         elif column is column.table._autoincrement_column:
             colspec += " IDENTITY(1,1)"
         else:
@@ -1021,8 +1018,7 @@ class MSDDLCompiler(compiler.DDLCompiler):
         if index.dialect_options['mssql']['clustered']:
             text += "CLUSTERED "
 
-        text += "INDEX %s ON %s (%s)" \
-                    % (
+        text += "INDEX {0!s} ON {1!s} ({2!s})".format(
                         self._prepared_index_name(index,
                                 include_schema=include_schema),
                         preparer.format_table(index.table),
@@ -1038,14 +1034,13 @@ class MSDDLCompiler(compiler.DDLCompiler):
                             if isinstance(col, util.string_types) else col
                           for col in index.dialect_options['mssql']['include']]
 
-            text += " INCLUDE (%s)" \
-                % ', '.join([preparer.quote(c.name)
-                             for c in inclusions])
+            text += " INCLUDE ({0!s})".format(', '.join([preparer.quote(c.name)
+                             for c in inclusions]))
 
         return text
 
     def visit_drop_index(self, drop):
-        return "\nDROP INDEX %s ON %s" % (
+        return "\nDROP INDEX {0!s} ON {1!s}".format(
             self._prepared_index_name(drop.element, include_schema=False),
             self.preparer.format_table(drop.element.table)
             )
@@ -1055,15 +1050,15 @@ class MSDDLCompiler(compiler.DDLCompiler):
             return ''
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                    self.preparer.format_constraint(constraint)
+            text += "CONSTRAINT {0!s} ".format( \
+                    self.preparer.format_constraint(constraint))
         text += "PRIMARY KEY "
 
         if constraint.dialect_options['mssql']['clustered']:
             text += "CLUSTERED "
 
-        text += "(%s)" % ', '.join(self.preparer.quote(c.name)
-                                   for c in constraint)
+        text += "({0!s})".format(', '.join(self.preparer.quote(c.name)
+                                   for c in constraint))
         text += self.define_constraint_deferrability(constraint)
         return text
 
@@ -1072,15 +1067,15 @@ class MSDDLCompiler(compiler.DDLCompiler):
             return ''
         text = ""
         if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                    self.preparer.format_constraint(constraint)
+            text += "CONSTRAINT {0!s} ".format( \
+                    self.preparer.format_constraint(constraint))
         text += "UNIQUE "
 
         if constraint.dialect_options['mssql']['clustered']:
             text += "CLUSTERED "
 
-        text += "(%s)" % ', '.join(self.preparer.quote(c.name)
-                                   for c in constraint)
+        text += "({0!s})".format(', '.join(self.preparer.quote(c.name)
+                                   for c in constraint))
         text += self.define_constraint_deferrability(constraint)
         return text
 
@@ -1119,12 +1114,12 @@ def _db_plus_owner(fn):
 def _switch_db(dbname, connection, fn, *arg, **kw):
     if dbname:
         current_db = connection.scalar("select db_name()")
-        connection.execute("use %s" % dbname)
+        connection.execute("use {0!s}".format(dbname))
     try:
         return fn(*arg, **kw)
     finally:
         if dbname:
-            connection.execute("use %s" % current_db)
+            connection.execute("use {0!s}".format(current_db))
 
 
 def _owner_plus_db(dialect, schema):
@@ -1412,8 +1407,7 @@ class MSDialect(default.DefaultDialect):
 
             if coltype is None:
                 util.warn(
-                    "Did not recognize type '%s' of column '%s'" %
-                    (type, name))
+                    "Did not recognize type '{0!s}' of column '{1!s}'".format(type, name))
                 coltype = sqltypes.NULLTYPE
             else:
                 if issubclass(coltype, sqltypes.Numeric) and \
@@ -1448,15 +1442,14 @@ class MSDialect(default.DefaultDialect):
                 ic = col_name
                 colmap[col_name]['autoincrement'] = True
                 colmap[col_name]['sequence'] = dict(
-                                    name='%s_identity' % col_name)
+                                    name='{0!s}_identity'.format(col_name))
                 break
         cursor.close()
 
         if ic is not None and self.server_version_info >= MS_2005_VERSION:
-            table_fullname = "%s.%s" % (owner, tablename)
+            table_fullname = "{0!s}.{1!s}".format(owner, tablename)
             cursor = connection.execute(
-                "select ident_seed('%s'), ident_incr('%s')"
-                % (table_fullname, table_fullname)
+                "select ident_seed('{0!s}'), ident_incr('{1!s}')".format(table_fullname, table_fullname)
                 )
 
             row = cursor.first()

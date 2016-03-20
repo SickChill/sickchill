@@ -371,7 +371,7 @@ def scan_video(path):
 
     # check video extension
     if not path.endswith(VIDEO_EXTENSIONS):
-        raise ValueError('%r is not a valid video extension' % os.path.splitext(path)[1])
+        raise ValueError('{0!r} is not a valid video extension'.format(os.path.splitext(path)[1]))
 
     dirpath, filename = os.path.split(path)
     logger.info('Scanning video %r in %r', filename, dirpath)
@@ -407,7 +407,7 @@ def scan_archive(path):
 
     # check video extension
     if not path.endswith(ARCHIVE_EXTENSIONS):
-        raise ValueError('%r is not a valid archive extension' % os.path.splitext(path)[1])
+        raise ValueError('{0!r} is not a valid archive extension'.format(os.path.splitext(path)[1]))
 
     dirpath, filename = os.path.split(path)
     logger.info('Scanning archive %r in %r', filename, dirpath)
@@ -435,7 +435,7 @@ def scan_archive(path):
         # size
         video.size = rar.getinfo(rar_filename).file_size
     else:
-        raise ValueError('Unsupported extension %r' % os.path.splitext(path)[1])
+        raise ValueError('Unsupported extension {0!r}'.format(os.path.splitext(path)[1]))
 
     return video
 
@@ -509,7 +509,7 @@ def scan_videos(path, age=None, archives=True, **kwargs):
                     logger.exception('Error scanning archive')
                     continue
             else:  # pragma: no cover
-                raise ValueError('Unsupported file %r' % filename)
+                raise ValueError('Unsupported file {0!r}'.format(filename))
 
             videos.append(video)
 

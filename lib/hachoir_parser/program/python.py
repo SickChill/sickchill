@@ -37,11 +37,11 @@ def parseString(parent):
             bc_off_delta=UInt8(parent, 'bytecode_offset_delta[]')
             yield bc_off_delta
             bytecode_offset+=bc_off_delta.value
-            bc_off_delta._description='Bytecode Offset %i'%bytecode_offset
+            bc_off_delta._description='Bytecode Offset {0:d}'.format(bytecode_offset)
             line_number_delta=UInt8(parent, 'line_number_delta[]')
             yield line_number_delta
             line_number+=line_number_delta.value
-            line_number_delta._description='Line Number %i'%line_number
+            line_number_delta._description='Line Number {0:d}'.format(line_number)
     elif 0 < length:
         yield RawBytes(parent, "text", length, "Content")
     if DISASSEMBLE and parent.name == "compiled_code":
@@ -50,7 +50,7 @@ def parseString(parent):
 def parseStringRef(parent):
     yield textHandler(UInt32(parent, "ref"), hexadecimal)
 def createStringRefDesc(parent):
-    return "String ref: %s" % parent["ref"].display
+    return "String ref: {0!s}".format(parent["ref"].display)
 
 # --- Integers ---
 def parseInt32(parent):
@@ -90,7 +90,7 @@ def parseTuple(parent):
 def createTupleDesc(parent):
     count = parent["count"].value
     items = ngettext("%s item", "%s items", count) % count
-    return "%s: %s" % (parent.code_info[2], items)
+    return "{0!s}: {1!s}".format(parent.code_info[2], items)
 
 
 # --- Dict ---
@@ -109,7 +109,7 @@ def parseDict(parent):
         parent.count += 1
 
 def createDictDesc(parent):
-    return "Dict: %s" % (ngettext("%s key", "%s keys", parent.count) % parent.count)
+    return "Dict: {0!s}".format((ngettext("%s key", "%s keys", parent.count) % parent.count))
 
 # --- Code ---
 def parseCode(parent):
@@ -178,7 +178,7 @@ class Object(FieldSet):
         FieldSet.__init__(self, parent, name, **kw)
         code = self["bytecode"].value
         if code not in self.bytecode_info:
-            raise ParserError('Unknown bytecode: "%s"' % code)
+            raise ParserError('Unknown bytecode: "{0!s}"'.format(code))
         self.code_info = self.bytecode_info[code]
         if not name:
             self._name = self.code_info[0]
@@ -221,7 +221,7 @@ class Object(FieldSet):
         total = 0
         for index in xrange(count-1, -1, -1):
             total <<= 15
-            total += self["digit[%u]" % index].value
+            total += self["digit[{0:d}]".format(index)].value
         if is_negative:
             total = -total
         return total
@@ -328,7 +328,7 @@ class PythonCompiledFile(Parser):
     def validate(self):
         signature = self.stream.readBits(0, 16, self.endian)
         if signature not in self.MAGIC:
-            return "Unknown version (%s)" % signature
+            return "Unknown version ({0!s})".format(signature)
         if self.stream.readBytes(2*8, 2) != "\r\n":
             return r"Wrong signature (\r\n)"
         if self.stream.readBytes(8*8, 1) != 'c':

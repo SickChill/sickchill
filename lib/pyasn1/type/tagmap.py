@@ -21,14 +21,14 @@ class TagMap:
             raise KeyError()
 
     def __repr__(self):
-        s = '%r/%r' % (self.__posMap, self.__negMap)
+        s = '{0!r}/{1!r}'.format(self.__posMap, self.__negMap)
         if self.__defType is not None:
-            s = s + '/%r' % (self.__defType,)
+            s = s + '/{0!r}'.format(self.__defType)
         return s
 
     def clone(self, parentType, tagMap, uniq=False):
         if self.__defType is not None and tagMap.getDef() is not None:
-            raise error.PyAsn1Error('Duplicate default value at %s' % (self,))
+            raise error.PyAsn1Error('Duplicate default value at {0!s}'.format(self))
         if tagMap.getDef() is not None:
             defType = tagMap.getDef()
         else:
@@ -37,7 +37,7 @@ class TagMap:
         posMap = self.__posMap.copy()
         for k in tagMap.getPosMap():
             if uniq and k in posMap:
-                raise error.PyAsn1Error('Duplicate positive key %s' % (k,))
+                raise error.PyAsn1Error('Duplicate positive key {0!s}'.format(k))
             posMap[k] = parentType
 
         negMap = self.__negMap.copy()

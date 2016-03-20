@@ -101,7 +101,7 @@ class KeyedTuple(tuple):
 
 class ImmutableContainer(object):
     def _immutable(self, *arg, **kw):
-        raise TypeError("%s object is immutable" % self.__class__.__name__)
+        raise TypeError("{0!s} object is immutable".format(self.__class__.__name__))
 
     __delitem__ = __setitem__ = __setattr__ = _immutable
 
@@ -131,7 +131,7 @@ class immutabledict(ImmutableContainer, dict):
             return d2
 
     def __repr__(self):
-        return "immutabledict(%s)" % dict.__repr__(self)
+        return "immutabledict({0!s})".format(dict.__repr__(self))
 
 
 class Properties(object):
@@ -379,7 +379,7 @@ class OrderedSet(set):
         return self.union(other)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._list)
+        return '{0!s}({1!r})'.format(self.__class__.__name__, self._list)
 
     __str__ = __repr__
 
@@ -647,7 +647,7 @@ class IdentitySet(object):
         raise TypeError('set objects are unhashable')
 
     def __repr__(self):
-        return '%s(%r)' % (type(self).__name__, list(self._members.values()))
+        return '{0!s}({1!r})'.format(type(self).__name__, list(self._members.values()))
 
 
 class WeakSequence(object):
@@ -673,7 +673,7 @@ class WeakSequence(object):
         try:
             obj = self._storage[index]
         except KeyError:
-            raise IndexError("Index %s out of range" % index)
+            raise IndexError("Index {0!s} out of range".format(index))
         else:
             return obj()
 

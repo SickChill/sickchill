@@ -329,7 +329,7 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
                     if path is None or cookie.path == path:
                         return cookie.value
 
-        raise KeyError('name=%r, domain=%r, path=%r' % (name, domain, path))
+        raise KeyError('name={0!r}, domain={1!r}, path={2!r}'.format(name, domain, path))
 
     def _find_no_duplicates(self, name, domain=None, path=None):
         """Both ``__get_item__`` and ``get`` call this function: it's never
@@ -343,12 +343,12 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
                 if domain is None or cookie.domain == domain:
                     if path is None or cookie.path == path:
                         if toReturn is not None:  # if there are multiple cookies that meet passed in criteria
-                            raise CookieConflictError('There are multiple cookies with name, %r' % (name))
+                            raise CookieConflictError('There are multiple cookies with name, {0!r}'.format((name)))
                         toReturn = cookie.value  # we will eventually return this as long as no cookie conflict
 
         if toReturn:
             return toReturn
-        raise KeyError('name=%r, domain=%r, path=%r' % (name, domain, path))
+        raise KeyError('name={0!r}, domain={1!r}, path={2!r}'.format(name, domain, path))
 
     def __getstate__(self):
         """Unlike a normal CookieJar, this class is pickleable."""
@@ -428,7 +428,7 @@ def morsel_to_cookie(morsel):
         try:
             expires = int(time.time() + int(morsel['max-age']))
         except ValueError:
-            raise TypeError('max-age: %s must be integer' % morsel['max-age'])
+            raise TypeError('max-age: {0!s} must be integer'.format(morsel['max-age']))
     elif morsel['expires']:
         time_template = '%a, %d-%b-%Y %H:%M:%S GMT'
         expires = calendar.timegm(

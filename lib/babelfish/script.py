@@ -40,7 +40,7 @@ class Script(object):
     """
     def __init__(self, script):
         if script not in SCRIPTS:
-            raise ValueError('%r is not a valid script' % script)
+            raise ValueError('{0!r} is not a valid script'.format(script))
 
         #: ISO-15924 4-letter script code
         self.code = script
@@ -70,7 +70,7 @@ class Script(object):
         return not self == other
 
     def __repr__(self):
-        return '<Script [%s]>' % self
+        return '<Script [{0!s}]>'.format(self)
 
     def __str__(self):
         return self.code

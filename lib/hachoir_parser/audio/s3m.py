@@ -49,7 +49,7 @@ class ChunkIndexer:
             offset = self.chunks[index].offset
             if offset < new_chunk.offset:
                 if not self.canHouse(new_chunk, index):
-                    raise ParserError("Chunk '%s' doesn't fit!" % new_chunk.name)
+                    raise ParserError("Chunk '{0!s}' doesn't fit!".format(new_chunk.name))
                 self.chunks.insert(index, new_chunk)
                 return
             index += 1
@@ -66,8 +66,7 @@ class ChunkIndexer:
             # Check if padding needed
             size = chunk.offset - current_pos
             if size > 0:
-                obj.info("Padding of %u bytes needed: curr=%u offset=%u" % \
-                         (size, current_pos, chunk.offset))
+                obj.info("Padding of {0:d} bytes needed: curr={1:d} offset={2:d}".format(size, current_pos, chunk.offset))
                 yield PaddingBytes(obj, "padding[]", size)
                 current_pos = obj.current_size//8
 
@@ -79,20 +78,17 @@ class ChunkIndexer:
                 chunk = self.chunks.pop()
                 # Unfortunaly, we also pass the underlying chunks
                 if chunk == None:
-                    obj.info("Couldn't resynch: %u object skipped to reach %u" % \
-                             (count, current_pos))
+                    obj.info("Couldn't resynch: {0:d} object skipped to reach {1:d}".format(count, current_pos))
                     return
 
             # Resynch
             size = chunk.offset-current_pos
             if size > 0:
-                obj.info("Skipped %u objects to resynch to %u; chunk offset: %u->%u" % \
-                         (count, current_pos, old_off, chunk.offset))
+                obj.info("Skipped {0:d} objects to resynch to {1:d}; chunk offset: {2:d}->{3:d}".format(count, current_pos, old_off, chunk.offset))
                 yield RawBytes(obj, "resynch[]", size)
 
             # Yield
-            obj.info("Yielding element of size %u at offset %u" % \
-                     (chunk.size, chunk.offset))
+            obj.info("Yielding element of size {0:d} at offset {1:d}".format(chunk.size, chunk.offset))
             field = chunk.cls(obj, chunk.name, chunk.size, *chunk.args)
             # Not tested, probably wrong:
             #if chunk.size: field.static_size = 8*chunk.size
@@ -100,8 +96,7 @@ class ChunkIndexer:
 
             if hasattr(field, "getSubChunks"):
                 for sub_chunk in field.getSubChunks():
-                    obj.info("Adding sub chunk: position=%u size=%u name='%s'" % \
-                             (sub_chunk.offset, sub_chunk.size, sub_chunk.name))
+                    obj.info("Adding sub chunk: position={0:d} size={1:d} name='{2!s}'".format(sub_chunk.offset, sub_chunk.size, sub_chunk.name))
                     self.addChunk(sub_chunk)
 
             # Let missing padding be done by next chunk
@@ -122,12 +117,12 @@ class S3MFlags(StaticFieldSet):
 def parseChannelType(val):
     val = val.value
     if val<8:
-        return "Left Sample Channel %u" % val
+        return "Left Sample Channel {0:d}".format(val)
     if val<16:
-        return "Right Sample Channel %u" % (val-8)
+        return "Right Sample Channel {0:d}".format((val-8))
     if val<32:
-        return "Adlib channel %u" % (val-16)
-    return "Value %u unknown" % val
+        return "Adlib channel {0:d}".format((val-16))
+    return "Value {0:d} unknown".format(val)
 
 class ChannelSettings(FieldSet):
     static_size = 8
@@ -191,8 +186,7 @@ class SizeFieldSet(FieldSet):
 
 class Header(SizeFieldSet):
     def createDescription(self):
-        return "%s (%u patterns, %u instruments)" % \
-               (self["title"].value, self["num_patterns"].value,
+        return "{0!s} ({1:d} patterns, {2:d} instruments)".format(self["title"].value, self["num_patterns"].value,
                 self["num_instruments"].value)
 
     def createValue(self):
@@ -314,13 +308,13 @@ class S3MHeader(Header):
         # Instruments -  no warranty that they are concatenated
         for index in xrange(self["num_instruments"].value):
             yield Chunk(S3MInstrument, "instrument[]",
-                        16*self["instr_pptr/offset[%u]" % index].value,
+                        16*self["instr_pptr/offset[{0:d}]".format(index)].value,
                         S3MInstrument.static_size//8)
 
         # Patterns - size unknown but listed in their headers
         for index in xrange(self["num_patterns"].value):
             yield Chunk(S3MPattern, "pattern[]",
-                        16*self["pattern_pptr/offset[%u]" % index].value, 0)
+                        16*self["pattern_pptr/offset[{0:d}]".format(index)].value, 0)
 
 class PTMHeader(Header):
     # static_size should prime over _size, right?
@@ -328,7 +322,7 @@ class PTMHeader(Header):
 
     def getTrackerVersion(self, val):
         val = val.value
-        return "ProTracker x%04X" % val
+        return "ProTracker x{0:04X}".format(val)
 
     def getFileVersionField(self):
         yield UInt16(self, "type")
@@ -369,7 +363,7 @@ class PTMHeader(Header):
         count = self["num_patterns"].value
         prev_off = 16*self["pattern_pptr/offset[0]"].value
         for index in range(1, count):
-            offset = 16*self["pattern_pptr/offset[%u]" % index].value
+            offset = 16*self["pattern_pptr/offset[{0:d}]".format(index)].value
             yield Chunk(PTMPattern, "pattern[]", prev_off, offset-prev_off)
             prev_off = offset
 
@@ -409,7 +403,7 @@ class Instrument(SizeFieldSet):
                 info.append("stereo")
             else:
                 info.append("mono")
-        info.append("%u bits" % self.getSampleBits())
+        info.append("{0:d} bits".format(self.getSampleBits()))
         return ", ".join(info)
 
     # Structure knows its size and doesn't need padding anyway, so
@@ -619,10 +613,10 @@ class Module(Parser):
     def validate(self):
         marker = self.stream.readBits(0x1C*8, 8, LITTLE_ENDIAN)
         if marker != 0x1A:
-            return "Invalid start marker %u" % marker
+            return "Invalid start marker {0:d}".format(marker)
         marker = self.stream.readBytes(0x2C*8, 4)
         if marker != self.MARKER:
-            return "Invalid marker %s!=%s" % (marker, self.MARKER)
+            return "Invalid marker {0!s}!={1!s}".format(marker, self.MARKER)
         return True
 
     def createFields(self):

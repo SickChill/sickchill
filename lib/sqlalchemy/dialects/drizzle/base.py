@@ -360,7 +360,7 @@ class DrizzleCompiler(mysql_dialect.MySQLCompiler):
         if type_ is None:
             return self.process(cast.clause)
 
-        return 'CAST(%s AS %s)' % (self.process(cast.clause), type_)
+        return 'CAST({0!s} AS {1!s})'.format(self.process(cast.clause), type_)
 
 
 class DrizzleDDLCompiler(mysql_dialect.MySQLDDLCompiler):
@@ -381,7 +381,7 @@ class DrizzleTypeCompiler(mysql_dialect.MySQLTypeCompiler):
             return getattr(type_, name, defaults.get(name))
 
         if attr('collation'):
-            collation = 'COLLATE %s' % type_.collation
+            collation = 'COLLATE {0!s}'.format(type_.collation)
         elif attr('binary'):
             collation = 'BINARY'
         else:
@@ -398,7 +398,7 @@ class DrizzleTypeCompiler(mysql_dialect.MySQLTypeCompiler):
 
     def visit_FLOAT(self, type_):
         if type_.scale is not None and type_.precision is not None:
-            return "FLOAT(%s, %s)" % (type_.precision, type_.scale)
+            return "FLOAT({0!s}, {1!s})".format(type_.precision, type_.scale)
         else:
             return "FLOAT"
 
@@ -457,8 +457,8 @@ class DrizzleDialect(mysql_dialect.MySQLDialect):
             current_schema = self.default_schema_name
 
         charset = 'utf8'
-        rp = connection.execute("SHOW TABLES FROM %s" %
-            self.identifier_preparer.quote_identifier(current_schema))
+        rp = connection.execute("SHOW TABLES FROM {0!s}".format(
+            self.identifier_preparer.quote_identifier(current_schema)))
         return [row[0] for row in self._compat_fetchall(rp, charset=charset)]
 
     @reflection.cache

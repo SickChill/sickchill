@@ -359,7 +359,7 @@ def FindABC(field):
 def GetConstant(field, pool, index):
     if index == 0:
         return None
-    return FindABC(field)["constant_%s_pool/constant[%i]"%(pool, index)]
+    return FindABC(field)["constant_{0!s}_pool/constant[{1:d}]".format(pool, index)]
 
 def GetMultiname(field, index):
     fld = GetConstant(field, "multiname", index)
@@ -388,7 +388,7 @@ class ABCNSIndex(FlashU30):
 
 class ABCMethodIndex(FlashU30):
     def createDisplay(self):
-        fld = FindABC(self)["method_array/method[%i]"%self.value]
+        fld = FindABC(self)["method_array/method[{0:d}]".format(self.value)]
         if fld is None:
             return "*"
         return fld.description
@@ -399,13 +399,13 @@ class ABCMultinameIndex(FlashU30):
 
 class ABCConstantPool(FieldSet):
     def __init__(self, parent, name, klass):
-        FieldSet.__init__(self, parent, 'constant_%s_pool'%name)
+        FieldSet.__init__(self, parent, 'constant_{0!s}_pool'.format(name))
         self.klass = klass
     def createFields(self):
         ctr = FlashU30(self, "count")
         yield ctr
         for i in xrange(ctr.value-1):
-            yield self.klass(self, "constant[%i]"%(i+1))
+            yield self.klass(self, "constant[{0:d}]".format((i+1)))
 
 class ABCObjectArray(FieldSet):
     def __init__(self, parent, name, klass):
@@ -461,7 +461,7 @@ class ABCConstantNamespace(FieldSet):
         yield ABCStringIndex(self, "name_index")
 
     def createDisplay(self):
-        return "%s %s"%(self["kind"].display, self["name_index"].display)
+        return "{0!s} {1!s}".format(self["kind"].display, self["name_index"].display)
 
     def createValue(self):
         return self["name_index"].value

@@ -111,7 +111,7 @@ class _WSGIConnection(httputil.HTTPConnection):
         else:
             self._expected_content_remaining = None
         self.start_response(
-            '%s %s' % (start_line.code, start_line.reason),
+            '{0!s} {1!s}'.format(start_line.code, start_line.reason),
             [(native_str(k), native_str(v)) for (k, v) in headers.get_all()])
         if chunk is not None:
             self.write(chunk, callback)
@@ -135,8 +135,8 @@ class _WSGIConnection(httputil.HTTPConnection):
         if (self._expected_content_remaining is not None and
                 self._expected_content_remaining != 0):
             self._error = httputil.HTTPOutputError(
-                "Tried to write %d bytes less than Content-Length" %
-                self._expected_content_remaining)
+                "Tried to write {0:d} bytes less than Content-Length".format(
+                self._expected_content_remaining))
             raise self._error
         self._finished = True
 
@@ -295,7 +295,7 @@ class WSGIContainer(object):
             if "content-type" not in header_set:
                 headers.append(("Content-Type", "text/html; charset=UTF-8"))
         if "server" not in header_set:
-            headers.append(("Server", "TornadoServer/%s" % tornado.version))
+            headers.append(("Server", "TornadoServer/{0!s}".format(tornado.version)))
 
         start_line = httputil.ResponseStartLine("HTTP/1.1", status_code, reason)
         header_obj = httputil.HTTPHeaders()

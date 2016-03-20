@@ -4,7 +4,7 @@ import unittest
 from enum import Enum, IntEnum, unique, EnumMeta
 from pickle import dumps, loads, PicklingError, HIGHEST_PROTOCOL
 
-pyver = float('%s.%s' % sys.version_info[:2])
+pyver = float('{0!s}.{1!s}'.format(*sys.version_info[:2]))
 
 try:
     any
@@ -96,9 +96,9 @@ def test_pickle_dump_load(assertion, source, target=None,
                 assertion(loads(dumps(source, protocol=protocol)), target)
         except Exception:
             exc, tb = sys.exc_info()[1:]
-            failures.append('%2d: %s' %(protocol, exc))
+            failures.append('{0:2d}: {1!s}'.format(protocol, exc))
     if failures:
-        raise ValueError('Failed with protocols: %s' % ', '.join(failures))
+        raise ValueError('Failed with protocols: {0!s}'.format(', '.join(failures)))
 
 def test_pickle_exception(assertion, exception, obj,
         protocol=(0, HIGHEST_PROTOCOL)):
@@ -109,9 +109,9 @@ def test_pickle_exception(assertion, exception, obj,
             assertion(exception, dumps, obj, protocol=protocol)
         except Exception:
             exc = sys.exc_info()[1]
-            failures.append('%d: %s %s' % (protocol, exc.__class__.__name__, exc))
+            failures.append('{0:d}: {1!s} {2!s}'.format(protocol, exc.__class__.__name__, exc))
     if failures:
-        raise ValueError('Failed with protocols: %s' % ', '.join(failures))
+        raise ValueError('Failed with protocols: {0!s}'.format(', '.join(failures)))
 
 
 class TestHelpers(unittest.TestCase):
@@ -278,7 +278,7 @@ class TestEnum(unittest.TestCase):
             self.assertEqual(str(e), 'Season.' + season)
             self.assertEqual(
                     repr(e),
-                    '<Season.%s: %s>' % (season, i),
+                    '<Season.{0!s}: {1!s}>'.format(season, i),
                     )
 
     def test_value_name(self):
@@ -607,7 +607,7 @@ class TestEnum(unittest.TestCase):
                 shiny = 'rare'
 
             self.__class__.NestedEnum = NestedEnum
-            self.NestedEnum.__qualname__ = '%s.NestedEnum' % self.__class__.__name__
+            self.NestedEnum.__qualname__ = '{0!s}.NestedEnum'.format(self.__class__.__name__)
             test_pickle_exception(
                     self.assertRaises, PicklingError, self.NestedEnum.twigs,
                     protocol=(0, 3))
@@ -941,7 +941,7 @@ class TestEnum(unittest.TestCase):
             this = 'that'
             these = 'those'
             def really(self):
-                return 'no, not %s' % self.value
+                return 'no, not {0!s}'.format(self.value)
         self.assertFalse(type(whatever.really) is whatever)
         self.assertEqual(whatever.this.really(), 'no, not that')
 
@@ -1042,7 +1042,7 @@ class TestEnum(unittest.TestCase):
             green = 2
             blue = 3
             def __repr__(self):
-                return "don't you just love shades of %s?" % self.name
+                return "don't you just love shades of {0!s}?".format(self.name)
         self.assertEqual(
                 repr(Color.blue),
                 "don't you just love shades of blue?",
@@ -1051,7 +1051,7 @@ class TestEnum(unittest.TestCase):
     def test_inherited_repr(self):
         class MyEnum(Enum):
             def __repr__(self):
-                return "My name is %s." % self.name
+                return "My name is {0!s}.".format(self.name)
         class MyIntEnum(int, MyEnum):
             this = 1
             that = 2
@@ -1115,7 +1115,7 @@ class TestEnum(unittest.TestCase):
                 return self._intname
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "%s(%r, %s)" % (type(self).__name__,
+                return "{0!s}({1!r}, {2!s})".format(type(self).__name__,
                                              self.__name__,
                                              int.__repr__(self))
             def __str__(self):
@@ -1131,7 +1131,7 @@ class TestEnum(unittest.TestCase):
                 temp = int(self) + int( other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
                     return NamedInt(
-                        '(%s + %s)' % (self.__name__, other.__name__),
+                        '({0!s} + {1!s})'.format(self.__name__, other.__name__),
                         temp )
                 else:
                     return temp
@@ -1227,7 +1227,7 @@ class TestEnum(unittest.TestCase):
                 return self._intname
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "%s(%r, %s)" % (type(self).__name__,
+                return "{0!s}({1!r}, {2!s})".format(type(self).__name__,
                                              self.__name__,
                                              int.__repr__(self))
             def __str__(self):
@@ -1243,7 +1243,7 @@ class TestEnum(unittest.TestCase):
                 temp = int(self) + int( other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
                     return NamedInt(
-                        '(%s + %s)' % (self.__name__, other.__name__),
+                        '({0!s} + {1!s})'.format(self.__name__, other.__name__),
                         temp )
                 else:
                     return temp
@@ -1283,7 +1283,7 @@ class TestEnum(unittest.TestCase):
                 return self._intname
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "%s(%r, %s)" % (type(self).__name__,
+                return "{0!s}({1!r}, {2!s})".format(type(self).__name__,
                                              self.__name__,
                                              int.__repr__(self))
             def __str__(self):
@@ -1299,7 +1299,7 @@ class TestEnum(unittest.TestCase):
                 temp = int(self) + int( other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
                     return NamedInt(
-                        '(%s + %s)' % (self.__name__, other.__name__),
+                        '({0!s} + {1!s})'.format(self.__name__, other.__name__),
                         temp )
                 else:
                     return temp
@@ -1337,7 +1337,7 @@ class TestEnum(unittest.TestCase):
                 return self._intname
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "%s(%r, %s)" % (type(self).__name__,
+                return "{0!s}({1!r}, {2!s})".format(type(self).__name__,
                                              self.__name__,
                                              int.__repr__(self))
             def __str__(self):
@@ -1353,7 +1353,7 @@ class TestEnum(unittest.TestCase):
                 temp = int(self) + int( other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
                     return NamedInt(
-                        '(%s + %s)' % (self.__name__, other.__name__),
+                        '({0!s} + {1!s})'.format(self.__name__, other.__name__),
                         temp )
                 else:
                     return temp
@@ -1390,7 +1390,7 @@ class TestEnum(unittest.TestCase):
                 return self._intname
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "%s(%r, %s)" % (type(self).__name__,
+                return "{0!s}({1!r}, {2!s})".format(type(self).__name__,
                                              self.__name__,
                                              int.__repr__(self))
             def __str__(self):
@@ -1406,7 +1406,7 @@ class TestEnum(unittest.TestCase):
                 temp = int(self) + int( other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
                     return NamedInt(
-                        '(%s + %s)' % (self.__name__, other.__name__),
+                        '({0!s} + {1!s})'.format(self.__name__, other.__name__),
                         temp )
                 else:
                     return temp
@@ -1475,7 +1475,7 @@ class TestEnum(unittest.TestCase):
             red = ()
             green = ()
             blue = ()
-        self.assertEqual(len(Color), 3, "wrong number of elements: %d (should be %d)" % (len(Color), 3))
+        self.assertEqual(len(Color), 3, "wrong number of elements: {0:d} (should be {1:d})".format(len(Color), 3))
         self.assertEqual(list(Color), [Color.red, Color.green, Color.blue])
         if pyver >= 3.0:
             self.assertEqual(list(map(int, Color)), [1, 2, 3])
@@ -1491,7 +1491,7 @@ class TestEnum(unittest.TestCase):
             red = ()
             green = ()
             blue = ()
-        self.assertEqual(len(Color), 3, "wrong number of elements: %d (should be %d)" % (len(Color), 3))
+        self.assertEqual(len(Color), 3, "wrong number of elements: {0:d} (should be {1:d})".format(len(Color), 3))
         Color.red
         Color.green
         Color.blue
@@ -1548,7 +1548,7 @@ class TestEnum(unittest.TestCase):
                 return self.name
         class Color(Shade):
             def hex(self):
-                return '%s hexlified!' % self.value
+                return '{0!s} hexlified!'.format(self.value)
         class MoreColor(Color):
             cyan = 4
             magenta = 5
@@ -1564,8 +1564,7 @@ class TestEnum(unittest.TestCase):
                         a = self.name
                         e = cls(self.value).name
                         raise ValueError(
-                                "aliases not allowed in UniqueEnum:  %r --> %r"
-                                % (a, e)
+                                "aliases not allowed in UniqueEnum:  {0!r} --> {1!r}".format(a, e)
                                 )
             class Color(UniqueEnum):
                 red = 1

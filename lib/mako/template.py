@@ -468,15 +468,15 @@ class Template(object):
                                 **kwargs)
 
     def has_def(self, name):
-        return hasattr(self.module, "render_%s" % name)
+        return hasattr(self.module, "render_{0!s}".format(name))
 
     def get_def(self, name):
         """Return a def of this template as a :class:`.DefTemplate`."""
 
-        return DefTemplate(self, getattr(self.module, "render_%s" % name))
+        return DefTemplate(self, getattr(self.module, "render_{0!s}".format(name)))
 
     def _get_def_callable(self, name):
-        return getattr(self.module, "render_%s" % name)
+        return getattr(self.module, "render_{0!s}".format(name))
 
     @property
     def last_modified(self):

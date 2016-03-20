@@ -386,7 +386,7 @@ def dumps(x, float_bits=DEFAULT_FLOAT_BITS):
         elif float_bits == 64:
             encode_func[FloatType] = encode_float64
         else:
-            raise ValueError('Float bits (%d) is not 32 or 64' % float_bits)
+            raise ValueError('Float bits ({0:d}) is not 32 or 64'.format(float_bits))
         r = []
         encode_func[type(x)](x, r)
     finally:

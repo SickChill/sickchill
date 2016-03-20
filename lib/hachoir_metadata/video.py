@@ -77,10 +77,10 @@ class MkvMetadata(MultipleMetadata):
         self.addGroup("video[]", video, "Video stream")
 
     def getDouble(self, field, parent):
-        float_key = '%s/float' % parent
+        float_key = '{0!s}/float'.format(parent)
         if float_key in field:
             return field[float_key].value
-        double_key = '%s/double' % parent
+        double_key = '{0!s}/double'.format(parent)
         if double_key in field:
             return field[double_key].value
         return None
@@ -279,7 +279,7 @@ class AsfMetadata(MultipleMetadata):
 
             # Have ToolName and ToolVersion? If yes, group them to producer key
             if "ToolName" in data and "ToolVersion" in data:
-                self.producer = "%s (version %s)" % (data["ToolName"], data["ToolVersion"])
+                self.producer = "{0!s} (version {1!s})".format(data["ToolName"], data["ToolVersion"])
                 del data["ToolName"]
                 del data["ToolVersion"]
 
@@ -295,7 +295,7 @@ class AsfMetadata(MultipleMetadata):
                 else:
                     if isinstance(key, str):
                         key = makePrintable(key, "ISO-8859-1", to_unicode=True)
-                    value = "%s=%s" % (key, value)
+                    value = "{0!s}={1!s}".format(key, value)
                     key = "comment"
                 setattr(self, key, value)
 
@@ -307,7 +307,7 @@ class AsfMetadata(MultipleMetadata):
                 if "name" in codec:
                     text = codec["name"].value
                     if "desc" in codec and codec["desc"].value:
-                        text = "%s (%s)" % (text, codec["desc"].value)
+                        text = "{0!s} ({1!s})".format(text, codec["desc"].value)
                     compression.append(text)
 
         audio_index = 1
@@ -317,13 +317,13 @@ class AsfMetadata(MultipleMetadata):
                 meta = Metadata(self)
                 self.streamProperty(header, index, meta)
                 self.streamAudioHeader(stream_prop["content/audio_header"], meta)
-                if self.addGroup("audio[%u]" % audio_index, meta, "Audio stream #%u" % audio_index):
+                if self.addGroup("audio[{0:d}]".format(audio_index), meta, "Audio stream #{0:d}".format(audio_index)):
                     audio_index += 1
             elif "content/video_header" in stream_prop:
                 meta = Metadata(self)
                 self.streamProperty(header, index, meta)
                 self.streamVideoHeader(stream_prop["content/video_header"], meta)
-                if self.addGroup("video[%u]" % video_index, meta, "Video stream #%u" % video_index):
+                if self.addGroup("video[{0:d}]".format(video_index), meta, "Video stream #{0:d}".format(video_index)):
                     video_index += 1
 
         if "metadata/content" in header:
@@ -380,15 +380,15 @@ class AsfMetadata(MultipleMetadata):
         value = prop["max_bitrate"].value
         text = prop["max_bitrate"].display
         if is_vbr is True:
-            text = "VBR (%s max)" % text
+            text = "VBR ({0!s} max)".format(text)
         elif is_vbr is False:
-            text = "%s (CBR)" % text
+            text = "{0!s} (CBR)".format(text)
         else:
-            text = "%s (max)" % text
+            text = "{0!s} (max)".format(text)
         self.bit_rate = (value, text)
 
     def streamProperty(self, header, index, meta):
-        key = "bit_rates/content/bit_rate[%u]/avg_bitrate" % index
+        key = "bit_rates/content/bit_rate[{0:d}]/avg_bitrate".format(index)
         if key in header:
             meta.bit_rate = header[key].value
 

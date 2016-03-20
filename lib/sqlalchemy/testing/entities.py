@@ -21,9 +21,9 @@ class BasicEntity(object):
             return object.__repr__(self)
         _repr_stack.add(id(self))
         try:
-            return "%s(%s)" % (
+            return "{0!s}({1!s})".format(
                 (self.__class__.__name__),
-                ', '.join(["%s=%r" % (key, getattr(self, key))
+                ', '.join(["{0!s}={1!r}".format(key, getattr(self, key))
                            for key in sorted(self.__dict__.keys())
                            if not key.startswith('_')]))
         finally:

@@ -20,7 +20,7 @@ class Timezone(TimezoneUTC):
     """Fixed offset in hour from UTC."""
     def __init__(self, offset):
         self._offset = timedelta(minutes=offset*60)
-        self._name = u"%+03u00" % offset
+        self._name = u"{0:+03d}00".format(offset)
 
     def utcoffset(self, dt):
         return self._offset
@@ -29,7 +29,7 @@ class Timezone(TimezoneUTC):
         return self._name
 
     def __repr__(self):
-        return "<Timezone delta=%s, name='%s'>" % (
+        return "<Timezone delta={0!s}, name='{1!s}'>".format(
             self._offset, self._name)
 
 UTC = TimezoneUTC()

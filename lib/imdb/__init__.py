@@ -48,19 +48,19 @@ imdbURL_base = 'http://akas.imdb.com/'
 #       please use the values in the 'urls' attribute
 #       of the IMDbBase subclass instance.
 # http://akas.imdb.com/title/
-imdbURL_movie_base = '%stitle/' % imdbURL_base
+imdbURL_movie_base = '{0!s}title/'.format(imdbURL_base)
 # http://akas.imdb.com/title/tt%s/
 imdbURL_movie_main = imdbURL_movie_base + 'tt%s/'
 # http://akas.imdb.com/name/
-imdbURL_person_base = '%sname/' % imdbURL_base
+imdbURL_person_base = '{0!s}name/'.format(imdbURL_base)
 # http://akas.imdb.com/name/nm%s/
 imdbURL_person_main = imdbURL_person_base + 'nm%s/'
 # http://akas.imdb.com/character/
-imdbURL_character_base = '%scharacter/' % imdbURL_base
+imdbURL_character_base = '{0!s}character/'.format(imdbURL_base)
 # http://akas.imdb.com/character/ch%s/
 imdbURL_character_main = imdbURL_character_base + 'ch%s/'
 # http://akas.imdb.com/company/
-imdbURL_company_base = '%scompany/' % imdbURL_base
+imdbURL_company_base = '{0!s}company/'.format(imdbURL_base)
 # http://akas.imdb.com/company/co%s/
 imdbURL_company_main = imdbURL_company_base + 'co%s/'
 # http://akas.imdb.com/keyword/%s/
@@ -104,7 +104,7 @@ class ConfigParserWithCase(ConfigParser.ConfigParser):
                 self.read(fname)
             except (ConfigParser.MissingSectionHeaderError,
                     ConfigParser.ParsingError), e:
-                _aux_logger.warn('Troubles reading config file: %s' % e)
+                _aux_logger.warn('Troubles reading config file: {0!s}'.format(e))
             # Stop at the first valid file.
             if self.has_section('imdbpy'):
                 break
@@ -199,8 +199,7 @@ def IMDb(accessSystem=None, *arguments, **keywords):
             raise IMDbError('the sql access system is not installed')
         return IMDbSqlAccessSystem(*arguments, **keywords)
     else:
-        raise IMDbError('unknown kind of data access system: "%s"' \
-                            % accessSystem)
+        raise IMDbError('unknown kind of data access system: "{0!s}"'.format(accessSystem))
 
 
 def available_access_systems():
@@ -282,23 +281,23 @@ class IMDbBase:
         """Set the urls used accessing the IMDb site."""
         imdbURL_base = imdbURL_base.strip().strip('"\'')
         if not imdbURL_base.startswith('http://'):
-            imdbURL_base = 'http://%s' % imdbURL_base
+            imdbURL_base = 'http://{0!s}'.format(imdbURL_base)
         if not imdbURL_base.endswith('/'):
-            imdbURL_base = '%s/' % imdbURL_base
+            imdbURL_base = '{0!s}/'.format(imdbURL_base)
         # http://akas.imdb.com/title/
-        imdbURL_movie_base='%stitle/' % imdbURL_base
+        imdbURL_movie_base='{0!s}title/'.format(imdbURL_base)
         # http://akas.imdb.com/title/tt%s/
         imdbURL_movie_main=imdbURL_movie_base + 'tt%s/'
         # http://akas.imdb.com/name/
-        imdbURL_person_base='%sname/' % imdbURL_base
+        imdbURL_person_base='{0!s}name/'.format(imdbURL_base)
         # http://akas.imdb.com/name/nm%s/
         imdbURL_person_main=imdbURL_person_base + 'nm%s/'
         # http://akas.imdb.com/character/
-        imdbURL_character_base='%scharacter/' % imdbURL_base
+        imdbURL_character_base='{0!s}character/'.format(imdbURL_base)
         # http://akas.imdb.com/character/ch%s/
         imdbURL_character_main=imdbURL_character_base + 'ch%s/'
         # http://akas.imdb.com/company/
-        imdbURL_company_base='%scompany/' % imdbURL_base
+        imdbURL_company_base='{0!s}company/'.format(imdbURL_base)
         # http://akas.imdb.com/company/co%s/
         imdbURL_company_main=imdbURL_company_base + 'co%s/'
         # http://akas.imdb.com/keyword/%s/
@@ -366,7 +365,7 @@ class IMDbBase:
     def _get_infoset(self, prefname):
         """Return methods with the name starting with prefname."""
         infoset = []
-        excludes = ('%sinfoset' % prefname,)
+        excludes = ('{0!s}infoset'.format(prefname),)
         preflen = len(prefname)
         for name in dir(self.__class__):
             if name.startswith(prefname) and name not in excludes:
@@ -762,8 +761,7 @@ class IMDbBase:
                 continue
             self._imdb_logger.debug('retrieving "%s" info set', i)
             try:
-                method = getattr(aSystem, 'get_%s_%s' %
-                                    (prefix, i.replace(' ', '_')))
+                method = getattr(aSystem, 'get_{0!s}_{1!s}'.format(prefix, i.replace(' ', '_')))
             except AttributeError:
                 self._imdb_logger.error('unknown information set "%s"', i)
                 # Keeps going.

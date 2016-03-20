@@ -106,9 +106,9 @@ class SCGITransport(xmlrpclib.Transport):
     def single_request(self, host, handler, request_body, verbose=0):
         # Add SCGI headers to the request.
         headers = {'CONTENT_LENGTH': str(len(request_body)), 'SCGI': '1'}
-        header = '\x00'.join(('%s\x00%s' % item for item in headers.iteritems())) + '\x00'
-        header = '%d:%s' % (len(header), header)
-        request_body = '%s,%s' % (header, request_body)
+        header = '\x00'.join(('{0!s}\x00{1!s}'.format(*item) for item in headers.iteritems())) + '\x00'
+        header = '{0:d}:{1!s}'.format(len(header), header)
+        request_body = '{0!s},{1!s}'.format(header, request_body)
 
         sock = None
 
@@ -195,8 +195,7 @@ class SCGIServerProxy(xmlrpclib.ServerProxy):
 
     def __repr__(self):
         return (
-            "<SCGIServerProxy for %s%s>" %
-            (self.__host, self.__handler)
+            "<SCGIServerProxy for {0!s}{1!s}>".format(self.__host, self.__handler)
         )
 
     __str__ = __repr__
@@ -216,4 +215,4 @@ class SCGIServerProxy(xmlrpclib.ServerProxy):
             return self.__close
         elif attr == "transport":
             return self.__transport
-        raise AttributeError("Attribute %r not found" % (attr,))
+        raise AttributeError("Attribute {0!r} not found".format(attr))

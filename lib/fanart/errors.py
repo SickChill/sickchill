@@ -4,7 +4,7 @@ class FanartError(Exception):
 
     def __repr__(self):
         name = self.__class__.__name__
-        return '%s%r' % (name, self.args)
+        return '{0!s}{1!r}'.format(name, self.args)
 
 
 class ResponseFanartError(FanartError):

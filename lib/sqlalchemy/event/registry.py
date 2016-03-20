@@ -184,8 +184,7 @@ class _EventKey(object):
 
         if key not in _key_to_collection:
             raise exc.InvalidRequestError(
-                    "No listeners found for event %s / %r / %s " %
-                    (self.target, self.identifier, self.fn)
+                    "No listeners found for event {0!s} / {1!r} / {2!s} ".format(self.target, self.identifier, self.fn)
                 )
         dispatch_reg = _key_to_collection.pop(key)
 

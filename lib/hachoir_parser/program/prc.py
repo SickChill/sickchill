@@ -39,7 +39,7 @@ class ResourceHeader(FieldSet):
         yield UInt32(self, "offset", "Pointer to the resource data")
 
     def createDescription(self):
-        return "Resource Header (%s)" % self["name"]
+        return "Resource Header ({0!s})".format(self["name"])
 
 class PRCFile(Parser):
     PARSER_TAGS = {

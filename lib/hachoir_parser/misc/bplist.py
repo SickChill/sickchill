@@ -100,10 +100,10 @@ class BPListDict(FieldSet):
         return zip(self.array('keyref'),self.array('valref'))
 
     def createDisplay(self):
-        return '{' + ', '.join(['%s: %s'%(k.display,v.display) for k,v in self.value]) + '}'
+        return '{' + ', '.join(['{0!s}: {1!s}'.format(k.display, v.display) for k,v in self.value]) + '}'
 
     def createXML(self, prefix=''):
-        return prefix + '<dict>\n' + ''.join(['%s\t<key>%s</key>\n%s\n'%(prefix,k.getRef().value.encode('utf-8'),v.createXML(prefix + '\t')) for k,v in self.value]) + prefix + '</dict>'
+        return prefix + '<dict>\n' + ''.join(['{0!s}\t<key>{1!s}</key>\n{2!s}\n'.format(prefix, k.getRef().value.encode('utf-8'), v.createXML(prefix + '\t')) for k,v in self.value]) + prefix + '</dict>'
 
 class BPListObject(FieldSet):
     def createFields(self):
@@ -140,7 +140,7 @@ class BPListObject(FieldSet):
             # 8-bit (size=0), 16-bit (size=1) and 32-bit (size=2) numbers are unsigned
             # 64-bit (size=3) numbers are signed
             yield GenericInteger(self, "value", (size>=3), (2**size)*8)
-            self.xml=lambda prefix:prefix + "<integer>%s</integer>"%self['value'].value
+            self.xml=lambda prefix:prefix + "<integer>{0!s}</integer>".format(self['value'].value)
 
         elif markertype == 2:
             # Real
@@ -152,7 +152,7 @@ class BPListObject(FieldSet):
             else:
                 # FIXME: What is the format of the real?
                 yield Bits(self, "value", (2**self['size'].value)*8)
-            self.xml=lambda prefix:prefix + "<real>%s</real>"%self['value'].value
+            self.xml=lambda prefix:prefix + "<real>{0!s}</real>".format(self['value'].value)
 
         elif markertype == 3:
             # Date
@@ -166,14 +166,14 @@ class BPListObject(FieldSet):
                     return epoch1970 + v
                 return epoch2001 + v
             yield displayHandler(Float64(self, "value"),lambda x:humanDatetime(cvt_time(x)))
-            self.xml=lambda prefix:prefix + "<date>%sZ</date>"%(cvt_time(self['value'].value).isoformat())
+            self.xml=lambda prefix:prefix + "<date>{0!s}Z</date>".format((cvt_time(self['value'].value).isoformat()))
 
         elif markertype == 4:
             # Data
             yield BPListSize(self, "size")
             if self['size'].value:
                 yield Bytes(self, "value", self['size'].value)
-                self.xml=lambda prefix:prefix + "<data>\n%s\n%s</data>"%(self['value'].value.encode('base64').strip(),prefix)
+                self.xml=lambda prefix:prefix + "<data>\n{0!s}\n{1!s}</data>".format(self['value'].value.encode('base64').strip(), prefix)
             else:
                 self.xml=lambda prefix:prefix + '<data></data>'
 
@@ -182,7 +182,7 @@ class BPListObject(FieldSet):
             yield BPListSize(self, "size")
             if self['size'].value:
                 yield String(self, "value", self['size'].value, charset="ASCII")
-                self.xml=lambda prefix:prefix + "<string>%s</string>"%(self['value'].value.replace('&','&amp;').encode('iso-8859-1'))
+                self.xml=lambda prefix:prefix + "<string>{0!s}</string>".format((self['value'].value.replace('&','&amp;').encode('iso-8859-1')))
             else:
                 self.xml=lambda prefix:prefix + '<string></string>'
 
@@ -191,7 +191,7 @@ class BPListObject(FieldSet):
             yield BPListSize(self, "size")
             if self['size'].value:
                 yield String(self, "value", self['size'].value*2, charset="UTF-16-BE")
-                self.xml=lambda prefix:prefix + "<string>%s</string>"%(self['value'].value.replace('&','&amp;').encode('utf-8'))
+                self.xml=lambda prefix:prefix + "<string>{0!s}</string>".format((self['value'].value.replace('&','&amp;').encode('utf-8')))
             else:
                 self.xml=lambda prefix:prefix + '<string></string>'
 
@@ -244,7 +244,7 @@ class BPListObject(FieldSet):
         return ''
 
     def getFieldType(self):
-        return '%s<%s>'%(FieldSet.getFieldType(self), self['marker_type'].display)
+        return '{0!s}<{1!s}>'.format(FieldSet.getFieldType(self), self['marker_type'].display)
 
 class BPList(HachoirParser, RootSeekableFieldSet):
     endian = BIG_ENDIAN

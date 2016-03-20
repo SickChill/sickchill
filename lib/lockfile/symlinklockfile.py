@@ -43,8 +43,8 @@ class SymlinkLockFile(LockBase):
                                               " lock for %s" %
                                               self.path)
                         else:
-                            raise AlreadyLocked("%s is already locked" %
-                                                self.path)
+                            raise AlreadyLocked("{0!s} is already locked".format(
+                                                self.path))
                     time.sleep(timeout/10 if timeout is not None else 0.1)
             else:
                 # Link creation succeeded.  We're good to go.
@@ -52,9 +52,9 @@ class SymlinkLockFile(LockBase):
 
     def release(self):
         if not self.is_locked():
-            raise NotLocked("%s is not locked" % self.path)
+            raise NotLocked("{0!s} is not locked".format(self.path))
         elif not self.i_am_locking():
-            raise NotMyLock("%s is locked, but not by me" % self.path)
+            raise NotMyLock("{0!s} is locked, but not by me".format(self.path))
         os.unlink(self.lock_file)
 
     def is_locked(self):

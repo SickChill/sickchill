@@ -778,4 +778,4 @@ class Match(object):
             tags = "+tags=" + six.text_type(self.tags)
         if self.defined_at:
             defined += "@" + six.text_type(self.defined_at)
-        return "<%s:%s%s%s%s%s>" % (self.value, self.span, flags, name, tags, defined)
+        return "<{0!s}:{1!s}{2!s}{3!s}{4!s}{5!s}>".format(self.value, self.span, flags, name, tags, defined)

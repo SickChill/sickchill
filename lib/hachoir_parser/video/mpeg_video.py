@@ -494,11 +494,11 @@ class Chunk(FieldSet):
             if 0xC0 <= tag < 0xE0:
                 # audio
                 streamid = tag-0xC0
-                self._name, self.parser, self._description = ("audio[%i][]"%streamid, Stream, "Audio Stream %i Packet"%streamid)
+                self._name, self.parser, self._description = ("audio[{0:d}][]".format(streamid), Stream, "Audio Stream {0:d} Packet".format(streamid))
             elif 0xE0 <= tag < 0xF0:
                 # video
                 streamid = tag-0xE0
-                self._name, self.parser, self._description = ("video[%i][]"%streamid, Stream, "Video Stream %i Packet"%streamid)
+                self._name, self.parser, self._description = ("video[{0:d}][]".format(streamid), Stream, "Video Stream {0:d} Packet".format(streamid))
             else:
                 self._name, self.parser, self._description = ("stream[]", Stream, "Data Stream Packet")
         else:
@@ -520,7 +520,7 @@ class Chunk(FieldSet):
             yield self.parser(self, "content")
 
     def createDescription(self):
-        return "Chunk: tag %s" % self["tag"].display
+        return "Chunk: tag {0!s}".format(self["tag"].display)
 
 class MPEGVideoFile(Parser):
     PARSER_TAGS = {

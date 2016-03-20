@@ -131,7 +131,7 @@ class Chunk(FieldSet):
                 yield RawBytes(self, "raw", size)
 
     def createDescription(self):
-        return "Chunk: %s" % self["tag"].display
+        return "Chunk: {0!s}".format(self["tag"].display)
 
 class RealMediaFile(Parser):
     MAGIC = '.RMF\0\0\0\x12\0\1'    # (magic, size=18, version=1)
@@ -157,7 +157,7 @@ class RealMediaFile(Parser):
         if self["header/size"].value != 18:
             return "Invalid header size"
         if self["header/version"].value not in (0, 1):
-            return "Unknown file format version (%s)" % self["header/version"].value
+            return "Unknown file format version ({0!s})".format(self["header/version"].value)
         return True
 
     def createFields(self):

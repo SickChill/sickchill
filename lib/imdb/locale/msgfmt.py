@@ -99,7 +99,7 @@ class MsgFmt(object):
             elif section == STR:
                 msgstr += line
             else:
-                raise SyntaxErrorException('Syntax error on line %d, before:\n%s' % (line_no, line))
+                raise SyntaxErrorException('Syntax error on line {0:d}, before:\n{1!s}'.format(line_no, line))
         # Add last entry
         if section == STR:
             self.add(msgid, msgstr, fuzzy)

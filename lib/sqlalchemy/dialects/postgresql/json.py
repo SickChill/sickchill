@@ -36,7 +36,7 @@ class JSONElement(elements.BinaryExpression):
             if hasattr(right, '__iter__') and \
                 not isinstance(right, util.string_types):
                 opstring = "#>"
-                right = "{%s}" % (", ".join(util.text_type(elem) for elem in right))
+                right = "{{{0!s}}}".format((", ".join(util.text_type(elem) for elem in right)))
             else:
                 opstring = "->"
 

@@ -74,7 +74,7 @@ class OracleCompiler_zxjdbc(OracleCompiler):
             dbtype = col.type.dialect_impl(self.dialect).get_dbapi_type(self.dialect.dbapi)
             self.returning_parameters.append((i + 1, dbtype))
 
-            bindparam = sql.bindparam("ret_%d" % i, value=ReturningParam(dbtype))
+            bindparam = sql.bindparam("ret_{0:d}".format(i), value=ReturningParam(dbtype))
             self.binds[bindparam.key] = bindparam
             binds.append(self.bindparam_string(self._truncate_bindparam(bindparam)))
 
@@ -97,9 +97,9 @@ class OracleExecutionContext_zxjdbc(OracleExecutionContext):
                     rrs = self.statement.__statement__.getReturnResultSet()
                     next(rrs)
                 except SQLException as sqle:
-                    msg = '%s [SQLCode: %d]' % (sqle.getMessage(), sqle.getErrorCode())
+                    msg = '{0!s} [SQLCode: {1:d}]'.format(sqle.getMessage(), sqle.getErrorCode())
                     if sqle.getSQLState() is not None:
-                        msg += ' [SQLState: %s]' % sqle.getSQLState()
+                        msg += ' [SQLState: {0!s}]'.format(sqle.getSQLState())
                     raise zxJDBC.Error(msg)
                 else:
                     row = tuple(self.cursor.datahandler.getPyObject(rrs, index, dbtype)
@@ -164,7 +164,7 @@ class ReturningParam(object):
 
     def __repr__(self):
         kls = self.__class__
-        return '<%s.%s object at 0x%x type=%s>' % (kls.__module__, kls.__name__, id(self),
+        return '<{0!s}.{1!s} object at 0x{2:x} type={3!s}>'.format(kls.__module__, kls.__name__, id(self),
                                                    self.type)
 
 
@@ -209,7 +209,7 @@ class OracleDialect_zxjdbc(ZxJDBCConnector, OracleDialect):
         self.implicit_returning = connection.connection.driverversion >= '10.2'
 
     def _create_jdbc_url(self, url):
-        return 'jdbc:oracle:thin:@%s:%s:%s' % (url.host, url.port or 1521, url.database)
+        return 'jdbc:oracle:thin:@{0!s}:{1!s}:{2!s}'.format(url.host, url.port or 1521, url.database)
 
     def _get_server_version_info(self, connection):
         version = re.search(r'Release ([\d\.]+)', connection.connection.dbversion).group(1)

@@ -96,7 +96,7 @@ def get_supported_platform():
     plat = get_build_platform(); m = macosVersionString.match(plat)
     if m is not None and sys.platform == "darwin":
         try:
-            plat = 'macosx-%s-%s' % ('.'.join(_macosx_vers()[:2]), m.group(3))
+            plat = 'macosx-{0!s}-{1!s}'.format('.'.join(_macosx_vers()[:2]), m.group(3))
         except ValueError:
             pass    # not Mac OS X
     return plat
@@ -228,7 +228,7 @@ def get_build_platform():
         try:
             version = _macosx_vers()
             machine = os.uname()[4].replace(" ", "_")
-            return "macosx-%d.%d-%s" % (int(version[0]), int(version[1]),
+            return "macosx-{0:d}.{1:d}-{2!s}".format(int(version[0]), int(version[1]),
                 _macosx_arch(machine))
         except ValueError:
             # if someone is running a non-Mac darwin system, this will fall
@@ -271,7 +271,7 @@ def compatible_platforms(provided,required):
             provDarwin = darwinVersionString.match(provided)
             if provDarwin:
                 dversion = int(provDarwin.group(1))
-                macosversion = "%s.%s" % (reqMac.group(1), reqMac.group(2))
+                macosversion = "{0!s}.{1!s}".format(reqMac.group(1), reqMac.group(2))
                 if dversion == 7 and macosversion >= "10.3" or \
                     dversion == 8 and macosversion >= "10.4":
 
@@ -831,7 +831,7 @@ class Environment(object):
                 for dist in other[project]:
                     self.add(dist)
         else:
-            raise TypeError("Can't add %r to environment" % (other,))
+            raise TypeError("Can't add {0!r} to environment".format(other))
         return self
 
     def __add__(self, other):
@@ -915,16 +915,16 @@ class ResourceManager:
 The following error occurred while trying to extract file(s) to the Python egg
 cache:
 
-  %s
+  {0!s}
 
 The Python egg cache directory is currently set to:
 
-  %s
+  {1!s}
 
 Perhaps your account does not have write access to this directory?  You can
 change the cache directory by setting the PYTHON_EGG_CACHE environment
 variable to point to an accessible directory.
-"""         % (old_exc, cache_path)
+""".format(old_exc, cache_path)
         )
         err.manager        = self
         err.cache_path     = cache_path
@@ -1202,7 +1202,7 @@ class NullProvider:
     def run_script(self,script_name,namespace):
         script = 'scripts/'+script_name
         if not self.has_metadata(script):
-            raise ResolutionError("No script named %r" % script_name)
+            raise ResolutionError("No script named {0!r}".format(script_name))
         script_text = self.get_metadata(script).replace('\r\n','\n')
         script_text = script_text.replace('\r','\n')
         script_filename = self._fn(self.egg_info,script)
@@ -1330,7 +1330,7 @@ class ZipProvider(EggProvider):
         if fspath.startswith(self.zip_pre):
             return fspath[len(self.zip_pre):]
         raise AssertionError(
-            "%s is not a subpath of %s" % (fspath,self.zip_pre)
+            "{0!s} is not a subpath of {1!s}".format(fspath, self.zip_pre)
         )
 
     def _parts(self,zip_path):
@@ -1339,7 +1339,7 @@ class ZipProvider(EggProvider):
         if fspath.startswith(self.egg_root+os.sep):
             return fspath[len(self.egg_root)+1:].split(os.sep)
         raise AssertionError(
-            "%s is not a subpath of %s" % (fspath,self.egg_root)
+            "{0!s} is not a subpath of {1!s}".format(fspath, self.egg_root)
         )
 
     def get_resource_filename(self, manager, resource_name):
@@ -1939,19 +1939,19 @@ class EntryPoint(object):
         self.name = name
         self.module_name = module_name
         self.attrs = tuple(attrs)
-        self.extras = Requirement.parse(("x[%s]" % ','.join(extras))).extras
+        self.extras = Requirement.parse(("x[{0!s}]".format(','.join(extras)))).extras
         self.dist = dist
 
     def __str__(self):
-        s = "%s = %s" % (self.name, self.module_name)
+        s = "{0!s} = {1!s}".format(self.name, self.module_name)
         if self.attrs:
             s += ':' + '.'.join(self.attrs)
         if self.extras:
-            s += ' [%s]' % ','.join(self.extras)
+            s += ' [{0!s}]'.format(','.join(self.extras))
         return s
 
     def __repr__(self):
-        return "EntryPoint.parse(%r)" % str(self)
+        return "EntryPoint.parse({0!r})".format(str(self))
 
     def load(self, require=True, env=None, installer=None):
         if require: self.require(env, installer)
@@ -1960,7 +1960,7 @@ class EntryPoint(object):
             try:
                 entry = getattr(entry,attr)
             except AttributeError:
-                raise ImportError("%r has no %r attribute" % (entry,attr))
+                raise ImportError("{0!r} has no {1!r} attribute".format(entry, attr))
         return entry
 
     def require(self, env=None, installer=None):
@@ -2158,7 +2158,7 @@ class Distribution(object):
                 deps.extend(dm[safe_extra(ext)])
             except KeyError:
                 raise UnknownExtra(
-                    "%s has no such extra feature %r" % (self, ext)
+                    "{0!s} has no such extra feature {1!r}".format(self, ext)
                 )
         return deps
 
@@ -2178,7 +2178,7 @@ class Distribution(object):
 
     def egg_name(self):
         """Return what this distribution's standard .egg filename should be"""
-        filename = "%s-%s-py%s" % (
+        filename = "{0!s}-{1!s}-py{2!s}".format(
             to_filename(self.project_name), to_filename(self.version),
             self.py_version or PY_MAJOR
         )
@@ -2189,7 +2189,7 @@ class Distribution(object):
 
     def __repr__(self):
         if self.location:
-            return "%s (%s)" % (self,self.location)
+            return "{0!s} ({1!s})".format(self, self.location)
         else:
             return str(self)
 
@@ -2197,7 +2197,7 @@ class Distribution(object):
         try: version = getattr(self,'version',None)
         except ValueError: version = None
         version = version or "[unknown version]"
-        return "%s %s" % (self.project_name,version)
+        return "{0!s} {1!s}".format(self.project_name, version)
 
     def __getattr__(self,attr):
         """Delegate all unrecognized public attributes to .metadata provider"""
@@ -2215,13 +2215,13 @@ class Distribution(object):
 
     def as_requirement(self):
         """Return a ``Requirement`` that matches this distribution exactly"""
-        return Requirement.parse('%s==%s' % (self.project_name, self.version))
+        return Requirement.parse('{0!s}=={1!s}'.format(self.project_name, self.version))
 
     def load_entry_point(self, group, name):
         """Return the `name` entry point of `group` or raise ImportError"""
         ep = self.get_entry_info(group,name)
         if ep is None:
-            raise ImportError("Entry point %r not found" % ((group,name),))
+            raise ImportError("Entry point {0!r} not found".format((group,name)))
         return ep.load()
 
     def get_entry_map(self, group=None):
@@ -2481,8 +2481,8 @@ class Requirement:
     def __str__(self):
         specs = ','.join([''.join(s) for s in self.specs])
         extras = ','.join(self.extras)
-        if extras: extras = '[%s]' % extras
-        return '%s%s%s' % (self.project_name, extras, specs)
+        if extras: extras = '[{0!s}]'.format(extras)
+        return '{0!s}{1!s}{2!s}'.format(self.project_name, extras, specs)
 
     def __eq__(self,other):
         return isinstance(other,Requirement) and self.hashCmp==other.hashCmp
@@ -2507,7 +2507,7 @@ class Requirement:
     def __hash__(self):
         return self.__hash
 
-    def __repr__(self): return "Requirement.parse(%r)" % str(self)
+    def __repr__(self): return "Requirement.parse({0!r})".format(str(self))
 
     #@staticmethod
     def parse(s):

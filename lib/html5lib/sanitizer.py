@@ -209,12 +209,12 @@ class HTMLSanitizerMixin(object):
 
     def disallowed_token(self, token, token_type):
         if token_type == tokenTypes["EndTag"]:
-            token["data"] = "</%s>" % token["name"]
+            token["data"] = "</{0!s}>".format(token["name"])
         elif token["data"]:
-            attrs = ''.join([' %s="%s"' % (k, escape(v)) for k, v in token["data"]])
-            token["data"] = "<%s%s>" % (token["name"], attrs)
+            attrs = ''.join([' {0!s}="{1!s}"'.format(k, escape(v)) for k, v in token["data"]])
+            token["data"] = "<{0!s}{1!s}>".format(token["name"], attrs)
         else:
-            token["data"] = "<%s>" % token["name"]
+            token["data"] = "<{0!s}>".format(token["name"])
         if token.get("selfClosing"):
             token["data"] = token["data"][:-1] + "/>"
 

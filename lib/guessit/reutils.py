@@ -16,6 +16,6 @@ def build_or_pattern(patterns, escape=False):
             or_pattern.append('(?:')
         else:
             or_pattern.append('|')
-        or_pattern.append('(?:%s)' % re.escape(pattern) if escape else pattern)
+        or_pattern.append('(?:{0!s})'.format(re.escape(pattern)) if escape else pattern)
     or_pattern.append(')')
     return ''.join(or_pattern)

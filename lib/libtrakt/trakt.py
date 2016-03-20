@@ -100,7 +100,7 @@ class TraktAPI:
                     logger.log(u'Could not connect to Trakt. Error: {0}'.format(e), logger.DEBUG)
             elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
-                logger.log(u'Retrying trakt api request: %s' % path, logger.DEBUG)
+                logger.log(u'Retrying trakt api request: {0!s}'.format(path), logger.DEBUG)
                 return self.traktRequest(path, data, headers, url, method)
             elif code == 401:
                 if self.traktToken(refresh=True, count=count):
@@ -111,7 +111,7 @@ class TraktAPI:
                 # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.DEBUG)
             elif code == 404:
-                logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.DEBUG)
+                logger.log(u'Trakt error (404) the resource does not exist: {0!s}'.format(url) + path, logger.DEBUG)
             else:
                 logger.log(u'Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)
             return {}

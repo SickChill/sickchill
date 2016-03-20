@@ -153,5 +153,5 @@ class FlvFile(Parser):
             yield UInt32(self, "prev_size[]", "Size of previous chunk")
 
     def createDescription(self):
-        return u"Macromedia Flash video version %s" % self["header/version"].value
+        return u"Macromedia Flash video version {0!s}".format(self["header/version"].value)
 

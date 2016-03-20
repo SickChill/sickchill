@@ -227,7 +227,7 @@ class _PGNumeric(sqltypes.Numeric):
                 return None
             else:
                 raise exc.InvalidRequestError(
-                            "Unknown PG numeric type: %d" % coltype)
+                            "Unknown PG numeric type: {0:d}".format(coltype))
         else:
             if coltype in _FLOAT_TYPES:
                 # pg8000 returns float natively for 701
@@ -236,7 +236,7 @@ class _PGNumeric(sqltypes.Numeric):
                 return processors.to_float
             else:
                 raise exc.InvalidRequestError(
-                            "Unknown PG numeric type: %d" % coltype)
+                            "Unknown PG numeric type: {0:d}".format(coltype))
 
 
 class _PGEnum(ENUM):
@@ -302,7 +302,7 @@ class PGExecutionContext_psycopg2(PGExecutionContext):
         if is_server_side:
             # use server-side cursors:
             # http://lists.initd.org/pipermail/psycopg/2007-January/005251.html
-            ident = "c_%s_%s" % (hex(id(self))[2:], hex(_server_side_id())[2:])
+            ident = "c_{0!s}_{1!s}".format(hex(id(self))[2:], hex(_server_side_id())[2:])
             return self._dbapi_connection.cursor(ident)
         else:
             return self._dbapi_connection.cursor()

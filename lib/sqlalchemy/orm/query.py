@@ -404,8 +404,7 @@ class Query(object):
         ):
             if getattr(self, attr) is not notset:
                 raise sa_exc.InvalidRequestError(
-                    "Can't call Query.%s() when %s has been called" %
-                    (meth, methname)
+                    "Can't call Query.{0!s}() when {1!s} has been called".format(meth, methname)
                 )
 
     def _get_options(self, populate_existing=None,
@@ -795,7 +794,7 @@ class Query(object):
             raise sa_exc.InvalidRequestError(
             "Incorrect number of values in identifier to formulate "
             "primary key for query.get(); primary key columns are %s" %
-            ','.join("'%s'" % c for c in mapper.primary_key))
+            ','.join("'{0!s}'".format(c) for c in mapper.primary_key))
 
         key = mapper.identity_key_from_primary_key(ident)
 
@@ -1691,8 +1690,8 @@ class Query(object):
         aliased, from_joinpoint = kwargs.pop('aliased', False),\
                                     kwargs.pop('from_joinpoint', False)
         if kwargs:
-            raise TypeError("unknown arguments: %s" %
-                                ','.join(kwargs.keys))
+            raise TypeError("unknown arguments: {0!s}".format(
+                                ','.join(kwargs.keys)))
         return self._join(props,
                             outerjoin=False, create_aliases=aliased,
                             from_joinpoint=from_joinpoint)
@@ -1707,8 +1706,8 @@ class Query(object):
         aliased, from_joinpoint = kwargs.pop('aliased', False), \
                                 kwargs.pop('from_joinpoint', False)
         if kwargs:
-            raise TypeError("unknown arguments: %s" %
-                    ','.join(kwargs))
+            raise TypeError("unknown arguments: {0!s}".format(
+                    ','.join(kwargs)))
         return self._join(props,
                             outerjoin=True, create_aliases=aliased,
                             from_joinpoint=from_joinpoint)
@@ -1880,8 +1879,8 @@ class Query(object):
 
         if overlap and l_info.selectable is r_info.selectable:
             raise sa_exc.InvalidRequestError(
-                    "Can't join table/selectable '%s' to itself" %
-                        l_info.selectable)
+                    "Can't join table/selectable '{0!s}' to itself".format(
+                        l_info.selectable))
 
         right, onclause = self._prepare_right_side(
                                 r_info, right, onclause,
@@ -1928,8 +1927,7 @@ class Query(object):
             if not right_selectable.is_derived_from(
                                     right_mapper.mapped_table):
                 raise sa_exc.InvalidRequestError(
-                    "Selectable '%s' is not derived from '%s'" %
-                    (right_selectable.description,
+                    "Selectable '{0!s}' is not derived from '{1!s}'".format(right_selectable.description,
                     right_mapper.mapped_table.description))
 
             if isinstance(right_selectable, expression.SelectBase):
@@ -2941,7 +2939,7 @@ class LockmodeArg(ForUpdateArg):
             read = False
         else:
             raise sa_exc.ArgumentError(
-                        "Unknown with_lockmode argument: %r" % mode)
+                        "Unknown with_lockmode argument: {0!r}".format(mode))
 
         return LockmodeArg(read=read, nowait=nowait)
 

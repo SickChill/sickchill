@@ -80,7 +80,7 @@ class NoContentHandler(RequestHandler):
 class SeeOtherPostHandler(RequestHandler):
     def post(self):
         redirect_code = int(self.request.body)
-        assert redirect_code in (302, 303), "unexpected body %r" % self.request.body
+        assert redirect_code in (302, 303), "unexpected body {0!r}".format(self.request.body)
         self.set_header("Location", "/see_other_get")
         self.set_status(redirect_code)
 
@@ -88,7 +88,7 @@ class SeeOtherPostHandler(RequestHandler):
 class SeeOtherGetHandler(RequestHandler):
     def get(self):
         if self.request.body:
-            raise Exception("unexpected body %r" % self.request.body)
+            raise Exception("unexpected body {0!r}".format(self.request.body))
         self.write("ok")
 
 
@@ -227,7 +227,7 @@ class SimpleHTTPClientTestMixin(object):
 
     def test_see_other_redirect(self):
         for code in (302, 303):
-            response = self.fetch("/see_other_post", method="POST", body="%d" % code)
+            response = self.fetch("/see_other_post", method="POST", body="{0:d}".format(code))
             self.assertEqual(200, response.code)
             self.assertTrue(response.request.url.endswith("/see_other_post"))
             self.assertTrue(response.effective_url.endswith("/see_other_get"))
@@ -262,7 +262,7 @@ class SimpleHTTPClientTestMixin(object):
                 # interface, so skip this test.
                 return
             raise
-        url = '%s://[::1]:%d/hello' % (self.get_protocol(), port)
+        url = '{0!s}://[::1]:{1:d}/hello'.format(self.get_protocol(), port)
 
         # ipv6 is currently enabled by default but can be disabled
         self.http_client.fetch(url, self.stop, allow_ipv6=False)
@@ -326,7 +326,7 @@ class SimpleHTTPClientTestMixin(object):
         cleanup_func, port = refusing_port()
         self.addCleanup(cleanup_func)
         with ExpectLog(gen_log, ".*", required=False):
-            self.http_client.fetch("http://127.0.0.1:%d/" % port, self.stop)
+            self.http_client.fetch("http://127.0.0.1:{0:d}/".format(port), self.stop)
             response = self.wait()
         self.assertEqual(599, response.code)
 
@@ -572,7 +572,7 @@ class HostnameMappingTestCase(AsyncHTTPTestCase):
 
     def test_hostname_mapping(self):
         self.http_client.fetch(
-            'http://www.example.com:%d/hello' % self.get_http_port(), self.stop)
+            'http://www.example.com:{0:d}/hello'.format(self.get_http_port()), self.stop)
         response = self.wait()
         response.rethrow()
         self.assertEqual(response.body, b'Hello world!')

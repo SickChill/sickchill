@@ -73,7 +73,7 @@ class Integer(base.AbstractSimpleAsn1Item):
                 return int(value)
             except:
                 raise error.PyAsn1Error(
-                    'Can\'t coerce %s into integer: %s' % (value, sys.exc_info()[1])
+                    'Can\'t coerce {0!s} into integer: {1!s}'.format(value, sys.exc_info()[1])
                     )
         r = self.__namedValues.getValue(value)
         if r is not None:
@@ -82,7 +82,7 @@ class Integer(base.AbstractSimpleAsn1Item):
             return int(value)
         except:
             raise error.PyAsn1Error(
-                'Can\'t coerce %s into integer: %s' % (value, sys.exc_info()[1])
+                'Can\'t coerce {0!s} into integer: {1!s}'.format(value, sys.exc_info()[1])
                 )
 
     def prettyOut(self, value):
@@ -216,7 +216,7 @@ class BitString(base.AbstractSimpleAsn1Item):
                             r.append(1)
                         else:
                             raise error.PyAsn1Error(
-                                'Non-binary BIT STRING initializer %s' % (v,)
+                                'Non-binary BIT STRING initializer {0!s}'.format(v)
                                 )
                     return tuple(r)
                 elif value[-2:] == '\'H':
@@ -229,14 +229,14 @@ class BitString(base.AbstractSimpleAsn1Item):
                     return tuple(r)
                 else:
                     raise error.PyAsn1Error(
-                        'Bad BIT STRING value notation %s' % (value,)
+                        'Bad BIT STRING value notation {0!s}'.format(value)
                         )                
             else:
                 for i in value.split(','):
                     j = self.__namedValues.getValue(i)
                     if j is None:
                         raise error.PyAsn1Error(
-                            'Unknown bit identifier \'%s\'' % (i,)
+                            'Unknown bit identifier \'{0!s}\''.format(i)
                             )
                     if j >= len(r):
                         r.extend([0]*(j-len(r)+1))
@@ -247,18 +247,18 @@ class BitString(base.AbstractSimpleAsn1Item):
             for b in r:
                 if b and b != 1:
                     raise error.PyAsn1Error(
-                        'Non-binary BitString initializer \'%s\'' % (r,)
+                        'Non-binary BitString initializer \'{0!s}\''.format(r)
                         )
             return r
         elif isinstance(value, BitString):
             return tuple(value)
         else:
             raise error.PyAsn1Error(
-                'Bad BitString initializer type \'%s\'' % (value,)
+                'Bad BitString initializer type \'{0!s}\''.format(value)
                 )
 
     def prettyOut(self, value):
-        return '\"\'%s\'B\"' % ''.join([str(x) for x in value])
+        return '\"\'{0!s}\'B\"'.format(''.join([str(x) for x in value]))
 
 class OctetString(base.AbstractSimpleAsn1Item):
     tagSet = baseTagSet = tag.initTagSet(
@@ -309,7 +309,7 @@ class OctetString(base.AbstractSimpleAsn1Item):
                     return ''.join([ chr(x) for x in value ])
                 except ValueError:
                     raise error.PyAsn1Error(
-                        'Bad OctetString initializer \'%s\'' % (value,)
+                        'Bad OctetString initializer \'{0!s}\''.format(value)
                         )                
             else:
                 return str(value)
@@ -324,14 +324,14 @@ class OctetString(base.AbstractSimpleAsn1Item):
                     return bytes(value)
                 except ValueError:
                     raise error.PyAsn1Error(
-                        'Bad OctetString initializer \'%s\'' % (value,)
+                        'Bad OctetString initializer \'{0!s}\''.format(value)
                         )
             else:
                 try:
                     return str(value).encode(self._encoding)
                 except UnicodeEncodeError:
                     raise error.PyAsn1Error(
-                        'Can\'t encode string \'%s\' with \'%s\' codec' % (value, self._encoding)
+                        'Can\'t encode string \'{0!s}\' with \'{1!s}\' codec'.format(value, self._encoding)
                         )
                         
 
@@ -350,7 +350,7 @@ class OctetString(base.AbstractSimpleAsn1Item):
                 v = 1
             else:
                 raise error.PyAsn1Error(
-                    'Non-binary OCTET STRING initializer %s' % (v,)
+                    'Non-binary OCTET STRING initializer {0!s}'.format(v)
                     )
             byte = byte | (v << bitNo)
         return octets.ints2octs(r + (byte,))
@@ -373,7 +373,7 @@ class OctetString(base.AbstractSimpleAsn1Item):
         else:
             numbers = tuple(value)
         if [ x for x in numbers if x < 32 or x > 126 ]:
-            return '0x' + ''.join([ '%.2x' % x for x in numbers ])
+            return '0x' + ''.join([ '{0:.2x}'.format(x) for x in numbers ])
         else:
             return str(value)
 
@@ -381,7 +381,7 @@ class OctetString(base.AbstractSimpleAsn1Item):
         if self._value is base.noValue:
             return self.__class__.__name__ + '()'
         if [ x for x in self.asNumbers() if x < 32 or x > 126 ]:
-            return self.__class__.__name__ + '(hexValue=\'' + ''.join([ '%.2x' % x for x in self.asNumbers() ])+'\')'
+            return self.__class__.__name__ + '(hexValue=\'' + ''.join([ '{0:.2x}'.format(x) for x in self.asNumbers() ])+'\')'
         else:
             return self.__class__.__name__ + '(\'' + self.prettyOut(self._value) + '\')'
                                 
@@ -480,8 +480,7 @@ class ObjectIdentifier(base.AbstractSimpleAsn1Item):
                     r.append(int(element, 0))
                 except ValueError:
                     raise error.PyAsn1Error(
-                        'Malformed Object ID %s at %s: %s' %
-                        (str(value), self.__class__.__name__, sys.exc_info()[1])
+                        'Malformed Object ID {0!s} at {1!s}: {2!s}'.format(str(value), self.__class__.__name__, sys.exc_info()[1])
                         )
             value = tuple(r)
         else:
@@ -489,14 +488,13 @@ class ObjectIdentifier(base.AbstractSimpleAsn1Item):
                 value = tuple(value)
             except TypeError:
                 raise error.PyAsn1Error(
-                        'Malformed Object ID %s at %s: %s' %
-                        (str(value), self.__class__.__name__,sys.exc_info()[1])
+                        'Malformed Object ID {0!s} at {1!s}: {2!s}'.format(str(value), self.__class__.__name__, sys.exc_info()[1])
                         )
 
         for x in value:
             if not isinstance(x, intTypes) or x < 0:
                 raise error.PyAsn1Error(
-                    'Invalid sub-ID in %s at %s' % (value, self.__class__.__name__)
+                    'Invalid sub-ID in {0!s} at {1!s}'.format(value, self.__class__.__name__)
                     )
     
         return value
@@ -529,11 +527,11 @@ class Real(base.AbstractSimpleAsn1Item):
             for d in value:
                 if not isinstance(d, intTypes):
                     raise error.PyAsn1Error(
-                        'Lame Real value syntax: %s' % (value,)
+                        'Lame Real value syntax: {0!s}'.format(value)
                         )
             if value[1] not in (2, 10):
                 raise error.PyAsn1Error(
-                    'Prohibited base for Real value: %s' % (value[1],)
+                    'Prohibited base for Real value: {0!s}'.format(value[1])
                     )
             if value[1] == 10:
                 value = self.__normalizeBase10(value)
@@ -557,12 +555,12 @@ class Real(base.AbstractSimpleAsn1Item):
             except ValueError:
                 pass
         raise error.PyAsn1Error(
-            'Bad real value syntax: %s' % (value,)
+            'Bad real value syntax: {0!s}'.format(value)
             )
         
     def prettyOut(self, value):
         if value in self._inf:
-            return '\'%s\'' % value
+            return '\'{0!s}\''.format(value)
         else:
             return str(value)
 
@@ -653,7 +651,7 @@ class SetOf(base.AbstractConstructedAsn1Item):
     def _verifyComponent(self, idx, value):
         if self._componentType is not None and \
                not self._componentType.isSuperTypeOf(value):
-            raise error.PyAsn1Error('Component type error %s' % (value,))
+            raise error.PyAsn1Error('Component type error {0!s}'.format(value))
 
     def getComponentByPosition(self, idx): return self._componentValues[idx]
     def setComponentByPosition(self, idx, value=None, verifyConstraints=True):
@@ -748,7 +746,7 @@ class SequenceAndSetBase(base.AbstractConstructedAsn1Item):
                 )
         t = self._componentType[idx].getType()
         if not t.isSuperTypeOf(value):
-            raise error.PyAsn1Error('Component type error %r vs %r' % (t, value))
+            raise error.PyAsn1Error('Component type error {0!r} vs {1!r}'.format(t, value))
 
     def getComponentByName(self, name):
         return self.getComponentByPosition(
@@ -815,7 +813,7 @@ class SequenceAndSetBase(base.AbstractConstructedAsn1Item):
             elif not self._componentType[idx].isOptional:
                 if self.getComponentByPosition(idx) is None:
                     raise error.PyAsn1Error(
-                        'Uninitialized component #%s at %r' % (idx, self)
+                        'Uninitialized component #{0!s} at {1!r}'.format(idx, self)
                         )
 
     def prettyPrint(self, scope=0):
@@ -829,7 +827,7 @@ class SequenceAndSetBase(base.AbstractConstructedAsn1Item):
                     r = r + '<no-name>'
                 else:
                     r = r + componentType.getNameByPosition(idx)
-                r = '%s=%s\n' % (
+                r = '{0!s}={1!s}\n'.format(
                     r, self._componentValues[idx].prettyPrint(scope)
                     )
         return r

@@ -66,15 +66,13 @@ class EntryResult(object):
         if self.ok:
             return self.string + ': OK!'
         elif self.warning:
-            return '%s%s: WARNING! (valid=%i, extra=%i)' % ('-' if self.negates else '', self.string, len(self.valid),
+            return '{0!s}{1!s}: WARNING! (valid={2:d}, extra={3:d})'.format('-' if self.negates else '', self.string, len(self.valid),
                                                             len(self.extra))
         elif self.error:
-            return '%s%s: ERROR! (valid=%i, missing=%i, different=%i, extra=%i, others=%i)' % \
-                   ('-' if self.negates else '', self.string, len(self.valid), len(self.missing), len(self.different),
+            return '{0!s}{1!s}: ERROR! (valid={2:d}, missing={3:d}, different={4:d}, extra={5:d}, others={6:d})'.format('-' if self.negates else '', self.string, len(self.valid), len(self.missing), len(self.different),
                     len(self.extra), len(self.others))
         else:
-            return '%s%s: UNKOWN! (valid=%i, missing=%i, different=%i, extra=%i, others=%i)' % \
-                   ('-' if self.negates else '', self.string, len(self.valid), len(self.missing), len(self.different),
+            return '{0!s}{1!s}: UNKOWN! (valid={2:d}, missing={3:d}, different={4:d}, extra={5:d}, others={6:d})'.format('-' if self.negates else '', self.string, len(self.valid), len(self.missing), len(self.different),
                     len(self.extra), len(self.others))
 
     @property

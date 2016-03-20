@@ -138,7 +138,7 @@ def Deserializer(file, metadata=None, scoped_session=None, engine=None):
             elif type_ == "engine":
                 return get_engine()
             else:
-                raise Exception("Unknown token: %s" % type_)
+                raise Exception("Unknown token: {0!s}".format(type_))
     unpickler.persistent_load = persistent_load
     return unpickler
 

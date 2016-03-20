@@ -110,7 +110,7 @@ class SessionRedirectMixin(object):
                 resp.raw.read(decode_content=False)
 
             if i >= self.max_redirects:
-                raise TooManyRedirects('Exceeded %s redirects.' % self.max_redirects, response=resp)
+                raise TooManyRedirects('Exceeded {0!s} redirects.'.format(self.max_redirects), response=resp)
 
             # Release the connection back into the pool.
             resp.close()
@@ -121,7 +121,7 @@ class SessionRedirectMixin(object):
             # Handle redirection without scheme (see: RFC 1808 Section 4)
             if url.startswith('//'):
                 parsed_rurl = urlparse(resp.url)
-                url = '%s:%s' % (parsed_rurl.scheme, url)
+                url = '{0!s}:{1!s}'.format(parsed_rurl.scheme, url)
 
             # The scheme should be lower case...
             parsed = urlparse(url)
@@ -643,7 +643,7 @@ class Session(SessionRedirectMixin):
                 return adapter
 
         # Nothing matches :-/
-        raise InvalidSchema("No connection adapters were found for '%s'" % url)
+        raise InvalidSchema("No connection adapters were found for '{0!s}'".format(url))
 
     def close(self):
         """Closes all adapters and as such the session"""

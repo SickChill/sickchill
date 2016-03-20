@@ -117,7 +117,7 @@ class DSRecord(FieldSet):
         elif type == 'ustr':
             yield PascalString32UTF16(self, "value")
         else:
-            raise ParserError("Unknown record type %s"%type)
+            raise ParserError("Unknown record type {0!s}".format(type))
 
     def createValue(self):
         return (self['filename'].value, self['property'].value, self['value'].value)
@@ -127,7 +127,7 @@ class DSRecord(FieldSet):
 
 class BTNode(FieldSet):
     def linkValue(self, block):
-        return (lambda: self['/node[%d]'%block.value])
+        return (lambda: self['/node[{0:d}]'.format(block.value)])
 
     def createFields(self):
         yield UInt32(self, "last_block")
@@ -192,7 +192,7 @@ class DSStore(HachoirParser, RootSeekableFieldSet):
             block = blocks.pop()
             offs, size = self.getBlock(block)
             self.seekByte(offs+4)
-            node = BTNode(self, "node[%d]"%block, size=size*8)
+            node = BTNode(self, "node[{0:d}]".format(block), size=size*8)
             yield node
             if node['last_block'].value != 0:
                 new_blocks = []

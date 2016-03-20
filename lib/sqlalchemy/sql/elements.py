@@ -507,7 +507,7 @@ class ClauseElement(Visitable):
         if friendly is None:
             return object.__repr__(self)
         else:
-            return '<%s.%s at 0x%x; %s>' % (
+            return '<{0!s}.{1!s} at 0x{2:x}; {3!s}>'.format(
                 self.__module__, self.__class__.__name__, id(self), friendly)
 
 
@@ -617,7 +617,7 @@ class ColumnElement(ClauseElement, operators.ColumnOperators):
             return getattr(self.comparator, key)
         except AttributeError:
             raise AttributeError(
-                    'Neither %r object nor %r object has an attribute %r' % (
+                    'Neither {0!r} object nor {1!r} object has an attribute {2!r}'.format(
                     type(self).__name__,
                     type(self.comparator).__name__,
                     key)
@@ -755,7 +755,7 @@ class ColumnElement(ClauseElement, operators.ColumnOperators):
         expressions and function calls.
 
         """
-        return _anonymous_label('%%(%d %s)s' % (id(self), getattr(self,
+        return _anonymous_label('%({0:d} {1!s})s'.format(id(self), getattr(self,
                                 'name', 'anon')))
 
 
@@ -990,11 +990,10 @@ class BindParameter(ColumnElement):
             key = quoted_name(key, quote)
 
         if unique:
-            self.key = _anonymous_label('%%(%d %s)s' % (id(self), key
+            self.key = _anonymous_label('%({0:d} {1!s})s'.format(id(self), key
                     or 'param'))
         else:
-            self.key = key or _anonymous_label('%%(%d param)s'
-                    % id(self))
+            self.key = key or _anonymous_label('%({0:d} param)s'.format(id(self)))
 
         # identifying key that won't change across
         # clones, used to identify the bind's logical
@@ -1052,14 +1051,14 @@ class BindParameter(ColumnElement):
     def _clone(self):
         c = ClauseElement._clone(self)
         if self.unique:
-            c.key = _anonymous_label('%%(%d %s)s' % (id(c), c._orig_key
+            c.key = _anonymous_label('%({0:d} {1!s})s'.format(id(c), c._orig_key
                     or 'param'))
         return c
 
     def _convert_to_unique(self):
         if not self.unique:
             self.unique = True
-            self.key = _anonymous_label('%%(%d %s)s' % (id(self),
+            self.key = _anonymous_label('%({0:d} {1!s})s'.format(id(self),
                     self._orig_key or 'param'))
 
     def compare(self, other, **kw):
@@ -1082,7 +1081,7 @@ class BindParameter(ColumnElement):
         return d
 
     def __repr__(self):
-        return 'BindParameter(%r, %r, type_=%r)' % (self.key,
+        return 'BindParameter({0!r}, {1!r}, type_={2!r})'.format(self.key,
                 self.value, self.type)
 
 
@@ -1145,7 +1144,7 @@ class TextClause(Executable, ClauseElement):
 
         def repl(m):
             self._bindparams[m.group(1)] = BindParameter(m.group(1))
-            return ':%s' % m.group(1)
+            return ':{0!s}'.format(m.group(1))
 
         # scan the string and search for bind parameter names, add them
         # to the list of bindparams
@@ -2740,7 +2739,7 @@ class Label(ColumnElement):
         if name:
             self.name = name
         else:
-            self.name = _anonymous_label('%%(%d %s)s' % (id(self),
+            self.name = _anonymous_label('%({0:d} {1!s})s'.format(id(self),
                                 getattr(element, 'name', 'anon')))
         self.key = self._label = self._key_label = self.name
         self._element = element
@@ -3144,7 +3143,7 @@ class quoted_name(util.text_type):
         backslashed = self.encode('ascii', 'backslashreplace')
         if not util.py2k:
             backslashed = backslashed.decode('ascii')
-        return "'%s'" % backslashed
+        return "'{0!s}'".format(backslashed)
 
 class _truncated_label(quoted_name):
     """A unicode subclass used to identify symbolic "
@@ -3216,7 +3215,7 @@ def _string_or_unprintable(element):
         try:
             return str(element)
         except:
-            return "unprintable element %r" % element
+            return "unprintable element {0!r}".format(element)
 
 
 def _expand_cloned(elements):

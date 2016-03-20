@@ -49,7 +49,7 @@ class DirectoryEntry(FieldSet):
     def createDescription(self):
         name = self["name"].value.strip("\0")
         if name:
-            return "Directory entry: %s" % name
+            return "Directory entry: {0!s}".format(name)
         else:
             return "Directory entry (empty)"
 
@@ -87,18 +87,18 @@ class Inode(FieldSet):
         self.uniq_id = 1+index
 
     def createDescription(self):
-        desc = "Inode %s: " % self.uniq_id
+        desc = "Inode {0!s}: ".format(self.uniq_id)
         size = self["size"].value
         if self["blocks"].value == 0:
             desc += "(unused)"
         elif 11 <= self.uniq_id:
             size = humanFilesize(size)
-            desc += "file, size=%s, mode=%s" % (size, self.getMode())
+            desc += "file, size={0!s}, mode={1!s}".format(size, self.getMode())
         else:
             if self.uniq_id in self.inode_type_name:
                 desc += self.inode_type_name[self.uniq_id]
                 if self.uniq_id == 2:
-                    desc += " (%s)" % self.getMode()
+                    desc += " ({0!s})".format(self.getMode())
             else:
                 desc += "special"
         return desc
@@ -175,13 +175,13 @@ class Inode(FieldSet):
 
 class Bitmap(FieldSet):
     def __init__(self, parent, name, start, size, description, **kw):
-        description = "%s: %s items" % (description, size)
+        description = "{0!s}: {1!s} items".format(description, size)
         FieldSet.__init__(self, parent, name, description, size=size, **kw)
         self.start = 1+start
 
     def createFields(self):
         for index in xrange(self._size):
-            yield Bit(self, "item[]", "Item %s" % (self.start+index))
+            yield Bit(self, "item[]", "Item {0!s}".format((self.start+index)))
 
 BlockBitmap = Bitmap
 InodeBitmap = Bitmap
@@ -197,7 +197,7 @@ class GroupDescriptor(FieldSet):
         blocks_per_group = self["/superblock/blocks_per_group"].value
         start = self.uniq_id * blocks_per_group
         end = start + blocks_per_group
-        return "Group descriptor: blocks %s-%s" % (start, end)
+        return "Group descriptor: blocks {0!s}-{1!s}".format(start, end)
 
     def createFields(self):
         yield UInt32(self, "block_bitmap", "Points to the blocks bitmap block")
@@ -238,7 +238,7 @@ class SuperBlock(FieldSet):
             fstype = "ext3"
         else:
             fstype = "ext2"
-        return "Superblock: %s file system" % fstype
+        return "Superblock: {0!s} file system".format(fstype)
 
     def createFields(self):
         yield UInt32(self, "inodes_count", "Inodes count")
@@ -302,7 +302,7 @@ class GroupDescriptors(FieldSet):
         self.count = count
 
     def createDescription(self):
-        return "Group descriptors: %s items" % self.count
+        return "Group descriptors: {0!s} items".format(self.count)
 
     def createFields(self):
         for index in range(0, self.count):
@@ -316,7 +316,7 @@ class InodeTable(FieldSet):
         self._size = self.count * self["/superblock/inode_size"].value * 8
 
     def createDescription(self):
-        return "Group descriptors: %s items" % self.count
+        return "Group descriptors: {0!s} items".format(self.count)
 
     def createFields(self):
         for index in range(self.start, self.start+self.count):
@@ -328,13 +328,13 @@ class Group(FieldSet):
         self.uniq_id = index
 
     def createDescription(self):
-        desc = "Group %s: %s" % (self.uniq_id, humanFilesize(self.size/8))
+        desc = "Group {0!s}: {1!s}".format(self.uniq_id, humanFilesize(self.size/8))
         if "superblock_copy" in self:
             desc += " (with superblock copy)"
         return desc
 
     def createFields(self):
-        group = self["../group_desc/group[%u]" % self.uniq_id]
+        group = self["../group_desc/group[{0:d}]".format(self.uniq_id)]
         superblock = self["/superblock"]
         block_size = self["/"].block_size
 
@@ -457,7 +457,7 @@ class EXT2_FS(Parser):
                 desc = "EXT3"
             else:
                 desc = "EXT2"
-        return desc + " file system: total=%s, used=%s, block=%s" % (
+        return desc + " file system: total={0!s}, used={1!s}, block={2!s}".format(
             humanFilesize(total), humanFilesize(used),
             humanFilesize(block_size))
 

@@ -87,7 +87,7 @@ class AttachedFile(Bytes):
     def createDescription(self):
         filename = self._getFilename()
         if filename:
-            return 'File "%s"' % filename
+            return 'File "{0!s}"'.format(filename)
         return "('Filename' entry not found)"
     def _createInputStream(self, **args):
         tags = args.setdefault("tags",[])

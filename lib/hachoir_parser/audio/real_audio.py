@@ -82,9 +82,9 @@ class RealAudioFile(Parser):
 
     def createDescription(self):
         if (self["version"].value == 3):
-            return "RealAudio v3 file, '%s' codec" % self["FourCC"].value
+            return "RealAudio v3 file, '{0!s}' codec".format(self["FourCC"].value)
         elif (self["version"].value == 4):
-            return "RealAudio v4 file, '%s' codec, %s, %u channels" % (
+            return "RealAudio v4 file, '{0!s}' codec, {1!s}, {2:d} channels".format(
                 self["FourCC"].value, self["sample_rate"].display, self["channels"].value)
         else:
             return "Real audio"

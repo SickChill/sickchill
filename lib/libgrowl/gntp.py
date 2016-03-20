@@ -102,7 +102,7 @@ class _GNTPBase(object):
 		pointerEnd = pointerStart + dataLength
 		data = self.raw[pointerStart:pointerEnd]
 		if not len(data) == dataLength:
-			raise ParseError('INVALID_DATA_LENGTH Expected: %s Recieved %s'%(dataLength,len(data)))
+			raise ParseError('INVALID_DATA_LENGTH Expected: {0!s} Recieved {1!s}'.format(dataLength, len(data)))
 		return data
 	def validate_password(self,password):
 		'''
@@ -141,20 +141,20 @@ class _GNTPBase(object):
 		Generate info line for GNTP Message
 		@return: Info line string
 		'''
-		info = u'GNTP/%s %s'%(
+		info = u'GNTP/{0!s} {1!s}'.format(
 			self.info.get('version'),
-			self.info.get('messagetype'),
+			self.info.get('messagetype')
 		)
 		if self.info.get('encryptionAlgorithmID',None):
-			info += ' %s:%s'%(
+			info += ' {0!s}:{1!s}'.format(
 				self.info.get('encryptionAlgorithmID'),
-				self.info.get('ivValue'),
+				self.info.get('ivValue')
 			)
 		else:
 			info+=' NONE'
 		
 		if self.info.get('keyHashAlgorithmID',None):
-			info += ' %s:%s.%s'%(
+			info += ' {0!s}:{1!s}.{2!s}'.format(
 				self.info.get('keyHashAlgorithmID'),
 				self.info.get('keyHash'),
 				self.info.get('salt')

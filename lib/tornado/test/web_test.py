@@ -117,7 +117,7 @@ class SecureCookieV1Test(unittest.TestCase):
                                  'foo', '1234', b'5678' + timestamp),
             sig)
         # tamper with the cookie
-        handler._cookies['foo'] = utf8('1234|5678%s|%s' % (
+        handler._cookies['foo'] = utf8('1234|5678{0!s}|{1!s}'.format(
             to_basestring(timestamp), to_basestring(sig)))
         # it gets rejected
         with ExpectLog(gen_log, "Cookie timestamp in future"):
@@ -394,18 +394,18 @@ class EchoHandler(RequestHandler):
         # as bytes.  Keys are always native strings.
         for key in self.request.arguments:
             if type(key) != str:
-                raise Exception("incorrect type for key: %r" % type(key))
+                raise Exception("incorrect type for key: {0!r}".format(type(key)))
             for value in self.request.arguments[key]:
                 if type(value) != bytes:
-                    raise Exception("incorrect type for value: %r" %
-                                    type(value))
+                    raise Exception("incorrect type for value: {0!r}".format(
+                                    type(value)))
             for value in self.get_arguments(key):
                 if type(value) != unicode_type:
-                    raise Exception("incorrect type for value: %r" %
-                                    type(value))
+                    raise Exception("incorrect type for value: {0!r}".format(
+                                    type(value)))
         for arg in path_args:
             if type(arg) != unicode_type:
-                raise Exception("incorrect type for path arg: %r" % type(arg))
+                raise Exception("incorrect type for path arg: {0!r}".format(type(arg)))
         self.write(dict(path=self.request.path,
                         path_args=path_args,
                         args=recursive_unicode(self.request.arguments)))
@@ -468,8 +468,8 @@ class TypeCheckHandler(RequestHandler):
         # Secure cookies return bytes because they can contain arbitrary
         # data, but regular cookies are native strings.
         if list(self.cookies.keys()) != ['asdf']:
-            raise Exception("unexpected values for cookie keys: %r" %
-                            self.cookies.keys())
+            raise Exception("unexpected values for cookie keys: {0!r}".format(
+                            self.cookies.keys()))
         self.check_type('get_secure_cookie', self.get_secure_cookie('asdf'), bytes)
         self.check_type('get_cookie', self.get_cookie('asdf'), str)
 
@@ -493,14 +493,14 @@ class TypeCheckHandler(RequestHandler):
     def check_type(self, name, obj, expected_type):
         actual_type = type(obj)
         if expected_type != actual_type:
-            self.errors[name] = "expected %s, got %s" % (expected_type,
+            self.errors[name] = "expected {0!s}, got {1!s}".format(expected_type,
                                                          actual_type)
 
 
 class DecodeArgHandler(RequestHandler):
     def decode_argument(self, value, name=None):
         if type(value) != bytes:
-            raise Exception("unexpected type for value: %r" % type(value))
+            raise Exception("unexpected type for value: {0!r}".format(type(value)))
         # use self.request.arguments directly to avoid recursion
         if 'encoding' in self.request.arguments:
             return value.decode(to_unicode(self.request.arguments['encoding'][0]))
@@ -885,9 +885,9 @@ class ErrorResponseTest(WebTestCase):
             def write_error(self, status_code, **kwargs):
                 self.set_header("Content-Type", "text/plain")
                 if "exc_info" in kwargs:
-                    self.write("Exception: %s" % kwargs["exc_info"][0].__name__)
+                    self.write("Exception: {0!s}".format(kwargs["exc_info"][0].__name__))
                 else:
-                    self.write("Status: %d" % status_code)
+                    self.write("Status: {0:d}".format(status_code))
 
         class FailedWriteErrorHandler(RequestHandler):
             def get(self):
@@ -1025,8 +1025,7 @@ class StaticFileTest(WebTestCase):
         for h in content_headers:
             self.assertEqual(head_response.headers.get(h),
                              get_response.headers.get(h),
-                             "%s differs between GET (%s) and HEAD (%s)" %
-                             (h, head_response.headers.get(h),
+                             "{0!s} differs between GET ({1!s}) and HEAD ({2!s})".format(h, head_response.headers.get(h),
                               get_response.headers.get(h)))
         return get_response
 
@@ -1237,13 +1236,13 @@ class CustomStaticFileTest(WebTestCase):
                 extension_index = path.rindex('.')
                 before_version = path[:extension_index]
                 after_version = path[(extension_index + 1):]
-                return '/static/%s.%s.%s' % (before_version, version_hash,
+                return '/static/{0!s}.{1!s}.{2!s}'.format(before_version, version_hash,
                                              after_version)
 
             def parse_url_path(self, url_path):
                 extension_index = url_path.rindex('.')
                 version_index = url_path.rindex('.', 0, extension_index)
-                return '%s%s' % (url_path[:version_index],
+                return '{0!s}{1!s}'.format(url_path[:version_index],
                                  url_path[extension_index:])
 
             @classmethod
@@ -1258,12 +1257,12 @@ class CustomStaticFileTest(WebTestCase):
                 assert start is None and end is None
                 if path == 'CustomStaticFileTest:foo.txt':
                     return b'bar'
-                raise Exception("unexpected path %r" % path)
+                raise Exception("unexpected path {0!r}".format(path))
 
             def get_content_size(self):
                 if self.absolute_path == 'CustomStaticFileTest:foo.txt':
                     return 3
-                raise Exception("unexpected path %r" % self.absolute_path)
+                raise Exception("unexpected path {0!r}".format(self.absolute_path))
 
             def get_modified_time(self):
                 return None
@@ -1635,12 +1634,12 @@ class UIMethodUIModuleTest(SimpleHandlerTestCase):
 
     def get_app_kwargs(self):
         def my_ui_method(handler, x):
-            return "In my_ui_method(%s) with handler value %s." % (
+            return "In my_ui_method({0!s}) with handler value {1!s}.".format(
                 x, handler.value())
 
         class MyModule(UIModule):
             def render(self, x):
-                return "In MyModule(%s) with handler value %s." % (
+                return "In MyModule({0!s}) with handler value {1!s}.".format(
                     x, self.handler.value())
 
         loader = DictLoader({
@@ -1722,7 +1721,7 @@ class SetLazyPropertiesTest(SimpleHandlerTestCase):
             raise NotImplementedError()
 
         def get(self):
-            self.write('Hello %s (%s)' % (self.current_user, self.locale.code))
+            self.write('Hello {0!s} ({1!s})'.format(self.current_user, self.locale.code))
 
     def test_set_properties(self):
         # Ensure that current_user can be assigned to normally for apps
@@ -2082,8 +2081,7 @@ class StreamingRequestFlowControlTest(WebTestCase):
             @contextlib.contextmanager
             def in_method(self, method):
                 if self.method is not None:
-                    self.test.fail("entered method %s while in %s" %
-                                   (method, self.method))
+                    self.test.fail("entered method {0!s} while in {1!s}".format(method, self.method))
                 self.method = method
                 self.methods.append(method)
                 try:
@@ -2376,7 +2374,7 @@ class XSRFTest(SimpleHandlerTestCase):
         else:
             headers = None
         response = self.fetch(
-            "/" if version is None else ("/?version=%d" % version),
+            "/" if version is None else ("/?version={0:d}".format(version)),
             headers=headers)
         response.rethrow()
         return native_str(response.body)

@@ -436,7 +436,7 @@ def unquote_unreserved(uri):
             try:
                 c = chr(int(h, 16))
             except ValueError:
-                raise InvalidURL("Invalid percent-escape sequence: '%s'" % h)
+                raise InvalidURL("Invalid percent-escape sequence: '{0!s}'".format(h))
 
             if c in UNRESERVED_SET:
                 parts[i] = c + parts[i][2:]
@@ -586,7 +586,7 @@ def select_proxy(url, proxies):
 
 def default_user_agent(name="python-requests"):
     """Return a string representing the default user agent."""
-    return '%s/%s' % (name, __version__)
+    return '{0!s}/{1!s}'.format(name, __version__)
 
 
 def default_headers():

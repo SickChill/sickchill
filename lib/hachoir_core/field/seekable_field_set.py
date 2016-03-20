@@ -26,7 +26,7 @@ class RootSeekableFieldSet(GenericFieldSet):
         if not relative:
             address -= self.absolute_address
         if address < 0:
-            raise ParserError("Seek below field set start (%s.%s)" % divmod(address, 8))
+            raise ParserError("Seek below field set start ({0!s}.{1!s})".format(*divmod(address, 8)))
         self._current_size = address
         return None
 
@@ -47,7 +47,7 @@ class RootSeekableFieldSet(GenericFieldSet):
         # If last field is too big, delete it
         while self._size < self._current_size:
             field = self._deleteField(len(self._fields)-1)
-            message.append("delete field %s" % field.path)
+            message.append("delete field {0!s}".format(field.path))
         assert self._current_size <= self._size
 
         blocks = [(x.absolute_address, x.size) for x in self._fields]
@@ -59,7 +59,7 @@ class RootSeekableFieldSet(GenericFieldSet):
             self.setUniqueFieldName(field)
             self._fields.append(field.name, field)
             fields.append(field)
-            message.append("found unparsed segment: start %s, length %s" % (start, length))
+            message.append("found unparsed segment: start {0!s}, length {1!s}".format(start, length))
         self.seekBit(self._size + self.absolute_address, relative=False)
         message = ", ".join(message)
         if fields:

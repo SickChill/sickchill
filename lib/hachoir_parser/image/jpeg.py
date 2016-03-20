@@ -217,17 +217,17 @@ class QuantizationTable(FieldSet):
         yield Bits(self, "is_16bit", 4)
         yield Bits(self, "index", 4)
         if self["index"].value >= 4:
-            raise ParserError("Invalid quantification index (%s)" % self["index"].value)
+            raise ParserError("Invalid quantification index ({0!s})".format(self["index"].value))
         if self["is_16bit"].value:
             coeff_type = UInt16
         else:
             coeff_type = UInt8
         for index in xrange(64):
             natural = JPEG_NATURAL_ORDER[index]
-            yield coeff_type(self, "coeff[%u]" % natural)
+            yield coeff_type(self, "coeff[{0:d}]".format(natural))
 
     def createDescription(self):
-        return "Quantification table #%u" % self["index"].value
+        return "Quantification table #{0:d}".format(self["index"].value)
 
 class DefineQuantizationTable(FieldSet):
     def createFields(self):
@@ -242,12 +242,12 @@ class HuffmanTable(FieldSet):
             1:"AC Table"})
         yield Bits(self, "index", 4, "Huffman table destination identifier")
         for i in xrange(1, 17):
-            yield UInt8(self, "count[%i]" % i, "Number of codes of length %i" % i)
+            yield UInt8(self, "count[{0:d}]".format(i), "Number of codes of length {0:d}".format(i))
         lengths = []
         remap = {}
         for i in xrange(1, 17):
-            for j in xrange(self["count[%i]" % i].value):
-                field = UInt8(self, "value[%i][%i]" % (i, j), "Value of code #%i of length %i" % (j, i))
+            for j in xrange(self["count[{0:d}]".format(i)].value):
+                field = UInt8(self, "value[{0:d}][{1:d}]".format(i, j), "Value of code #{0:d} of length {1:d}".format(j, i))
                 yield field
                 remap[len(lengths)] = field.value
                 lengths.append(i)
@@ -277,7 +277,7 @@ class HuffmanCode(Field):
                 if last_byte == '\xFF':
                     next_byte = stream.readBytes(addr, 1)
                     if next_byte != '\x00':
-                        raise FieldError("Unexpected byte sequence %r!"%(last_byte + next_byte))
+                        raise FieldError("Unexpected byte sequence {0!r}!".format((last_byte + next_byte)))
                     addr += 8 # hack hack hack
                     met_ff = True
                     self._description = "[skipped 8 bits after 0xFF] "
@@ -300,7 +300,7 @@ class JpegHuffmanImageUnit(FieldSet):
 
     def createFields(self):
         field = HuffmanCode(self, "dc_data", self.dc_tree)
-        field._description = "DC Code %i (Huffman Code %i)" % (field.realvalue, field.value) + field._description
+        field._description = "DC Code {0:d} (Huffman Code {1:d})".format(field.realvalue, field.value) + field._description
         yield field
         if field.realvalue != 0:
             extra = Bits(self, "dc_data_extra", field.realvalue)
@@ -308,7 +308,7 @@ class JpegHuffmanImageUnit(FieldSet):
                 corrected_value = extra.value + (-1 << field.realvalue) + 1
             else:
                 corrected_value = extra.value
-            extra._description = "Extra Bits: Corrected DC Value %i" % corrected_value
+            extra._description = "Extra Bits: Corrected DC Value {0:d}".format(corrected_value)
             yield extra
         data = []
         while len(data) < 63:
@@ -318,18 +318,18 @@ class JpegHuffmanImageUnit(FieldSet):
                 data += [0] * value_r
             value_s = field.realvalue & 0x0F
             if value_r == value_s == 0:
-                field._description = "AC Code Block Terminator (0, 0) (Huffman Code %i)" % field.value + field._description
+                field._description = "AC Code Block Terminator (0, 0) (Huffman Code {0:d})".format(field.value) + field._description
                 yield field
                 return
-            field._description = "AC Code %i, %i (Huffman Code %i)" % (value_r, value_s, field.value) + field._description
+            field._description = "AC Code {0:d}, {1:d} (Huffman Code {2:d})".format(value_r, value_s, field.value) + field._description
             yield field
             if value_s != 0:
-                extra = Bits(self, "ac_data_extra[%s" % field.name.split('[')[1], value_s)
+                extra = Bits(self, "ac_data_extra[{0!s}".format(field.name.split('[')[1]), value_s)
                 if extra.value < 2**(value_s - 1):
                     corrected_value = extra.value + (-1 << value_s) + 1
                 else:
                     corrected_value = extra.value
-                extra._description = "Extra Bits: Corrected AC Value %i" % corrected_value
+                extra._description = "Extra Bits: Corrected AC Value {0:d}".format(corrected_value)
                 data.append(corrected_value)
                 yield extra
             else:
@@ -397,12 +397,12 @@ class JpegImageData(FieldSet):
                     if last_byte == '\xFF':
                         next_byte = self.stream.readBytes(self.absolute_address + self.current_size, 1)
                         if next_byte != '\x00':
-                            raise FieldError("Unexpected byte sequence %r!"%(last_byte + next_byte))
+                            raise FieldError("Unexpected byte sequence {0!r}!".format((last_byte + next_byte)))
                         yield NullBytes(self, "stuffed_byte[]", 1)
                     break
                 for sos_comp, num_units in components:
                     for interleave_count in range(num_units):
-                        yield JpegHuffmanImageUnit(self, "block[%i]component[%i][]" % (mcu_number, sos_comp["component_id"].value),
+                        yield JpegHuffmanImageUnit(self, "block[{0:d}]component[{1:d}][]".format(mcu_number, sos_comp["component_id"].value),
                                               self.huffman_tables[0, sos_comp["dc_coding_table"].value],
                                               self.huffman_tables[1, sos_comp["ac_coding_table"].value])
                 mcu_number += 1
@@ -456,7 +456,7 @@ class JpegChunk(FieldSet):
         0xCF: u"Differential lossless, arithmetic coding",
     }
     for key, text in START_OF_FRAME.iteritems():
-        TAG_INFO[key] = ("start_frame", "Start of frame (%s)" % text.lower(), StartOfFrame)
+        TAG_INFO[key] = ("start_frame", "Start of frame ({0!s})".format(text.lower()), StartOfFrame)
 
     def __init__(self, parent, name, description=None):
         FieldSet.__init__(self, parent, name, description)
@@ -492,7 +492,7 @@ class JpegChunk(FieldSet):
                 yield RawBytes(self, "data", size, "Data")
 
     def createDescription(self):
-        return "Chunk: %s" % self["type"].display
+        return "Chunk: {0!s}".format(self["type"].display)
 
 class JpegFile(Parser):
     endian = BIG_ENDIAN
@@ -518,7 +518,7 @@ class JpegFile(Parser):
             for index, field in enumerate(self):
                 chunk_type = field["type"].value
                 if chunk_type not in JpegChunk.TAG_INFO:
-                    return "Unknown chunk type: 0x%02X (chunk #%s)" % (chunk_type, index)
+                    return "Unknown chunk type: 0x{0:02X} (chunk #{1!s})".format(chunk_type, index)
                 if index == 2:
                     # Only check 3 fields
                     break
@@ -572,7 +572,7 @@ class JpegFile(Parser):
         desc = "JPEG picture"
         if "start_frame/content" in self:
             header = self["start_frame/content"]
-            desc += ": %ux%u pixels" % (header["width"].value, header["height"].value)
+            desc += ": {0:d}x{1:d} pixels".format(header["width"].value, header["height"].value)
         return desc
 
     def createContentSize(self):
