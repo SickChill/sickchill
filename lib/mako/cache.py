@@ -149,7 +149,7 @@ class Cache(object):
 
         """
 
-        self.invalidate('render_%s' % name, __M_defname='render_%s' % name)
+        self.invalidate('render_{0!s}'.format(name), __M_defname='render_{0!s}'.format(name))
 
     def invalidate_closure(self, name):
         """Invalidate a nested ``<%def>`` within this template.

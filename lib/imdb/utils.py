@@ -151,7 +151,7 @@ def analyze_name(name, canonical=None):
             # XXX: for the birth and death dates case like " (1926-2004)"
             name = re_parentheses.sub('', name).strip()
     if not name:
-        raise IMDbParserError('invalid name: "%s"' % original_n)
+        raise IMDbParserError('invalid name: "{0!s}"'.format(original_n))
     if canonical is not None:
         if canonical:
             name = canonicalName(name)
@@ -179,7 +179,7 @@ def build_name(name_dict, canonical=None):
             name = normalizeName(name)
     imdbIndex = name_dict.get('imdbIndex')
     if imdbIndex:
-        name += ' (%s)' % imdbIndex
+        name += ' ({0!s})'.format(imdbIndex)
     return name
 
 
@@ -207,7 +207,7 @@ def canonicalTitle(title, lang=None, imdbIndex=None):
         _format = '%s%s, %s'
     ltitle = title.lower()
     if imdbIndex:
-        imdbIndex = ' (%s)' % imdbIndex
+        imdbIndex = ' ({0!s})'.format(imdbIndex)
     else:
         imdbIndex = ''
     spArticles = linguistics.spArticlesForLang(lang)
@@ -448,7 +448,7 @@ def analyze_title(title, canonical=None, canonicalSeries=None,
         if last_yi[1]:
             imdbIndex = last_yi[1][1:]
             year = year[:-len(imdbIndex)-1]
-        i = title.rfind('(%s)' % last_yi[0])
+        i = title.rfind('({0!s})'.format(last_yi[0]))
         if i != -1:
             title = title[:i-1].rstrip()
     # This is a tv (mini) series: strip the '"' at the begin and at the end.
@@ -458,7 +458,7 @@ def analyze_title(title, canonical=None, canonicalSeries=None,
             kind = u'tv series'
         title = title[1:-1].strip()
     if not title:
-        raise IMDbParserError('invalid title: "%s"' % original_t)
+        raise IMDbParserError('invalid title: "{0!s}"'.format(original_t))
     if canonical is not None:
         if canonical:
             title = canonicalTitle(title)
@@ -494,13 +494,13 @@ def _convertTime(title, fromPTDFtoWEB=1, _emptyString=u''):
             from_format = _ptdf_format
             to_format = _web_format
         else:
-            from_format = u'Episode dated %s' % _web_format
+            from_format = u'Episode dated {0!s}'.format(_web_format)
             to_format = _ptdf_format
         t = strptime(title, from_format)
         title = strftime(to_format, t)
         if fromPTDFtoWEB:
             if title[0] == '0': title = title[1:]
-            title = u'Episode dated %s' % title
+            title = u'Episode dated {0!s}'.format(title)
     except ValueError:
         pass
     if isinstance(_emptyString, str):
@@ -565,16 +565,16 @@ def build_title(title_dict, canonical=None, canonicalSeries=None,
             oad = title_dict.get('original air date', _emptyString)
             if len(oad) == 10 and oad[4] == '-' and oad[7] == '-' and \
                         episode_title.find(oad) == -1:
-                episode_title += ' (%s)' % oad
+                episode_title += ' ({0!s})'.format(oad)
             seas = title_dict.get('season')
             if seas is not None:
-                episode_title += ' (#%s' % seas
+                episode_title += ' (#{0!s}'.format(seas)
                 episode = title_dict.get('episode')
                 if episode is not None:
-                    episode_title += '.%s' % episode
+                    episode_title += '.{0!s}'.format(episode)
                 episode_title += ')'
-            episode_title = '{%s}' % episode_title
-        return _emptyString + '%s %s' % (_emptyString + pre_title,
+            episode_title = '{{{0!s}}}'.format(episode_title)
+        return _emptyString + '{0!s} {1!s}'.format(_emptyString + pre_title,
                             _emptyString + episode_title)
     title = title_dict.get('title', '')
     imdbIndex = title_dict.get('imdbIndex', '')
@@ -585,9 +585,9 @@ def build_title(title_dict, canonical=None, canonicalSeries=None,
         else:
             title = normalizeTitle(title, lang=lang)
     if pre_title:
-        title = '%s %s' % (pre_title, title)
+        title = '{0!s} {1!s}'.format(pre_title, title)
     if kind in (u'tv series', u'tv mini series'):
-        title = '"%s"' % title
+        title = '"{0!s}"'.format(title)
     if _doYear:
         year = title_dict.get('year') or '????'
         if isinstance(_emptyString, str):
@@ -595,12 +595,12 @@ def build_title(title_dict, canonical=None, canonicalSeries=None,
         imdbIndex = title_dict.get('imdbIndex')
         if not ptdf:
             if imdbIndex and (canonical is None or canonical):
-                title += ' (%s)' % imdbIndex
-            title += ' (%s)' % year
+                title += ' ({0!s})'.format(imdbIndex)
+            title += ' ({0!s})'.format(year)
         else:
-            title += ' (%s' % year
+            title += ' ({0!s}'.format(year)
             if imdbIndex and (canonical is None or canonical):
-                title += '/%s' % imdbIndex
+                title += '/{0!s}'.format(imdbIndex)
             title += ')'
     if appendKind and kind:
         if kind == 'tv movie':
@@ -648,7 +648,7 @@ def analyze_company_name(name, stripNotes=False):
                 country = name[idx:]
                 name = name[:idx].rstrip()
     if not name:
-        raise IMDbParserError('invalid name: "%s"' % o_name)
+        raise IMDbParserError('invalid name: "{0!s}"'.format(o_name))
     result = {'name': name}
     if country:
         result['country'] = country
@@ -664,7 +664,7 @@ def build_company_name(name_dict, _emptyString=u''):
         return _emptyString
     country = name_dict.get('country')
     if country is not None:
-        name += ' %s' % country
+        name += ' {0!s}'.format(country)
     return name
 
 
@@ -916,7 +916,7 @@ def _handleTextNotes(s):
     ssplit = s.split('::', 1)
     if len(ssplit) == 1:
         return s
-    return u'%s<notes>%s</notes>' % (ssplit[0], ssplit[1])
+    return u'{0!s}<notes>{1!s}</notes>'.format(ssplit[0], ssplit[1])
 
 
 def _normalizeValue(value, withRefs=False, modFunct=None, titlesRefs=None,
@@ -968,29 +968,28 @@ def _tag4TON(ton, addAccessSystem=False, _containerOnly=False):
                             u'<name>%s</name></%s>' % (crTag, crID,
                                                         crValue, crTag)
             else:
-                extras += u'<current-role><%s><name>%s</name></%s>' % \
-                               (crTag, crValue, crTag)
+                extras += u'<current-role><{0!s}><name>{1!s}</name></{2!s}>'.format(crTag, crValue, crTag)
             if cr.notes:
-                extras += u'<notes>%s</notes>' % _normalizeValue(cr.notes)
+                extras += u'<notes>{0!s}</notes>'.format(_normalizeValue(cr.notes))
             extras += u'</current-role>'
     theID = ton.getID()
     if theID is not None:
-        beginTag = u'<%s id="%s"' % (tag, theID)
+        beginTag = u'<{0!s} id="{1!s}"'.format(tag, theID)
         if addAccessSystem and ton.accessSystem:
-            beginTag += ' access-system="%s"' % ton.accessSystem
+            beginTag += ' access-system="{0!s}"'.format(ton.accessSystem)
         if not _containerOnly:
-            beginTag += u'><%s>%s</%s>' % (what, value, what)
+            beginTag += u'><{0!s}>{1!s}</{2!s}>'.format(what, value, what)
         else:
             beginTag += u'>'
     else:
         if not _containerOnly:
-            beginTag = u'<%s><%s>%s</%s>' % (tag, what, value, what)
+            beginTag = u'<{0!s}><{1!s}>{2!s}</{3!s}>'.format(tag, what, value, what)
         else:
-            beginTag = u'<%s>' % tag
+            beginTag = u'<{0!s}>'.format(tag)
     beginTag += extras
     if ton.notes:
-        beginTag += u'<notes>%s</notes>' % _normalizeValue(ton.notes)
-    return (beginTag, u'</%s>' % tag)
+        beginTag += u'<notes>{0!s}</notes>'.format(_normalizeValue(ton.notes))
+    return (beginTag, u'</{0!s}>'.format(tag))
 
 
 TAGS_TO_MODIFY = {
@@ -1048,9 +1047,9 @@ def _tagAttr(key, fullpath):
         # This will proably break the DTD/schema, but at least it will
         # produce a valid XML.
         tagName = 'item'
-        _utils_logger.error('invalid tag: %s [%s]' % (_escapedKey, fullpath))
+        _utils_logger.error('invalid tag: {0!s} [{1!s}]'.format(_escapedKey, fullpath))
         attrs['key'] = _escapedKey
-    return tagName, u' '.join([u'%s="%s"' % i for i in attrs.items()])
+    return tagName, u' '.join([u'{0!s}="{1!s}"'.format(*i) for i in attrs.items()])
 
 
 def _seq2xml(seq, _l=None, withRefs=False, modFunct=None,
@@ -1071,34 +1070,34 @@ def _seq2xml(seq, _l=None, withRefs=False, modFunct=None,
                 tagName = key.__class__.__name__.lower()
             else:
                 tagName, attrs = _tagAttr(key, fullpath)
-                openTag = u'<%s' % tagName
+                openTag = u'<{0!s}'.format(tagName)
                 if attrs:
-                    openTag += ' %s' % attrs
+                    openTag += ' {0!s}'.format(attrs)
                 if _topLevel and key2infoset and key in key2infoset:
-                    openTag += u' infoset="%s"' % key2infoset[key]
+                    openTag += u' infoset="{0!s}"'.format(key2infoset[key])
                 if isinstance(value, int):
                     openTag += ' type="int"'
                 elif isinstance(value, float):
                     openTag += ' type="float"'
                 openTag += u'>'
-                closeTag = u'</%s>' % tagName
+                closeTag = u'</{0!s}>'.format(tagName)
             _l.append(openTag)
             _seq2xml(value, _l, withRefs, modFunct, titlesRefs,
                     namesRefs, charactersRefs, _topLevel=False,
-                    fullpath='%s.%s' % (fullpath, tagName))
+                    fullpath='{0!s}.{1!s}'.format(fullpath, tagName))
             _l.append(closeTag)
     elif isinstance(seq, (list, tuple)):
         tagName, attrs = _tagAttr('item', fullpath)
-        beginTag = u'<%s' % tagName
+        beginTag = u'<{0!s}'.format(tagName)
         if attrs:
-            beginTag += u' %s' % attrs
+            beginTag += u' {0!s}'.format(attrs)
         #beginTag += u'>'
-        closeTag = u'</%s>' % tagName
+        closeTag = u'</{0!s}>'.format(tagName)
         for item in seq:
             if isinstance(item, _Container):
                 _seq2xml(item, _l, withRefs, modFunct, titlesRefs,
                          namesRefs, charactersRefs, _topLevel=False,
-                         fullpath='%s.%s' % (fullpath,
+                         fullpath='{0!s}.{1!s}'.format(fullpath,
                                     item.__class__.__name__.lower()))
             else:
                 openTag = beginTag
@@ -1110,7 +1109,7 @@ def _seq2xml(seq, _l=None, withRefs=False, modFunct=None,
                 _l.append(openTag)
                 _seq2xml(item, _l, withRefs, modFunct, titlesRefs,
                         namesRefs, charactersRefs, _topLevel=False,
-                        fullpath='%s.%s' % (fullpath, tagName))
+                        fullpath='{0!s}.{1!s}'.format(fullpath, tagName))
                 _l.append(closeTag)
     else:
         if isinstance(seq, _Container):
@@ -1392,7 +1391,7 @@ class _Container(object):
             if acs in ('mobile', 'httpThin'):
                 acs = 'http'
             # There must be some indication of the kind of the object, too.
-            s4h = '%s:%s[%s]' % (self.__class__.__name__, theID, acs)
+            s4h = '{0!s}:{1!s}[{2!s}]'.format(self.__class__.__name__, theID, acs)
         else:
             s4h = repr(self)
         return hash(s4h)

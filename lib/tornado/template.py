@@ -243,7 +243,7 @@ class Template(object):
             # from being applied to the generated code.
             self.compiled = compile(
                 escape.to_unicode(self.code),
-                "%s.generated.py" % self.name.replace('.', '_'),
+                "{0!s}.generated.py".format(self.name.replace('.', '_')),
                 "exec", dont_inherit=True)
         except Exception:
             formatted_code = _format_code(self.code).rstrip()
@@ -483,15 +483,15 @@ class _ApplyBlock(_Node):
         return (self.body,)
 
     def generate(self, writer):
-        method_name = "_tt_apply%d" % writer.apply_counter
+        method_name = "_tt_apply{0:d}".format(writer.apply_counter)
         writer.apply_counter += 1
-        writer.write_line("def %s():" % method_name, self.line)
+        writer.write_line("def {0!s}():".format(method_name), self.line)
         with writer.indent():
             writer.write_line("_tt_buffer = []", self.line)
             writer.write_line("_tt_append = _tt_buffer.append", self.line)
             self.body.generate(writer)
             writer.write_line("return _tt_utf8('').join(_tt_buffer)", self.line)
-        writer.write_line("_tt_append(_tt_utf8(%s(%s())))" % (
+        writer.write_line("_tt_append(_tt_utf8({0!s}({1!s}())))".format(
             self.method, method_name), self.line)
 
 
@@ -505,7 +505,7 @@ class _ControlBlock(_Node):
         return (self.body,)
 
     def generate(self, writer):
-        writer.write_line("%s:" % self.statement, self.line)
+        writer.write_line("{0!s}:".format(self.statement), self.line)
         with writer.indent():
             self.body.generate(writer)
             # Just in case the body was empty
@@ -520,7 +520,7 @@ class _IntermediateControlBlock(_Node):
     def generate(self, writer):
         # In case the previous block was empty
         writer.write_line("pass", self.line)
-        writer.write_line("%s:" % self.statement, self.line, writer.indent_size() - 1)
+        writer.write_line("{0!s}:".format(self.statement), self.line, writer.indent_size() - 1)
 
 
 class _Statement(_Node):
@@ -539,15 +539,15 @@ class _Expression(_Node):
         self.raw = raw
 
     def generate(self, writer):
-        writer.write_line("_tt_tmp = %s" % self.expression, self.line)
+        writer.write_line("_tt_tmp = {0!s}".format(self.expression), self.line)
         writer.write_line("if isinstance(_tt_tmp, _tt_string_types):"
                           " _tt_tmp = _tt_utf8(_tt_tmp)", self.line)
         writer.write_line("else: _tt_tmp = _tt_utf8(str(_tt_tmp))", self.line)
         if not self.raw and writer.current_template.autoescape is not None:
             # In python3 functions like xhtml_escape return unicode,
             # so we have to convert to utf8 again.
-            writer.write_line("_tt_tmp = _tt_utf8(%s(_tt_tmp))" %
-                              writer.current_template.autoescape, self.line)
+            writer.write_line("_tt_tmp = _tt_utf8({0!s}(_tt_tmp))".format(
+                              writer.current_template.autoescape), self.line)
         writer.write_line("_tt_append(_tt_tmp)", self.line)
 
 
@@ -573,7 +573,7 @@ class _Text(_Node):
             value = re.sub(r"(\s*\n\s*)", "\n", value)
 
         if value:
-            writer.write_line('_tt_append(%r)' % escape.utf8(value), self.line)
+            writer.write_line('_tt_append({0!r})'.format(escape.utf8(value)), self.line)
 
 
 class ParseError(Exception):
@@ -624,11 +624,11 @@ class _CodeWriter(object):
     def write_line(self, line, line_number, indent=None):
         if indent is None:
             indent = self._indent
-        line_comment = '  # %s:%d' % (self.current_template.name, line_number)
+        line_comment = '  # {0!s}:{1:d}'.format(self.current_template.name, line_number)
         if self.include_stack:
-            ancestors = ["%s:%d" % (tmpl.name, lineno)
+            ancestors = ["{0!s}:{1:d}".format(tmpl.name, lineno)
                          for (tmpl, lineno) in self.include_stack]
-            line_comment += ' (via %s)' % ', '.join(reversed(ancestors))
+            line_comment += ' (via {0!s})'.format(', '.join(reversed(ancestors)))
         print("    " * indent + line + line_comment, file=self.file)
 
 
@@ -690,7 +690,7 @@ class _TemplateReader(object):
 
 def _format_code(code):
     lines = code.splitlines()
-    format = "%%%dd  %%s\n" % len(repr(len(lines) + 1))
+    format = "%{0:d}d  %s\n".format(len(repr(len(lines) + 1)))
     return "".join([format % (i + 1, line) for (i, line) in enumerate(lines)])
 
 
@@ -704,8 +704,8 @@ def _parse(reader, template, in_block=None, in_loop=None):
             if curly == -1 or curly + 1 == reader.remaining():
                 # EOF
                 if in_block:
-                    raise ParseError("Missing {%% end %%} block for %s" %
-                                     in_block)
+                    raise ParseError("Missing {{% end %}} block for {0!s}".format(
+                                     in_block))
                 body.chunks.append(_Text(reader.consume(), reader.line))
                 return body
             # If the first curly brace is not the start of a special token,
@@ -743,7 +743,7 @@ def _parse(reader, template, in_block=None, in_loop=None):
         if start_brace == "{#":
             end = reader.find("#}")
             if end == -1:
-                raise ParseError("Missing end expression #} on line %d" % line)
+                raise ParseError("Missing end expression #}} on line {0:d}".format(line))
             contents = reader.consume(end).strip()
             reader.consume(2)
             continue
@@ -752,11 +752,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
         if start_brace == "{{":
             end = reader.find("}}")
             if end == -1:
-                raise ParseError("Missing end expression }} on line %d" % line)
+                raise ParseError("Missing end expression }}}} on line {0:d}".format(line))
             contents = reader.consume(end).strip()
             reader.consume(2)
             if not contents:
-                raise ParseError("Empty expression on line %d" % line)
+                raise ParseError("Empty expression on line {0:d}".format(line))
             body.chunks.append(_Expression(contents, line))
             continue
 
@@ -764,11 +764,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
         assert start_brace == "{%", start_brace
         end = reader.find("%}")
         if end == -1:
-            raise ParseError("Missing end block %%} on line %d" % line)
+            raise ParseError("Missing end block %}} on line {0:d}".format(line))
         contents = reader.consume(end).strip()
         reader.consume(2)
         if not contents:
-            raise ParseError("Empty block tag ({%% %%}) on line %d" % line)
+            raise ParseError("Empty block tag ({{% %}}) on line {0:d}".format(line))
 
         operator, space, suffix = contents.partition(" ")
         suffix = suffix.strip()
@@ -783,17 +783,16 @@ def _parse(reader, template, in_block=None, in_loop=None):
         allowed_parents = intermediate_blocks.get(operator)
         if allowed_parents is not None:
             if not in_block:
-                raise ParseError("%s outside %s block" %
-                                 (operator, allowed_parents))
+                raise ParseError("{0!s} outside {1!s} block".format(operator, allowed_parents))
             if in_block not in allowed_parents:
-                raise ParseError("%s block cannot be attached to %s block" % (operator, in_block))
+                raise ParseError("{0!s} block cannot be attached to {1!s} block".format(operator, in_block))
             body.chunks.append(_IntermediateControlBlock(contents, line))
             continue
 
         # End tag
         elif operator == "end":
             if not in_block:
-                raise ParseError("Extra {%% end %%} block on line %d" % line)
+                raise ParseError("Extra {{% end %}} block on line {0:d}".format(line))
             return body
 
         elif operator in ("extends", "include", "set", "import", "from",
@@ -803,20 +802,20 @@ def _parse(reader, template, in_block=None, in_loop=None):
             if operator == "extends":
                 suffix = suffix.strip('"').strip("'")
                 if not suffix:
-                    raise ParseError("extends missing file path on line %d" % line)
+                    raise ParseError("extends missing file path on line {0:d}".format(line))
                 block = _ExtendsBlock(suffix)
             elif operator in ("import", "from"):
                 if not suffix:
-                    raise ParseError("import missing statement on line %d" % line)
+                    raise ParseError("import missing statement on line {0:d}".format(line))
                 block = _Statement(contents, line)
             elif operator == "include":
                 suffix = suffix.strip('"').strip("'")
                 if not suffix:
-                    raise ParseError("include missing file path on line %d" % line)
+                    raise ParseError("include missing file path on line {0:d}".format(line))
                 block = _IncludeBlock(suffix, reader, line)
             elif operator == "set":
                 if not suffix:
-                    raise ParseError("set missing statement on line %d" % line)
+                    raise ParseError("set missing statement on line {0:d}".format(line))
                 block = _Statement(suffix, line)
             elif operator == "autoescape":
                 fn = suffix.strip()
@@ -844,11 +843,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
 
             if operator == "apply":
                 if not suffix:
-                    raise ParseError("apply missing method name on line %d" % line)
+                    raise ParseError("apply missing method name on line {0:d}".format(line))
                 block = _ApplyBlock(suffix, line, block_body)
             elif operator == "block":
                 if not suffix:
-                    raise ParseError("block missing name on line %d" % line)
+                    raise ParseError("block missing name on line {0:d}".format(line))
                 block = _NamedBlock(suffix, block_body, template, line)
             else:
                 block = _ControlBlock(contents, line, block_body)
@@ -857,9 +856,9 @@ def _parse(reader, template, in_block=None, in_loop=None):
 
         elif operator in ("break", "continue"):
             if not in_loop:
-                raise ParseError("%s outside %s block" % (operator, set(["for", "while"])))
+                raise ParseError("{0!s} outside {1!s} block".format(operator, set(["for", "while"])))
             body.chunks.append(_Statement(contents, line))
             continue
 
         else:
-            raise ParseError("unknown operator: %r" % operator)
+            raise ParseError("unknown operator: {0!r}".format(operator))

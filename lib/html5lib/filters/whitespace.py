@@ -6,7 +6,7 @@ from . import _base
 from ..constants import rcdataElements, spaceCharacters
 spaceCharacters = "".join(spaceCharacters)
 
-SPACES_REGEX = re.compile("[%s]+" % spaceCharacters)
+SPACES_REGEX = re.compile("[{0!s}]+".format(spaceCharacters))
 
 
 class Filter(_base.Filter):

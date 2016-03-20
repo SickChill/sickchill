@@ -34,7 +34,7 @@ class Filter(_base.Filter):
                             has_http_equiv_content_type = True
                     else:
                         if has_http_equiv_content_type and (None, "content") in token["data"]:
-                            token["data"][(None, "content")] = 'text/html; charset=%s' % self.encoding
+                            token["data"][(None, "content")] = 'text/html; charset={0!s}'.format(self.encoding)
                             meta_found = True
 
                 elif token["name"].lower() == "head" and not meta_found:

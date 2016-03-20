@@ -121,14 +121,14 @@ class GUID(FieldSet):
         c = self.stream.readBits (addr + 48, 16, self.endian)
         d = self.stream.readBytes(addr + 64, 2)
         e = self.stream.readBytes(addr + 80, 6)
-        return "%08X-%04X-%04X-%s-%s" % (a, b, c, str2hex(d), str2hex(e))
+        return "{0:08X}-{1:04X}-{2:04X}-{3!s}-{4!s}".format(a, b, c, str2hex(d), str2hex(e))
 
     def createDisplay(self):
         value = self.value
         if value == self.NULL:
             name = "Null GUID: "
         else:
-            name = "GUID v%u (%s): " % (self.version, self["version"].display)
+            name = "GUID v{0:d} ({1!s}): ".format(self.version, self["version"].display)
         return name + value
 
     def createRawDisplay(self):
@@ -169,6 +169,5 @@ class BitmapInfoHeader(FieldSet):
         yield UInt32(self, "color_important", "Number of important colors")
 
     def createDescription(self):
-        return "Bitmap info header: %ux%u pixels, %u bits/pixel" % \
-            (self["width"].value, self["height"].value, self["bpp"].value)
+        return "Bitmap info header: {0:d}x{1:d} pixels, {2:d} bits/pixel".format(self["width"].value, self["height"].value, self["bpp"].value)
 

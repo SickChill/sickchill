@@ -273,7 +273,7 @@ class HTTPHeaderDict(MutableMapping):
     iget = getlist
 
     def __repr__(self):
-        return "%s(%s)" % (type(self).__name__, dict(self.itermerged()))
+        return "{0!s}({1!s})".format(type(self).__name__, dict(self.itermerged()))
 
     def _copy_from(self, other):
         for key in other:

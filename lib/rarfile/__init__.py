@@ -614,7 +614,7 @@ class RarFile(object):
         if inf.needs_password():
             psw = psw or self._password
             if psw is None:
-                raise PasswordRequired("File %s requires password" % inf.filename)
+                raise PasswordRequired("File {0!s} requires password".format(inf.filename))
         else:
             psw = None
 
@@ -1911,7 +1911,7 @@ def custom_popen(cmd):
     except OSError:
         ex = sys.exc_info()[1]
         if ex.errno == errno.ENOENT:
-            raise RarCannotExec("Unrar not installed? (rarfile.UNRAR_TOOL=%r)" % UNRAR_TOOL)
+            raise RarCannotExec("Unrar not installed? (rarfile.UNRAR_TOOL={0!r})".format(UNRAR_TOOL))
         raise
     return p
 
@@ -1957,9 +1957,9 @@ def check_returncode(p, out):
 
     # format message
     if out:
-        msg = "%s [%d]: %s" % (exc.__doc__, p.returncode, out)
+        msg = "{0!s} [{1:d}]: {2!s}".format(exc.__doc__, p.returncode, out)
     else:
-        msg = "%s [%d]" % (exc.__doc__, p.returncode)
+        msg = "{0!s} [{1:d}]".format(exc.__doc__, p.returncode)
 
     raise exc(msg)
 

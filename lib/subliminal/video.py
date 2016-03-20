@@ -107,7 +107,7 @@ class Video(object):
         return cls.fromguess(name, guessit(name))
 
     def __repr__(self):
-        return '<%s [%r]>' % (self.__class__.__name__, self.name)
+        return '<{0!s} [{1!r}]>'.format(self.__class__.__name__, self.name)
 
     def __hash__(self):
         return hash(self.name)
@@ -176,9 +176,9 @@ class Episode(Video):
 
     def __repr__(self):
         if self.year is None:
-            return '<%s [%r, %dx%d]>' % (self.__class__.__name__, self.series, self.season, self.episode)
+            return '<{0!s} [{1!r}, {2:d}x{3:d}]>'.format(self.__class__.__name__, self.series, self.season, self.episode)
 
-        return '<%s [%r, %d, %dx%d]>' % (self.__class__.__name__, self.series, self.year, self.season, self.episode)
+        return '<{0!s} [{1!r}, {2:d}, {3:d}x{4:d}]>'.format(self.__class__.__name__, self.series, self.year, self.season, self.episode)
 
 
 class Movie(Video):
@@ -216,6 +216,6 @@ class Movie(Video):
 
     def __repr__(self):
         if self.year is None:
-            return '<%s [%r]>' % (self.__class__.__name__, self.title)
+            return '<{0!s} [{1!r}]>'.format(self.__class__.__name__, self.title)
 
-        return '<%s [%r, %d]>' % (self.__class__.__name__, self.title, self.year)
+        return '<{0!s} [{1!r}, {2:d}]>'.format(self.__class__.__name__, self.title, self.year)

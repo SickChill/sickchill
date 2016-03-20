@@ -31,7 +31,7 @@ def hash_opensubtitles(video_path):
             (l_value,) = struct.unpack(b'<q', filebuffer)
             filehash += l_value
             filehash &= 0xFFFFFFFFFFFFFFFF
-    returnedhash = '%016x' % filehash
+    returnedhash = '{0:016x}'.format(filehash)
 
     return returnedhash
 

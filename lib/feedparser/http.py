@@ -116,7 +116,7 @@ def _build_urllib2_request(url, agent, accept_header, etag, modified, referrer, 
         # in English.
         short_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        request.add_header('If-Modified-Since', '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5]))
+        request.add_header('If-Modified-Since', '{0!s}, {1:02d} {2!s} {3:04d} {4:02d}:{5:02d}:{6:02d} GMT'.format(short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5]))
     if referrer:
         request.add_header('Referer', referrer)
     if gzip and zlib:
@@ -128,7 +128,7 @@ def _build_urllib2_request(url, agent, accept_header, etag, modified, referrer, 
     else:
         request.add_header('Accept-encoding', '')
     if auth:
-        request.add_header('Authorization', 'Basic %s' % auth)
+        request.add_header('Authorization', 'Basic {0!s}'.format(auth))
     if accept_header:
         request.add_header('Accept', accept_header)
     # use this for whatever -- cookies, special headers, etc
@@ -161,7 +161,7 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
         if realhost:
             user_passwd, realhost = urllib.parse.splituser(realhost)
             if user_passwd:
-                url = '%s://%s%s' % (urltype, realhost, rest)
+                url = '{0!s}://{1!s}{2!s}'.format(urltype, realhost, rest)
                 auth = base64.standard_b64encode(user_passwd).strip()
 
     # iri support

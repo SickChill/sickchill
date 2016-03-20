@@ -154,8 +154,7 @@ def _assert_no_stray_pool_connections():
         # we'll allow a couple of these at most.
         _STRAY_CONNECTION_FAILURES += 1
 
-        print("Encountered a stray connection in test cleanup: %s"
-                        % str(pool._refs))
+        print("Encountered a stray connection in test cleanup: {0!s}".format(str(pool._refs)))
         # then do a real GC sweep.   We shouldn't even be here
         # so a single sweep should really be doing it, otherwise
         # there's probably a real unreachable cycle somewhere.
@@ -172,32 +171,32 @@ def _assert_no_stray_pool_connections():
         # so the error doesn't at least keep happening.
         pool._refs.clear()
         _STRAY_CONNECTION_FAILURES = 0
-        assert False, "Stray conections in cleanup: %s" % err
+        assert False, "Stray conections in cleanup: {0!s}".format(err)
 
 
 def eq_(a, b, msg=None):
     """Assert a == b, with repr messaging on failure."""
-    assert a == b, msg or "%r != %r" % (a, b)
+    assert a == b, msg or "{0!r} != {1!r}".format(a, b)
 
 
 def ne_(a, b, msg=None):
     """Assert a != b, with repr messaging on failure."""
-    assert a != b, msg or "%r == %r" % (a, b)
+    assert a != b, msg or "{0!r} == {1!r}".format(a, b)
 
 
 def is_(a, b, msg=None):
     """Assert a is b, with repr messaging on failure."""
-    assert a is b, msg or "%r is not %r" % (a, b)
+    assert a is b, msg or "{0!r} is not {1!r}".format(a, b)
 
 
 def is_not_(a, b, msg=None):
     """Assert a is not b, with repr messaging on failure."""
-    assert a is not b, msg or "%r is %r" % (a, b)
+    assert a is not b, msg or "{0!r} is {1!r}".format(a, b)
 
 
 def startswith_(a, fragment, msg=None):
     """Assert a.startswith(fragment), with repr messaging on failure."""
-    assert a.startswith(fragment), msg or "%r does not start with %r" % (
+    assert a.startswith(fragment), msg or "{0!r} does not start with {1!r}".format(
         a, fragment)
 
 
@@ -217,7 +216,7 @@ def assert_raises_message(except_cls, msg, callable_, *args, **kwargs):
         callable_(*args, **kwargs)
         assert False, "Callable did not raise an exception"
     except except_cls as e:
-        assert re.search(msg, util.text_type(e), re.UNICODE), "%r !~ %s" % (msg, e)
+        assert re.search(msg, util.text_type(e), re.UNICODE), "{0!r} !~ {1!s}".format(msg, e)
         print(util.text_type(e).encode('utf-8'))
 
 
@@ -274,7 +273,7 @@ class AssertsCompiledSQL(object):
 
         cc = re.sub(r'[\n\t]', '', util.text_type(c))
 
-        eq_(cc, result, "%r != %r on dialect %r" % (cc, result, dialect))
+        eq_(cc, result, "{0!r} != {1!r} on dialect {2!r}".format(cc, result, dialect))
 
         if checkparams is not None:
             eq_(c.construct_params(params), checkparams)
@@ -317,8 +316,7 @@ class ComparesTables(object):
 
     def assert_types_base(self, c1, c2):
         assert c1.type._compare_type_affinity(c2.type),\
-                "On column %r, type '%s' doesn't correspond to type '%s'" % \
-                (c1.name, c1.type, c2.type)
+                "On column {0!r}, type '{1!s}' doesn't correspond to type '{2!s}'".format(c1.name, c1.type, c2.type)
 
 
 class AssertsExecutionResults(object):
@@ -345,7 +343,7 @@ class AssertsExecutionResults(object):
                     self.assert_row(value[0], getattr(rowobj, key), value[1])
             else:
                 self.assert_(getattr(rowobj, key) == value,
-                             "attribute %s value %s does not match %s" % (
+                             "attribute {0!s} value {1!s} does not match {2!s}".format(
                              key, getattr(rowobj, key), value))
 
     def assert_unordered_result(self, result, cls, *expected):
@@ -363,11 +361,11 @@ class AssertsExecutionResults(object):
         expected = set([immutabledict(e) for e in expected])
 
         for wrong in util.itertools_filterfalse(lambda o: type(o) == cls, found):
-            fail('Unexpected type "%s", expected "%s"' % (
+            fail('Unexpected type "{0!s}", expected "{1!s}"'.format(
                 type(wrong).__name__, cls.__name__))
 
         if len(found) != len(expected):
-            fail('Unexpected object count "%s", expected "%s"' % (
+            fail('Unexpected object count "{0!s}", expected "{1!s}"'.format(
                 len(found), len(expected)))
 
         NOVALUE = object()
@@ -392,7 +390,7 @@ class AssertsExecutionResults(object):
                     break
             else:
                 fail(
-                    "Expected %s instance with attributes %s not found." % (
+                    "Expected {0!s} instance with attributes {1!s} not found.".format(
                     cls.__name__, repr(expected_item)))
         return True
 

@@ -75,7 +75,7 @@ def trash_move(src, dst, topdir=None):
     destname = filename
     while op.exists(op.join(filespath, destname)) or op.exists(op.join(infopath, destname + INFO_SUFFIX)):
         counter += 1
-        destname = '%s %s%s' % (base_name, counter, ext)
+        destname = '{0!s} {1!s}{2!s}'.format(base_name, counter, ext)
     
     check_create(filespath)
     check_create(infopath)
@@ -137,11 +137,11 @@ def send2trash(path):
         path = str(path)
 
     if not op.exists(path):
-        raise OSError("File not found: %s" % path)
+        raise OSError("File not found: {0!s}".format(path))
     # ...should check whether the user has the necessary permissions to delete
     # it, before starting the trashing operation itself. [2]
     if not os.access(path, os.W_OK):
-        raise OSError("Permission denied: %s" % path)
+        raise OSError("Permission denied: {0!s}".format(path))
     # if the file to be trashed is on the same device as HOMETRASH we
     # want to move it there.
     path_dev = get_dev(path)
@@ -157,6 +157,6 @@ def send2trash(path):
         topdir = find_mount_point(path)
         trash_dev = get_dev(topdir)
         if trash_dev != path_dev:
-            raise OSError("Couldn't find mount point for %s" % path)
+            raise OSError("Couldn't find mount point for {0!s}".format(path))
         dest_trash = find_ext_volume_trash(topdir)
     trash_move(path, dest_trash, topdir)

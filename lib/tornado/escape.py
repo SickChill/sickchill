@@ -200,7 +200,7 @@ def utf8(value):
         return value
     if not isinstance(value, unicode_type):
         raise TypeError(
-            "Expected bytes, unicode, or None; got %r" % type(value)
+            "Expected bytes, unicode, or None; got {0!r}".format(type(value))
         )
     return value.encode("utf-8")
 
@@ -217,7 +217,7 @@ def to_unicode(value):
         return value
     if not isinstance(value, bytes):
         raise TypeError(
-            "Expected bytes, unicode, or None; got %r" % type(value)
+            "Expected bytes, unicode, or None; got {0!r}".format(type(value))
         )
     return value.decode("utf-8")
 
@@ -248,7 +248,7 @@ def to_basestring(value):
         return value
     if not isinstance(value, bytes):
         raise TypeError(
-            "Expected bytes, unicode, or None; got %r" % type(value)
+            "Expected bytes, unicode, or None; got {0!r}".format(type(value))
         )
     return value.decode("utf-8")
 
@@ -364,7 +364,7 @@ def linkify(text, shorten=False, extra_params="",
                 else:
                     # full url is visible on mouse-over (for those who don't
                     # have a status bar, such as Safari by default)
-                    params += ' title="%s"' % href
+                    params += ' title="{0!s}"'.format(href)
 
         return u('<a href="%s"%s>%s</a>') % (href, params, url)
 
@@ -383,11 +383,11 @@ def _convert_entity(m):
             else:
                 return unichr(int(m.group(2)))
         except ValueError:
-            return "&#%s;" % m.group(2)
+            return "&#{0!s};".format(m.group(2))
     try:
         return _HTML_UNICODE_MAP[m.group(2)]
     except KeyError:
-        return "&%s;" % m.group(2)
+        return "&{0!s};".format(m.group(2))
 
 
 def _build_unicode_map():

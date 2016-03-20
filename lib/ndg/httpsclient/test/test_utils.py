@@ -36,7 +36,7 @@ class TestUtilsModule(unittest.TestCase):
         config = Configuration(SSL.Context(SSL.SSLv3_METHOD), True)
         res = open_url(Constants.TEST_URI, config)
         self.assertEqual(res[0], 200, 
-                         'open_url for %r failed' % Constants.TEST_URI)
+                         'open_url for {0!r} failed'.format(Constants.TEST_URI))
         
     def test04__should_use_proxy(self):
         if 'no_proxy' in os.environ:

@@ -66,7 +66,7 @@ class ProcessTest(unittest.TestCase):
             sock, port = bind_unused_port()
 
             def get_url(path):
-                return "http://127.0.0.1:%d%s" % (port, path)
+                return "http://127.0.0.1:{0:d}{1!s}".format(port, path)
             # ensure that none of these processes live too long
             signal.alarm(5)  # master process
             try:

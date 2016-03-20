@@ -30,7 +30,7 @@ class Asn1ItemBase(Asn1Item):
             self._subtypeSpec(value, idx)
         except error.PyAsn1Error:
             c, i, t = sys.exc_info()
-            raise c('%s at %s' % (i, self.__class__.__name__))
+            raise c('{0!s} at {1!s}'.format(i, self.__class__.__name__))
         
     def getSubtypeSpec(self): return self._subtypeSpec
     
@@ -49,7 +49,7 @@ class Asn1ItemBase(Asn1Item):
 
 class __NoValue:
     def __getattr__(self, attr):
-        raise error.PyAsn1Error('No value for %s()' % attr)
+        raise error.PyAsn1Error('No value for {0!s}()'.format(attr))
     def __getitem__(self, i):
         raise error.PyAsn1Error('No value')
     
@@ -75,7 +75,7 @@ class AbstractSimpleAsn1Item(Asn1ItemBase):
         if self._value is noValue:
             return self.__class__.__name__ + '()'
         else:
-            return self.__class__.__name__ + '(%s)' % (self.prettyOut(self._value),)
+            return self.__class__.__name__ + '({0!s})'.format(self.prettyOut(self._value))
     def __str__(self): return str(self._value)
     def __eq__(self, other):
         return self is other and True or self._value == other
@@ -170,7 +170,7 @@ class AbstractConstructedAsn1Item(Asn1ItemBase):
         for idx in range(len(self._componentValues)):
             if self._componentValues[idx] is None:
                 continue
-            r = r + '.setComponentByPosition(%s, %r)' % (
+            r = r + '.setComponentByPosition({0!s}, {1!r})'.format(
                 idx, self._componentValues[idx]
                 )
         return r

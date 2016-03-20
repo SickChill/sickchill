@@ -28,8 +28,8 @@ def _make_ext(name, docstring):
 
     inner.__doc__ = docstring
     m1 = mock.Mock(spec=pkg_resources.EntryPoint)
-    m1.module_name = '%s_module' % name
-    s = mock.Mock(return_value='ENTRY_POINT(%s)' % name)
+    m1.module_name = '{0!s}_module'.format(name)
+    s = mock.Mock(return_value='ENTRY_POINT({0!s})'.format(name))
     m1.__str__ = s
     return extension.Extension(name, m1, inner, None)
 

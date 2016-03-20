@@ -131,7 +131,7 @@ def readObjectID(self, content_size):
 
 def readBoolean(self, content_size):
     if content_size != 1:
-        raise ParserError("Overlong boolean: got %s bytes, expected 1 byte"%content_size)
+        raise ParserError("Overlong boolean: got {0!s} bytes, expected 1 byte".format(content_size))
     yield textHandler(UInt8(self, "value"), lambda field:str(bool(field.value)))
 
 def readInteger(self, content_size):
@@ -142,7 +142,7 @@ def readInteger(self, content_size):
 
 def formatFirstObjectID(field):
     value = field.value
-    return "%u.%u" % (value // 40, value % 40)
+    return "{0:d}.{1:d}".format(value // 40, value % 40)
 
 def formatValue(fieldset):
     return fieldset["value"].display
@@ -223,7 +223,7 @@ class Object(FieldSet):
             if key in self.TYPE_INFO:
                 self._name, self._handler, self._description, create_desc = self.TYPE_INFO[key]
                 if create_desc:
-                    self.createDescription = lambda: "%s: %s" % (self.TYPE_INFO[key][2], create_desc(self))
+                    self.createDescription = lambda: "{0!s}: {1!s}".format(self.TYPE_INFO[key][2], create_desc(self))
                     self._description = None
             elif key == 31:
                 raise ParserError("ASN.1 Object: tag bigger than 30 are not supported")
@@ -233,12 +233,12 @@ class Object(FieldSet):
             # constructed: treat as sequence
             self._name = 'seq[]'
             self._handler = readSequence
-            self._description = 'constructed object type %i' % key
+            self._description = 'constructed object type {0:d}'.format(key)
         else:
             # primitive, context/private
             self._name = 'raw[]'
             self._handler = readASCIIString
-            self._description = '%s object type %i' % (self['class'].display, key)
+            self._description = '{0!s} object type {1:d}'.format(self['class'].display, key)
         field = self["size"]
         self._size = field.address + field.size + field.value*8
 

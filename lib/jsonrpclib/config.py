@@ -26,8 +26,8 @@ class Config(object):
     # The list of classes to use for jsonclass translation.
     version = 2.0
     # Version of the JSON-RPC spec to support
-    user_agent = 'jsonrpclib/0.1 (Python %s)' % \
-        '.'.join([str(ver) for ver in sys.version_info[0:3]])
+    user_agent = 'jsonrpclib/0.1 (Python {0!s})'.format( \
+        '.'.join([str(ver) for ver in sys.version_info[0:3]]))
     # User agent to use for calls.
     _instance = None
     

@@ -108,7 +108,7 @@ class PropertyIndex(FieldSet):
         yield UInt32(self, "offset")
 
     def createDescription(self):
-        return "Property: %s" % self["id"].display
+        return "Property: {0!s}".format(self["id"].display)
 
 class Bool(Int8):
     def createValue(self):
@@ -268,8 +268,7 @@ class PropertyContent(FieldSet):
         except LookupError:
             handler = None
         if not handler:
-            self.warning("OLE2: Unable to parse property of type %s" \
-                % self["type"].display)
+            self.warning("OLE2: Unable to parse property of type {0!s}".format(self["type"].display))
             # raise ParserError(
         elif self["is_vector"].value:
             yield UInt32(self, "count")
@@ -292,7 +291,7 @@ class SummarySection(SeekableFieldSet):
         for index in xrange(self["property_count"].value):
             yield PropertyIndex(self, "property_index[]")
         for index in xrange(self["property_count"].value):
-            findex = self["property_index[%u]" % index]
+            findex = self["property_index[{0:d}]".format(index)]
             self.seekByte(findex["offset"].value)
             field = PropertyContent(self, "property[]", findex["id"].display)
             yield field
@@ -302,7 +301,7 @@ class SummarySection(SeekableFieldSet):
                 if codepage in CODEPAGE_CHARSET:
                     self.osconfig.charset = CODEPAGE_CHARSET[codepage]
                 else:
-                    self.warning("Unknown codepage: %r" % codepage)
+                    self.warning("Unknown codepage: {0!r}".format(codepage))
 
 class SummaryIndex(FieldSet):
     static_size = 20*8
@@ -327,7 +326,7 @@ class Summary(OLE2FragmentParser):
         yield GUID(self, "format_id")
         yield UInt32(self, "section_count")
         if MAX_SECTION_COUNT < self["section_count"].value:
-            raise ParserError("OLE2: Too much sections (%s)" % self["section_count"].value)
+            raise ParserError("OLE2: Too much sections ({0!s})".format(self["section_count"].value))
 
         section_indexes = []
         for index in xrange(self["section_count"].value):

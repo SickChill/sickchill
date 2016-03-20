@@ -130,8 +130,7 @@ class GenericString(Bytes):
         elif charset in self.UTF_CHARSET:
             self._character_size = None
         else:
-            raise FieldError("Invalid charset for %s: \"%s\"" %
-                (self.path, charset))
+            raise FieldError("Invalid charset for {0!s}: \"{1!s}\"".format(self.path, charset))
         self._charset = charset
 
         # It is a fixed string?
@@ -139,8 +138,7 @@ class GenericString(Bytes):
             assert self._format == "fixed"
             # Arbitrary limits, just to catch some bugs...
             if not (1 <= nbytes <= 0xffff):
-                raise FieldError("Invalid string size for %s: %s" %
-                    (self.path, nbytes))
+                raise FieldError("Invalid string size for {0!s}: {1!s}".format(self.path, nbytes))
             self._content_size = nbytes   # content length in bytes
             self._size = nbytes * 8
             self._content_offset = 0
@@ -156,8 +154,7 @@ class GenericString(Bytes):
                 length = self._parent.stream.searchBytesLength(
                     suffix, False, self.absolute_address)
                 if length is None:
-                    raise FieldError("Unable to find end of string %s (format %s)!"
-                        % (self.path, self._format))
+                    raise FieldError("Unable to find end of string {0!s} (format {1!s})!".format(self.path, self._format))
                 if 1 < len(suffix):
                     # Fix length for little endian bug with UTF-xx charset:
                     #   u"abc" -> "a\0b\0c\0\0\0" (UTF-16-LE)
@@ -194,8 +191,7 @@ class GenericString(Bytes):
                 # Choose right charset using the BOM
                 bom_endian = self.UTF_BOM[bomsize]
                 if bom not in bom_endian:
-                    raise FieldError("String %s has invalid BOM (%s)!"
-                        % (self.path, repr(bom)))
+                    raise FieldError("String {0!s} has invalid BOM ({1!s})!".format(self.path, repr(bom)))
                 self._charset = bom_endian[bom]
                 self._content_size -= nbytes
                 self._content_offset += nbytes
@@ -243,13 +239,13 @@ class GenericString(Bytes):
         and self._charset == "UTF-16-LE":
             try:
                 text = unicode(text+"\0", self._charset, "strict")
-                self.warning("Fix truncated %s string: add missing nul byte" % self._charset)
+                self.warning("Fix truncated {0!s} string: add missing nul byte".format(self._charset))
                 return text
             except UnicodeDecodeError, err:
                 pass
 
         # On error, use FALLBACK_CHARSET
-        self.warning(u"Unable to convert string to Unicode: %s" % err)
+        self.warning(u"Unable to convert string to Unicode: {0!s}".format(err))
         return unicode(text, FALLBACK_CHARSET, "strict")
 
     def _guessCharset(self):
@@ -305,12 +301,12 @@ class GenericString(Bytes):
             value = self.value
         if config.max_string_length < len(value):
             # Truncate string if needed
-            value = "%s(...)" % value[:config.max_string_length]
+            value = "{0!s}(...)".format(value[:config.max_string_length])
         if not self._charset or not human:
             return makePrintable(value, "ASCII", quote='"', to_unicode=True)
         else:
             if value:
-                return '"%s"' % value.replace('"', '\\"')
+                return '"{0!s}"'.format(value.replace('"', '\\"'))
             else:
                 return _("(empty)")
 
@@ -345,10 +341,10 @@ class GenericString(Bytes):
         info = self.charset
         if self._strip:
             if isinstance(self._strip, (str, unicode)):
-                info += ",strip=%s" % makePrintable(self._strip, "ASCII", quote="'")
+                info += ",strip={0!s}".format(makePrintable(self._strip, "ASCII", quote="'"))
             else:
                 info += ",strip=True"
-        return "%s<%s>" % (Bytes.getFieldType(self), info)
+        return "{0!s}<{1!s}>".format(Bytes.getFieldType(self), info)
 
 def stringFactory(name, format, doc):
     class NewString(GenericString):

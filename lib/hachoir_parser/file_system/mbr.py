@@ -155,7 +155,7 @@ class PartitionHeader(FieldSet):
         if self.isUsed():
             system = self["system"].display
             size = self["size"].value * BLOCK_SIZE
-            desc += "%s, %s" % (system, humanFilesize(size))
+            desc += "{0!s}, {1!s}".format(system, humanFilesize(size))
         else:
             desc += "(unused)"
         return desc
@@ -194,7 +194,7 @@ class Partition(FieldSet):
                 yield padding
 
             # Content of the partition
-            name = "partition[%u]" % index
+            name = "partition[{0:d}]".format(index)
             size = BLOCK_SIZE * header["size"].value
             desc = header["system"].display
             if header["system"].value == 5:

@@ -32,10 +32,10 @@ class LegendasTvConverter(LanguageReverseConverter):
         if (alpha3,) in self.to_legendastv:
             return self.to_legendastv[(alpha3,)]
 
-        raise ConfigurationError('Unsupported language code for legendastv: %s, %s, %s' % (alpha3, country, script))
+        raise ConfigurationError('Unsupported language code for legendastv: {0!s}, {1!s}, {2!s}'.format(alpha3, country, script))
 
     def reverse(self, legendastv):
         if legendastv in self.from_legendastv:
             return self.from_legendastv[legendastv]
 
-        raise ConfigurationError('Unsupported language number for legendastv: %s' % legendastv)
+        raise ConfigurationError('Unsupported language number for legendastv: {0!s}'.format(legendastv))

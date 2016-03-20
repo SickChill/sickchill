@@ -60,7 +60,7 @@ class CircularDependencyError(SQLAlchemyError):
     """
     def __init__(self, message, cycles, edges, msg=None):
         if msg is None:
-            message += " Cycles: %r all edges: %r" % (cycles, edges)
+            message += " Cycles: {0!r} all edges: {1!r}".format(cycles, edges)
         else:
             message = msg
         SQLAlchemyError.__init__(self, message)
@@ -85,8 +85,7 @@ class UnsupportedCompilationError(CompileError):
 
     def __init__(self, compiler, element_type):
         super(UnsupportedCompilationError, self).__init__(
-                    "Compiler %r can't render element of type %s" %
-                                (compiler, element_type))
+                    "Compiler {0!r} can't render element of type {1!s}".format(compiler, element_type))
 
 class IdentifierError(SQLAlchemyError):
     """Raised when a schema name is beyond the max character limit"""
@@ -236,7 +235,7 @@ class StatementError(SQLAlchemyError):
         params_repr = util._repr_params(self.params, 10)
 
         return ' '.join([
-                            "(%s)" % det for det in self.detail
+                            "({0!s})".format(det) for det in self.detail
                         ] + [
                             SQLAlchemyError.__str__(self),
                              repr(self.statement), repr(params_repr)
@@ -286,7 +285,7 @@ class DBAPIError(StatementError):
                 msg = traceback.format_exception_only(
                     orig.__class__, orig)[-1].strip()
                 return StatementError(
-                    "%s (original cause: %s)" % (str(orig), msg),
+                    "{0!s} (original cause: {1!s})".format(str(orig), msg),
                     statement, params, orig
                 )
 
@@ -309,7 +308,7 @@ class DBAPIError(StatementError):
             text = 'Error in str() of DB-API-generated exception: ' + str(e)
         StatementError.__init__(
                 self,
-                '(%s) %s' % (orig.__class__.__name__, text),
+                '({0!s}) {1!s}'.format(orig.__class__.__name__, text),
                 statement,
                 params,
                 orig

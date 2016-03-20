@@ -328,7 +328,7 @@ class Movie(_Container):
             title = self.get('long imdb episode title')
         else:
             title = self.get('long imdb title')
-        r = '<Movie id:%s[%s] title:_%s_>' % (self.movieID, self.accessSystem,
+        r = '<Movie id:{0!s}[{1!s}] title:_{2!s}_>'.format(self.movieID, self.accessSystem,
                                                 title)
         if isinstance(r, unicode): r = r.encode('utf_8', 'replace')
         return r
@@ -349,38 +349,38 @@ class Movie(_Container):
             nl = []
             for person in personList:
                 n = person.get('name', u'')
-                if person.currentRole: n += u' (%s)' % person.currentRole
+                if person.currentRole: n += u' ({0!s})'.format(person.currentRole)
                 nl.append(n)
             return joiner.join(nl)
-        s = u'Movie\n=====\nTitle: %s\n' % \
-                    self.get('long imdb canonical title', u'')
+        s = u'Movie\n=====\nTitle: {0!s}\n'.format( \
+                    self.get('long imdb canonical title', u''))
         genres = self.get('genres')
-        if genres: s += u'Genres: %s.\n' % u', '.join(genres)
+        if genres: s += u'Genres: {0!s}.\n'.format(u', '.join(genres))
         director = self.get('director')
         if director:
-            s += u'Director: %s.\n' % _nameAndRole(director)
+            s += u'Director: {0!s}.\n'.format(_nameAndRole(director))
         writer = self.get('writer')
         if writer:
-            s += u'Writer: %s.\n' % _nameAndRole(writer)
+            s += u'Writer: {0!s}.\n'.format(_nameAndRole(writer))
         cast = self.get('cast')
         if cast:
             cast = cast[:5]
-            s += u'Cast: %s.\n' % _nameAndRole(cast)
+            s += u'Cast: {0!s}.\n'.format(_nameAndRole(cast))
         runtime = self.get('runtimes')
         if runtime:
-            s += u'Runtime: %s.\n' % u', '.join(runtime)
+            s += u'Runtime: {0!s}.\n'.format(u', '.join(runtime))
         countries = self.get('countries')
         if countries:
-            s += u'Country: %s.\n' % u', '.join(countries)
+            s += u'Country: {0!s}.\n'.format(u', '.join(countries))
         lang = self.get('languages')
         if lang:
-            s += u'Language: %s.\n' % u', '.join(lang)
+            s += u'Language: {0!s}.\n'.format(u', '.join(lang))
         rating = self.get('rating')
         if rating:
-            s += u'Rating: %s' % rating
+            s += u'Rating: {0!s}'.format(rating)
             nr_votes = self.get('votes')
             if nr_votes:
-                s += u' (%s votes)' % nr_votes
+                s += u' ({0!s} votes)'.format(nr_votes)
             s += u'.\n'
         plot = self.get('plot')
         if not plot:
@@ -392,7 +392,7 @@ class Movie(_Container):
             i = plot.find('::')
             if i != -1:
                 plot = plot[:i]
-            s += u'Plot: %s' % plot
+            s += u'Plot: {0!s}'.format(plot)
         return s
 
 

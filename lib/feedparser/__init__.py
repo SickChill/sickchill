@@ -34,7 +34,7 @@ __version__ = '5.2.1'
 # HTTP "User-Agent" header to send to servers when downloading feeds.
 # If you are embedding feedparser in a larger application, you should
 # change this to your application name and URL.
-USER_AGENT = "feedparser/%s +https://github.com/kurtmckee/feedparser/" % __version__
+USER_AGENT = "feedparser/{0!s} +https://github.com/kurtmckee/feedparser/".format(__version__)
 
 from . import api
 from .api import parse

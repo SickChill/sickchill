@@ -55,7 +55,7 @@ class Log:
 
     def _writeIntoFile(self, message):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        self.__file.write(u"%s - %s\n" % (timestamp, message))
+        self.__file.write(u"{0!s} - {1!s}\n".format(timestamp, message))
         self.__file.flush()
 
     def newMessage(self, level, text, ctxt=None):
@@ -84,7 +84,7 @@ class Log:
         if hasattr(ctxt, "_logger"):
             _ctxt = ctxt._logger()
             if _ctxt is not None:
-                text = "[%s] %s" % (_ctxt, text)
+                text = "[{0!s}] {1!s}".format(_ctxt, text)
 
         # Add message to log buffer
         if self.use_buffer:
@@ -99,12 +99,12 @@ class Log:
         # Display on stdout (if used)
         if self.use_print:
             sys.stdout.flush()
-            sys.stderr.write("%s %s\n" % (prefix, text))
+            sys.stderr.write("{0!s} {1!s}\n".format(prefix, text))
             sys.stderr.flush()
 
         # Write into outfile (if used)
         if self.__file:
-            self._writeIntoFile("%s %s" % (prefix, text))
+            self._writeIntoFile("{0!s} {1!s}".format(prefix, text))
 
         # Use callback (if used)
         if self.on_new_message:
@@ -135,7 +135,7 @@ log = Log()
 
 class Logger(object):
     def _logger(self):
-        return "<%s>" % self.__class__.__name__
+        return "<{0!s}>".format(self.__class__.__name__)
     def info(self, text):
         log.newMessage(Log.LOG_INFO, text, self)
     def warning(self, text):

@@ -23,7 +23,7 @@ class BencodeException(Exception):
         self.data = data
 
     def __repr__(self):
-        return "<BencodeException mode = %s>[%s]=>[%s]" % (self.mode, self.message, self.data)
+        return "<BencodeException mode = {0!s}>[{1!s}]=>[{2!s}]".format(self.mode, self.message, self.data)
 
 
 class BencodeEncodeError(BencodeException):
@@ -50,7 +50,7 @@ def _encode_int(data):
     :return String: becoded string
     """
     if isinstance(data, (int, long)):
-        return "%s%s%s" % ("i", str(data), "e")
+        return "{0!s}{1!s}{2!s}".format("i", str(data), "e")
     else:
         raise BencodeEncodeError("Invalid Integer", data)
 
@@ -62,7 +62,7 @@ def _encode_string(data):
     :return: String: bencoded Strings
     """
     if isinstance(data, (str, basestring, unicode,)):
-        return "%s:%s" % (str(len(data)), data)
+        return "{0!s}:{1!s}".format(str(len(data)), data)
     else:
         raise BencodeEncodeError("Invalid String", data)
 
@@ -94,7 +94,7 @@ def _encode_list(lst):
     """
     if isinstance(lst, (list, set, tuple,)):
         lst = list(lst)
-        return "%s%s%s" % ("l", _recursive_baselist_encode(lst), "e")
+        return "{0!s}{1!s}{2!s}".format("l", _recursive_baselist_encode(lst), "e")
     else:
         raise BencodeEncodeError("Invalid Collection ", lst)
 
@@ -118,8 +118,8 @@ def _encode_dict(dct):
             elif isinstance(value, dict):
                 value = _encode_dict(value)
             key = _encode_string(key)
-            valrs += "%s%s" % (key, value)
-        strs = "%s%s%s" % ("d", valrs, "e")
+            valrs += "{0!s}{1!s}".format(key, value)
+        strs = "{0!s}{1!s}{2!s}".format("d", valrs, "e")
     else:
         raise BencodeEncodeError("Invalid Dictionary", dct)
     return strs

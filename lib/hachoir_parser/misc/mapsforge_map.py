@@ -84,7 +84,7 @@ class VbeString(FieldSet):
         yield String(self, "chars", self["length"].value, charset="UTF-8")
 
     def createDescription (self):
-        return '(%d B) "%s"' % (self["length"].value, self["chars"].value)
+        return '({0:d} B) "{1!s}"'.format(self["length"].value, self["chars"].value)
 
 
 class TagStringList(FieldSet):
@@ -94,7 +94,7 @@ class TagStringList(FieldSet):
             yield VbeString(self, "tag[]")
 
     def createDescription (self):
-        return "%d tag strings" % self["num_tags"].value
+        return "{0:d} tag strings".format(self["num_tags"].value)
 
 
 class ZoomIntervalCfg(FieldSet):
@@ -106,7 +106,7 @@ class ZoomIntervalCfg(FieldSet):
         yield UInt64(self, "subfile_size")
 
     def createDescription (self):
-        return "zoom level around %d (%d - %d)" % (self["base_zoom_level"].value,
+        return "zoom level around {0:d} ({1:d} - {2:d})".format(self["base_zoom_level"].value,
             self["min_zoom_level"].value, self["max_zoom_level"].value)
 
 
@@ -122,7 +122,7 @@ class TileZoomTable(FieldSet):
         yield UIntVbe(self, "num_ways")
 
     def createDescription (self):
-        return "%d POIs, %d ways" % (self["num_pois"].value, self["num_ways"].value)
+        return "{0:d} POIs, {1:d} ways".format(self["num_pois"].value, self["num_ways"].value)
 
 
 class TileHeader(FieldSet):
@@ -163,8 +163,8 @@ class POIData(FieldSet):
     def createDescription (self):
         s = "POI"
         if self["have_name"].value:
-            s += ' "%s"' % self["name"]["chars"].value
-        s += " @ %f/%f" % (self["lat_diff"].value / UDEG, self["lon_diff"].value / UDEG)
+            s += ' "{0!s}"'.format(self["name"]["chars"].value)
+        s += " @ {0:f}/{1:f}".format(self["lat_diff"].value / UDEG, self["lon_diff"].value / UDEG)
         return s
 
 
@@ -174,7 +174,7 @@ class SubTileBitmap(FieldSet):
     def createFields(self):
         for y in range(4):
             for x in range(4):
-                yield Bit(self, "is_used[%d,%d]" % (x,y))
+                yield Bit(self, "is_used[{0:d},{1:d}]".format(x, y))
 
 
 class WayProperties(FieldSet):
@@ -224,7 +224,7 @@ class WayPropertiesInner(FieldSet):
     def createDescription (self):
         s = "way"
         if self["have_name"].value:
-            s += ' "%s"' % self["name"]["chars"].value
+            s += ' "{0!s}"'.format(self["name"]["chars"].value)
         return s
 
 
@@ -255,14 +255,14 @@ class TileData(FieldSet):
 
         numLevels = int(self.zoomIntervalCfg["max_zoom_level"].value - self.zoomIntervalCfg["min_zoom_level"].value) +1
         for zoomLevel in range(numLevels):
-            zoomTableEntry = self["tile_header"]["zoom_table_entry[%d]" % zoomLevel]
+            zoomTableEntry = self["tile_header"]["zoom_table_entry[{0:d}]".format(zoomLevel)]
             for poiIndex in range(zoomTableEntry["num_pois"].value):
-                yield POIData(self, "poi_data[%d,%d]" % (zoomLevel, poiIndex))
+                yield POIData(self, "poi_data[{0:d},{1:d}]".format(zoomLevel, poiIndex))
 
         for zoomLevel in range(numLevels):
-            zoomTableEntry = self["tile_header"]["zoom_table_entry[%d]" % zoomLevel]
+            zoomTableEntry = self["tile_header"]["zoom_table_entry[{0:d}]".format(zoomLevel)]
             for wayIndex in range(zoomTableEntry["num_ways"].value):
-                yield WayProperties(self, "way_props[%d,%d]" % (zoomLevel, wayIndex))
+                yield WayProperties(self, "way_props[{0:d},{1:d}]".format(zoomLevel, wayIndex))
         
 
 
@@ -351,7 +351,7 @@ class MapsforgeMapFile(Parser, RootSeekableFieldSet):
             yield ZoomIntervalCfg(self, "zoom_interval_cfg[]")
 
         for i in range(self["num_zoom_intervals"].value):
-            zoomIntervalCfg = self["zoom_interval_cfg[%d]" % i]
+            zoomIntervalCfg = self["zoom_interval_cfg[{0:d}]".format(i)]
             self.seekByte(zoomIntervalCfg["subfile_start"].value, relative=False)
             yield ZoomSubFile(self, "subfile[]", size=zoomIntervalCfg["subfile_size"].value * 8, zoomIntervalCfg=zoomIntervalCfg)
 

@@ -365,15 +365,15 @@ class SemaphoreContextManagerTest(AsyncTestCase):
         @gen.coroutine
         def f(index):
             with (yield sem.acquire()):
-                history.append('acquired %d' % index)
+                history.append('acquired {0:d}'.format(index))
                 yield gen.sleep(0.01)
-                history.append('release %d' % index)
+                history.append('release {0:d}'.format(index))
 
         yield [f(i) for i in range(2)]
 
         expected_history = []
         for i in range(2):
-            expected_history.extend(['acquired %d' % i, 'release %d' % i])
+            expected_history.extend(['acquired {0:d}'.format(i), 'release {0:d}'.format(i)])
 
         self.assertEqual(expected_history, history)
 

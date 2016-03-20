@@ -94,7 +94,7 @@ def is_ascii_str(text):
 class XMLEntityEscaper(object):
 
     def __init__(self, codepoint2name, name2codepoint):
-        self.codepoint2entity = dict([(c, compat.text_type('&%s;' % n))
+        self.codepoint2entity = dict([(c, compat.text_type('&{0!s};'.format(n)))
                                       for c, n in codepoint2name.items()])
         self.name2codepoint = name2codepoint
 
@@ -110,7 +110,7 @@ class XMLEntityEscaper(object):
         try:
             return self.codepoint2entity[codepoint]
         except (KeyError, IndexError):
-            return '&#x%X;' % codepoint
+            return '&#x{0:X};'.format(codepoint)
 
     __escapable = re.compile(r'["&<>]|[^\x00-\x7f]')
 

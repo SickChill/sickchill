@@ -6,7 +6,7 @@ __all__ = ['Enum', 'IntEnum', 'unique']
 
 version = 1, 0, 4
 
-pyver = float('%s.%s' % _sys.version_info[:2])
+pyver = float('{0!s}.{1!s}'.format(*_sys.version_info[:2]))
 
 try:
     any
@@ -86,7 +86,7 @@ def _is_sunder(name):
 def _make_class_unpicklable(cls):
     """Make the given class un-picklable."""
     def _break_on_call_reduce(self, protocol=None):
-        raise TypeError('%r cannot be pickled' % self)
+        raise TypeError('{0!r} cannot be pickled'.format(self))
     cls.__reduce_ex__ = _break_on_call_reduce
     cls.__module__ = '<unknown>'
 
@@ -126,11 +126,11 @@ class _EnumDict(dict):
             pass
         elif key in self._member_names:
             # descriptor overwriting an enum?
-            raise TypeError('Attempted to reuse key: %r' % key)
+            raise TypeError('Attempted to reuse key: {0!r}'.format(key))
         elif not _is_descriptor(value):
             if key in self:
                 # enum overwriting a descriptor?
-                raise TypeError('Key already defined as: %r' % self[key])
+                raise TypeError('Key already defined as: {0!r}'.format(self[key]))
             self._member_names.append(key)
         super(_EnumDict, self).__setitem__(key, value)
 
@@ -187,8 +187,8 @@ class EnumMeta(type):
         # check for illegal enum names (any others?)
         invalid_names = set(members) & set(['mro'])
         if invalid_names:
-            raise ValueError('Invalid enum member name(s): %s' % (
-                ', '.join(invalid_names), ))
+            raise ValueError('Invalid enum member name(s): {0!s}'.format(
+                ', '.join(invalid_names) ))
 
         # create our new Enum type
         enum_class = super(EnumMeta, metacls).__new__(metacls, cls, bases, classdict)
@@ -339,7 +339,7 @@ class EnumMeta(type):
         # (see issue19025).
         if attr in cls._member_map_:
             raise AttributeError(
-                    "%s: cannot delete Enum member." % cls.__name__)
+                    "{0!s}: cannot delete Enum member.".format(cls.__name__))
         super(EnumMeta, cls).__delattr__(attr)
 
     def __dir__(self):
@@ -385,7 +385,7 @@ class EnumMeta(type):
         return len(cls._member_names_)
 
     def __repr__(cls):
-        return "<enum %r>" % cls.__name__
+        return "<enum {0!r}>".format(cls.__name__)
 
     def __setattr__(cls, name, value):
         """Block attempts to reassign Enum members.
@@ -418,7 +418,7 @@ class EnumMeta(type):
                 try:
                     class_name = class_name.encode('ascii')
                 except UnicodeEncodeError:
-                    raise TypeError('%r is not representable in ASCII' % class_name)
+                    raise TypeError('{0!r} is not representable in ASCII'.format(class_name))
         metacls = cls.__class__
         if type is None:
             bases = (cls, )
@@ -639,18 +639,18 @@ def __new__(cls, value):
         for member in cls._member_map_.values():
             if member.value == value:
                 return member
-    raise ValueError("%s is not a valid %s" % (value, cls.__name__))
+    raise ValueError("{0!s} is not a valid {1!s}".format(value, cls.__name__))
 temp_enum_dict['__new__'] = __new__
 del __new__
 
 def __repr__(self):
-    return "<%s.%s: %r>" % (
+    return "<{0!s}.{1!s}: {2!r}>".format(
             self.__class__.__name__, self._name_, self._value_)
 temp_enum_dict['__repr__'] = __repr__
 del __repr__
 
 def __str__(self):
-    return "%s.%s" % (self.__class__.__name__, self._name_)
+    return "{0!s}.{1!s}".format(self.__class__.__name__, self._name_)
 temp_enum_dict['__str__'] = __str__
 del __str__
 
@@ -694,29 +694,29 @@ if pyver < 2.6:
                 return 0
             return -1
         return NotImplemented
-        raise TypeError("unorderable types: %s() and %s()" % (self.__class__.__name__, other.__class__.__name__))
+        raise TypeError("unorderable types: {0!s}() and {1!s}()".format(self.__class__.__name__, other.__class__.__name__))
     temp_enum_dict['__cmp__'] = __cmp__
     del __cmp__
 
 else:
 
     def __le__(self, other):
-        raise TypeError("unorderable types: %s() <= %s()" % (self.__class__.__name__, other.__class__.__name__))
+        raise TypeError("unorderable types: {0!s}() <= {1!s}()".format(self.__class__.__name__, other.__class__.__name__))
     temp_enum_dict['__le__'] = __le__
     del __le__
 
     def __lt__(self, other):
-        raise TypeError("unorderable types: %s() < %s()" % (self.__class__.__name__, other.__class__.__name__))
+        raise TypeError("unorderable types: {0!s}() < {1!s}()".format(self.__class__.__name__, other.__class__.__name__))
     temp_enum_dict['__lt__'] = __lt__
     del __lt__
 
     def __ge__(self, other):
-        raise TypeError("unorderable types: %s() >= %s()" % (self.__class__.__name__, other.__class__.__name__))
+        raise TypeError("unorderable types: {0!s}() >= {1!s}()".format(self.__class__.__name__, other.__class__.__name__))
     temp_enum_dict['__ge__'] = __ge__
     del __ge__
 
     def __gt__(self, other):
-        raise TypeError("unorderable types: %s() > %s()" % (self.__class__.__name__, other.__class__.__name__))
+        raise TypeError("unorderable types: {0!s}() > {1!s}()".format(self.__class__.__name__, other.__class__.__name__))
     temp_enum_dict['__gt__'] = __gt__
     del __gt__
     
@@ -782,9 +782,8 @@ def unique(enumeration):
             duplicates.append((name, member.name))
     if duplicates:
         duplicate_names = ', '.join(
-                ["%s -> %s" % (alias, name) for (alias, name) in duplicates]
+                ["{0!s} -> {1!s}".format(alias, name) for (alias, name) in duplicates]
                 )
-        raise ValueError('duplicate names found in %r: %s' %
-                (enumeration, duplicate_names)
+        raise ValueError('duplicate names found in {0!r}: {1!s}'.format(enumeration, duplicate_names)
                 )
     return enumeration

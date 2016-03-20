@@ -40,7 +40,7 @@ class Url(namedtuple('Url', url_attrs)):
     def netloc(self):
         """Network location including host and port"""
         if self.port:
-            return '%s:%d' % (self.host, self.port)
+            return '{0!s}:{1:d}'.format(self.host, self.port)
         return self.host
 
     @property

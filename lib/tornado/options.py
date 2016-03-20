@@ -106,12 +106,12 @@ class OptionParser(object):
     def __getattr__(self, name):
         if isinstance(self._options.get(name), _Option):
             return self._options[name].value()
-        raise AttributeError("Unrecognized option %r" % name)
+        raise AttributeError("Unrecognized option {0!r}".format(name))
 
     def __setattr__(self, name, value):
         if isinstance(self._options.get(name), _Option):
             return self._options[name].set(value)
-        raise AttributeError("Unrecognized option %r" % name)
+        raise AttributeError("Unrecognized option {0!r}".format(name))
 
     def __iter__(self):
         return iter(self._options)
@@ -200,8 +200,7 @@ class OptionParser(object):
         by later flags.
         """
         if name in self._options:
-            raise Error("Option %r already defined in %s" %
-                        (name, self._options[name].file_name))
+            raise Error("Option {0!r} already defined in {1!s}".format(name, self._options[name].file_name))
         frame = sys._getframe(0)
         options_file = frame.f_code.co_filename
 
@@ -258,13 +257,13 @@ class OptionParser(object):
             name = name.replace('-', '_')
             if name not in self._options:
                 self.print_help()
-                raise Error('Unrecognized command line option: %r' % name)
+                raise Error('Unrecognized command line option: {0!r}'.format(name))
             option = self._options[name]
             if not equals:
                 if option.type == bool:
                     value = "true"
                 else:
-                    raise Error('Option %r requires a value' % name)
+                    raise Error('Option {0!r} requires a value'.format(name))
             option.parse(value)
 
         if final:
@@ -297,7 +296,7 @@ class OptionParser(object):
         """Prints all the command line options to stderr (or another file)."""
         if file is None:
             file = sys.stderr
-        print("Usage: %s [OPTIONS]" % sys.argv[0], file=file)
+        print("Usage: {0!s} [OPTIONS]".format(sys.argv[0]), file=file)
         print("\nOptions:\n", file=file)
         by_group = {}
         for option in self._options.values():
@@ -305,7 +304,7 @@ class OptionParser(object):
 
         for filename, o in sorted(by_group.items()):
             if filename:
-                print("\n%s options:\n" % os.path.normpath(filename), file=file)
+                print("\n{0!s} options:\n".format(os.path.normpath(filename)), file=file)
             o.sort(key=lambda option: option.name)
             for option in o:
                 prefix = option.name
@@ -313,13 +312,13 @@ class OptionParser(object):
                     prefix += "=" + option.metavar
                 description = option.help or ""
                 if option.default is not None and option.default != '':
-                    description += " (default %s)" % option.default
+                    description += " (default {0!s})".format(option.default)
                 lines = textwrap.wrap(description, 79 - 35)
                 if len(prefix) > 30 or len(lines) == 0:
                     lines.insert(0, '')
-                print("  --%-30s %s" % (prefix, lines[0]), file=file)
+                print("  --{0:<30!s} {1!s}".format(prefix, lines[0]), file=file)
                 for line in lines[1:]:
-                    print("%-34s %s" % (' ', line), file=file)
+                    print("{0:<34!s} {1!s}".format(' ', line), file=file)
         print(file=file)
 
     def _help_callback(self, value):
@@ -431,16 +430,13 @@ class _Option(object):
     def set(self, value):
         if self.multiple:
             if not isinstance(value, list):
-                raise Error("Option %r is required to be a list of %s" %
-                            (self.name, self.type.__name__))
+                raise Error("Option {0!r} is required to be a list of {1!s}".format(self.name, self.type.__name__))
             for item in value:
                 if item is not None and not isinstance(item, self.type):
-                    raise Error("Option %r is required to be a list of %s" %
-                                (self.name, self.type.__name__))
+                    raise Error("Option {0!r} is required to be a list of {1!s}".format(self.name, self.type.__name__))
         else:
             if value is not None and not isinstance(value, self.type):
-                raise Error("Option %r is required to be a %s (%s given)" %
-                            (self.name, self.type.__name__, type(value)))
+                raise Error("Option {0!r} is required to be a {1!s} ({2!s} given)".format(self.name, self.type.__name__, type(value)))
         self._value = value
         if self.callback is not None:
             self.callback(self._value)
@@ -465,7 +461,7 @@ class _Option(object):
                 return datetime.datetime.strptime(value, format)
             except ValueError:
                 pass
-        raise Error('Unrecognized date/time format: %r' % value)
+        raise Error('Unrecognized date/time format: {0!r}'.format(value))
 
     _TIMEDELTA_ABBREVS = [
         ('hours', ['h']),
@@ -484,7 +480,7 @@ class _Option(object):
     _FLOAT_PATTERN = r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
 
     _TIMEDELTA_PATTERN = re.compile(
-        r'\s*(%s)\s*(\w*)\s*' % _FLOAT_PATTERN, re.IGNORECASE)
+        r'\s*({0!s})\s*(\w*)\s*'.format(_FLOAT_PATTERN), re.IGNORECASE)
 
     def _parse_timedelta(self, value):
         try:

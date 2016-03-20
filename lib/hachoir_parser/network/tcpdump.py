@@ -50,14 +50,14 @@ class ARP(Layer):
         yield IPv4_Address(self, "dst_ip")
 
     def createDescription(self):
-        desc = "ARP: %s" % self["opcode"].display
+        desc = "ARP: {0!s}".format(self["opcode"].display)
         opcode = self["opcode"].value
         src_ip = self["src_ip"].display
         dst_ip = self["dst_ip"].display
         if opcode == 1:
-            desc += ", %s ask %s" % (dst_ip, src_ip)
+            desc += ", {0!s} ask {1!s}".format(dst_ip, src_ip)
         elif opcode == 2:
-            desc += " from %s" % src_ip
+            desc += " from {0!s}".format(src_ip)
         return desc
 
 class TCP_Option(FieldSet):
@@ -101,7 +101,7 @@ class TCP_Option(FieldSet):
                 yield RawBytes(self, "data", size)
 
     def createDescription(self):
-        return "TCP option: %s" % self["code"].display
+        return "TCP option: {0!s}".format(self["code"].display)
 
 class TCP(Layer):
     port_name = {
@@ -165,11 +165,11 @@ class TCP(Layer):
             dst = None
         desc = "TCP"
         if src != None and dst != None:
-            desc += " (%s->%s)" % (src, dst)
+            desc += " ({0!s}->{1!s})".format(src, dst)
         elif src != None:
-            desc += " (%s->)" % (src)
+            desc += " ({0!s}->)".format((src))
         elif dst != None:
-            desc += " (->%s)" % (dst)
+            desc += " (->{0!s})".format((dst))
 
         # Get flags
         flags = []
@@ -182,7 +182,7 @@ class TCP(Layer):
         if self["rst"].value:
             flags.append("RST")
         if flags:
-            desc += " [%s]" % (",".join(flags))
+            desc += " [{0!s}]".format((",".join(flags)))
         return desc
 
 class UDP(Layer):
@@ -205,7 +205,7 @@ class UDP(Layer):
         yield textHandler(UInt16(self, "checksum"), hexadecimal)
 
     def createDescription(self):
-        return "UDP (%s->%s)" % (self["src"].display, self["dst"].display)
+        return "UDP ({0!s}->{1!s})".format(self["src"].display, self["dst"].display)
 
 class ICMP(Layer):
     REJECT = 3
@@ -259,9 +259,9 @@ class ICMP(Layer):
     def createDescription(self):
         type = self["type"].value
         if type in (self.PING, self.PONG):
-            return "%s (num=%s)" % (self["type"].display, self["seq_num"].value)
+            return "{0!s} (num={1!s})".format(self["type"].display, self["seq_num"].value)
         else:
-            return "ICMP (%s)" % self["type"].display
+            return "ICMP ({0!s})".format(self["type"].display)
 
     def parseNext(self, parent):
         if self["type"].value == self.REJECT:
@@ -288,9 +288,9 @@ class ICMPv6(Layer):
 
     def createDescription(self):
         if self['type'].value in (self.ECHO_REQUEST, self.ECHO_REPLY):
-            return "%s (num=%s)" % (self["type"].display, self["sequence"].value)
+            return "{0!s} (num={1!s})".format(self["type"].display, self["sequence"].value)
         else:
-            return "ICMPv6 (%s)" % self["type"].display
+            return "ICMPv6 ({0!s})".format(self["type"].display)
 
 class IP(Layer):
     PROTOCOL_INFO = {
@@ -357,7 +357,7 @@ class IPv4(IP):
             yield RawBytes(self, "options", size)
 
     def createDescription(self):
-        return "IPv4 (%s>%s)" % (self["src"].display, self["dst"].display)
+        return "IPv4 ({0!s}>{1!s})".format(self["src"].display, self["dst"].display)
 
 class IPv6(IP):
     static_size = 40 * 8
@@ -374,7 +374,7 @@ class IPv6(IP):
         yield IPv6_Address(self, "dst")
 
     def createDescription(self):
-        return "IPv6 (%s>%s)" % (self["src"].display, self["dst"].display)
+        return "IPv6 ({0!s}>{1!s})".format(self["src"].display, self["dst"].display)
 
 class Layer2(Layer):
     PROTO_INFO = {
@@ -413,8 +413,7 @@ class Ethernet(Layer2):
         yield Enum(UInt16(self, "protocol"), self.PROTO_DESC)
 
     def createDescription(self):
-        return "Ethernet: %s>%s (%s)" % \
-            (self["src"].display, self["dst"].display, self["protocol"].display)
+        return "Ethernet: {0!s}>{1!s} ({2!s})".format(self["src"].display, self["dst"].display, self["protocol"].display)
 
 class Packet(FieldSet):
     endian = LITTLE_ENDIAN
@@ -452,7 +451,7 @@ class Packet(FieldSet):
 #        ts = max(self.getTimestamp() - t0, t0)
         ts = self.getTimestamp() - t0
         #text = ["%1.6f: " % ts]
-        text = ["%s: " % ts]
+        text = ["{0!s}: ".format(ts)]
         if "icmp" in self:
             text.append(self["icmp"].description)
         elif "tcp" in self:
@@ -498,7 +497,7 @@ class TcpdumpFile(Parser):
         yield Enum(UInt32(self, "link_type", "data link type"), self.LINK_TYPE_DESC)
         link = self["link_type"].value
         if link not in self.LINK_TYPE:
-            raise ParserError("Unknown link type: %s" % link)
+            raise ParserError("Unknown link type: {0!s}".format(link))
         name, parser = self.LINK_TYPE[link]
         while self.current_size < self.size:
             yield Packet(self, "packet[]", parser, name)

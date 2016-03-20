@@ -67,7 +67,7 @@ def custom_analyze_title4kwd(title, yearNote, outline):
     if not title:
         return {}
     if yearNote:
-        yearNote = '%s)' % yearNote.split(' ')[0]
+        yearNote = '{0!s})'.format(yearNote.split(' ')[0])
         title = title + ' ' + yearNote
     retDict = analyze_title(title)
     if outline:

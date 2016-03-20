@@ -46,7 +46,7 @@ class LegendasTvSubtitle(Subtitle):
 
     @property
     def id(self):
-        return '%s-%s' % (self.subtitle_id, self.name.lower())
+        return '{0!s}-{1!s}'.format(self.subtitle_id, self.name.lower())
 
     def get_matches(self, video, hearing_impaired=False):
         matches = set()
@@ -77,13 +77,13 @@ class LegendasTvProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
+        self.session.headers['User-Agent'] = 'Subliminal/{0!s}'.format(__short_version__)
 
         # login
         if self.username is not None and self.password is not None:
             logger.info('Logging in')
             data = {'_method': 'POST', 'data[User][username]': self.username, 'data[User][password]': self.password}
-            r = self.session.post('%s/login' % self.server_url, data, allow_redirects=False, timeout=TIMEOUT)
+            r = self.session.post('{0!s}/login'.format(self.server_url), data, allow_redirects=False, timeout=TIMEOUT)
             r.raise_for_status()
 
             soup = ParserBeautifulSoup(r.content, ['html.parser'])
@@ -99,7 +99,7 @@ class LegendasTvProvider(Provider):
         # logout
         if self.logged_in:
             logger.info('Logging out')
-            r = self.session.get('%s/users/logout' % self.server_url, timeout=TIMEOUT)
+            r = self.session.get('{0!s}/users/logout'.format(self.server_url), timeout=TIMEOUT)
             r.raise_for_status()
             logger.debug('Logged out')
             self.logged_in = False
@@ -228,7 +228,7 @@ class LegendasTvProvider(Provider):
 
         for keyword in keywords:
             logger.info('Searching candidates using the keyword %s', keyword)
-            r = self.session.get('%s/legenda/sugestao/%s' % (self.server_url, keyword), timeout=TIMEOUT)
+            r = self.session.get('{0!s}/legenda/sugestao/{1!s}'.format(self.server_url, keyword), timeout=TIMEOUT)
             r.raise_for_status()
             results.update({item['_id']: item for item in json.loads(r.text)})
 
@@ -323,7 +323,7 @@ class LegendasTvProvider(Provider):
         for candidate in candidates:
             # page_url: {server_url}/util/carrega_legendas_busca_filme/{title_id}/{language_code}
             candidate_id = candidate.get('id')
-            page_url = '%s/util/carrega_legendas_busca_filme/%s/%d' % (self.server_url, candidate_id, language_code)
+            page_url = '{0!s}/util/carrega_legendas_busca_filme/{1!s}/{2:d}'.format(self.server_url, candidate_id, language_code)
 
             # loop over paginated results
             while page_url:
@@ -468,7 +468,7 @@ class LegendasTvProvider(Provider):
 
         """
         logger.debug('Downloading subtitle_id %s. Last update on %s', subtitle_id, timestamp)
-        r = self.session.get('%s/downloadarquivo/%s' % (self.server_url, subtitle_id), timeout=TIMEOUT)
+        r = self.session.get('{0!s}/downloadarquivo/{1!s}'.format(self.server_url, subtitle_id), timeout=TIMEOUT)
         r.raise_for_status()
 
         return r.content

@@ -80,7 +80,7 @@ class DNNameObj(object):
         self.dbName = dbName
 
     def __repr__(self):
-        return '<DNNameObj(dbName=%s) [id=%s]>' % (self.dbName, id(self))
+        return '<DNNameObj(dbName={0!s}) [id={1!s}]>'.format(self.dbName, id(self))
 
 
 class DNNameDict(object):
@@ -92,7 +92,7 @@ class DNNameDict(object):
         return DNNameObj(self.colMap[key])
 
     def __repr__(self):
-        return '<DNNameDict(colMap=%s) [id=%s]>' % (self.colMap, id(self))
+        return '<DNNameDict(colMap={0!s}) [id={1!s}]>'.format(self.colMap, id(self))
 
 
 class SQLMetaAdapter(object):
@@ -114,8 +114,7 @@ class SQLMetaAdapter(object):
         return None
 
     def __repr__(self):
-        return '<SQLMetaAdapter(table=%s, colMap=%s) [id=%s]>' % \
-                (repr(self.table), repr(self.colMap), id(self))
+        return '<SQLMetaAdapter(table={0!s}, colMap={1!s}) [id={2!s}]>'.format(repr(self.table), repr(self.colMap), id(self))
 
 
 class QAdapter(object):
@@ -128,11 +127,10 @@ class QAdapter(object):
 
     def __getattr__(self, name):
         try: return getattr(self.table.c, self.colMap[name])
-        except KeyError, e: raise AttributeError("unable to get '%s'" % name)
+        except KeyError, e: raise AttributeError("unable to get '{0!s}'".format(name))
 
     def __repr__(self):
-        return '<QAdapter(table=%s, colMap=%s) [id=%s]>' % \
-                (repr(self.table), repr(self.colMap), id(self))
+        return '<QAdapter(table={0!s}, colMap={1!s}) [id={2!s}]>'.format(repr(self.table), repr(self.colMap), id(self))
 
 
 class RowAdapter(object):
@@ -150,7 +148,7 @@ class RowAdapter(object):
 
     def __getattr__(self, name):
         try: return getattr(self.row, self.colMap[name])
-        except KeyError, e: raise AttributeError("unable to get '%s'" % name)
+        except KeyError, e: raise AttributeError("unable to get '{0!s}'".format(name))
 
     def __setattr__(self, name, value):
         # FIXME: I can't even think about how much performances suffer,
@@ -176,8 +174,7 @@ class RowAdapter(object):
         object.__setattr__(self, name, value)
 
     def __repr__(self):
-        return '<RowAdapter(row=%s, table=%s, colMap=%s) [id=%s]>' % \
-                (repr(self.row), repr(self.table), repr(self.colMap), id(self))
+        return '<RowAdapter(row={0!s}, table={1!s}, colMap={2!s}) [id={3!s}]>'.format(repr(self.row), repr(self.table), repr(self.colMap), id(self))
 
 
 class ResultAdapter(object):
@@ -213,8 +210,7 @@ class ResultAdapter(object):
             yield RowAdapter(item, self.table, colMap=self.colMap)
 
     def __repr__(self):
-        return '<ResultAdapter(result=%s, table=%s, colMap=%s) [id=%s]>' % \
-                (repr(self.result), repr(self.table),
+        return '<ResultAdapter(result={0!s}, table={1!s}, colMap={2!s}) [id={3!s}]>'.format(repr(self.result), repr(self.table),
                     repr(self.colMap), id(self))
 
 
@@ -294,7 +290,7 @@ class TableAdapter(object):
         try:
             return result[0]
         except KeyError:
-            raise NotFoundError('no data for ID %s' % theID)
+            raise NotFoundError('no data for ID {0!s}'.format(theID))
 
     def dropTable(self, checkfirst=True):
         """Drop the table."""
@@ -326,7 +322,7 @@ class TableAdapter(object):
         #      indexes will be over the whole 255 chars strings...
         # NOTE: don't use a dot as a separator, or DB2 will do
         #       nasty things.
-        idx_name = '%s_%s' % (self.table.name, col.index or col.name)
+        idx_name = '{0!s}_{1!s}'.format(self.table.name, col.index or col.name)
         if checkfirst:
             for index in self.table.indexes:
                 if index.name == idx_name:
@@ -340,8 +336,7 @@ class TableAdapter(object):
         try:
             idx.create()
         except exc.OperationalError, e:
-            _alchemy_logger.warn('Skipping creation of the %s.%s index: %s' %
-                                (self.sqlmeta.table, col.name, e))
+            _alchemy_logger.warn('Skipping creation of the {0!s}.{1!s} index: {2!s}'.format(self.sqlmeta.table, col.name, e))
 
     def addIndexes(self, ifNotExists=True):
         """Create all required indexes."""
@@ -375,7 +370,7 @@ class TableAdapter(object):
             foreignCol = getattr(foreignTable.c, foreignColName)
             # Need to explicitly set an unique name, otherwise it will
             # explode, if two cols points to the same table.
-            fkName = 'fk_%s_%s_%d' % (foreignTable.name, foreignColName,
+            fkName = 'fk_{0!s}_{1!s}_{2:d}'.format(foreignTable.name, foreignColName,
                                         countCols)
             constrain = migrate.changeset.ForeignKeyConstraint([thisCol],
                                                         [foreignCol],
@@ -393,7 +388,7 @@ class TableAdapter(object):
         self._ta_insert.execute(*args, **taArgs)
 
     def __repr__(self):
-        return '<TableAdapter(table=%s) [id=%s]>' % (repr(self.table), id(self))
+        return '<TableAdapter(table={0!s}) [id={1!s}]>'.format(repr(self.table), id(self))
 
 
 # Module-level "cache" for SQLObject classes, to prevent
@@ -445,7 +440,7 @@ def ISNOTNULL(x):
 
 def CONTAINSSTRING(expr, pattern):
     """Emulate SQLObject's CONTAINSSTRING."""
-    return expr.like('%%%s%%' % pattern)
+    return expr.like('%{0!s}%'.format(pattern))
 
 
 def toUTF8(s):
@@ -474,7 +469,7 @@ def setConnection(uri, tables, encoding='utf8', debug=False):
             uri += '&'
         else:
             uri += '?'
-        uri += 'charset=%s' % encoding
+        uri += 'charset={0!s}'.format(encoding)
         
         # On some server configurations, we will need to explictly enable
         # loading data from local files

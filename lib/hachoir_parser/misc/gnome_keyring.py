@@ -80,10 +80,10 @@ class Attribute(FieldSet):
         elif type == 1:
             yield UInt32(self, "value")
         else:
-            raise TypeError("Unknown attribute type (%s)" % type)
+            raise TypeError("Unknown attribute type ({0!s})".format(type))
 
     def createDescription(self):
-        return 'Attribute "%s"' % self["name"].value
+        return 'Attribute "{0!s}"'.format(self["name"].value)
 
 class ACL(FieldSet):
     def createFields(self):
@@ -102,7 +102,7 @@ class Item(FieldSet):
             yield Attribute(self, "attr[]")
 
     def createDescription(self):
-        return "Item #%s: %s attributes" % (self["id"].value, self["attr_count"].value)
+        return "Item #{0!s}: {1!s} attributes".format(self["id"].value, self["attr_count"].value)
 
 class Items(FieldSet):
     def createFields(self):
@@ -174,7 +174,7 @@ class GnomeKeyring(Parser):
         return True
 
     def createFields(self):
-        yield String(self, "magic", len(self.MAGIC), 'Magic string (%r)' % self.MAGIC, charset="ASCII")
+        yield String(self, "magic", len(self.MAGIC), 'Magic string ({0!r})'.format(self.MAGIC), charset="ASCII")
         yield UInt8(self, "major_version")
         yield UInt8(self, "minor_version")
         yield Enum(UInt8(self, "crypto"), self.CRYPTO_NAMES)

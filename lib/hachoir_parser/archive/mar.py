@@ -22,7 +22,7 @@ class FileIndex(FieldSet):
         yield UInt32(self, "offset")
 
     def createDescription(self):
-        return "File %s (%s) at %s" % (
+        return "File {0!s} ({1!s}) at {2!s}".format(
             self["filename"].value, self["filesize"].display, self["offset"].value)
 
 class MarFile(Parser):
@@ -62,6 +62,6 @@ class MarFile(Parser):
             if padding:
                 yield padding
             size = index["filesize"].value
-            desc = "File %s" % index["filename"].value
+            desc = "File {0!s}".format(index["filename"].value)
             yield SubFile(self, "data[]", size, desc, filename=index["filename"].value)
 

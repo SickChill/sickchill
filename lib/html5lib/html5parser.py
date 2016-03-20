@@ -772,7 +772,7 @@ def getPhases(debug):
 
         def endTagHead(self, token):
             node = self.parser.tree.openElements.pop()
-            assert node.name == "head", "Expected head got %s" % node.name
+            assert node.name == "head", "Expected head got {0!s}".format(node.name)
             self.parser.phase = self.parser.phases["afterHead"]
 
         def endTagHtmlBodyBr(self, token):
@@ -1601,7 +1601,7 @@ def getPhases(debug):
             return True
 
         def startTagOther(self, token):
-            assert False, "Tried to process start tag %s in RCDATA/RAWTEXT mode" % token['name']
+            assert False, "Tried to process start tag {0!s} in RCDATA/RAWTEXT mode".format(token['name'])
 
         def endTagScript(self, token):
             node = self.tree.openElements.pop()

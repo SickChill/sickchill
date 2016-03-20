@@ -78,8 +78,7 @@ class FileEntry(FieldSet):
         else:
             filename = self["name"].value
             filesize = humanFilesize(self.getOctal("size"))
-            desc = "(%s: %s, %s)" % \
-                (filename, self["type"].display, filesize)
+            desc = "({0!s}: {1!s}, {2!s})".format(filename, self["type"].display, filesize)
         return "Tar File " + desc
 
 class TarFile(Parser):

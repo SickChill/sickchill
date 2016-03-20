@@ -62,7 +62,7 @@ class Element(object):
         self.data = data
 
     def __repr__(self):
-        return '<%s [%s, %r]>' % (self.__class__.__name__, self.name, self.data)
+        return '<{0!s} [{1!s}, {2!r}]>'.format(self.__class__.__name__, self.name, self.data)
 
 
 class MasterElement(Element):
@@ -118,7 +118,7 @@ class MasterElement(Element):
             return default
         element = self[name]
         if element.type == MASTER:
-            raise ValueError('%s is a MasterElement' % name)
+            raise ValueError('{0!s} is a MasterElement'.format(name))
         return element.data
 
     def __getitem__(self, key):
@@ -128,7 +128,7 @@ class MasterElement(Element):
         if not children:
             raise KeyError(key)
         if len(children) > 1:
-            raise KeyError('More than 1 child with key %s (%d)' % (key, len(children)))
+            raise KeyError('More than 1 child with key {0!s} ({1:d})'.format(key, len(children)))
         return children[0]
 
     def __contains__(self, item):
@@ -208,7 +208,7 @@ def parse_element(stream, specs, load_children=False, ignore_element_types=None,
     if element_size is None:
         raise ReadError('Cannot read element size')
     if element_id not in specs:
-        logger.error('Element with id 0x%x is not in the specs' % element_id)
+        logger.error('Element with id 0x{0:x} is not in the specs'.format(element_id))
         stream.seek(element_size, 1)
         return None
     element_type, element_name, element_level = specs[element_id]

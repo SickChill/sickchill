@@ -113,7 +113,7 @@ class MapperExtension(object):
                     event.listen(self.class_manager, 'init_failure',
                                         go(ls_meth), raw=False, propagate=True)
                 else:
-                    event.listen(self, "%s" % meth, ls_meth,
+                    event.listen(self, "{0!s}".format(meth), ls_meth,
                                         raw=False, retval=True, propagate=True)
 
     def instrument_class(self, mapper, class_):

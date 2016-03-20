@@ -1867,19 +1867,19 @@ class JoinCondition(object):
         log.info('%s setup secondary join %s', self.prop,
                          self.secondaryjoin)
         log.info('%s synchronize pairs [%s]', self.prop,
-                         ','.join('(%s => %s)' % (l, r) for (l, r) in
+                         ','.join('({0!s} => {1!s})'.format(l, r) for (l, r) in
                          self.synchronize_pairs))
         log.info('%s secondary synchronize pairs [%s]', self.prop,
-                         ','.join('(%s => %s)' % (l, r) for (l, r) in
+                         ','.join('({0!s} => {1!s})'.format(l, r) for (l, r) in
                          self.secondary_synchronize_pairs or []))
         log.info('%s local/remote pairs [%s]', self.prop,
-                         ','.join('(%s / %s)' % (l, r) for (l, r) in
+                         ','.join('({0!s} / {1!s})'.format(l, r) for (l, r) in
                          self.local_remote_pairs))
         log.info('%s remote columns [%s]', self.prop,
-                        ','.join('%s' % col for col in self.remote_columns)
+                        ','.join('{0!s}'.format(col) for col in self.remote_columns)
             )
         log.info('%s local columns [%s]', self.prop,
-                        ','.join('%s' % col for col in self.local_columns)
+                        ','.join('{0!s}'.format(col) for col in self.local_columns)
             )
         log.info('%s relationship direction %s', self.prop,
                          self.direction)

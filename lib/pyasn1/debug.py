@@ -19,18 +19,18 @@ class Debug:
     def __init__(self, *flags):
         self._flags = flagNone
         self._printer = self.defaultPrinter
-        self('running pyasn1 version %s' % __version__)
+        self('running pyasn1 version {0!s}'.format(__version__))
         for f in flags:
             if f not in flagMap:
-                raise error.PyAsn1Error('bad debug flag %s' % (f,))
+                raise error.PyAsn1Error('bad debug flag {0!s}'.format(f))
             self._flags = self._flags | flagMap[f]
-            self('debug category \'%s\' enabled' % f)
+            self('debug category \'{0!s}\' enabled'.format(f))
         
     def __str__(self):
-        return 'logger %s, flags %x' % (self._printer, self._flags)
+        return 'logger {0!s}, flags {1:x}'.format(self._printer, self._flags)
     
     def __call__(self, msg):
-        self._printer('DBG: %s\n' % msg)
+        self._printer('DBG: {0!s}\n'.format(msg))
 
     def __and__(self, flag):
         return self._flags & flag
@@ -46,7 +46,7 @@ def setLogger(l):
 
 def hexdump(octets):
     return ' '.join(
-            [ '%s%.2X' % (n%16 == 0 and ('\n%.5d: ' % n) or '', x) 
+            [ '{0!s}{1:.2X}'.format(n%16 == 0 and ('\n{0:.5d}: '.format(n)) or '', x) 
               for n,x in zip(range(len(octets)), octs2ints(octets)) ]
         )
 

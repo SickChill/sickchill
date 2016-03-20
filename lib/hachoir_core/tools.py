@@ -28,7 +28,7 @@ def deprecated(comment=None):
     """
     def _deprecated(func):
         def newFunc(*args, **kwargs):
-            message = "Call to deprecated function %s" % func.__name__
+            message = "Call to deprecated function {0!s}".format(func.__name__)
             if comment:
                 message += ": " + comment
             warn(message, category=DeprecationWarning, stacklevel=2)
@@ -100,17 +100,17 @@ def humanDurationNanosec(nsec):
 
     # Nano second
     if nsec < 1000:
-        return u"%u nsec" % nsec
+        return u"{0:d} nsec".format(nsec)
 
     # Micro seconds
     usec, nsec = divmod(nsec, 1000)
     if usec < 1000:
-        return u"%.2f usec" % (usec+float(nsec)/1000)
+        return u"{0:.2f} usec".format((usec+float(nsec)/1000))
 
     # Milli seconds
     msec, usec = divmod(usec, 1000)
     if msec < 1000:
-        return u"%.2f ms" % (msec + float(usec)/1000)
+        return u"{0:.2f} ms".format((msec + float(usec)/1000))
     return humanDuration(msec)
 
 def humanDuration(delta):
@@ -133,15 +133,15 @@ def humanDuration(delta):
     # Milliseconds
     text = []
     if 1000 <= delta.microseconds:
-        text.append(u"%u ms" % (delta.microseconds//1000))
+        text.append(u"{0:d} ms".format((delta.microseconds//1000)))
 
     # Seconds
     minutes, seconds = divmod(delta.seconds, 60)
     hours, minutes = divmod(minutes, 60)
     if seconds:
-        text.append(u"%u sec" % seconds)
+        text.append(u"{0:d} sec".format(seconds))
     if minutes:
-        text.append(u"%u min" % minutes)
+        text.append(u"{0:d} min".format(minutes))
     if hours:
         text.append(ngettext("%u hour", "%u hours", hours) % hours)
 
@@ -178,8 +178,8 @@ def humanFilesize(size):
     for unit in units:
         size = size / divisor
         if size < divisor:
-            return "%.1f %s" % (size, unit)
-    return "%u %s" % (size, unit)
+            return "{0:.1f} {1!s}".format(size, unit)
+    return "{0:d} {1!s}".format(size, unit)
 
 def humanBitSize(size):
     """
@@ -202,8 +202,8 @@ def humanBitSize(size):
     for unit in units:
         size = size / divisor
         if size < divisor:
-            return "%.1f %s" % (size, unit)
-    return u"%u %s" % (size, unit)
+            return "{0:.1f} {1!s}".format(size, unit)
+    return u"{0:d} {1!s}".format(size, unit)
 
 def humanBitRate(size):
     """
@@ -230,14 +230,14 @@ def humanFrequency(hertz):
     """
     divisor = 1000
     if hertz < divisor:
-        return u"%u Hz" % hertz
+        return u"{0:d} Hz".format(hertz)
     units = [u"kHz", u"MHz", u"GHz", u"THz"]
     hertz = float(hertz)
     for unit in units:
         hertz = hertz / divisor
         if hertz < divisor:
-            return u"%.1f %s" % (hertz, unit)
-    return u"%s %s" % (hertz, unit)
+            return u"{0:.1f} {1!s}".format(hertz, unit)
+    return u"{0!s} {1!s}".format(hertz, unit)
 
 regex_control_code = re.compile(r"([\x00-\x1f\x7f])")
 controlchars = tuple({
@@ -248,7 +248,7 @@ controlchars = tuple({
         ord("\t"): r"\t",
         ord("\a"): r"\a",
         ord("\b"): r"\b",
-    }.get(code, '\\x%02x' % code)
+    }.get(code, '\\x{0:02x}'.format(code))
     for code in xrange(128)
 )
 
@@ -433,7 +433,7 @@ def humanUnixAttributes(mode):
             chars[9] = 'T'
         else:
             chars[9] = 't'
-    return u"%s (%o)" % (''.join(chars), mode)
+    return u"{0!s} ({1:o})".format(''.join(chars), mode)
 
 def createDict(data, index):
     """

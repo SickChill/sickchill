@@ -577,8 +577,7 @@ class Inspector(object):
             if include_columns and \
                             not set(columns).issubset(include_columns):
                 util.warn(
-                    "Omitting %s KEY for (%s), key covers omitted columns." %
-                    (flavor, ', '.join(columns)))
+                    "Omitting {0!s} KEY for ({1!s}), key covers omitted columns.".format(flavor, ', '.join(columns)))
                 continue
             # look for columns by orig name in cols_by_orig_name,
             # but support columns that are in-Python only as fallback

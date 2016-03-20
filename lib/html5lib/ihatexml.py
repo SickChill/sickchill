@@ -159,7 +159,7 @@ def listToRegexpStr(charList):
         else:
             rv.append(escapeRegexp(chr(item[0])) + "-" +
                       escapeRegexp(chr(item[1])))
-    return "[%s]" % "".join(rv)
+    return "[{0!s}]".format("".join(rv))
 
 
 def hexToInt(hex_str):
@@ -277,7 +277,7 @@ class InfosetFilter(object):
         return name
 
     def escapeChar(self, char):
-        replacement = "U%05X" % ord(char)
+        replacement = "U{0:05X}".format(ord(char))
         self.replaceCache[char] = replacement
         return replacement
 

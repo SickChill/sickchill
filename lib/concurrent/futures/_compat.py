@@ -34,56 +34,56 @@ def namedtuple(typename, field_names):
     field_names = tuple(map(str, field_names))
     for name in (typename,) + field_names:
         if not all(c.isalnum() or c=='_' for c in name):
-            raise ValueError('Type names and field names can only contain alphanumeric characters and underscores: %r' % name)
+            raise ValueError('Type names and field names can only contain alphanumeric characters and underscores: {0!r}'.format(name))
         if _iskeyword(name):
-            raise ValueError('Type names and field names cannot be a keyword: %r' % name)
+            raise ValueError('Type names and field names cannot be a keyword: {0!r}'.format(name))
         if name[0].isdigit():
-            raise ValueError('Type names and field names cannot start with a number: %r' % name)
+            raise ValueError('Type names and field names cannot start with a number: {0!r}'.format(name))
     seen_names = set()
     for name in field_names:
         if name.startswith('_'):
-            raise ValueError('Field names cannot start with an underscore: %r' % name)
+            raise ValueError('Field names cannot start with an underscore: {0!r}'.format(name))
         if name in seen_names:
-            raise ValueError('Encountered duplicate field name: %r' % name)
+            raise ValueError('Encountered duplicate field name: {0!r}'.format(name))
         seen_names.add(name)
 
     # Create and fill-in the class template
     numfields = len(field_names)
     argtxt = repr(field_names).replace("'", "")[1:-1]   # tuple repr without parens or quotes
-    reprtxt = ', '.join('%s=%%r' % name for name in field_names)
-    dicttxt = ', '.join('%r: t[%d]' % (name, pos) for pos, name in enumerate(field_names))
-    template = '''class %(typename)s(tuple):
-        '%(typename)s(%(argtxt)s)' \n
+    reprtxt = ', '.join('{0!s}=%r'.format(name) for name in field_names)
+    dicttxt = ', '.join('{0!r}: t[{1:d}]'.format(name, pos) for pos, name in enumerate(field_names))
+    template = '''class {typename!s}(tuple):
+        '{typename!s}({argtxt!s})' \n
         __slots__ = () \n
-        _fields = %(field_names)r \n
-        def __new__(_cls, %(argtxt)s):
-            return _tuple.__new__(_cls, (%(argtxt)s)) \n
+        _fields = {field_names!r} \n
+        def __new__(_cls, {argtxt!s}):
+            return _tuple.__new__(_cls, ({argtxt!s})) \n
         @classmethod
         def _make(cls, iterable, new=tuple.__new__, len=len):
-            'Make a new %(typename)s object from a sequence or iterable'
+            'Make a new {typename!s} object from a sequence or iterable'
             result = new(cls, iterable)
-            if len(result) != %(numfields)d:
-                raise TypeError('Expected %(numfields)d arguments, got %%d' %% len(result))
+            if len(result) != {numfields:d}:
+                raise TypeError('Expected {numfields:d} arguments, got %d' % len(result))
             return result \n
         def __repr__(self):
-            return '%(typename)s(%(reprtxt)s)' %% self \n
+            return '{typename!s}({reprtxt!s})' % self \n
         def _asdict(t):
             'Return a new dict which maps field names to their values'
-            return {%(dicttxt)s} \n
+            return {{{dicttxt!s}}} \n
         def _replace(_self, **kwds):
-            'Return a new %(typename)s object replacing specified fields with new values'
-            result = _self._make(map(kwds.pop, %(field_names)r, _self))
+            'Return a new {typename!s} object replacing specified fields with new values'
+            result = _self._make(map(kwds.pop, {field_names!r}, _self))
             if kwds:
-                raise ValueError('Got unexpected field names: %%r' %% kwds.keys())
+                raise ValueError('Got unexpected field names: %r' % kwds.keys())
             return result \n
         def __getnewargs__(self):
-            return tuple(self) \n\n''' % locals()
+            return tuple(self) \n\n'''.format(**locals())
     for i, name in enumerate(field_names):
-        template += '        %s = _property(_itemgetter(%d))\n' % (name, i)
+        template += '        {0!s} = _property(_itemgetter({1:d}))\n'.format(name, i)
 
     # Execute the template string in a temporary namespace and
     # support tracing utilities by setting a value for frame.f_globals['__name__']
-    namespace = dict(_itemgetter=_itemgetter, __name__='namedtuple_%s' % typename,
+    namespace = dict(_itemgetter=_itemgetter, __name__='namedtuple_{0!s}'.format(typename),
                      _property=property, _tuple=tuple)
     try:
         exec(template, namespace)

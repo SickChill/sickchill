@@ -125,7 +125,7 @@ class DOMHTMLCharacterBioParser(DOMParserBase):
                                 'info': "./preceding-sibling::h4[1]//text()",
                                 'text': ".//text()"
                             },
-                            postprocess=lambda x: u'%s: %s' % (
+                            postprocess=lambda x: u'{0!s}: {1!s}'.format(
                                 x.get('info').strip(),
                                 x.get('text').replace('\n',
                                     ' ').replace('||', '\n\n').strip()))),

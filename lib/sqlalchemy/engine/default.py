@@ -167,8 +167,8 @@ class DefaultDialect(interfaces.Dialect):
 
         if not getattr(self, 'ported_sqla_06', True):
             util.warn(
-                "The %s dialect is not yet ported to the 0.6 format" %
-                self.name)
+                "The {0!s} dialect is not yet ported to the 0.6 format".format(
+                self.name))
 
         self.convert_unicode = convert_unicode
         self.encoding = encoding
@@ -368,8 +368,7 @@ class DefaultDialect(interfaces.Dialect):
     def validate_identifier(self, ident):
         if len(ident) > self.max_identifier_length:
             raise exc.IdentifierError(
-                "Identifier '%s' exceeds maximum length of %d characters" %
-                (ident, self.max_identifier_length)
+                "Identifier '{0!s}' exceeds maximum length of {1:d} characters".format(ident, self.max_identifier_length)
             )
 
     def connect(self, *cargs, **cparams):
@@ -417,7 +416,7 @@ class DefaultDialect(interfaces.Dialect):
         do_commit_twophase().  Its format is unspecified.
         """
 
-        return "_sa_%032x" % random.randint(0, 2 ** 128)
+        return "_sa_{0:032x}".format(random.randint(0, 2 ** 128))
 
     def do_savepoint(self, connection, name):
         connection.execute(expression.SavepointClause(name))

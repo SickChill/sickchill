@@ -48,7 +48,7 @@ def cmdline(argv=None):
     else:
         filename = options.input
         if not isfile(filename):
-            raise SystemExit("error: can't find %s" % filename)
+            raise SystemExit("error: can't find {0!s}".format(filename))
         lookup_dirs = options.template_dir or [dirname(filename)]
         lookup = TemplateLookup(lookup_dirs)
         try:

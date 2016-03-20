@@ -79,7 +79,7 @@ class _Dispatch(object):
         """
         if '_joined_dispatch_cls' not in self.__class__.__dict__:
             cls = type(
-                    "Joined%s" % self.__class__.__name__,
+                    "Joined{0!s}".format(self.__class__.__name__),
                     (_JoinedDispatcher, self.__class__), {}
                 )
             for ls in _event_descriptors(self):
@@ -129,7 +129,7 @@ def _create_dispatcher_class(cls, classname, bases, dict_):
     # i.e. make a Dispatch class that shares the '_listen' method
     # of the Event class, this is the straight monkeypatch.
     dispatch_base = getattr(cls, 'dispatch', _Dispatch)
-    dispatch_cls = type("%sDispatch" % classname,
+    dispatch_cls = type("{0!s}Dispatch".format(classname),
                                         (dispatch_base, ), {})
     cls._set_dispatch(cls, dispatch_cls)
 

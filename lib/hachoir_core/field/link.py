@@ -15,7 +15,7 @@ class Link(Field):
     def createDisplay(self):
         value = self.value
         if value is None:
-            return "<%s>" % MissingField.__name__
+            return "<{0!s}>".format(MissingField.__name__)
         return value.path
 
     def _getField(self, name, const):

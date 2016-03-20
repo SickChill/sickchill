@@ -61,7 +61,7 @@ def formatRARVersion(field):
     """
     Decodes the RAR version stored on 1 byte
     """
-    return "%u.%u" % divmod(field.value, 10)
+    return "{0:d}.{1:d}".format(*divmod(field.value, 10))
 
 def commonFlags(s):
     yield Bit(s, "has_added_size", "Additional field indicating additional size")
@@ -204,8 +204,7 @@ def fileBody(s):
         yield RawBytes(s, "compressed_data", size, "File compressed data")
 
 def fileDescription(s):
-    return "File entry: %s (%s)" % \
-           (s["filename"].display, s["compressed_size"].display)
+    return "File entry: {0!s} ({1!s})".format(s["filename"].display, s["compressed_size"].display)
 
 def newSubHeader(s):
     return specialHeader(s, False)
@@ -263,7 +262,7 @@ class Block(FieldSet):
             if parseHeader   : self.parseHeader    = lambda: parseHeader(self)
             if parseBody     : self.parseBody      = lambda: parseBody(self)
         else:
-            self.info("Processing as unknown block block of type %u" % type)
+            self.info("Processing as unknown block block of type {0:d}".format(type))
 
         self._size = 8*self["block_size"].value
         if t == 0x74 or t == 0x7A:
@@ -299,7 +298,7 @@ class Block(FieldSet):
             yield field
 
     def createDescription(self):
-        return "Block entry: %s" % self["type"].display
+        return "Block entry: {0!s}".format(self["type"].display)
 
     def parseFlags(self):
         yield BlockFlags(self, "flags", "Block header flags")

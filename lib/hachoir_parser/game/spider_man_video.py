@@ -32,7 +32,7 @@ class Chunk(FieldSet):
             self._name, self._parser, self._description = self.tag_info[fourcc]
         else:
             self._parser = None
-            self._description = "Unknown chunk: fourcc %s" % self["fourcc"].display
+            self._description = "Unknown chunk: fourcc {0!s}".format(self["fourcc"].display)
 
     def createFields(self):
         yield String(self, "fourcc", 4, "FourCC", charset="ASCII")

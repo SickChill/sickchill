@@ -37,7 +37,7 @@ class weekday(object):
         if not self.n:
             return s
         else:
-            return "%s(%+d)" % (s, self.n)
+            return "{0!s}({1:+d})".format(s, self.n)
 
 MO, TU, WE, TH, FR, SA, SU = weekdays = tuple([weekday(x) for x in range(7)])
 
@@ -238,7 +238,7 @@ class relativedelta(object):
                             self.day = yday-ydayidx[idx-1]
                         break
                 else:
-                    raise ValueError("invalid year day (%d)" % yday)
+                    raise ValueError("invalid year day ({0:d})".format(yday))
 
         self._fix()
 

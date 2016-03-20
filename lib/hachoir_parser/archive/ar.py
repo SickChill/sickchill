@@ -18,7 +18,7 @@ class ArchiveFileEntry(FieldSet):
             yield RawBytes(self, "content", size, "File data")
 
     def createDescription(self):
-        return "File entry (%s)" % self["header"].value.split()[0]
+        return "File entry ({0!s})".format(self["header"].value.split()[0])
 
 class ArchiveFile(Parser):
     endian = BIG_ENDIAN

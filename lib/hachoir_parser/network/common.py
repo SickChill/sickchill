@@ -32,7 +32,7 @@ class IPv4_Address(Field):
 
     def createValue(self):
         value = self._parent.stream.readBytes(self.absolute_address, 4)
-        return ".".join(( "%u" % ord(byte) for byte in value ))
+        return ".".join(( "{0:d}".format(ord(byte)) for byte in value ))
 
     def createDisplay(self):
         return ip2name(self.value)
@@ -45,7 +45,7 @@ class IPv6_Address(Field):
         value = self._parent.stream.readBits(self.absolute_address, 128, self.parent.endian)
         parts = []
         for index in xrange(8):
-            part = "%04x" % (value & 0xffff)
+            part = "{0:04x}".format((value & 0xffff))
             value >>= 16
             parts.append(part)
         return ':'.join(reversed(parts))
@@ -77,7 +77,7 @@ class OrganizationallyUniqueIdentifier(Bits):
         a = value >> 16
         b = (value >> 8) & 0xFF
         c = value & 0xFF
-        return "%02X-%02X-%02X" % (a, b, c)
+        return "{0:02X}-{1:02X}-{2:02X}".format(a, b, c)
 
 class NIC24(Bits):
     static_size = 24
@@ -90,10 +90,10 @@ class NIC24(Bits):
         a = value >> 16
         b = (value >> 8) & 0xFF
         c = value & 0xFF
-        return "%02x:%02x:%02x" % (a, b, c)
+        return "{0:02x}:{1:02x}:{2:02x}".format(a, b, c)
 
     def createRawDisplay(self):
-        return "0x%06X" % self.value
+        return "0x{0:06X}".format(self.value)
 
 class MAC48_Address(FieldSet):
     """
@@ -114,5 +114,5 @@ class MAC48_Address(FieldSet):
         return str2hex(bytes, format="%02x:")[:-1]
 
     def createDisplay(self):
-        return "%s [%s]" % (self["organization"].display, self["nic"].display)
+        return "{0!s} [{1!s}]".format(self["organization"].display, self["nic"].display)
 

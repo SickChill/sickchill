@@ -88,7 +88,7 @@ class weekday(object):
         if not self.n:
             return s
         else:
-            return "%s(%+d)" % (s, self.n)
+            return "{0!s}({1:+d})".format(s, self.n)
 
 MO, TU, WE, TH, FR, SA, SU = weekdays = tuple([weekday(x) for x in range(7)])
 
@@ -1487,9 +1487,9 @@ class _rrulestr(object):
                                                ignoretz=ignoretz,
                                                tzinfos=tzinfos)
             except AttributeError:
-                raise ValueError("unknown parameter '%s'" % name)
+                raise ValueError("unknown parameter '{0!s}'".format(name))
             except (KeyError, ValueError):
-                raise ValueError("invalid '%s': %s" % (name, value))
+                raise ValueError("invalid '{0!s}': {1!s}".format(name, value))
         return rrule(dtstart=dtstart, cache=cache, **rrkwargs)
 
     def _parse_rfc(self, s,

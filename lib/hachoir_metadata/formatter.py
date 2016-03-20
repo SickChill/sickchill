@@ -12,7 +12,7 @@ def humanFrameRate(value):
         return value
 
 def humanComprRate(rate):
-    return u"%.1fx" % rate
+    return u"{0:.1f}x".format(rate)
 
 def humanAltitude(value):
     return ngettext("%.1f meter", "%.1f meters", value) % value
@@ -21,5 +21,5 @@ def humanPixelSize(value):
     return ngettext("%s pixel", "%s pixels", value) % value
 
 def humanDPI(value):
-    return u"%s DPI" % value
+    return u"{0!s} DPI".format(value)
 

@@ -160,7 +160,7 @@ class Subtitle(object):
         return hash(self.provider_name + '-' + self.id)
 
     def __repr__(self):
-        return '<%s %r [%s]>' % (self.__class__.__name__, self.id, self.language)
+        return '<{0!s} {1!r} [{2!s}]>'.format(self.__class__.__name__, self.id, self.language)
 
 
 def get_subtitle_path(video_path, language=None, extension='.srt'):

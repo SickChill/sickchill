@@ -93,8 +93,7 @@ class CharSetGroupProber(CharSetProber):
                 continue
             cf = prober.get_confidence()
             if constants._debug:
-                sys.stderr.write('%s confidence = %s\n' %
-                                 (prober.get_charset_name(), cf))
+                sys.stderr.write('{0!s} confidence = {1!s}\n'.format(prober.get_charset_name(), cf))
             if bestConf < cf:
                 bestConf = cf
                 self._mBestGuessProber = prober

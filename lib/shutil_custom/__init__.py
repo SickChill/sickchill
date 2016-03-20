@@ -11,7 +11,7 @@ from shutil import _samefile
 def copyfile_custom(src, dst):
     """Copy data from src to dst"""
     if _samefile(src, dst):
-        raise Error("`%s` and `%s` are the same file" % (src, dst))
+        raise Error("`{0!s}` and `{1!s}` are the same file".format(src, dst))
 
     for fn in [src, dst]:
         try:
@@ -23,9 +23,9 @@ def copyfile_custom(src, dst):
             # XXX What about other special files? (sockets, devices...)
             if stat.S_ISFIFO(st.st_mode):
                 try:
-                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                    raise SpecialFileError("`{0!s}` is a named pipe".format(fn))
                 except NameError:
-                    raise Error("`%s` is a named pipe" % fn)
+                    raise Error("`{0!s}` is a named pipe".format(fn))
 
     try:
         # Windows

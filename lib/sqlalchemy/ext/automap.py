@@ -566,7 +566,7 @@ def generate_relationship(base, direction, return_fn, attrname, local_cls, refer
     elif return_fn is relationship:
         return return_fn(referred_cls, **kw)
     else:
-        raise TypeError("Unknown relationship function: %s" % return_fn)
+        raise TypeError("Unknown relationship function: {0!s}".format(return_fn))
 
 class AutomapBase(object):
     """Base class for an "automap" schema.

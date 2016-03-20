@@ -110,7 +110,7 @@ class XcfLevel(FieldSet):
         for chunk in data_offsets:
             data_offset = chunk.value
             size = data_offset - previous
-            yield RawBytes(self, "data[]", size, "Data content of %s" % chunk.name)
+            yield RawBytes(self, "data[]", size, "Data content of {0!s}".format(chunk.name))
             previous = data_offset
 
 class XcfHierarchy(FieldSet):
@@ -144,7 +144,7 @@ class XcfChannel(FieldSet):
         yield XcfHierarchy(self, "hierarchy", "Hierarchy")
 
     def createDescription(self):
-         return 'Channel "%s"' % self["name"].value
+         return 'Channel "{0!s}"'.format(self["name"].value)
 
 class XcfLayer(FieldSet):
     def createFields(self):
@@ -168,7 +168,7 @@ class XcfLayer(FieldSet):
         # TODO: Read layer mask if needed: self["mask_ofs"].value != 0
 
     def createDescription(self):
-        return 'Layer "%s"' % self["name"].value
+        return 'Layer "{0!s}"'.format(self["name"].value)
 
 class XcfParasites(FieldSet):
     def createFields(self):
@@ -244,7 +244,7 @@ class XcfProperty(FieldSet):
                 yield RawBytes(self, "data", size, "Data")
 
     def createDescription(self):
-        return "Property: %s" % self["type"].display
+        return "Property: {0!s}".format(self["type"].display)
 
 def readProperties(parser):
     while True:

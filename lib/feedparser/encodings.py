@@ -227,7 +227,7 @@ def convert_to_utf8(http_headers, data, result):
 
     if http_headers and (not acceptable_content_type):
         if 'content-type' in http_headers:
-            msg = '%s is not an XML media type' % http_headers['content-type']
+            msg = '{0!s} is not an XML media type'.format(http_headers['content-type'])
         else:
             msg = 'no Content-type specified'
         error = NonXMLContentType(msg)
@@ -263,13 +263,11 @@ def convert_to_utf8(http_headers, data, result):
     if not known_encoding:
         error = CharacterEncodingUnknown(
             'document encoding unknown, I tried ' +
-            '%s, %s, utf-8, windows-1252, and iso-8859-2 but nothing worked' %
-            (rfc3023_encoding, xml_encoding))
+            '{0!s}, {1!s}, utf-8, windows-1252, and iso-8859-2 but nothing worked'.format(rfc3023_encoding, xml_encoding))
         rfc3023_encoding = ''
     elif proposed_encoding != rfc3023_encoding:
         error = CharacterEncodingOverride(
-            'document declared as %s, but parsed as %s' %
-            (rfc3023_encoding, proposed_encoding))
+            'document declared as {0!s}, but parsed as {1!s}'.format(rfc3023_encoding, proposed_encoding))
         rfc3023_encoding = proposed_encoding
 
     result['encoding'] = rfc3023_encoding

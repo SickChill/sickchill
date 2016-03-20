@@ -174,7 +174,7 @@ class ItemId(FieldSet):
 
 def formatVolumeSerial(field):
     val = field.value
-    return '%04X-%04X'%(val>>16, val&0xFFFF)
+    return '{0:04X}-{1:04X}'.format(val>>16, val&0xFFFF)
 
 class LocalVolumeTable(FieldSet):
     VOLUME_TYPE={
@@ -298,7 +298,7 @@ class ColorRef(FieldSet):
         yield PaddingBytes(self, "pad", 1, "Padding (must be 0)")
     def createDescription(self):
         rgb = self["red"].value, self["green"].value, self["blue"].value
-        return "RGB Color: #%02X%02X%02X" % rgb
+        return "RGB Color: #{0:02X}{1:02X}{2:02X}".format(*rgb)
 
 class ColorTableIndex(Bits):
     def __init__(self, parent, name, size, description=None):
@@ -306,8 +306,8 @@ class ColorTableIndex(Bits):
         self.desc=description
     def createDescription(self):
         assert hasattr(self, 'parent') and hasattr(self, 'value')
-        return "%s: %s"%(self.desc,
-                         self.parent["color[%i]"%self.value].description)
+        return "{0!s}: {1!s}".format(self.desc,
+                         self.parent["color[{0:d}]".format(self.value)].description)
 
 class ExtraInfo(FieldSet):
     INFO_TYPE={
@@ -512,7 +512,7 @@ def text_hot_key(field):
     elif 0x60 <= val <= 0x69:
         return u'Numpad %c' % unichr(val-0x30)
     elif 0x70 <= val <= 0x87:
-        return 'F%i'%(val-0x6F)
+        return 'F{0:d}'.format((val-0x6F))
     elif val in HOT_KEYS:
         return HOT_KEYS[val]
     return str(val)

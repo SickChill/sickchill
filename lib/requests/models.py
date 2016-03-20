@@ -163,7 +163,7 @@ class RequestHooksMixin(object):
         """Properly register a hook."""
 
         if event not in self.hooks:
-            raise ValueError('Unsupported event specified, with event name "%s"' % (event))
+            raise ValueError('Unsupported event specified, with event name "{0!s}"'.format((event)))
 
         if isinstance(hook, collections.Callable):
             self.hooks[event].append(hook)
@@ -231,7 +231,7 @@ class Request(RequestHooksMixin):
         self.cookies = cookies
 
     def __repr__(self):
-        return '<Request [%s]>' % (self.method)
+        return '<Request [{0!s}]>'.format((self.method))
 
     def prepare(self):
         """Constructs a :class:`PreparedRequest <PreparedRequest>` for transmission and returns it."""
@@ -303,7 +303,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         self.prepare_hooks(hooks)
 
     def __repr__(self):
-        return '<PreparedRequest [%s]>' % (self.method)
+        return '<PreparedRequest [{0!s}]>'.format((self.method))
 
     def copy(self):
         p = PreparedRequest()
@@ -353,7 +353,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             raise MissingSchema(error)
 
         if not host:
-            raise InvalidURL("Invalid URL %r: No host supplied" % url)
+            raise InvalidURL("Invalid URL {0!r}: No host supplied".format(url))
 
         # Only want to apply IDNA to the hostname
         try:
@@ -391,7 +391,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         enc_params = self._encode_params(params)
         if enc_params:
             if query:
-                query = '%s&%s' % (query, enc_params)
+                query = '{0!s}&{1!s}'.format(query, enc_params)
             else:
                 query = enc_params
 
@@ -603,7 +603,7 @@ class Response(object):
         setattr(self, 'raw', None)
 
     def __repr__(self):
-        return '<Response [%s]>' % (self.status_code)
+        return '<Response [{0!s}]>'.format((self.status_code))
 
     def __bool__(self):
         """Returns true if :attr:`status_code` is 'OK'."""
@@ -831,10 +831,10 @@ class Response(object):
         http_error_msg = ''
 
         if 400 <= self.status_code < 500:
-            http_error_msg = '%s Client Error: %s for url: %s' % (self.status_code, self.reason, self.url)
+            http_error_msg = '{0!s} Client Error: {1!s} for url: {2!s}'.format(self.status_code, self.reason, self.url)
 
         elif 500 <= self.status_code < 600:
-            http_error_msg = '%s Server Error: %s for url: %s' % (self.status_code, self.reason, self.url)
+            http_error_msg = '{0!s} Server Error: {1!s} for url: {2!s}'.format(self.status_code, self.reason, self.url)
 
         if http_error_msg:
             raise HTTPError(http_error_msg, response=self)

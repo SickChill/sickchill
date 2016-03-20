@@ -49,7 +49,7 @@ class ContentFile(github.GithubObject.CompletableGithubObject):
 
     @property
     def decoded_content(self):
-        assert self.encoding == "base64", "unsupported encoding: %s" % self.encoding
+        assert self.encoding == "base64", "unsupported encoding: {0!s}".format(self.encoding)
         if atLeastPython3:
             content = bytearray(self.content, "utf-8")  # pragma no cover (covered by tests with Python 3.2)
         else:

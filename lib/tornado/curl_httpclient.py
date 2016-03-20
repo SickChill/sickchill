@@ -298,7 +298,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             request.headers["Pragma"] = ""
 
         curl.setopt(pycurl.HTTPHEADER,
-                    ["%s: %s" % (native_str(k), native_str(v))
+                    ["{0!s}: {1!s}".format(native_str(k), native_str(v))
                      for k, v in request.headers.get_all()])
 
         curl.setopt(pycurl.HEADERFUNCTION,
@@ -338,7 +338,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             curl.setopt(pycurl.PROXY, request.proxy_host)
             curl.setopt(pycurl.PROXYPORT, request.proxy_port)
             if request.proxy_username:
-                credentials = '%s:%s' % (request.proxy_username,
+                credentials = '{0!s}:{1!s}'.format(request.proxy_username,
                                          request.proxy_password)
                 curl.setopt(pycurl.PROXYUSERPWD, credentials)
         else:
@@ -394,8 +394,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
         elif request.method in ("POST", "PUT") or request.body:
             if request.body is None:
                 raise ValueError(
-                    'Body must not be None for "%s" request'
-                    % request.method)
+                    'Body must not be None for "{0!s}" request'.format(request.method))
 
             request_buffer = BytesIO(utf8(request.body))
 
@@ -411,14 +410,14 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
                 curl.setopt(pycurl.INFILESIZE, len(request.body))
 
         if request.auth_username is not None:
-            userpwd = "%s:%s" % (request.auth_username, request.auth_password or '')
+            userpwd = "{0!s}:{1!s}".format(request.auth_username, request.auth_password or '')
 
             if request.auth_mode is None or request.auth_mode == "basic":
                 curl.setopt(pycurl.HTTPAUTH, pycurl.HTTPAUTH_BASIC)
             elif request.auth_mode == "digest":
                 curl.setopt(pycurl.HTTPAUTH, pycurl.HTTPAUTH_DIGEST)
             else:
-                raise ValueError("Unsupported auth_mode %s" % request.auth_mode)
+                raise ValueError("Unsupported auth_mode {0!s}".format(request.auth_mode))
 
             curl.setopt(pycurl.USERPWD, native_str(userpwd))
             curl_log.debug("%s %s (username: %r)", request.method, request.url,
@@ -459,7 +458,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             headers.clear()
             try:
                 (__, __, reason) = httputil.parse_response_start_line(header_line)
-                header_line = "X-Http-Reason: %s" % reason
+                header_line = "X-Http-Reason: {0!s}".format(reason)
             except httputil.HTTPInputError:
                 return
         if not header_line:

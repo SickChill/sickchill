@@ -185,7 +185,7 @@ else:
 # Copyright (c) 2010-2012 Benjamin Peterson
 def with_metaclass(meta, base=object):
     """Create a base class with a metaclass."""
-    return meta("%sBase" % meta.__name__, (base,), {})
+    return meta("{0!s}Base".format(meta.__name__), (base,), {})
 ################################################
 
 

@@ -474,32 +474,32 @@ class CompatibilityTests(unittest.TestCase):
     def testTwistedServerTornadoClientIOLoop(self):
         self.start_twisted_server()
         response = self.tornado_fetch(
-            'http://127.0.0.1:%d' % self.twisted_port, self.run_ioloop)
+            'http://127.0.0.1:{0:d}'.format(self.twisted_port), self.run_ioloop)
         self.assertEqual(response.body, 'Hello from twisted!')
 
     def testTwistedServerTornadoClientReactor(self):
         self.start_twisted_server()
         response = self.tornado_fetch(
-            'http://127.0.0.1:%d' % self.twisted_port, self.run_reactor)
+            'http://127.0.0.1:{0:d}'.format(self.twisted_port), self.run_reactor)
         self.assertEqual(response.body, 'Hello from twisted!')
 
     def testTornadoServerTwistedClientIOLoop(self):
         self.start_tornado_server()
         response = self.twisted_fetch(
-            'http://127.0.0.1:%d' % self.tornado_port, self.run_ioloop)
+            'http://127.0.0.1:{0:d}'.format(self.tornado_port), self.run_ioloop)
         self.assertEqual(response, 'Hello from tornado!')
 
     def testTornadoServerTwistedClientReactor(self):
         self.start_tornado_server()
         response = self.twisted_fetch(
-            'http://127.0.0.1:%d' % self.tornado_port, self.run_reactor)
+            'http://127.0.0.1:{0:d}'.format(self.tornado_port), self.run_reactor)
         self.assertEqual(response, 'Hello from tornado!')
 
     @skipIfNoSingleDispatch
     def testTornadoServerTwistedCoroutineClientIOLoop(self):
         self.start_tornado_server()
         response = self.twisted_coroutine_fetch(
-            'http://127.0.0.1:%d' % self.tornado_port, self.run_ioloop)
+            'http://127.0.0.1:{0:d}'.format(self.tornado_port), self.run_ioloop)
         self.assertEqual(response, 'Hello from tornado!')
 
 

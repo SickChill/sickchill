@@ -20,7 +20,7 @@ class BooleanDecoder(decoder.AbstractSimpleDecoder):
         elif byte == 0x00:
             value = 0
         else:
-            raise error.PyAsn1Error('Boolean CER violation: %s' % byte)
+            raise error.PyAsn1Error('Boolean CER violation: {0!s}'.format(byte))
         return self._createComponent(asn1Spec, tagSet, value), tail
 
 tagMap = decoder.tagMap.copy()

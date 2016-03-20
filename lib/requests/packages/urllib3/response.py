@@ -241,7 +241,7 @@ class HTTPResponse(io.IOBase):
 
             except (HTTPException, SocketError) as e:
                 # This includes IncompleteRead.
-                raise ProtocolError('Connection broken: %r' % e, e)
+                raise ProtocolError('Connection broken: {0!r}'.format(e), e)
 
         except Exception:
             # The response may not be closed but we're not going to use it anymore

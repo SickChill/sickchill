@@ -214,8 +214,8 @@ class _resultbase(object):
         for attr in self.__slots__:
             value = getattr(self, attr)
             if value is not None:
-                l.append("%s=%s" % (attr, repr(value)))
-        return "%s(%s)" % (classname, ", ".join(l))
+                l.append("{0!s}={1!s}".format(attr, repr(value)))
+        return "{0!s}({1!s})".format(classname, ", ".join(l))
 
     def __len__(self):
         return (sum(getattr(self, attr) is not None

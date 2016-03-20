@@ -107,17 +107,16 @@ class SQLiteLockFile(LockBase):
                                       self.path)
                 else:
                     # Someone else has the lock and we are impatient..
-                    raise AlreadyLocked("%s is already locked" % self.path)
+                    raise AlreadyLocked("{0!s} is already locked".format(self.path))
 
             # Well, okay.  We'll give it a bit longer.
             time.sleep(wait)
 
     def release(self):
         if not self.is_locked():
-            raise NotLocked("%s is not locked" % self.path)
+            raise NotLocked("{0!s} is not locked".format(self.path))
         if not self.i_am_locking():
-            raise NotMyLock("%s is locked, but not by me (by %s)" %
-                            (self.unique_name, self._who_is_locking()))
+            raise NotMyLock("{0!s} is locked, but not by me (by {1!s})".format(self.unique_name, self._who_is_locking()))
         cursor = self.connection.cursor()
         cursor.execute("delete from locks"
                        "  where unique_name = ?",

@@ -92,7 +92,7 @@ class AniDBLink(threading.Thread):
                 self._handle_timeouts()
 
                 continue
-            self.log("NetIO < %s" % repr(data))
+            self.log("NetIO < {0!s}".format(repr(data)))
             try:
                 for i in range(2):
                     try:
@@ -100,7 +100,7 @@ class AniDBLink(threading.Thread):
                         resp = None
                         if tmp[:2] == '\x00\x00':
                             tmp = zlib.decompressobj().decompress(tmp[2:])
-                            self.log("UnZip | %s" % repr(tmp))
+                            self.log("UnZip | {0!s}".format(repr(tmp)))
                         resp = ResponseResolver(tmp)
                     except:
                         sys.excepthook(*sys.exc_info())
@@ -200,14 +200,14 @@ class AniDBLink(threading.Thread):
         if command.command == 'AUTH' and self.logPrivate:
             self.log("NetIO > sensitive data is not logged!")
         else:
-            self.log("NetIO > %s" % repr(data))
+            self.log("NetIO > {0!s}".format(repr(data)))
 
     def new_tag(self):
         if not len(self.tags):
             maxtag = "T000"
         else:
             maxtag = max(self.tags)
-        newtag = "T%03d" % (int(maxtag[1:]) + 1)
+        newtag = "T{0:03d}".format((int(maxtag[1:]) + 1))
         return newtag
 
     def request(self, command):

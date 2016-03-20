@@ -158,4 +158,4 @@ class Provider(object):
         raise NotImplementedError
 
     def __repr__(self):
-        return '<%s [%r]>' % (self.__class__.__name__, self.video_types)
+        return '<{0!s} [{1!r}]>'.format(self.__class__.__name__, self.video_types)

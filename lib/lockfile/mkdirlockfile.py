@@ -19,7 +19,7 @@ class MkdirLockFile(LockBase):
         # Lock file itself is a directory.  Place the unique file name into
         # it.
         self.unique_name  = os.path.join(self.lock_file,
-                                         "%s.%s%s" % (self.hostname,
+                                         "{0!s}.{1!s}{2!s}".format(self.hostname,
                                                       self.tname,
                                                       self.pid))
 
@@ -51,21 +51,21 @@ class MkdirLockFile(LockBase):
                                               self.path)
                         else:
                             # Someone else has the lock.
-                            raise AlreadyLocked("%s is already locked" %
-                                                self.path)
+                            raise AlreadyLocked("{0!s} is already locked".format(
+                                                self.path))
                     time.sleep(wait)
                 else:
                     # Couldn't create the lock for some other reason
-                    raise LockFailed("failed to create %s" % self.lock_file)
+                    raise LockFailed("failed to create {0!s}".format(self.lock_file))
             else:
                 open(self.unique_name, "wb").close()
                 return
 
     def release(self):
         if not self.is_locked():
-            raise NotLocked("%s is not locked" % self.path)
+            raise NotLocked("{0!s} is not locked".format(self.path))
         elif not os.path.exists(self.unique_name):
-            raise NotMyLock("%s is locked, but not by me" % self.path)
+            raise NotMyLock("{0!s} is locked, but not by me".format(self.path))
         os.unlink(self.unique_name)
         os.rmdir(self.lock_file)
 

@@ -84,7 +84,7 @@ class FBDialect_fdb(FBDialect_kinterbasdb):
     def create_connect_args(self, url):
         opts = url.translate_connect_args(username='user')
         if opts.get('port'):
-            opts['host'] = "%s/%s" % (opts['host'], opts['port'])
+            opts['host'] = "{0!s}/{1!s}".format(opts['host'], opts['port'])
             del opts['port']
         opts.update(url.query)
 

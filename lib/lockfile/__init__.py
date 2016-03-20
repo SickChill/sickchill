@@ -198,7 +198,7 @@ class _SharedBase(object):
         self.release()
 
     def __repr__(self):
-        return "<%s: %r>" % (self.__class__.__name__, self.path)
+        return "<{0!s}: {1!r}>".format(self.__class__.__name__, self.path)
 
 class LockBase(_SharedBase):
     """Base class for platform-specific lock classes."""
@@ -216,7 +216,7 @@ class LockBase(_SharedBase):
             # Thread objects in Python 2.4 and earlier do not have ident
             # attrs.  Worm around that.
             ident = getattr(t, "ident", hash(t))
-            self.tname = "-%x" % (ident & 0xffffffff)
+            self.tname = "-{0:x}".format((ident & 0xffffffff))
         else:
             self.tname = ""
         dirname = os.path.dirname(self.lock_file)
@@ -229,7 +229,7 @@ class LockBase(_SharedBase):
         # gets unlocked, deleting both lock-file and unique file,
         # finally the last lock errors out upon releasing.
         self.unique_name = os.path.join(dirname,
-                                        "%s%s.%s%s" % (self.hostname,
+                                        "{0!s}{1!s}.{2!s}{3!s}".format(self.hostname,
                                                        self.tname,
                                                        self.pid,
                                                        hash(self.path)))
@@ -254,11 +254,11 @@ class LockBase(_SharedBase):
         raise NotImplemented("implement in subclass")
 
     def __repr__(self):
-        return "<%s: %r -- %r>" % (self.__class__.__name__, self.unique_name,
+        return "<{0!s}: {1!r} -- {2!r}>".format(self.__class__.__name__, self.unique_name,
                                    self.path)
 
 def _fl_helper(cls, mod, *args, **kwds):
-    warnings.warn("Import from %s module instead of lockfile package" % mod,
+    warnings.warn("Import from {0!s} module instead of lockfile package".format(mod),
                   DeprecationWarning, stacklevel=2)
     # This is a bit funky, but it's only for awhile.  The way the unit tests
     # are constructed this function winds up as an unbound method, so it

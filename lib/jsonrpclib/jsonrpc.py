@@ -276,7 +276,7 @@ class _Method(XML_Method):
             return self.__send(self.__name, kwargs)
 
     def __getattr__(self, name):
-        self.__name = '%s.%s' % (self.__name, name)
+        self.__name = '{0!s}.{1!s}'.format(self.__name, name)
         return self
         # The old method returned a new instance, but this seemed wasteful.
         # The only thing that changes is the name.
@@ -312,10 +312,10 @@ class MultiCallMethod(object):
                      encoding=encoding, rpcid=rpcid, notify=self.notify)
 
     def __repr__(self):
-        return '%s' % self.request()
+        return '{0!s}'.format(self.request())
         
     def __getattr__(self, method):
-        new_method = '%s.%s' % (self.method, method)
+        new_method = '{0!s}.{1!s}'.format(self.method, method)
         self.method = new_method
         return self
 
@@ -357,8 +357,8 @@ class MultiCall(object):
         if len(self._job_list) < 1:
             # Should we alert? This /is/ pretty obvious.
             return
-        request_body = '[ %s ]' % ','.join([job.request() for
-                                          job in self._job_list])
+        request_body = '[ {0!s} ]'.format(','.join([job.request() for
+                                          job in self._job_list]))
         responses = self._server._run_request(request_body)
         del self._job_list[:]
         if not responses:
@@ -400,7 +400,7 @@ class Fault(object):
         )
 
     def __repr__(self):
-        return '<Fault %s: %s>' % (self.faultCode, self.faultString)
+        return '<Fault {0!s}: {1!s}>'.format(self.faultCode, self.faultString)
 
 def random_id(length=8):
     return_id = ''

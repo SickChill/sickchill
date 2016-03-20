@@ -122,8 +122,8 @@ class _TestMethodWrapper(object):
             raise TypeError("Generator test methods should be decorated with "
                             "tornado.testing.gen_test")
         elif result is not None:
-            raise ValueError("Return value from test method ignored: %r" %
-                             result)
+            raise ValueError("Return value from test method ignored: {0!r}".format(
+                             result))
 
     def __getattr__(self, name):
         """Proxy all unknown attributes to the original method.
@@ -300,8 +300,8 @@ class AsyncTestCase(unittest.TestCase):
                 def timeout_func():
                     try:
                         raise self.failureException(
-                            'Async operation timed out after %s seconds' %
-                            timeout)
+                            'Async operation timed out after {0!s} seconds'.format(
+                            timeout))
                     except Exception:
                         self.__failure = sys.exc_info()
                     self.stop()
@@ -398,7 +398,7 @@ class AsyncHTTPTestCase(AsyncTestCase):
 
     def get_url(self, path):
         """Returns an absolute url for the given path on the test server."""
-        return '%s://localhost:%s%s' % (self.get_protocol(),
+        return '{0!s}://localhost:{1!s}{2!s}'.format(self.get_protocol(),
                                         self.get_http_port(), path)
 
     def tearDown(self):

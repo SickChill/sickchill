@@ -206,7 +206,7 @@ class HTTP1Connection(httputil.HTTPConnection):
                     if ('Content-Length' in headers or
                             'Transfer-Encoding' in headers):
                         raise httputil.HTTPInputError(
-                            "Response code %d cannot have body" % code)
+                            "Response code {0:d} cannot have body".format(code))
                     # TODO: client delegates will get headers_received twice
                     # in the case of a 100-continue.  Document or change?
                     yield self._read_message(delegate)
@@ -333,7 +333,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         lines = []
         if self.is_client:
             self._request_start_line = start_line
-            lines.append(utf8('%s %s HTTP/1.1' % (start_line[0], start_line[1])))
+            lines.append(utf8('{0!s} {1!s} HTTP/1.1'.format(start_line[0], start_line[1])))
             # Client requests with a non-empty body must have either a
             # Content-Length or a Transfer-Encoding.
             self._chunking_output = (
@@ -342,7 +342,7 @@ class HTTP1Connection(httputil.HTTPConnection):
                 'Transfer-Encoding' not in headers)
         else:
             self._response_start_line = start_line
-            lines.append(utf8('HTTP/1.1 %s %s' % (start_line[1], start_line[2])))
+            lines.append(utf8('HTTP/1.1 {0!s} {1!s}'.format(start_line[1], start_line[2])))
             self._chunking_output = (
                 # TODO: should this use
                 # self._request_start_line.version or
@@ -404,7 +404,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         if self._chunking_output and chunk:
             # Don't write out empty chunks because that means END-OF-STREAM
             # with chunked encoding
-            return utf8("%x" % len(chunk)) + b"\r\n" + chunk + b"\r\n"
+            return utf8("{0:x}".format(len(chunk))) + b"\r\n" + chunk + b"\r\n"
         else:
             return chunk
 
@@ -436,8 +436,8 @@ class HTTP1Connection(httputil.HTTPConnection):
                 not self.stream.closed()):
             self.stream.close()
             raise httputil.HTTPOutputError(
-                "Tried to write %d bytes less than Content-Length" %
-                self._expected_content_remaining)
+                "Tried to write {0:d} bytes less than Content-Length".format(
+                self._expected_content_remaining))
         if self._chunking_output:
             if not self.stream.closed():
                 self._pending_write = self.stream.write(b"0\r\n\r\n")
@@ -509,8 +509,8 @@ class HTTP1Connection(httputil.HTTPConnection):
             headers = httputil.HTTPHeaders.parse(data[eol:])
         except ValueError:
             # probably form split() if there was no ':' in the line
-            raise httputil.HTTPInputError("Malformed HTTP headers: %r" %
-                                          data[eol:100])
+            raise httputil.HTTPInputError("Malformed HTTP headers: {0!r}".format(
+                                          data[eol:100]))
         return start_line, headers
 
     def _read_body(self, code, headers, delegate):
@@ -522,8 +522,8 @@ class HTTP1Connection(httputil.HTTPConnection):
                 pieces = re.split(r',\s*', headers["Content-Length"])
                 if any(i != pieces[0] for i in pieces):
                     raise httputil.HTTPInputError(
-                        "Multiple unequal Content-Lengths: %r" %
-                        headers["Content-Length"])
+                        "Multiple unequal Content-Lengths: {0!r}".format(
+                        headers["Content-Length"]))
                 headers["Content-Length"] = pieces[0]
             content_length = int(headers["Content-Length"])
 
@@ -539,7 +539,7 @@ class HTTP1Connection(httputil.HTTPConnection):
             if ("Transfer-Encoding" in headers or
                     content_length not in (None, 0)):
                 raise httputil.HTTPInputError(
-                    "Response with code %d should not have body" % code)
+                    "Response with code {0:d} should not have body".format(code))
             content_length = 0
 
         if content_length is not None:

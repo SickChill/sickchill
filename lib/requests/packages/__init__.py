@@ -27,10 +27,10 @@ try:
     from . import urllib3
 except ImportError:
     import urllib3
-    sys.modules['%s.urllib3' % __name__] = urllib3
+    sys.modules['{0!s}.urllib3'.format(__name__)] = urllib3
 
 try:
     from . import chardet
 except ImportError:
     import chardet
-    sys.modules['%s.chardet' % __name__] = chardet
+    sys.modules['{0!s}.chardet'.format(__name__)] = chardet

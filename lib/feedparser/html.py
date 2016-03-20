@@ -119,17 +119,17 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser, object):
                 value=value.replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
                 value = self.bare_ampersand.sub("&amp;", value)
                 uattrs.append((key, value))
-            strattrs = ''.join([' %s="%s"' % (key, value) for key, value in uattrs])
+            strattrs = ''.join([' {0!s}="{1!s}"'.format(key, value) for key, value in uattrs])
         if tag in self.elements_no_end_tag:
-            self.pieces.append('<%s%s />' % (tag, strattrs))
+            self.pieces.append('<{0!s}{1!s} />'.format(tag, strattrs))
         else:
-            self.pieces.append('<%s%s>' % (tag, strattrs))
+            self.pieces.append('<{0!s}{1!s}>'.format(tag, strattrs))
 
     def unknown_endtag(self, tag):
         # called for each end tag, e.g. for </pre>, tag will be 'pre'
         # Reconstruct the original end tag.
         if tag not in self.elements_no_end_tag:
-            self.pieces.append("</%s>" % tag)
+            self.pieces.append("</{0!s}>".format(tag))
 
     def handle_charref(self, ref):
         # called for each character reference, e.g. for '&#160;', ref will be '160'
@@ -141,17 +141,17 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser, object):
             value = int(ref)
 
         if value in _cp1252:
-            self.pieces.append('&#%s;' % hex(ord(_cp1252[value]))[1:])
+            self.pieces.append('&#{0!s};'.format(hex(ord(_cp1252[value]))[1:]))
         else:
-            self.pieces.append('&#%s;' % ref)
+            self.pieces.append('&#{0!s};'.format(ref))
 
     def handle_entityref(self, ref):
         # called for each entity reference, e.g. for '&copy;', ref will be 'copy'
         # Reconstruct the original entity reference.
         if ref in name2codepoint or ref == 'apos':
-            self.pieces.append('&%s;' % ref)
+            self.pieces.append('&{0!s};'.format(ref))
         else:
-            self.pieces.append('&amp;%s' % ref)
+            self.pieces.append('&amp;{0!s}'.format(ref))
 
     def handle_data(self, text):
         # called for each block of plain text, i.e. outside of any tag and
@@ -162,19 +162,19 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser, object):
     def handle_comment(self, text):
         # called for each HTML comment, e.g. <!-- insert Javascript code here -->
         # Reconstruct the original comment.
-        self.pieces.append('<!--%s-->' % text)
+        self.pieces.append('<!--{0!s}-->'.format(text))
 
     def handle_pi(self, text):
         # called for each processing instruction, e.g. <?instruction>
         # Reconstruct original processing instruction.
-        self.pieces.append('<?%s>' % text)
+        self.pieces.append('<?{0!s}>'.format(text))
 
     def handle_decl(self, text):
         # called for the DOCTYPE, if present, e.g.
         # <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         #     "http://www.w3.org/TR/html4/loose.dtd">
         # Reconstruct original DOCTYPE
-        self.pieces.append('<!%s>' % text)
+        self.pieces.append('<!{0!s}>'.format(text))
 
     _new_declname_match = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9:]*\s*').match
     def _scan_name(self, i, declstartpos):
@@ -195,10 +195,10 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser, object):
             return None, -1
 
     def convert_charref(self, name):
-        return '&#%s;' % name
+        return '&#{0!s};'.format(name)
 
     def convert_entityref(self, name):
-        return '&%s;' % name
+        return '&{0!s};'.format(name)
 
     def output(self):
         '''Return processed HTML as a single string'''

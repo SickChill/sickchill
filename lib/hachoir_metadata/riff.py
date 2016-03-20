@@ -45,7 +45,7 @@ class RiffMetadata(MultipleMetadata):
         value = chunk["text"].value
         tag = chunk["tag"].value
         if tag not in self.TAG_TO_KEY:
-            self.warning("Skip RIFF metadata %s: %s" % (tag, value))
+            self.warning("Skip RIFF metadata {0!s}: {1!s}".format(tag, value))
             return
         key = self.TAG_TO_KEY[tag]
         setattr(self, key, value)
@@ -84,8 +84,7 @@ class RiffMetadata(MultipleMetadata):
 
     @fault_tolerant
     def extractAVIVideo(self, header, meta):
-        meta.compression = "%s (fourcc:\"%s\")" \
-            % (header["fourcc"].display, makeUnicode(header["fourcc"].value))
+        meta.compression = "{0!s} (fourcc:\"{1!s}\")".format(header["fourcc"].display, makeUnicode(header["fourcc"].value))
         if header["rate"].value and header["scale"].value:
             fps = float(header["rate"].value) / header["scale"].value
             meta.frame_rate = fps
@@ -114,8 +113,7 @@ class RiffMetadata(MultipleMetadata):
                 frame_rate = float(header["rate"].value) / header["scale"].value
                 meta.duration = timedelta(seconds=float(header["length"].value) / frame_rate)
             if header["fourcc"].value != "":
-                meta.compression = "%s (fourcc:\"%s\")" \
-                    % (format["codec"].display, header["fourcc"].value)
+                meta.compression = "{0!s} (fourcc:\"{1!s}\")".format(format["codec"].display, header["fourcc"].value)
         if not meta.has("compression"):
             meta.compression = format["codec"].display
 
@@ -157,7 +155,7 @@ class RiffMetadata(MultipleMetadata):
                 if "stream_fmt" in stream:
                     meta = Metadata(self)
                     self.extractAVIAudio(stream["stream_fmt"], meta)
-                    self.addGroup("audio[%u]" % audio_index, meta, "Audio stream")
+                    self.addGroup("audio[{0:d}]".format(audio_index), meta, "Audio stream")
                     audio_index += 1
         if "avi_hdr" in headers:
             self.useAviHeader(headers["avi_hdr"])

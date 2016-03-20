@@ -46,10 +46,10 @@ class MultipartPostHandler(urllib2.BaseHandler):
                 data = urllib.urlencode(v_vars, doseq)
             else:
                 boundary, data = MultipartPostHandler.multipart_encode(v_vars, v_files)
-                contenttype = 'multipart/form-data; boundary=%s' % boundary
+                contenttype = 'multipart/form-data; boundary={0!s}'.format(boundary)
                 if(request.has_header('Content-Type')
                    and request.get_header('Content-Type').find('multipart/form-data') != 0):
-                    print "Replacing %s with %s" % (request.get_header('content-type'), 'multipart/form-data')
+                    print "Replacing {0!s} with {1!s}".format(request.get_header('content-type'), 'multipart/form-data')
                 request.add_unredirected_header('Content-Type', contenttype)
 
             request.add_data(data)
@@ -62,8 +62,8 @@ class MultipartPostHandler(urllib2.BaseHandler):
         if buffer is None:
             buffer = ''
         for(key, value) in vars:
-            buffer += '--%s\r\n' % boundary
-            buffer += 'Content-Disposition: form-data; name="%s"' % key
+            buffer += '--{0!s}\r\n'.format(boundary)
+            buffer += 'Content-Disposition: form-data; name="{0!s}"'.format(key)
             buffer += '\r\n\r\n' + value + '\r\n'
         for(key, fd) in files:
             
@@ -77,12 +77,12 @@ class MultipartPostHandler(urllib2.BaseHandler):
                 
             filename = os.path.basename(name_in)
             contenttype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-            buffer += '--%s\r\n' % boundary
-            buffer += 'Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename)
-            buffer += 'Content-Type: %s\r\n' % contenttype
+            buffer += '--{0!s}\r\n'.format(boundary)
+            buffer += 'Content-Disposition: form-data; name="{0!s}"; filename="{1!s}"\r\n'.format(key, filename)
+            buffer += 'Content-Type: {0!s}\r\n'.format(contenttype)
             # buffer += 'Content-Length: %s\r\n' % file_size
             buffer += '\r\n' + data_in + '\r\n'
-        buffer += '--%s--\r\n\r\n' % boundary
+        buffer += '--{0!s}--\r\n\r\n'.format(boundary)
         return boundary, buffer
 
     https_request = http_request

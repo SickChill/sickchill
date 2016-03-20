@@ -86,10 +86,10 @@ def waitForID(s, wait_id, wait_name="waited_id[]"):
         uid = s.stream.readBits(addr, 8, LITTLE_ENDIAN)
         if uid == wait_id:
             yield Enum(UInt8(s, wait_name), ID_INFO)
-            s.info("Found ID %s (%u)" % (ID_INFO[uid], uid))
+            s.info("Found ID {0!s} ({1:d})".format(ID_INFO[uid], uid))
             return
-        s.info("Skipping ID %u!=%u" % (uid, wait_id))
-        yield SkippedData(s, "skipped_id[]", "%u != %u" % (uid, wait_id))
+        s.info("Skipping ID {0:d}!={1:d}".format(uid, wait_id))
+        yield SkippedData(s, "skipped_id[]", "{0:d} != {1:d}".format(uid, wait_id))
 
 class HashDigest(FieldSet):
     def __init__(self, parent, name, num_digests, desc=None):
@@ -103,7 +103,7 @@ class HashDigest(FieldSet):
             for index in xrange(self.num_digests):
                 if bytes[index]:
                     yield textHandler(UInt32(self, "hash[]",
-                        "Hash for digest %u" % index), hexadecimal)
+                        "Hash for digest {0:d}".format(index)), hexadecimal)
 
 class PackInfo(FieldSet):
     def createFields(self):
@@ -140,7 +140,7 @@ def lzmaParams(value):
     pb = remainder / 5
     # Literal coder position bits
     lp = remainder % 5
-    return "lc=%u pb=%u lp=%u" % (lc, lp, pb)
+    return "lc={0:d} pb={1:d} lp={2:d}".format(lc, lp, pb)
 
 class CoderID(FieldSet):
     CODECS = {
@@ -152,23 +152,22 @@ class CoderID(FieldSet):
         byte = UInt8(self, "id_size")
         yield byte
         byte = byte.value
-        self.info("ID=%u" % byte)
+        self.info("ID={0:d}".format(byte))
         size = byte & 0xF
         if size > 0:
             name = self.stream.readBytes(self.absolute_address+self.current_size, size)
             if name in self.CODECS:
                 name = self.CODECS[name]
-                self.info("Codec is %s" % name)
+                self.info("Codec is {0!s}".format(name))
             else:
-                self.info("Undetermined codec %s" % name)
+                self.info("Undetermined codec {0!s}".format(name))
                 name = "unknown"
             yield RawBytes(self, name, size)
             #yield textHandler(Bytes(self, "id", size), lambda: name)
         if byte & 0x10:
             yield SZUInt64(self, "num_stream_in")
             yield SZUInt64(self, "num_stream_out")
-            self.info("Streams: IN=%u    OUT=%u" % \
-                      (self["num_stream_in"].value, self["num_stream_out"].value))
+            self.info("Streams: IN={0:d}    OUT={1:d}".format(self["num_stream_in"].value, self["num_stream_out"].value))
         if byte & 0x20:
             size = SZUInt64(self, "properties_size[]")
             yield size
@@ -205,8 +204,7 @@ class BindPairInfo(FieldSet):
         # 64 bits values then cast to 32 in fact
         yield SZUInt64(self, "in_index")
         yield SZUInt64(self, "out_index")
-        self.info("Indexes: IN=%u   OUT=%u" % \
-                  (self["in_index"].value, self["out_index"].value))
+        self.info("Indexes: IN={0:d}   OUT={1:d}".format(self["in_index"].value, self["out_index"].value))
 
 class FolderItem(FieldSet):
     def __init__(self, parent, name, desc=None):
@@ -217,7 +215,7 @@ class FolderItem(FieldSet):
     def createFields(self):
         yield SZUInt64(self, "num_coders")
         num = self["num_coders"].value
-        self.info("Folder: %u codecs" % num)
+        self.info("Folder: {0:d} codecs".format(num))
 
         # Coders info
         for index in xrange(num):
@@ -227,7 +225,7 @@ class FolderItem(FieldSet):
             self.out_streams += ci.out_streams
 
         # Bin pairs
-        self.info("out streams: %u" % self.out_streams)
+        self.info("out streams: {0:d}".format(self.out_streams))
         for index in xrange(self.out_streams-1):
             yield BindPairInfo(self, "bind_pair[]")
 
@@ -251,7 +249,7 @@ class UnpackInfo(FieldSet):
 
         # Get generic info
         num = self["num_folders"].value
-        self.info("%u folders" % num)
+        self.info("{0:d} folders".format(num))
         yield UInt8(self, "is_external")
 
         # Read folder items
@@ -262,7 +260,7 @@ class UnpackInfo(FieldSet):
         for field in waitForID(self, ID_CODERS_UNPACK_SIZE, "coders_unpsize_marker"):
             yield field
         for folder_index in xrange(num):
-            folder_item = self["folder_item[%u]" % folder_index]
+            folder_item = self["folder_item[{0:d}]".format(folder_index)]
             for index in xrange(folder_item.out_streams):
                 #yield UInt8(self, "unpack_size[]")
                 yield SZUInt64(self, "unpack_size[]")
@@ -300,7 +298,7 @@ class EncodedHeader(FieldSet):
             elif uid == ID_SUBSTREAMS_INFO:
                 yield SubStreamInfo(self, "substreams_info", ID_INFO[ID_SUBSTREAMS_INFO])
             else:
-                self.info("Unexpected ID (%i)" % uid)
+                self.info("Unexpected ID ({0:d})".format(uid))
                 break
 
 class IDHeader(FieldSet):
@@ -328,7 +326,7 @@ class NextHeader(FieldSet):
             # data position from "/next_hdr/encoded_hdr/pack_info/pack_pos"
             # We should process further, yet we can't...
         else:
-            ParserError("Unexpected ID %u" % uid)
+            ParserError("Unexpected ID {0:d}".format(uid))
         size = self._size - self.current_size
         if size > 0:
             yield RawBytes(self, "next_hdr_data", size//8, "Next header's data")

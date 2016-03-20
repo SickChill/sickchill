@@ -82,7 +82,7 @@ class LogFormatterTest(unittest.TestCase):
             if m:
                 return m.group(1)
             else:
-                raise Exception("output didn't match regex: %r" % line)
+                raise Exception("output didn't match regex: {0!r}".format(line))
 
     def test_basic_logging(self):
         self.logger.error("foo")
@@ -176,7 +176,7 @@ class LoggingOptionTest(unittest.TestCase):
             [sys.executable, '-c', program] + (args or []),
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, stderr = proc.communicate()
-        self.assertEqual(proc.returncode, 0, 'process failed: %r' % stdout)
+        self.assertEqual(proc.returncode, 0, 'process failed: {0!r}'.format(stdout))
         return b'hello' in stdout
 
     def test_default(self):

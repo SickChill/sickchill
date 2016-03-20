@@ -67,22 +67,22 @@ class PyODBCConnector(Connector):
             dsn_connection = 'dsn' in keys or \
                             ('host' in keys and 'database' not in keys)
             if dsn_connection:
-                connectors = ['dsn=%s' % (keys.pop('host', '') or \
-                            keys.pop('dsn', ''))]
+                connectors = ['dsn={0!s}'.format((keys.pop('host', '') or \
+                            keys.pop('dsn', '')))]
             else:
                 port = ''
                 if 'port' in keys and not 'port' in query:
-                    port = ',%d' % int(keys.pop('port'))
+                    port = ',{0:d}'.format(int(keys.pop('port')))
 
-                connectors = ["DRIVER={%s}" %
-                                keys.pop('driver', self.pyodbc_driver_name),
-                              'Server=%s%s' % (keys.pop('host', ''), port),
-                              'Database=%s' % keys.pop('database', '')]
+                connectors = ["DRIVER={{{0!s}}}".format(
+                                keys.pop('driver', self.pyodbc_driver_name)),
+                              'Server={0!s}{1!s}'.format(keys.pop('host', ''), port),
+                              'Database={0!s}'.format(keys.pop('database', ''))]
 
             user = keys.pop("user", None)
             if user:
-                connectors.append("UID=%s" % user)
-                connectors.append("PWD=%s" % keys.pop('password', ''))
+                connectors.append("UID={0!s}".format(user))
+                connectors.append("PWD={0!s}".format(keys.pop('password', '')))
             else:
                 connectors.append("Trusted_Connection=Yes")
 
@@ -91,10 +91,10 @@ class PyODBCConnector(Connector):
             # client encoding.  This should obviously be set to 'No' if
             # you query a cp1253 encoded database from a latin1 client...
             if 'odbc_autotranslate' in keys:
-                connectors.append("AutoTranslate=%s" %
-                                    keys.pop("odbc_autotranslate"))
+                connectors.append("AutoTranslate={0!s}".format(
+                                    keys.pop("odbc_autotranslate")))
 
-            connectors.extend(['%s=%s' % (k, v) for k, v in keys.items()])
+            connectors.extend(['{0!s}={1!s}'.format(k, v) for k, v in keys.items()])
         return [[";".join(connectors)], connect_args]
 
     def is_disconnect(self, e, connection, cursor):

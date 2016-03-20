@@ -454,8 +454,8 @@ class HTTPServerRequest(object):
 
     def __repr__(self):
         attrs = ("protocol", "host", "method", "uri", "version", "remote_ip")
-        args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
-        return "%s(%s, headers=%s)" % (
+        args = ", ".join(["{0!s}={1!r}".format(n, getattr(self, n)) for n in attrs])
+        return "{0!s}({1!s}, headers={2!s})".format(
             self.__class__.__name__, args, dict(self.headers))
 
 
@@ -672,7 +672,7 @@ def _get_content_range(start, end, total):
     """
     start = start or 0
     end = (end or total) - 1
-    return "bytes %s-%s/%s" % (start, end, total)
+    return "bytes {0!s}-{1!s}/{2!s}".format(start, end, total)
 
 
 def _int_or_none(val):
@@ -781,7 +781,7 @@ def format_timestamp(ts):
     elif isinstance(ts, datetime.datetime):
         ts = calendar.timegm(ts.utctimetuple())
     else:
-        raise TypeError("unknown timestamp type: %r" % ts)
+        raise TypeError("unknown timestamp type: {0!r}".format(ts))
     return email.utils.formatdate(ts, usegmt=True)
 
 
@@ -803,7 +803,7 @@ def parse_request_start_line(line):
         raise HTTPInputError("Malformed HTTP request line")
     if not re.match(r"^HTTP/1\.[0-9]$", version):
         raise HTTPInputError(
-            "Malformed HTTP version in HTTP Request-Line: %r" % version)
+            "Malformed HTTP version in HTTP Request-Line: {0!r}".format(version))
     return RequestStartLine(method, path, version)
 
 
@@ -885,7 +885,7 @@ def _encode_header(key, pdict):
             out.append(k)
         else:
             # TODO: quote if necessary.
-            out.append('%s=%s' % (k, v))
+            out.append('{0!s}={1!s}'.format(k, v))
     return '; '.join(out)
 
 

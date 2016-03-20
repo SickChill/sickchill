@@ -82,7 +82,7 @@ class AMFObject(FieldSet):
             if code == self.CODE_DATE:
                 self.createValue = self.createValueDate
         except KeyError:
-            raise ParserError("AMF: Unable to parse type %s" % code)
+            raise ParserError("AMF: Unable to parse type {0!s}".format(code))
 
     def createFields(self):
         yield UInt8(self, "type")
@@ -106,5 +106,5 @@ class Attribute(AMFObject):
             yield field
 
     def createDescription(self):
-        return 'Attribute "%s"' % self["key"].value
+        return 'Attribute "{0!s}"'.format(self["key"].value)
 

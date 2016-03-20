@@ -176,28 +176,27 @@ def getDomBuilder(DomImplementation):
                     if element.publicId or element.systemId:
                         publicId = element.publicId or ""
                         systemId = element.systemId or ""
-                        rv.append("""|%s<!DOCTYPE %s "%s" "%s">""" %
-                                  (' ' * indent, element.name, publicId, systemId))
+                        rv.append("""|{0!s}<!DOCTYPE {1!s} "{2!s}" "{3!s}">""".format(' ' * indent, element.name, publicId, systemId))
                     else:
-                        rv.append("|%s<!DOCTYPE %s>" % (' ' * indent, element.name))
+                        rv.append("|{0!s}<!DOCTYPE {1!s}>".format(' ' * indent, element.name))
                 else:
-                    rv.append("|%s<!DOCTYPE >" % (' ' * indent,))
+                    rv.append("|{0!s}<!DOCTYPE >".format(' ' * indent))
             elif element.nodeType == Node.DOCUMENT_NODE:
                 rv.append("#document")
             elif element.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
                 rv.append("#document-fragment")
             elif element.nodeType == Node.COMMENT_NODE:
-                rv.append("|%s<!-- %s -->" % (' ' * indent, element.nodeValue))
+                rv.append("|{0!s}<!-- {1!s} -->".format(' ' * indent, element.nodeValue))
             elif element.nodeType == Node.TEXT_NODE:
-                rv.append("|%s\"%s\"" % (' ' * indent, element.nodeValue))
+                rv.append("|{0!s}\"{1!s}\"".format(' ' * indent, element.nodeValue))
             else:
                 if (hasattr(element, "namespaceURI") and
                         element.namespaceURI is not None):
-                    name = "%s %s" % (constants.prefixes[element.namespaceURI],
+                    name = "{0!s} {1!s}".format(constants.prefixes[element.namespaceURI],
                                       element.nodeName)
                 else:
                     name = element.nodeName
-                rv.append("|%s<%s>" % (' ' * indent, name))
+                rv.append("|{0!s}<{1!s}>".format(' ' * indent, name))
                 if element.hasAttributes():
                     attributes = []
                     for i in range(len(element.attributes)):
@@ -206,13 +205,13 @@ def getDomBuilder(DomImplementation):
                         value = attr.value
                         ns = attr.namespaceURI
                         if ns:
-                            name = "%s %s" % (constants.prefixes[ns], attr.localName)
+                            name = "{0!s} {1!s}".format(constants.prefixes[ns], attr.localName)
                         else:
                             name = attr.nodeName
                         attributes.append((name, value))
 
                     for name, value in sorted(attributes):
-                        rv.append('|%s%s="%s"' % (' ' * (indent + 2), name, value))
+                        rv.append('|{0!s}{1!s}="{2!s}"'.format(' ' * (indent + 2), name, value))
             indent += 2
             for child in element.childNodes:
                 serializeElement(child, indent)

@@ -31,12 +31,12 @@ class HelloWorldHandler(RequestHandler):
     def get(self):
         name = self.get_argument("name", "world")
         self.set_header("Content-Type", "text/plain")
-        self.finish("Hello %s!" % name)
+        self.finish("Hello {0!s}!".format(name))
 
 
 class PostHandler(RequestHandler):
     def post(self):
-        self.finish("Post arg1: %s, arg2: %s" % (
+        self.finish("Post arg1: {0!s}, arg2: {1!s}".format(
             self.get_argument("arg1"), self.get_argument("arg2")))
 
 
@@ -203,7 +203,7 @@ Transfer-Encoding: chunked
                 stream.read_until(b"\r\n\r\n",
                                   functools.partial(write_response, stream))
             netutil.add_accept_handler(sock, accept_callback, self.io_loop)
-            self.http_client.fetch("http://127.0.0.1:%d/" % port, self.stop)
+            self.http_client.fetch("http://127.0.0.1:{0:d}/".format(port), self.stop)
             resp = self.wait()
             resp.rethrow()
             self.assertEqual(resp.body, b"12")
@@ -368,8 +368,7 @@ Transfer-Encoding: chunked
                 resp = self.fetch('/user_agent', headers=headers)
                 self.assertEqual(
                     resp.body, b"MyUserAgent",
-                    "response=%r, value=%r, container=%r" %
-                    (resp.body, value, container))
+                    "response={0!r}, value={1!r}, container={2!r}".format(resp.body, value, container))
 
     def test_304_with_content_length(self):
         # According to the spec 304 responses SHOULD NOT include
@@ -562,7 +561,7 @@ class SyncHTTPClientTest(unittest.TestCase):
         self.server_ioloop.close(all_fds=True)
 
     def get_url(self, path):
-        return 'http://127.0.0.1:%d%s' % (self.port, path)
+        return 'http://127.0.0.1:{0:d}{1!s}'.format(self.port, path)
 
     def test_sync_client(self):
         response = self.http_client.fetch(self.get_url('/'))
