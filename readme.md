@@ -1,4 +1,4 @@
-SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=develop)](https://travis-ci.org/SickRage/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/sickrage-issues.svg)](http://isitmaintained.com/project/SickRage/sickrage-issues "Percentage of issues still open") [![Coverage Status](https://coveralls.io/repos/SickRage/SickRage/badge.svg?branch=develop&service=github)](https://coveralls.io/github/SickRage/SickRage?branch=develop)  
+SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=develop)](https://travis-ci.org/SickRage/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Percentage of issues still open") [![Coverage Status](https://coveralls.io/repos/SickRage/SickRage/badge.svg?branch=develop&service=github)](https://coveralls.io/github/SickRage/SickRage?branch=develop)  
 =====
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
@@ -31,7 +31,7 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 
 #### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
 
-##### [SickRage Issue Tracker](https://github.com/SickRage/sickrage-issues)
+##### [SickRage Issue Tracker](https://github.com/SickRage/SickRage)
 
 ##### [FAQ](https://github.com/SickRage/SickRage/wiki/Frequently-Asked-Questions)
 
@@ -43,7 +43,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 
 #### Supported providers
 
-A full list can be found here: [Link](https://github.com/SickRage/sickrage-issues/wiki/SickRage-Search-Providers)
+A full list can be found here: [Link](https://github.com/SickRage/SickRage/wiki/SickRage-Search-Providers)
 
 #### Special Thanks to:
 ![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)

@@ -266,7 +266,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         self.submitter_running = True
 
         gh_org = sickbeard.GIT_ORG or 'SickRage'
-        gh_repo = 'sickrage-issues'
+        gh_repo = sickbeard.GIT_REPO or 'SickRage'
 
         git = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent='SickRage')
 

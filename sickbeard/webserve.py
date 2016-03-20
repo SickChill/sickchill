@@ -1227,7 +1227,7 @@ class Home(WebRoot):
     def displayShow(self, show=None):
         # todo: add more comprehensive show validation
         try:
-            show = int(show)  # fails if show id ends in a period SickRage/sickrage-issues#65
+            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
             showObj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
             return self._genericMessage("Error", "Invalid show ID: {0!s}".format(str(show)))

@@ -406,7 +406,7 @@ class SickRage(object):
 
         os.setsid()  # @UndefinedVariable - only available in UNIX
 
-        # https://github.com/SickRage/sickrage-issues/issues/2969
+        # https://github.com/SickRage/SickRage/issues/2969
         # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
         # https://www.safaribooksonline.com/library/view/python-cookbook/0596001673/ch06s08.html
         # Previous code simply set the umask to whatever it was because it was ANDing instead of OR-ing
