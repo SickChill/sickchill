@@ -50,7 +50,7 @@ from sickbeard.webapi import function_mapper
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.helpers import get_showname_from_indexer
 
-from dateutil import tz
+import pytz
 from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
@@ -578,7 +578,7 @@ class CalendarHandler(BaseHandler):
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
                 (past_date, future_date, int(show["indexer_id"])))
 
-            utc = tz.gettz('GMT')
+            utc = pytz.utc
 
             for episode in episode_list:
 
