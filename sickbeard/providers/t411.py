@@ -42,7 +42,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'http://www.t411.ch/',
+        self.urls = {'base_url': 'https://www.t411.ch/',
                      'search': 'https://api.t411.ch/torrents/search/%s*?cid=%s&limit=100',
                      'rss': 'https://api.t411.ch/torrents/top/today',
                      'login_page': 'https://api.t411.ch/auth',
@@ -67,7 +67,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json')
+        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json', verify=False)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -98,7 +98,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
                 search_urlS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
                 for search_url in search_urlS:
-                    data = self.get_url(search_url, returns='json')
+                    data = self.get_url(search_url, returns='json', verify=False)
                     if not data:
                         continue
 
