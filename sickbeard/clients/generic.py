@@ -8,7 +8,6 @@ from base64 import b16encode, b32decode
 import sickbeard
 from sickbeard import logger, helpers
 from bencode import Bencoder, BencodeEncodeError, BencodeDecodeError
-import cookielib
 
 
 class GenericClient(object):  # pylint: disable=too-many-instance-attributes
@@ -26,7 +25,6 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         self.last_time = time.time()
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
-        self.session.cookies = cookielib.CookieJar()
 
     def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
 
@@ -198,9 +196,9 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
             if result.priority != 0 and not self._set_torrent_priority(result):
                 logger.log(self.name + u': Unable to set priority for Torrent', logger.ERROR)
 
-        except Exception as e:
+        except Exception as error:
             logger.log(self.name + u': Failed Sending Torrent', logger.ERROR)
-            logger.log(self.name + u': Exception raised when sending torrent: ' + str(result) + u'. Error: ' + str(e), logger.DEBUG)
+            logger.log(self.name + u': Exception raised when sending torrent: {0!s}. Error {1}'.format(result, error), logger.DEBUG)
             return r_code
 
         return r_code
