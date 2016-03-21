@@ -842,17 +842,32 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         :param ep_obj: The object to use when calling the extra script
         """
 
-        filepath = self.file_path
-        if isinstance(filepath, unicode):
-            filepath = filepath.encode(sickbeard.SYS_ENCODING)
+        if not sickbeard.EXTRA_SCRIPTS:
+            return
+
+        file_path = self.file_path
+        if isinstance(file_path, unicode):
+            try:
+                file_path = file_path.encode(sickbeard.SYS_ENCODING)
+            except UnicodeEncodeError:
+                # ignore it
+                pass
 
         ep_location = ep_obj.location
         if isinstance(ep_location, unicode):
-            ep_location = ep_location.encode(sickbeard.SYS_ENCODING)
+            try:
+                ep_location = ep_location.encode(sickbeard.SYS_ENCODING)
+            except UnicodeEncodeError:
+                # ignore it
+                pass
 
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
             if isinstance(curScriptName, unicode):
-                curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
+                try:
+                    curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
+                except UnicodeEncodeError:
+                    # ignore it
+                    pass
 
             # generate a safe command line string to execute the script and provide all the parameters
             script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
@@ -860,7 +875,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             self._log(u"Absolute path to script: {0}".format(script_cmd[0]), logger.DEBUG)
 
             script_cmd += [
-                str(ep_location), str(filepath), str(ep_obj.show.indexerid),
+                ep_location, file_path, str(ep_obj.show.indexerid),
                 str(ep_obj.season), str(ep_obj.episode), str(ep_obj.airdate)
             ]
 
