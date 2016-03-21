@@ -20,12 +20,9 @@
 
 import os
 import re
-import errno
 import threading
 import datetime
 import traceback
-import requests
-from socket import timeout as SocketTimeout
 
 import sickbeard
 
@@ -498,30 +495,12 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
-            except AuthException as e:
-                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            except AuthException as error:
+                logger.log(u"Authentication error: {0!r}".format(error), logger.ERROR)
                 break
-            except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
-                logger.log(u"HTTP error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.ConnectionError as e:
-                logger.log(u"Connection error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.Timeout as e:
-                logger.log(u"Connection timed out while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.ContentDecodingError:
-                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except Exception as e:
-                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
-                    logger.log(u"Connection reseted by peer while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                else:
-                    logger.log(u"Unknown exception while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+            except Exception as error:
+                logger.log(u"Exception while searching {0!s}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
                 break
 
             didSearch = True
