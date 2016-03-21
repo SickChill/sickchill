@@ -75,7 +75,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     continue
 
                 with BS4Parser(data, 'html5lib') as parser:
-                    for item in parser.findAll('item'):
+                    for item in parser('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
                             seeders = try_int(item.find('seeders').get_text(strip=True))

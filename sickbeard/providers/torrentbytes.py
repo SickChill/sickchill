@@ -105,7 +105,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", border="1")
-                    torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
@@ -113,11 +113,11 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         continue
 
                     # "Type", "Name", Files", "Comm.", "Added", "TTL", "Size", "Snatched", "Seeders", "Leechers"
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all("td")]
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]("td")]
 
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result.find_all("td")
+                            cells = result("td")
 
                             download_url = urljoin(self.url, cells[labels.index("Name")].find("a", href=re.compile(r"download.php\?id="))["href"])
                             title_element = cells[labels.index("Name")].find("a", href=re.compile(r"details.php\?id="))

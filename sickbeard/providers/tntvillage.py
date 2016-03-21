@@ -172,7 +172,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         """
         file_quality = ''
 
-        img_all = (torrent_rows.find_all('td'))[1].find_all('img')
+        img_all = (torrent_rows('td'))[1]('img')
 
         if img_all:
             for img_type in img_all:
@@ -182,7 +182,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log(u"Failed parsing quality. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
 
         else:
-            file_quality = (torrent_rows.find_all('td'))[1].get_text()
+            file_quality = (torrent_rows('td'))[1].get_text()
             logger.log(u"Episode quality: {0!s}".format(file_quality), logger.DEBUG)
 
         def checkName(options, func):
@@ -195,7 +195,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         fullHD = checkName(["1080p", "fullHD"], any)
 
         if img_all:
-            file_quality = (torrent_rows.find_all('td'))[1].get_text()
+            file_quality = (torrent_rows('td'))[1].get_text()
 
         webdl = checkName(["webdl", "webmux", "webrip", "dl-webmux", "web-dlmux", "webdl-mux", "web-dl", "webdlmux", "dlmux"], any)
 
@@ -220,7 +220,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def _is_italian(self, torrent_rows):
 
-        name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
+        name = str(torrent_rows('td')[1].find('b').find('span'))
         if not name or name == 'None':
             return False
 
@@ -245,7 +245,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
     @staticmethod
     def _is_english(torrent_rows):
 
-        name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
+        name = str(torrent_rows('td')[1].find('b').find('span'))
         if not name or name == 'None':
             return False
 
@@ -316,7 +316,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     try:
                         with BS4Parser(data, 'html5lib') as html:
                             torrent_table = html.find('table', attrs={'class': 'copyright'})
-                            torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                            torrent_rows = torrent_table('tr') if torrent_table else []
 
                             # Continue only if one Release is found
                             if len(torrent_rows) < 3:
@@ -327,17 +327,17 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if len(torrent_rows) < 42:
                                 last_page = 1
 
-                            for result in torrent_table.find_all('tr')[2:]:
+                            for result in torrent_table('tr')[2:]:
 
                                 try:
                                     link = result.find('td').find('a')
                                     title = link.string
-                                    download_url = self.urls['download'] % result.find_all('td')[8].find('a')['href'][-8:]
-                                    leechers = result.find_all('td')[3].find_all('td')[1].text
+                                    download_url = self.urls['download'] % result('td')[8].find('a')['href'][-8:]
+                                    leechers = result('td')[3]('td')[1].text
                                     leechers = int(leechers.strip('[]'))
-                                    seeders = result.find_all('td')[3].find_all('td')[2].text
+                                    seeders = result('td')[3]('td')[2].text
                                     seeders = int(seeders.strip('[]'))
-                                    torrent_size = result.find_all('td')[3].find_all('td')[3].text.strip('[]') + " GB"
+                                    torrent_size = result('td')[3]('td')[3].text.strip('[]') + " GB"
                                     size = convert_size(torrent_size) or -1
                                 except (AttributeError, TypeError):
                                     continue

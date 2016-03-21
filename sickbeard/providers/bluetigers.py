@@ -101,7 +101,7 @@ class BlueTigersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
-                        result_linkz = html.findAll('a', href=re.compile("torrents-details"))
+                        result_linkz = html('a', href=re.compile("torrents-details"))
 
                         if not result_linkz:
                             logger.log(u"Data returned from provider do not contains any torrent", logger.DEBUG)

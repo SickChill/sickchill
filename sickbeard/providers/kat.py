@@ -90,7 +90,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    for item in html.find_all("item"):
+                    for item in html("item"):
                         try:
                             title = item.title.get_text(strip=True)
                             # Use the torcache link kat provides,

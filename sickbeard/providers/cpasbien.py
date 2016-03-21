@@ -60,7 +60,7 @@ class CpasbienProvider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.find_all(class_=re.compile('ligne[01]'))
+                    torrent_rows = html(class_=re.compile('ligne[01]'))
                     for result in torrent_rows:
                         try:
                             title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")

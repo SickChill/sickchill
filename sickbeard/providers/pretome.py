@@ -115,10 +115,10 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             logger.log(u"Could not find table of torrents", logger.ERROR)
                             continue
 
-                        torrent_rows = torrent_table.find_all('tr', attrs={'class': 'browse'})
+                        torrent_rows = torrent_table('tr', attrs={'class': 'browse'})
 
                         for result in torrent_rows:
-                            cells = result.find_all('td')
+                            cells = result('td')
                             size = None
                             link = cells[1].find('a', attrs={'style': 'font-size: 1.25em; font-weight: bold;'})
 

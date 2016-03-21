@@ -74,7 +74,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         continue
 
                     data = BeautifulSoup(data, 'html5lib')
-                    for item in data.findAll('item'):
+                    for item in data('item'):
                         try:
                             if not item.category.text.endswith(('TV', 'Anime')):
                                 continue

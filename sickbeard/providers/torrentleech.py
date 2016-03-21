@@ -129,14 +129,14 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", id="torrenttable")
-                    torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    labels = [process_column_header(label) for label in torrent_rows[0].find_all("th")]
+                    labels = [process_column_header(label) for label in torrent_rows[0]("th")]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
@@ -157,7 +157,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = result.find_all("td")[labels.index("Size")].get_text()
+                            torrent_size = result("td")[labels.index("Size")].get_text()
                             size = convert_size(torrent_size, units=units) or -1
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}

@@ -123,7 +123,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     logger.log(u"No html data parsed from provider", logger.DEBUG)
                     continue
 
-                torrents = html.findAll('tr')
+                torrents = html('tr')
                 if not torrents:
                     continue
 

@@ -134,11 +134,11 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                         for result in entries[1:]:
 
-                            torrent = result.find_all('td')
+                            torrent = result('td')
                             if len(torrent) <= 1:
                                 break
 
-                            allAs = (torrent[1]).find_all('a')
+                            allAs = (torrent[1])('a')
 
                             try:
                                 notinternal = result.find('img', src='/static//common/user_upload.png')
@@ -153,8 +153,8 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
                                 if torrent_size:
                                     size = convert_size(torrent_size) or -1
-                                seeders = try_int((result.findAll('td')[6]).text)
-                                leechers = try_int((result.findAll('td')[7]).text)
+                                seeders = try_int((result('td')[6]).text)
+                                leechers = try_int((result('td')[7]).text)
 
                             except (AttributeError, TypeError):
                                 continue

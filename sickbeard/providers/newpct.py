@@ -91,7 +91,7 @@ class newpctProvider(TorrentProvider):
 
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find('table', id='categoryTable')
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                    torrent_rows = torrent_table('tr') if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
@@ -100,10 +100,10 @@ class newpctProvider(TorrentProvider):
 
                     # 'Fecha', 'Título', 'Tamaño', ''
                     # Date, Title, Size
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('th')]
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('th')]
                     for row in torrent_rows[1:-1]:
                         try:
-                            cells = row.find_all('td')
+                            cells = row('td')
 
                             torrent_row = row.find('a')
                             title = self._processTitle(torrent_row.get('title', ''))

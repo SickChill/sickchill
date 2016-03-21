@@ -120,7 +120,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             continue
 
                         torrent_table = html.find('table', attrs={'class': 'torrents'})
-                        torrents = torrent_table.find_all('tr') if torrent_table else []
+                        torrents = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
                         if len(torrents) < 2:
@@ -129,11 +129,11 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                         for result in torrents[1:]:
                             try:
-                                title = result.find_all('td')[1].find('a').text
-                                download_url = self.urls['base_url'] + result.find_all('td')[3].find('a')['href']
+                                title = result('td')[1].find('a').text
+                                download_url = self.urls['base_url'] + result('td')[3].find('a')['href']
                                 seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).text)
                                 leechers = int(result.find('td', attrs={'class': 'ac t_leechers'}).text)
-                                torrent_size = result.find_all('td')[5].text
+                                torrent_size = result('td')[5].text
                                 size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError):
                                 continue

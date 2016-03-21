@@ -94,7 +94,7 @@ class elitetorrentProvider(TorrentProvider):
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', class_='fichas-listado')
-                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                        torrent_rows = torrent_table('tr') if torrent_table else []
 
                         if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
