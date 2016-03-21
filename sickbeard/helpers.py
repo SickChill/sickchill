@@ -31,9 +31,7 @@ import tempfile
 import time
 import traceback
 import urllib
-import urllib2
-import httplib
-import urlparse
+from requests.utils import urlparse
 import uuid
 import base64
 import zipfile
@@ -48,13 +46,12 @@ import certifi
 import hashlib
 import random
 from contextlib import closing
-from socket import timeout as SocketTimeout
 import ssl
 
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
-from sickrage.helper.common import http_code_description, media_extensions, pretty_file_size, subtitle_extensions, episode_num
+from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_extensions, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
 from cachecontrol import CacheControl
@@ -957,17 +954,12 @@ def check_url(url):
     Check if a URL exists without downloading the whole file.
     We only check the URL header.
     """
-    # see also http://stackoverflow.com/questions/2924422
-    # http://stackoverflow.com/questions/1140661
-    good_codes = [httplib.OK, httplib.FOUND, httplib.MOVED_PERMANENTLY]
-
-    host, path = urlparse.urlparse(url)[1:3]  # elems [1] and [2]
     try:
-        conn = httplib.HTTPConnection(host)
-        conn.request('HEAD', path)
-        return conn.getresponse().status in good_codes
-    except StandardError:
-        return None
+        requests.head(url, verify=False).raise_for_status()
+    except Exception as error:
+        handle_requests_exception(error)
+        return False
+    return True
 
 
 def anon_url(*url):
@@ -1374,8 +1366,8 @@ def request_defaults(kwargs):
     # request session proxies
     if sickbeard.PROXY_SETTING:
         logger.log("Using global proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
-        scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
-        address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
+        parsed_url = urlparse(sickbeard.PROXY_SETTING)
+        address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
         proxies = {
             "http": address,
             "https": address,
@@ -1412,38 +1404,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )
-
-        if not resp.ok:
-            logger.log("Requested getURL {0} returned status code is {1}: {2}".format
-                       (url, resp.status_code, http_code_description(resp.status_code)), logger.DEBUG)
-            return None
-
-    except (SocketTimeout, TypeError) as error:
-        logger.log("Connection timed out (sockets) accessing getURL {0} Error: {1}".format(url, error), logger.DEBUG)
-        return None
-    except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as error:
-        logger.log("HTTP error in getURL {0} Error: {1}".format(url, error), logger.DEBUG)
-        return None
-    except requests.exceptions.SSLError as error:
-        if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
-            logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(url, ssl.OPENSSL_VERSION))
-            logger.log(traceback.format_exc(), logger.DEBUG)
-        if sickbeard.SSL_VERIFY:
-            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
-        return None
-    except requests.exceptions.ConnectionError as error:
-        logger.log("Connection error to getURL {0} Error: {1}".format(url, error), logger.DEBUG)
-        return None
-    except requests.exceptions.Timeout as error:
-        logger.log("Connection timed out accessing getURL {0} Error: {1}".format(url, error), logger.DEBUG)
-        return None
-    except requests.exceptions.ContentDecodingError:
-        logger.log("Content-Encoding was gzip, but content was not compressed. getURL: {0}".format(url), logger.DEBUG)
-        logger.log(traceback.format_exc(), logger.DEBUG)
-        return None
+        resp.raise_for_status()
     except Exception as error:
-        logger.log("Unknown exception in getURL {0} Error: {1}".format(url, error), logger.ERROR)
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        handle_requests_exception(error)
         return None
 
     try:
@@ -1471,10 +1434,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
                                  verify=verify, headers=headers, cookies=cookies,
                                  hooks=hooks, proxies=proxies)) as resp:
 
-            if not resp.ok:
-                logger.log("Requested download url {0} returned status code is {1}: {2}".format
-                           (url, resp.status_code, http_code_description(resp.status_code)), logger.DEBUG)
-                return False
+            resp.raise_for_status()
 
             try:
                 with io.open(filename, 'wb') as fp:
@@ -1487,32 +1447,59 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
             except Exception:
                 logger.log("Problem setting permissions or writing file to: {0}".format(filename), logger.WARNING)
 
-    except (SocketTimeout, TypeError) as error:
-        remove_file_failed(filename)
-        logger.log("Connection timed out (sockets) while loading download URL {0} Error: {1}".format(url, error), logger.WARNING)
-        return False
-    except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as error:
-        remove_file_failed(filename)
-        logger.log("HTTP error {0} while loading download URL {1} ".format(error, url), logger.WARNING)
-        return False
-    except requests.exceptions.ConnectionError as error:
-        remove_file_failed(filename)
-        logger.log("Connection error {0} while loading download URL {1} ".format(error, url), logger.WARNING)
-        return False
-    except requests.exceptions.Timeout as error:
-        remove_file_failed(filename)
-        logger.log("Connection timed out {0} while loading download URL {1} ".format(error, url), logger.WARNING)
-        return False
-    except EnvironmentError as error:
-        remove_file_failed(filename)
-        logger.log("Unable to save the file: {0} ".format(error), logger.WARNING)
-        return False
-    except Exception:
-        remove_file_failed(filename)
-        logger.log("Unknown exception while loading download URL {0} : {1}".format(url, traceback.format_exc()), logger.ERROR)
+    except Exception as error:
+        handle_requests_exception(error)
         return False
 
     return True
+
+
+def handle_requests_exception(requests_exception):  # pylint: disable=too-many-branches, too-many-statements
+    default = "Request failed: {0}"
+    try:
+        raise requests_exception
+    except requests.exceptions.SSLError as error:
+        if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
+            logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(error.request.url, ssl.OPENSSL_VERSION))
+        if sickbeard.SSL_VERIFY:
+            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
+        logger.log(default.format(error), logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
+
+    except requests.exceptions.HTTPError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.TooManyRedirects as error:
+        logger.log(default.format(error))
+    except requests.exceptions.ConnectTimeout as error:
+        logger.log(default.format(error))
+    except requests.exceptions.ReadTimeout as error:
+        logger.log(default.format(error))
+    except requests.exceptions.ProxyError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.ConnectionError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.ContentDecodingError as error:
+        logger.log(default.format(error))
+        logger.log(traceback.format_exc(), logger.DEBUG)
+    except requests.exceptions.ChunkedEncodingError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.InvalidURL as error:
+        logger.log(default.format(error))
+    except requests.exceptions.InvalidSchema as error:
+        logger.log(default.format(error))
+    except requests.exceptions.MissingSchema as error:
+        logger.log(default.format(error))
+    except requests.exceptions.RetryError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.StreamConsumedError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.StreamConsumedError as error:
+        logger.log(default.format(error))
+    except requests.exceptions.URLRequired as error:
+        logger.log(default.format(error))
+    except Exception as error:
+        logger.log(default.format(error), logger.ERROR)
+        logger.log(traceback.format_exc(), logger.DEBUG)
 
 
 def get_size(start_path='.'):

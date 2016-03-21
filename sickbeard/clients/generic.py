@@ -8,9 +8,7 @@ from base64 import b16encode, b32decode
 import sickbeard
 from sickbeard import logger, helpers
 from bencode import Bencoder, BencodeEncodeError, BencodeDecodeError
-import requests
 import cookielib
-from sickrage.helper.common import http_code_description
 
 
 class GenericClient(object):  # pylint: disable=too-many-instance-attributes
@@ -45,33 +43,13 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
             return False
 
         try:
-            self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files, cookies=cookies,
-                                                                  timeout=120, verify=False)
-        except requests.exceptions.ConnectionError as e:
-            logger.log(self.name + u': Unable to connect ' + str(e), logger.ERROR)
-            return False
-        except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
-            logger.log(self.name + u': Invalid Host', logger.ERROR)
-            return False
-        except requests.exceptions.HTTPError as e:
-            logger.log(self.name + u': Invalid HTTP Request ' + str(e), logger.ERROR)
-            return False
-        except requests.exceptions.Timeout as e:
-            logger.log(self.name + u': Connection Timeout ' + str(e), logger.WARNING)
-            return False
-        except Exception as e:
-            logger.log(self.name + u': Unknown exception raised when send torrent to ' + self.name + ': ' + str(e),
-                       logger.ERROR)
-            return False
+            self.response = self.session.request(
+                method.upper(), self.url, params=params, data=data,
+                files=files, cookies=cookies, timeout=120, verify=False)
 
-        if self.response.status_code == 401:
-            logger.log(self.name + u': Invalid Username or Password, check your config', logger.ERROR)
-            return False
-
-        code_description = http_code_description(self.response.status_code)
-
-        if code_description is not None:
-            logger.log(self.name + u': ' + code_description, logger.INFO)
+            self.response.raise_for_status()
+        except Exception as error:
+            helpers.handle_requests_exception(error)
             return False
 
         logger.log(self.name + u': Response to ' + method.upper() + ' request is ' + self.response.text, logger.DEBUG)
@@ -231,19 +209,15 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
 
         try:
             self.response = self.session.get(self.url, timeout=120, verify=False)
-        except requests.exceptions.ConnectionError:
-            return False, 'Error: ' + self.name + ' Connection Error'
-        except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
-            return False, 'Error: Invalid ' + self.name + ' host'
-
-        if self.response.status_code == 401:
-            return False, 'Error: Invalid ' + self.name + ' Username or Password, check your config!'
+            self.response.raise_for_status()
+        except Exception as error:
+            helpers.handle_requests_exception(error)
+            return False, '{0}'.format(error)
 
         try:
             self._get_auth()
-            if self.response.status_code == 200 and self.auth:
-                return True, 'Success: Connected and Authenticated'
-            else:
-                return False, 'Error: Unable to get ' + self.name + ' Authentication, check your config!'
+            self.response.raise_for_status()
+            return True, 'Success: Connected and Authenticated'
         except Exception:
-            return False, 'Error: Unable to connect to ' + self.name
+            helpers.handle_requests_exception(error)
+            return False, '{0}'.format(error)
