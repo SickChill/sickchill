@@ -24,7 +24,6 @@ import datetime
 
 import sickbeard
 from sickbeard import helpers, logger
-from sickbeard.common import USER_AGENT
 
 session = helpers.make_session()
 
@@ -47,33 +46,30 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
 
     # set up a dict with the URL params in it
     params = {'output': 'json'}
-    if sickbeard.SAB_USERNAME is not None:
+    if sickbeard.SAB_USERNAME:
         params['ma_username'] = sickbeard.SAB_USERNAME
-    if sickbeard.SAB_PASSWORD is not None:
+    if sickbeard.SAB_PASSWORD:
         params['ma_password'] = sickbeard.SAB_PASSWORD
-    if sickbeard.SAB_APIKEY is not None:
+    if sickbeard.SAB_APIKEY:
         params['apikey'] = sickbeard.SAB_APIKEY
 
-    if category is not None:
+    if category:
         params['cat'] = category
 
     if nzb.priority:
         params['priority'] = 2 if sickbeard.SAB_FORCED else 1
 
+    logger.log('Sending NZB to SABnzbd')
+    url = urljoin(sickbeard.SAB_HOST, 'api')
+
     if nzb.resultType == 'nzb':
         params['mode'] = 'addurl'
         params['name'] = nzb.url
+        jdata = helpers.getURL(url, params=params, session=session, returns='json', verify=False)
     elif nzb.resultType == 'nzbdata':
         params['mode'] = 'addfile'
         multiPartParams = {'nzbfile': (nzb.name + '.nzb', nzb.extraInfo[0])}
-
-    logger.log('Sending NZB to SABnzbd')
-
-    url = urljoin(sickbeard.SAB_HOST, 'api')
-    if nzb.resultType == 'nzb':
-        jdata = helpers.getURL(url, params=params, session=session, returns='json', headers={'User-Agent': USER_AGENT})
-    elif nzb.resultType == 'nzbdata':
-        jdata = helpers.getURL(url, file=multiPartParams, session=session, returns='json', headers={'User-Agent': USER_AGENT})
+        jdata = helpers.getURL(url, params=params, file=multiPartParams, session=session, returns='json', verify=False)
 
     if not jdata:
         logger.log('Error connecting to sab, no data returned')

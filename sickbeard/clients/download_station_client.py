@@ -23,6 +23,7 @@
 
 import sickbeard
 from sickbeard.clients.generic import GenericClient
+from requests.compat import urljoin
 
 
 class DownloadStationAPI(GenericClient):
@@ -31,14 +32,24 @@ class DownloadStationAPI(GenericClient):
 
         super(DownloadStationAPI, self).__init__('DownloadStation', host, username, password)
 
-        self.url = self.host + 'webapi/DownloadStation/task.cgi'
+        self.url = urljoin(self.host, 'webapi/DownloadStation/task.cgi')
 
     def _get_auth(self):
 
-        auth_url = self.host + 'webapi/auth.cgi?api=SYNO.API.Auth&version=2&method=login&account=' + self.username + '&passwd=' + self.password + '&session=DownloadStation&format=sid'
+        auth_url = urljoin(self.host, 'webapi/auth.cgi')
+
+        params = {
+            'api': 'SYNO.API.Auth',
+            'version': 2,
+            'method': 'login',
+            'account': self.username.encode('utf-8') if isinstance(self.username, unicode) else self.username,
+            'passwd': self.password.encode('utf-8') if isinstance(self.password, unicode) else self.password,
+            'session': 'DownloadStation',
+            'format': 'sid'
+        }
 
         try:
-            self.response = self.session.get(auth_url, verify=False)
+            self.response = self.session.get(auth_url, params=params, verify=False)
             self.auth = self.response.json()['data']['sid']
         except Exception:
             return None
@@ -58,6 +69,7 @@ class DownloadStationAPI(GenericClient):
 
         if sickbeard.TORRENT_PATH:
             data['destination'] = sickbeard.TORRENT_PATH
+
         self._request(method='post', data=data)
 
         return self.response.json()['success']
