@@ -107,8 +107,8 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for search_string in search_strings[mode]:
 
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                     categories = ["2", "7", "35"]
                     categories += ["26", "32"] if mode == "Episode" else ["27"]
@@ -153,7 +153,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.log("Discarding torrent because it doesn't meet the"
-                                               " minimum seeders or leechers: {} (S:{} L:{})".format
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 

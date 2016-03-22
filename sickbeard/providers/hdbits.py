@@ -83,7 +83,8 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: {0!s}".format(search_params), logger.DEBUG)
+        logger.log(u"Search string: {0}".format
+                   (search_params.decode('utf-8')), logger.DEBUG)
 
         self._check_auth()
 

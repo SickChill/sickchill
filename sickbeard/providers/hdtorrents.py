@@ -92,8 +92,8 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 if mode != 'RSS':
                     search_url = self.urls['search'] % (quote_plus(search_string), self.categories)
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
                 else:
                     search_url = self.urls['rss'] % self.categories
 

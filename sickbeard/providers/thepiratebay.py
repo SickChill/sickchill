@@ -98,8 +98,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 if mode != "RSS":
                     search_params["q"] = search_string
-                    logger.log("Search string: {search}".format
-                               (search=search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                     data = self.get_url(search_url, params=search_params, returns="text")
                 else:

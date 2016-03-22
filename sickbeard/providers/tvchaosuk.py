@@ -105,7 +105,8 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     search_string = re.sub(ur'(.*)Season', ur'\1Series', search_string)
 
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format(search_string), logger.DEBUG)
+                    logger.log('Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                 search_params['keywords'] = search_string
                 data = self.get_url(self.urls['search'], post_data=search_params, returns='text')
@@ -140,7 +141,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log('Discarding torrent because it doesn\'t meet the'
-                                               ' minimum seeders or leechers: {} (S:{} L:{})'.format
+                                               ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 

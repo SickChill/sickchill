@@ -114,8 +114,8 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    logger.log("Search string: {search}".format
-                               (search=search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params["searchstr"] = search_string
                 search_url = self.urls["search"]
@@ -155,7 +155,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.log("Discarding torrent because it doesn't meet the"
-                                               " minimum seeders or leechers: {} (S:{} L:{})".format
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 

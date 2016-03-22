@@ -78,7 +78,7 @@ def filterBadReleases(name, parse=True):
     except InvalidShowException:
         pass
     # except InvalidShowException as error:
-    #    logger.log(u"{}".format(error), logger.DEBUG)
+    #    logger.log(u"{0}".format(error), logger.DEBUG)
     #    return False
 
     # if any of the bad strings are in the name then say no

@@ -54,8 +54,8 @@ class BTDiggProvider(TorrentProvider):
                 search_params["q"] = search_string
                 if mode != "RSS":
                     search_params["order"] = 0
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
                 else:
                     search_params["order"] = 2
 

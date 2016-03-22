@@ -82,7 +82,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                 error_message = jdata.get('error', '')
                 if error_message:
-                    logger.log(u"{}".format(error_message), logger.DEBUG)
+                    logger.log(u"{0}".format(error_message), logger.DEBUG)
                     return results
 
                 try:

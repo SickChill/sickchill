@@ -94,8 +94,8 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for search_string in search_strings[mode]:
 
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params["search"] = search_string
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")

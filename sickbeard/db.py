@@ -181,7 +181,7 @@ class DBConnection(object):
         :return: list of results
         """
 
-        assert hasattr(querylist, '__iter__'), 'You passed a non-iterable to mass_action: {}'.format(repr(querylist))
+        assert hasattr(querylist, '__iter__'), 'You passed a non-iterable to mass_action: {0!r}'.format(querylist)
 
         # remove None types
         querylist = [i for i in querylist if i]
