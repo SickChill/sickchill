@@ -72,7 +72,7 @@ from sickrage.system.Shutdown import Shutdown
 
 from sickbeard.versionChecker import CheckVersion
 
-import requests
+from requests.compat import urljoin
 import markdown2
 
 try:
@@ -232,10 +232,9 @@ class BaseHandler(RequestHandler):
         (temporary) is chosen based on the ``permanent`` argument.
         The default is 302 (temporary).
         """
-        import urlparse
         from tornado.escape import utf8
         if not url.startswith(sickbeard.WEB_ROOT):
-            url = sickbeard.WEB_ROOT + url
+            url = urljoin(sickbeard.WEB_ROOT, url)
 
         if self._headers_written:
             raise Exception("Cannot redirect after headers have been written")
@@ -244,8 +243,7 @@ class BaseHandler(RequestHandler):
         else:
             assert isinstance(status, int) and 300 <= status <= 399
         self.set_status(status)
-        self.set_header("Location", urlparse.urljoin(utf8(self.request.uri),
-                                                     utf8(url)))
+        self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
@@ -3580,7 +3578,7 @@ class Manage(Home, WebRoot):
         if sickbeard.TORRENT_METHOD == 'utorrent':
             webui_url = '/'.join(s.strip('/') for s in (webui_url, 'gui/'))
         if sickbeard.TORRENT_METHOD == 'download_station':
-            if helpers.check_url(webui_url + 'download/'):
+            if helpers.check_url(urljoin(webui_url, 'download/')):
                 webui_url += 'download/'
             else:
                 info_download_station = '<p>To have a better experience please set the Download Station alias as <code>download</code>, you can check this setting in the Synology DSM <b>Control Panel</b> > <b>Application Portal</b>. Make sure you allow DSM to be embedded with iFrames too in <b>Control Panel</b> > <b>DSM Settings</b> > <b>Security</b>.</p><br><p>There is more information about this available <a href="https://github.com/midgetspy/Sick-Beard/pull/338">here</a>.</p><br>'

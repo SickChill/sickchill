@@ -93,8 +93,8 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 self.search_params['search'] = search_string
 
@@ -104,8 +104,8 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                 try:
                     with BS4Parser(data, "html.parser") as html:
-                        torrent_table = html.find('table', attrs={'class': 'koptekst'})
-                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                        torrent_table = html.find('table', class_='koptekst')
+                        torrent_rows = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
                         if len(torrent_rows) < 2:
@@ -113,7 +113,7 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             continue
 
                         for result in torrent_rows[1:]:
-                            cells = result.find_all('td')
+                            cells = result('td')
 
                             link = cells[1].find('a')
                             download_url = self.urls['download'] % cells[2].find('a')['href']

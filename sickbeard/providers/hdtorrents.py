@@ -92,8 +92,8 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 if mode != 'RSS':
                     search_url = self.urls['search'] % (quote_plus(search_string), self.categories)
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
                 else:
                     search_url = self.urls['rss'] % self.categories
 
@@ -128,14 +128,14 @@ class HDTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     torrent_rows = []
                     torrent_table = html.find('table', class_='mainblockcontenttt')
                     if torrent_table:
-                        torrent_rows = torrent_table.find_all('tr')
+                        torrent_rows = torrent_table('tr')
 
                     if not torrent_rows:
                         logger.log(u"Could not find results in returned data", logger.DEBUG)
                         continue
 
                     # Cat., Active, Filename, Dl, Wl, Added, Size, Uploader, S, L, C
-                    labels = [label.a.get_text(strip=True) if label.a else label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    labels = [label.a.get_text(strip=True) if label.a else label.get_text(strip=True) for label in torrent_rows[0]('td')]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:

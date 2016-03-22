@@ -2171,7 +2171,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'addic7ed_password': helpers.encrypt(ADDIC7ED_PASS, ENCRYPTION_VERSION),
 
             'itasa_username': ITASA_USER,
-            'itase_password': helpers.encrypt(ITASA_PASS, ENCRYPTION_VERSION),
+            'itasa_password': helpers.encrypt(ITASA_PASS, ENCRYPTION_VERSION),
 
             'legendastv_username': LEGENDASTV_USER,
             'legendastv_password': helpers.encrypt(LEGENDASTV_PASS, ENCRYPTION_VERSION),

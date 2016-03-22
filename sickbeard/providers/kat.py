@@ -70,8 +70,8 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                 search_params["field"] = "seeders" if mode != "RSS" else "time_add"
 
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls["search"] % ("usearch" if mode != "RSS" else search_string)
                 if self.custom_url:
@@ -90,7 +90,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    for item in html.find_all("item"):
+                    for item in html("item"):
                         try:
                             title = item.title.get_text(strip=True)
                             # Use the torcache link kat provides,

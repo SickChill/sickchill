@@ -60,8 +60,8 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
                     search_url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
@@ -77,7 +77,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     data = BeautifulSoup(data, 'html5lib')
 
-                    entries = data.findAll('item')
+                    entries = data('item')
                     if not entries:
                         logger.log(u'Returned xml contained no results', logger.INFO)
                         continue
@@ -105,8 +105,8 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
                                 # ]]>
                                 description = item.find('description')
-                                seeders = try_int(description.find_all('br')[0].next_sibling.strip().lstrip('Seeds: '))
-                                leechers = try_int(description.find_all('br')[1].next_sibling.strip().lstrip('Leechers: '))
+                                seeders = try_int(description('br')[0].next_sibling.strip().lstrip('Seeds: '))
+                                leechers = try_int(description('br')[1].next_sibling.strip().lstrip('Leechers: '))
                             else:
                                 # <description>Seeds: 6982 , Leechers 734</description>
                                 description = item.find('description').text.partition(',')

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ItaSASubtitle(Subtitle):
     provider_name = 'itasa'
 
-    def __init__(self, sub_id, series, season, episode, format, full_data):
+    def __init__(self, sub_id, series, season, episode, format, full_data, hash=None):
         super(ItaSASubtitle, self).__init__(Language('ita'))
         self.sub_id = sub_id
         self.series = series
@@ -36,6 +36,7 @@ class ItaSASubtitle(Subtitle):
         self.episode = episode
         self.format = format
         self.full_data = full_data
+        self.hash = hash
 
     @property
     def id(self):
@@ -58,6 +59,12 @@ class ItaSASubtitle(Subtitle):
             matches.add('format')
         if not video.format and not self.format:
             matches.add('format')
+        # hash
+        if 'itasa' in video.hashes and self.hash == video.hashes['itasa']:
+            print('Hash %s' % video.hashes['itasa'])
+            if 'series' in matches and 'season' in matches and 'episode' in matches:
+                matches.add('hash')
+
         # other properties
         matches |= guess_matches(video, guessit(self.full_data), partial=True)
 
@@ -68,6 +75,8 @@ class ItaSAProvider(Provider):
     languages = {Language('ita')}
 
     video_types = (Episode,)
+
+    required_hash = 'itasa'
 
     server_url = 'https://api.italiansubs.net/api/rest/'
 
@@ -247,7 +256,7 @@ class ItaSAProvider(Provider):
 
         return r.content
 
-    def query(self, series, season, episode, format, country=None):
+    def query(self, series, season, episode, format, country=None, hash=None):
 
         # To make queries you need to be logged in
         if not self.logged_in:
@@ -301,7 +310,8 @@ class ItaSAProvider(Provider):
                         season,
                         episode,
                         format,
-                        subtitle.find('name').text)
+                        subtitle.find('name').text,
+                        hash)
 
                 subtitles.append(sub)
 
@@ -330,7 +340,8 @@ class ItaSAProvider(Provider):
                         season,
                         episode,
                         format,
-                        subtitle.find('name').text)
+                        subtitle.find('name').text,
+                        hash)
 
                     subtitles.append(sub)
 
@@ -369,7 +380,7 @@ class ItaSAProvider(Provider):
         return subtitles + additional_subs
 
     def list_subtitles(self, video, languages):
-        return self.query(video.series, video.season, video.episode, video.format)
+        return self.query(video.series, video.season, video.episode, video.format, hash=video.hashes.get('itasa'))
 
     def download_subtitle(self, subtitle):
         pass

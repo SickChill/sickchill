@@ -23,6 +23,7 @@ Common interface for Quality and Status
 """
 
 # pylint: disable=line-too-long
+from __future__ import unicode_literals
 
 import operator
 from os import path
@@ -308,7 +309,7 @@ class Quality(object):
             sd_options = tags.anime_sd.search(name)
             hd_options = tags.anime_hd.search(name)
             full_hd = tags.anime_fullhd.search(name)
-            ep.rex[u'bluray'] = tags.anime_bluray
+            ep.rex[b'bluray'] = tags.anime_bluray
 
             # BluRay
             if ep.bluray and (full_hd or hd_options):
@@ -326,7 +327,7 @@ class Quality(object):
             return Quality.UNKNOWN if result is None else result
 
         # Is it UHD?
-        if ep.vres in [2160, 4320] and ep.scan == u'p':
+        if ep.vres in [2160, 4320] and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
             if ep.avc and ep.bluray:
@@ -335,12 +336,12 @@ class Quality(object):
             elif (ep.avc and ep.itunes) or ep.web:
                 result = Quality.UHD_4K_WEBDL if not full_res else Quality.UHD_8K_WEBDL
             # HDTV
-            elif ep.avc and ep.tv == u'hd':
+            elif ep.avc and ep.tv == 'hd':
                 result = Quality.UHD_4K_TV if not full_res else Quality.UHD_8K_TV
 
         # Is it HD?
         elif ep.vres in [1080, 720]:
-            if ep.scan == u'p':
+            if ep.scan == 'p':
                 # BluRay
                 full_res = (ep.vres == 1080)
                 if ep.avc and (ep.bluray or ep.hddvd):
@@ -349,14 +350,14 @@ class Quality(object):
                 elif (ep.avc and ep.itunes) or ep.web:
                     result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
                 # HDTV
-                elif ep.avc and ep.tv == u'hd':
+                elif ep.avc and ep.tv == 'hd':
                     if not all([ep.vres == 1080, ep.raw, ep.avc_non_free]):
                         result = Quality.FULLHDTV if full_res else Quality.HDTV
                     else:
                         result = Quality.RAWHDTV
-                elif all([ep.vres == 720, ep.tv == u'hd', ep.mpeg]):
+                elif all([ep.vres == 720, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
-            elif (ep.res == u'1080i') and ep.tv == u'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
+            elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
                 result = Quality.RAWHDTV
         elif ep.hrws:
             result = Quality.HDTV
@@ -367,7 +368,7 @@ class Quality(object):
             if ep.dvd or ep.bluray:
                 result = Quality.SDDVD
             # SDTV
-            elif ep.res == u'480p' or any([ep.tv, ep.sat, ep.web]):
+            elif ep.res == '480p' or any([ep.tv, ep.sat, ep.web]):
                 result = Quality.SDTV
 
         return Quality.UNKNOWN if result is None else result

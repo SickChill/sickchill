@@ -24,9 +24,6 @@ import datetime
 import operator
 import threading
 import traceback
-import errno
-from socket import timeout as SocketTimeout
-from requests import exceptions as requests_exceptions
 import sickbeard
 
 from sickbeard import db
@@ -93,27 +90,9 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
-            except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                continue
-            except (requests_exceptions.HTTPError, requests_exceptions.TooManyRedirects) as e:
-                logger.log(u"HTTP error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                continue
-            except requests_exceptions.ConnectionError as e:
-                logger.log(u"Connection error while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                continue
-            except requests_exceptions.Timeout as e:
-                logger.log(u"Connection timed out while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                continue
-            except requests_exceptions.ContentDecodingError:
-                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.DEBUG)
-                continue
             except Exception as e:
-                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
-                    logger.log(u"Connection reseted by peer accessing {0}".format(curProvider.name), logger.DEBUG)
-                else:
-                    logger.log(u"Unknown exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+                logger.log(u"Exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
@@ -215,8 +194,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
-            if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in map(
-                    operator.attrgetter('indexerid', 'season', 'episode'), finalPropers):
+            if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in {(p.indexerid, p.season, p.episode) for p in finalPropers}:
                 logger.log(u"Found a proper that we need: " + str(bestResult.name))
                 finalPropers.append(bestResult)
 
