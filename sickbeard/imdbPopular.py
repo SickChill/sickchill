@@ -37,7 +37,7 @@ class imdbPopular(object):
 
         soup = BeautifulSoup(data, 'html5lib')
         results = soup.find("table", {"class": "results"})
-        rows = results.find_all("tr")
+        rows = results("tr")
 
         for row in rows:
             show = {}

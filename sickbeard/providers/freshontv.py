@@ -115,8 +115,8 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls['search'] % (freeleech, search_string)
                 init_html = self.get_url(search_url, returns='text')
@@ -131,7 +131,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         # Check to see if there is more than 1 page of results
                         pager = init_soup.find('div', {'class': 'pager'})
-                        page_links = pager.find_all('a', href=True) if pager else []
+                        page_links = pager('a', href=True) if pager else []
 
                         for lnk in page_links:
                             link_text = lnk.text.strip()
@@ -172,7 +172,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         with BS4Parser(data_response, 'html5lib') as html:
 
-                            torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
+                            torrent_rows = html("tr", class_=re.compile('torrent_[0-9]*'))
 
                             # Continue only if a Release is found
                             if not torrent_rows:

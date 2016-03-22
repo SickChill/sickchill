@@ -81,8 +81,8 @@ class elitetorrentProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
@@ -94,7 +94,7 @@ class elitetorrentProvider(TorrentProvider):
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', class_='fichas-listado')
-                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                        torrent_rows = torrent_table('tr') if torrent_table else []
 
                         if len(torrent_rows) < 2:
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)

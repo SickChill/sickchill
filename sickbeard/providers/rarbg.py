@@ -116,8 +116,8 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             for search_string in search_strings[mode]:
                 if mode != "RSS":
                     search_params["search_string"] = search_string
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
@@ -151,7 +151,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.log("Discarding torrent because it doesn't meet the"
-                                           " minimum seeders or leechers: {} (S:{} L:{})".format
+                                           " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 

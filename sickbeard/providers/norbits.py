@@ -118,7 +118,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                         if seeders < self.minseed or leechers < self.minleech:
                             logger.log('Discarding torrent because it does not meet '
-                                       'the minimum seeders or leechers: {} (S:{} L:{})'.format
+                                       'the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                        (title, seeders, leechers), logger.DEBUG)
                             continue
 

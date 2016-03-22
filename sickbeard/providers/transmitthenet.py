@@ -97,8 +97,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params = {
                     'searchtext': search_string,
@@ -122,7 +122,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             logger.log(u"Data returned from {0!s} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
-                        torrent_rows = torrent_table.findAll('tr', {'class': 'torrent'})
+                        torrent_rows = torrent_table('tr', class_='torrent')
 
                         # Continue only if one Release is found
                         if not torrent_rows:
@@ -136,7 +136,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                             #Normal Download Link
                             download_item = torrent_row.find('a', {'title': 'Download Torrent'})
-                            
+
                             if not download_item:
                                 #If the user has downloaded it
                                 download_item = torrent_row.find('a', {'title': 'Previously Grabbed Torrent File'})
@@ -166,11 +166,11 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.log(u"Discarding torrent because it doesn't meet the"
-                                               u" minimum seeders or leechers: {} (S:{} L:{})".format
+                                               u" minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            cells = torrent_row.find_all('td')
+                            cells = torrent_row('td')
                             torrent_size = cells[5].text.strip()
                             size = convert_size(torrent_size) or -1
 

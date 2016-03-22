@@ -86,7 +86,7 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                 try:
                     with BS4Parser(data, 'html5lib') as parser:
-                        for item in parser.findAll('item'):
+                        for item in parser('item'):
                             if item.category and 'tv' not in item.category.get_text(strip=True):
                                 continue
 
