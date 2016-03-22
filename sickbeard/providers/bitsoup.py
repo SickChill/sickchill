@@ -104,7 +104,7 @@ class BitSoupProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
                 try:
                     with BS4Parser(data, "html.parser") as html:
-                        torrent_table = html.find('table', attrs={'class': 'koptekst'})
+                        torrent_table = html.find('table', class_='koptekst')
                         torrent_rows = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found

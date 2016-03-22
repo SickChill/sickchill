@@ -110,17 +110,17 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrent_table = html.find('table', attrs={'style': 'border: none; width: 100%;'})
+                        torrent_table = html.find('table', style='border: none; width: 100%;')
                         if not torrent_table:
                             logger.log(u"Could not find table of torrents", logger.ERROR)
                             continue
 
-                        torrent_rows = torrent_table('tr', attrs={'class': 'browse'})
+                        torrent_rows = torrent_table('tr', class_='browse')
 
                         for result in torrent_rows:
                             cells = result('td')
                             size = None
-                            link = cells[1].find('a', attrs={'style': 'font-size: 1.25em; font-weight: bold;'})
+                            link = cells[1].find('a', style='font-size: 1.25em; font-weight: bold;')
 
                             torrent_id = link['href'].replace('details.php?id=', '')
 

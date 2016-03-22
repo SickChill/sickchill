@@ -137,8 +137,8 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         dl_href = result.find('a', attrs={'href': re.compile(r'download.php.*')})['href']
                         title = re.search('f=(.*).torrent', dl_href).group(1).replace('+', '.')
                         download_url = self.urls['base_url'] + dl_href
-                        seeders = int(result.find('span', attrs={'class': 'seedy'}).find('a').text)
-                        leechers = int(result.find('span', attrs={'class': 'leechy'}).find('a').text)
+                        seeders = int(result.find('span', class_='seedy').find('a').text)
+                        leechers = int(result.find('span', class_='leechy').find('a').text)
                         torrent_size = re.match(r'.*?([0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+).*', str(result), re.DOTALL).group(1)
                         size = convert_size(torrent_size) or -1
 

@@ -119,7 +119,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrent_table = html.find('table', attrs={'class': 'torrents'})
+                        torrent_table = html.find('table', class_='torrents')
                         torrents = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
@@ -131,8 +131,8 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             try:
                                 title = result('td')[1].find('a').text
                                 download_url = self.urls['base_url'] + result('td')[3].find('a')['href']
-                                seeders = int(result.find('td', attrs={'class': 'ac t_seeders'}).text)
-                                leechers = int(result.find('td', attrs={'class': 'ac t_leechers'}).text)
+                                seeders = int(result.find('td', class_='ac t_seeders').text)
+                                leechers = int(result.find('td', class_='ac t_leechers').text)
                                 torrent_size = result('td')[5].text
                                 size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError):

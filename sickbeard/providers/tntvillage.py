@@ -315,7 +315,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                     try:
                         with BS4Parser(data, 'html5lib') as html:
-                            torrent_table = html.find('table', attrs={'class': 'copyright'})
+                            torrent_table = html.find('table', class_='copyright')
                             torrent_rows = torrent_table('tr') if torrent_table else []
 
                             # Continue only if one Release is found
