@@ -65,7 +65,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             run_at = u", next check in approx. " + (
                 "{0:d}h, {1:d}m".format(hours, minutes) if 0 < hours else "{0:d}m, {1:d}s".format(minutes, seconds))
 
-        logger.log(u"Completed the search for new propers{0!s}".format(run_at))
+        logger.log(u"Completed the search for new propers{0}".format(run_at))
 
         self.amActive = False
 

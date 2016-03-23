@@ -71,7 +71,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     return True
 
                 else:
-                    logger.log('Unknown error: {0!s}'.format(description_text), logger.DEBUG)
+                    logger.log('Unknown error: {0}'.format(description_text), logger.DEBUG)
                     return False
 
             return True

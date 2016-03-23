@@ -108,7 +108,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

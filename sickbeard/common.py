@@ -236,7 +236,7 @@ class Quality(object):
                 stat = Quality.statusPrefixes[status]
                 qual = Quality.qualityStrings[quality]
                 comp = Quality.compositeStatus(status, quality)
-                to_return[comp] = '{0!s} ({1!s})'.format(stat, qual)
+                to_return[comp] = '{0} ({1})'.format(stat, qual)
         return to_return
 
     @staticmethod

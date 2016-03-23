@@ -717,7 +717,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # git_remote
         GIT_REMOTE = check_setting_str(CFG, 'General', 'git_remote', 'origin')
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
-                                           'https://github.com/{0!s}/{1!s}.git'.format(GIT_ORG, GIT_REPO))
+                                           'https://github.com/{0}/{1}.git'.format(GIT_ORG, GIT_REPO))
 
         if 'sickragetv' in GIT_REMOTE_URL.lower():
             GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
@@ -1582,7 +1582,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.log(u"Waiting for the {0!s} thread to exit".format(t.name))
+                logger.log(u"Waiting for the {0} thread to exit".format(t.name))
                 try:
                     t.join(10)
                 except Exception:
@@ -2210,7 +2210,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
     if not startPort:
         startPort = WEB_PORT
 
-    browserURL = '{0!s}://localhost:{1:d}{2!s}/home/'.format(protocol, startPort, web_root)
+    browserURL = '{0}://localhost:{1:d}{2}/home/'.format(protocol, startPort, web_root)
 
     try:
         webbrowser.open(browserURL, 2, 1)

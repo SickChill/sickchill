@@ -115,7 +115,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
     try:
         file_list = getFileList(path, includeFiles)
     except OSError as e:
-        logger.log('Unable to open {0!s}: {1!s} / {2!s}'.format(path, repr(e), str(e)), logger.WARNING)
+        logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
         file_list = getFileList(parent_path, includeFiles)
 
     file_list = sorted(file_list,
