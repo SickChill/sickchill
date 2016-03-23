@@ -234,7 +234,7 @@ class BaseHandler(RequestHandler):
         """
         from tornado.escape import utf8
         if not url.startswith(sickbeard.WEB_ROOT):
-            url = urljoin(sickbeard.WEB_ROOT, url)
+            url = sickbeard.WEB_ROOT + url
 
         if self._headers_written:
             raise Exception("Cannot redirect after headers have been written")
