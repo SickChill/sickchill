@@ -1,7 +1,6 @@
 # coding=utf-8
 
-# Authors: Mr_Orange <mr_orange@hotmail.it>, EchelonFour
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,7 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import re
+from collections import OrderedDict
+from requests.compat import urljoin
 
 import sickbeard
 from sickbeard.clients.generic import GenericClient
@@ -26,116 +29,141 @@ from sickbeard.clients.generic import GenericClient
 
 class uTorrentAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-
+        """
+        Initializes the utorrent client class and sets the url, username, and password
+        """
         super(uTorrentAPI, self).__init__('uTorrent', host, username, password)
+        self.url = urljoin(self.host, 'gui/')
 
-        self.url = self.host + 'gui/'
-
-    def _request(self, method='get', params=None, data=None, files=None):
-
-        # Workaround for uTorrent 2.2.1
-        # Need a odict but only supported in 2.7+ and sickrage is 2.6+
-        ordered_params = {'token': self.auth}
-
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments
+        """
+        Overrides the parent _request method to add the auth token
+        """
+        ordered_params = OrderedDict({'token': self.auth})
         for k, v in params.iteritems() or {}:
             ordered_params.update({k: v})
 
-        return super(uTorrentAPI, self)._request(method=method, params=ordered_params, data=data, files=files)
+        return super(uTorrentAPI, self)._request(method=method, params=ordered_params, data=data, files=files, cookies=cookies)
 
     def _get_auth(self):
-
+        """
+        Makes a request to the token url to get a CSRF token
+        """
         try:
-            self.response = self.session.get(self.url + 'token.html', verify=False)
+            self.response = self.session.get(urljoin(self.url, 'token.html'), verify=False)
+            self.response.raise_for_status()
             self.auth = re.findall("<div.*?>(.*?)</", self.response.text)[0]
-        except Exception:
-            return None
+        except Exception as error:
+            sickbeard.helpers.handle_requests_exception(error)
+            self.auth = None
 
-        return self.auth if not self.response.status_code == 404 else None
+        return self.auth
 
     def _add_torrent_uri(self, result):
-
+        """
+        Adds a torrent either by magnet or url
+        params: :result: an instance of the searchResult class
+        """
         params = {'action': 'add-url', 's': result.url}
         return self._request(params=params)
 
     def _add_torrent_file(self, result):
-
+        """
+        Adds a torrent file from memory
+        params: :result: an instance of the searchResult class
+        """
         params = {'action': 'add-file'}
         files = {'torrent_file': (result.name + '.torrent', result.content)}
         return self._request(method='post', params=params, files=files)
 
     def _set_torrent_label(self, result):
-
-        label = sickbeard.TORRENT_LABEL
+        """
+        Sets a label on an existing torrent in the client
+        params: :result: an instance of the searchResult class
+        """
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME
+        else:
+            label = sickbeard.TORRENT_LABEL
 
-        params = {'action': 'setprops',
-                  'hash': result.hash,
-                  's': 'label',
-                  'v': label}
-
+        params = {
+            'action': 'setprops',
+            'hash': result.hash,
+            's': 'label',
+            'v': label
+        }
         return self._request(params=params)
 
     def _set_torrent_ratio(self, result):
+        """
+        Sets the desired seed ratio for an existing torrent in the client
+        params: :result: an instance of the searchResult class
+        """
+        if result.ratio in (None, ''):
+            return True
 
-        ratio = None
-        if result.ratio:
-            ratio = result.ratio
+        params = {
+            'action': 'setprops',
+            'hash': result.hash,
+            's': 'seed_override',
+            'v': '1'
+        }
+        if not self._request(params=params):
+            return False
 
-        if ratio:
-            params = {'action': 'setprops',
-                      'hash': result.hash,
-                      's': 'seed_override',
-                      'v': '1'}
-
-            if self._request(params=params):
-                params = {'action': 'setprops',
-                          'hash': result.hash,
-                          's': 'seed_ratio',
-                          'v': float(ratio) * 10}
-
-                return self._request(params=params)
-            else:
-                return False
-
-        return True
+        params = {
+            'action': 'setprops',
+            'hash': result.hash,
+            's': 'seed_ratio',
+            'v': float(result.ratio) * 10
+        }
+        return self._request(params=params)
 
     def _set_torrent_seed_time(self, result):
-
-        if sickbeard.TORRENT_SEED_TIME:
-            time = 3600 * float(sickbeard.TORRENT_SEED_TIME)
-            params = {'action': 'setprops',
-                      'hash': result.hash,
-                      's': 'seed_override',
-                      'v': '1'}
-
-            if self._request(params=params):
-                params = {'action': 'setprops',
-                          'hash': result.hash,
-                          's': 'seed_time',
-                          'v': time}
-
-                return self._request(params=params)
-            else:
-                return False
-        else:
+        """
+        Sets the amount of time a torrent that exists in the client should seed for
+        params: :result: an instance of the searchResult class
+        """
+        if not sickbeard.TORRENT_SEED_TIME:
             return True
+
+        params = {
+            'action': 'setprops',
+            'hash': result.hash,
+            's': 'seed_override',
+            'v': '1'}
+
+        if not self._request(params=params):
+            return False
+
+        params = {
+            'action': 'setprops',
+            'hash': result.hash,
+            's': 'seed_time',
+            'v': 3600 * float(sickbeard.TORRENT_SEED_TIME)
+        }
+        return self._request(params=params)
 
     def _set_torrent_priority(self, result):
-
-        if result.priority == 1:
-            params = {'action': 'queuetop', 'hash': result.hash}
-            return self._request(params=params)
-        else:
+        """
+        Sets the priority of a torrent that exists in the client
+        params: :result: an instance of the searchResult class
+        """
+        if not result.priority:
             return True
 
+        params = {'action': 'queuetop', 'hash': result.hash}
+        return self._request(params=params)
+
     def _set_torrent_pause(self, result):
-
-        if sickbeard.TORRENT_PAUSED:
-            params = {'action': 'pause', 'hash': result.hash}
-        else:
-            params = {'action': 'start', 'hash': result.hash}
-
+        """
+        Pauses a torrent that exists on the client
+        params: :result: an instance of the searchResult class
+        """
+        params = {
+            'action': 'pause' if sickbeard.TORRENT_PAUSED else 'start',
+            'hash': result.hash
+        }
         return self._request(params=params)
 
 
