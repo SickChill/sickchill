@@ -250,13 +250,13 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
-            self._log(u"Found the following associated files for {0!s}: {1!s}".format(file_path, file_path_list), logger.DEBUG)
+            self._log(u"Found the following associated files for {0}: {1}".format(file_path, file_path_list), logger.DEBUG)
             if extensions_to_delete:
                 # Rebuild the 'file_path_list' list only with the extensions the user allows
                 file_path_list = [associated_file for associated_file in file_path_list if associated_file not in extensions_to_delete]
                 self._delete(extensions_to_delete)
         else:
-            self._log(u"No associated files for {0!s} were found during this pass".format(file_path), logger.DEBUG)
+            self._log(u"No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 
         return file_path_list
 
@@ -693,7 +693,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 try:
                     airdate = episodes[0].toordinal()
                 except AttributeError:
-                    self._log(u"Could not convert to a valid airdate: {0!s}".format(episodes[0]), logger.DEBUG)
+                    self._log(u"Could not convert to a valid airdate: {0}".format(episodes[0]), logger.DEBUG)
                     episodes = []
                     continue
 
@@ -948,16 +948,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
 
         if ek(os.path.isdir, self.file_path):
-            self._log(u"File {0!s} seems to be a directory".format(self.file_path))
+            self._log(u"File {0} seems to be a directory".format(self.file_path))
             return False
 
         if not ek(os.path.exists, self.file_path):
-            self._log(u"File {0!s} doesn't exist, did unrar fail?".format(self.file_path))
+            self._log(u"File {0} doesn't exist, did unrar fail?".format(self.file_path))
             return False
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.file_path:
-                self._log(u"File {0!s} is ignored type, skipping".format(self.file_path))
+                self._log(u"File {0} is ignored type, skipping".format(self.file_path))
                 return False
 
         # reset per-file stuff
@@ -987,7 +987,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: {0!s}".format(common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
+        logger.log(u"Quality of the episode we're processing: {0}".format(common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
@@ -1027,7 +1027,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 if int(ep_obj.season) > int(max_season[0][0]):
-                    self._log(u"File has season {0!s}, while the indexer is on season {1!s}. The file may be incorrectly labeled or fake, aborting.".format(str(ep_obj.season), str(max_season[0][0])))
+                    self._log(u"File has season {0}, while the indexer is on season {1}. The file may be incorrectly labeled or fake, aborting.".format(str(ep_obj.season), str(max_season[0][0])))
                     return False
 
         # if the file is priority then we're going to replace it even if it exists

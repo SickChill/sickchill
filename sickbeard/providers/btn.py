@@ -63,7 +63,7 @@ class BTNProvider(TorrentProvider):
             return self._check_auth()
 
         if 'api-error' in parsedJSON:
-            logger.log(u"Incorrect authentication credentials: {0!s}".format(parsedJSON['api-error']), logger.DEBUG)
+            logger.log(u"Incorrect authentication credentials: {0}".format(parsedJSON['api-error']), logger.DEBUG)
             raise AuthException(
                 "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
@@ -122,7 +122,7 @@ class BTNProvider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.log(u"Found result: {0!s} ".format(title), logger.DEBUG)
+                    logger.log(u"Found result: {0} ".format(title), logger.DEBUG)
                     results.append(torrent_info)
 
         # FIXME SORT RESULTS
@@ -141,7 +141,7 @@ class BTNProvider(TorrentProvider):
             if error.message == 'Call Limit Exceeded':
                 logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
             else:
-                logger.log(u"JSON-RPC protocol error while accessing provicer. Error: {0!s} ".format(repr(error)), logger.ERROR)
+                logger.log(u"JSON-RPC protocol error while accessing provicer. Error: {0} ".format(repr(error)), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
             return parsedJSON
 
@@ -150,13 +150,13 @@ class BTNProvider(TorrentProvider):
 
         except socket.error, error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.log(u"Socket error while accessing provider. Error: {0!s} ".format(error[1]), logger.WARNING)
+            logger.log(u"Socket error while accessing provider. Error: {0} ".format(error[1]), logger.WARNING)
 
         except Exception, error:
             errorstring = str(error)
             if errorstring.startswith('<') and errorstring.endswith('>'):
                 errorstring = errorstring[1:-1]
-            logger.log(u"Unknown error while accessing provider. Error: {0!s} ".format(errorstring), logger.WARNING)
+            logger.log(u"Unknown error while accessing provider. Error: {0} ".format(errorstring), logger.WARNING)
 
         return parsedJSON
 

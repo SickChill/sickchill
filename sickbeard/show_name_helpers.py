@@ -52,7 +52,7 @@ def containsAtLeastOneWord(name, words):
     """
     if isinstance(words, basestring):
         words = words.split(',')
-    items = [(re.compile(r'(^|[\W_]){0!s}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
+    items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
     for regexp, word in items:
         if regexp.search(name):
             return word

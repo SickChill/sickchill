@@ -203,22 +203,22 @@ class BaseHandler(RequestHandler):
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
-            trace_info = ''.join(["{0!s}<br>".format(line) for line in traceback.format_exception(*exc_info)])
-            request_info = ''.join(["<strong>{0!s}</strong>: {1!s}<br>".format(k, self.request.__dict__[k]) for k in
+            trace_info = ''.join(["{0}<br>".format(line) for line in traceback.format_exception(*exc_info)])
+            request_info = ''.join(["<strong>{0}</strong>: {1}<br>".format(k, self.request.__dict__[k]) for k in
                                     self.request.__dict__.keys()])
             error = exc_info[1]
 
             self.set_header('Content-Type', 'text/html')
             self.finish("""<html>
-                                 <title>{0!s}</title>
+                                 <title>{0}</title>
                                  <body>
                                     <h2>Error</h2>
-                                    <p>{1!s}</p>
+                                    <p>{1}</p>
                                     <h2>Traceback</h2>
-                                    <p>{2!s}</p>
+                                    <p>{2}</p>
                                     <h2>Request Info</h2>
-                                    <p>{3!s}</p>
-                                    <button onclick="window.location='{4!s}/errorlogs/';">View Log(Errors)</button>
+                                    <p>{3}</p>
+                                    <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
                                  </body>
                                </html>""".format(error, error, trace_info, request_info, sickbeard.WEB_ROOT))
 
@@ -271,7 +271,7 @@ class WebHandler(BaseHandler):
             self.finish(results)
 
         except Exception:
-            logger.log(u'Failed doing webui request "{0!s}": {1!s}'.format(route, traceback.format_exc()), logger.DEBUG)
+            logger.log(u'Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()), logger.DEBUG)
             raise HTTPError(404)
 
     @run_on_executor
@@ -285,7 +285,7 @@ class WebHandler(BaseHandler):
             result = function(**kwargs)
             return result
         except Exception:
-            logger.log(u'Failed doing webui callback: {0!s}'.format((traceback.format_exc())), logger.ERROR)
+            logger.log(u'Failed doing webui callback: {0}'.format((traceback.format_exc())), logger.ERROR)
             raise
 
     # post uses get method
@@ -348,7 +348,7 @@ class KeyHandler(RequestHandler):
 
             self.finish({'success': api_key is not None, 'api_key': api_key})
         except Exception:
-            logger.log(u'Failed doing key request: {0!s}'.format((traceback.format_exc())), logger.ERROR)
+            logger.log(u'Failed doing key request: {0}'.format((traceback.format_exc())), logger.ERROR)
             self.finish({'success': False, 'error': 'Failed returning results'})
 
 
@@ -550,7 +550,7 @@ class CalendarHandler(BaseHandler):
         """ Provides a subscribeable URL for iCal subscriptions
         """
 
-        logger.log(u"Receiving iCal request from {0!s}".format(self.request.remote_ip))
+        logger.log(u"Receiving iCal request from {0}".format(self.request.remote_ip))
 
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'
@@ -984,7 +984,7 @@ class Home(WebRoot):
         host = config.clean_host(host)
         result = notifiers.nmj_notifier.notify_settings(urllib.unquote_plus(host))
         if result:
-            return '{{"message": "Got settings from {host!s}", "database": "{database!s}", "mount": "{mount!s}"}}'.format(**{
+            return '{{"message": "Got settings from {host}", "database": "{database}", "mount": "{mount}"}}'.format(**{
                 "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT})
         else:
             return '{"message": "Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)", "database": "", "mount": ""}'
@@ -1005,10 +1005,10 @@ class Home(WebRoot):
         host = config.clean_host(host)
         result = notifiers.nmjv2_notifier.notify_settings(urllib.unquote_plus(host), dbloc, instance)
         if result:
-            return '{{"message": "NMJ Database found at: {host!s}", "database": "{database!s}"}}'.format(**{"host": host,
+            return '{{"message": "NMJ Database found at: {host}", "database": "{database}"}}'.format(**{"host": host,
                                                                                                    "database": sickbeard.NMJv2_DATABASE})
         else:
-            return '{{"message": "Unable to find NMJ Database at location: {dbloc!s}. Is the right location selected and PCH running?", "database": ""}}'.format(**{
+            return '{{"message": "Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?", "database": ""}}'.format(**{
                 "dbloc": dbloc})
 
     @staticmethod
@@ -1085,7 +1085,7 @@ class Home(WebRoot):
         if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
             return 'Test email sent successfully! Check inbox.'
         else:
-            return 'ERROR: {0!s}'.format(notifiers.email_notifier.last_err)
+            return 'ERROR: {0}'.format(notifiers.email_notifier.last_err)
 
     @staticmethod
     def testNMA(nma_api=None, nma_priority=0):
@@ -1228,7 +1228,7 @@ class Home(WebRoot):
             show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
             showObj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
-            return self._genericMessage("Error", "Invalid show ID: {0!s}".format(str(show)))
+            return self._genericMessage("Error", "Invalid show ID: {0}".format(str(show)))
 
         if showObj is None:
             return self._genericMessage("Error", "Show not in show list")
@@ -1546,7 +1546,7 @@ class Home(WebRoot):
             if ek(os.path.normpath, showObj._location) != ek(os.path.normpath, location):  # pylint: disable=protected-access
                 logger.log(ek(os.path.normpath, showObj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)  # pylint: disable=protected-access
                 if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
-                    errors.append("New location <tt>{0!s}</tt> does not exist".format(location))
+                    errors.append("New location <tt>{0}</tt> does not exist".format(location))
 
                 # don't bother if we're going to update anyway
                 elif not do_update:
@@ -1562,7 +1562,7 @@ class Home(WebRoot):
                             # rescan the episodes in the new folder
                     except NoNFOException:
                         errors.append(
-                            "The folder at <tt>{0!s}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickRage.".format(location))
+                            "The folder at <tt>{0}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickRage.".format(location))
 
             # save it to the DB
             showObj.saveToDB()
@@ -1593,8 +1593,8 @@ class Home(WebRoot):
             return errors
 
         if len(errors) > 0:
-            ui.notifications.error('{0:d} error{1!s} while saving changes:'.format(len(errors), "" if len(errors) == 1 else "s"),
-                                   '<ul>' + '\n'.join(['<li>{0!s}</li>'.format(error) for error in errors]) + "</ul>")
+            ui.notifications.error('{0:d} error{1} while saving changes:'.format(len(errors), "" if len(errors) == 1 else "s"),
+                                   '<ul>' + '\n'.join(['<li>{0}</li>'.format(error) for error in errors]) + "</ul>")
 
         return self.redirect("/home/displayShow?show=" + show)
 
@@ -1604,7 +1604,7 @@ class Home(WebRoot):
         if error is not None:
             return self._genericMessage('Error', error)
 
-        ui.notifications.message('{0!s} has been {1!s}'.format(show.name, ('resumed', 'paused')[show.paused]))
+        ui.notifications.message('{0} has been {1}'.format(show.name, ('resumed', 'paused')[show.paused]))
 
         return self.redirect("/home/displayShow?show={0:d}".format(show.indexerid))
 
@@ -1616,7 +1616,7 @@ class Home(WebRoot):
                 return self._genericMessage('Error', error)
 
             ui.notifications.message(
-                '{0!s} has been {1!s} {2!s}'.format(
+                '{0} has been {1} {2}'.format(
                     show.name,
                     ('deleted', 'trashed')[bool(sickbeard.TRASH_REMOVE_SHOW)],
                     ('(media untouched)', '(with all related media)')[bool(full)]
@@ -1777,7 +1777,7 @@ class Home(WebRoot):
                 epInfo = curEp.split('x')
 
                 if not all(epInfo):
-                    logger.log(u"Something went wrong when trying to setStatus, epInfo[0]: {0!s}, epInfo[1]: {1!s}".format(epInfo[0], epInfo[1]), logger.DEBUG)
+                    logger.log(u"Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]), logger.DEBUG)
                     continue
 
                 epObj = showObj.getEpisode(epInfo[0], epInfo[1])
@@ -2082,7 +2082,7 @@ class Home(WebRoot):
 
         if new_subtitles:
             new_languages = [subtitles.name_from_code(code) for code in new_subtitles]
-            status = 'New subtitles downloaded: {0!s}'.format(', '.join(new_languages))
+            status = 'New subtitles downloaded: {0}'.format(', '.join(new_languages))
         else:
             status = 'No subtitles downloaded'
 
@@ -2130,7 +2130,7 @@ class Home(WebRoot):
             result['success'] = False
             result['errorMessage'] = ep_obj
         elif showObj.is_anime:
-            logger.log(u"setAbsoluteSceneNumbering for {0!s} from {1!s} to {2!s}".format(show, forAbsolute, sceneAbsolute), logger.DEBUG)
+            logger.log(u"setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute), logger.DEBUG)
 
             show = int(show)
             indexer = int(indexer)
@@ -2140,7 +2140,7 @@ class Home(WebRoot):
 
             set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
-            logger.log(u"setEpisodeSceneNumbering for {0!s} from {1!s}x{2!s} to {3!s}x{4!s}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
+            logger.log(u"setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
 
             show = int(show)
             indexer = int(indexer)
@@ -2189,15 +2189,15 @@ class Home(WebRoot):
 
     @staticmethod
     def fetch_releasegroups(show_name):
-        logger.log(u'ReleaseGroups: {0!s}'.format(show_name), logger.INFO)
+        logger.log(u'ReleaseGroups: {0}'.format(show_name), logger.INFO)
         if helpers.set_up_anidb_connection():
             try:
                 anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
                 groups = anime.get_groups()
-                logger.log(u'ReleaseGroups: {0!s}'.format(groups), logger.INFO)
+                logger.log(u'ReleaseGroups: {0}'.format(groups), logger.INFO)
                 return json.dumps({'result': 'success', 'groups': groups})
             except AttributeError as error:
-                logger.log(u'Unable to get ReleaseGroups: {0!s}'.format(error), logger.DEBUG)
+                logger.log(u'Unable to get ReleaseGroups: {0}'.format(error), logger.DEBUG)
 
         return json.dumps({'result': 'failure'})
 
@@ -2328,7 +2328,7 @@ class HomeAddShows(Home):
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r'^(.+ |)([12][0-9]{3})$', search_term)
         if matches:
-            searchTerms.append("{0!s}({1!s})".format(matches.group(1), matches.group(2)))
+            searchTerms.append("{0}({1})".format(matches.group(1), matches.group(2)))
 
         for searchTerm in searchTerms:
             # If search term begins with an article, let's also search for it without
@@ -2346,7 +2346,7 @@ class HomeAddShows(Home):
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            logger.log(u"Searching for Show with searchterm(s): {0!s} on Indexer: {1!s}".format(
+            logger.log(u"Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
             for searchTerm in searchTerms:
                 try:
@@ -2554,9 +2554,9 @@ class HomeAddShows(Home):
         elif traktList == "recommended":
             page_url = "recommendations/shows"
         elif traktList == "newshow":
-            page_url = 'calendars/all/shows/new/{0!s}/30'.format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = 'calendars/all/shows/new/{0}/30'.format(datetime.date.today().strftime("%Y-%m-%d"))
         elif traktList == "newseason":
-            page_url = 'calendars/all/shows/premieres/{0!s}/30'.format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = 'calendars/all/shows/premieres/{0}/30'.format(datetime.date.today().strftime("%Y-%m-%d"))
         else:
             page_url = "shows/anticipated"
 
@@ -2612,7 +2612,7 @@ class HomeAddShows(Home):
                 blacklist = False
 
         except traktException as e:
-            logger.log(u"Could not connect to Trakt service: {0!s}".format(ex(e)), logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
         return t.render(blacklist=blacklist, trending_shows=trending_shows)
 
@@ -2665,10 +2665,10 @@ class HomeAddShows(Home):
         if indexer != "TVDB":
             tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
             if not tvdb_id:
-                logger.log(u"Unable to to find tvdb ID to add {0!s}".format(show_name))
+                logger.log(u"Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(
-                    "Unable to add {0!s}".format(show_name),
-                    "Could not add {0!s}.  We were unable to locate the tvdb id at this time.".format(show_name)
+                    "Unable to add {0}".format(show_name),
+                    "Could not add {0}.  We were unable to locate the tvdb id at this time.".format(show_name)
                 )
                 return
 
@@ -2794,7 +2794,7 @@ class HomeAddShows(Home):
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.log(u"Unable to add show due to show selection. Not anough arguments: {0!s}".format((repr(series_pieces))),
+                logger.log(u"Unable to add show due to show selection. Not anough arguments: {0}".format((repr(series_pieces))),
                            logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
                 return self.redirect('/addShows/existingShows/')
@@ -3435,11 +3435,11 @@ class Manage(Home, WebRoot):
 
             if curErrors:
                 logger.log(u"Errors: " + str(curErrors), logger.ERROR)
-                errors.append('<b>{0!s}:</b>\n<ul>'.format(showObj.name) + ' '.join(
-                    ['<li>{0!s}</li>'.format(error) for error in curErrors]) + "</ul>")
+                errors.append('<b>{0}:</b>\n<ul>'.format(showObj.name) + ' '.join(
+                    ['<li>{0}</li>'.format(error) for error in curErrors]) + "</ul>")
 
         if len(errors) > 0:
-            ui.notifications.error('{0:d} error{1!s} while saving changes:'.format(len(errors), "" if len(errors) == 1 else "s"),
+            ui.notifications.error('{0:d} error{1} while saving changes:'.format(len(errors), "" if len(errors) == 1 else "s"),
                                    " ".join(errors))
 
         return self.redirect("/manage/")

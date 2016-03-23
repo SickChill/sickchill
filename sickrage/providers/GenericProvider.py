@@ -88,17 +88,17 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     'Referer': '/'.join(url.split('/')[:3]) + '/'
                 })
 
-            logger.log(u'Downloading a result from {0!s} at {1!s}'.format(self.name, url))
+            logger.log(u'Downloading a result from {0} at {1}'.format(self.name, url))
 
             if url.endswith(GenericProvider.TORRENT) and filename.endswith(GenericProvider.NZB):
                 filename = replace_extension(filename, GenericProvider.TORRENT)
 
             if download_file(url, filename, session=self.session, headers=self.headers, hooks={'response': self.get_url_hook}):
                 if self._verify_download(filename):
-                    logger.log(u'Saved result to {0!s}'.format(filename), logger.INFO)
+                    logger.log(u'Saved result to {0}'.format(filename), logger.INFO)
                     return True
 
-                logger.log(u'Could not download {0!s}'.format(url), logger.WARNING)
+                logger.log(u'Could not download {0}'.format(url), logger.WARNING)
                 remove_file_failed(filename)
 
         if urls:
@@ -186,13 +186,13 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 if search_mode == 'sponly':
                     if parse_result.episode_numbers:
                         logger.log(
-                            u'This is supposed to be a season pack search but the result {0!s} is not a valid season pack, skipping it'.format(title),
+                            u'This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it'.format(title),
                             logger.DEBUG
                         )
                         add_cache_entry = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
                         logger.log(
-                            u'This season result {0!s} is for a season we are not searching for, skipping it'.format(title),
+                            u'This season result {0} is for a season we are not searching for, skipping it'.format(title),
                             logger.DEBUG
                         )
                         add_cache_entry = True
@@ -207,7 +207,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     ]):
 
                         logger.log(
-                            u'The result {0!s} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title),
+                            u'The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title),
                             logger.DEBUG)
                         add_cache_entry = True
 
@@ -219,7 +219,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
                 if not parse_result.is_air_by_date:
                     logger.log(
-                        u'This is supposed to be a date search but the result {0!s} didn\'t parse as one, skipping it'.format(title),
+                        u'This is supposed to be a date search but the result {0} didn\'t parse as one, skipping it'.format(title),
                         logger.DEBUG)
                     add_cache_entry = True
                 else:
@@ -241,7 +241,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                             same_day_special = True
                     elif len(sql_results) != 1:
                         logger.log(
-                            u'Tried to look up the date for the episode {0!s} but the database didn\'t give proper results, skipping it'.format(title),
+                            u'Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title),
                             logger.WARNING)
                         add_cache_entry = True
 
@@ -250,7 +250,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     actual_episodes = [int(sql_results[0]['episode'])]
 
             if add_cache_entry:
-                logger.log(u'Adding item from search to cache: {0!s}'.format(title), logger.DEBUG)
+                logger.log(u'Adding item from search to cache: {0}'.format(title), logger.DEBUG)
                 # pylint: disable=protected-access
                 # Access to a protected member of a client class
                 ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
@@ -269,10 +269,10 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     break
 
             if not episode_wanted:
-                logger.log(u'Ignoring result {0!s}.'.format(title), logger.DEBUG)
+                logger.log(u'Ignoring result {0}.'.format(title), logger.DEBUG)
                 continue
 
-            logger.log(u'Found result {0!s} at {1!s}'.format(title, url), logger.DEBUG)
+            logger.log(u'Found result {0} at {1}'.format(title, url), logger.DEBUG)
 
             episode_object = []
             for current_episode in actual_episodes:
@@ -293,7 +293,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log(u'Single episode result.', logger.DEBUG)
             elif len(episode_object) > 1:
                 episode_number = MULTI_EP_RESULT
-                logger.log(u'Separating multi-episode result to check for later - result contains episodes: {0!s}'.format(
+                logger.log(u'Separating multi-episode result to check for later - result contains episodes: {0}'.format(
                     parse_result.episode_numbers), logger.DEBUG)
             elif len(episode_object) == 0:
                 episode_number = SEASON_RESULT
@@ -470,12 +470,12 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     torrent_hash = b16encode(b32decode(torrent_hash)).upper()
 
                 if not torrent_hash:
-                    logger.log(u'Unable to extract torrent hash from magnet: {0!s}'.format(ex(result.url)), logger.ERROR)
+                    logger.log(u'Unable to extract torrent hash from magnet: {0}'.format(ex(result.url)), logger.ERROR)
                     return urls, filename
 
                 urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.bt_cache_urls]
             except Exception:
-                logger.log(u'Unable to extract torrent hash or name from magnet: {0!s}'.format(ex(result.url)), logger.ERROR)
+                logger.log(u'Unable to extract torrent hash or name from magnet: {0}'.format(ex(result.url)), logger.ERROR)
                 return urls, filename
         else:
             urls = [result.url]

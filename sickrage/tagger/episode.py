@@ -31,7 +31,7 @@ class EpisodeTags(object):
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
-        match_obj = '{0!s}_match'.format(attr)
+        match_obj = '{0}_match'.format(attr)
         try:
             return getattr(self, match_obj)
         except (KeyError, AttributeError):
@@ -241,7 +241,7 @@ class EpisodeTags(object):
         attr = 'hrws'
         match = None
         if self.avc and self.tv == 'pd':
-            regex = re.compile(ur'(hr.ws.pdtv).{0!s}'.format(self.avc), re.IGNORECASE)
+            regex = re.compile(ur'(hr.ws.pdtv).{0}'.format(self.avc), re.IGNORECASE)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
 
@@ -255,6 +255,6 @@ class EpisodeTags(object):
         attr = 'raw'
         match = None
         if self.res and self.tv == 'hd':
-            regex = re.compile(ur'({0!s}.hdtv)'.format(self.res), re.IGNORECASE)
+            regex = re.compile(ur'({0}.hdtv)'.format(self.res), re.IGNORECASE)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()

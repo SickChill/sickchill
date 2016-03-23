@@ -279,7 +279,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
-                f_name = '{0!s}.{1:d}'.format(self.log_file, i)
+                f_name = '{0}.{1:d}'.format(self.log_file, i)
                 if ek(os.path.isfile, f_name) and (len(log_data) <= 500):
                     with io.open(f_name, encoding='utf-8') as log_f:
                         log_data += log_f.readlines()
@@ -297,10 +297,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         title_error = title_error[0:1000]
 
                 except Exception as err_msg:  # pylint: disable=broad-except
-                    self.log('Unable to get error title : {0!s}'.format(ex(err_msg)), ERROR)
+                    self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
 
                 gist = None
-                regex = r'^({0!s})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
+                regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
                 for i, data in enumerate(log_data):
                     match = re.match(regex, data)
                     if match:
@@ -319,17 +319,17 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     locale_name = 'unknown'
 
                 if gist and gist != 'No ERROR found':
-                    log_link = 'Link to Log: {0!s}'.format(gist.html_url)
+                    log_link = 'Link to Log: {0}'.format(gist.html_url)
                 else:
                     log_link = 'No Log available with ERRORS:'
 
                 msg = [
                     '### INFO',
-                    'Python Version: **{0!s}**'.format(sys.version[:120].replace('\n', '')),
-                    'Operating System: **{0!s}**'.format(platform.platform()),
-                    'Locale: {0!s}'.format(locale_name),
-                    'Branch: **{0!s}**'.format(sickbeard.BRANCH),
-                    'Commit: SickRage/SickRage@{0!s}'.format(sickbeard.CUR_COMMIT_HASH),
+                    'Python Version: **{0}**'.format(sys.version[:120].replace('\n', '')),
+                    'Operating System: **{0}**'.format(platform.platform()),
+                    'Locale: {0}'.format(locale_name),
+                    'Branch: **{0}**'.format(sickbeard.BRANCH),
+                    'Commit: SickRage/SickRage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',
@@ -340,7 +340,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 ]
 
                 message = '\n'.join(msg)
-                title_error = '[APP SUBMITTED]: {0!s}'.format(title_error)
+                title_error = '[APP SUBMITTED]: {0}'.format(title_error)
                 reports = git.get_organization(gh_org).get_repo(gh_repo).get_issues(state='all')
 
                 def is_ascii_error(title):
@@ -364,11 +364,11 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         issue_id = report.number
                         if not report.raw_data['locked']:
                             if report.create_comment(message):
-                                submitter_result = 'Commented on existing issue #{0!s} successfully!'.format(issue_id)
+                                submitter_result = 'Commented on existing issue #{0} successfully!'.format(issue_id)
                             else:
-                                submitter_result = 'Failed to comment on found issue #{0!s}!'.format(issue_id)
+                                submitter_result = 'Failed to comment on found issue #{0}!'.format(issue_id)
                         else:
-                            submitter_result = 'Issue #{0!s} is locked, check GitHub to find info about the error.'.format(issue_id)
+                            submitter_result = 'Issue #{0} is locked, check GitHub to find info about the error.'.format(issue_id)
 
                         issue_found = True
                         break
@@ -377,7 +377,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     issue = git.get_organization(gh_org).get_repo(gh_repo).create_issue(title_error, message)
                     if issue:
                         issue_id = issue.number
-                        submitter_result = 'Your issue ticket #{0!s} was submitted successfully!'.format(issue_id)
+                        submitter_result = 'Your issue ticket #{0} was submitted successfully!'.format(issue_id)
                     else:
                         submitter_result = 'Failed to create a new issue!'
 
