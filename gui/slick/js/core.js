@@ -2160,7 +2160,7 @@ var SICKRAGE = {
                 if (epArr.length === 0) { return false; }
 
                 $.post(srRoot + '/home/setStatus', 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val());
-                location.reload();
+                location.reload(true);
             });
 
             $('.seasonCheck').on('click', function(){
@@ -2603,7 +2603,7 @@ var SICKRAGE = {
                 if (removeArr.length === 0) { return false; }
 
                 $.post(srRoot + '/manage/failedDownloads', 'toRemove='+removeArr.join('|'));
-                location.reload();
+                location.reload(true);
             });
 
             if($('.removeCheck').length){
@@ -3207,7 +3207,7 @@ var SICKRAGE = {
                 if(url.length < 2083) {
                     window.location.href = url;
                 } else {
-                    alert("You've selected too many shows, please uncheck some and try again.");
+                    alert("You've selected too many shows, please uncheck some and try again. [" + url.length + "/2083 characters]");
                 }
             });
 

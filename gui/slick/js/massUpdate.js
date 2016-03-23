@@ -12,7 +12,7 @@ $(document).ready(function(){
         if(url.length < 2083) {
             window.location.href = url;
         } else {
-            alert("You've selected too many shows, please uncheck some and try again.");
+            alert("You've selected too many shows, please uncheck some and try again. [" + url.length + "/2083 characters]");
         }
     });
 
@@ -69,7 +69,7 @@ $(document).ready(function(){
                         return false;
                     }
                     $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
-                    location.reload();
+                    location.reload(true);
                 }
             });
         }
@@ -77,7 +77,7 @@ $(document).ready(function(){
             return false;
         }
         $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
-        location.reload();
+        location.reload(true);
     });
 
     ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
