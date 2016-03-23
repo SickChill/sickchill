@@ -694,7 +694,7 @@ class GenericMetadata(object):
         image_dir = ek(os.path.dirname, image_path)
 
         if not image_data:
-            logger.log(u"Unable to retrieve image to save in {0!s}, skipping".format(image_path), logger.DEBUG)
+            logger.log(u"Unable to retrieve image to save in {0}, skipping".format(image_path), logger.DEBUG)
             return False
 
         try:
@@ -746,7 +746,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0!s} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
@@ -816,7 +816,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0!s} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return result
 
         # if we have no season banners then just finish
@@ -870,7 +870,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0!s} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return result
 
         # if we have no season banners then just finish
@@ -919,7 +919,7 @@ class GenericMetadata(object):
                 showXML = etree.ElementTree(file=xmlFileObj)
 
             if showXML.findtext('title') is None or (showXML.findtext('tvdbid') is None and showXML.findtext('id') is None):
-                logger.log(u"Invalid info in tvshow.nfo (missing name or id): {0!s} {1!s} {2!s}".format(showXML.findtext('title'), showXML.findtext('tvdbid'), showXML.findtext('id')))
+                logger.log(u"Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}".format(showXML.findtext('title'), showXML.findtext('tvdbid'), showXML.findtext('id')))
                 return empty_return
 
             name = showXML.findtext('title')

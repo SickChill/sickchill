@@ -331,7 +331,7 @@ def wantedEpisodes(show, fromDate):
     """
     wanted = []
     if show.paused:
-        logger.log(u"Not checking for episodes of {0!s} because the show is paused".format(show.name), logger.DEBUG)
+        logger.log(u"Not checking for episodes of {0} because the show is paused".format(show.name), logger.DEBUG)
         return wanted
 
     allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
@@ -416,7 +416,7 @@ def searchForNeededEpisodes():
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
             if not curEp.show or curEp.show.paused:
-                logger.log(u"Skipping {0!s} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
+                logger.log(u"Skipping {0} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
                 continue
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
@@ -499,7 +499,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                 logger.log(u"Authentication error: {0!r}".format(error), logger.ERROR)
                 break
             except Exception as error:
-                logger.log(u"Exception while searching {0!s}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
+                logger.log(u"Exception while searching {0}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 break
 
@@ -556,7 +556,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                                   [show.indexerid])]
 
-            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0!s} AND season in  {1!s}]".format(show.indexerid, ','.join(searchedSeasons)))
+            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0} AND season in  {1}]".format(show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
             allWanted = True

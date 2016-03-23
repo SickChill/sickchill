@@ -480,7 +480,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     if refresh or force:
         logger.log(
-            u'Looking up XEM scene mapping for show {0!s} on {1!s}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+            u'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
             logger.DEBUG)
 
         # mark refreshed
@@ -493,17 +493,17 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = "http://thexem.de/map/havemap?origin={0!s}".format(sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/havemap?origin={0}".format(sickbeard.indexerApi(indexer).config['xem_origin'])
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result'] or 'data' not in parsedJSON or str(indexer_id) not in parsedJSON['data']:
                 return
 
             # XEM API URL
-            url = "http://thexem.de/map/all?id={0!s}&origin={1!s}&destination=scene".format(indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
-                logger.log(u'No XEM data for show "{0!s} on {1!s}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
+                logger.log(u'No XEM data for show "{0} on {1}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
                 return
 
             cl = []
@@ -570,7 +570,7 @@ def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, t
     update_scene_absolute_number = False
 
     logger.log(
-        u'Fixing any XEM scene mapping issues for show {0!s} on {1!s}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+        u'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
         logger.DEBUG)
 
     cl = []

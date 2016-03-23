@@ -96,7 +96,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : {0!s}".format(title), logger.DEBUG)
+                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title), logger.DEBUG)
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]

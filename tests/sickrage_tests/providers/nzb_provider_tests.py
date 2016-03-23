@@ -146,7 +146,7 @@ class NZBProviderTests(GenericProviderTests):
 
 
 if __name__ == '__main__':
-    print('=====> Testing {0!s}'.format(__file__))
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(NZBProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -67,7 +67,7 @@ class ShutdownTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print('=====> Testing {0!s}'.format(__file__))
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ShutdownTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

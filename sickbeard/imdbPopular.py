@@ -21,7 +21,7 @@ class imdbPopular(object):
             'at': 0,
             'sort': 'moviemeter',
             'title_type': 'tv_series',
-            'year': '{0!s},{1!s}'.format(date.today().year - 1, date.today().year + 1)
+            'year': '{0},{1}'.format(date.today().year - 1, date.today().year + 1)
         }
 
         self.session = helpers.make_session()
@@ -100,7 +100,7 @@ class imdbPopular(object):
             matches[6] = int(matches[6]) * factor
             matches[7] = int(matches[7]) * factor
 
-            return "{0!s}V1._{1!s}{2!s}_{3!s}{4!s},{5!s},{6!s},{7!s}_.jpg".format(matches[0], matches[1], matches[2], matches[3], matches[4],
+            return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(matches[0], matches[1], matches[2], matches[3], matches[4],
                                                       matches[5], matches[6], matches[7])
         else:
             return image_url
