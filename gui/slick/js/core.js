@@ -3207,7 +3207,7 @@ var SICKRAGE = {
                 if(url.length < 2083) {
                     window.location.href = url;
                 } else {
-                    alert("You've selected too many shows, please uncheck some and try again.");
+                    alert("You've selected too many shows, please uncheck some and try again. [" + url.length + "/2083 characters]");
                 }
             });
 
