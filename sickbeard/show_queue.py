@@ -229,9 +229,13 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                  indexer, indexer_id, showDir, default_status, quality, flatten_folders,
                  lang, subtitles, anime, scene, paused, blacklist, whitelist, default_status_after, root_dir):
 
+        if isinstance(showDir, str):
+            self.showDir = showDir.decode('utf-8')
+        else:
+            self.showDir = showDir
+
         self.indexer = indexer
         self.indexer_id = indexer_id
-        self.showDir = showDir
         self.default_status = default_status
         self.quality = quality
         self.flatten_folders = flatten_folders
