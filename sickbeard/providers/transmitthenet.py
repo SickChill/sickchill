@@ -159,8 +159,9 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(temp_anchor.text.strip())
-                            leechers = try_int(temp_anchor.find_next_sibling().text.strip())
+                            cells = torrent_row('td')
+                            seeders = try_int(cells[8].text.strip())
+                            leechers = try_int(cells[9].text.strip())
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -170,7 +171,6 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            cells = torrent_row('td')
                             torrent_size = cells[5].text.strip()
                             size = convert_size(torrent_size) or -1
 
