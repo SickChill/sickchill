@@ -84,7 +84,7 @@ class BTNProvider(TorrentProvider):
         if search_params:
             params.update(search_params)
             logger.log(u"Search string: {0}".format
-                       (search_params.decode('utf-8')), logger.DEBUG)
+                       (search_params), logger.DEBUG)
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
