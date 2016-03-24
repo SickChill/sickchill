@@ -101,7 +101,7 @@ class BinSearchCache(tvcache.TVCache):
         self.setLastUpdate()
 
         cl = []
-        for group in ['alt.binaries.hdtv', 'alt.binaries.hdtv.x264', 'alt.binaries.tv', 'alt.binaries.tvseries', 'alt.binaries.teevee']:
+        for group in ['alt.binaries.hdtv', 'alt.binaries.hdtv.x264', 'alt.binaries.tv', 'alt.binaries.tvseries']:
             search_params = {'max': 50, 'g': group}
             data = self.getRSSFeed(self.provider.urls['rss'], search_params)['entries']
             if not data:
