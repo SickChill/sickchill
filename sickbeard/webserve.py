@@ -2169,7 +2169,7 @@ class Home(WebRoot):
 
         return json.dumps(result)
 
-    def retryEpisode(self, show, season, episode, downCurQuality):
+    def retryEpisode(self, show, season, episode, downCurQuality=0):
         # retrieve the episode object and fail if we can't get one
         ep_obj = self._getEpisode(show, season, episode)
         if isinstance(ep_obj, str):

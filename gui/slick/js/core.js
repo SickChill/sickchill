@@ -2159,8 +2159,9 @@ var SICKRAGE = {
 
                 if (epArr.length === 0) { return false; }
 
-                $.post(srRoot + '/home/setStatus', 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val());
-                location.reload(true);
+                var url = srRoot + '/home/setStatus';
+                var params = 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+                $.post(url, params, function() { location.reload(true); });
             });
 
             $('.seasonCheck').on('click', function(){
@@ -2602,8 +2603,7 @@ var SICKRAGE = {
 
                 if (removeArr.length === 0) { return false; }
 
-                $.post(srRoot + '/manage/failedDownloads', 'toRemove='+removeArr.join('|'));
-                location.reload(true);
+                $.post(srRoot + '/manage/failedDownloads', 'toRemove='+removeArr.join('|'), function() { location.reload(true); });
             });
 
             if($('.removeCheck').length){

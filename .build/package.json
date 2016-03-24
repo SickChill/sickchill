@@ -30,6 +30,6 @@
     "grunt-sass": "^1.1.0",
     "load-grunt-tasks": "^3.4.1",
     "mocha": "^2.4.5",
-    "snyk": "^1.12.1"
+    "snyk": "^1.13.1"
   }
 }
