@@ -1124,6 +1124,15 @@ class Home(WebRoot):
         else:
             return "Error sending Pushbullet notification"
 
+    @staticmethod
+    def getPushbulletChannels(api=None):
+
+        result = notifiers.pushbullet_notifier.get_channels(api)
+        if result:
+            return result
+        else:
+            return "Error sending Pushbullet notification"
+
     def status(self):
         tvdirFree = helpers.getDiskSpaceUsage(sickbeard.TV_DOWNLOAD_DIR)
         rootDir = {}
@@ -4903,7 +4912,7 @@ class ConfigNotifications(Config):
                           pushalot_notify_onsubtitledownload=None, pushalot_authorizationtoken=None,
                           use_pushbullet=None, pushbullet_notify_onsnatch=None, pushbullet_notify_ondownload=None,
                           pushbullet_notify_onsubtitledownload=None, pushbullet_api=None, pushbullet_device=None,
-                          pushbullet_device_list=None,
+                          pushbullet_device_list=None, pushbullet_channel_list=None, pushbullet_channel=None,
                           use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
                           email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
                           email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
@@ -5075,6 +5084,7 @@ class ConfigNotifications(Config):
         sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushbullet_notify_onsubtitledownload)
         sickbeard.PUSHBULLET_API = pushbullet_api
         sickbeard.PUSHBULLET_DEVICE = pushbullet_device_list
+        sickbeard.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""
 
         sickbeard.save_config()
 
