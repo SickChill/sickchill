@@ -60,21 +60,16 @@ class OmgwtfnzbsProvider(NZBProvider):
         if is_XML:
             # provider doesn't return xml on error
             return True
-        else:
-            if 'notice' in parsed_data:
-                description_text = parsed_data.get('notice')
 
-                if 'information is incorrect' in parsed_data.get('notice'):
-                    logger.log('Invalid api key. Check your settings', logger.WARNING)
+        if 'notice' in parsed_data:
+            description_text = parsed_data.get('notice')
+            if 'information is incorrect' in description_text:
+                logger.log('Invalid api key. Check your settings', logger.WARNING)
+            elif '0 results matched your terms' not in description_text:
+                logger.log('Unknown error: {0}'.format(description_text), logger.DEBUG)
+            return False
 
-                elif '0 results matched your terms' in parsed_data.get('notice'):
-                    return True
-
-                else:
-                    logger.log('Unknown error: {0}'.format(description_text), logger.DEBUG)
-                    return False
-
-            return True
+        return True
 
     def _get_title_and_url(self, item):
         return item['release'], item['getnzb']
