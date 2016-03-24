@@ -24,7 +24,7 @@ import time
 from hashlib import sha1
 from requests.compat import urlencode
 from base64 import b16encode, b32decode
-from bencode import Bencoder, BencodeEncodeError, BencodeDecodeError
+import bencode
 
 import sickbeard
 from sickbeard import logger, helpers
@@ -171,13 +171,12 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 logger.log('Torrent without content', logger.ERROR)
                 raise Exception('Torrent without content')
 
-            bencoder = Bencoder()
             try:
-                torrent_bdecode = bencoder.decode(result.content)
-            except (BencodeDecodeError, Exception) as error:
+                torrent_bdecode = bencode.bdecode(result.content)
+            except (bencode.BTL.BTFailure, Exception) as error:
                 logger.log('Unable to bdecode torrent', logger.ERROR)
                 logger.log('Error is: {0}'.format(error), logger.DEBUG)
-                logger.log('Torrent bencoded data: {0}'.format(result.content), logger.DEBUG)
+                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
             try:
                 info = torrent_bdecode[b'info']
@@ -186,11 +185,12 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 raise
 
             try:
-                result.hash = sha1(bencoder.encode(info)).hexdigest()
-            except (BencodeEncodeError, Exception) as error:
+                result.hash = sha1(bencode.bencode(info)).hexdigest()
+                logger.log('Result Hash is {0}'.format(result.hash), logger.DEBUG)
+            except (bencode.BTL.BTFailure, Exception) as error:
                 logger.log('Unable to bencode torrent info', logger.ERROR)
                 logger.log('Error is: {0}'.format(error), logger.DEBUG)
-                logger.log('Torrent bencoded data: {0}'.format(result.content), logger.DEBUG)
+                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
 
         return result

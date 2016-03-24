@@ -1803,7 +1803,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
     def __str__(self):
 
         toReturn = ""
-        toReturn += "{0!r} - S{1:2!r}E{2:2!r} - {3!r}\n".format(self.show.name, self.season, self.episode, self.name)
+        toReturn += "{0!r} - S{1!r}E{2!r} - {3!r}\n".format(self.show.name, self.season, self.episode, self.name)
         toReturn += "location: {0!r}\n".format(self.location)
         toReturn += "description: {0!r}\n".format(self.description)
         toReturn += "subtitles: {0!r}\n".format(",".join(self.subtitles))
