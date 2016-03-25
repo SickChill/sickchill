@@ -23,6 +23,7 @@ import re
 import time
 from hashlib import sha1
 from requests.compat import urlencode
+from requests.models import HTTPError
 from base64 import b16encode, b32decode
 import bencode
 
@@ -256,15 +257,16 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.response = self.session.get(self.url, timeout=120, verify=False)
-            self.response.raise_for_status()
-        except Exception as error:
-            helpers.handle_requests_exception(error)
-            return False, '{0}'.format(error)
+        except Exception:
+            pass
 
         try:
             self._get_auth()
+            if not self.response:
+                raise HTTPError(404, 'Not Found')
+
             self.response.raise_for_status()
             return True, 'Success: Connected and Authenticated'
-        except Exception:
+        except Exception as error:
             helpers.handle_requests_exception(error)
             return False, '{0}'.format(error)
