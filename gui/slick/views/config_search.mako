@@ -215,15 +215,57 @@
                                 <span class="component-title">Send .nzb files to:</span>
                                 <span class="component-desc">
                                     <select name="nzb_method" id="nzb_method" class="form-control input-sm">
-<% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"} %>
-% for curAction in ('sabnzbd', 'blackhole', 'nzbget'):
-                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
-% endfor
+                                        <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
+                                        % for curAction in ('sabnzbd', 'blackhole', 'nzbget', 'download_station'):
+                                            <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                        % endfor
                                     </select>
                                 </span>
                             </label>
                         </div>
+                        <div id="download_station_settings">
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title" id="host_title">Torrent host:port</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="syno_dsm_host" id="syno_dsm_host" value="${sickbeard.SYNOLOGY_DSM_HOST}" class="form-control input-sm input350" autocapitalize="off" />
+                                        <div class="clear-left">
+                                            <p>URL to your Synology DS (e.g. http://localhost:8000/)</p>
+                                        </div>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title" id="username_title">Client username</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="syno_dsm_user" id="syno_dsm_user" value="${sickbeard.SYNOLOGY_DSM_USERNAME}" class="form-control input-sm input200" autocapitalize="off" autocomplete="no" />
+                                        <p>(blank for none)</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title" id="password_title">Client password</span>
+                                    <span class="component-desc">
+                                        <input type="password" name="syno_dsm_pass" id="syno_dsm_pass" value="${sickbeard.SYNOLOGY_DSM_PASSWORD}" class="form-control input-sm input200" autocomplete="no" autocapitalize="off" />
+                                        <p>(blank for none)</p>
+                                    </span>
+                                </label>
+                            </div>
 
+                            <div class="field-pair">
+                                <label>
+                                    <span class="component-title" id="directory_title">Downloaded files location</span>
+                                    <span class="component-desc">
+                                        <input type="text" name="syno_dsm_path" id="syno_dsm_path" value="${sickbeard.SYNOLOGY_DSM_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                        <div class="clear-left"><p>where Synology Download Station will save downloaded files (blank for client default)
+                                            <span id="path_synology"> <b>note:</b> the destination has to be a shared folder for Synology DS</span></p>
+                                        </div>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                         <div id="blackhole_settings">
                             <div class="field-pair">
                                 <label>
@@ -433,6 +475,10 @@
 
                         <div class="testNotification" id="testSABnzbd_result">Click below to test</div>
                         <input class="btn" type="button" value="Test SABnzbd" id="testSABnzbd" class="btn test-button"/>
+
+                        <div class="testNotification" id="testDSM_result">Click below to test</div>
+                        <input class="btn" type="button" value="Test DSM" id="testDSM" class="btn test-button"/>
+
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
 
                         </div><!-- /content_use_nzbs //-->
@@ -464,10 +510,10 @@
                                     <span class="component-title">Send .torrent files to:</span>
                                     <span class="component-desc">
                                     <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
-    % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
-                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
-    % endfor
+                                    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
+                                    % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
+                                        <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                    % endfor
                                     </select>
                                 </label>
 

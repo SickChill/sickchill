@@ -1597,7 +1597,10 @@ var SICKRAGE = {
                     sabnzbdSettings = '#sabnzbd_settings',
                     testSABnzbd = '#testSABnzbd',
                     testSABnzbdResult = '#testSABnzbd_result',
-                    nzbgetSettings = '#nzbget_settings';
+                    nzbgetSettings = '#nzbget_settings',
+                    downloadStationSettings = '#download_station_settings',
+                    testDSM = '#testDSM',
+                    testDSMResult = '#testDSM_result';
 
                 $('#nzb_method_icon').removeClass (function (index, css) {
                     return (css.match (/(^|\s)add-client-icon-\S+/g) || []).join(' ');
@@ -1609,11 +1612,18 @@ var SICKRAGE = {
                 $(testSABnzbd).hide();
                 $(testSABnzbdResult).hide();
                 $(nzbgetSettings).hide();
+                $(downloadStationSettings).hide();
+                $(testDSM).hide();
+                $(testDSMResult).hide();
 
                 if (selectedProvider.toLowerCase() === 'blackhole') {
                     $(blackholeSettings).show();
                 } else if (selectedProvider.toLowerCase() === 'nzbget') {
                     $(nzbgetSettings).show();
+                } else if (selectedProvider.toLowerCase() === 'download_station') {
+                    $(downloadStationSettings).show();
+                    $(testDSM).show();
+                    $(testDSMResult).show();
                 } else {
                     $(sabnzbdSettings).show();
                     $(testSABnzbd).show();
@@ -1772,6 +1782,22 @@ var SICKRAGE = {
                     'apikey': sab.apiKey
                 }, function(data){
                     $('#testSABnzbd_result').html(data);
+                });
+            });
+
+            $('#testDSM').on('click', function(){
+                var dsm = {};
+                $('#testDSM_result').html(loading);
+                dsm.host = $('#syno_dsm_host').val();
+                dsm.username = $('#syno_dsm_user').val();
+                dsm.password = $('#syno_dsm_pass').val();
+
+                $.get(srRoot + '/home/testDSM', {
+                    'host': dsm.host,
+                    'username': dsm.username,
+                    'password': dsm.password,
+                }, function(data){
+                    $('#testDSM_result').html(data);
                 });
             });
 

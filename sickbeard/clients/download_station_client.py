@@ -1,8 +1,5 @@
 # coding=utf-8
-# Authors:
-# Pedro Jose Pereira Vieito <pvieito@gmail.com> (Twitter: @pvieito)
-#
-# URL: https://github.com/mr-orange/Sick-Beard
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -27,6 +24,7 @@ import os
 import re
 
 import sickbeard
+from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
@@ -39,13 +37,11 @@ class DownloadStationAPI(GenericClient):
         self.urls = {
             'login': urljoin(self.host, 'webapi/auth.cgi'),
             'task': urljoin(self.host, 'webapi/DownloadStation/task.cgi'),
-            'info': urljoin(self.host, '/webapi/DownloadStation/info.cgi'),
-            'dsminfo': urljoin(self.host, '/webapi/entry.cgi')
         }
 
         self.url = self.urls['task']
 
-        self.error_map = {
+        generic_errors = {
             100: 'Unknown error',
             101: 'Invalid parameter',
             102: 'The requested API does not exist',
@@ -53,26 +49,66 @@ class DownloadStationAPI(GenericClient):
             104: 'The requested version does not support the functionality',
             105: 'The logged in session does not have permission',
             106: 'Session timeout',
-            107: 'Session interrupted by duplicate login'
+            107: 'Session interrupted by duplicate login',
         }
-        self.checked_destination = False
-        self.destination = sickbeard.TORRENT_PATH
+        self.error_map = {
+            'create': {
+                400: 'File upload failed',
+                401: 'Max number of tasks reached',
+                402: 'Destination denied',
+                403: 'Destination does not exist',
+                404: 'Invalid task id',
+                405: 'Invalid task action',
+                406: 'No default destination',
+                407: 'Set destination failed',
+                408: 'File does not exist'
+            },
+            'login': {
+                400: 'No such account or incorrect password',
+                401: 'Account disabled',
+                402: 'Permission denied',
+                403: '2-step verification code required',
+                404: 'Failed to authenticate 2-step verification code'
+            }
+        }
+        for api_method in self.error_map:
+            self.error_map[api_method].update(generic_errors)
 
-    def _check_response(self):
+        self._task_post_data = {
+            'api': 'SYNO.DownloadStation.Task',
+            'version': '1',
+            'method': 'create',
+            'session': 'DownloadStation',
+        }
+
+    def _check_response(self, data=None, files=None):
         try:
             jdata = self.response.json()
-        except ValueError:
-            self.session.cookies.clear()
-            self.auth = False
-            return self.auth
+        except (ValueError, AttributeError):
+            logger.log('Could not convert response to json, check the host:port: {0!r}'.format(self.response))
+            return False
 
-        self.auth = jdata.get('success')
-        if not self.auth:
+        if not jdata.get('success'):
             error_code = jdata.get('error', {}).get('code')
-            sickbeard.logger.log('{}'.format(self.error_map.get(error_code, jdata)))
-            self.session.cookies.clear()
+            if error_code == 403 and sickbeard.TORRENT_PATH and (data or {}).get('destination') == sickbeard.TORRENT_PATH and os.path.isabs(sickbeard.TORRENT_PATH):
+                data['destination'] = re.sub(r'^/volume\d/', '', sickbeard.TORRENT_PATH).lstrip('/')
+                self._request(method='post', data=data, files=files)
 
-        return self.auth
+                try:
+                    jdata = self.response.json()
+                except ValueError:
+                    return False
+
+                if jdata.get('success'):
+                    sickbeard.TORRENT_PATH = data['destination']
+
+        if not jdata.get('success'):
+            error_code = jdata.get('error', {}).get('code')
+            api_method = (data or {}).get('method', 'login')
+            log_string = self.error_map.get(api_method)[error_code]
+            logger.log('{0}'.format(log_string))
+
+        return jdata.get('success')
 
     def _get_auth(self):
         if self.session.cookies and self.auth:
@@ -88,124 +124,46 @@ class DownloadStationAPI(GenericClient):
             'format': 'cookie'
         }
 
-        try:
-            self.response = self.session.get(self.urls['login'], params=params, verify=False)
-            self.response.raise_for_status()
-        except Exception as error:
-            sickbeard.helpers.handle_requests_exception(error)
-            self.session.cookies.clear()
-            self.auth = False
-            return self.auth
+        self.response = self.session.get(self.urls['login'], params=params, verify=False)
 
-        return self._check_response()
+        self.auth = self._check_response()
+        return self.auth
 
     def _add_torrent_uri(self, result):
-
-        data = {
-            'api': 'SYNO.DownloadStation.Task',
-            'version': '1',
-            'method': 'create',
-            'session': 'DownloadStation',
-            'uri': result.url
-        }
-
-        if not self._check_destination():
-            return False
+        data = self._task_post_data
+        data['uri'] = result.url
 
         if sickbeard.TORRENT_PATH:
             data['destination'] = sickbeard.TORRENT_PATH
 
         self._request(method='post', data=data)
-        return self._check_response()
+        return self._check_response(data)
 
     def _add_torrent_file(self, result):
-
-        data = {
-            'api': 'SYNO.DownloadStation.Task',
-            'version': '1',
-            'method': 'create',
-            'session': 'DownloadStation',
-        }
-
-        if not self._check_destination():
-            return False
+        data = self._task_post_data
 
         if sickbeard.TORRENT_PATH:
             data['destination'] = sickbeard.TORRENT_PATH
 
-        files = {'file': (result.name + '.torrent', result.content)}
+        if result.resultType.startswith('nzb'):
+            files = {'file': (result.name + '.nzb', result.extraInfo[0])}
+        else:
+            files = {'file': (result.name + '.torrent', result.content)}
 
         self._request(method='post', data=data, files=files)
-        return self._check_response()
+        return self._check_response(data, files)
 
-    def _check_destination(self):  # pylint: disable=too-many-return-statements, too-many-branches
+    def sendNZB(self, result):
+
+        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
+
         if not (self.auth or self._get_auth()):
+            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
             return False
 
-        if self.checked_destination and self.destination == sickbeard.TORRENT_PATH:
-            return True
-
-        params = {
-            'api': 'SYNO.DSM.Info',
-            'version': 2,
-            'method': 'getinfo',
-            'session': 'DownloadStation'
-        }
-
-        try:
-            self.response = self.session.get(self.urls['dsminfo'], params=params, verify=False, timeout=120)
-            self.response.raise_for_status()
-        except Exception as error:
-            sickbeard.helpers.handle_requests_exception(error)
-            self.session.cookies.clear()
-            self.auth = False
-            return False
-
-        destination = ''
-        if self._check_response():
-            jdata = self.response.json()
-            version_string = jdata.get('data', {}).get('version_string')
-            if not version_string:
-                sickbeard.logger.log('Could not get the version_string from DSM: {0}'.format(jdata))
-                return False
-
-            if version_string.startswith('DSM 6'):
-                #  This is DSM6, lets make sure the location is relative
-                if sickbeard.TORRENT_PATH:
-                    if os.path.isabs(sickbeard.TORRENT_PATH):
-                        sickbeard.TORRENT_PATH = re.sub(r'^/volume\d/', '', sickbeard.TORRENT_PATH).lstrip('/')
-                else:
-                    #  Since they didnt specify the location in the settings, lets make sure the default is relative,
-                    #  Or forcefully set the location setting in SickRage
-                    params.update({
-                        'method': 'getconfig',
-                        'version': 2
-                    })
-
-                    try:
-                        self.response = self.session.get(self.urls['info'], params=params, verify=False, timeout=120)
-                        self.response.raise_for_status()
-                    except Exception as error:
-                        sickbeard.helpers.handle_requests_exception(error)
-                        self.session.cookies.clear()
-                        self.auth = False
-                        return False
-
-                    if self._check_response():
-                        jdata = self.response.json()
-                        destination = jdata.get('data', {}).get('default_destination')
-                        if destination:
-                            if os.path.isabs(destination):
-                                sickbeard.TORRENT_PATH = re.sub(r'^/volume\d/', '', destination).lstrip('/')
-                        else:
-                            sickbeard.logger.log('default_destination could not be determined for DSM6: {0}'.format(jdata))
-                            return False
-
-        if destination or sickbeard.TORRENT_PATH:
-            sickbeard.logger.log('Destination is now {0}'.format(sickbeard.TORRENT_PATH or destination))
-
-        self.checked_destination = True
-        self.destination = sickbeard.TORRENT_PATH
-        return True
+        if result.resultType == 'nzb':
+            return self._add_torrent_uri(result)
+        elif result.resultType == 'nzbdata':
+            return self._add_torrent_file(result)
 
 api = DownloadStationAPI()

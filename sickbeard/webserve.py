@@ -799,6 +799,9 @@ class Home(WebRoot):
         else:
             return "Unable to connect to host"
 
+    def testDSM(self, host=None, username=None, password=None):
+        return self.testTorrent('download_station', host, username, password)
+
     @staticmethod
     def testTorrent(torrent_method=None, host=None, username=None, password=None):
 
@@ -4075,7 +4078,8 @@ class ConfigSearch(Config):
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
-                   torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None):
+                   torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
+                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None):
 
         results = []
 
@@ -4138,13 +4142,41 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_LABEL = torrent_label
         sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
         sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
+
         sickbeard.TORRENT_PATH = torrent_path.rstrip('/\\')
+
         sickbeard.TORRENT_SEED_TIME = torrent_seed_time
         sickbeard.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
         sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
         sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
         sickbeard.TORRENT_RPCURL = torrent_rpcurl
         sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
+
+        sickbeard.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
+        sickbeard.SYNOLOGY_DSM_USERNAME = syno_dsm_user
+        sickbeard.SYNOLOGY_DSM_PASSWORD = syno_dsm_pass
+        sickbeard.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
+
+        # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
+        if sickbeard.TORRENT_METHOD == 'download_station':
+            if not sickbeard.SYNOLOGY_DSM_HOST:
+                sickbeard.SYNOLOGY_DSM_HOST = sickbeard.TORRENT_HOST
+            if not sickbeard.SYNOLOGY_DSM_USERNAME:
+                sickbeard.SYNOLOGY_DSM_USERNAME = sickbeard.TORRENT_USERNAME
+            if not sickbeard.SYNOLOGY_DSM_PASSWORD:
+                sickbeard.SYNOLOGY_DSM_PASSWORD = sickbeard.TORRENT_PASSWORD
+            if not sickbeard.SYNOLOGY_DSM_PATH:
+                sickbeard.SYNOLOGY_DSM_PATH = sickbeard.TORRENT_PATH
+
+        if sickbeard.NZB_METHOD == 'download_station':
+            if not sickbeard.TORRENT_HOST:
+                sickbeard.TORRENT_HOST = sickbeard.SYNOLOGY_DSM_HOST
+            if not sickbeard.TORRENT_USERNAME:
+                sickbeard.TORRENT_USERNAME = sickbeard.SYNOLOGY_DSM_USERNAME
+            if not sickbeard.TORRENT_PASSWORD:
+                sickbeard.TORRENT_PASSWORD = sickbeard.SYNOLOGY_DSM_PASSWORD
+            if not sickbeard.TORRENT_PATH:
+                sickbeard.TORRENT_PATH = sickbeard.SYNOLOGY_DSM_PATH
 
         sickbeard.save_config()
 

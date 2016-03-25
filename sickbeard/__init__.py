@@ -329,6 +329,11 @@ TORRENT_VERIFY_CERT = False
 TORRENT_RPCURL = 'transmission'
 TORRENT_AUTH_TYPE = 'none'
 
+SYNOLOGY_DSM_HOST = None
+SYNOLOGY_DSM_USERNAME = None
+SYNOLOGY_DSM_PASSWORD = None
+SYNOLOGY_DSM_PATH = None
+
 USE_KODI = False
 KODI_ALWAYS_ON = True
 KODI_NOTIFY_ONSNATCH = False
@@ -634,7 +639,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
+            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH
 
         if __INITIALIZED__:
             return False
@@ -881,7 +887,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))
 
         NZB_METHOD = check_setting_str(CFG, 'General', 'nzb_method', 'blackhole')
-        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget'):
+        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
@@ -994,6 +1000,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
         TORRENT_RPCURL = check_setting_str(CFG, 'TORRENT', 'torrent_rpcurl', 'transmission')
         TORRENT_AUTH_TYPE = check_setting_str(CFG, 'TORRENT', 'torrent_auth_type', '')
+
+        SYNOLOGY_DSM_HOST = check_setting_str(CFG, 'Synology', 'host', '')
+        SYNOLOGY_DSM_USERNAME = check_setting_str(CFG, 'Synology', 'username', '', censor_log=True)
+        SYNOLOGY_DSM_PASSWORD = check_setting_str(CFG, 'Synology', 'password', '', censor_log=True)
+        SYNOLOGY_DSM_PATH = check_setting_str(CFG, 'Synology', 'path', '')
 
         USE_KODI = bool(check_setting_int(CFG, 'KODI', 'use_kodi', 0))
         KODI_ALWAYS_ON = bool(check_setting_int(CFG, 'KODI', 'kodi_always_on', 1))
@@ -2044,7 +2055,11 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
         },
 
         'Synology': {
-            'use_synoindex': int(USE_SYNOINDEX)
+            'use_synoindex': int(USE_SYNOINDEX),
+            'host': SYNOLOGY_DSM_HOST,
+            'username': SYNOLOGY_DSM_USERNAME,
+            'password': helpers.encrypt(SYNOLOGY_DSM_PASSWORD, ENCRYPTION_VERSION),
+            'path': SYNOLOGY_DSM_PATH
         },
 
         'SynologyNotifier': {
