@@ -21,7 +21,9 @@
 import os
 import re
 import json
+
 from base64 import b64encode
+from requests.models import HTTPError
 
 import sickbeard
 from sickbeard.clients.generic import GenericClient
@@ -162,6 +164,28 @@ class TransmissionAPI(GenericClient):
         self._request(method='post', data=post_data)
 
         return self.response.json()['result'] == "success"
+
+    def testAuthentication(self):                                                                                                                             
+        """                                                                                                                                                   
+        Tests the parameters the user has provided in the ui to see if they are correct                                                                       
+        """                                                                                                                                                   
+        try:                                                                                                                                                  
+            self.response = self.session.get(self.url, timeout=120, verify=False)                                                                             
+                                                                                                                                                              
+            if self.response.status_code != 409:                                                                                                              
+                self.response.raise_for_status()                                                                                                              
+        except HTTPError as error:                                                                                                                            
+            helpers.handle_requests_exception(error)                                                                                                          
+            return False, '{0}'.format(error)                                                                                                                 
+                                                                                                                                                              
+        try:                                                                                                                                                  
+            self._get_auth()                                                                                                                                  
+            self.response.raise_for_status()                                                                                                                  
+            return True, 'Success: Connected and Authenticated'                                                                                               
+        except Exception:                                                                                                                                     
+            helpers.handle_requests_exception(error)                                                                                                          
+            return False, '{0}'.format(error) 
+
 
 
 api = TransmissionAPI()
