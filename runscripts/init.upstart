@@ -32,5 +32,9 @@ script
 
     [ -z $SR_HOME ] && echo "I can't start SickRage if I don't know where it is"
 
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US.UTF-8
+
     exec ${SR_HOME}/SickBeard.py -q --nolaunch --datadir=${SR_DATA-SR_HOME} ${SR_OPTS-}
 end script

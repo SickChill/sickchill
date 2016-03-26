@@ -51,6 +51,9 @@ sickrage_prestart() {
 	if [ ! -d ${sickrage_datadir} ]; then
 		install -d -o ${sickrage_user} -g ${sickrage_group} ${sickrage_datadir}
 	fi
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US.UTF-8
 }
 
 run_rc_command "$1"

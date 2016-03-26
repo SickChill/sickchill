@@ -117,6 +117,9 @@ start_sickrage() {
 
 stop_sickrage() {
     [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US.UTF-8
     start-stop-daemon --stop --pidfile $PID_FILE --quiet --retry TERM/30/KILL/5
     RETVAL="$?"
     case "${RETVAL}" in
