@@ -29,9 +29,16 @@ from sickbeard.clients.generic import GenericClient
 
 
 class DownloadStationAPI(GenericClient):
-
+    """
+    Class to send torrents/NZBs or links to them to DownloadStation
+    """
     def __init__(self, host=None, username=None, password=None):
-
+        """
+        Initializes the DownloadStation client
+        params: :host: Url to the Download Station API
+                :username: Username to use for authentication
+                :password: Password to use for authentication
+        """
         super(DownloadStationAPI, self).__init__('DownloadStation', host, username, password)
 
         self.urls = {
@@ -82,6 +89,11 @@ class DownloadStationAPI(GenericClient):
         }
 
     def _check_response(self, data=None, files=None):
+        """
+        Checks the response from Download Station, and logs any errors
+        params: :data: post data sent in the original request, in case we need to send it with adjusted parameters
+                :file: file data being sent with the post request, if any
+        """
         try:
             jdata = self.response.json()
         except (ValueError, AttributeError):
@@ -111,6 +123,9 @@ class DownloadStationAPI(GenericClient):
         return jdata.get('success')
 
     def _get_auth(self):
+        """
+        Authenticates the session with DownloadStation
+        """
         if self.session.cookies and self.auth:
             return self.auth
 
@@ -130,6 +145,10 @@ class DownloadStationAPI(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result):
+        """
+        Sends a magnet, Torrent url or NZB url to DownloadStation
+        params: :result: an object subclassing sickbeard.classes.SearchResult
+        """
         data = self._task_post_data
         data['uri'] = result.url
 
@@ -140,6 +159,10 @@ class DownloadStationAPI(GenericClient):
         return self._check_response(data)
 
     def _add_torrent_file(self, result):
+        """
+        Sends a Torrent file or NZB file to DownloadStation
+        params: :result: an object subclassing sickbeard.classes.SearchResult
+        """
         data = self._task_post_data
 
         if sickbeard.TORRENT_PATH:
@@ -154,7 +177,10 @@ class DownloadStationAPI(GenericClient):
         return self._check_response(data, files)
 
     def sendNZB(self, result):
-
+        """
+        Sends an NZB to DownloadStation
+        params: :result: an object subclassing sickbeard.classes.SearchResult
+        """
         logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
 
         if not (self.auth or self._get_auth()):
