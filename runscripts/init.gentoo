@@ -41,6 +41,10 @@ start() {
 
     checkpath -q -d -o ${SICKRAGE_USER}:${SICKRAGE_GROUP} -m 0770 "${RUNDIR}"
 
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US.UTF-8
+
     start-stop-daemon \
         --quiet \
         --start \
