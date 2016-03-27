@@ -1696,8 +1696,10 @@ def getDiskSpaceUsage(diskPath=None):
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
             return pretty_file_size(free_bytes.value)
         else:
-            st = ek(os.statvfs, diskPath)
-            return pretty_file_size(st.f_bavail * st.f_frsize)  # pylint: disable=no-member
+      	    import subprocess
+            call = subprocess.Popen(["df", "-h", diskPath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output = call.communicate()[0]
+       	    return output.split("\n")[1].split()[3]
     else:
         return False
 
