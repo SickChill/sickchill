@@ -1576,32 +1576,34 @@ def verify_freespace(src, dest, oldfile=None):
 
     logger.log("Trying to determine free space on destination drive", logger.DEBUG)
 
-    if hasattr(os, 'statvfs'):  # POSIX
-        def disk_usage(path):
-            st = ek(os.statvfs, path)
-            free = st.f_bavail * st.f_frsize  # pylint: disable=no-member
-            return free
-
-    elif os.name == 'nt':       # Windows
+    if platform.system() == 'Windows':
         import sys
 
         def disk_usage(path):
             _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
             if sys.version_info >= (3,) or isinstance(path, unicode):
-                fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
+                method = ctypes.windll.kernel32.GetDiskFreeSpaceExW
             else:
-                fun = ctypes.windll.kernel32.GetDiskFreeSpaceExA
-            ret = fun(path, ctypes.byref(_), ctypes.byref(total), ctypes.byref(free))
+                method = ctypes.windll.kernel32.GetDiskFreeSpaceExA
+            ret = method(path, ctypes.byref(_), ctypes.byref(total), ctypes.byref(free))
             if ret == 0:
                 logger.log("Unable to determine free space, something went wrong", logger.WARNING)
                 raise ctypes.WinError()
             return free.value
+
+    elif hasattr(os, 'statvfs'):  # POSIX
+        def disk_usage(path):
+            import subprocess
+            call = subprocess.Popen(["df", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output = call.communicate()[0]
+            return output.split("\n")[1].split()[3]
+
     else:
         logger.log("Unable to determine free space on your OS")
         return True
 
     if not ek(os.path.isfile, src):
-        logger.log("A path to a file is required for the source. " + src + " is not a file.", logger.WARNING)
+        logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
     try:
