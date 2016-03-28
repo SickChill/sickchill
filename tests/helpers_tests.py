@@ -82,7 +82,6 @@ Public Methods:
     getDiskSpaceUsage
 Private Methods:
     _check_against_names
-    _getTempDir
     _setUpSession
 """
 
@@ -231,13 +230,6 @@ class HelpersDirectoryTests(unittest.TestCase):
     def test_make_dir(self):
         """
         Test makeDir
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_get_temp_dir(self):
-        """
-        Test _getTempDir
         """
         pass
 
