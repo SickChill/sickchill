@@ -25,6 +25,7 @@ import datetime
 import traceback
 import subliminal
 import subprocess
+import threading
 import sickbeard
 from babelfish import Language, language_converters
 from subliminal import ProviderPool, provider_manager
@@ -55,6 +56,42 @@ PROVIDER_URLS = {
     'thesubdb': 'http://www.thesubdb.com',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
+
+class SubtitleProviderPool(object):
+    _lock = threading.Lock()
+    _creation = None
+    _instance = None
+
+    def __init_instance(self):
+        with SubtitleProviderPool._lock:
+            providers = enabled_service_list()
+            provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
+                                             'password': sickbeard.ADDIC7ED_PASS},
+                                'itasa': {'username': sickbeard.ITASA_USER,
+                                          'password': sickbeard.ITASA_PASS},
+                                'legendastv': {'username': sickbeard.LEGENDASTV_USER,
+                                                   'password': sickbeard.LEGENDASTV_PASS},
+                                'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
+                                                  'password': sickbeard.OPENSUBTITLES_PASS}}
+
+            SubtitleProviderPool._instance = ProviderPool(providers=providers, provider_configs=provider_configs)
+
+    def __init__(self):
+        if SubtitleProviderPool._creation is None:
+            SubtitleProviderPool._creation = datetime.datetime.now()
+            self.__init_instance()
+        else:
+            delta = datetime.timedelta(minutes=15)
+            if SubtitleProviderPool._creation + delta < datetime.datetime.now():
+                SubtitleProviderPool._creation = datetime.datetime.now()
+                self.__init_instance()
+
+    def reset(self):
+        SubtitleProviderPool._creation = None
+
+    def __getattr__(self, attr):
+        """ Delegate access to implementation """
+        return getattr(self._instance, attr)
 
 
 def sorted_service_list():
@@ -162,17 +199,9 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    providers = enabled_service_list()
-    provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
-                                     'password': sickbeard.ADDIC7ED_PASS},
-                        'itasa': {'username': sickbeard.ITASA_USER,
-                                  'password': sickbeard.ITASA_PASS},
-                        'legendastv': {'username': sickbeard.LEGENDASTV_USER,
-                                       'password': sickbeard.LEGENDASTV_PASS},
-                        'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
-                                          'password': sickbeard.OPENSUBTITLES_PASS}}
 
-    pool = ProviderPool(providers=providers, provider_configs=provider_configs)
+    providers = enabled_service_list()
+    pool = SubtitleProviderPool()
 
     try:
         subtitles_list = pool.list_subtitles(video, languages)
@@ -337,16 +366,7 @@ class SubtitlesFinder(object):
         logger.log(u'Checking for needed subtitles in Post-Process folder', logger.INFO)
 
         providers = enabled_service_list()
-        provider_configs = {'addic7ed': {'username': sickbeard.ADDIC7ED_USER,
-                                         'password': sickbeard.ADDIC7ED_PASS},
-                            'itasa': {'username': sickbeard.ITASA_USER,
-                                      'password': sickbeard.ITASA_PASS},
-                            'legendastv': {'username': sickbeard.LEGENDASTV_USER,
-                                           'password': sickbeard.LEGENDASTV_PASS},
-                            'opensubtitles': {'username': sickbeard.OPENSUBTITLES_USER,
-                                              'password': sickbeard.OPENSUBTITLES_PASS}}
-
-        pool = ProviderPool(providers=providers, provider_configs=provider_configs)
+        pool = SubtitleProviderPool()
 
         # Search for all wanted languages
         languages = {from_code(language) for language in wanted_languages()}

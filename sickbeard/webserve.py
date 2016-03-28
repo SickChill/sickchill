@@ -5145,6 +5145,8 @@ class ConfigSubtitles(Config):
         sickbeard.OPENSUBTITLES_PASS = opensubtitles_pass or ''
 
         sickbeard.save_config()
+        # Reset provider pool so next time we use the newest settings
+        subtitles.SubtitleProviderPool().reset()
 
         if len(results) > 0:
             for x in results:
