@@ -426,7 +426,10 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return [search_string]
 
     def _get_size(self, item):  # pylint: disable=unused-argument,no-self-use
-        return -1
+        try:
+            return item.get('size')
+        except:
+            return -1
 
     def _get_storage_dir(self):  # pylint: disable=no-self-use
         return ''
