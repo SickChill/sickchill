@@ -71,3 +71,7 @@ lib/unrar2/UnRAR.exe
 .tox/
 .coverage
 htmlcov
+
+# nzbToMedia #
+######################
+contrib/nzbToMedia

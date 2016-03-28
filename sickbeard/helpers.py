@@ -109,29 +109,45 @@ def remove_non_release_groups(name):
     removeWordsList = {
         r'\[rartv\]$': 'searchre',
         r'\[rarbg\]$': 'searchre',
+        r'\.\[eztv\]$': 'searchre',
         r'\[eztv\]$': 'searchre',
         r'\[ettv\]$': 'searchre',
         r'\[cttv\]$': 'searchre',
+        r'\.\[vtv\]$': 'searchre',
         r'\[vtv\]$': 'searchre',
         r'\[EtHD\]$': 'searchre',
         r'\[GloDLS\]$': 'searchre',
         r'\[silv4\]$': 'searchre',
         r'\[Seedbox\]$': 'searchre',
         r'\[PublicHD\]$': 'searchre',
+        r'\.\[PublicHD\]$': 'searchre',
+        r'\.\[NO.RAR\]$': 'searchre',
+        r'\[NO.RAR\]$': 'searchre',
+        r'-\=\{SPARROW\}\=-$': 'searchre',
+        r'\=\{SPARR$': 'searchre',
+        r'\.\[720P\]\[HEVC\]$': 'searchre',
         r'\[AndroidTwoU\]$': 'searchre',
-        r'\[brassetv]\]$': 'searchre',
+        r'\[brassetv\]$': 'searchre',
+        r'\[Talamasca32\]$': 'searchre',
         r'\(musicbolt\.com\)$': 'searchre',
+        r'\.\(NLsub\)$': 'searchre',
+        r'\(NLsub\)$': 'searchre',
         r'\.\[BT\]$': 'searchre',
         r' \[1044\]$': 'searchre',
         r'\.RiPSaLoT$': 'searchre',
         r'\.GiuseppeTnT$': 'searchre',
         r'\.Renc$': 'searchre',
         r'\.gz$': 'searchre',
+        r'\.English$': 'searchre',
+        r'\.German$': 'searchre',
+        r'\.\.Italian$': 'searchre',
+        r'\.Italian$': 'searchre',
         r'(?<![57])\.1$': 'searchre',
         r'-NZBGEEK$': 'searchre',
         r'-Siklopentan$': 'searchre',
         r'-Chamele0n$': 'searchre',
         r'-Obfuscated$': 'searchre',
+        r'-BUYMORE$': 'searchre',
         r'-\[SpastikusTV\]$': 'searchre',
         r'-RP$': 'searchre',
         r'-20-40$': 'searchre',
@@ -1545,6 +1561,29 @@ def generateCookieSecret():
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
 
 
+def disk_usage(path):
+    if platform.system() == 'Windows':
+        import sys
+        _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
+        if sys.version_info >= (3,) or isinstance(path, unicode):
+            method = ctypes.windll.kernel32.GetDiskFreeSpaceExW
+        else:
+            method = ctypes.windll.kernel32.GetDiskFreeSpaceExA
+        ret = method(path, ctypes.byref(_), ctypes.byref(total), ctypes.byref(free))
+        if ret == 0:
+            logger.log("Unable to determine free space, something went wrong", logger.WARNING)
+            raise ctypes.WinError()
+        return free.value
+
+    elif hasattr(os, 'statvfs'):  # POSIX
+        import subprocess
+        call = subprocess.Popen(["df", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = call.communicate()[0]
+        return output.split("\n")[1].split()[3]
+    else:
+        raise Exception("Unable to determine free space on your OS")
+
+
 def verify_freespace(src, dest, oldfile=None):
     """
     Checks if the target system has enough free space to copy or move a file.
@@ -1560,32 +1599,8 @@ def verify_freespace(src, dest, oldfile=None):
 
     logger.log("Trying to determine free space on destination drive", logger.DEBUG)
 
-    if hasattr(os, 'statvfs'):  # POSIX
-        def disk_usage(path):
-            st = ek(os.statvfs, path)
-            free = st.f_bavail * st.f_frsize  # pylint: disable=no-member
-            return free
-
-    elif os.name == 'nt':       # Windows
-        import sys
-
-        def disk_usage(path):
-            _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
-            if sys.version_info >= (3,) or isinstance(path, unicode):
-                fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
-            else:
-                fun = ctypes.windll.kernel32.GetDiskFreeSpaceExA
-            ret = fun(path, ctypes.byref(_), ctypes.byref(total), ctypes.byref(free))
-            if ret == 0:
-                logger.log("Unable to determine free space, something went wrong", logger.WARNING)
-                raise ctypes.WinError()
-            return free.value
-    else:
-        logger.log("Unable to determine free space on your OS")
-        return True
-
     if not ek(os.path.isfile, src):
-        logger.log("A path to a file is required for the source. " + src + " is not a file.", logger.WARNING)
+        logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
     try:
@@ -1607,6 +1622,22 @@ def verify_freespace(src, dest, oldfile=None):
         logger.log("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )".format
                    (neededspace, pretty_file_size(neededspace), diskfree, pretty_file_size(diskfree)), logger.WARNING)
         return False
+
+
+def getDiskSpaceUsage(diskPath=None):
+    """
+    returns the free space in human readable bytes for a given path or False if no path given
+    :param diskPath: the filesystem path being checked
+    """
+    if diskPath and ek(os.path.exists, diskPath):
+        try:
+            free = disk_usage(diskPath)
+        except Exception:
+            logger.log("Unable to determine free space", logger.WARNING)
+        else:
+            return pretty_file_size(free)
+
+    return False
 
 
 # https://gist.github.com/thatalextaylor/7408395
@@ -1665,23 +1696,6 @@ def isFileLocked(checkfile, writeLockCheck=False):
             return True
 
     return False
-
-
-def getDiskSpaceUsage(diskPath=None):
-    """
-    returns the free space in human readable bytes for a given path or False if no path given
-    :param diskPath: the filesystem path being checked
-    """
-    if diskPath and ek(os.path.exists, diskPath):
-        if platform.system() == 'Windows':
-            free_bytes = ctypes.c_ulonglong(0)
-            ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskPath), None, None, ctypes.pointer(free_bytes))
-            return pretty_file_size(free_bytes.value)
-        else:
-            st = ek(os.statvfs, diskPath)
-            return pretty_file_size(st.f_bavail * st.f_frsize)  # pylint: disable=no-member
-    else:
-        return False
 
 
 def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statements
