@@ -225,6 +225,7 @@ anime_regexes = [
      # [ISLAND]One_Piece_726_[VOSTFR]_[V1]_[8bit]_[720p]_[2F7B3FA2].mp4
      # Naruto Shippuden 445 VOSTFR par Fansub-Resistance (1280*720) - version MQ
      # Dragon Ball Super 015 VOSTFR par Fansub-Resistance (1280x720) - HQ version
+     # [Mystic.Z-Team].Dragon.Ball.Super.-.épisode.36.VOSTFR.720p
      # [Z-Team][DBSuper.pw] Dragon Ball Super - 028 (VOSTFR)(720p AAC)(MP4)
      # [SnF] Shokugeki no Souma - 24 VOSTFR [720p][41761A60].mkv
      # [Y-F] Ao no Kanata no Four Rhythm - 03 Vostfr HD 8bits
@@ -236,8 +237,9 @@ anime_regexes = [
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                                                     # Release Group and separator (Optional)
      ((\[|\().+?(\]|\))[ ._-]*)?                                                               # Extra info (Optionnal)
      (?P<series_name>.+?)[ ._-]+                                                               # Show_Name and separator
+     ((épisode|episode|Episode)[ ._-]+)?                                                       # Sentence for special fansub (Optionnal)
      (?P<ep_ab_num>\d{1,3})[ ._-]+                                                             # Episode number and separator
-     (((\[|\())?(VOSTFR|vostfr|Vostfr|VostFR)((\]|\)))?([ ._-])*)+                             # Subtitle Language and separator
+     (((\[|\())?(VOSTFR|vostfr|Vostfr|VostFR|vostFR)((\]|\)))?([ ._-])*)+                      # Subtitle Language and separator
      (par Fansub-Resistance)?                                                                  # Sentence for special fansub (Optionnal)
      (\[((v|V)(?P<version>[0-9]))\]([ ._-])*)?                                                 # Version and separator (Optional)
      ((\[(8|10)(Bits|bits|Bit|bit)\])?([ ._-])*)?                                              # Colour resolution and separator (Optional)
