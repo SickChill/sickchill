@@ -27,7 +27,6 @@ import ctypes
 import re
 import socket
 import stat
-import tempfile
 import time
 import traceback
 import urllib
@@ -1551,9 +1550,9 @@ def disk_usage(path):
 
     elif hasattr(os, 'statvfs'):  # POSIX
         import subprocess
-        call = subprocess.Popen(["df", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        call = subprocess.Popen(["df", "-B", "K", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = call.communicate()[0]
-        return output.split("\n")[1].split()[3]
+        return int(output.split("\n")[1].split()[3]) * 1024
     else:
         raise Exception("Unable to determine free space on your OS")
 
