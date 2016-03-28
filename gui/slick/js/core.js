@@ -936,6 +936,36 @@ var SICKRAGE = {
                     $("#pushbullet_device").val($("#pushbullet_device_list").val());
                     $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
                 });
+
+                $.get(srRoot + "/home/getPushbulletChannels", {
+                    'api': pushbullet.api
+                }, function (data) {
+                    pushbullet.channels = $.parseJSON(data).channels;
+                    pushbullet.currentChannel = $("#pushbullet_channel").val();
+                    $("#pushbullet_channel_list").html('');
+                    if (pushbullet.channels.length > 0) {
+                        for (var i = 0, len = pushbullet.channels.length; i < len; i++) {
+                            if (pushbullet.channels[i].active === true) {
+                                $("#pushbullet_channel_list").append('<option value="' + pushbullet.channels[i].tag + '" selected>' + pushbullet.channels[i].name + '</option>');
+                            } else {
+                                $("#pushbullet_channel_list").append('<option value="' + pushbullet.channels[i].tag + '">' + pushbullet.channels[i].name + '</option>');
+                            }
+                        }
+                        $("#pushbullet_channel_list").prepend('<option value="" ' + (pushbullet.currentChannel ? 'selected' : '') + '>No Channel</option>');
+                        $('#pushbullet_channel_list').prop('disabled', false);
+                    } else {
+                        $("#pushbullet_channel_list").prepend('<option value>No Channels</option>');
+                        $("#pushbullet_channel_list").prop('disabled', true);
+                    }
+                    if (msg) {
+                        $('#testPushbullet-result').html(msg);
+                    }
+
+                    $("#pushbullet_channel_list").on('change', function () {
+                        $("#pushbullet_channel").val($("#pushbullet_channel_list").val());
+                        $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
+                    });
+                });
             }
 
             $('#getPushbulletDevices').on('click', function(){
