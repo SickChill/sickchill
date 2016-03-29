@@ -1570,7 +1570,7 @@ def disk_usage(path):
 
     elif hasattr(os, 'statvfs'):  # POSIX
         import subprocess
-        call = subprocess.Popen(["df", "-B", "1K", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = call.communicate()[0]
         return int(output.split("\n")[1].split()[3]) * 1024
     else:
