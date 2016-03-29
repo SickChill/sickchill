@@ -403,7 +403,7 @@ def link(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if not ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0:
+        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), None) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
