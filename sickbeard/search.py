@@ -508,7 +508,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             if len(searchResults):
                 # make a list of all the results for this provider
                 for curEp in searchResults:
-                    if curEp in foundResults:
+                    if curEp in foundResults[curProvider.name]:
                         foundResults[curProvider.name][curEp] += searchResults[curEp]
                     else:
                         foundResults[curProvider.name][curEp] = searchResults[curEp]
