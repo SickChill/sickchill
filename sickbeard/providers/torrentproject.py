@@ -101,6 +101,8 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                     t_hash = torrents[i]["torrent_hash"]
                     torrent_size = torrents[i]["torrent_size"]
+                    if not all([t_hash, torrent_size]):
+                        continue
                     size = convert_size(torrent_size) or -1
 
                     try:
