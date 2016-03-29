@@ -20,7 +20,7 @@
 
 import os
 import stat
-from functools import wraps
+# from functools import wraps
 
 import sickbeard
 from sickbeard import postProcessor
@@ -141,25 +141,25 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def OneRunPP():
-    isRunning = [False]
-
-    def decorate(func):
-        @wraps(func)
-        def func_wrapper(*args, **kargs):
-            if isRunning[0]:
-                return logHelper(u'Post processor is already running', logger.WARNING)
-
-            isRunning[0] = True
-            ret = func(*args, **kargs)
-            isRunning[0] = False
-            return ret
-        return func_wrapper
-    return decorate
+# def OneRunPP():
+#     isRunning = [False]
+#
+#     def decorate(func):
+#         @wraps(func)
+#         def func_wrapper(*args, **kargs):
+#             if isRunning[0]:
+#                 return logHelper(u'Post processor is already running', logger.WARNING)
+#
+#             isRunning[0] = True
+#             ret = func(*args, **kargs)
+#             isRunning[0] = False
+#             return ret
+#         return func_wrapper
+#     return decorate
 
 
 # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
-@OneRunPP()
+# @OneRunPP()
 def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
@@ -451,8 +451,10 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 skip_file = False
                 for file_in_archive in [ek(os.path.basename, x.filename) for x in rar_handle.infolist() if not x.isdir]:
                     if already_postprocessed(path, file_in_archive, force, result):
-                        result.output += logHelper(u"Archive file already post-processed, extraction skipped: {0}".format(
-                                                   file_in_archive), logger.DEBUG)
+                        result.output += logHelper(
+                            u"Archive file already post-processed, extraction skipped: {0}".format
+                            (file_in_archive), logger.DEBUG)
+
                         skip_file = True
                         break
 
@@ -524,7 +526,8 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
     if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
+        search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(
+            parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
