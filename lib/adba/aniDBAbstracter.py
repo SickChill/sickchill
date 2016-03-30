@@ -175,7 +175,7 @@ class Anime(aniDBabstractObject):
                                         "rating": line["rating"],
                                         "range": line["episode_range"]
             })
-        return sorted(self.release_groups)
+        return sorted(self.release_groups, key=lambda x: x['name'].lower())
 
     # TODO: refactor and use the new functions in anidbFileinfo
     def _get_aid_from_xml(self, name):
