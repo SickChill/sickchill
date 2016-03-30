@@ -358,14 +358,19 @@ class TraktChecker(object):
             if sickbeard.showList:
                 for show in sickbeard.showList:
                     if show.status == "Ended":
+                        if not show.imdbid:
+                            logger.log(u'Could not check trakt progress for {0} because the imdb id is missing from tvdb data, skipping'.format
+                                       (show.name), logger.WARNING)
+                            continue
+
                         try:
                             progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or []
                         except traktException as e:
                             logger.log(u"Could not connect to Trakt service. Aborting removing show {0} from SickRage. Error: {1}".format(show.name, repr(e)), logger.WARNING)
-                            return
+                            continue
 
                         if not progress:
-                            return
+                            continue
 
                         if progress.get('aired', True) == progress.get('completed', False):
                             sickbeard.showQueueScheduler.action.removeShow(show, full=True)
