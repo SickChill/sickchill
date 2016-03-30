@@ -71,7 +71,7 @@ urllib._urlopener = classes.SickBeardURLopener()
 
 
 def fixGlob(path):
-    path = re.sub(r'\[b', '[[]', path)
+    path = re.sub(r'\[', '[[]', path)
     return re.sub(r'(?<!\[)\]', '[]]', path)
 
 
