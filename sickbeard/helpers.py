@@ -1401,7 +1401,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
     try:
         return resp if response_type == 'response' or response_type is None else resp.json() if response_type == 'json' else getattr(resp, response_type, resp)
     except ValueError:
-        logger.log('Requested a json response but response was not json, check the url: {1}'.format(url), logger.DEBUG)
+        logger.log('Requested a json response but response was not json, check the url: {0}'.format(url), logger.DEBUG)
         return None
 
 
