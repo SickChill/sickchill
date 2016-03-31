@@ -238,7 +238,7 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
                        logger.INFO)
             continue
 
-        if not show_name_helpers.filterBadReleases(cur_result.name, parse=False):
+        if not show_name_helpers.filterBadReleases(cur_result.name, parse=False, show=show):
             logger.log(u"Ignoring " + cur_result.name + " because its not a valid scene release that we want, ignoring it",
                        logger.INFO)
             continue

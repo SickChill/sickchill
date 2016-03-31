@@ -111,7 +111,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.log('Found result: {0}'.format(item.get('title')), logger.DEBUG)
+                    logger.log('Found result: {0}'.format(item.get('release')), logger.DEBUG)
                     items.append(item)
 
             results += items
