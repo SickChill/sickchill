@@ -123,7 +123,8 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
         elif sickbeard.NZB_METHOD == "download_station":
-            client = clients.getClientIstance(sickbeard.NZB_METHOD)()
+            client = clients.getClientIstance(sickbeard.NZB_METHOD)(
+                sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
             dlResult = client.sendNZB(result)
         else:
             logger.log(u"Unknown NZB action specified in config: " + sickbeard.NZB_METHOD, logger.ERROR)

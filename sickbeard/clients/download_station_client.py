@@ -102,17 +102,22 @@ class DownloadStationAPI(GenericClient):
 
         if not jdata.get('success'):
             error_code = jdata.get('error', {}).get('code')
-            if error_code == 403 and sickbeard.TORRENT_PATH and (data or {}).get('destination') == sickbeard.TORRENT_PATH and os.path.isabs(sickbeard.TORRENT_PATH):
-                data['destination'] = re.sub(r'^/volume\d/', '', sickbeard.TORRENT_PATH).lstrip('/')
-                self._request(method='post', data=data, files=files)
+            if error_code == 403:
+                destination = (data or {}).get('destination')
+                if destination and os.path.isabs(destination):
+                    data['destination'] = re.sub(r'^/volume\d/', '', destination).lstrip('/')
+                    self._request(method='post', data=data, files=files)
 
-                try:
-                    jdata = self.response.json()
-                except ValueError:
-                    return False
+                    try:
+                        jdata = self.response.json()
+                    except ValueError:
+                        return False
 
-                if jdata.get('success'):
-                    sickbeard.TORRENT_PATH = data['destination']
+                    if jdata.get('success'):
+                        if destination == sickbeard.SYNOLOGY_DSM_PATH:
+                            sickbeard.SYNOLOGY_DSM_PATH = data['destination']
+                        elif destination == sickbeard.TORRENT_PATH:
+                            sickbeard.TORRENT_PATH = data['destination']
 
         if not jdata.get('success'):
             error_code = jdata.get('error', {}).get('code')
@@ -152,8 +157,11 @@ class DownloadStationAPI(GenericClient):
         data = self._task_post_data
         data['uri'] = result.url
 
-        if sickbeard.TORRENT_PATH:
-            data['destination'] = sickbeard.TORRENT_PATH
+        if result.resultType == 'torrent':
+            if sickbeard.TORRENT_PATH:
+                data['destination'] = sickbeard.TORRENT_PATH
+        elif sickbeard.SYNOLOGY_DSM_PATH:
+            data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
 
         self._request(method='post', data=data)
         return self._check_response(data)
@@ -165,13 +173,14 @@ class DownloadStationAPI(GenericClient):
         """
         data = self._task_post_data
 
-        if sickbeard.TORRENT_PATH:
-            data['destination'] = sickbeard.TORRENT_PATH
-
-        if result.resultType.startswith('nzb'):
-            files = {'file': (result.name + '.nzb', result.extraInfo[0])}
-        else:
+        if result.resultType == 'torrent':
             files = {'file': (result.name + '.torrent', result.content)}
+            if sickbeard.TORRENT_PATH:
+                data['destination'] = sickbeard.TORRENT_PATH
+        else:
+            files = {'file': (result.name + '.nzb', result.extraInfo[0])}
+            if sickbeard.SYNOLOGY_DSM_PATH:
+                data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
 
         self._request(method='post', data=data, files=files)
         return self._check_response(data, files)
