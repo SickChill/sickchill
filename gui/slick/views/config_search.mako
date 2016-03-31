@@ -230,7 +230,7 @@
                                     <span class="component-desc">
                                         <input type="text" name="syno_dsm_host" id="syno_dsm_host" value="${sickbeard.SYNOLOGY_DSM_HOST}" class="form-control input-sm input350" autocapitalize="off" />
                                         <div class="clear-left">
-                                            <p>URL to your Synology DS (e.g. http://localhost:8000/)</p>
+                                            <p>URL to your Synology DS (e.g. http://localhost:5000/)</p>
                                         </div>
                                     </span>
                                 </label>
