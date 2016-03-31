@@ -266,7 +266,10 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 raise HTTPError(404, 'Not Found')
 
             self.response.raise_for_status()
-            return True, 'Success: Connected and Authenticated'
+            if self.auth:
+                return True, 'Success: Connected and Authenticated'
+            else:
+                return False, 'Failed to authenticate with {0}'.format(self.name)
         except Exception as error:
             helpers.handle_requests_exception(error)
             return False, '{0}'.format(error)
