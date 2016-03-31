@@ -313,13 +313,13 @@ class TVCache(object):
 
         # for each cache entry
         for curResult in sql_results:
-            # ignored/required words, and non-tv junk
-            if not show_name_helpers.filterBadReleases(curResult["name"]):
-                continue
-
             # get the show object, or if it's not one of our shows then ignore it
             showObj = Show.find(sickbeard.showList, int(curResult["indexerid"]))
             if not showObj:
+                continue
+
+            # ignored/required words, and non-tv junk
+            if not show_name_helpers.filterBadReleases(curResult["name"], show=showObj):
                 continue
 
             # skip if provider is anime only and show is not anime

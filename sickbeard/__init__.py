@@ -329,6 +329,11 @@ TORRENT_VERIFY_CERT = False
 TORRENT_RPCURL = 'transmission'
 TORRENT_AUTH_TYPE = 'none'
 
+SYNOLOGY_DSM_HOST = None
+SYNOLOGY_DSM_USERNAME = None
+SYNOLOGY_DSM_PASSWORD = None
+SYNOLOGY_DSM_PATH = None
+
 USE_KODI = False
 KODI_ALWAYS_ON = True
 KODI_NOTIFY_ONSNATCH = False
@@ -490,6 +495,7 @@ PUSHBULLET_NOTIFY_ONDOWNLOAD = False
 PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PUSHBULLET_API = None
 PUSHBULLET_DEVICE = None
+PUSHBULLET_CHANNEL = None
 
 USE_EMAIL = False
 EMAIL_NOTIFY_ONSNATCH = False
@@ -609,7 +615,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
-            USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
+            USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, PUSHBULLET_CHANNEL,\
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, UNPACK, CPU_PRESET, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
@@ -633,7 +639,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
+            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH
 
         if __INITIALIZED__:
             return False
@@ -880,7 +887,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))
 
         NZB_METHOD = check_setting_str(CFG, 'General', 'nzb_method', 'blackhole')
-        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget'):
+        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
@@ -993,6 +1000,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
         TORRENT_RPCURL = check_setting_str(CFG, 'TORRENT', 'torrent_rpcurl', 'transmission')
         TORRENT_AUTH_TYPE = check_setting_str(CFG, 'TORRENT', 'torrent_auth_type', '')
+
+        SYNOLOGY_DSM_HOST = check_setting_str(CFG, 'Synology', 'host', '')
+        SYNOLOGY_DSM_USERNAME = check_setting_str(CFG, 'Synology', 'username', '', censor_log=True)
+        SYNOLOGY_DSM_PASSWORD = check_setting_str(CFG, 'Synology', 'password', '', censor_log=True)
+        SYNOLOGY_DSM_PATH = check_setting_str(CFG, 'Synology', 'path', '')
 
         USE_KODI = bool(check_setting_int(CFG, 'KODI', 'use_kodi', 0))
         KODI_ALWAYS_ON = bool(check_setting_int(CFG, 'KODI', 'kodi_always_on', 1))
@@ -1152,6 +1164,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             check_setting_int(CFG, 'Pushbullet', 'pushbullet_notify_onsubtitledownload', 0))
         PUSHBULLET_API = check_setting_str(CFG, 'Pushbullet', 'pushbullet_api', '', censor_log=True)
         PUSHBULLET_DEVICE = check_setting_str(CFG, 'Pushbullet', 'pushbullet_device', '')
+        PUSHBULLET_CHANNEL = check_setting_str(CFG, 'Pushbullet', 'pushbullet_channel', '')
 
         USE_EMAIL = bool(check_setting_int(CFG, 'Email', 'use_email', 0))
         EMAIL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Email', 'email_notify_onsnatch', 0))
@@ -2042,7 +2055,11 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
         },
 
         'Synology': {
-            'use_synoindex': int(USE_SYNOINDEX)
+            'use_synoindex': int(USE_SYNOINDEX),
+            'host': SYNOLOGY_DSM_HOST,
+            'username': SYNOLOGY_DSM_USERNAME,
+            'password': helpers.encrypt(SYNOLOGY_DSM_PASSWORD, ENCRYPTION_VERSION),
+            'path': SYNOLOGY_DSM_PATH
         },
 
         'SynologyNotifier': {
@@ -2105,7 +2122,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'pushbullet_notify_ondownload': int(PUSHBULLET_NOTIFY_ONDOWNLOAD),
             'pushbullet_notify_onsubtitledownload': int(PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD),
             'pushbullet_api': PUSHBULLET_API,
-            'pushbullet_device': PUSHBULLET_DEVICE
+            'pushbullet_device': PUSHBULLET_DEVICE,
+            'pushbullet_channel': PUSHBULLET_CHANNEL,
         },
 
         'Email': {

@@ -1307,6 +1307,13 @@
                                     <span class="component-desc">select device you wish to push to.</span>
                                 </label>
                             </div>
+                            <div class="field-pair">
+                                <label for="pushbullet_channel_list">
+                                    <span class="component-title">Pushbullet channels</span>
+                                    <select name="pushbullet_channel_list" id="pushbullet_channel_list" class="form-control input-sm"></select>
+                                    <input type="hidden" id="pushbullet_channel" value="${sickbeard.PUSHBULLET_CHANNEL}">
+                                </label>
+                            </div>
                             <div class="testNotification" id="testPushbullet-result">Click below to test.</div>
                             <input type="button" class="btn" value="Test Pushbullet" id="testPushbullet" />
                             <input type="submit" class="btn config_submitter" value="Save Changes" />

@@ -434,7 +434,7 @@ def symlink(src, dst):
     :param dst: Destination file
     """
 
-    if os.name == 'nt':
+    if platform.system() == 'Windows':
         if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
             raise ctypes.WinError()
     else:
@@ -470,7 +470,7 @@ def make_dirs(path):
 
     if not ek(os.path.isdir, path):
         # Windows, create all missing folders
-        if os.name == 'nt' or os.name == 'ce':
+        if platform.system() == 'Windows':
             try:
                 logger.log("Folder {0} didn't exist, creating it".format(path), logger.DEBUG)
                 ek(os.makedirs, path)
@@ -609,7 +609,7 @@ def chmodAsParent(childPath):
     :param childPath: Child Path to change permissions to sync from parent
     """
 
-    if os.name == 'nt' or os.name == 'ce':
+    if platform.system() == 'Windows':
         return
 
     parentPath = ek(os.path.dirname, childPath)
@@ -655,7 +655,7 @@ def fixSetGroupID(childPath):
     :param childPath: Path to inherit SGID permissions from parent
     """
 
-    if os.name == 'nt' or os.name == 'ce':
+    if platform.system() == 'Windows':
         return
 
     parentPath = ek(os.path.dirname, childPath)
@@ -1337,26 +1337,6 @@ def touchFile(fname, atime=None):
         return True
 
     return False
-
-
-def _getTempDir():
-    """
-    Returns the [system temp dir]/tvdb_api-u501 (or
-    tvdb_api-myuser)
-    """
-
-    import getpass
-
-    if hasattr(os, 'getuid'):
-        uid = "u{0}".format(os.getuid())
-    else:
-        # For Windows
-        try:
-            uid = getpass.getuser()
-        except ImportError:
-            return ek(os.path.join, tempfile.gettempdir(), "sickrage")
-
-    return ek(os.path.join, tempfile.gettempdir(), "sickrage-{0}".format(uid))
 
 
 def make_session():
