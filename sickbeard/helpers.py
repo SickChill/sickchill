@@ -762,7 +762,7 @@ def sanitizeSceneName(name, anime=False):
     :return: A string containing the scene version of the show name given.
     """
 
-    assert isinstance(name, unicode), name + ' is not unicode'
+    # assert isinstance(name, unicode), name + ' is not unicode'
 
     if not name:
         return ''
