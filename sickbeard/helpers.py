@@ -1549,10 +1549,18 @@ def disk_usage(path):
         return free.value
 
     elif hasattr(os, 'statvfs'):  # POSIX
-        import subprocess
-        call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = call.communicate()[0]
-        return int(output.split("\n")[1].split()[3]) * 1024
+        if platform.system() == 'Darwin':
+            try:
+                import subprocess
+                call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                output = call.communicate()[0]
+                return int(output.split("\n")[1].split()[3]) * 1024
+            except Exception:
+                pass
+
+        st = ek(os.statvfs, path)
+        return st.f_bavail * st.f_frsize  # pylint: disable=no-member
+
     else:
         raise Exception("Unable to determine free space on your OS")
 
