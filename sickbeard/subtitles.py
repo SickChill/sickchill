@@ -39,9 +39,6 @@ from sickrage.helper.common import episode_num, dateTimeFormat, subtitle_extensi
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
-provider_manager.register('itasa = subliminal.providers.itasa:ItaSAProvider')
-provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTvProvider')
-provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
@@ -98,7 +95,8 @@ class SubtitleProviderPool(object):
                 SubtitleProviderPool._creation = datetime.datetime.now()
                 self.__init_instance()
 
-    def reset(self):
+    @staticmethod
+    def reset():
         SubtitleProviderPool._creation = None
 
     def __getattr__(self, attr):
@@ -129,7 +127,7 @@ def sorted_service_list():
 
 
 def enabled_service_list():
-    return [service['name'] for service in sorted_service_list() if service['enabled']]
+    return {service['name'] for service in sorted_service_list() if service['enabled']}
 
 
 def wanted_languages(sql_like=None):
@@ -211,16 +209,14 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-
     providers = enabled_service_list()
     pool = SubtitleProviderPool()
 
     try:
         subtitles_list = pool.list_subtitles(video, languages)
 
-        for provider in providers:
-            if provider in pool.discarded_providers:
-                logger.log(u'Could not search in {0} provider. Discarding for now'.format(provider), logger.DEBUG)
+        for provider in providers.intersection(pool.discarded_providers):
+            logger.log(u'Could not search in {0} provider. Discarding for now'.format(provider), logger.DEBUG)
 
         if not subtitles_list:
             logger.log(u'No subtitles found for {0} {1}'.format
@@ -437,9 +433,8 @@ class SubtitlesFinder(object):
                             video = get_video(os.path.join(root, filename), subtitles=False, embedded_subtitles=False)
                             subtitles_list = pool.list_subtitles(video, languages)
 
-                            for provider in providers:
-                                if provider in pool.discarded_providers:
-                                    logger.log(u'Could not search in {0} provider. Discarding for now'.format(provider), logger.DEBUG)
+                            for provider in providers.intersection(pool.discarded_providers):
+                                logger.log(u'Could not search in {0} provider. Discarding for now'.format(provider), logger.DEBUG)
 
                             if not subtitles_list:
                                 logger.log(u'No subtitles found for {0}'.format
