@@ -194,21 +194,22 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
     def getAllEpisodes(self, season=None, has_location=False):
 
-        sql_selection = "SELECT season, episode, "
+        sql_selection = 'SELECT season, episode, '
 
         # subselection to detect multi-episodes early, share_location > 0
-        sql_selection += " (SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid AND season = tve.season AND location != '' AND location = tve.location AND episode != tve.episode) AS share_location "
-
-        sql_selection = sql_selection + " FROM tv_episodes tve WHERE showid = " + str(self.indexerid)
+        sql_selection += '(SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid '
+        sql_selection += 'AND season = tve.season AND location != \'\' AND location = tve.location '
+        sql_selection += 'AND episode != tve.episode) AS share_location '
+        sql_selection += 'FROM tv_episodes tve WHERE showid = {0} '.format(self.indexerid)
 
         if season is not None:
-            sql_selection = sql_selection + " AND season = " + str(season)
+            sql_selection += 'AND season = {0} '.format(season)
 
         if has_location:
-            sql_selection += " AND location != '' "
+            sql_selection += 'AND location != \'\' '
 
         # need ORDER episode ASC to rename multi-episodes in order S01E01-02
-        sql_selection += " ORDER BY season ASC, episode ASC"
+        sql_selection += 'ORDER BY season ASC, episode ASC '
 
         main_db_con = db.DBConnection()
         results = main_db_con.select(sql_selection)
@@ -669,7 +670,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             else:
                 # if there is a new file associated with this ep then re-check the quality
-                if not curEp.location or ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
+                if curEp.location and ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
                     logger.log(
                         "{0}: The old episode had a different file associated with it, re-checking the quality using the new filename {1}".format
                         (self.indexerid, filepath), logger.DEBUG)
@@ -699,16 +700,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
                 logger.log("{0}: Since this file has been renamed, I checked {1} and found quality {2}".format
                            (self.indexerid, filepath, Quality.qualityStrings[newQuality]), logger.DEBUG)
-                if newQuality != Quality.UNKNOWN:
-                    with curEp.lock:
-                        curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
+
+                with curEp.lock:
+                    curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
             elif not same_file and sickbeard.helpers.isMediaFile(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
-                if newQuality == Quality.UNKNOWN:
-                    newQuality = Quality.assumeQuality(filepath)
 
                 newStatus = None
 
@@ -1501,11 +1500,10 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")
         elif not sql_results:
             logger.log("{id}: Episode {ep} not found in the database".format
-                       (id=self.show.indexerid, ep=episode_num(self.season, self.episode)),
+                       (id=self.show.indexerid, ep=episode_num(season, episode)),
                        logger.DEBUG)
             return False
         else:
-            # NAMEIT logger.log("AAAAA from" + str(self.season)+"x"+str(self.episode) + " -" + self.name + " to " + str(sql_results[0][b"name"]))
             if sql_results[0][b"name"]:
                 self.name = sql_results[0][b"name"]
 
@@ -1519,7 +1517,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.subtitles = sql_results[0][b"subtitles"].split(",")
             self.subtitles_searchcount = sql_results[0][b"subtitles_searchcount"]
             self.subtitles_lastsearch = sql_results[0][b"subtitles_lastsearch"]
-            self.airdate = datetime.date.fromordinal(int(sql_results[0][b"airdate"]))
+            self.airdate = datetime.date.fromordinal(long(sql_results[0][b"airdate"]))
             # logger.log("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]), logger.DEBUG)
             self.status = int(sql_results[0][b"status"] or -1)
 
@@ -2060,12 +2058,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         ep_name = self._ep_name()
 
         def dot(name):
-            try:
-                assert isinstance(name, unicode), name + ' is not unicode'
-            except AssertionError as error:
-                print traceback.format_exc()
-                print error
-                os._exit(0)
+            # assert isinstance(name, unicode), name + ' is not unicode'
             return helpers.sanitizeSceneName(name)
 
         def us(name):

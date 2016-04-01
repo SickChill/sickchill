@@ -281,11 +281,14 @@ class Quality(object):
         if quality != Quality.UNKNOWN:
             return quality
 
-        quality = Quality.assumeQuality(name)
+        quality = Quality.qualityFromFileMeta(name)
         if quality != Quality.UNKNOWN:
             return quality
 
-        return Quality.UNKNOWN
+        if name.lower().endswith(".ts"):
+            return Quality.RAWHDTV
+        else:
+            return Quality.UNKNOWN
 
     @staticmethod
     def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
@@ -372,23 +375,6 @@ class Quality(object):
                 result = Quality.SDTV
 
         return Quality.UNKNOWN if result is None else result
-
-    @staticmethod
-    def assumeQuality(name):
-        """
-        Assume a quality from file extension if we cannot resolve it otherwise
-
-        :param name: File name of episode to analyse
-        :return: Quality prefix
-        """
-        quality = Quality.qualityFromFileMeta(name)
-        if quality != Quality.UNKNOWN:
-            return quality
-
-        if name.lower().endswith(".ts"):
-            return Quality.RAWHDTV
-        else:
-            return Quality.UNKNOWN
 
     @staticmethod
     def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
@@ -541,19 +527,15 @@ class Quality(object):
             return ""
 
     @staticmethod
-    def statusFromName(name, assume=True, anime=False):
+    def statusFromName(name, anime=False):
         """
         Get a status object from filename
 
         :param name: Filename to check
-        :param assume: boolean to assume quality by extension if we can't figure it out
         :param anime: boolean to enable anime parsing
         :return: Composite status/quality object
         """
-        quality = Quality.nameQuality(name, anime)
-        if assume and quality == Quality.UNKNOWN:
-            quality = Quality.assumeQuality(name)
-        return Quality.compositeStatus(DOWNLOADED, quality)
+        return Quality.compositeStatus(DOWNLOADED, Quality.nameQuality(name, anime))
 
     DOWNLOADED = None
     SNATCHED = None

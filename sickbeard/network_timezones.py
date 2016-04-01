@@ -26,7 +26,7 @@ from sickbeard import db, helpers, logger
 from sickrage.helper.common import try_int
 
 # regex to parse time (12/24 hour format)
-time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
+time_regex = re.compile(r'.*(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
 
 network_dict = {}
 

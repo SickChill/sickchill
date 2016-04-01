@@ -824,7 +824,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 return ep_quality
 
         # Try guessing quality from the file name
-        ep_quality = common.Quality.assumeQuality(self.file_path)
+        ep_quality = common.Quality.nameQuality(self.file_path)
         self._log(
             u"Guessing quality for name " + self.file_name + u", got " + common.Quality.qualityStrings[ep_quality],
             logger.DEBUG)
