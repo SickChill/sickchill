@@ -10,7 +10,6 @@ Classes:
         splitQuality
         nameQuality
         scene_quality
-        assumeQuality
         qualityFromFileMeta
         compositeStatus
         qualityDownloaded
@@ -357,13 +356,6 @@ class QualityTests(unittest.TestCase):
     def test_scene_quality(self):
         """
         Test scene_quality
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_assume_quality(self):
-        """
-        Test assumeQuality
         """
         pass
 
