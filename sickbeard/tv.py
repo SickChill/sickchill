@@ -670,7 +670,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             else:
                 # if there is a new file associated with this ep then re-check the quality
-                if not curEp.location or ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
+                if curEp.location and ek(os.path.normpath, curEp.location) != ek(os.path.normpath, filepath):
                     logger.log(
                         "{0}: The old episode had a different file associated with it, re-checking the quality using the new filename {1}".format
                         (self.indexerid, filepath), logger.DEBUG)
@@ -700,9 +700,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
                 logger.log("{0}: Since this file has been renamed, I checked {1} and found quality {2}".format
                            (self.indexerid, filepath, Quality.qualityStrings[newQuality]), logger.DEBUG)
-                if newQuality != Quality.UNKNOWN:
-                    with curEp.lock:
-                        curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
+
+                with curEp.lock:
+                    curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
             elif not same_file and sickbeard.helpers.isMediaFile(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
