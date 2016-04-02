@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class SubsCenterSubtitle(Subtitle):
+    """SubsCenter Subtitle."""
     provider_name = 'subscenter'
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, subtitle_id, subtitle_key,
@@ -70,25 +71,27 @@ class SubsCenterSubtitle(Subtitle):
 
 
 class SubsCenterProvider(Provider):
+    """SubsCenter Provider."""
     languages = {Language.fromalpha2(l) for l in ['he']}
-    server = 'http://subscenter.cinemast.com/he/'
+    server_url = 'http://subscenter.cinemast.com/he/'
 
     def __init__(self, username=None, password=None):
-        if username is not None and password is None or username is None and password is not None:
+        if any((username, password)) and not all((username, password)):
             raise ConfigurationError('Username and password must be specified')
 
         self.username = username
         self.password = password
         self.logged_in = False
+        self.session = None
 
     def initialize(self):
         self.session = Session()
         self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
 
         # login
-        if self.username is not None and self.password is not None:
+        if self.username and self.password:
             logger.debug('Logging in')
-            url = self.server + 'subscenter/accounts/login/'
+            url = self.server_url + 'subscenter/accounts/login/'
 
             # retrieve CSRF token
             self.session.get(url)
@@ -108,7 +111,7 @@ class SubsCenterProvider(Provider):
         # logout
         if self.logged_in:
             logger.info('Logging out')
-            r = self.session.get(self.server + 'subscenter/accounts/logout/', timeout=10)
+            r = self.session.get(self.server_url + 'subscenter/accounts/logout/', timeout=10)
             r.raise_for_status()
             logger.info('Logged out')
             self.logged_in = False
@@ -122,12 +125,13 @@ class SubsCenterProvider(Provider):
         :param str title: title to search for.
         :param str kind: kind of the title, ``movie`` or ``series``.
         :return: the URL version of the title.
-        :rtype: str or None
+        :rtype: str
 
         """
         # make the search
         logger.info('Searching title name for %r', title)
-        r = self.session.get(self.server + 'subtitle/search/', params={'q': title}, allow_redirects=False, timeout=10)
+        r = self.session.get(self.server_url + 'subtitle/search/', params={'q': title}, allow_redirects=False,
+                             timeout=10)
         r.raise_for_status()
 
         # if redirected, get the url title from the Location header
@@ -155,12 +159,12 @@ class SubsCenterProvider(Provider):
         # set the correct parameters depending on the kind
         if series and season and episode:
             url_series = self._search_url_title(series, 'series')
-            url = self.server + 'cinemast/data/series/sb/{}/{}/{}/'.format(url_series, season, episode)
-            page_link = self.server + 'subtitle/series/{}/{}/{}/'.format(url_series, season, episode)
+            url = self.server_url + 'cinemast/data/series/sb/{}/{}/{}/'.format(url_series, season, episode)
+            page_link = self.server_url + 'subtitle/series/{}/{}/{}/'.format(url_series, season, episode)
         elif title:
             url_title = self._search_url_title(title, 'movie')
-            url = self.server + 'cinemast/data/movie/sb/{}/'.format(url_title)
-            page_link = self.server + 'subtitle/movie/{}/'.format(url_title)
+            url = self.server_url + 'cinemast/data/movie/sb/{}/'.format(url_title)
+            page_link = self.server_url + 'subtitle/movie/{}/'.format(url_title)
         else:
             raise ValueError('One or more parameters are missing')
 
@@ -214,7 +218,7 @@ class SubsCenterProvider(Provider):
 
     def download_subtitle(self, subtitle):
         # download
-        url = self.server + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
+        url = self.server_url + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
         params = {'v': subtitle.releases[0], 'key': subtitle.subtitle_key}
         r = self.session.get(url, params=params, headers={'Referer': subtitle.page_link}, timeout=10)
         r.raise_for_status()

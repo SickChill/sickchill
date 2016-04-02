@@ -14,6 +14,7 @@ language_converters.register('thesubdb = subliminal.converters.thesubdb:TheSubDB
 
 
 class TheSubDBSubtitle(Subtitle):
+    """TheSubDB Subtitle."""
     provider_name = 'thesubdb'
 
     def __init__(self, language, hash):
@@ -35,9 +36,13 @@ class TheSubDBSubtitle(Subtitle):
 
 
 class TheSubDBProvider(Provider):
+    """TheSubDB Provider."""
     languages = {Language.fromthesubdb(l) for l in language_converters['thesubdb'].codes}
     required_hash = 'thesubdb'
     server_url = 'http://api.thesubdb.com/'
+
+    def __init__(self):
+        self.session = None
 
     def initialize(self):
         self.session = Session()
