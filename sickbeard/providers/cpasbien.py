@@ -65,7 +65,7 @@ class CpasbienProvider(TorrentProvider):
                     for result in torrent_rows:
                         try:
                             title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
-                            title = re.sub(r' Saison', ' Season', title, flags=re.IGNORECASE)
+                            title = re.sub(r' Saison', ' Season', title, flags=re.I)
                             tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
                             download_url = (self.url + '/telechargement/{0}'.format(tmp))
                             if not all([title, download_url]):
