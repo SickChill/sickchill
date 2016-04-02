@@ -87,7 +87,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
     @staticmethod
     def _isSection(section, text):
         title = r'<title>.+? \| {0}</title>'.format(section)
-        return re.search(title, text, re.IGNORECASE)
+        return re.search(title, text, re.I)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals,too-many-branches, too-many-statements
         results = []
