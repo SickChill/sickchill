@@ -185,23 +185,23 @@ class newpctProvider(TorrentProvider):
         title = title[22:]
 
         # Quality - Use re module to avoid case sensitive problems with replace
-        title = re.sub(r'\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[HDTV]', 'HDTV x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[BluRay 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[BluRay MicroHD[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[MicroHD 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[BLuRay[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[HDTV]', 'HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.I)
+        title = re.sub(r'\[BluRay 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.I)
+        title = re.sub(r'\[BluRay MicroHD[^\[]*]', '1080p BlueRay x264', title, flags=re.I)
+        title = re.sub(r'\[MicroHD 1080p[^\[]*]', '1080p BlueRay x264', title, flags=re.I)
+        title = re.sub(r'\[BLuRay[^\[]*]', '720p BlueRay x264', title, flags=re.I)
+        title = re.sub(r'\[BRrip[^\[]*]', '720p BlueRay x264', title, flags=re.I)
+        title = re.sub(r'\[BDrip[^\[]*]', '720p BlueRay x264', title, flags=re.I)
 
         # Language
-        title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
-        title = re.sub(ur'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.IGNORECASE)
+        title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        title = re.sub(ur'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
 
         title += '-NEWPCT'
 
