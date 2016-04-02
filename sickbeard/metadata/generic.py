@@ -912,7 +912,7 @@ class GenericMetadata(object):
             logger.log(u"Can't load the metadata file from " + metadata_path + ", it doesn't exist", logger.DEBUG)
             return empty_return
 
-        logger.log(u"Loading show info from metadata file in " + folder, logger.DEBUG)
+        logger.log(u"Loading show info from metadata file in " + metadata_path, logger.DEBUG)
 
         try:
             with io.open(metadata_path, 'rb') as xmlFileObj:
@@ -928,10 +928,10 @@ class GenericMetadata(object):
             if indexer_id_text:
                 indexer_id = try_int(indexer_id_text, None)
                 if indexer_id is None or indexer_id < 1:
-                    logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)
+                    logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.DEBUG)
                     return empty_return
             else:
-                logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID", logger.WARNING)
+                logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file", logger.DEBUG)
                 return empty_return
 
             indexer = 1
