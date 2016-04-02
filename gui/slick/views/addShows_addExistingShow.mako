@@ -12,7 +12,7 @@
 
 <div id="newShowPortal">
     <div id="config-components">
-        <ul><li><a href="#core-component-group1">Add Existing Show</a></li></ul>
+        <ul><li><a href="#core-component-group1">${_('Add Existing Show')}</a></li></ul>
 
     <div id="core-component-group1" class="tab-pane active component-group">
 
@@ -20,8 +20,8 @@
 
     <div id="tabs">
         <ul>
-            <li><a href="#tabs-1">Manage Directories</a></li>
-            <li><a href="#tabs-2">Customize Options</a></li>
+            <li><a href="#tabs-1">${_('Manage Directories')}</a></li>
+            <li><a href="#tabs-2">${_('Customize Options')}</a></li>
         </ul>
         <div id="tabs-1" class="existingtabs">
             <%include file="/inc_rootDirs.mako"/>
@@ -32,14 +32,14 @@
     </div>
     <br>
 
-    <p>SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction.
-    If you would rather have SickRage prompt you to customize each show, then use the checkbox below.</p>
+    <p>${_('SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction.
+    If you would rather have SickRage prompt you to customize each show, then use the checkbox below.')}</p>
 
-    <p><input type="checkbox" name="promptForSettings" id="promptForSettings" /> <label for="promptForSettings">Prompt me to set settings for each show</label></p>
+    <p><input type="checkbox" name="promptForSettings" id="promptForSettings" /> <label for="promptForSettings">${_('Prompt me to set settings for each show')}</label></p>
 
     <hr />
 
-    <p><b>Displaying folders within these directories which aren't already added to SickRage:</b></p>
+    <p><b>${_('Displaying folders within these directories which aren't already added to SickRage:')}</b></p>
 
     <ul id="rootDirStaticList"><li></li></ul>
     <br>
