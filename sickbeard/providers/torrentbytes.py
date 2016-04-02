@@ -1,4 +1,4 @@
-﻿# coding=utf-8
+# coding=utf-8
 # Author: Idan Gutman
 #
 # URL: https://sickrage.github.io
