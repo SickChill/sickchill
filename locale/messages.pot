@@ -8,6 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
+<<<<<<< 07969ae46afc5445dcc92f7994c9159175f80366
 <<<<<<< f725fcac176840a1694312edd116a14220c923fb
 <<<<<<< 6b9e54c0cf605a372fe8145e75dbbad883ad8bc0
 "POT-Creation-Date: 2016-04-02 20:47-0700\n"
@@ -17,6 +18,9 @@ msgstr ""
 =======
 "POT-Creation-Date: 2016-04-02 17:59-0700\n"
 >>>>>>> Adjustments
+=======
+"POT-Creation-Date: 2016-04-02 20:47-0700\n"
+>>>>>>> main.mako, translatable
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -297,7 +301,10 @@ msgstr ""
 msgid "IRC Chat:"
 msgstr ""
 
+<<<<<<< 07969ae46afc5445dcc92f7994c9159175f80366
 <<<<<<< 6b9e54c0cf605a372fe8145e75dbbad883ad8bc0
+=======
+>>>>>>> main.mako, translatable
 #: gui/slick/views/layouts/main.mako:112
 msgid "Show List"
 msgstr ""
@@ -492,5 +499,8 @@ msgstr ""
 msgid "Now:"
 msgstr ""
 
+<<<<<<< 07969ae46afc5445dcc92f7994c9159175f80366
 =======
 >>>>>>> Update pot, po, mo
+=======
+>>>>>>> main.mako, translatable
