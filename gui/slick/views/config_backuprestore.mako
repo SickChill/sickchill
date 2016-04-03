@@ -15,23 +15,22 @@
 % endif
 <div id="config">
     <div id="config-content">
-
         <form name="configForm" method="post" action="backuprestore">
             <div id="config-components">
                 <ul>
-                    <li><a href="#backup">Backup</a></li>
-                    <li><a href="#restore">Restore</a></li>
+                    <li><a href="#backup">${_('Backup')}</a></li>
+                    <li><a href="#restore">${_('Restore')}</a></li>
                 </ul>
 
                 <div id="backup" class="component-group clearfix">
                     <div class="component-group-desc">
-                        <h3>Backup</h3>
-                        <p><b>Backup your main database file and config.</b></p>
+                        <h3>${_('Backup')}</h3>
+                        <p><b>${_('Backup your main database file and config.')}</b></p>
                     </div>
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            Select the folder you wish to save your backup file to:
+                            ${_('Select the folder you wish to save your backup file to:')}
 
                             <br><br>
 
@@ -48,13 +47,13 @@
 
                 <div id="restore" class="component-group clearfix">
                     <div class="component-group-desc">
-                        <h3>Restore</h3>
-                        <p><b>Restore your main database file and config.</b></p>
+                        <h3>${_('Restore')}</h3>
+                        <p><b>${_('Restore your main database file and config.')}</b></p>
                     </div>
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            Select the backup file you wish to restore:
+                            ${_('Select the backup file you wish to restore:')}
 
                             <br><br>
 
