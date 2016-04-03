@@ -109,9 +109,9 @@
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;Show List</a></li>
-                                <li><a href="${srRoot}/addShows/"><i class="menu-icon-addshow"></i>&nbsp;Add Shows</a></li>
-                                <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;Manual Post-Processing</a></li>
+                                <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;${_('Show List')}</a></li>
+                                <li><a href="${srRoot}/addShows/"><i class="menu-icon-addshow"></i>&nbsp;${_('Add Shows')}</a></li>
+                                <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
                                 % if sickbeard.SHOWS_RECENT:
                                     <li role="separator" class="divider"></li>
                                     % for recentShow in sickbeard.SHOWS_RECENT:
@@ -123,39 +123,39 @@
                         </li>
 
                         <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
-                            <a href="${srRoot}/schedule/">Schedule</a>
+                            <a href="${srRoot}/schedule/">${_('Schedule')}</a>
                         </li>
 
                         <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>
-                            <a href="${srRoot}/history/">History</a>
+                            <a href="${srRoot}/history/">${_('History')}</a>
                         </li>
 
                         <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>Manage</span>
+                            <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Manage')}</span>
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
-                                <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
-                                <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
-                                <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-manage2"></i>&nbsp;Episode Status Management</a></li>
+                                <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;${_('Mass Update')}</a></li>
+                                <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;${_('Backlog Overview')}</a></li>
+                                <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;${_('Manage Searches')}</a></li>
+                                <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-manage2"></i>&nbsp;${_('Episode Status Management')}</a></li>
                             % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
-                                <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-plex"></i>&nbsp;Update PLEX</a></li>
+                                <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
                             % endif
                             % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
-                                <li><a href="${srRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
+                                <li><a href="${srRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
                             % endif
                             % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
-                                <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;Update Emby</a></li>
+                                <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                             % endif
                             % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-                                <li><a href="${srRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
+                                <li><a href="${srRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;${_('Manage Torrents')}</a></li>
                             % endif
                             % if sickbeard.USE_FAILED_DOWNLOADS:
-                                <li><a href="${srRoot}/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;Failed Downloads</a></li>
+                                <li><a href="${srRoot}/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;${_('Failed Downloads')}</a></li>
                             % endif
                             % if sickbeard.USE_SUBTITLES:
-                                <li><a href="${srRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;Missed Subtitle Management</a></li>
+                                <li><a href="${srRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                             % endif
                             </ul>
                             <div style="clear:both;"></div>
@@ -166,15 +166,15 @@
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
-                                <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
-                                <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-backup"></i>&nbsp;Backup &amp; Restore</a></li>
-                                <li><a href="${srRoot}/config/search/"><i class="menu-icon-manage-searches"></i>&nbsp;Search Settings</a></li>
-                                <li><a href="${srRoot}/config/providers/"><i class="menu-icon-provider"></i>&nbsp;Search Providers</a></li>
-                                <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-backlog"></i>&nbsp;Subtitles Settings</a></li>
-                                <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-postprocess"></i>&nbsp;Post Processing</a></li>
-                                <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-notification"></i>&nbsp;Notifications</a></li>
-                                <li><a href="${srRoot}/config/anime/"><i class="menu-icon-anime"></i>&nbsp;Anime</a></li>
+                                <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;${_('Help &amp; Info')}</a></li>
+                                <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;${_('General')}</a></li>
+                                <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-backup"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
+                                <li><a href="${srRoot}/config/search/"><i class="menu-icon-manage-searches"></i>&nbsp;${_('Search Settings')}</a></li>
+                                <li><a href="${srRoot}/config/providers/"><i class="menu-icon-provider"></i>&nbsp;${_('Search Providers')}</a></li>
+                                <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-backlog"></i>&nbsp;${_('Subtitles Settings')}</a></li>
+                                <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-postprocess"></i>&nbsp;${_('Post Processing')}</a></li>
+                                <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-notification"></i>&nbsp;${_('Notifications')}</a></li>
+                                <li><a href="${srRoot}/config/anime/"><i class="menu-icon-anime"></i>&nbsp;${_('Anime')}</a></li>
                             </ul>
                             <div style="clear:both;"></div>
                         </li>
@@ -199,31 +199,31 @@
                                 toolsBadge = ''
                         %>
                         <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                            <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Tools</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                            <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
                             <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="${srRoot}/news/"><i class="menu-icon-news"></i>&nbsp;News${newsBadge}</a></li>
-                                <li><a href="${srRoot}/IRC/"><i class="menu-icon-irc"></i>&nbsp;IRC</a></li>
-                                <li><a href="${srRoot}/changes/"><i class="menu-icon-changelog"></i>&nbsp;Changelog</a></li>
-                                <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-support"></i>&nbsp;Support SickRage</a></li>
+                                <li><a href="${srRoot}/news/"><i class="menu-icon-news"></i>&nbsp;${_('News')}${newsBadge}</a></li>
+                                <li><a href="${srRoot}/IRC/"><i class="menu-icon-irc"></i>&nbsp;${_('IRC')}</a></li>
+                                <li><a href="${srRoot}/changes/"><i class="menu-icon-changelog"></i>&nbsp;${_('Changelog')}</a></li>
+                                <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-support"></i>&nbsp;${_('Support SickRage')}</a></li>
                                 <li role="separator" class="divider"></li>
                                 %if numErrors:
-                                    <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-error"></i>&nbsp;View Errors <span class="badge btn-danger">${numErrors}</span></a></li>
+                                    <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-error"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                 %endif
                                 %if numWarnings:
-                                    <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Warnings <span class="badge btn-warning">${numWarnings}</span></a></li>
+                                    <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
                                 %endif
-                                <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
+                                <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;${_('View Log')}</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
-                                <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
-                                <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
+                                <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;${_('Restart')}</a></li>
+                                <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;${_('Shutdown')}</a></li>
                                 % if srLogin is not True:
-                                    <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                    <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;${_('Logout')}</a></li>
                                 % endif
                                 <li role="separator" class="divider"></li>
-                                <li><a href="${srRoot}/home/status/"><i class="menu-icon-info"></i>&nbsp;Server Status</a></li>
+                                <li><a href="${srRoot}/home/status/"><i class="menu-icon-info"></i>&nbsp;${_('Server Status')}</a></li>
                             </ul>
                             <div style="clear:both;"></div>
                         </li>
@@ -260,7 +260,7 @@
         % endif
         % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
         <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
-            <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
+            <span>${_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)}</span>
         </div>
         % endif
 
@@ -289,20 +289,20 @@
                 | <span class="footerhighlight">${ep_downloaded}</span>
 
                 % if ep_snatched:
-                <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">+${ep_snatched}</a></span> Snatched
+                <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="${_('View overview of snatched episodes')}">+${ep_snatched}</a></span> ${_('Snatched')}
                 % endif
 
-                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
-                | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
-                | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
+                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> ${_('Episodes Downloaded')} ${ep_percentage}
+                | ${_('Daily Search:')} <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
+                | ${_('Backlog Search:')} <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
 
                 <div>
                     % if has_resource_module:
-                    Memory used: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
+                    ${_('Memory used:')} <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
                     % endif
-                    Load time: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
-                    Branch: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
-                    Now: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
+                    ${_('Load time:')} <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
+                    ${_('Branch:')} <span class="footerhighlight">${sickbeard.BRANCH}</span> |
+                    ${_('Now:')} <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
                 </div>
             </div>
         </footer>
