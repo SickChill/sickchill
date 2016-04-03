@@ -51,7 +51,13 @@ setup(
     },
 
     message_extractors={
-        'gui': [('**.mako', 'mako', {'input_encoding': 'utf-8'})],
+        'gui': [
+            ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
+            # @OmgImAlexis
+            # Need to move *.js into a separate dir than *.min.js,
+            # running gettext on minified js conflicts with _()
+            # ('**/js/**.js', 'javascript', {'input_encoding': 'utf-8'})
+        ],
         'sickrage': [('**.py', 'python', None)],
         'sickbeard': [('**.py', 'python', None)],
     },
