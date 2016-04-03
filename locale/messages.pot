@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-02 17:59-0700\n"
+"POT-Creation-Date: 2016-04-02 20:47-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -287,5 +287,199 @@ msgstr ""
 
 #: gui/slick/views/config.mako:51
 msgid "IRC Chat:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:112
+msgid "Show List"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:113
+msgid "Add Shows"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:114
+msgid "Manual Post-Processing"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:126
+msgid "Schedule"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:130
+msgid "History"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:134
+msgid "Manage"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:138
+msgid "Mass Update"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:139
+msgid "Backlog Overview"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:140
+msgid "Manage Searches"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:141
+msgid "Episode Status Management"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:143
+msgid "Update PLEX"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:146
+msgid "Update KODI"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:149
+msgid "Update Emby"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:152
+msgid "Manage Torrents"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:155
+msgid "Failed Downloads"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:158
+msgid "Missed Subtitle Management"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:169
+msgid "Help &amp; Info"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:170
+msgid "General"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:171
+msgid "Backup &amp; Restore"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:172
+msgid "Search Settings"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:173
+msgid "Search Providers"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:174
+msgid "Subtitles Settings"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:175
+msgid "Post Processing"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:176
+msgid "Notifications"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:177
+msgid "Anime"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:202
+msgid "Tools"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:206
+msgid "News"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:207
+msgid "IRC"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:208
+msgid "Changelog"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:209
+msgid "Support SickRage"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:212
+msgid "View Errors"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:215
+msgid "View Warnings"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:217
+msgid "View Log"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:219
+msgid "Check For Updates"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:220
+msgid "Restart"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:221
+msgid "Shutdown"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:223
+msgid "Logout"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:226
+msgid "Server Status"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:263
+msgid ""
+"You're using the {branch} branch. Please use 'master' unless specifically "
+"asked"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:292
+msgid "View overview of snatched episodes"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:292
+msgid "Snatched"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:295
+msgid "Episodes Downloaded"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:296
+msgid "Daily Search:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:297
+msgid "Backlog Search:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:301
+msgid "Memory used:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:303
+msgid "Load time:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:304
+msgid "Branch:"
+msgstr ""
+
+#: gui/slick/views/layouts/main.mako:305
+msgid "Now:"
 msgstr ""
 
