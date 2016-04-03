@@ -8,11 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
+<<<<<<< f725fcac176840a1694312edd116a14220c923fb
 <<<<<<< 6b9e54c0cf605a372fe8145e75dbbad883ad8bc0
 "POT-Creation-Date: 2016-04-02 20:47-0700\n"
 =======
 "POT-Creation-Date: 2016-04-02 17:04-0700\n"
 >>>>>>> Update pot, po, mo
+=======
+"POT-Creation-Date: 2016-04-02 17:59-0700\n"
+>>>>>>> Adjustments
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
