@@ -34,6 +34,7 @@ setup(
         'nose',
         'rednose',
         'mock',
+        'vcrpy-unittest'
     ],
 
     classifiers=[
