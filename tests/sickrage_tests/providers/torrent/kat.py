@@ -18,7 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 """
-Test ThePirateBay Result Parsing
+Test KAT Result Parsing
 """
 
 from __future__ import print_function, unicode_literals
@@ -34,12 +34,13 @@ sys.path.insert(1, 'lib')
 
 import sickbeard
 
-overwrite_cassettes = False
+overwrite_cassettes = True
 
 
-class ThePirateBayParsingTests(VCRTestCase):
+class KATParsingTests(VCRTestCase):
     """
-    Test ThePirateBay Result Parsing using pre-recorded responses
+    Test KAT Result Parsing using pre-recorded responses
+    ***This file must be named the same as the provider file***
     When recording new cassettes:
         Set overwrite_cassettes = True on line 37
         Delete the cassette yml file with the same base filename as this file in the cassettes dir next to this file
@@ -48,7 +49,7 @@ class ThePirateBayParsingTests(VCRTestCase):
 
     def __init__(self, test):
         """Initialize the test suite"""
-        super(ThePirateBayParsingTests, self).__init__(test)
+        super(KATParsingTests, self).__init__(test)
 
         self.provider = sickbeard.providers.getProviderModule(os.path.basename(__file__)[:-3]).provider
         self.provider.session.verify = False
@@ -116,5 +117,5 @@ if __name__ == '__main__':
 
     sickbeard.logger.log = override_log
 
-    test_suite = unittest.TestLoader().loadTestsFromTestCase(ThePirateBayParsingTests)
+    test_suite = unittest.TestLoader().loadTestsFromTestCase(KATParsingTests)
     unittest.TextTestRunner(verbosity=3).run(test_suite)
