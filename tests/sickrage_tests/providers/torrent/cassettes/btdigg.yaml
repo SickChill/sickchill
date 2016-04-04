@@ -1,0 +1,210 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode Mozilla/5.0 (compatible; MSIE 10.0; Windows NT
+          7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)]
+    method: GET
+    uri: https://api.btdigg.org/api/private-341ada3245790954/s02?q=Game+of+Thrones+S05E08&p=0&order=0
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA7zXYWsbRxAG4L8iBOkn+TyzszOzKzAhjp241KQQm6QQQtm93ZUEtZzKahJa+t/L
+        xW2sk2r51qT9dkg6Se88zM7cuz/Gi2W5/nkebubj6WhMwXiDgNFLm7E4ESxtYpPFU2hzS1ICZM7j
+        yWi8DFe5u+dluMrNdWku56vrZb5pLoBPwTVq4ENzdnL5pvlsxB7Axenz7q6y+CXfjKcjkslofLP4
+        vfsKFHHg0YOdjMar/Gv3PnZv57zsLi0re8+OJqNxSCmnLy+SVbWg3QdLGU9H0MBkNL4Ks2Ved//r
+        9mr69PP66LfVchrXi/l0aL7v0vKoLldXxu5X5+v1h+nhYVynxWzWXK9mhzc5rNr50691Pqop8qe8
+        mM27OOidWPvnZLQlZtRbTYBFUoEUGSxEUuc5JS/gEQsa9T7tiP24k+zF69NXz882sh0/e3t+sYlm
+        7swsgwNRdz+ZMpK6HhkLGgvG1pANDfiVrCZYhVpNoXtqyLtqnALngqAOQElyCISREB2b6ClESUGL
+        KUP67C7VD9+fn5++vniX1+uP7zfZ7AabgjHozCab77k5NeLEbbWaY1T2NW5DI+5ptZ1oT/i4C/eE
+        Tyrxaurdx/uXlsNAWQNkEmMIOVq1ihiKTcWwY26tEYnJDsBDcH+fJvd4MZHxBCywAUZ9MLQErNtn
+        I6JxUgM2NNYesH6cCp+akj7o0yKqZx9ZyHtJENpstQWXo/gordUWJWVqv8EQ25xhHRIYljso23Py
+        AkBuq7EUwVpwNU5D4/2nM6ymxg83VGlLzEGSibEgx6IomMByjKZlcCRgNMUyAGye1h+bnz4uTg6e
+        vXh5DxUbtIBk7X1SDi2wwk5HeVKq6qiBufZI7eSpaaqKsj5oZFotodXgIjpFyWrAl9aGpOLFmpRD
+        tBQyfpuJRb2JhWpEzcYByP1VwxkVY7ZHlpK3XNVZQzP+LyOrpuA9PZBdPSrKHHIiwVJact3Ea31x
+        xUUolA2yJw8mPEpvFVZxVsFnt+aXVYu0M7/EA1QtikMzVup9SVfPV1PxB/mCdbZlDMVhyNYFn0Ky
+        JUZoLTrxLK0CUhlyQJ6FVZpfX+XbGfD29Pjg5Lw5OeEGm7OmS/7qMu4XRa/kHRnaIL19mrsbdaRq
+        LfdJ2Yvzpqohh+beRzog7+OVa2AeVG59DKZ1gQ2jGCgZY2IUMaTemKiJ2fuioWqv/OeB5/LNftVu
+        0XTqiDb2F+L+Ex0heE87CwyA56oFZmDOQYvmXb7HK9YUflvx/V8AAAD//wMAYmJ1cUMRAAA=
+    headers:
+      cf-ray: [28e4f29f57a611e3-SJC]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 04 Apr 2016 13:01:14 GMT']
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d9c17c1cf979c7bd288dcb0e2836ef4751459774873; expires=Tue,
+          04-Apr-17 13:01:13 GMT; path=/; domain=.btdigg.org; HttpOnly']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=d9c17c1cf979c7bd288dcb0e2836ef4751459774873]
+      User-Agent: [!!python/unicode Mozilla/5.0 (compatible; MSIE 10.0; Windows NT
+          7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)]
+    method: GET
+    uri: https://api.btdigg.org/api/private-341ada3245790954/s02?q=x264&p=0&order=2
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6zXa4/aOBQG4L8SIbGfpunx5fiCVFVQ6EXLdEZAq0pVtbIdG6IyMBsybWdX+99X
+        hm5JmO0St/stIiTK68c+x37/Z6/chO1vK7Nb9QZZT1vUXjFBGXrhtDWcUyWwAGvBM8eLEJw1IHoX
+        WW9jbnx8ZlrW9drnY2+KfLat63KzzF9ut0VOgYhcUrjNR+u7mbnPv1DBH83ezBeTcXxBKNd+1xtk
+        Ul5kvV35R3wbQ9SagVJwkfUq//v+Po/3vd/0BhnhqKnWwOMzpih88fVHCZwSGt8aeoMM8vj8jVlu
+        fB2/8XA1ePqlfnJXbQa2LleDrll/KTZPfjhjHN34Aau6vh08fmzrolwu8221fLzzpnKrp9+G/0nK
+        2H/25XIVk3GOQv51kZ042mCc5twHxizVBmVgvhBBKSAoAvHcBYXgeNPx/cibuiqdfzQzn3cfsuuq
+        3G032dytttt19n40npW3GdEUvhBQkMWg2fPp8NmHpiXHoyUFqZgmmgBvYJI2pmBCKHaKyYBIloLZ
+        NXDE7OOoFbWP4z6FQ9w+hUPgPoX4vxi6T+Fb7D6FGLxPIUbvYypyCsxZZGOJRaeJKhhjyJkTSAWV
+        gnnFwHKNmoiCuiby6C6E+3yx8vlbc3NbVj6fr829r/I50PzZ1eX1dLKY5OO346q8PczlqZ+Z9fYu
+        tJT5UVkJiZJzKdT3kVFKhqfIQlFgacgdA0fknwuaIpqgcE5UFbIQypLCFRAsdaCUMsSjlcgZesa9
+        QeFJaIrO/LLyu1253cRihPnlm+mizONcbdek6dV80TQkAEdEzaXinGj1HyuVyFiXTxElQcAUxK4Z
+        I2JqtgS2lKE+x4aMWcGCDYpb5q0yjmnpibNAaNAFFsQ4aQrf7prBp4Fp1fBimnLKtWi0yf0CO3op
+        wUHRB16aA4MUr67hDm2ya6gEqZTRPSflUHKPQiEwlJY7CNZqrlnBQdhCCKICEidoq2Qa97GujPt4
+        SNbK9C5mGl6+Go6mk6aVaGxpUKMSgIo21tbepdkFpZaCPuiCX6tmZ6uu8fYFMiFWglbKCJ9tcE4x
+        kMZgYSgYDcKhkNxiQUDq4JUMgUqNrV3MzNS1r/4l0376jcrrq+lw1qRS5EglCdOoKdG0QSVOqICJ
+        h2VQMU51Ui/rmG1fBrtmSmlbCWPbwUmAcygNIV5wETyxhGDgwVkmpHPKkYC+5fTC3Ph8G/LFqtpu
+        /C6fAx7b8iHkbHL55l0+HS7K11f5/HqYT16/2EfOh89Ya7U1OpmKBwitxMHon9J4sh0RSuuHhJKT
+        VMJOsSPh/xE3TbezyFldSTFYp5Uu0CrhqVGcCh0YSs04CdxwDIZgUzfuu16a2oe7dT6Jr//e5J1f
+        D2e/zlttjh4xCdWMUQbYWpAn2xLNKaMPtiWUQ1Kb65oyYv5AuhS7hPE+Z6d5AB+AExNPHJoqxYEz
+        46hyDr2kBQfFsTBNu+GmyCeffHVfr+Ix99Uuf7GNF8/Lzb65w8Pz7nw4vh6+Hg9bp3rWPNUTSoCo
+        5po8YQTB5L4UtxlRpx0RugaOjD8ZNOVon8BwQvrhbwAAAP//AwCnfhuLoxEAAA==
+    headers:
+      cf-ray: [28e4f2a53b950719-SJC]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 04 Apr 2016 13:01:14 GMT']
+      server: [cloudflare-nginx]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=d9c17c1cf979c7bd288dcb0e2836ef4751459774873]
+      User-Agent: [!!python/unicode Mozilla/5.0 (compatible; MSIE 10.0; Windows NT
+          7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)]
+    method: GET
+    uri: https://api.btdigg.org/api/private-341ada3245790954/s02?q=x264.HDTV&p=0&order=2
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5SRTWvcMBBA/4oQOCej1bdswxLabWkvPTW0h1CKZEu26FreyHIaUvrfyzRJ2RYK
+        yW00oxnmzbv+gWMKy9fJrhPuEO6VYqxtpHJ9aIURkhnWykBbGRpurGKB8pYNFtcIJzt76DksWyox
+        jehg84o+UvWWMXRYjksO2xEdtrUss88rMpye0B3XEr1/c/WJzN9uYUqIR7/iDrEa4TXew0QlDJdM
+        U1ojnP0NVI2GsvcJfkrVatMayWuE7TD44TFphNFUwsyAO0QJ9M92TL7Amg9Rd3lX9ltOnStx6p6L
+        ezGk/RNmxSmAVpw+oML7ERbCJ9yKUwCuOAXkitNzaLg57DSVcup2O1eGOI5kyeNu9Tb30+UfKfuX
+        GPnu4zgBbEOVED9r9I9dZ5UbvBfOhF4471wb1MC0aZyUwTRS9UJoq9W53avJk3fZ20JepRJvNr+S
+        D/ZElkBe51hsTEQvoSGfYxrWJRNgJkBMgPfa35fbL2Q+yf+obphslGK6OVPN/latDFW/c+eqtVFM
+        q5eofi77xS8AAAD//6TX224bNxAG4KfJZYk5cTi86EUCC0EQBwUqIAEK9IJHR2gdAZL8/sU6dbJa
+        2dAyfoSfH/8Zsn77/VWZ3/h3U+o3/uYp94D2iNBV7ViJmoBxrhlTKp6VYyvkKQhSD5ZKSFHm2je7
+        u7vdtzvX94cfWbftsGtHJw73nd2XdjyNKiNHRB9IZswkC2YVwkvmoMxDzCtDT8y/FPZ1vAMkV3lL
+        YuQmiKlDItIMDQsp5sCUJXJIagS2LPO2lUM7udtdb9ONPn1t7q/93sm+q0Ow52BfnNQowdAMmH7C
+        4qK/FMQLLGFNmHEIdmXcp/4OxJyTDs/nEYZrpIV6lCDqgbACQwYJ3CUhJqJY1IfIwWdY3ViaLvEm
+        /UJjBVA5RtYZLCx2sCfxdrGDPVIc2sErQ19t7EthX9XYEZJrvIk6UjKmTr4BMYOVkHyqoNo1aG9V
+        JWs7a+zh4Xhyn5r7cO/eupt9Oe0PT5HJ8RR5eBibcmCk+fPqXJYDAYdlZWOwR+7VsmvzPlZ2NOer
+        VEckrs7hHEr1kLiTFgWUEnrOKRbrFptJ7pWJAJZz+Ev695/pLt+0VN0WdIP+e8THh+KU87e3n7dz
+        ROGfigRsHsyLzFbqYqOaGfKFoo8RhgbvynxPg3d9rpEpO3DIP8BEfKDnwAxqyQFbRAuigrn3oIlT
+        RPVdqeTaoJ/9cd4fdvf3bgvLKG77kOdEZGdFC0wSaL4dbfm4JbxsWqBIY8txZaTJ6FqUIZX1J3mm
+        gs+o1EDRhFvTZtC1qnFES6wSuUBqXUP12Ocqn3fTTTu6LcgGdHnLPn64vd38edag74/O/3lA1St4
+        nOnw4umizKAXTxfjwa/HymiTzupII0wDR3uNqYJkKBNqz0TAMUmG1JMm7aV1yFxDT1bmTH88nI67
+        2g5TKtyAOAJcpRVmWmiG3nN8UStwYH5mawmIjmitTThpjSYbQBs56AXa3/8BAAD//wMAkikKfNYR
+        AAA=
+    headers:
+      cf-ray: [28e4f2a67b9a0719-SJC]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 04 Apr 2016 13:01:15 GMT']
+      server: [cloudflare-nginx]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=d9c17c1cf979c7bd288dcb0e2836ef4751459774873]
+      User-Agent: [!!python/unicode Mozilla/5.0 (compatible; MSIE 10.0; Windows NT
+          7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)]
+    method: GET
+    uri: https://api.btdigg.org/api/private-341ada3245790954/s02?q=720.HDTV.x264&p=0&order=2
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8yXfW/bNhDGvwphgFsCpO7x+HY0UBR+6bYATYs2aTAgCwZKJG0tjt3ZTtdt2Hcf
+        aGe17DiFVLTA/qFoSiL83I/33Onq7041S/NfJ3456fRYR5ILZSxJWikhkU4lJSilJdAKk0FXCASi
+        snPCOjN/G/M7V/23b99ds8H85o4FfxPZ2LPTma/YmS8nFbu4ZIId/TS6uHxbvWcW4T37iEaxfn94
+        nLdJ1TQuOz1mT1hnWf2Vt0QNzihNqE5YZxF/z7cx345x1ukxobQlpyToE9bxIcSwWXSGBJHIe6ZO
+        j0EXTljn1o9ncZX/52bWe/5x9exuMesVq2rSa6r3uzB7xvUgK+V6xBGyWo6Q9XKEsecIWTNHWKvm
+        CBeXHEFwBI50r54jZP0cIUeAI/T7Q44uRyFTyH9yslq97z19WqxCNR5354vx02X0i3Ly/BOmZ20Y
+        /RGr8SSrV0oT/HPC9nh7KEKprPBJeDIuCUQVKNpkPAYRiiBkEYJIdd6vhqfn3ZfzZbc/G8dpXHbP
+        wb5A6GaR3SzsycvXL6/iavXhus4Xt3ylMEYr7XCL19kdvk5qBdrs8dVCSdJt+DbVl/k20sX1ICvj
+        etSSWptIf6JGpDU+pFYQlqF0IrlQaBWU8o6UBXIWS4q+gBRCNIh1aoPBkL05ZedCXv7YZ/3plJ1V
+        yzJOp34W53dLdvb9kg2HLIu9z8+hzNnavb35UMcothiFRi2EcUhbjmaPo9ZgjNzPUyOEwDYcmyrO
+        HAeDIUd4c8oRNmpzok2nOTXrivNvjjZfh/mFrLyWmUO5ydb/9LdA3QbPFjVoZQ+gjs6AEsYWoZBa
+        o4pGSKGcl15YVVgly6hSCAcMuf9bNWvsvgK2XJVGApBga/mpd7GiALl22h2smpyTrbA2VPfAfrO2
+        b+mxbcK+47HqIUInTTLCK48KktOI0mCUViqtbAiFFaCDjNo08dgsbWNIP2dDGp2evXh1fvr6VR2l
+        rGUogLGOSNUyVOyRRKcV7JGUmghUG5JNRX7OaD8nrgW7NvGuO63RB+qjgFKpaJN2ZCKWMRQpOCyS
+        C0BgS18GHxM1qo8C6LC+q4VfFOPrRxhKMlI76ajWDEnzoFoqs98NKVJOU6tq2VDt5yA+qpLrwVrn
+        F5TOFhB2Sqc5kIwUKZGkWHiJwZItyygKT1oFVDolClbinp/+cgdKyDwqyKPcjGG9YtdzvZ6L9Yi1
+        FWAIwrAjZNsHNrfk5sW42eqYPTlfVaGas8uqXM0Xfz75oZreLtmRRTh+5GCgslo6J0wtudVeclM2
+        gP1zgU4jtEruhkFb2/QIuJN8JDhBng8242i9YtdzvZ6L9Yi1FeAIOVwbP8d8uX9w8wjwwWaDF/db
+        ouMI94HjCDuh22xi89jW/Nucka35kzYHGmxCh6WJwXvhbSqCSFQYsj4ACqWiAxehMNp/gw8qqh0V
+        MmSMwHodoN2jAgId7dcBFNqhbXNUmur9P31QtWG0U+wPtOaWEgUvsl/nRBNG56ahFEKXJEySUpsA
+        KZmv5i9HPy78bFVO4nIVF8ePfHAJY0BKAVDjv9uok1OAar+ECOMUmTb8m+r/ClbBkera23Nvw2pb
+        Vw72CZBKFJi01c6nUBYqGmWTL6M1lCKUTqKRCVQd+/nEL266F35280gD9K5/eaA1UDWsa6Qk6h/S
+        6xyucQWpjdvr1EkZ1KJVp95UYObaRNiXdwNtQr3X3l3/CwAA//8DAAp3DFDvEgAA
+    headers:
+      cf-ray: [28e4f2aacba50719-SJC]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 04 Apr 2016 13:01:16 GMT']
+      server: [cloudflare-nginx]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=d9c17c1cf979c7bd288dcb0e2836ef4751459774873]
+      User-Agent: [!!python/unicode Mozilla/5.0 (compatible; MSIE 10.0; Windows NT
+          7.0; InfoPath.3; .NET CLR 3.1.40767; Trident/6.0; en-IN)]
+    method: GET
+    uri: https://api.btdigg.org/api/private-341ada3245790954/s02?q=Game+of+Thrones+S05&p=0&order=0
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6zVTWsbMRAG4L+yLKQn42i+NBpDyLHHHNpbD0WftiGxW9ulpaX/vWyT1PWWEm/w
+        TexKQu88jPThR7/etO3HVdyv+kXXu8zEKWZAs5JBWkjA5L2FbNnIQUopq8N+1vWb+FCHNW/jQ51v
+        2/z9arfd1P38nZPhd1vf132/6AhnXb9ffx/mArKoMhL5Wdfv6udhAsAwodbNMGYJDrwJzbo+llLL
+        748k4oZ1w7atX3Ru7mZd/xCXm3oYjvA4Wtx+O9x82W0W6bBeLc6N8qZsbv4TYSjNsP3qcPi0uL5O
+        h7JeLufb3fJ6X+Mur27/1O5mSuG+1vVyNZwbHXsIP2fdSAGCBDOoidFbJBYjTyUY1BjVo6BCbJXa
+        BAV0RwVmCoLqNPBRwU4RwGFQPUFgL05B3BSEc5NcBmFK3U4R5F8EpBy5NEDDpikIOQotx1hCRlRU
+        C1BzpPRKBGDPgp7IuyNCGCEIK9tpJ7BCAO+nIJyb5DIIU+r2IgKkiFUtxybipRb1MSIHjLG00BoK
+        QfbRy2sRTBDFSA2PCDpCYIfBjxGcqZt0HZ2b5EKdMKFuLyIQhMxISdT76nKsloU9Z4/Fm0rFbMGk
+        xEt2gpwikEOmEYIKq5JMQTg3yWUQptTtRYRkRRiLBMbCjClmjcgtRMlsUEsSdj63Okbo7lr3FKEb
+        ITw+vM+dYCQYBDn89TKfIBgoKIyuIyDyQDYF4dwkzwhX6O7aFbqnFFfonil+AQAA//+s18lZxDAM
+        BtCWtFhbMRxsy7pOBfTONckwEMOUoP992u5T7KR3pqBnCqhgciqENO4aWD1HII2JNIKrDD1D/Ini
+        8Zri2A9ojc3B9bCeG1+OJHZGOVmIN3O2LYu7pRwsHv+12InvbIHfWEwpbygiJLm8d52EOHLWYhNp
+        3ivnqLYxm44WBMBsjd3o1WyyMA+5bml1AJe9e/VeJe+6V+/n9isCr84gaZOGdC5PKbNoExpOGT1W
+        9r7U7I8IShTgTnJ4Gi7twOJoT0vaQGPrXL1byJv2w0Zsvxo0HsmMAQhAOJeKzHTFxdPYCrLYOXXn
+        c4vDTDIPUlb9qQ8Qnf1q4KZ7fXC3kPcY7MR2NoDPjy8AAAD//wMAcnIppj4PAAA=
+    headers:
+      cf-ray: [28e4f2b1b5aa0719-SJC]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 04 Apr 2016 13:01:17 GMT']
+      server: [cloudflare-nginx]
+    status: {code: 200, message: OK}
+version: 1

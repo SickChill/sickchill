@@ -36,6 +36,7 @@ from vcr_unittest import VCRTestCase
 sys.path.insert(1, 'lib')
 
 import sickbeard
+sickbeard.CPU_PRESET = 'NORMAL'
 
 overwrite_cassettes = False
 
@@ -102,28 +103,84 @@ class BaseParser(type):
                       [x.url for x in self.cassette.requests])
 
 
-class ThePirateBayParsingTests(BaseParser.TestCase):
+class ThePirateBay(BaseParser.TestCase):
     """Test ThePirateBay Result Parsing using pre-recorded responses"""
     def __init__(self, test):
-        """Initialize the test suite"""
-        super(ThePirateBayParsingTests, self).__init__(test, 'thepiratebay')
+        super(ThePirateBay, self).__init__(test, 'thepiratebay')
 
 
-class KATParsingTests(BaseParser.TestCase):
-    """Test ThePirateBay Result Parsing using pre-recorded responses"""
+class KAT(BaseParser.TestCase):
+    """Test KickAssTorrents Result Parsing using pre-recorded responses"""
     def __init__(self, test):
-        """Initialize the test suite"""
-        super(KATParsingTests, self).__init__(test, 'kat')
+        super(KAT, self).__init__(test, 'kat')
 
 
-class BitSnoopParsingTests(BaseParser.TestCase):
-    """Test ThePirateBay Result Parsing using pre-recorded responses"""
+class BitSnoop(BaseParser.TestCase):
+    """Test BitSnoop Result Parsing using pre-recorded responses"""
     def __init__(self, test):
-        """Initialize the test suite"""
-        super(BitSnoopParsingTests, self).__init__(test, 'bitsnoop')
+        super(BitSnoop, self).__init__(test, 'bitsnoop')
+
+
+class BTDigg(BaseParser.TestCase):
+    """Test BTDigg Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(BTDigg, self).__init__(test, 'btdigg')
+
+
+class ETTV(BaseParser.TestCase):
+    """Test BTDigg Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(ETTV, self).__init__(test, 'extratorrent')
+
+
+@unittest.skip(b'Not working')
+class NyaaTorrents(BaseParser.TestCase):
+    """Test NyaaTorrents Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(NyaaTorrents, self).__init__(test, 'nyaatorrents')
+
+
+class Torrentz(BaseParser.TestCase):
+    """Test NyaaTorrents Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(Torrentz, self).__init__(test, 'torrentz')
+
+
+class RARBG(BaseParser.TestCase):
+    """Test RARBG Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(RARBG, self).__init__(test, 'rarbg')
+
+
+@unittest.skip(b'Not working')
+class TokyoToshoKan(BaseParser.TestCase):
+    """Test TokyoToshoKan Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(TokyoToshoKan, self).__init__(test, 'tokyotoshokan')
+
+
+@unittest.skip(b'Not working')
+class CPasbian(BaseParser.TestCase):
+    """Test CPasbian Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(CPasbian, self).__init__(test, 'cpasbien')
+
+
+class LimeTorrents(BaseParser.TestCase):
+    """Test LimeTorrents Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(LimeTorrents, self).__init__(test, 'limetorrents')
+
+
+@unittest.skip(b"api maintenance")
+class TorrentProject(BaseParser.TestCase):
+    """Test LimeTorrents Result Parsing using pre-recorded responses"""
+    def __init__(self, test):
+        super(TorrentProject, self).__init__(test, 'torrentproject')
 
 
 if __name__ == '__main__':
+    import inspect
     print('=====> Testing %s', __file__)
 
     def override_log(msg, *args, **kwargs):
@@ -131,11 +188,11 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
-    sickbeard.logger.log = override_log
+    suite = unittest.TestSuite()
+    # sickbeard.logger.log = override_log
+    members = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    for _, provider_test_class in members:
+        if provider_test_class not in (BaseParser, BaseParser.TestCase):
+            suite.addTest(unittest.TestLoader().loadTestsFromTestCase(provider_test_class))
 
-    test_suite = unittest.TestLoader().loadTestsFromTestCase(ThePirateBayParsingTests)
-    unittest.TextTestRunner(verbosity=3).run(test_suite)
-    test_suite = unittest.TestLoader().loadTestsFromTestCase(KATParsingTests)
-    unittest.TextTestRunner(verbosity=3).run(test_suite)
-    # test_suite = unittest.TestLoader().loadTestsFromTestCase(BitSnoopParsingTests)
-    # unittest.TextTestRunner(verbosity=3).run(test_suite)
+    unittest.TextTestRunner(verbosity=3).run(suite)
