@@ -26,6 +26,7 @@ When recording new cassettes:
 """
 
 from __future__ import print_function, unicode_literals
+from functools import wraps
 
 import sys
 
@@ -40,21 +41,66 @@ sickbeard.CPU_PRESET = 'NORMAL'
 
 overwrite_cassettes = False
 
+disabled_provider_tests = {
+    # ???
+    'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # api_maintenance still
+    'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # Have to trick it into thinking is an anime search, and add string overrides
+    'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+
+}
+test_string_overrides = {
+    'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
+    'NyaaTorrents': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+    'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+}
+
 
 class BaseParser(type):
+
     class TestCase(VCRTestCase):
-        def __init__(self, test, provider):
+        provider = None
+
+        def __init__(self, test):
             """Initialize the test suite"""
             VCRTestCase.__init__(self, test)
 
-            self.provider = sickbeard.providers.getProviderModule(provider).provider
             self.provider.session.verify = False
 
-            self.search_strings = {
-                'rss': self.provider.cache.search_params,
-                'episode': {'Episode': ['Game of Thrones S05E08']},
-                'season': {'Season': ['Game of Thrones S05']}
+            self.provider.username = self.username
+            self.provider.password = self.password
+
+        @property
+        def username(self):  # pylint: disable=no-self-use
+            # TODO: Make this read usernames from somewhere
+            return ''
+
+        @property
+        def password(self):  # pylint: disable=no-self-use
+            # TODO: Make this read passwords from somewhere
+            return ''
+
+        def search_strings(self, mode):
+            _search_strings = {
+                'RSS': [''],
+                'Episode': ['Game of Thrones S05E08'],
+                'Season': ['Game of Thrones S05']
             }
+            _search_strings.update(self.provider.cache.search_params)
+            _search_strings.update(test_string_overrides.get(self.provider.name, {}))
+            return {mode: _search_strings[mode]}
+
+        def magic_skip(func):  # pylint:disable=no-self-argument
+            @wraps(func)
+            def magic(self, *args, **kwargs):
+                # pylint:disable=no-member
+                if func.func_name in disabled_provider_tests.get(self.provider.name, []):
+                    print("skipping {0}".format(str(self.provider.name)))
+                    return unittest.skip(str(self.provider.name))
+                func(self, *args, **kwargs)
+            return magic
 
         def _get_vcr_kwargs(self):
             """Don't allow the suite to write to cassettes unless we say so"""
@@ -66,117 +112,47 @@ class BaseParser(type):
             """Returns the filename to use for the cassette"""
             return self.provider.get_id() + '.yaml'
 
+        @magic_skip
         def test_rss_search(self):
             """Check that the provider can parse it's own rss search results"""
-            results = self.provider.search(self.search_strings['rss'])
+            results = self.provider.search(self.search_strings('RSS'))
 
             self.assertTrue(self.cassette.requests)
-            self.assertTrue(results)
+            self.assertTrue(results, self.cassette.requests[-1].url)
             self.assertTrue(len(self.cassette))
 
-            if len(self.cassette) > 1:
-                print('Url is being called more than once, redirecting? %s',
-                      [x.url for x in self.cassette.requests])
-
-        def test_season_search(self):
-            """Check that the provider can parse it's own season search results"""
-            results = self.provider.search(self.search_strings['season'])
-
-            self.assertTrue(self.cassette.requests)
-            self.assertTrue(results)
-            self.assertTrue(len(self.cassette))
-
-            if len(self.cassette) > 1:
-                print('Url is being called more than once, redirecting? %s',
-                      [x.url for x in self.cassette.requests])
-
+        @magic_skip
         def test_episode_search(self):
             """Check that the provider can parse it's own episode search results"""
-            results = self.provider.search(self.search_strings['episode'])
+            results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
-            self.assertTrue(results)
+            self.assertTrue(results, self.cassette.requests[-1].url)
             self.assertTrue(len(self.cassette))
 
-            if len(self.cassette) > 1:
-                print('Url is being called more than once, redirecting? %s',
-                      [x.url for x in self.cassette.requests])
+        @magic_skip
+        def test_season_search(self):
+            """Check that the provider can parse it's own season search results"""
+            results = self.provider.search(self.search_strings('Season'))
 
+            self.assertTrue(self.cassette.requests)
+            self.assertTrue(results, self.cassette.requests[-1].url)
+            self.assertTrue(len(self.cassette))
 
-class ThePirateBay(BaseParser.TestCase):
-    """Test ThePirateBay Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(ThePirateBay, self).__init__(test, 'thepiratebay')
+        @magic_skip
+        def test_cache_update(self):
+            """Check that the provider's cache can parse it's own rss search results"""
+            self.provider.cache.updateCache()
 
-
-class KAT(BaseParser.TestCase):
-    """Test KickAssTorrents Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(KAT, self).__init__(test, 'kat')
-
-
-class BitSnoop(BaseParser.TestCase):
-    """Test BitSnoop Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(BitSnoop, self).__init__(test, 'bitsnoop')
-
-
-class BTDigg(BaseParser.TestCase):
-    """Test BTDigg Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(BTDigg, self).__init__(test, 'btdigg')
-
-
-class ETTV(BaseParser.TestCase):
-    """Test BTDigg Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(ETTV, self).__init__(test, 'extratorrent')
-
-
-@unittest.skip(b'Not working')
-class NyaaTorrents(BaseParser.TestCase):
-    """Test NyaaTorrents Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(NyaaTorrents, self).__init__(test, 'nyaatorrents')
-
-
-class Torrentz(BaseParser.TestCase):
-    """Test NyaaTorrents Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(Torrentz, self).__init__(test, 'torrentz')
-
-
-class RARBG(BaseParser.TestCase):
-    """Test RARBG Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(RARBG, self).__init__(test, 'rarbg')
-
-
-@unittest.skip(b'Not working')
-class TokyoToshoKan(BaseParser.TestCase):
-    """Test TokyoToshoKan Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(TokyoToshoKan, self).__init__(test, 'tokyotoshokan')
-
-
-@unittest.skip(b'Not working')
-class CPasbian(BaseParser.TestCase):
-    """Test CPasbian Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(CPasbian, self).__init__(test, 'cpasbien')
-
-
-class LimeTorrents(BaseParser.TestCase):
-    """Test LimeTorrents Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(LimeTorrents, self).__init__(test, 'limetorrents')
-
-
-@unittest.skip(b"api maintenance")
-class TorrentProject(BaseParser.TestCase):
-    """Test LimeTorrents Result Parsing using pre-recorded responses"""
-    def __init__(self, test):
-        super(TorrentProject, self).__init__(test, 'torrentproject')
+"""
+Auto Generate TestCases from providers and add them to globals()
+"""
+for p in sickbeard.providers.__all__:
+    provider = sickbeard.providers.getProviderModule(p).provider
+    if provider.supports_backlog and provider.provider_type == 'torrent' and provider.public:
+        generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
+        globals()[generated_class.__name__] = generated_class
+        del generated_class
 
 
 if __name__ == '__main__':
@@ -188,8 +164,9 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
+    sickbeard.logger.log = override_log
+
     suite = unittest.TestSuite()
-    # sickbeard.logger.log = override_log
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     for _, provider_test_class in members:
         if provider_test_class not in (BaseParser, BaseParser.TestCase):
