@@ -498,7 +498,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
                 except sickbeard.indexer_seasonnotfound as error:
-                    logger.log("{0}: {1} (unaired/deleted) in the indexer {2} for {3}. Removing existing records from database".format(curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
+                    logger.log("{0}: {1} (unaired/deleted) in the indexer {2} for {3}. Removing existing records from database".format
+                               (curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
                     deleteEp = True
 
             if curSeason not in scannedEps:
@@ -1395,6 +1396,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.saveToDB()
 
     def download_subtitles(self, force=False):
+        _ = force
         if not ek(os.path.isfile, self.location):
             logger.log("{id}: Episode file doesn't exist, can't download subtitles for {ep}".format
                        (id=self.show.indexerid, ep=episode_num(self.season, self.episode)),
@@ -2138,15 +2140,15 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             '%SQ.N': dot(Quality.sceneQualityStrings[epQual] + encoder),
             '%SQ_N': us(Quality.sceneQualityStrings[epQual] + encoder),
             '%S': str(self.season),
-            '%0S': '{0:02d}'.format(self.season),
+            '%0S': '{0:02d}'.format(int(self.season)),
             '%E': str(self.episode),
-            '%0E': '{0:02d}'.format(self.episode),
+            '%0E': '{0:02d}'.format(int(self.episode)),
             '%XS': str(self.scene_season),
-            '%0XS': '{0:02d}'.format(self.scene_season),
+            '%0XS': '{0:02d}'.format(int(self.scene_season)),
             '%XE': str(self.scene_episode),
-            '%0XE': '{0:02d}'.format(self.scene_episode),
-            '%AB': '{0:03d}'.format(self.absolute_number),
-            '%XAB': '{0:03d}'.format(self.scene_absolute_number),
+            '%0XE': '{0:02d}'.format(int(self.scene_episode)),
+            '%AB': '{0:03d}'.format(int(self.absolute_number)),
+            '%XAB': '{0:03d}'.format(int(self.scene_absolute_number)),
             '%RN': release_name(self.release_name),
             '%RG': rel_grp[relgrp],
             '%CRG': rel_grp[relgrp].upper(),
@@ -2160,8 +2162,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             '%CY': str(datetime.date.today().year),
             '%CM': str(datetime.date.today().month),
             '%CD': str(datetime.date.today().day),
-            '%0M': '{0:02d}'.format(self.airdate.month),
-            '%0D': '{0:02d}'.format(self.airdate.day),
+            '%0M': '{0:02d}'.format(int(self.airdate.month)),
+            '%0D': '{0:02d}'.format(int(self.airdate.day)),
             '%RT': "PROPER" if self.is_proper else "",
         }
 
@@ -2338,7 +2340,6 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 # fill out the template for this piece and then insert this piece into the actual pattern
                 cur_name_group_result = re.sub('(?i)(?x)' + regex_used, regex_replacement, cur_name_group)
                 # cur_name_group_result = cur_name_group.replace(ep_format, ep_string)
-                # logger.log("found "+ep_format+" as the ep pattern using "+regex_used+" and replaced it with "+regex_replacement+" to result in "+cur_name_group_result+" from "+cur_name_group, logger.DEBUG)
                 result_name = result_name.replace(cur_name_group, cur_name_group_result)
 
         result_name = self._format_string(result_name, replace_map)
