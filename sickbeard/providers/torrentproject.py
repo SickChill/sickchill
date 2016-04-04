@@ -106,9 +106,9 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     size = convert_size(torrent_size) or -1
 
                     try:
-                        assert seeders < 10
+                        assert seeders < 3 #Have it for now at 3 , and if its needed increase it back to 10
                         assert mode != 'RSS'
-                        logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
+                        logger.log(u"Torrent has less than 10 seeds getting trackers dynamicly: " + title, logger.DEBUG)
 
                         if self.custom_url:
                             if not validators.url(self.custom_url):
@@ -118,11 +118,10 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                         else:
                             trackers_url = self.url
 
-                        trackers_url = urljoin(trackers_url, t_hash)
-                        trackers_url = urljoin(trackers_url, "/trackers_json")
+                        trackers_url = urljoin(trackers_url, t_hash) + "/trackers_json"
                         jdata = self.get_url(trackers_url, returns='json')
 
-                        assert jdata != "maintenance"
+                        assert jdata != "api maintenance"
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
                     except (Exception, AssertionError):
                         download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
