@@ -34,7 +34,7 @@ sys.path.insert(1, 'lib')
 
 import sickbeard
 
-overwrite_cassettes = True
+overwrite_cassettes = False
 
 
 class KATParsingTests(VCRTestCase):
