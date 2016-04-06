@@ -31,14 +31,10 @@ import platform
 import re
 import uuid
 
-from hachoir_parser import createParser  # pylint: disable=import-error
-from hachoir_metadata import extractMetadata  # pylint: disable=import-error
-from hachoir_core.log import log as hachoir_log  # pylint: disable=import-error
-
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
-from sickrage.helper.common import try_int  # pylint: disable=unused-import
+from sickrage.helper.common import try_int, avi_screen_size, mkv_screen_size  # pylint: disable=unused-import
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
@@ -385,38 +381,10 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        hachoir_log.use_print = False
-
-        try:
-            parser = createParser(filename)
-        except Exception:  # pylint: disable=broad-except
-            parser = None
-
-        if not parser:
-            return Quality.UNKNOWN
-
-        try:
-            metadata = extractMetadata(parser)
-        except Exception:  # pylint: disable=broad-except
-            metadata = None
-
-        try:
-            parser.stream._input.close()  # pylint: disable=protected-access
-        except Exception:  # pylint: disable=broad-except
-            pass
-
-        if not metadata:
-            return Quality.UNKNOWN
-
-        height = 0
-        if metadata.has('height'):
-            height = int(metadata.get('height') or 0)
+        if filename.endswith('.mkv'):
+            _, height = mkv_screen_size(filename)
         else:
-            test = getattr(metadata, "iterGroups", None)
-            if callable(test):
-                for metagroup in metadata.iterGroups():
-                    if metagroup.has('height'):
-                        height = int(metagroup.get('height') or 0)
+            _, height = avi_screen_size(filename)
 
         if not height:
             return Quality.UNKNOWN
