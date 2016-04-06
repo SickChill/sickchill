@@ -117,7 +117,7 @@ class newpctProvider(TorrentProvider):
                             torrent_size = cells[labels.index('Tamaño')].get_text(strip=True)
 
                             size = convert_size(torrent_size) or -1
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
                                 logger.log('Found result: {0}'.format(title), logger.DEBUG)
 

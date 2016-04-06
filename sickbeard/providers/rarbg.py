@@ -157,12 +157,13 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
                         torrent_size = item.pop("size", -1)
                         size = convert_size(torrent_size) or -1
+                        torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
                             logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)
 
-                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         items.append(result)
                     except StandardError:
                         continue

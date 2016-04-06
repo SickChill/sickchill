@@ -36,7 +36,6 @@ from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickrage.helper.common import replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
 
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
@@ -427,8 +426,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     def _get_size(self, item):  # pylint: disable=unused-argument,no-self-use
         try:
-            return item.get('size')
-        except:
+            return item.get('size', -1)
+        except AttributeError:
             return -1
 
     def _get_storage_dir(self):  # pylint: disable=no-self-use
@@ -453,35 +452,34 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return title, url
 
+    @staticmethod
+    def hash_from_magnet(magnet):
+        try:
+            torrent_hash = re.findall(r'urn:btih:([\w]{32,40})', magnet)[0].upper()
+            if len(torrent_hash) == 32:
+                torrent_hash = b16encode(b32decode(torrent_hash)).upper()
+            return torrent_hash
+        except Exception:
+            logger.log(u'Unable to extract torrent hash or name from magnet: {0}'.format(magnet), logger.ERROR)
+            return ''
+
     def _make_url(self, result):
         if not result:
             return '', ''
 
-        urls = []
         filename = u''
-
+        urls = [result.url]
         if result.url.startswith('magnet'):
-            try:
-                torrent_hash = re.findall(r'urn:btih:([\w]{32,40})', result.url)[0].upper()
-
-                try:
-                    torrent_name = re.findall('dn=([^&]+)', result.url)[0]
-                except Exception:
-                    torrent_name = 'NO_DOWNLOAD_NAME'
-
-                if len(torrent_hash) == 32:
-                    torrent_hash = b16encode(b32decode(torrent_hash)).upper()
-
-                if not torrent_hash:
-                    logger.log(u'Unable to extract torrent hash from magnet: {0}'.format(ex(result.url)), logger.ERROR)
-                    return urls, filename
-
-                urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.bt_cache_urls]
-            except Exception:
-                logger.log(u'Unable to extract torrent hash or name from magnet: {0}'.format(ex(result.url)), logger.ERROR)
+            torrent_hash = self.hash_from_magnet(result.url)
+            if not torrent_hash:
                 return urls, filename
-        else:
-            urls = [result.url]
+
+            try:
+                torrent_name = re.findall('dn=([^&]+)', result.url)[0]
+            except Exception:
+                torrent_name = 'NO_DOWNLOAD_NAME'
+
+            urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.bt_cache_urls]
 
         filename = ek(join, self._get_storage_dir(), sanitize_filename(result.name) + '.' + self.provider_type)
 

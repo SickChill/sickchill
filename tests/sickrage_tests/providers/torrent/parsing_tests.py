@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-
+# pylint: disable=fixme
 """
 Test Provider Result Parsing
 When recording new cassettes:
@@ -28,6 +28,7 @@ When recording new cassettes:
 from __future__ import print_function, unicode_literals
 from functools import wraps
 
+import re
 import sys
 
 import unittest
@@ -38,6 +39,8 @@ sys.path.insert(1, 'lib')
 
 import sickbeard
 sickbeard.CPU_PRESET = 'NORMAL'
+
+import validators
 
 overwrite_cassettes = False
 
@@ -56,6 +59,8 @@ test_string_overrides = {
     'NyaaTorrents': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
 }
+
+magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
 
 
 class BaseParser(type):
@@ -97,7 +102,7 @@ class BaseParser(type):
             def magic(self, *args, **kwargs):
                 # pylint:disable=no-member
                 if func.func_name in disabled_provider_tests.get(self.provider.name, []):
-                    print("skipping {0}".format(str(self.provider.name)))
+                    print("skipped")
                     return unittest.skip(str(self.provider.name))
                 func(self, *args, **kwargs)
             return magic
@@ -112,9 +117,14 @@ class BaseParser(type):
             """Returns the filename to use for the cassette"""
             return self.provider.get_id() + '.yaml'
 
+        def shortDescription(self):
+            if self._testMethodDoc:
+                return self._testMethodDoc.replace('the provider', self.provider.name)
+            return None
+
         @magic_skip
         def test_rss_search(self):
-            """Check that the provider can parse it's own rss search results"""
+            """Check that the provider parses rss search results"""
             results = self.provider.search(self.search_strings('RSS'))
 
             self.assertTrue(self.cassette.requests)
@@ -123,7 +133,7 @@ class BaseParser(type):
 
         @magic_skip
         def test_episode_search(self):
-            """Check that the provider can parse it's own episode search results"""
+            """Check that the provider parses episode search results"""
             results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
@@ -132,7 +142,7 @@ class BaseParser(type):
 
         @magic_skip
         def test_season_search(self):
-            """Check that the provider can parse it's own season search results"""
+            """Check that the provider parses season search results"""
             results = self.provider.search(self.search_strings('Season'))
 
             self.assertTrue(self.cassette.requests)
@@ -141,19 +151,63 @@ class BaseParser(type):
 
         @magic_skip
         def test_cache_update(self):
-            """Check that the provider's cache can parse it's own rss search results"""
+            """Check that the provider's cache parses rss search results"""
             self.provider.cache.updateCache()
 
-"""
-Auto Generate TestCases from providers and add them to globals()
-"""
-for p in sickbeard.providers.__all__:
-    provider = sickbeard.providers.getProviderModule(p).provider
-    if provider.supports_backlog and provider.provider_type == 'torrent' and provider.public:
-        generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
-        globals()[generated_class.__name__] = generated_class
-        del generated_class
+        def test_result_values(self):
+            """Check that the provider returns results in proper format"""
+            results = self.provider.search(self.search_strings('Episode'))
+            for result in results:
+                self.assertIsInstance(result, dict)
+                self.assertEqual(sorted(result.keys()), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
 
+                self.assertIsInstance(result['title'], unicode)
+                self.assertIsInstance(result['link'], unicode)
+                self.assertIsInstance(result['hash'], basestring)
+                self.assertIsInstance(result['seeders'], (int, long))
+                self.assertIsInstance(result['leechers'], (int, long))
+                self.assertIsInstance(result['size'], (int, long))
+
+                self.assertTrue(len(result['title']))
+                self.assertTrue(len(result['link']))
+                self.assertTrue(len(result['hash']) in (0, 32, 40))
+                self.assertTrue(result['seeders'] >= 0)
+                self.assertTrue(result['leechers'] >= 0)
+
+                self.assertTrue(result['size'] >= -1)
+
+                if result['link'].startswith('magnet'):
+                    self.assertTrue(magnet_regex.match(result['link']))
+                else:
+                    self.assertTrue(validators.url(result['link'], require_tld=False))
+
+                self.assertIsInstance(self.provider._get_size(result), (int, long))  # pylint: disable=protected-access
+                self.assertTrue(all(self.provider._get_title_and_url(result)))  # pylint: disable=protected-access
+                self.assertTrue(self.provider._get_size(result))  # pylint: disable=protected-access
+
+            @unittest.skip('Not yet implemented')
+            def test_season_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+                """Check format of the provider's season search strings"""
+                pass
+
+            @unittest.skip('Not yet implemented')
+            def test_episode_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+                """Check format of the provider's season search strings"""
+                pass
+
+
+def generate_test_cases():
+    """
+    Auto Generate TestCases from providers and add them to globals()
+    """
+    for p in sickbeard.providers.__all__:
+        provider = sickbeard.providers.getProviderModule(p).provider
+        if provider.supports_backlog and provider.provider_type == 'torrent' and provider.public:
+            generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
+            globals()[generated_class.__name__] = generated_class
+            del generated_class
+
+generate_test_cases()
 
 if __name__ == '__main__':
     import inspect
