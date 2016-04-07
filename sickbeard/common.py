@@ -369,6 +369,12 @@ class Quality(object):
             # SDTV
             elif ep.res == '480p' or any([ep.tv, ep.sat, ep.web]):
                 result = Quality.SDTV
+        elif ep.dvd:
+            # SD DVD
+            result = Quality.SDDVD
+        elif ep.tv:
+            # SD TV/HD TV
+            result = Quality.SDTV
 
         return Quality.UNKNOWN if result is None else result
 
