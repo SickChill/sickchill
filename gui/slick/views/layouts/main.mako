@@ -270,8 +270,8 @@
         </div>
         % endif
 
-        <div id="contentWrapper">
-            <div id="content">
+        <div class="container-fluid">
+            <div class="content">
                 <%block name="content" />
             </div> <!-- /content -->
         </div> <!-- /contentWrapper -->
