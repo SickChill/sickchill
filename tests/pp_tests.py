@@ -24,14 +24,17 @@ Test post processing
 import os.path
 import sys
 import unittest
+import shutil
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import sickbeard
+from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
 from sickbeard.postProcessor import PostProcessor
 from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
+
 import tests.test_lib as test
 
 
@@ -83,6 +86,66 @@ class PPBasicTests(test.SickbeardTestDBCase):
         self.assertTrue(post_processor.process())
 
 
+class ListAssociatedFiles(unittest.TestCase):
+    def __init__(self, test_case):
+        super(ListAssociatedFiles, self).__init__(test_case)
+        self.test_tree = os.path.join(u'Show Name', u'associated_files', u'random', u'recursive', u'subdir')
+
+        file_names = [
+            u'Show Name [SickRage].avi',
+            u'Show Name [SickRage].srt',
+            u'Show Name [SickRage].nfo',
+            u'Show Name [SickRage].en.srt'
+        ]
+        self.file_list = [os.path.join(u'Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
+        self.maxDiff = None
+
+    def setUp(self):
+        make_dirs(self.test_tree)
+        for test_file in self.file_list:
+            open(test_file, 'a').close()
+
+    def tearDown(self):
+        shutil.rmtree(u'Show Name')
+
+    # list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False)
+    def test_subfolders(self):
+        post_processor = PostProcessor(self.file_list[0])
+        associated_files = post_processor.list_associated_files(self.file_list[0], subfolders=True)
+
+        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
+        out_list = sorted(self.file_list[1:])
+
+        self.assertEqual(out_list, associated_files)
+
+    def test_no_subfolders(self):
+        post_processor = PostProcessor(self.file_list[0])
+        associated_files = post_processor.list_associated_files(self.file_list[0], subfolders=False)
+
+        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
+        out_list = sorted(file_name for file_name in self.file_list[1:] if 'associated_files' not in file_name)
+
+        self.assertEqual(out_list, associated_files)
+
+    def test_subtitles_only(self):
+        post_processor = PostProcessor(self.file_list[0])
+        associated_files = post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
+
+        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
+        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt'))
+
+        self.assertEqual(out_list, associated_files)
+
+    def test_subtitles_only_no_subfolders(self):
+        post_processor = PostProcessor(self.file_list[0])
+        associated_files = post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
+
+        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
+        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'associated_files' not in file_name)
+
+        self.assertEqual(out_list, associated_files)
+
+
 if __name__ == '__main__':
     print "=================="
     print "STARTING - PostProcessor TESTS"
@@ -95,4 +158,9 @@ if __name__ == '__main__':
     print "######################################################################"
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PPBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    print "######################################################################"
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ListAssociatedFiles)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

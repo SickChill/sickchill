@@ -114,8 +114,8 @@ class CheckVersion(object):
         if not backupDir:
             return False
 
-        import glob
-        files = glob.glob(ek(os.path.join, backupDir, '*.zip'))
+        from sickrage.helper import glob
+        files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
         if not files:
             return True
 

@@ -20,7 +20,9 @@
 from __future__ import unicode_literals
 
 import io
+import os
 import re
+import glob
 import binascii
 from enzyme import MKV
 from fnmatch import fnmatch
@@ -366,3 +368,25 @@ def mkv_screen_size(filename):
         return mkv.video_tracks[0].width, mkv.video_tracks[0].height
     except Exception:
         return None, None
+
+# Backport glob.escape from python 3.4
+# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87
+magic_check = re.compile('([*?[])')
+magic_check_bytes = re.compile(b'([*?[])')
+
+
+# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l100
+def glob_escape(pathname):
+    """Escape all special characters.
+    """
+    # Escaping is done by wrapping any of "*?[" between square brackets.
+    # Metacharacters do not work in the drive part and shouldn't be escaped.
+    drive, pathname = os.path.splitdrive(pathname)
+    if isinstance(pathname, bytes):
+        pathname = magic_check_bytes.sub(br'[\1]', pathname)
+    else:
+        pathname = magic_check.sub(r'[\1]', pathname)
+    return drive + pathname
+
+custom_glob = glob
+custom_glob.escape = glob_escape
