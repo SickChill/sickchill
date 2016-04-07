@@ -144,6 +144,9 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                 #If the user is seeding
                                 download_item = torrent_row.find('a', {'title': 'Currently Seeding Torrent'})
                             if not download_item:
+                                #If the user is leeching
+                                download_item = torrent_row.find('a', {'title': 'Currently Leeching Torrent'})
+                            if not download_item:
                                 #If there are none
                                 continue
 
