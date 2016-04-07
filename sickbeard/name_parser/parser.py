@@ -141,7 +141,7 @@ class NameParser(object):
                     result.score += 1
                 else:
                     result.episode_numbers = [ep_num]
-                result.score += 1
+                result.score += 3
 
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
