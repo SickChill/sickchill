@@ -22,7 +22,6 @@
 Test sickbeard.helpers
 
 Public Methods:
-    fixGlob
     indentXML
     remove_non_release_groups
     isMediaFile
@@ -598,13 +597,6 @@ class HelpersMiscTests(unittest.TestCase):
     """
     Test misc helper methods
     """
-    @unittest.skip('Not yet implemented')
-    def test_fix_glob(self):
-        """
-        Test fixGlob
-        """
-        pass
-
     @unittest.skip('Not yet implemented')
     def test_indent_xml(self):
         """

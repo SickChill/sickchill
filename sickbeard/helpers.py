@@ -70,11 +70,6 @@ shutil.copyfile = shutil_custom.copyfile_custom
 urllib._urlopener = classes.SickBeardURLopener()
 
 
-def fixGlob(path):
-    path = re.sub(r'\[', '[[]', path)
-    return re.sub(r'(?<!\[)\]', '[]]', path)
-
-
 def indentXML(elem, level=0):
     """
     Does our pretty printing, makes Matt very happy
