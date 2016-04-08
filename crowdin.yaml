@@ -5,4 +5,4 @@ base_path: .
 files:
   -
     source: /locale/sickrage.pot
-    translation: /locale/%locale%/LC_MESSAGES/%original_file_name%
+    translation: /locale/%locale%/LC_MESSAGES/messages.pot
