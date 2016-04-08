@@ -5,4 +5,4 @@ base_path: .
 files:
   -
     source: /locale/messages.pot
-    translation: /locale/%locale%/LC_MESSAGES/%original_file_name%
+    translation: /locale/%locale_with_underscore%/LC_MESSAGES/messages.po
