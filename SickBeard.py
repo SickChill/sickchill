@@ -46,6 +46,9 @@ Options:
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import gettext
+gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
+
 import codecs
 import datetime
 import getopt

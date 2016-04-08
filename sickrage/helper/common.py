@@ -19,9 +19,15 @@
 
 from __future__ import unicode_literals
 
+import io
+import os
 import re
-import sickbeard
+import glob
+import binascii
+from enzyme import MKV
 from fnmatch import fnmatch
+
+import sickbeard
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -208,7 +214,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
             scalar, units = size_tuple[0], size_tuple[1:]
             units = units[0].upper() if units else default_units
         else:
-            regex_scalar = re.search(r'([\d. ]+)', size, re.IGNORECASE)
+            regex_scalar = re.search(r'([\d. ]+)', size, re.I)
             scalar = regex_scalar.group() if regex_scalar else -1
             units = size.strip(scalar) if scalar != -1 else 'B'
 
@@ -319,3 +325,68 @@ def episode_num(season=None, episode=None, **kwargs):
     elif numbering == 'absolute':
         if not (season and episode) and (season or episode):
             return '{0:0>3}'.format(season or episode)
+
+
+def avi_screen_size(filename):
+    """
+    Parses avi file header for width and height
+    :param filname: the filename to parse
+    :returns: a tuple in (width, height) format or a tuple of (None, None)
+    """
+    try:
+        if not filename.endswith('.avi'):
+            raise
+
+        with io.open(filename, 'rb') as f:
+            header = f.read(72)
+
+        x = binascii.hexlify(header[68:72])
+        height = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
+        assert 100 < height < 4320
+
+        x = binascii.hexlify(header[64:68])
+        width = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
+        assert 100 < width < 7680
+
+        return width, height
+    except Exception:
+        return None, None
+
+
+def mkv_screen_size(filename):
+    """
+    Parses mkv file for width and height
+    :param filname: the filename to parse
+    :returns: a tuple in (width, height) format or a tuple of (None, None)
+    """
+    try:
+        if not filename.endswith('.mkv'):
+            raise
+        with io.open(filename, 'rb') as f:
+            mkv = MKV(f)
+
+        return mkv.video_tracks[0].width, mkv.video_tracks[0].height
+    except Exception:
+        return None, None
+
+# Backport glob.escape from python 3.4
+# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87
+magic_check = re.compile('([*?[])')
+magic_check_bytes = re.compile(b'([*?[])')
+
+
+# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l100
+def glob_escape(pathname):
+    """Escape all special characters.
+    """
+    # Escaping is done by wrapping any of "*?[" between square brackets.
+    # Metacharacters do not work in the drive part and shouldn't be escaped.
+    drive, pathname = os.path.splitdrive(pathname)
+    if isinstance(pathname, bytes):
+        pathname = magic_check_bytes.sub(br'[\1]', pathname)
+    else:
+        pathname = magic_check.sub(r'[\1]', pathname)
+    return drive + pathname
+
+custom_glob = glob
+custom_glob.escape = glob_escape

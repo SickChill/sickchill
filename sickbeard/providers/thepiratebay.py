@@ -146,7 +146,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
                                 if mode != "RSS":
-                                    logger.log("Found result {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                    logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
                                 continue
 
                             # Convert size after all possible skip scenarios
@@ -154,7 +154,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             torrent_size = re.sub(r"Size ([\d.]+).+([KMGT]iB)", r"\1 \2", torrent_size)
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != "RSS":
                                 logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)

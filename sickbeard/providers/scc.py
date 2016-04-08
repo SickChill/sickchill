@@ -87,7 +87,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
     @staticmethod
     def _isSection(section, text):
         title = r'<title>.+? \| {0}</title>'.format(section)
-        return re.search(title, text, re.IGNORECASE)
+        return re.search(title, text, re.I)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals,too-many-branches, too-many-statements
         results = []
@@ -153,7 +153,7 @@ class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                                 logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
                             logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 

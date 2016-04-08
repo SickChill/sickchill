@@ -33,13 +33,13 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
-from sickrage.helper.common import replace_extension
+from sickrage.helper.common import replace_extension, try_int
 from sickrage.helper.exceptions import ex
 from sickrage.helper.encoding import ek
 
 from tmdb_api.tmdb_api import TMDB
 
-import fanart
+import fanart as fanart_module
 from fanart.core import Request as fanartRequest
 
 
@@ -912,7 +912,7 @@ class GenericMetadata(object):
             logger.log(u"Can't load the metadata file from " + metadata_path + ", it doesn't exist", logger.DEBUG)
             return empty_return
 
-        logger.log(u"Loading show info from metadata file in " + folder, logger.DEBUG)
+        logger.log(u"Loading show info from metadata file in " + metadata_path, logger.DEBUG)
 
         try:
             with io.open(metadata_path, 'rb') as xmlFileObj:
@@ -924,25 +924,22 @@ class GenericMetadata(object):
 
             name = showXML.findtext('title')
 
-            if showXML.findtext('tvdbid') is not None:
-                indexer_id = int(showXML.findtext('tvdbid'))
-            elif showXML.findtext('id') is not None:
-                indexer_id = int(showXML.findtext('id'))
+            indexer_id_text = showXML.findtext('tvdbid') or showXML.findtext('id')
+            if indexer_id_text:
+                indexer_id = try_int(indexer_id_text, None)
+                if indexer_id is None or indexer_id < 1:
+                    logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.DEBUG)
+                    return empty_return
             else:
-                logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID", logger.WARNING)
+                logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file", logger.DEBUG)
                 return empty_return
 
-            if indexer_id is None:
-                logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)
-                return empty_return
-
-            indexer = None
-            if showXML.find('episodeguide/url') is not None:
-                epg_url = showXML.findtext('episodeguide/url').lower()
+            indexer = 1
+            epg_url_text = showXML.findtext('episodeguide/url')
+            if epg_url_text:
+                epg_url = epg_url_text.lower()
                 if str(indexer_id) in epg_url:
-                    if 'thetvdb.com' in epg_url:
-                        indexer = 1
-                    elif 'tvrage' in epg_url:
+                    if 'tvrage' in epg_url:
                         logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file because it has TVRage info", logger.WARNING)
                         return empty_return
 
@@ -987,11 +984,11 @@ class GenericMetadata(object):
 
     def _retrieve_show_images_from_fanart(self, show, img_type, thumb=False):
         types = {
-            'poster': fanart.TYPE.TV.POSTER,
-            'banner': fanart.TYPE.TV.BANNER,
-            'poster_thumb': fanart.TYPE.TV.POSTER,
-            'banner_thumb': fanart.TYPE.TV.BANNER,
-            'fanart': fanart.TYPE.TV.BACKGROUND,
+            'poster': fanart_module.TYPE.TV.POSTER,
+            'banner': fanart_module.TYPE.TV.BANNER,
+            'poster_thumb': fanart_module.TYPE.TV.POSTER,
+            'banner_thumb': fanart_module.TYPE.TV.BANNER,
+            'fanart': fanart_module.TYPE.TV.BACKGROUND,
         }
 
         try:
@@ -1000,10 +997,10 @@ class GenericMetadata(object):
                 request = fanartRequest(
                     apikey=sickbeard.FANART_API_KEY,
                     id=indexerid,
-                    ws=fanart.WS.TV,
+                    ws=fanart_module.WS.TV,
                     type=types[img_type],
-                    sort=fanart.SORT.POPULAR,
-                    limit=fanart.LIMIT.ONE,
+                    sort=fanart_module.SORT.POPULAR,
+                    limit=fanart_module.LIMIT.ONE,
                 )
 
                 resp = request.response()

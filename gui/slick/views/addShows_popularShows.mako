@@ -16,17 +16,17 @@
 <div id="tabs">
     <span>Sort By:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
-        <option value="name">Name</option>
-        <option value="original" selected="selected">Original</option>
-        <option value="votes">Votes</option>
-        <option value="rating">% Rating</option>
-        <option value="rating_votes">% Rating > Votes</option>
+        <option value="name">${_('Name')}</option>
+        <option value="original" selected="selected">${_('Original')}</option>
+        <option value="votes">${_('Votes')}</option>
+        <option value="rating">% ${_('Rating')}</option>
+        <option value="rating_votes">% ${_('Rating > Votes')}</option>
     </select>
 
-    <span style="margin-left:12px">Sort Order:</span>
+    <span style="margin-left:12px">${_('Sort Order:')}</span>
     <select id="showsortdirection" class="form-control form-control-inline input-sm">
-        <option value="asc" selected="selected">Asc</option>
-        <option value="desc">Desc</option>
+        <option value="asc" selected="selected">${_('Asc')}</option>
+        <option value="desc">${_('Desc')}</option>
     </select>
 </div>
 
@@ -37,8 +37,8 @@
     <div id="container">
     % if not popular_shows:
         <div class="trakt_show" style="width:100%; margin-top:20px">
-            <p class="red-text">Fetching of IMDB Data failed. Are you online?
-            <strong>Exception:</strong>
+            <p class="red-text">${_('Fetching of IMDB Data failed. Are you online?')}
+            <strong>${_('Exception:')}</strong>
             <p>${imdb_exception}</p>
         </div>
     % else:

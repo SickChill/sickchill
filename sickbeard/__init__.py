@@ -511,6 +511,8 @@ EMAIL_LIST = None
 EMAIL_SUBJECT = None
 
 GUI_NAME = None
+GUI_LANG = None
+
 HOME_LAYOUT = None
 HISTORY_LAYOUT = None
 HISTORY_LIMIT = 0
@@ -640,7 +642,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
-            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG
 
         if __INITIALIZED__:
             return False
@@ -788,7 +790,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-
+        GUI_LANG = check_setting_str(CFG, 'GUI', 'language', 'en')
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
@@ -2151,6 +2153,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
         'GUI': {
             'gui_name': GUI_NAME,
+            'language': GUI_LANG,
             'theme_name': THEME_NAME,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
