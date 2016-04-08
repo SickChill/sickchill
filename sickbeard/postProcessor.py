@@ -1013,9 +1013,19 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 max_season = main_db_con.select(
                     "SELECT MAX(season) FROM tv_episodes WHERE showid = ? and indexer = ?", [show.indexerid, show.indexer])
 
+                if not isinstance(max_season[0][0], int) or max_season[0][0] < 0:
+                    self._log(
+                        u"File has season {0}, while the database does not have any known seasons yet. "
+                        u"Try forcing a full update on the show and process this file again. "
+                        u"The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season)
+                    )
+                    return False
+
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
-                if int(ep_obj.season) > int(max_season[0][0]):
-                    self._log(u"File has season {0}, while the indexer is on season {1}. The file may be incorrectly labeled or fake, aborting.".format(str(ep_obj.season), str(max_season[0][0])))
+                if int(ep_obj.season) > max_season[0][0]:
+                    self._log(u"File has season {0}, while the indexer is on season {1}. "
+                              u"Try forcing a full update on the show and process this file again. "
+                              u"The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season, max_season[0][0]))
                     return False
 
         # if the file is priority then we're going to replace it even if it exists
