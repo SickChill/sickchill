@@ -23,7 +23,7 @@
         <option value="rating_votes">% ${_('Rating > Votes')}</option>
     </select>
 
-    <span style="margin-left:12px">${_('Sort Order:')}</span>
+    <span style="margin-left:12px">${_('Sort Order')}:</span>
     <select id="showsortdirection" class="form-control form-control-inline input-sm">
         <option value="asc" selected="selected">${_('Asc')}</option>
         <option value="desc">${_('Desc')}</option>
@@ -38,7 +38,7 @@
     % if not popular_shows:
         <div class="trakt_show" style="width:100%; margin-top:20px">
             <p class="red-text">${_('Fetching of IMDB Data failed. Are you online?')}
-            <strong>${_('Exception:')}</strong>
+            <strong>${_('Exception')}:</strong>
             <p>${imdb_exception}</p>
         </div>
     % else:

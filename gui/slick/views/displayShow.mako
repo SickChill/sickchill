@@ -23,8 +23,8 @@
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <input type="hidden" id="srRoot" value="${srRoot}" />
     <div class="pull-left form-inline">
-        Change Show:
-        <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
+        ${_('Change Show')}:
+        <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="${_('Prev Show')}" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
             % for curShowList in sortedShowLists:
                 <% curShowType = curShowList[0] %>
@@ -41,7 +41,7 @@
                 % endif
             % endfor
             </select>
-        <div class="navShow"><img id="nextShow" src="${srRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
+        <div class="navShow"><img id="nextShow" src="${srRoot}/images/next.png" alt="&gt;&gt;" title="${_('Next Show')}" /></div>
     </div>
 
     <div class="clearfix"></div>
@@ -62,7 +62,7 @@
         % endif
         <span class="h2footer displayspecials pull-right">
             % if season_special:
-            Display Specials:
+            ${_('Display Specials')}:
                 <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
             % endif
         </span>
@@ -71,16 +71,16 @@
             <span>
             % if (len(seasonResults) > 14):
                 <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
-                    <option value="jump">Jump to Season</option>
+                    <option value="jump">${_('Jump to Season')}</option>
                 % for seasonNum in seasonResults:
-                    <option value="#season-${seasonNum["season"]}" data-season="${seasonNum["season"]}">${('Specials', 'Season ' + str(seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
+                    <option value="#season-${seasonNum["season"]}" data-season="${seasonNum["season"]}">${(_('Specials'), _('Season') + ' ' + str(seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
                 % endfor
                 </select>
             % else:
-                Season:
+                ${_('Season')}:
                 % for seasonNum in seasonResults:
                     % if int(seasonNum["season"]) == 0:
-                        <a href="#season-${seasonNum["season"]}">Specials</a>
+                        <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
                     % else:
                         <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
                     % endif
@@ -105,20 +105,20 @@
 
     <div id="container">
         <div id="posterCol">
-            <a href="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="View Poster for ${show.name}"><img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
+            <a href="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="${_('View Poster for')} ${show.name}"><img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
         </div>
 
         <div id="showCol">
 
             <div id="showinfo">
 % if 'rating' in show.imdb_info:
-    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " Votes" %>
+    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
 % endif
 
 <% _show = show %>
 % if not show.imdbid:
-    <span>(${show.startyear}) - ${show.runtime} minutes - </span>
+    <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
 % else:
     % if 'country_codes' in show.imdb_info:
         % for country in show.imdb_info['country_codes'].split('|'):
@@ -126,14 +126,14 @@
         % endfor
     % endif
     <span>
-    % if 'year' in show.imdb_info and show.imdb_info['year']:
-                (${show.imdb_info['year']}) -
+    % if show.imdb_info.get('year'):
+        (${show.imdb_info['year']}) -
     % endif
-                ${show.imdb_info['runtimes']} minutes</span>
+        ${show.imdb_info['runtimes']} ${_('minutes')}</span>
 
-                <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+        <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
-                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+        <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % if xem_numbering or xem_absolute_numbering:
                 <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
@@ -141,13 +141,13 @@
 
             <div id="tags">
                 <ul class="tags">
-                    % if ('genres' not in show.imdb_info or not show.imdb_info['genres']) and show.genre:
+                    % if show.genre and not show.imdb_info.get('genres'):
                         % for genre in show.genre[1:-1].split('|'):
-                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="View other popular ${genre} shows on trakt.tv."><li>${genre}</li></a>
+                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular ${genre} shows on trakt.tv.')}"><li>${genre}</li></a>
                         % endfor
-                    % elif 'genres' in show.imdb_info and show.imdb_info['genres']:
+                    % elif show.imdb_info.get('genres'):
                         % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="View other popular ${imdbgenre} shows on IMDB."><li>${imdbgenre}</li></a>
+                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular ${imdbgenre} shows on IMDB.')}"><li>${imdbgenre}</li></a>
                         % endfor
                     % endif
                 </ul>
@@ -156,39 +156,39 @@
             <div id="summary">
                 <table class="summaryTable pull-left">
                 <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
-                    <tr><td class="showLegend">Quality: </td><td>
+                    <tr><td class="showLegend">${_('Quality')}: </td><td>
                 % if show.quality in qualityPresets:
                     ${renderQualityPill(show.quality)}
                 % else:
                 % if anyQualities:
-                    <i>Allowed:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
+                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
                 % endif
                 % if bestQualities:
-                    <i>Preferred:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
+                    <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
                 % endif
                 % endif
 
                 % if show.network and show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font> ", "")[network_timezones.test_timeformat(show.airs)]} on ${show.network}</td></tr>
+                    <tr><td class="showLegend">${_('Originally Airs')}: </td><td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font> ", "")[network_timezones.test_timeformat(show.airs)]} on ${show.network}</td></tr>
                 % elif show.network:
-                    <tr><td class="showLegend">Originally Airs: </td><td>${show.network}</td></tr>
+                    <tr><td class="showLegend">${_('Originally Airs')}: </td><td>${show.network}</td></tr>
                 % elif show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font>", "")[network_timezones.test_timeformat(show.airs)]}</td></tr>
+                    <tr><td class="showLegend">${_('Originally Airs')}: </td><td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font>", "")[network_timezones.test_timeformat(show.airs)]}</td></tr>
                 % endif
-                    <tr><td class="showLegend">Show Status: </td><td>${show.status}</td></tr>
-                    <tr><td class="showLegend">Default EP Status: </td><td>${statusStrings[show.default_ep_status]}</td></tr>
+                    <tr><td class="showLegend">${_('Show Status')}: </td><td>${_(show.status)}</td></tr>
+                    <tr><td class="showLegend">${_('Default EP Status')}: </td><td>${statusStrings[show.default_ep_status]}</td></tr>
                 % if showLoc[1]:
-                    <tr><td class="showLegend">Location: </td><td>${showLoc[0]}</td></tr>
+                    <tr><td class="showLegend">${_('Location')}: </td><td>${showLoc[0]}</td></tr>
                 % else:
-                    <tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">${showLoc[0]}</span> (Missing)</td></tr>
+                    <tr><td class="showLegend"><span style="color: red;">${_('Location')}: </span></td><td><span style="color: red;">${showLoc[0]}</span> (${_('Missing')})</td></tr>
                 % endif
-                    <tr><td class="showLegend">Scene Name:</td><td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td></tr>
+                    <tr><td class="showLegend">${_('Scene Name')}:</td><td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td></tr>
 
                 % if show.rls_require_words:
-                    <tr><td class="showLegend">Required Words: </td><td>${show.rls_require_words}</td></tr>
+                    <tr><td class="showLegend">${_('Required Words')}: </td><td>${show.rls_require_words}</td></tr>
                 % endif
                 % if show.rls_ignore_words:
-                    <tr><td class="showLegend">Ignored Words: </td><td>${show.rls_ignore_words}</td></tr>
+                    <tr><td class="showLegend">${_('Ignored Words')}: </td><td>${show.rls_ignore_words}</td></tr>
                 % endif
                 % if bwl and bwl.whitelist:
                     <tr>
@@ -203,23 +203,23 @@
                     </tr>
                 % endif
 
-                <tr><td class="showLegend">Size:</td><td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
+                <tr><td class="showLegend">${_('Size')}:</td><td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
 
                 </table>
 
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
                     <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
-                    <tr><td class="showLegend">Info Language:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
+                    <tr><td class="showLegend">${_('Info Language')}:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Subtitles')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
                     % endif
-                    <tr><td class="showLegend">Season Folders: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Paused: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Sports: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Anime: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">DVD Order: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Season Folders')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Paused')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Air-by-Date')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Sports')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Anime')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('DVD Order')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">${_('Scene Numbering')}: </td><td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
                 </table>
             </div>
         </div>
@@ -228,7 +228,7 @@
     <div class="clearfix"></div>
 
     <div class="pull-left" >
-        Change selected episodes to:<br>
+        ${_('Change selected episodes to')}:<br>
         <select id="statusSelect" class="form-control form-control-inline input-sm">
         <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
@@ -250,17 +250,17 @@
     <div class="pull-right clearfix" id="checkboxControls">
         <div style="padding-bottom: 5px;">
             <% total_snatched = epCounts[Overview.SNATCHED] + epCounts[Overview.SNATCHED_PROPER] + epCounts[Overview.SNATCHED_BEST] %>
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>${epCounts[Overview.WANTED]}</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Allowed: <b>${epCounts[Overview.QUAL]}</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Preferred: <b>${epCounts[Overview.GOOD]}</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
-            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>${total_snatched}</b></span></label>
+            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${epCounts[Overview.WANTED]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${epCounts[Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> ${_('Preferred')}: <b>${epCounts[Overview.GOOD]}</b></span></label>
+            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
+            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> ${_('Snatched')}: <b>${total_snatched}</b></span></label>
         </div>
 
-        <button id="popover" type="button" class="btn btn-xs">Select Columns <b class="caret"></b></button>
+        <button id="popover" type="button" class="btn btn-xs">${_('Select Columns')} <b class="caret"></b></button>
         <div class="pull-right" >
-            <button class="btn btn-xs seriesCheck">Select Filtered Episodes</button>
-            <button class="btn btn-xs clearAll">Clear All</button>
+            <button class="btn btn-xs seriesCheck">${_('Select Filtered Episodes')}</button>
+            <button class="btn btn-xs clearAll">${_('Clear All')}</button>
         </div>
     </div>
 <br>
@@ -316,28 +316,28 @@
     <thead>
         <tr class="seasoncols" style="display:none;">
                 <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
-                <th data-sorter="false" class="col-metadata">NFO</th>
-                <th data-sorter="false" class="col-metadata">TBN</th>
-                <th data-sorter="false" class="col-ep">Episode</th>
-                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(show.is_anime)]}>Absolute</th>
-                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene)]}>Scene</th>
-                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene_anime)]}>Scene Absolute</th>
-                <th data-sorter="false" class="col-name">Name</th>
-                <th data-sorter="false" class="col-name columnSelector-false">File Name</th>
-                <th data-sorter="false" class="col-ep columnSelector-false">Size</th>
-                <th data-sorter="false" class="col-airdate">Airdate</th>
-                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>Download</th>
-                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>Subtitles</th>
-                <th data-sorter="false" class="col-status">Status</th>
-                <th data-sorter="false" class="col-search">Search</th>
+                <th data-sorter="false" class="col-metadata">${_('NFO')}</th>
+                <th data-sorter="false" class="col-metadata">${_('TBN')}</th>
+                <th data-sorter="false" class="col-ep">${_('Episode')}</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(show.is_anime)]}>${_('Absolute')}</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene)]}>${_('Scene')}</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene_anime)]}>${_('Scene Absolute')}</th>
+                <th data-sorter="false" class="col-name">${_('Name')}</th>
+                <th data-sorter="false" class="col-name columnSelector-false">${_('File Name')}</th>
+                <th data-sorter="false" class="col-ep columnSelector-false">${_('Size')}</th>
+                <th data-sorter="false" class="col-airdate">${_('Airdate')}</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>${_('Download')}</th>
+                <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>${_('Subtitles')}</th>
+                <th data-sorter="false" class="col-status">${_('Status')}</th>
+                <th data-sorter="false" class="col-search">${_('Search')}</th>
         </tr>
     </thead>
     <tbody class="tablesorter-no-sort">
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
+                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS is False:
-                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
+                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">${_('Show Episodes')}</button>
                 % endif
             </th>
         </tr>
@@ -345,29 +345,29 @@
     <tbody class="tablesorter-no-sort">
         <tr id="season-${epResult["season"]}-cols" class="seasoncols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
-            <th class="col-metadata">NFO</th>
-            <th class="col-metadata">TBN</th>
-            <th class="col-ep">Episode</th>
-            <th class="col-ep">Absolute</th>
-            <th class="col-ep">Scene</th>
-            <th class="col-ep">Scene Absolute</th>
-            <th class="col-name">Name</th>
-            <th class="col-name">File Name</th>
-            <th class="col-ep">Size</th>
-            <th class="col-airdate">Airdate</th>
-            <th class="col-ep">Download</th>
-            <th class="col-ep">Subtitles</th>
-            <th class="col-status">Status</th>
-            <th class="col-search">Search</th>
+            <th class="col-metadata">${_('NFO')}</th>
+            <th class="col-metadata">${_('TBN')}</th>
+            <th class="col-ep">${_('Episode')}</th>
+            <th class="col-ep">${_('Absolute')}</th>
+            <th class="col-ep">${_('Scene')}</th>
+            <th class="col-ep">${_('Scene Absolute')}</th>
+            <th class="col-name">${_('Name')}</th>
+            <th class="col-name">${_('File Name')}</th>
+            <th class="col-ep">${_('Size')}</th>
+            <th class="col-airdate">${_('Airdate')}</th>
+            <th class="col-ep">${_('Download')}</th>
+            <th class="col-ep">${_('Subtitles')}</th>
+            <th class="col-status">${_('Status')}</th>
+            <th class="col-search">${_('Search')}</th>
         </tr>
             % else:
     </tbody>
     <tbody class="tablesorter-no-sort">
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${("Specials", "Season " + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
+                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[bool(int(epResult["season"]))]}</h3>
                 % if sickbeard.DISPLAY_ALL_SEASONS is False:
-                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
+                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">${_('Show Episodes')}</button>
                 % endif
             </th>
         </tr>
@@ -375,20 +375,20 @@
     <tbody class="tablesorter-no-sort">
         <tr id="season-${epResult["season"]}-cols" class="seasoncols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
-            <th class="col-metadata">NFO</th>
-            <th class="col-metadata">TBN</th>
-            <th class="col-ep">Episode</th>
-            <th class="col-ep">Absolute</th>
-            <th class="col-ep">Scene</th>
-            <th class="col-ep">Scene Absolute</th>
-            <th class="col-name">Name</th>
-            <th class="col-name">File Name</th>
-            <th class="col-ep">Size</th>
-            <th class="col-airdate">Airdate</th>
-            <th class="col-ep">Download</th>
-            <th class="col-ep">Subtitles</th>
-            <th class="col-status">Status</th>
-            <th class="col-search">Search</th>
+            <th class="col-metadata">${_('NFO')}</th>
+            <th class="col-metadata">${_('TBN')}</th>
+            <th class="col-ep">${_('Episode')}</th>
+            <th class="col-ep">${_('Absolute')}</th>
+            <th class="col-ep">${_('Scene')}</th>
+            <th class="col-ep">${_('Scene Absolute')}</th>
+            <th class="col-name">${_('Name')}</th>
+            <th class="col-name">${_('File Name')}</th>
+            <th class="col-ep">${_('Size')}</th>
+            <th class="col-airdate">${_('Airdate')}</th>
+            <th class="col-ep">${_('Download')}</th>
+            <th class="col-ep">${_('Subtitles')}</th>
+            <th class="col-status">${_('Status')}</th>
+            <th class="col-search">${_('Search')}</th>
         </tr>
             % endif
     </tbody>
@@ -420,7 +420,7 @@
                 <input type="text" placeholder="${str(dfltSeas) + 'x' + str(dfltEpis)}" size="6" maxlength="8"
                     class="sceneSeasonXEpisode form-control input-scene" data-for-season="${epResult["season"]}" data-for-episode="${epResult["episode"]}"
                     id="sceneSeasonXEpisode_${show.indexerid}_${str(epResult["season"])}_${str(epResult["episode"])}"
-                    title="Change the value here if scene numbering differs from the indexer episode numbering"
+                    title="${_('Change the value here if scene numbering differs from the indexer episode numbering')}"
                     % if dfltEpNumbering:
                         value=""
                     % else:
@@ -432,7 +432,7 @@
                 <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
                     class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult["absolute_number"]}"
                     id="sceneAbsolute_${show.indexerid}${"_"+str(epResult["absolute_number"])}"
-                    title="Change the value here if scene absolute numbering differs from the indexer absolute numbering"
+                    title="${_('Change the value here if scene absolute numbering differs from the indexer absolute numbering')}"
                     % if dfltAbsNumbering:
                         value=""
                     % else:
@@ -476,7 +476,7 @@
                                 filename = filename.replace(rootDir, "")
                         filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename.encode('utf8'))
                     %>
-                    <center><a href="${filename}">Download</a></center>
+                    <center><a href="${filename}">${_('Download')}</a></center>
                 % endif
             </td>
             <td class="col-subtitles" align="center">
@@ -516,11 +516,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Manual Search</h4>
+                <h4 class="modal-title">${_('Manual Search')}</h4>
             </div>
             <div class="modal-body">
-                <p>Do you want to mark this episode as failed?</p>
-                <p class="text-warning"><small>The episode release name will be added to the failed history, preventing it to be downloaded again.</small></p>
+                <p>${_('Do you want to mark this episode as failed?')}</p>
+                <p class="text-warning"><small>${_('The episode release name will be added to the failed history, preventing it to be downloaded again.')}</small></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
@@ -535,11 +535,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Manual Search</h4>
+                <h4 class="modal-title">${_('Manual Search')}</h4>
             </div>
             <div class="modal-body">
-                <p>Do you want to include the current episode quality in the search?</p>
-                <p class="text-warning"><small>Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched.</small></p>
+                <p>${_('Do you want to include the current episode quality in the search?')}</p>
+                <p class="text-warning"><small>${_('Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched.')}</small></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>

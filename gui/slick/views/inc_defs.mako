@@ -6,11 +6,11 @@
     # Build a string of quality names to use as title attribute
     if showTitle:
         allowed_qualities, preferred_qualities = Quality.splitQuality(quality)
-        title = 'Allowed Quality:\n'
+        title = _('Allowed Quality:') + '\n'
         for curQual in allowed_qualities or [None]:
             title += "  " + Quality.qualityStrings[curQual] + "\n"
 
-        title += "\nPreferred Quality:\n"
+        title += "\n" + _('Preferred Quality:') + "\n"
         for curQual in preferred_qualities or [None]:
             title += "  " + Quality.qualityStrings[curQual] + "\n"
     else:

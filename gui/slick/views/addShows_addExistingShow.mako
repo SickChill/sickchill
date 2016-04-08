@@ -39,7 +39,7 @@
 
     <hr />
 
-    <p><b>${_('Displaying folders within these directories which aren\'t already added to SickRage:')}</b></p>
+    <p><b>${_('Displaying folders within these directories which aren\'t already added to SickRage')}:</b></p>
 
     <ul id="rootDirStaticList"><li></li></ul>
     <br>

@@ -26,6 +26,9 @@ import shutil
 import shutil_custom
 import random
 
+import gettext
+gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
+
 shutil.copyfile = shutil_custom.copyfile_custom
 
 from threading import Lock

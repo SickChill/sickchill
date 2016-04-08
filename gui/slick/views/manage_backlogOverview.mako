@@ -33,15 +33,15 @@
 
 <div class="h2footer pull-right">
     % if totalWanted > 0:
-    <span class="listing-key wanted">Wanted: <b>${totalWanted}</b></span>
+    <span class="listing-key wanted">${_('Wanted')}: <b>${totalWanted}</b></span>
     % endif
 
     % if totalQualSnatched > 0:
-    <span class="listing-key snatched">Snatched (Allowed): <b>${totalQualSnatched}</b></span>
+    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${totalQualSnatched}</b></span>
     % endif
 
     % if totalQual > 0:
-    <span class="listing-key qual">Allowed: <b>${totalQual}</b></span>
+    <span class="listing-key qual">${_('Allowed')}: <b>${totalQual}</b></span>
     % endif
 </div><br>
 
@@ -64,23 +64,23 @@ Jump to Show:
             <h2 style="display: inline-block;"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></h2>
             <div style="position: absolute; bottom: 10px; right: 0;">
                 % if showCounts[curShow.indexerid][Overview.WANTED] > 0:
-                <span class="listing-key wanted">Wanted: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
+                <span class="listing-key wanted">${_('Wanted')}: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
                 % endif
 
                 % if showQualSnatched(curShow) and showCounts[curShow.indexerid][Overview.SNATCHED] > 0:
-                    <span class="listing-key snatched">Snatched (Allowed): <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
                 % endif
 
                 % if showCounts[curShow.indexerid][Overview.QUAL] > 0:
-                <span class="listing-key qual">Allowed: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
+                <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                 % endif
 
-                <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
+                <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
             </div>
         </td>
     </tr>
 
-    <tr class="seasoncols"><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
+    <tr class="seasoncols"><th>${_('Episode')}</th><th>${_('Name')}</th><th class="nowrap">${_('Airdate')}</th></tr>
 
     % for curResult in showSQLResults[curShow.indexerid]:
         <%

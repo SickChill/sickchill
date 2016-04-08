@@ -15,6 +15,7 @@
 % endif
 <div id="config">
     <div id="config-content">
+
         <form name="configForm" method="post" action="backuprestore">
             <div id="config-components">
                 <ul>
@@ -30,7 +31,7 @@
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            ${_('Select the folder you wish to save your backup file to:')}
+                            ${_('Select the folder you wish to save your backup file to')}:
 
                             <br><br>
 
@@ -53,7 +54,7 @@
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            ${_('Select the backup file you wish to restore:')}
+                            ${_('Select the backup file you wish to restore')}:
 
                             <br><br>
 

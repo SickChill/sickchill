@@ -22,46 +22,46 @@
 <h1 class="header">${header}</h1>
 <div class="h2footer pull-right">
 % if layout == 'list':
-    <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+    <button id="popover" type="button" class="btn btn-inline">${_('Select Columns')} <b class="caret"></b></button>
 % else:
-    <span>Sort By:
+    <span>${_('Sort By')}:
         <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >Date</option>
-            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >Network</option>
-            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >Show</option>
+            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
         </select>
     </span>
 % endif
     &nbsp;
 
-    <span>View Paused:
+    <span>${_('View Paused')}:
         <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Hidden</option>
-            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>Shown</option>
+            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
+            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
         </select>
     </span>
     &nbsp;
 
-    <span>Layout:
+    <span>${_('Layout')}:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >Poster</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >Calendar</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >Banner</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >List</option>
+            <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
+            <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
+            <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
+            <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
         </select>
     </span>
 </div>
 
 <div class="key pull-right">
 % if 'calendar' != layout:
-    <b>Key:</b>
-    <span class="listing-key listing-overdue">Missed</span>
-    <span class="listing-key listing-current">Today</span>
-    <span class="listing-key listing-default">Soon</span>
-    <span class="listing-key listing-toofar">Later</span>
+    <b>${_('Key')}:</b>
+    <span class="listing-key listing-overdue">${_('Missed')}</span>
+    <span class="listing-key listing-current">${_('Today')}</span>
+    <span class="listing-key listing-default">${_('Soon')}</span>
+    <span class="listing-key listing-toofar">${_('Later')}</span>
 % endif
     <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
-    <i class="icon-calendar icon-white"></i>Subscribe</a>
+    <i class="icon-calendar icon-white"></i>${_('Subscribe')}</a>
 </div>
 
 <br>
@@ -76,16 +76,16 @@
 
     <thead>
         <tr>
-            <th>Airdate (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
-            <th>Ends</th>
-            <th>Show</th>
-            <th>Next Ep</th>
-            <th>Next Ep Name</th>
-            <th>Network</th>
-            <th>Run time</th>
-            <th>Quality</th>
-            <th>Indexers</th>
-            <th>Search</th>
+            <th>${_('Airdate')} (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
+            <th>${_('Ends')}</th>
+            <th>${_('Show')}</th>
+            <th>${_('Next Ep')}</th>
+            <th>${_('Next Ep Name')}</th>
+            <th>${_('Network')}</th>
+            <th>${_('Run time')}</th>
+            <th>${_('Quality')}</th>
+            <th>${_('Indexers')}</th>
+            <th>${_('Search')}</th>
         </tr>
     </thead>
 
@@ -236,10 +236,10 @@
     % elif sickbeard.COMING_EPS_SORT == 'date':
         % if cur_segment != cur_ep_airdate:
             % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                <br><h2 class="day">Missed</h2>
+                <br><h2 class="day">${_('Missed')}</h2>
                 <% missed_header = True %>
             % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                <br><h2 class="day">Later</h2>
+                <br><h2 class="day">${_('Later')}</h2>
                 <% too_late_header = True %>
             % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                 % if cur_ep_airdate == today.date():
@@ -314,14 +314,14 @@
                     </span>
                 </div>
 
-                <span class="title">Next Episode:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
+                <span class="title">${_('Next Episode')}:</span> <span>${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}</span>
 
                 <div class="clearfix">
-                    <span class="title">Airs: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}</span>${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
+                    <span class="title">${_('Airs')}: </span><span class="airdate">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}</span>${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                 </div>
 
                 <div class="clearfix">
-                    <span class="title">Quality:</span>
+                    <span class="title">${_('Quality')}:</span>
                     ${renderQualityPill(cur_result['quality'], showTitle=True)}
                 </div>
             ##</td>
@@ -330,10 +330,10 @@
             ##<td style="vertical-align: top;">
                 <div>
 % if cur_result['description']:
-                        <span class="title" style="vertical-align:middle;">Plot:</span>
+                        <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
                         <img class="ep_summaryTrigger" src="${srRoot}/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">${cur_result['description']}</div>
 % else:
-                        <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
+                        <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
                         <img class="ep_summaryTriggerNone" src="${srRoot}/images/plus.png" height="16" width="16" alt="" />
 % endif
                 </div>
@@ -401,7 +401,7 @@
 
         % endfor
         % if not day_has_show:
-            <tr><td class="calendarShow"><span class="show-status">No shows for this day</span></td></tr>
+            <tr><td class="calendarShow"><span class="show-status">${_('No shows for this day')}</span></td></tr>
         % endif
         </tbody>
         </table>
