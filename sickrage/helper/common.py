@@ -19,12 +19,9 @@
 
 from __future__ import unicode_literals
 
-import io
 import os
 import re
 import glob
-import binascii
-from enzyme import MKV
 from fnmatch import fnmatch
 
 import sickbeard
@@ -326,48 +323,6 @@ def episode_num(season=None, episode=None, **kwargs):
         if not (season and episode) and (season or episode):
             return '{0:0>3}'.format(season or episode)
 
-
-def avi_screen_size(filename):
-    """
-    Parses avi file header for width and height
-    :param filname: the filename to parse
-    :returns: a tuple in (width, height) format or a tuple of (None, None)
-    """
-    try:
-        if not filename.endswith('.avi'):
-            raise
-
-        with io.open(filename, 'rb') as f:
-            header = f.read(72)
-
-        x = binascii.hexlify(header[68:72])
-        height = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
-        assert 100 < height < 4320
-
-        x = binascii.hexlify(header[64:68])
-        width = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
-        assert 100 < width < 7680
-
-        return width, height
-    except Exception:
-        return None, None
-
-
-def mkv_screen_size(filename):
-    """
-    Parses mkv file for width and height
-    :param filname: the filename to parse
-    :returns: a tuple in (width, height) format or a tuple of (None, None)
-    """
-    try:
-        if not filename.endswith('.mkv'):
-            raise
-        with io.open(filename, 'rb') as f:
-            mkv = MKV(f)
-
-        return mkv.video_tracks[0].width, mkv.video_tracks[0].height
-    except Exception:
-        return None, None
 
 # Backport glob.escape from python 3.4
 # https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87

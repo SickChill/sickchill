@@ -31,10 +31,11 @@ import platform
 import re
 import uuid
 
+
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
-from sickrage.helper.common import try_int, avi_screen_size, mkv_screen_size  # pylint: disable=unused-import
+from sickrage.helper import video_screen_size
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
@@ -388,11 +389,7 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        if filename.endswith('.mkv'):
-            _, height = mkv_screen_size(filename)
-        else:
-            _, height = avi_screen_size(filename)
-
+        height = video_screen_size(filename)[1]
         if not height:
             return Quality.UNKNOWN
 
