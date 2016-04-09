@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:17-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Romanian\n"
 "MIME-Version: 1.0\n"
@@ -19,41 +19,41 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "A început descărcarea"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "Descărcare terminată"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Descărcarea subtitrării s-a încheiat"
 
 #: sickbeard/common.py:77
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage a fost actualizat"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage actualizat la commit-ul#: "
 
 #: sickbeard/common.py:79
 msgid "SickRage new login"
-msgstr ""
+msgstr "Autentificare nouă la SickRage"
 
 #: sickbeard/common.py:80
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "Autentificare nouă de la IP-ul: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Necunoscut"
 
 #: sickbeard/common.py:601 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Nedifuzat"
 
 #: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145

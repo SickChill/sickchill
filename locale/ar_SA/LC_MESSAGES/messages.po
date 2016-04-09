@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:16-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -19,41 +19,41 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "بدأ التحميل"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "انتهى التحميل"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "الانتهاء من تحميل الترجمة"
 
 #: sickbeard/common.py:77
 msgid "SickRage Updated"
-msgstr ""
+msgstr "تم تحديث سيكراج"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "تم تحديث سيكراج الى تجديد#: "
 
 #: sickbeard/common.py:79
 msgid "SickRage new login"
-msgstr ""
+msgstr "تسجيل دخول جديد سيكراج"
 
 #: sickbeard/common.py:80
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "تسجيل دخول جديد من IP: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "غير معروف"
 
 #: sickbeard/common.py:601 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "غير مذاع"
 
 #: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
@@ -64,11 +64,11 @@ msgstr ""
 #: sickbeard/common.py:603 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "تم التنزيل"
 
 #: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "متخطى"
 
 #: sickbeard/common.py:605
 msgid "Snatched (Proper)"
@@ -78,24 +78,24 @@ msgstr ""
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "مطلوب"
 
 #: sickbeard/common.py:607
 msgid "Archived"
-msgstr ""
+msgstr "مؤرشفة"
 
 #: sickbeard/common.py:608
 msgid "Ignored"
-msgstr ""
+msgstr "متجاهل"
 
 #: sickbeard/common.py:609 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "مترجم"
 
 #: sickbeard/common.py:610 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "فشل"
 
 #: sickbeard/common.py:611
 msgid "Snatched (Best)"
@@ -103,136 +103,136 @@ msgstr ""
 
 #: sickbeard/webserve.py:200
 msgid "Oops"
-msgstr ""
+msgstr "عفوا"
 
 #: sickbeard/webserve.py:302 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "الدخول"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "منشئ API"
 
 #: sickbeard/webserve.py:530 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "الجدول الزمني"
 
 #: sickbeard/webserve.py:712 sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Home"
-msgstr ""
+msgstr "الصفحة الرئيسية"
 
 #: sickbeard/webserve.py:712 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "إظهار القائمة"
 
 #: sickbeard/webserve.py:1153 gui/slick/views/displayShow.mako:331
 #: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "الحالة"
 
 #: sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "إعادة تشغيل سيكراج"
 
 #: sickbeard/webserve.py:1455 sickbeard/webserve.py:1457
 msgid "Edit Show"
-msgstr ""
+msgstr "تعديل العرض"
 
 #: sickbeard/webserve.py:1928 sickbeard/webserve.py:1929
 msgid "Preview Rename"
-msgstr ""
+msgstr "معاينة التسمية"
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
 msgid "News"
-msgstr ""
+msgstr "الأخبار"
 
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
-msgstr ""
+msgstr "سجل التغييرات"
 
 #: sickbeard/webserve.py:2275 sickbeard/webserve.py:4203
 #: gui/slick/views/layouts/main.mako:175
 msgid "Post Processing"
-msgstr ""
+msgstr "مرحلة ما بعد المعالجة"
 
 #: sickbeard/webserve.py:2319 gui/slick/views/layouts/main.mako:113
 msgid "Add Shows"
-msgstr ""
+msgstr "إضافة عروض"
 
 #: sickbeard/webserve.py:2504
 msgid "New Show"
-msgstr ""
+msgstr "عرض جديد"
 
 #: sickbeard/webserve.py:2644
 msgid "Popular Shows"
-msgstr ""
+msgstr "عروض محبوبة"
 
 #: sickbeard/webserve.py:2664 sickbeard/webserve.py:2665
 msgid "Existing Show"
-msgstr ""
+msgstr "عرض موجود"
 
 #: sickbeard/webserve.py:2972 gui/slick/views/layouts/main.mako:138
 msgid "Mass Update"
-msgstr ""
+msgstr "تحديث شامل"
 
 #: sickbeard/webserve.py:3010 sickbeard/webserve.py:3037 sickbeard/webserve.py:3112
 #: sickbeard/webserve.py:3113
 msgid "Episode Overview"
-msgstr ""
+msgstr "نظرة عامة على الحلقة"
 
 #: sickbeard/webserve.py:3145
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "ترجمات مفقودة"
 
 #: sickbeard/webserve.py:3228 sickbeard/webserve.py:3229
 #: gui/slick/views/layouts/main.mako:139
 msgid "Backlog Overview"
-msgstr ""
+msgstr "نظرة عامة على السجل التراكمي"
 
 #: sickbeard/webserve.py:3353
 msgid "Mass Edit"
-msgstr ""
+msgstr "تعديل شامل"
 
 #: sickbeard/webserve.py:3603 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
-msgstr ""
+msgstr "إدارة التورنت"
 
 #: sickbeard/webserve.py:3624 gui/slick/views/layouts/main.mako:155
 msgid "Failed Downloads"
-msgstr ""
+msgstr "تنزيلات فشلت"
 
 #: sickbeard/webserve.py:3642 gui/slick/views/layouts/main.mako:140
 msgid "Manage Searches"
-msgstr ""
+msgstr "إدارة عمليات البحث"
 
 #: sickbeard/webserve.py:3755 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:130
 msgid "History"
-msgstr ""
+msgstr "السجل"
 
 #: sickbeard/webserve.py:3826 sickbeard/webserve.py:3827
 msgid "SickRage Configuration"
-msgstr ""
+msgstr "ضبط سيكراج"
 
 #: sickbeard/webserve.py:3841
 msgid "Config - General"
-msgstr ""
+msgstr "ضبط - عام"
 
 #: sickbeard/webserve.py:3841
 msgid "General Configuration"
-msgstr ""
+msgstr "ضبط عام"
 
 #: sickbeard/webserve.py:4004
 msgid "Config - Backup/Restore"
-msgstr ""
+msgstr "ضبط - نسخ الاحتياط/الاستعادة"
 
 #: sickbeard/webserve.py:4005
 msgid "Backup/Restore"
@@ -447,23 +447,23 @@ msgstr ""
 
 #: gui/slick/views/addShows_popularShows.mako:41
 msgid "Exception"
-msgstr ""
+msgstr "استثناء"
 
 #: gui/slick/views/addShows_trendingShows.mako:44
 msgid "Select Trakt List"
-msgstr ""
+msgstr "حدد قائمة Trakt"
 
 #: gui/slick/views/addShows_trendingShows.mako:46
 msgid "Most Anticipated"
-msgstr ""
+msgstr "الأكثر توقع"
 
 #: gui/slick/views/addShows_trendingShows.mako:47
 msgid "New Shows"
-msgstr ""
+msgstr "عروض جديدة"
 
 #: gui/slick/views/addShows_trendingShows.mako:48
 msgid "Season Premieres"
-msgstr ""
+msgstr "بدايات الموسم"
 
 #: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Trending"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:17-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
@@ -19,220 +19,220 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "Started Download"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "Download Finished"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Subtitle Download Finished"
 
 #: sickbeard/common.py:77
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage Updated"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage Updated To Commit#: "
 
 #: sickbeard/common.py:79
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage new login"
 
 #: sickbeard/common.py:80
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Unknown"
 
 #: sickbeard/common.py:601 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Unaired"
 
 #: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
-msgstr ""
+msgstr "Snatched"
 
 #: sickbeard/common.py:603 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "Downloaded"
 
 #: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "Skipped"
 
 #: sickbeard/common.py:605
 msgid "Snatched (Proper)"
-msgstr ""
+msgstr "Snatched (Proper)"
 
 #: sickbeard/common.py:606 gui/slick/views/displayShow.mako:253
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Wanted"
 
 #: sickbeard/common.py:607
 msgid "Archived"
-msgstr ""
+msgstr "Archived"
 
 #: sickbeard/common.py:608
 msgid "Ignored"
-msgstr ""
+msgstr "Ignore"
 
 #: sickbeard/common.py:609 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "Subtitled"
 
 #: sickbeard/common.py:610 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "Failed"
 
 #: sickbeard/common.py:611
 msgid "Snatched (Best)"
-msgstr ""
+msgstr "Snatched (Best)"
 
 #: sickbeard/webserve.py:200
 msgid "Oops"
-msgstr ""
+msgstr "Oops"
 
 #: sickbeard/webserve.py:302 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "API Builder"
 
 #: sickbeard/webserve.py:530 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "Schedule"
 
 #: sickbeard/webserve.py:712 sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: sickbeard/webserve.py:712 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "Show List"
 
 #: sickbeard/webserve.py:1153 gui/slick/views/displayShow.mako:331
 #: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "Restarting SickRage"
 
 #: sickbeard/webserve.py:1455 sickbeard/webserve.py:1457
 msgid "Edit Show"
-msgstr ""
+msgstr "Edit Show"
 
 #: sickbeard/webserve.py:1928 sickbeard/webserve.py:1929
 msgid "Preview Rename"
-msgstr ""
+msgstr "Preview Rename"
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
 msgid "News"
-msgstr ""
+msgstr "News"
 
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
-msgstr ""
+msgstr "Changelog"
 
 #: sickbeard/webserve.py:2275 sickbeard/webserve.py:4203
 #: gui/slick/views/layouts/main.mako:175
 msgid "Post Processing"
-msgstr ""
+msgstr "Post Processing"
 
 #: sickbeard/webserve.py:2319 gui/slick/views/layouts/main.mako:113
 msgid "Add Shows"
-msgstr ""
+msgstr "Add Shows"
 
 #: sickbeard/webserve.py:2504
 msgid "New Show"
-msgstr ""
+msgstr "New Show"
 
 #: sickbeard/webserve.py:2644
 msgid "Popular Shows"
-msgstr ""
+msgstr "Popular Shows"
 
 #: sickbeard/webserve.py:2664 sickbeard/webserve.py:2665
 msgid "Existing Show"
-msgstr ""
+msgstr "Existing Show"
 
 #: sickbeard/webserve.py:2972 gui/slick/views/layouts/main.mako:138
 msgid "Mass Update"
-msgstr ""
+msgstr "Mass Update"
 
 #: sickbeard/webserve.py:3010 sickbeard/webserve.py:3037 sickbeard/webserve.py:3112
 #: sickbeard/webserve.py:3113
 msgid "Episode Overview"
-msgstr ""
+msgstr "Episode Overview"
 
 #: sickbeard/webserve.py:3145
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Missing Subtitles"
 
 #: sickbeard/webserve.py:3228 sickbeard/webserve.py:3229
 #: gui/slick/views/layouts/main.mako:139
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Backlog Overview"
 
 #: sickbeard/webserve.py:3353
 msgid "Mass Edit"
-msgstr ""
+msgstr "Mass Edit"
 
 #: sickbeard/webserve.py:3603 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
-msgstr ""
+msgstr "Manage Torrents"
 
 #: sickbeard/webserve.py:3624 gui/slick/views/layouts/main.mako:155
 msgid "Failed Downloads"
-msgstr ""
+msgstr "Failed Downloads"
 
 #: sickbeard/webserve.py:3642 gui/slick/views/layouts/main.mako:140
 msgid "Manage Searches"
-msgstr ""
+msgstr "Manage Searches"
 
 #: sickbeard/webserve.py:3755 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:130
 msgid "History"
-msgstr ""
+msgstr "History"
 
 #: sickbeard/webserve.py:3826 sickbeard/webserve.py:3827
 msgid "SickRage Configuration"
-msgstr ""
+msgstr "SickRage Configuration"
 
 #: sickbeard/webserve.py:3841
 msgid "Config - General"
-msgstr ""
+msgstr "Config - General"
 
 #: sickbeard/webserve.py:3841
 msgid "General Configuration"
-msgstr ""
+msgstr "General Configuration"
 
 #: sickbeard/webserve.py:4004
 msgid "Config - Backup/Restore"
-msgstr ""
+msgstr "Config - Backup/Restore"
 
 #: sickbeard/webserve.py:4005
 msgid "Backup/Restore"

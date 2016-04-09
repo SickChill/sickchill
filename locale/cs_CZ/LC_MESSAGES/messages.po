@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:16-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "Spuštěno stahování"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "Stahování dokončeno"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
@@ -64,7 +64,7 @@ msgstr ""
 #: sickbeard/common.py:603 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "Staženo"
 
 #: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
