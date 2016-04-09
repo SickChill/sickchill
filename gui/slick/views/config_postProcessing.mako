@@ -1128,7 +1128,7 @@
 
                         <div class="clearfix"></div><br>
 
-                        <input type="submit" class="btn config_submitter" value="Save Changes')}" /><br>
+                        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" /><br>
                     </fieldset>
                 </div><!-- /component-group3 //-->
 
