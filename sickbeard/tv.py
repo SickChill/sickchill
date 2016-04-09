@@ -2447,12 +2447,12 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return
 
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location, base_name_only=True, subfolders=True)
+            self.location, subfolders=True)
 
         # This is wrong. Cause of pp not moving subs.
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
-            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
-                                                                                            subtitles_only=True, subfolders=True)
+            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
+                sickbeard.SUBTITLES_DIR, subtitles_only=True, subfolders=True)
             absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
