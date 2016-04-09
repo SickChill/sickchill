@@ -149,15 +149,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, base_name_only=False,  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-                              subtitles_only=False, subfolders=False):  # pylint: disable=unused-argument
+    def list_associated_files(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+            self, file_path, subtitles_only=False, subfolders=False):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
         :param file_path: The file to check for associated files
-
-        :param base_name_only: False add extra '.' (conservative search) to file_path minus extension
-
         :return: A list containing all files which are associated to the given file
         """
         def recursive_glob(treeroot, pattern):
@@ -181,9 +178,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         else:
             base_name = file_path.rpartition('.')[0]
 
-        if not base_name_only:
-            base_name += '.'
-
         # don't strip it all and use cwd by accident
         if not base_name:
             return []
@@ -198,20 +192,15 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         else:
             filelist = []
 
-            # get a list of all the files in the folder
-            checklist = glob.glob(ek(os.path.join, glob.escape(dirname), '*'))
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
-            for filefound in checklist:
+            for filefound in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
+                file_name, _, file_extension = filefound.rpartition('.')
 
-                file_name = filefound.rpartition('.')[0]
-                file_extension = filefound.rpartition('.')[-1]
-                is_subtitle = file_extension in subtitle_extensions
-
-                new_file_name = file_name
-                if not base_name_only:
-                    file_name += '.'
-
-                if is_subtitle or new_file_name.lower().rstrip('.') == base_name.lower().rstrip('.'):
+                # Handles subtitles with language code
+                if file_extension in subtitle_extensions and file_name.rpartition('.')[0].lower() == base_name.lower():
+                    filelist.append(filefound)
+                # Handles all files with same basename, including subtitles without language code
+                elif file_name.lower() == base_name.lower():
                     filelist.append(filefound)
 
         for associated_file_path in filelist:
@@ -267,7 +256,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # figure out which files we want to delete
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path, base_name_only=True, subfolders=True)
+            file_list = file_list + self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
             self._log(u"There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)

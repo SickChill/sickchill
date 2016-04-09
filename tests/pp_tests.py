@@ -95,9 +95,14 @@ class ListAssociatedFiles(unittest.TestCase):
             u'Show Name [SickRage].avi',
             u'Show Name [SickRage].srt',
             u'Show Name [SickRage].nfo',
-            u'Show Name [SickRage].en.srt'
+            u'Show Name [SickRage].en.srt',
+            u'Non-Associated Show [SickRage].srt',
+            u'Non-Associated Show [SickRage].en.srt',
+            u'Show [SickRage] Non-Associated.en.srt',
+            u'Show [SickRage] Non-Associated.srt',
         ]
         self.file_list = [os.path.join(u'Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
+        self.post_processor = PostProcessor(u'Show Name')
         self.maxDiff = None
 
     def setUp(self):
@@ -108,40 +113,34 @@ class ListAssociatedFiles(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(u'Show Name')
 
-    # list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False)
     def test_subfolders(self):
-        post_processor = PostProcessor(self.file_list[0])
-        associated_files = post_processor.list_associated_files(self.file_list[0], subfolders=True)
+        associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=True)
 
         associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(self.file_list[1:])
+        out_list = sorted(file_name for file_name in self.file_list[1:] if 'Non-Associated' not in file_name)
 
         self.assertEqual(out_list, associated_files)
 
     def test_no_subfolders(self):
-        post_processor = PostProcessor(self.file_list[0])
-        associated_files = post_processor.list_associated_files(self.file_list[0], subfolders=False)
+        associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=False)
 
         associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list[1:] if 'associated_files' not in file_name)
+        out_list = sorted(file_name for file_name in self.file_list[1:] if 'associated_files' not in file_name and 'Non-Associated' not in file_name)
 
         self.assertEqual(out_list, associated_files)
 
     def test_subtitles_only(self):
-        post_processor = PostProcessor(self.file_list[0])
-        associated_files = post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
+        associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
 
         associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt'))
+        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'Non-Associated' not in file_name)
 
         self.assertEqual(out_list, associated_files)
 
     def test_subtitles_only_no_subfolders(self):
-        post_processor = PostProcessor(self.file_list[0])
-        associated_files = post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
-
+        associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
         associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'associated_files' not in file_name)
+        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'associated_files' not in file_name and 'Non-Associated' not in file_name)
 
         self.assertEqual(out_list, associated_files)
 
