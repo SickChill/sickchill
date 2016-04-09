@@ -15,10 +15,10 @@ pre {
 <%
     if logLevel == sickbeard.logger.WARNING:
         errors = sickbeard.classes.WarningViewer.errors
-        title = 'WARNING logs'
+        title = _('WARNING logs')
     else:
         errors = sickbeard.classes.ErrorViewer.errors
-        title = 'ERROR logs'
+        title = _('ERROR logs')
 %>
 <h1 class="header">${title}</h1>
 <div class="align-left">
@@ -28,7 +28,7 @@ pre {
 ${curError.time} ${curError.message}
 % endfor
 % else:
-There are no events to display.
+${_('There are no events to display.')}
 % endif
 </pre>
 </div>

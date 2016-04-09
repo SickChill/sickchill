@@ -19,7 +19,7 @@ pre {
     <h1 class="title">${title}</h1>
 % endif
 
-<div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
+<div class="h2footer pull-right">${_('Minimum logging level to display')}: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
     <%
         levels = LOGGING_LEVELS.keys()
         levels.sort(lambda x, y: cmp(LOGGING_LEVELS[x], LOGGING_LEVELS[y]))
@@ -38,7 +38,7 @@ pre {
         <option value="${logNameFilter}" ${('', 'selected="selected"')[logFilter == logNameFilter]}>${logNameFilters[logNameFilter]}</option>
     % endfor
     </select>
-    Search log by:
+    ${_('Search log by')}:
     <input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" autocapitalize="off" />
 </div>
 <br>

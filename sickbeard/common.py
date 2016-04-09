@@ -31,10 +31,11 @@ import platform
 import re
 import uuid
 
+
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
-from sickrage.helper.common import try_int, avi_screen_size, mkv_screen_size  # pylint: disable=unused-import
+from sickrage.helper import video_screen_size
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
@@ -70,13 +71,14 @@ NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 
 notifyStrings = NumDict({
-    NOTIFY_SNATCH: "Started Download",
-    NOTIFY_DOWNLOAD: "Download Finished",
-    NOTIFY_SUBTITLE_DOWNLOAD: "Subtitle Download Finished",
-    NOTIFY_GIT_UPDATE: "SickRage Updated",
-    NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: ",
-    NOTIFY_LOGIN: "SickRage new login",
-    NOTIFY_LOGIN_TEXT: "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
+    # pylint: disable=undefined-variable
+    NOTIFY_SNATCH: _("Started Download"),
+    NOTIFY_DOWNLOAD: _("Download Finished"),
+    NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
+    NOTIFY_GIT_UPDATE: _("SickRage Updated"),
+    NOTIFY_GIT_UPDATE_TEXT: _("SickRage Updated To Commit#: "),
+    NOTIFY_LOGIN: _("SickRage new login"),
+    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}")
 })
 
 # Episode statuses
@@ -387,11 +389,7 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        if filename.endswith('.mkv'):
-            _, height = mkv_screen_size(filename)
-        else:
-            _, height = avi_screen_size(filename)
-
+        height = video_screen_size(filename)[1]
         if not height:
             return Quality.UNKNOWN
 
@@ -595,18 +593,19 @@ class StatusStrings(NumDict):
 
 # Assign strings to statuses
 statusStrings = StatusStrings({
-    UNKNOWN: "Unknown",
-    UNAIRED: "Unaired",
-    SNATCHED: "Snatched",
-    DOWNLOADED: "Downloaded",
-    SKIPPED: "Skipped",
-    SNATCHED_PROPER: "Snatched (Proper)",
-    WANTED: "Wanted",
-    ARCHIVED: "Archived",
-    IGNORED: "Ignored",
-    SUBTITLED: "Subtitled",
-    FAILED: "Failed",
-    SNATCHED_BEST: "Snatched (Best)"
+    # pylint: disable=undefined-variable
+    UNKNOWN: _("Unknown"),
+    UNAIRED: _("Unaired"),
+    SNATCHED: _("Snatched"),
+    DOWNLOADED: _("Downloaded"),
+    SKIPPED: _("Skipped"),
+    SNATCHED_PROPER: _("Snatched (Proper)"),
+    WANTED: _("Wanted"),
+    ARCHIVED: _("Archived"),
+    IGNORED: _("Ignored"),
+    SUBTITLED: _("Subtitled"),
+    FAILED: _("Failed"),
+    SNATCHED_BEST: _("Snatched (Best)")
 })
 
 

@@ -21,13 +21,13 @@
         </td>
         <td align="right">
             <div>
-                <input class="btn btn-inline submitMassEdit" type="button" value="Edit Selected" />
-                <input class="btn btn-inline submitMassUpdate" type="button" value="Submit" />
+                <input class="btn btn-inline submitMassEdit" type="button" value="${_('Edit Selected')}" />
+                <input class="btn btn-inline submitMassUpdate" type="button" value="${_('Submit')}" />
                 <span class="show-option">
-                    <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+                    <button id="popover" type="button" class="btn btn-inline">${_('Select Columns')} <b class="caret"></b></button>
                 </span>
                 <span class="show-option">
-                    <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+                    <button type="button" class="resetsorting btn btn-inline">${_('Clear Filter(s)')}</button>
                 </span>
             </div>
         </td>
@@ -37,32 +37,32 @@
 <table id="massUpdateTable" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
     <thead>
         <tr>
-            <th class="col-checkbox">Edit<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
-            <th class="nowrap" style="text-align: left;">Show Name</th>
-            <th class="col-quality">Quality</th>
-            <th class="col-legend">Sports</th>
-            <th class="col-legend">Scene</th>
-            <th class="col-legend">Anime</th>
-            <th class="col-legend">Season folders</th>
-            <th class="col-legend">Paused</th>
-            <th class="col-legend">Subtitle</th>
-            <th class="col-legend">Default Ep Status</th>
-            <th class="col-legend">Status</th>
-            <th width="1%">Update<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
-            <th width="1%">Rescan<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
-            <th width="1%">Rename<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
+            <th class="col-checkbox">${_('Edit')}<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
+            <th class="nowrap" style="text-align: left;">${_('Show Name')}</th>
+            <th class="col-quality">${_('Quality')}</th>
+            <th class="col-legend">${_('Sports')}</th>
+            <th class="col-legend">${_('Scene')}</th>
+            <th class="col-legend">${_('Anime')}</th>
+            <th class="col-legend">${_('Season folders')}</th>
+            <th class="col-legend">${_('Paused')}</th>
+            <th class="col-legend">${_('Subtitle')}</th>
+            <th class="col-legend">${_('Default Ep Status')}</th>
+            <th class="col-legend">${_('Status')}</th>
+            <th width="1%">${_('Update')}<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
+            <th width="1%">${_('Rescan')}<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
+            <th width="1%">${_('Rename')}<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
         % if sickbeard.USE_SUBTITLES:
-            <th width="1%">Search Subtitle<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
+            <th width="1%">${_('Search Subtitle')}<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
         % endif
-            <!-- <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
-            <th width="1%">Delete<br><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
-            <th width="1%">Remove<br><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+            <!-- <th>${_('Force Metadata Regen')} <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
+            <th width="1%">${_('Delete')}<br><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
+            <th width="1%">${_('Remove')}<br><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
         </tr>
     </thead>
     <tfoot>
         <tr>
-            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="Edit Selected" /></td>
-            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="Submit" /></td>
+            <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
+            <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
         </tr>
     </tfoot>
 
@@ -104,7 +104,7 @@
         <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
         <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
         <td align="center">${statusStrings[curShow.default_ep_status]}</td>
-        <td align="center">${curShow.status}</td>
+        <td align="center">${_(curShow.status)}</td>
         <td align="center">${curUpdate}</td>
         <td align="center">${curRefresh}</td>
         <td align="center">${curRename}</td>

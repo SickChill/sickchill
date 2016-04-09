@@ -16,7 +16,7 @@
         <input type="hidden" id="type" name="type" value="manual">
         <tr>
             <td style="padding-right:10px;">
-                <b>Enter the folder containing the episode:</b>
+                <b>${_('Enter the folder containing the episode')}:</b>
             </td>
             <td>
                 <input type="text" name="dir" id="episodeDir" class="form-control form-control-inline input-sm input350" autocapitalize="off" />
@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <td>
-                <b>Process Method to be used:</b>
+                <b>${_('Process Method to be used')}:</b>
             </td>
             <td>
                 <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" >
@@ -37,7 +37,7 @@
         </tr>
         <tr>
             <td>
-                <b>Force already Post Processed Dir/Files:</b>
+                <b>${_('Force already Post Processed Dir/Files')}:</b>
             </td>
             <td>
                 <input id="force" name="force" type="checkbox">
@@ -45,26 +45,26 @@
         </tr>
         <tr>
             <td>
-                <b>Mark Dir/Files as priority download:</b>
+                <b>${_('Mark Dir/Files as priority download')}:</b>
             </td>
             <td>
                 <input id="is_priority" name="is_priority" type="checkbox">
-                <span style="line-height: 0; font-size: 12px;"><i>&nbsp;(Check it to replace the file even if it exists at higher quality)</i></span>
+                <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to replace the file even if it exists at higher quality)')}</i></span>
             </td>
         </tr>
         <tr>
             <td>
-                <b>Delete files and folders:</b>
+                <b>${_('Delete files and folders')}:</b>
             </td>
             <td>
                 <input id="delete_on" name="delete_on" type="checkbox">
-                <span style="line-height: 0; font-size: 12px;"><i>&nbsp;(Check it to delete files and folders like auto processing)</i></span>
+                <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to delete files and folders like auto processing)')}</i></span>
             </td>
         </tr>
         % if sickbeard.USE_FAILED_DOWNLOADS:
         <tr>
             <td>
-                <b>Mark download as failed:</b>
+                <b>${_('Mark download as failed')}:</b>
             </td>
             <td>
                 <input id="failed" name="failed" type="checkbox">
@@ -72,7 +72,7 @@
         </tr>
         % endif
     </table>
-        <input id="submit" class="btn" type="submit" value="Process" />
+        <input id="submit" class="btn" type="submit" value="${_('Process')}" />
     </form>
 </div>
 </%block>
