@@ -14,7 +14,7 @@
 
 <input type="hidden" id="showID" value="${show.indexerid}" />
 
-<h3>Preview of the proposed name changes</h3>
+<h3>${_('Preview of the proposed name changes')}</h3>
 <blockquote>
 % if show.air_by_date and sickbeard.NAMING_CUSTOM_ABD:
     ${sickbeard.NAMING_ABD_PATTERN}
@@ -34,19 +34,19 @@
     <thead>
         <tr class="seasonheader" id="season-all">
             <td colspan="4">
-                <h2>All Seasons</h2>
+                <h2>${_('All Seasons')}</h2>
             </td>
         </tr>
         <tr class="seasoncols" id="selectall">
-            <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll" /></th>
-            <th align="left" valign="top" class="nowrap">Select All</th>
+            <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="${_('SelectAll')}" /></th>
+            <th align="left" valign="top" class="nowrap">${_('Select All')}</th>
             <th width="100%" class="col-name" style="visibility:hidden;"></th>
         </tr>
     </thead>
 </table>
 
 <br>
-<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
+<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">${_('Cancel Rename')}</a>
 
 <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
 
@@ -66,9 +66,9 @@
         </tr>
         <tr class="seasoncols" id="season-${cur_ep_obj.season}-cols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}" /></th>
-            <th class="nowrap">Episode</th>
-            <th class="col-name">Old Location</th>
-            <th class="col-name">New Location</th>
+            <th class="nowrap">${_('Episode')}</th>
+            <th class="col-name">${_('Old Location')}</th>
+            <th class="col-name">${_('New Location')}</th>
         </tr>
     </thead>
 <% curSeason = int(cur_ep_obj.season) %>
@@ -95,5 +95,5 @@ if len(epList) > 1:
 
 % endfor
 </table><br>
-<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">Cancel Rename</a>
+<input type="submit" value="${_('Rename Selected')}" class="btn btn-success"> <a href="/home/displayShow?show=${show.indexerid}" class="btn btn-danger">${_('Cancel Rename')}</a>
 </%block>

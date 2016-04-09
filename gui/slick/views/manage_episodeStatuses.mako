@@ -19,19 +19,19 @@
 % if not whichStatus or (whichStatus and not ep_counts):
 
 % if whichStatus:
-<h2>None of your episodes have status ${common.statusStrings[whichStatus]}</h2>
+<h2>${_('None of your episodes have status')} ${common.statusStrings[whichStatus]}</h2>
 <br>
 % endif
 
 <form action="${srRoot}/manage/episodeStatuses" method="get">
-Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
+${_('Manage episodes with status')} <select name="whichStatus" class="form-control form-control-inline input-sm">
 % for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
     %if curStatus not in [common.ARCHIVED, common.DOWNLOADED]:
         <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
     %endif
 % endfor
 </select>
-<input class="btn btn-inline" type="submit" value="Manage" />
+<input class="btn btn-inline" type="submit" value="${_('Manage')}" />
 </form>
 
 % else:
@@ -39,7 +39,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <form action="${srRoot}/manage/changeEpisodeStatuses" method="post">
 <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
 
-<h2>Shows containing ${common.statusStrings[whichStatus]} episodes</h2>
+<h2>${_('Shows containing ${common.statusStrings[whichStatus]} episodes')}</h2>
 
 <br>
 
@@ -52,7 +52,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 
 <input type="hidden" id="row_class" value="${row_class}" />
 
-Set checked shows/episodes to <select name="newStatus" class="form-control form-control-inline input-sm">
+${_('Set checked shows/episodes to')} <select name="newStatus" class="form-control form-control-inline input-sm">
 <%
     statusList = [common.SKIPPED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED
     # Do not allow setting to bare downloaded or archived!
@@ -71,11 +71,11 @@ Set checked shows/episodes to <select name="newStatus" class="form-control form-
 
 </select>
 
-<input class="btn btn-inline" type="submit" value="Go" />
+<input class="btn btn-inline" type="submit" value="${_('Go')}" />
 
 <div>
-    <button type="button" class="btn btn-xs selectAllShows">Select all</a></button>
-    <button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
+    <button type="button" class="btn btn-xs selectAllShows">${_('Select all')}</a></button>
+    <button type="button" class="btn btn-xs unselectAllShows">${_('Clear all')}</a></button>
 </div>
 <br>
 

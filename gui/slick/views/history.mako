@@ -34,9 +34,9 @@
     </select>
 
     <span> Layout:
-        <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
-            <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
+        <select name="${_('HistoryLayout')}" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
+            <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
         </select>
     </span>
 </div>
@@ -46,11 +46,11 @@
     <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
         <thead>
             <tr>
-                <th class="nowrap">Time</th>
-                <th>Episode</th>
-                <th>Action</th>
-                <th>Provider</th>
-                <th>Quality</th>
+                <th class="nowrap">${_('Time')}</th>
+                <th>${_('Episode')}</th>
+                <th>${_('Action')}</th>
+                <th>${_('Provider')}</th>
+                <th>${_('Quality')}</th>
             </tr>
         </thead>
 
@@ -81,7 +81,7 @@
                     % if hItem["provider"] != "-1":
                         <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
                     % else:
-                        <span style="vertical-align:middle;"><i>Unknown</i></span>
+                        <span style="vertical-align:middle;"><i>${_('Unknown')}</i></span>
                     % endif
                 % else:
                     % if hItem["provider"] > 0:
@@ -90,7 +90,7 @@
                             % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
                             % else:
-                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
+                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">${_('Missing Provider')}</span>
                             % endif
                         % else:
                                 <img src="${srRoot}/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${hItem["provider"].capitalize()}</span>
@@ -109,14 +109,14 @@
     <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
         <thead>
             <tr>
-                <th class="nowrap">Time</th>
-                <th>Episode</th>
-                <th>Snatched</th>
-                <th>Downloaded</th>
+                <th class="nowrap">${_('Time')}</th>
+                <th>${_('Episode')}</th>
+                <th>${_('Snatched')}</th>
+                <th>${_('Downloaded')}</th>
                 % if sickbeard.USE_SUBTITLES:
-                <th>Subtitled</th>
+                <th>${_('Subtitled')}</th>
                 % endif
-                <th>Quality</th>
+                <th>${_('Quality')}</th>
             </tr>
         </thead>
 
@@ -145,7 +145,7 @@
                             % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${ek(os.path.basename, action["resource"])}"/>
                             % else:
-                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
+                                <img src="${srRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="${_('missing provider')}" title="${_('missing provider')}"/>
                             % endif
                         % endif
                     % endfor
@@ -157,7 +157,7 @@
                             % if action["provider"] != "-1":
                                 <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>${action["provider"]}</i></span>
                             % else:
-                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>Unknown</i></span>
+                                <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>${_('Unknown')}</i></span>
                             % endif
                         % endif
                     % endfor

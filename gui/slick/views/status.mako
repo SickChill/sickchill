@@ -14,32 +14,32 @@
 
 <%
     schedulerList = {
-        'Daily Search': 'dailySearchScheduler',
-        'Backlog': 'backlogSearchScheduler',
-        'Show Update': 'showUpdateScheduler',
-        'Version Check': 'versionCheckScheduler',
-        'Show Queue': 'showQueueScheduler',
-        'Search Queue': 'searchQueueScheduler',
-        'Proper Finder': 'properFinderScheduler',
-        'Post Process': 'autoPostProcesserScheduler',
-        'Subtitles Finder': 'subtitlesFinderScheduler',
-        'Trakt Checker': 'traktCheckerScheduler',
+        _('Daily Search'): 'dailySearchScheduler',
+        _('Backlog'): 'backlogSearchScheduler',
+        _('Show Update'): 'showUpdateScheduler',
+        _('Version Check'): 'versionCheckScheduler',
+        _('Show Queue'): 'showQueueScheduler',
+        _('Search Queue'): 'searchQueueScheduler',
+        _('Proper Finder'): 'properFinderScheduler',
+        _('Post Process'): 'autoPostProcesserScheduler',
+        _('Subtitles Finder'): 'subtitlesFinderScheduler',
+        _('Trakt Checker'): 'traktCheckerScheduler',
     }
 %>
 <div id="config-content">
-    <h2 class="header">Scheduler</h2>
+    <h2 class="header">${_('Scheduler')}</h2>
     <table id="schedulerStatusTable" class="tablesorter" width="100%">
         <thead>
             <tr>
-                <th>Scheduler</th>
-                <th>Alive</th>
-                <th>Enable</th>
-                <th>Active</th>
-                <th>Start Time</th>
-                <th>Cycle Time</th>
-                <th>Next Run</th>
-                <th>Last Run</th>
-                <th>Silent</th>
+                <th>${_('Scheduler')}</th>
+                <th>${_('Alive')}</th>
+                <th>${_('Enable')}</th>
+                <th>${_('Active')}</th>
+                <th>${_('Start Time')}</th>
+                <th>${_('Cycle Time')}</th>
+                <th>${_('Next Run')}</th>
+                <th>${_('Last Run')}</th>
+                <th>${_('Silent')}</th>
             </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@
                    <% BLSpaused = searchQueue.action.is_backlog_paused() %>
                    <% del searchQueue %>
                    % if BLSpaused:
-               <td>Paused</td>
+               <td>${_('Paused')}</td>
                    % else:
                <td>${service.enable}</td>
                    % endif
@@ -69,13 +69,13 @@
                    <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
                    <% del searchQueue %>
                    % if BLSinProgress:
-               <td>True</td>
+               <td>${_('True')}</td>
                    % else:
                        % try:
                        <% amActive = service.action.amActive %>
                <td>${amActive}</td>
                        % except Exception:
-               <td>N/A</td>
+               <td>${_('N/A')}</td>
                        % endtry
                    % endif
                % else:
@@ -83,7 +83,7 @@
                    <% amActive = service.action.amActive %>
                <td>${amActive}</td>
                    % except Exception:
-               <td>N/A</td>
+               <td>${_('N/A')}</td>
                    % endtry
                % endif
                % if service.start_time:
@@ -106,16 +106,16 @@
            % endfor
        </tbody>
     </table>
-    <h2 class="header">Show Queue</h2>
+    <h2 class="header">${_('Show Queue')}</h2>
     <table id="queueStatusTable" class="tablesorter" width="100%">
         <thead>
             <tr>
-                <th>Show id</th>
-                <th>Show name</th>
-                <th>In Progress</th>
-                <th>Priority</th>
-                <th>Added</th>
-                <th>Queue type</th>
+                <th>${_('Show id')}</th>
+                <th>${_('Show name')}</th>
+                <th>${_('In Progress')}</th>
+                <th>${_('Priority')}</th>
+                <th>${_('Added')}</th>
+                <th>${_('Queue type')}</th>
             </tr>
         </thead>
         <tbody>
@@ -139,11 +139,11 @@
                     % endtry
                     <td>${sickbeard.showQueueScheduler.action.currentItem.inProgress}</td>
                     % if sickbeard.showQueueScheduler.action.currentItem.priority == 10:
-                        <td>LOW</td>
+                        <td>${_('LOW')}</td>
                     % elif sickbeard.showQueueScheduler.action.currentItem.priority == 20:
-                        <td>NORMAL</td>
+                        <td>${_('NORMAL')}</td>
                     % elif sickbeard.showQueueScheduler.action.currentItem.priority == 30:
-                        <td>HIGH</td>
+                        <td>${_('HIGH')}</td>
                     % else:
                         <td>sickbeard.showQueueScheduler.action.currentItem.priority</td>
                     % endif
@@ -171,11 +171,11 @@
                     % endtry
                     <td>${item.inProgress}</td>
                     % if item.priority == 10:
-                        <td>LOW</td>
+                        <td>${_('LOW')}</td>
                     % elif item.priority == 20:
-                        <td>NORMAL</td>
+                        <td>${_('NORMAL')}</td>
                     % elif item.priority == 30:
-                        <td>HIGH</td>
+                        <td>${_('HIGH')}</td>
                     % else:
                         <td>${item.priority}</td>
                     % endif
@@ -185,35 +185,35 @@
             % endfor
         </tbody>
     </table>
-    <h2 class="header">Disk Space</h2>
+    <h2 class="header">${_('Disk Space')}</h2>
     <table id="DFStatusTable" class="tablesorter" width="50%">
         <thead>
             <tr>
-                <th>Type</th>
-                <th>Location</th>
-                <th>Free space</th>
+                <th>${_('Type')}</th>
+                <th>${_('Location')}</th>
+                <th>${_('Free space')}</th>
             </tr>
         </thead>
         <tbody>
             % if sickbeard.TV_DOWNLOAD_DIR:
             <tr>
-                <td>TV Download Directory</td>
+                <td>${_('TV Download Directory')}</td>
                 <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
                 % if tvdirFree is not False:
                 <td align="middle">${tvdirFree}</td>
                 % else:
-                <td align="middle"><i>Missing</i></td>
+                <td align="middle"><i>${_('Missing')}</i></td>
                 % endif
             </tr>
             % endif
             <tr>
-                <td rowspan=${len(rootDir)}>Media Root Directories</td>
+                <td rowspan=${len(rootDir)}>${_('Media Root Directories')}</td>
                 % for cur_dir in rootDir:
                     <td>${cur_dir}</td>
                     % if rootDir[cur_dir] is not False:
                         <td align="middle">${rootDir[cur_dir]}</td>
                     % else:
-                        <td align="middle"><i>Missing</i></td>
+                        <td align="middle"><i>${_('Missing')}</i></td>
                     % endif
             </tr>
             % endfor
