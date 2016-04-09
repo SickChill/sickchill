@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:17-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -19,144 +19,144 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "İndirme Başladı"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "İndirme Tamamlandı"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Altyazı indirildi"
 
 #: sickbeard/common.py:77
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage Güncellendi"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage: # Commit Güncellendi"
 
 #: sickbeard/common.py:79
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage Yeni Kullanıcı Girişi"
 
 #: sickbeard/common.py:80
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "Yeni Kullanıcı Girişi IP: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Bilinmiyor"
 
 #: sickbeard/common.py:601 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Yayınlanmadı"
 
 #: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
-msgstr ""
+msgstr "Yakalandı"
 
 #: sickbeard/common.py:603 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "İndirildi"
 
 #: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "Atlandı"
 
 #: sickbeard/common.py:605
 msgid "Snatched (Proper)"
-msgstr ""
+msgstr "Yakalandı (Proper)"
 
 #: sickbeard/common.py:606 gui/slick/views/displayShow.mako:253
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Aranan"
 
 #: sickbeard/common.py:607
 msgid "Archived"
-msgstr ""
+msgstr "Arşivlendi"
 
 #: sickbeard/common.py:608
 msgid "Ignored"
-msgstr ""
+msgstr "Yoksayıldı"
 
 #: sickbeard/common.py:609 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "Altyazılı"
 
 #: sickbeard/common.py:610 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: sickbeard/common.py:611
 msgid "Snatched (Best)"
-msgstr ""
+msgstr "Yakalandı(En İyi)"
 
 #: sickbeard/webserve.py:200
 msgid "Oops"
-msgstr ""
+msgstr "Oops"
 
 #: sickbeard/webserve.py:302 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Giriş"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "API Kurucu"
 
 #: sickbeard/webserve.py:530 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "Zamanlama"
 
 #: sickbeard/webserve.py:712 sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Home"
-msgstr ""
+msgstr "Ana Sayfa"
 
 #: sickbeard/webserve.py:712 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "Dizi Listesi"
 
 #: sickbeard/webserve.py:1153 gui/slick/views/displayShow.mako:331
 #: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "Durum"
 
 #: sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "SickRage Yeniden Başlatılıyor"
 
 #: sickbeard/webserve.py:1455 sickbeard/webserve.py:1457
 msgid "Edit Show"
-msgstr ""
+msgstr "Diziyi Düzenle"
 
 #: sickbeard/webserve.py:1928 sickbeard/webserve.py:1929
 msgid "Preview Rename"
-msgstr ""
+msgstr "Yeniden Adlandırmayı Özizle"
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
 msgid "News"
-msgstr ""
+msgstr "Haberler"
 
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
-msgstr ""
+msgstr "Değişim Günlüğü"
 
 #: sickbeard/webserve.py:2275 sickbeard/webserve.py:4203
 #: gui/slick/views/layouts/main.mako:175
@@ -165,74 +165,74 @@ msgstr ""
 
 #: sickbeard/webserve.py:2319 gui/slick/views/layouts/main.mako:113
 msgid "Add Shows"
-msgstr ""
+msgstr "Dizi Ekle"
 
 #: sickbeard/webserve.py:2504
 msgid "New Show"
-msgstr ""
+msgstr "Yeni Dizi"
 
 #: sickbeard/webserve.py:2644
 msgid "Popular Shows"
-msgstr ""
+msgstr "Popüler Diziler"
 
 #: sickbeard/webserve.py:2664 sickbeard/webserve.py:2665
 msgid "Existing Show"
-msgstr ""
+msgstr "Varolan Diziler"
 
 #: sickbeard/webserve.py:2972 gui/slick/views/layouts/main.mako:138
 msgid "Mass Update"
-msgstr ""
+msgstr "Toplu Güncelleme"
 
 #: sickbeard/webserve.py:3010 sickbeard/webserve.py:3037 sickbeard/webserve.py:3112
 #: sickbeard/webserve.py:3113
 msgid "Episode Overview"
-msgstr ""
+msgstr "Bölüme Genel Bakış"
 
 #: sickbeard/webserve.py:3145
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Eksik Altyazılar"
 
 #: sickbeard/webserve.py:3228 sickbeard/webserve.py:3229
 #: gui/slick/views/layouts/main.mako:139
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Sonradan İndirmeye Genel Bakış"
 
 #: sickbeard/webserve.py:3353
 msgid "Mass Edit"
-msgstr ""
+msgstr "Toplu Düzenleme"
 
 #: sickbeard/webserve.py:3603 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
-msgstr ""
+msgstr "Torrentleri Yönet"
 
 #: sickbeard/webserve.py:3624 gui/slick/views/layouts/main.mako:155
 msgid "Failed Downloads"
-msgstr ""
+msgstr "Başarısız İndirmeler"
 
 #: sickbeard/webserve.py:3642 gui/slick/views/layouts/main.mako:140
 msgid "Manage Searches"
-msgstr ""
+msgstr "Aramaları Yönet"
 
 #: sickbeard/webserve.py:3755 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:130
 msgid "History"
-msgstr ""
+msgstr "Geçmiş"
 
 #: sickbeard/webserve.py:3826 sickbeard/webserve.py:3827
 msgid "SickRage Configuration"
-msgstr ""
+msgstr "SickRage Ayarları"
 
 #: sickbeard/webserve.py:3841
 msgid "Config - General"
-msgstr ""
+msgstr "Ayarlar - Genel"
 
 #: sickbeard/webserve.py:3841
 msgid "General Configuration"
-msgstr ""
+msgstr "Genel Ayarlar"
 
 #: sickbeard/webserve.py:4004
 msgid "Config - Backup/Restore"
-msgstr ""
+msgstr "Ayarlar - Yedekle/Geri Yükle"
 
 #: sickbeard/webserve.py:4005
 msgid "Backup/Restore"
@@ -509,27 +509,27 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:131
 msgid "Parameters"
-msgstr ""
+msgstr "Parametreler"
 
 #: gui/slick/views/apiBuilder.mako:137
 msgid "Required"
-msgstr ""
+msgstr "Gerekli"
 
 #: gui/slick/views/apiBuilder.mako:138
 msgid "Description"
-msgstr ""
+msgstr "Açıklama"
 
 #: gui/slick/views/apiBuilder.mako:139 gui/slick/views/status.mako:192
 msgid "Type"
-msgstr ""
+msgstr "Tür"
 
 #: gui/slick/views/apiBuilder.mako:140
 msgid "Default value"
-msgstr ""
+msgstr "Varsayılan değer"
 
 #: gui/slick/views/apiBuilder.mako:141
 msgid "Allowed values"
-msgstr ""
+msgstr "İzin verilen değerler"
 
 #: gui/slick/views/apiBuilder.mako:149
 msgid "Playground"
@@ -537,7 +537,7 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:170
 msgid "Clear"
-msgstr ""
+msgstr "Temizle"
 
 #: gui/slick/views/apiBuilder.mako:207 gui/slick/views/apiBuilder.mako:236
 #: gui/slick/views/manage_massEdit.mako:135
@@ -548,7 +548,7 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:221
 #: gui/slick/views/manage_massEdit.mako:236
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: gui/slick/views/apiBuilder.mako:209 gui/slick/views/apiBuilder.mako:235
 #: gui/slick/views/manage_massEdit.mako:136
@@ -559,91 +559,91 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:222
 #: gui/slick/views/manage_massEdit.mako:237
 msgid "No"
-msgstr ""
+msgstr "Hayır"
 
 #: gui/slick/views/apiBuilder.mako:254
 msgid "season"
-msgstr ""
+msgstr "sezon"
 
 #: gui/slick/views/apiBuilder.mako:260
 msgid "episode"
-msgstr ""
+msgstr "bölüm"
 
 #: gui/slick/views/config.mako:28
 msgid "Python Version"
-msgstr ""
+msgstr "Python Sürümü"
 
 #: gui/slick/views/config.mako:29
 msgid "SSL Version"
-msgstr ""
+msgstr "SSL Sürümü"
 
 #: gui/slick/views/config.mako:30
 msgid "OS"
-msgstr ""
+msgstr "OS"
 
 #: gui/slick/views/config.mako:31
 msgid "Locale"
-msgstr ""
+msgstr "Yerel"
 
 #: gui/slick/views/config.mako:34
 msgid "User"
-msgstr ""
+msgstr "Kullanıcı"
 
 #: gui/slick/views/config.mako:35
 msgid "Program Folder"
-msgstr ""
+msgstr "Program Klasörü"
 
 #: gui/slick/views/config.mako:36
 msgid "Config File"
-msgstr ""
+msgstr "Ayar Dosyası"
 
 #: gui/slick/views/config.mako:37
 msgid "Database File"
-msgstr ""
+msgstr "Veritabanı dosyası"
 
 #: gui/slick/views/config.mako:38
 msgid "Cache Folder"
-msgstr ""
+msgstr "Önbellek klasörü"
 
 #: gui/slick/views/config.mako:39
 msgid "Log Folder"
-msgstr ""
+msgstr "Günlük klasörü"
 
 #: gui/slick/views/config.mako:41
 msgid "Arguments"
-msgstr ""
+msgstr "Değişkenler"
 
 #: gui/slick/views/config.mako:44
 msgid "Web Root"
-msgstr ""
+msgstr "Web Kök Dizini"
 
 #: gui/slick/views/config.mako:48
 msgid "Website"
-msgstr ""
+msgstr "Web sayfası"
 
 #: gui/slick/views/config.mako:49
 msgid "Wiki"
-msgstr ""
+msgstr "Viki"
 
 #: gui/slick/views/config.mako:50
 msgid "Source"
-msgstr ""
+msgstr "Kaynak"
 
 #: gui/slick/views/config.mako:51
 msgid "IRC Chat"
-msgstr ""
+msgstr "IRC sohbet"
 
 #: gui/slick/views/config_anime.mako:17
 msgid "AnimeDB Settings"
-msgstr ""
+msgstr "AnimeDB ayarları"
 
 #: gui/slick/views/config_anime.mako:18
 msgid "Look &amp; Feel"
-msgstr ""
+msgstr "Görünüm &amp; Hisset"
 
 #: gui/slick/views/config_anime.mako:25
 msgid "AniDB is non-profit database of anime information that is freely open to the public"
-msgstr ""
+msgstr "AniDB kar amacı olmayan halka açık ücretsiz anime bilgi veritabanıdır"
 
 #: gui/slick/views/config_anime.mako:32
 #: gui/slick/views/config_notifications.mako:35
@@ -670,15 +670,15 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:1744
 #: gui/slick/views/config_postProcessing.mako:35 gui/slick/views/status.mako:36
 msgid "Enable"
-msgstr ""
+msgstr "Etkinleştir"
 
 #: gui/slick/views/config_anime.mako:33
 msgid "Should SickRage use data from AniDB?"
-msgstr ""
+msgstr "SickRage AniDB verilerini kullansın mı?"
 
 #: gui/slick/views/config_anime.mako:40
 msgid "AniDB Username"
-msgstr ""
+msgstr "AniDB Kullanıcı adı"
 
 #: gui/slick/views/config_anime.mako:45
 msgid "Username of your AniDB account"

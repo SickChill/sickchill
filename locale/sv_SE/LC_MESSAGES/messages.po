@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-08 22:17-0400\n"
+"PO-Revision-Date: 2016-04-09 10:14-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -19,95 +19,95 @@ msgstr ""
 
 #: sickbeard/common.py:74
 msgid "Started Download"
-msgstr ""
+msgstr "Hämtning påbörjad"
 
 #: sickbeard/common.py:75
 msgid "Download Finished"
-msgstr ""
+msgstr "Nerladdning klar"
 
 #: sickbeard/common.py:76
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Undertext nerladdad"
 
 #: sickbeard/common.py:77
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage uppdaterad"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage uppdaterad till version#: "
 
 #: sickbeard/common.py:79
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage ny inloggning"
 
 #: sickbeard/common.py:80
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "Ny inloggning från IP: {0}. http://geomaplookup.net/?IP={0}"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Okänd"
 
 #: sickbeard/common.py:601 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Kommande"
 
 #: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
-msgstr ""
+msgstr "Hämtad"
 
 #: sickbeard/common.py:603 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "Nedladdad"
 
 #: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "Hoppat över"
 
 #: sickbeard/common.py:605
 msgid "Snatched (Proper)"
-msgstr ""
+msgstr "Hämtad (Proper)"
 
 #: sickbeard/common.py:606 gui/slick/views/displayShow.mako:253
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Önskad"
 
 #: sickbeard/common.py:607
 msgid "Archived"
-msgstr ""
+msgstr "Arkiverad"
 
 #: sickbeard/common.py:608
 msgid "Ignored"
-msgstr ""
+msgstr "Ignorerad"
 
 #: sickbeard/common.py:609 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "Undertextad"
 
 #: sickbeard/common.py:610 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "Misslyckad"
 
 #: sickbeard/common.py:611
 msgid "Snatched (Best)"
-msgstr ""
+msgstr "Hämtad (Best)"
 
 #: sickbeard/webserve.py:200
 msgid "Oops"
-msgstr ""
+msgstr "Hoppsan"
 
 #: sickbeard/webserve.py:302 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Användarnamn"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
@@ -116,81 +116,81 @@ msgstr ""
 #: sickbeard/webserve.py:530 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "Schemalägg"
 
 #: sickbeard/webserve.py:712 sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Home"
-msgstr ""
+msgstr "Startsida"
 
 #: sickbeard/webserve.py:712 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "Visa lista"
 
 #: sickbeard/webserve.py:1153 gui/slick/views/displayShow.mako:331
 #: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "Startar om SickRage"
 
 #: sickbeard/webserve.py:1455 sickbeard/webserve.py:1457
 msgid "Edit Show"
-msgstr ""
+msgstr "Redigera program"
 
 #: sickbeard/webserve.py:1928 sickbeard/webserve.py:1929
 msgid "Preview Rename"
-msgstr ""
+msgstr "Förhandsgranska namn byte"
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
 msgid "News"
-msgstr ""
+msgstr "Nyheter"
 
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
-msgstr ""
+msgstr "Ändringslogg"
 
 #: sickbeard/webserve.py:2275 sickbeard/webserve.py:4203
 #: gui/slick/views/layouts/main.mako:175
 msgid "Post Processing"
-msgstr ""
+msgstr "Efterbearbetning"
 
 #: sickbeard/webserve.py:2319 gui/slick/views/layouts/main.mako:113
 msgid "Add Shows"
-msgstr ""
+msgstr "Lägg till program"
 
 #: sickbeard/webserve.py:2504
 msgid "New Show"
-msgstr ""
+msgstr "Ny Serie"
 
 #: sickbeard/webserve.py:2644
 msgid "Popular Shows"
-msgstr ""
+msgstr "Populär serie"
 
 #: sickbeard/webserve.py:2664 sickbeard/webserve.py:2665
 msgid "Existing Show"
-msgstr ""
+msgstr "Existerande Serie"
 
 #: sickbeard/webserve.py:2972 gui/slick/views/layouts/main.mako:138
 msgid "Mass Update"
-msgstr ""
+msgstr "Massuppdatering"
 
 #: sickbeard/webserve.py:3010 sickbeard/webserve.py:3037 sickbeard/webserve.py:3112
 #: sickbeard/webserve.py:3113
 msgid "Episode Overview"
-msgstr ""
+msgstr "Episod översikt"
 
 #: sickbeard/webserve.py:3145
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Saknade undertexter"
 
 #: sickbeard/webserve.py:3228 sickbeard/webserve.py:3229
 #: gui/slick/views/layouts/main.mako:139
@@ -199,76 +199,76 @@ msgstr ""
 
 #: sickbeard/webserve.py:3353
 msgid "Mass Edit"
-msgstr ""
+msgstr "Mass redigera"
 
 #: sickbeard/webserve.py:3603 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
-msgstr ""
+msgstr "Hantera Torrents"
 
 #: sickbeard/webserve.py:3624 gui/slick/views/layouts/main.mako:155
 msgid "Failed Downloads"
-msgstr ""
+msgstr "Misslyckade nedladdningar"
 
 #: sickbeard/webserve.py:3642 gui/slick/views/layouts/main.mako:140
 msgid "Manage Searches"
-msgstr ""
+msgstr "Hantera sökningar"
 
 #: sickbeard/webserve.py:3755 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:130
 msgid "History"
-msgstr ""
+msgstr "Historik"
 
 #: sickbeard/webserve.py:3826 sickbeard/webserve.py:3827
 msgid "SickRage Configuration"
-msgstr ""
+msgstr "SickRage konfiguration"
 
 #: sickbeard/webserve.py:3841
 msgid "Config - General"
-msgstr ""
+msgstr "Inställningar - Allmäna"
 
 #: sickbeard/webserve.py:3841
 msgid "General Configuration"
-msgstr ""
+msgstr "Allmäna inställningar"
 
 #: sickbeard/webserve.py:4004
 msgid "Config - Backup/Restore"
-msgstr ""
+msgstr "Inställning - Backup/Återställ"
 
 #: sickbeard/webserve.py:4005
 msgid "Backup/Restore"
-msgstr ""
+msgstr "Backup / Återställ"
 
 #: sickbeard/webserve.py:4067
 msgid "Config - Episode Search"
-msgstr ""
+msgstr "Inställning - Episod Sök"
 
 #: sickbeard/webserve.py:4068 gui/slick/views/layouts/main.mako:172
 msgid "Search Settings"
-msgstr ""
+msgstr "Sökinställningar"
 
 #: sickbeard/webserve.py:4202
 msgid "Config - Post Processing"
-msgstr ""
+msgstr "Inställning - efterbearbetning"
 
 #: sickbeard/webserve.py:4406
 msgid "Config - Providers"
-msgstr ""
+msgstr "Alternativ - Leverantör"
 
 #: sickbeard/webserve.py:4407 gui/slick/views/layouts/main.mako:173
 msgid "Search Providers"
-msgstr ""
+msgstr "Sökleverantörer"
 
 #: sickbeard/webserve.py:4899
 msgid "Config - Notifications"
-msgstr ""
+msgstr "Alternativ - Notifikationer"
 
 #: sickbeard/webserve.py:4900 gui/slick/views/layouts/main.mako:176
 msgid "Notifications"
-msgstr ""
+msgstr "Notifikationer"
 
 #: sickbeard/webserve.py:5142
 msgid "Config - Subtitles"
-msgstr ""
+msgstr "Alternativ - Undertexter"
 
 #: sickbeard/webserve.py:5143 gui/slick/views/displayShow.mako:214
 #: gui/slick/views/displayShow.mako:330 gui/slick/views/displayShow.mako:359
@@ -276,26 +276,26 @@ msgstr ""
 #: gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
-msgstr ""
+msgstr "Undertexter"
 
 #: sickbeard/webserve.py:5213
 msgid "Config - Anime"
-msgstr ""
+msgstr "Inställningar - Anime"
 
 #: sickbeard/webserve.py:5214 gui/slick/views/displayShow.mako:220
 #: gui/slick/views/editShow.mako:128 gui/slick/views/home.mako:258
 #: gui/slick/views/inc_addShowOptions.mako:66 gui/slick/views/manage.mako:45
 #: gui/slick/views/manage_massEdit.mako:188 gui/slick/views/layouts/main.mako:177
 msgid "Anime"
-msgstr ""
+msgstr "Anime"
 
 #: sickbeard/webserve.py:5372
 msgid "Log File"
-msgstr ""
+msgstr "Loggfil"
 
 #: sickbeard/webserve.py:5372
 msgid "Logs"
-msgstr ""
+msgstr "Loggar"
 
 #: gui/slick/views/404.mako:5
 msgid "You have reached this page by accident, please check the url."
@@ -450,11 +450,11 @@ msgstr "Hämtning av information från IMDB misslyckades. Är du uppkopplad?"
 
 #: gui/slick/views/addShows_popularShows.mako:41
 msgid "Exception"
-msgstr ""
+msgstr "Undantag"
 
 #: gui/slick/views/addShows_trendingShows.mako:44
 msgid "Select Trakt List"
-msgstr ""
+msgstr "Välj Trakt lista"
 
 #: gui/slick/views/addShows_trendingShows.mako:46
 msgid "Most Anticipated"
@@ -741,11 +741,11 @@ msgstr ""
 #: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
-msgstr ""
+msgstr "Spara ändringar"
 
 #: gui/slick/views/config_anime.mako:76
 msgid "Look and Feel"
-msgstr ""
+msgstr "Utseende och känsla"
 
 #: gui/slick/views/config_anime.mako:77
 msgid "How should the anime functions show and behave."
@@ -762,48 +762,48 @@ msgstr ""
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr ""
+msgstr "Säkerhetskopiera"
 
 #: gui/slick/views/config_backuprestore.mako:23
 #: gui/slick/views/config_backuprestore.mako:51
 msgid "Restore"
-msgstr ""
+msgstr "Återställ"
 
 #: gui/slick/views/config_backuprestore.mako:29
 msgid "Backup your main database file and config."
-msgstr ""
+msgstr "Säkerhetskopiera databasen och inställningarna."
 
 #: gui/slick/views/config_backuprestore.mako:34
 msgid "Select the folder you wish to save your backup file to"
-msgstr ""
+msgstr "Välj mappen du vill spara din säkerhetskopia till"
 
 #: gui/slick/views/config_backuprestore.mako:52
 msgid "Restore your main database file and config."
-msgstr ""
+msgstr "Återställ databasen och inställningarna."
 
 #: gui/slick/views/config_backuprestore.mako:57
 msgid "Select the backup file you wish to restore"
-msgstr ""
+msgstr "Välj säkerhetskopian du vill återställa"
 
 #: gui/slick/views/config_general.mako:26 gui/slick/views/config_general.mako:35
 msgid "Misc"
-msgstr ""
+msgstr "Övrigt"
 
 #: gui/slick/views/config_general.mako:27
 msgid "Interface"
-msgstr ""
+msgstr "Gränssnitt"
 
 #: gui/slick/views/config_general.mako:28 gui/slick/views/editShow.mako:182
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Avancerade inställningar"
 
 #: gui/slick/views/config_general.mako:36
 msgid "Startup options. Indexer options. Log and show file locations."
-msgstr ""
+msgstr "Startalternativ. Indexerare alternativ. Loggar och serie plats."
 
 #: gui/slick/views/config_general.mako:37
 msgid "Some options may require a manual restart to take effect."
-msgstr ""
+msgstr "Vissa alternativ kan kräva en manuell omstart för att börja gälla."
 
 #: gui/slick/views/config_general.mako:44
 msgid "Default Indexer Language"
@@ -811,24 +811,24 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:47
 msgid "for adding shows and metadata providers"
-msgstr ""
+msgstr "för att lägga till serier och metadata leverantörer"
 
 #: gui/slick/views/config_general.mako:53
 msgid "Launch browser"
-msgstr ""
+msgstr "Starta webbläsaren"
 
 #: gui/slick/views/config_general.mako:56
 msgid "open the SickRage home page on startup"
-msgstr ""
+msgstr "Öppna SickRage startsida vid start"
 
 #: gui/slick/views/config_general.mako:62
 msgid "Initial page"
-msgstr ""
+msgstr "Första sidan"
 
 #: gui/slick/views/config_general.mako:65 gui/slick/views/layouts/main.mako:108
 #: gui/slick/views/layouts/main.mako:288
 msgid "Shows"
-msgstr ""
+msgstr "Serier"
 
 #: gui/slick/views/config_general.mako:71
 msgid "when launching SickRage interface"
@@ -836,7 +836,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:77
 msgid "Choose hour to update shows"
-msgstr ""
+msgstr "Välj när serier ska uppdateras"
 
 #: gui/slick/views/config_general.mako:80
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
