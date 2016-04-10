@@ -507,7 +507,7 @@
                         <div id="content_use_torrents">
                             <div class="field-pair">
                                 <label for="torrent_method">
-                                    <span class="component-title">Send .torrent files to')}:</span>
+                                    <span class="component-title">${_('Send .torrent files to')}:</span>
                                     <span class="component-desc">
                                     <select name="torrent_method" id="torrent_method" class="form-control input-sm">
                                     <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
