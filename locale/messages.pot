@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
+"POT-Creation-Date: 2016-04-09 22:04-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4683,14 +4683,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4726,6 +4718,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83
