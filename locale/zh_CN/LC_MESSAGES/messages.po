@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:15-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -19,56 +19,56 @@ msgstr ""
 
 #: sickbeard/common.py:75
 msgid "Started Download"
-msgstr ""
+msgstr "开始下载"
 
 #: sickbeard/common.py:76
 msgid "Download Finished"
-msgstr ""
+msgstr "下载完成"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "字幕下载完成"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage更新完成"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage更新至Commit#: "
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage新的登录"
 
 #: sickbeard/common.py:81
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "您的账户在 ip 地址 ︰ {0}. http://geomaplookup.net/?ip={0} 登录"
 
 #: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "未知 ！"
 
 #: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "未播出"
 
 #: sickbeard/common.py:599 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
-msgstr ""
+msgstr "已获取"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "已下载"
 
 #: sickbeard/common.py:601 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "跳过"
 
 #: sickbeard/common.py:602
 msgid "Snatched (Proper)"
@@ -78,24 +78,24 @@ msgstr ""
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "想要"
 
 #: sickbeard/common.py:604
 msgid "Archived"
-msgstr ""
+msgstr "已存档"
 
 #: sickbeard/common.py:605
 msgid "Ignored"
-msgstr ""
+msgstr "已忽略"
 
 #: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "有字幕"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "失败"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
@@ -107,49 +107,49 @@ msgstr ""
 
 #: sickbeard/webserve.py:201
 msgid "Oops"
-msgstr ""
+msgstr "哎呀"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
-msgstr ""
+msgstr "错误的API密钥"
 
 #: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "登录"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "API密钥未生成"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "API 生成器"
 
 #: sickbeard/webserve.py:498
 msgid "Sort by:"
-msgstr ""
+msgstr "排序方式："
 
 #: sickbeard/webserve.py:506
 msgid "Layout:"
-msgstr ""
+msgstr "布局 ︰"
 
 #: sickbeard/webserve.py:508 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
-msgstr ""
+msgstr "横幅"
 
 #: sickbeard/webserve.py:509 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
-msgstr ""
+msgstr "海报"
 
 #: sickbeard/webserve.py:510 gui/slick/views/schedule.mako:50
 msgid "List"
-msgstr ""
+msgstr "列表"
 
 #: sickbeard/webserve.py:511 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "日历"
 
 #: sickbeard/webserve.py:515
 msgid "View Paused:"
@@ -157,38 +157,38 @@ msgstr ""
 
 #: sickbeard/webserve.py:517
 msgid "Hide"
-msgstr ""
+msgstr "隐藏"
 
 #: sickbeard/webserve.py:519 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "显示"
 
 #: sickbeard/webserve.py:532 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "日程"
 
 #: sickbeard/webserve.py:630
 msgid "Test 1"
-msgstr ""
+msgstr "测试 1"
 
 #: sickbeard/webserve.py:630
 msgid "This is test number 1"
-msgstr ""
+msgstr "这是测试1"
 
 #: sickbeard/webserve.py:631
 msgid "Test 2"
-msgstr ""
+msgstr "测试 2"
 
 #: sickbeard/webserve.py:631
 msgid "This is test number 2"
-msgstr ""
+msgstr "这是测试2"
 
 #: sickbeard/webserve.py:683
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "无效的显示参数"
 
 #: sickbeard/webserve.py:688
 msgid "Invalid show paramaters"
@@ -200,23 +200,23 @@ msgstr ""
 
 #: sickbeard/webserve.py:698 sickbeard/webserve.py:1800
 msgid "Episode couldn't be retrieved"
-msgstr ""
+msgstr "无法获取此集"
 
 #: sickbeard/webserve.py:717 sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Home"
-msgstr ""
+msgstr "首页"
 
 #: sickbeard/webserve.py:717 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "节目清单"
 
 #: sickbeard/webserve.py:757
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr ""
+msgstr "错误 ︰ 不支持的请求。请以callback作为变量发送jsonp请求"
 
 #: sickbeard/webserve.py:801
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "成功。已连接并通过身份验证"
 
 #: sickbeard/webserve.py:803
 msgid "Authentication failed. SABnzbd expects"
@@ -224,11 +224,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:803
 msgid "as authentication method"
-msgstr ""
+msgstr "作为身份验证方法"
 
 #: sickbeard/webserve.py:805
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "无法连接到主机"
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
@@ -414,19 +414,19 @@ msgstr ""
 
 #: sickbeard/webserve.py:1206
 msgid "Update Failed"
-msgstr ""
+msgstr "更新失败"
 
 #: sickbeard/webserve.py:1207
 msgid "Update wasn't successful, not restarting. Check your log for more information."
-msgstr ""
+msgstr "更新不成功，不重新启动。请检查您的日志以了解更多信息。"
 
 #: sickbeard/webserve.py:1214
 msgid "Checking out branch"
-msgstr ""
+msgstr "检出branch"
 
 #: sickbeard/webserve.py:1217
 msgid "Already on branch"
-msgstr ""
+msgstr "已经在branch上"
 
 #: sickbeard/webserve.py:1245 sickbeard/webserve.py:1248 sickbeard/webserve.py:1417
 #: sickbeard/webserve.py:1426 sickbeard/webserve.py:1618 sickbeard/webserve.py:1629
@@ -437,61 +437,61 @@ msgstr ""
 #: sickbeard/webserve.py:1897 sickbeard/webserve.py:1902 sickbeard/webserve.py:1907
 #: sickbeard/webserve.py:1936 sickbeard/webserve.py:1940 sickbeard/webserve.py:1945
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
 #: sickbeard/webserve.py:1245
 msgid "Invalid show ID: {show}"
-msgstr ""
+msgstr "无效的节目ID: {show}"
 
 #: sickbeard/webserve.py:1248 sickbeard/webserve.py:1772 sickbeard/webserve.py:1902
 #: sickbeard/webserve.py:1940
 msgid "Show not in show list"
-msgstr ""
+msgstr "节目不在清单中"
 
 #: sickbeard/webserve.py:1264 sickbeard/webserve.py:1927
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
-msgstr ""
+msgstr "更改"
 
 #: sickbeard/webserve.py:1297
 msgid "Resume"
-msgstr ""
+msgstr "继续"
 
 #: sickbeard/webserve.py:1299
 msgid "Pause"
-msgstr ""
+msgstr "暂停"
 
 #: sickbeard/webserve.py:1301 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr ""
+msgstr "移除"
 
 #: sickbeard/webserve.py:1302
 msgid "Re-scan files"
-msgstr ""
+msgstr "重新扫描文件"
 
 #: sickbeard/webserve.py:1303
 msgid "Force Full Update"
-msgstr ""
+msgstr "强制全部更新"
 
 #: sickbeard/webserve.py:1304
 msgid "Update show in KODI"
-msgstr ""
+msgstr "在KODI中更新节目"
 
 #: sickbeard/webserve.py:1305
 msgid "Update show in Emby"
-msgstr ""
+msgstr "在Emby中更新节目"
 
 #: sickbeard/webserve.py:1306 sickbeard/webserve.py:1930 sickbeard/webserve.py:1931
 msgid "Preview Rename"
-msgstr ""
+msgstr "预览重命名"
 
 #: sickbeard/webserve.py:1309
 msgid "Download Subtitles"
-msgstr ""
+msgstr "下载字幕"
 
 #: sickbeard/webserve.py:1395
 msgid "No scene exceptions"
@@ -499,11 +499,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1413 sickbeard/webserve.py:1665 sickbeard/webserve.py:1686
 msgid "Invalid show ID"
-msgstr ""
+msgstr "无效的节目ID"
 
 #: sickbeard/webserve.py:1422 sickbeard/webserve.py:1670 sickbeard/webserve.py:1691
 msgid "Unable to find the specified show"
-msgstr ""
+msgstr "无法找到指定的节目"
 
 #: sickbeard/webserve.py:1447
 msgid "Unable to retreive Fansub Groups from AniDB."
@@ -511,11 +511,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1456 sickbeard/webserve.py:1458
 msgid "Edit Show"
-msgstr ""
+msgstr "编辑节目"
 
 #: sickbeard/webserve.py:1541 sickbeard/webserve.py:1572
 msgid "Unable to refresh this show: {error}"
-msgstr ""
+msgstr "无法刷新此显节目︰ {error}"
 
 #: sickbeard/webserve.py:1562
 msgid "New location <tt>{location}</tt> does not exist"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -4502,14 +4498,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4545,6 +4533,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83

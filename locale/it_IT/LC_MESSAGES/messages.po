@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:16-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -95,7 +95,7 @@ msgstr "Sottotitolato"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "Tentativo non riuscito"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
@@ -103,11 +103,11 @@ msgstr "Trovato (migliore)"
 
 #: sickbeard/webserve.py:176
 msgid "Mako Error"
-msgstr ""
+msgstr "Errore di Mako"
 
 #: sickbeard/webserve.py:201
 msgid "Oops"
-msgstr ""
+msgstr "Oops"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
@@ -127,7 +127,7 @@ msgstr "API Builder"
 
 #: sickbeard/webserve.py:498
 msgid "Sort by:"
-msgstr ""
+msgstr "Ordina per:"
 
 #: sickbeard/webserve.py:506
 msgid "Layout:"
@@ -172,7 +172,7 @@ msgstr "Pianificazione"
 
 #: sickbeard/webserve.py:630
 msgid "Test 1"
-msgstr ""
+msgstr "Prova 1"
 
 #: sickbeard/webserve.py:630
 msgid "This is test number 1"
@@ -180,7 +180,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:631
 msgid "Test 2"
-msgstr ""
+msgstr "Prova 2"
 
 #: sickbeard/webserve.py:631
 msgid "This is test number 2"
@@ -232,7 +232,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "SMS inviato con successo"
 
 #: sickbeard/webserve.py:828
 msgid "Problem sending SMS: {message}"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -4512,14 +4508,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4555,6 +4543,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83

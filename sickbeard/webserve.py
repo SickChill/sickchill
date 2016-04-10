@@ -3556,7 +3556,7 @@ class Manage(Home, WebRoot):
             if helpers.check_url(urljoin(webui_url, 'download/')):
                 webui_url += 'download/'
             else:
-                info_download_station = '<p>' + _('For best results please set the Download Station alias as') + ' ' + '<code>' + _('download') + '</code>.' + ' '
+                info_download_station = '<p>' + _('For best results please set the Download Station alias as') + ' <code>download</code>. '
                 info_download_station += _('You can check this setting in the Synology DSM') + ' ' + '<b>' + _('Control Panel') + '</b> > <b>' + _('Application Portal') + '</b>.'
                 info_download_station += _('Make sure you allow DSM to be embedded with iFrames too in') + ' ' + '<b>'
                 info_download_station += _('Control Panel') + '</b> > <b>' + _('DSM Settings') + '</b> > <b>' + _('Security') + '</b>.'

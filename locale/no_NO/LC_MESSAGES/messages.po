@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:16-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -111,7 +111,7 @@ msgstr "Oops"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Feil API-nøkkel brukes"
 
 #: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
@@ -119,7 +119,7 @@ msgstr "Innlogging"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "API-nøkkel ikke generert"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
@@ -188,7 +188,7 @@ msgstr "Dette er test nummer 2"
 
 #: sickbeard/webserve.py:683
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "Ugyldig Vis-parametere"
 
 #: sickbeard/webserve.py:688
 msgid "Invalid show paramaters"
@@ -212,51 +212,51 @@ msgstr "Vis Liste"
 
 #: sickbeard/webserve.py:757
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr ""
+msgstr "Feil: Ustøttet forespørsel. Send jsonp-forespørsel med \"callback\"-variabel i søkestrengen."
 
 #: sickbeard/webserve.py:801
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "Suksess. Tilkoblet og autentisert"
 
 #: sickbeard/webserve.py:803
 msgid "Authentication failed. SABnzbd expects"
-msgstr ""
+msgstr "Godkjenning mislyktes. SABnzbd forventer"
 
 #: sickbeard/webserve.py:803
 msgid "as authentication method"
-msgstr ""
+msgstr "som autentiseringsmetode"
 
 #: sickbeard/webserve.py:805
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "Kan ikke koble til verten"
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "SMS sendt"
 
 #: sickbeard/webserve.py:828
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Problemer med å sende SMS: {message}"
 
 #: sickbeard/webserve.py:835
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Telegram varsel lyktes. Sjekk Telegram-klientene for å verifisere at det fungerte"
 
 #: sickbeard/webserve.py:837
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Feil under sending Telegram-varsel: {message}"
 
 #: sickbeard/webserve.py:847
 msgid " with password"
-msgstr ""
+msgstr " med passord"
 
 #: sickbeard/webserve.py:849
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "Registrering og testing av Growl vellykket {growl_host}"
 
 #: sickbeard/webserve.py:851
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Registrering og testing av Growl mislyktes {growl_host}"
 
 #: sickbeard/webserve.py:858
 msgid "Test prowl notice sent successfully"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -4503,14 +4499,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4546,6 +4534,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83

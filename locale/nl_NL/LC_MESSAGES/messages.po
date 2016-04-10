@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:15-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "Opgepikt (Best)"
 
 #: sickbeard/webserve.py:176
 msgid "Mako Error"
-msgstr ""
+msgstr "Mako fout"
 
 #: sickbeard/webserve.py:201
 msgid "Oops"
@@ -111,7 +111,7 @@ msgstr "Oeps"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Ongeldige API-sleutel gebruikt"
 
 #: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
@@ -119,7 +119,7 @@ msgstr "Inloggen"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "API-sleutel niet gegenereerd"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
@@ -188,7 +188,7 @@ msgstr "Dit is test nummer 2"
 
 #: sickbeard/webserve.py:683
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "Ongeldige serie gegevens"
 
 #: sickbeard/webserve.py:688
 msgid "Invalid show paramaters"
@@ -212,91 +212,91 @@ msgstr "Serie Lijst"
 
 #: sickbeard/webserve.py:757
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr ""
+msgstr "Fout: Verzoek niet ondersteund. Verzend de jsonp request met 'callback' variabele in de queryreeks."
 
 #: sickbeard/webserve.py:801
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "Succes. Verbonden en geverifieerd"
 
 #: sickbeard/webserve.py:803
 msgid "Authentication failed. SABnzbd expects"
-msgstr ""
+msgstr "Authenticatie mislukt. Sabnzbd verwacht"
 
 #: sickbeard/webserve.py:803
 msgid "as authentication method"
-msgstr ""
+msgstr "als verificatiemethode"
 
 #: sickbeard/webserve.py:805
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "Kan niet verbinden met de server"
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "SMS verzonden"
 
 #: sickbeard/webserve.py:828
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Probleem met het verzenden van SMS: {message}"
 
 #: sickbeard/webserve.py:835
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Telegram melding verzonden. Controleer uw Telegram client om te verifiëren dat het gelukt is"
 
 #: sickbeard/webserve.py:837
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Verzenden Telegram melding mislukt: {message}"
 
 #: sickbeard/webserve.py:847
 msgid " with password"
-msgstr ""
+msgstr " met wachtwoord"
 
 #: sickbeard/webserve.py:849
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "Geregistreerd en Growl test succesvol {growl_host}"
 
 #: sickbeard/webserve.py:851
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Geregistreerd en Growl test mislukt {growl_host}"
 
 #: sickbeard/webserve.py:858
 msgid "Test prowl notice sent successfully"
-msgstr ""
+msgstr "Test prowl notificatie verzonden"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice failed"
-msgstr ""
+msgstr "Test prowl notificatie mislukt"
 
 #: sickbeard/webserve.py:867
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr ""
+msgstr "Boxcar2 melding verzonden. Controleer uw Boxcar2 client om te verifiëren dat het gelukt is"
 
 #: sickbeard/webserve.py:869
 msgid "Error sending Boxcar2 notification"
-msgstr ""
+msgstr "Fout bij verzenden van Boxcar2 melding"
 
 #: sickbeard/webserve.py:876
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr ""
+msgstr "Pushover melding verzonden. Controleer uw Pushover client om te verifiëren dat het gelukt is"
 
 #: sickbeard/webserve.py:878
 msgid "Error sending Pushover notification"
-msgstr ""
+msgstr "Fout bij verzenden van Pushover melding"
 
 #: sickbeard/webserve.py:890
 msgid "Key verification successful"
-msgstr ""
+msgstr "Sleutel succesvol geverifieerd"
 
 #: sickbeard/webserve.py:892
 msgid "Unable to verify key"
-msgstr ""
+msgstr "Niet in staat de sleutel te verifieren"
 
 #: sickbeard/webserve.py:899
 msgid "Tweet successful, check your twitter to make sure it worked"
-msgstr ""
+msgstr "Tweet verzonden. Controleer uw Twitter om te verifiëren dat het gelukt is"
 
 #: sickbeard/webserve.py:901
 msgid "Error sending tweet"
-msgstr ""
+msgstr "Fout bij verzenden tweet"
 
 #: sickbeard/webserve.py:911
 msgid "Test KODI notice sent successfully to {kodi_host}"
@@ -495,7 +495,7 @@ msgstr "Download ondertitels"
 
 #: sickbeard/webserve.py:1395
 msgid "No scene exceptions"
-msgstr ""
+msgstr "Geen scène uitzonderingen"
 
 #: sickbeard/webserve.py:1413 sickbeard/webserve.py:1665 sickbeard/webserve.py:1686
 msgid "Invalid show ID"
@@ -507,7 +507,7 @@ msgstr "Kan deze serie niet vinden"
 
 #: sickbeard/webserve.py:1447
 msgid "Unable to retreive Fansub Groups from AniDB."
-msgstr ""
+msgstr "Niet mogelijk Fansub groepen van AniDB op te halen"
 
 #: sickbeard/webserve.py:1456 sickbeard/webserve.py:1458
 msgid "Edit Show"
@@ -515,27 +515,27 @@ msgstr "Bewerk Show"
 
 #: sickbeard/webserve.py:1541 sickbeard/webserve.py:1572
 msgid "Unable to refresh this show: {error}"
-msgstr ""
+msgstr "Serie kan momenteel niet vernieuwd worden: {error}"
 
 #: sickbeard/webserve.py:1562
 msgid "New location <tt>{location}</tt> does not exist"
-msgstr ""
+msgstr "Nieuwe locatie <tt>{location}</tt> bestaat niet"
 
 #: sickbeard/webserve.py:1589
 msgid "Unable to update show: {error}"
-msgstr ""
+msgstr "Kan serie niet bijwerken: {error}"
 
 #: sickbeard/webserve.py:1596
 msgid "Unable to force an update on scene exceptions of the show."
-msgstr ""
+msgstr "Niet in staat om een geforceerde update uit te voeren op de scène uitzonderingen bij deze serie."
 
 #: sickbeard/webserve.py:1603
 msgid "Unable to force an update on scene numbering of the show."
-msgstr ""
+msgstr "Niet in staat om een geforceerde update uit te voeren op de scène nummering bij deze serie."
 
 #: sickbeard/webserve.py:1609 sickbeard/webserve.py:3448
 msgid "{num_errors:d} error{plural} while saving changes:"
-msgstr ""
+msgstr "{num_errors:d} foutmelding{plural} tijdens het opslaan van wijzigingen:"
 
 #: sickbeard/webserve.py:1620
 msgid "{show_name} has been {paused_resumed}"
@@ -551,23 +551,23 @@ msgstr "gepauzeerd"
 
 #: sickbeard/webserve.py:1632
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
-msgstr ""
+msgstr "{show_name} is {deleted_trashed} {was_deleted}"
 
 #: sickbeard/webserve.py:1634
 msgid "deleted"
-msgstr ""
+msgstr "verwijderd"
 
 #: sickbeard/webserve.py:1634
 msgid "trashed"
-msgstr ""
+msgstr "verplaatst naar prullenbak"
 
 #: sickbeard/webserve.py:1635
 msgid "(media untouched)"
-msgstr ""
+msgstr "(media ongewijzigd)"
 
 #: sickbeard/webserve.py:1635
 msgid "(with all related media)"
-msgstr ""
+msgstr "(met alle gerelateerde media)"
 
 #: sickbeard/webserve.py:1656
 msgid "Unable to refresh this show."
@@ -595,11 +595,11 @@ msgstr "Niet mogelijk contact te leggen met Plex Media Server host: {plex_server
 
 #: sickbeard/webserve.py:1741
 msgid "Library update command sent to Emby host: {emby_host}"
-msgstr ""
+msgstr "Bijgewerkt bibliotheek commando is naar Emby host verstuurd: {emby_host}"
 
 #: sickbeard/webserve.py:1743
 msgid "Unable to contact Emby host: {emby_host}"
-msgstr ""
+msgstr "Niet gelukt met de Emby host te verbinden: {emby_host}"
 
 #: sickbeard/webserve.py:1753 sickbeard/webserve.py:1936
 msgid "You must specify a show and at least one episode"
@@ -611,7 +611,7 @@ msgstr "Ongeldige status"
 
 #: sickbeard/webserve.py:1854
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
-msgstr ""
+msgstr "Backlog is automatisch gestart voor de volgens seizoenen van <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1861 sickbeard/webserve.py:1880
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
@@ -625,7 +625,7 @@ msgstr "Backlog gestart"
 
 #: sickbeard/webserve.py:1873
 msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
-msgstr ""
+msgstr "Opnieuw zoeken is automatisch gestart voor de volgens seizoenen van <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1887
 msgid "Retry Search started"
@@ -641,11 +641,11 @@ msgstr "Kan geen afleveringen hernoemen als er geen serie map is."
 
 #: sickbeard/webserve.py:2097
 msgid "New subtitles downloaded: {new_subtitle_languages}"
-msgstr ""
+msgstr "Nieuwe ondertitels gedownload: {new_subtitle_languages}"
 
 #: sickbeard/webserve.py:2099
 msgid "No subtitles downloaded"
-msgstr ""
+msgstr "Geen ondertitels gedownload"
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
@@ -654,11 +654,11 @@ msgstr "IRC"
 
 #: sickbeard/webserve.py:2238
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
-msgstr ""
+msgstr "Nieuws kan niet worden geladen uit de repo. [Klik hier voor de news.md])({news_url})"
 
 #: sickbeard/webserve.py:2245 sickbeard/webserve.py:2263
 msgid "The was a problem connecting to github, please refresh and try again"
-msgstr ""
+msgstr "Er was een probleem met de verbinding met GitHub, gelieve te vernieuwen en opnieuw te proberen"
 
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
@@ -667,7 +667,7 @@ msgstr "Nieuws"
 
 #: sickbeard/webserve.py:2260
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
-msgstr ""
+msgstr "Aanpassingen kunnen niet worden geladen uit de repo. [Klik hier voor de CHANGES.md]({changes_url})"
 
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
@@ -684,7 +684,7 @@ msgstr "Serie Toeveogen"
 
 #: sickbeard/webserve.py:2382
 msgid "No folders selected."
-msgstr ""
+msgstr "Geen mappen geselecteerd."
 
 #: sickbeard/webserve.py:2502
 msgid "New Show"
@@ -692,7 +692,7 @@ msgstr "Nieuwe Show"
 
 #: sickbeard/webserve.py:2517
 msgid "Trending Shows"
-msgstr ""
+msgstr "Populaire Series"
 
 #: sickbeard/webserve.py:2519 sickbeard/webserve.py:2642
 msgid "Popular Shows"
@@ -700,7 +700,7 @@ msgstr "Populaire Shows"
 
 #: sickbeard/webserve.py:2521 sickbeard/webserve.py:2535
 msgid "Most Anticipated Shows"
-msgstr ""
+msgstr "De meest verwachte Series"
 
 #: sickbeard/webserve.py:2531 gui/slick/views/addShows_trendingShows.mako:47
 msgid "New Shows"
@@ -716,7 +716,7 @@ msgstr "Bestaande Show"
 
 #: sickbeard/webserve.py:2743
 msgid "No root directories setup, please go back and add one."
-msgstr ""
+msgstr "Geen hoofdmappen ingesteld, gelieve terug te gaan en één toe te voegen."
 
 #: sickbeard/webserve.py:2753 sickbeard/webserve.py:2869
 msgid "Show added"
@@ -728,11 +728,11 @@ msgstr "Bezig deze serie toe te voegen: {show_name}"
 
 #: sickbeard/webserve.py:2794
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
-msgstr ""
+msgstr "Ontbrekende parameters, geen Indexer ID of map: {show_to_add} en {root_dir}/{show_path}"
 
 #: sickbeard/webserve.py:2803
 msgid "Unknown error. Unable to add show due to problem with show selection."
-msgstr ""
+msgstr "Onbekende fout. Serie kan niet toegevoegd worden vanwege een probleem met het selecteren van de serie."
 
 #: sickbeard/webserve.py:2827 sickbeard/webserve.py:2837
 msgid "Unable to add show"
@@ -782,11 +782,11 @@ msgstr "Massaal Bewerken"
 
 #: sickbeard/webserve.py:3494
 msgid "Unable to update show: {excption_format}"
-msgstr ""
+msgstr "Kan serie niet bijwerken: {excption_format}"
 
 #: sickbeard/webserve.py:3502
 msgid "Unable to refresh show {show_name}: {excption_format}"
-msgstr ""
+msgstr "Kan serie {show_name} niet bijwerken: {excption_format}"
 
 #: sickbeard/webserve.py:3513
 msgid "Errors encountered"
@@ -818,35 +818,31 @@ msgstr "De volgende acties zijn in de wachtrij gezet"
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
-msgstr ""
+msgstr "Voor het beste resultaat, stel de Download Station alias in als"
 
 #: sickbeard/webserve.py:3560
 msgid "You can check this setting in the Synology DSM"
-msgstr ""
+msgstr "U kunt deze instelling terugvinden in de Synology DSM"
 
 #: sickbeard/webserve.py:3560 sickbeard/webserve.py:3562
 msgid "Control Panel"
-msgstr ""
+msgstr "Configuratiescherm"
 
 #: sickbeard/webserve.py:3560
 msgid "Application Portal"
-msgstr ""
+msgstr "Toepassingsportaal"
 
 #: sickbeard/webserve.py:3561
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
-msgstr ""
+msgstr "Zorg ervoor dat DSM wordt toegestaan dat deze ook in iFrames wordt geïntegreerd "
 
 #: sickbeard/webserve.py:3562
 msgid "DSM Settings"
-msgstr ""
+msgstr "DSM Instellingen"
 
 #: sickbeard/webserve.py:3562
 msgid "Security"
-msgstr ""
+msgstr "Beveiliging"
 
 #: sickbeard/webserve.py:3570 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
@@ -974,15 +970,15 @@ msgstr "Configuratie - nabewerking"
 
 #: sickbeard/webserve.py:4198
 msgid "Unpacking Not Supported, disabling unpack setting"
-msgstr ""
+msgstr "Uitpakken niet ondersteund, deze instelling is nu uitgeschakeld"
 
 #: sickbeard/webserve.py:4250 sickbeard/webserve.py:4261
 msgid "You tried saving an invalid anime naming config, not saving your naming settings"
-msgstr ""
+msgstr "U hebt geprobeerd een ongeldige anime benamings configuratie op te slaan, deze wordt nu niet opgeslagen"
 
 #: sickbeard/webserve.py:4252 sickbeard/webserve.py:4263
 msgid "You tried saving an invalid naming config, not saving your naming settings"
-msgstr ""
+msgstr "U hebt geprobeerd een ongeldige benamings configuratie op te slaan, deze wordt nu niet opgeslagen"
 
 #: sickbeard/webserve.py:4366
 msgid "Config - Providers"
@@ -990,15 +986,15 @@ msgstr "Configuratie - Providers"
 
 #: sickbeard/webserve.py:4423
 msgid "No Provider Name specified"
-msgstr ""
+msgstr "Geen naam opgegeven voor deze indexeerder"
 
 #: sickbeard/webserve.py:4425
 msgid "No Provider Url specified"
-msgstr ""
+msgstr "Geen webadres opgegeven voor deze indexeerder"
 
 #: sickbeard/webserve.py:4427
 msgid "No Provider Api key specified"
-msgstr ""
+msgstr "Geen API sleutel opgegeven voor deze indexeerder"
 
 #: sickbeard/webserve.py:4859
 msgid "Config - Notifications"
@@ -1026,7 +1022,7 @@ msgstr "Verzend foutmeldingen"
 
 #: sickbeard/webserve.py:5238
 msgid "Logs &amp; Errors"
-msgstr ""
+msgstr "Registreert &amp; fouten"
 
 #: sickbeard/webserve.py:5349
 msgid "Log File"
@@ -4518,14 +4514,6 @@ msgstr "Hoge bandbreedte toestaan"
 msgid "use high bandwidth allocation if priority is high"
 msgstr "zet bandbreedte toewijzing op \"high\" als de prioriteit op hoog staat"
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr "Tik om naar een taal te zoeken en selecteer deze"
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr "Selecteer de ondertitel download map"
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4562,6 +4550,10 @@ msgstr "De map waar SickRage de <i>ondertitel</i> bestanden opslaat."
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
 msgstr "Laat dit leeg als de bestanden bij de afleveringen opgeslagen moeten worden."
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
+msgstr "Zoekfrequentie ondertitels"
 
 #: gui/slick/views/config_subtitles.mako:83
 msgid "time in hours between scans (default: 1)"
@@ -5735,7 +5727,7 @@ msgstr "Toon id"
 
 #: gui/slick/views/status.mako:114
 msgid "Show name"
-msgstr "Naam van de Show"
+msgstr "Naam van de Serie"
 
 #: gui/slick/views/status.mako:116
 msgid "Priority"

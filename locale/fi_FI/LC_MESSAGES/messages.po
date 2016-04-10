@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:16-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "Napattu (Paras)"
 
 #: sickbeard/webserve.py:176
 msgid "Mako Error"
-msgstr ""
+msgstr "Mako virhe"
 
 #: sickbeard/webserve.py:201
 msgid "Oops"
@@ -111,7 +111,7 @@ msgstr "Hups"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Virheellinen API-avain kätetty"
 
 #: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
@@ -119,11 +119,11 @@ msgstr "Kirjaudu"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "API-avainta ei luotu"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "API-kääntäjä"
 
 #: sickbeard/webserve.py:498
 msgid "Sort by:"
@@ -188,7 +188,7 @@ msgstr "Tämä on testi numero 2"
 
 #: sickbeard/webserve.py:683
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "Virheelliset sarjan parametrit"
 
 #: sickbeard/webserve.py:688
 msgid "Invalid show paramaters"
@@ -200,7 +200,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:698 sickbeard/webserve.py:1800
 msgid "Episode couldn't be retrieved"
-msgstr ""
+msgstr "Jaksoa ei voitu hakea"
 
 #: sickbeard/webserve.py:717 sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Home"
@@ -212,67 +212,67 @@ msgstr "Näytä lista"
 
 #: sickbeard/webserve.py:757
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr ""
+msgstr "Virhe: Pyyntöä ei tueta. Lähetä jsonp-pyyntö laittamalla \"callback\" muuttuja kysymysriville."
 
 #: sickbeard/webserve.py:801
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "Onnitui. Yhdistetty ja todennettu"
 
 #: sickbeard/webserve.py:803
 msgid "Authentication failed. SABnzbd expects"
-msgstr ""
+msgstr "Todennus epäonnistui. SABnzbd odottaa"
 
 #: sickbeard/webserve.py:803
 msgid "as authentication method"
-msgstr ""
+msgstr "todennustapana"
 
 #: sickbeard/webserve.py:805
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "Yhteyttä ei voitu muodostaa isäntäpalvelimeen"
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "Viestin lähetys onnistui"
 
 #: sickbeard/webserve.py:828
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Ongelma lähetettäessä viestiä: {message}"
 
 #: sickbeard/webserve.py:835
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Telegram-ilmoitus onnistui. Tarkista Telegrammisi varmistaaksesi toiminnan"
 
 #: sickbeard/webserve.py:837
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Virhe lähetettäessä Telegram-ilmoitusta: {message}"
 
 #: sickbeard/webserve.py:847
 msgid " with password"
-msgstr ""
+msgstr " salasanalla"
 
 #: sickbeard/webserve.py:849
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "Growl rekisteröity ja testattu onnistuneesti {growl_host}"
 
 #: sickbeard/webserve.py:851
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Growlin rekisteröinti ja testaus epäonnistui {growl_host}"
 
 #: sickbeard/webserve.py:858
 msgid "Test prowl notice sent successfully"
-msgstr ""
+msgstr "Prowl testi-ilmoitus lähetetty onnistuneesti"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice failed"
-msgstr ""
+msgstr "Prowl testi-ilmoituksen lähetys epäonnistui"
 
 #: sickbeard/webserve.py:867
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr ""
+msgstr "Boxcar2-ilmoitus onnistui. Tarkista Boxcar2 ohjelmasi varmistaaksesi toiminnan"
 
 #: sickbeard/webserve.py:869
 msgid "Error sending Boxcar2 notification"
-msgstr ""
+msgstr "Virhe lähetettäessä Boxcar2-ilmoitusta"
 
 #: sickbeard/webserve.py:876
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -4503,14 +4499,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4546,6 +4534,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83
