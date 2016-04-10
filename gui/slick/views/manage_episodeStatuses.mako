@@ -39,7 +39,7 @@ ${_('Manage episodes with status')} <select name="whichStatus" class="form-contr
 <form action="${srRoot}/manage/changeEpisodeStatuses" method="post">
 <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
 
-<h2>${_('Shows containing ${common.statusStrings[whichStatus]} episodes')}</h2>
+<h2>${_('Shows containing')} ${common.statusStrings[whichStatus]} ${_('episodes')}</h2>
 
 <br>
 
