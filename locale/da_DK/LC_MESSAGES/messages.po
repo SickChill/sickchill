@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-08 17:17-0700\n"
-"PO-Revision-Date: 2016-04-09 10:14-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:15-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -17,283 +17,1018 @@ msgstr ""
 "X-Crowdin-File: messages.pot\n"
 "Language: da_DK\n"
 
-#: sickbeard/common.py:74
+#: sickbeard/common.py:75
 msgid "Started Download"
 msgstr "Download startet"
 
-#: sickbeard/common.py:75
+#: sickbeard/common.py:76
 msgid "Download Finished"
 msgstr "Download færdig"
 
-#: sickbeard/common.py:76
+#: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
 msgstr "Undertekst download færdig"
 
-#: sickbeard/common.py:77
+#: sickbeard/common.py:78
 msgid "SickRage Updated"
 msgstr "SickRage opdateret"
 
-#: sickbeard/common.py:78
+#: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
 msgstr "SickRage opdateret til Commit #: "
 
-#: sickbeard/common.py:79
+#: sickbeard/common.py:80
 msgid "SickRage new login"
 msgstr ""
 
-#: sickbeard/common.py:80
+#: sickbeard/common.py:81
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 msgstr "Nyt login fra IP: {0}. http://geomaplookup.net/?IP={0}"
 
-#: sickbeard/common.py:600 gui/slick/views/history.mako:84
+#: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
 msgstr "Ukendt"
 
-#: sickbeard/common.py:601 gui/slick/views/home.mako:155
+#: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
 msgstr "Ikke udsendt"
 
-#: sickbeard/common.py:602 gui/slick/views/displayShow.mako:257
+#: sickbeard/common.py:599 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
 msgstr "Hentet"
 
-#: sickbeard/common.py:603 gui/slick/views/history.mako:115
+#: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
 msgstr "Downloadet"
 
-#: sickbeard/common.py:604 gui/slick/views/displayShow.mako:256
+#: sickbeard/common.py:601 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
 msgstr "Sprunget over"
 
-#: sickbeard/common.py:605
+#: sickbeard/common.py:602
 msgid "Snatched (Proper)"
 msgstr "Hentet(ordentlig)"
 
-#: sickbeard/common.py:606 gui/slick/views/displayShow.mako:253
+#: sickbeard/common.py:603 gui/slick/views/displayShow.mako:253
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
 msgstr "Ønsket"
 
-#: sickbeard/common.py:607
+#: sickbeard/common.py:604
 msgid "Archived"
 msgstr "Arkiveret"
 
-#: sickbeard/common.py:608
+#: sickbeard/common.py:605
 msgid "Ignored"
 msgstr "Ignoreret"
 
-#: sickbeard/common.py:609 gui/slick/views/config_providers.mako:596
+#: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
 msgstr "Undertekstet"
 
-#: sickbeard/common.py:610 gui/slick/views/manage_manageSearches.mako:59
+#: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
 msgstr "Mislykket"
 
-#: sickbeard/common.py:611
+#: sickbeard/common.py:608
 msgid "Snatched (Best)"
 msgstr "Hentet (bedst)"
 
-#: sickbeard/webserve.py:200
+#: sickbeard/webserve.py:176
+msgid "Mako Error"
+msgstr "Mako fejl"
+
+#: sickbeard/webserve.py:201
 msgid "Oops"
 msgstr "Ups"
 
-#: sickbeard/webserve.py:302 gui/slick/views/login.mako:10
+#: sickbeard/webserve.py:203
+msgid "Wrong API key used"
+msgstr "Forkert API-nøgle brugt"
+
+#: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
 msgstr "Login"
+
+#: sickbeard/webserve.py:394
+msgid "API Key not generated"
+msgstr "API-nøgle ikke genereret"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
 msgstr "API Builder"
 
-#: sickbeard/webserve.py:530 gui/slick/views/config_general.mako:66
+#: sickbeard/webserve.py:498
+msgid "Sort by:"
+msgstr "Sortér efter:"
+
+#: sickbeard/webserve.py:506
+msgid "Layout:"
+msgstr "Layout:"
+
+#: sickbeard/webserve.py:508 gui/slick/views/home.mako:72
+#: gui/slick/views/schedule.mako:49
+msgid "Banner"
+msgstr "Banner"
+
+#: sickbeard/webserve.py:509 gui/slick/views/home.mako:70
+#: gui/slick/views/schedule.mako:47
+msgid "Poster"
+msgstr "Plakat"
+
+#: sickbeard/webserve.py:510 gui/slick/views/schedule.mako:50
+msgid "List"
+msgstr "Liste"
+
+#: sickbeard/webserve.py:511 gui/slick/views/schedule.mako:48
+msgid "Calendar"
+msgstr "Kalender"
+
+#: sickbeard/webserve.py:515
+msgid "View Paused:"
+msgstr ""
+
+#: sickbeard/webserve.py:517
+msgid "Hide"
+msgstr "Skjul"
+
+#: sickbeard/webserve.py:519 gui/slick/views/home.mako:246
+#: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
+#: gui/slick/views/schedule.mako:81
+msgid "Show"
+msgstr "Show"
+
+#: sickbeard/webserve.py:532 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
 msgstr "Tidsplan"
 
-#: sickbeard/webserve.py:712 sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
+#: sickbeard/webserve.py:630
+msgid "Test 1"
+msgstr "Test 1"
+
+#: sickbeard/webserve.py:630
+msgid "This is test number 1"
+msgstr "Dette er test nummer 1"
+
+#: sickbeard/webserve.py:631
+msgid "Test 2"
+msgstr "Test 2"
+
+#: sickbeard/webserve.py:631
+msgid "This is test number 2"
+msgstr "Dette er test nummer 2"
+
+#: sickbeard/webserve.py:683
+msgid "Invalid show parameters"
+msgstr "Ugyldig show parametre"
+
+#: sickbeard/webserve.py:688
+msgid "Invalid show paramaters"
+msgstr ""
+
+#: sickbeard/webserve.py:695
+msgid "Invalid paramaters"
+msgstr ""
+
+#: sickbeard/webserve.py:698 sickbeard/webserve.py:1800
+msgid "Episode couldn't be retrieved"
+msgstr "Episode kunne ikke hentes"
+
+#: sickbeard/webserve.py:717 sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Home"
 msgstr "Hjem"
 
-#: sickbeard/webserve.py:712 gui/slick/views/layouts/main.mako:112
+#: sickbeard/webserve.py:717 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
 msgstr "Show liste"
 
-#: sickbeard/webserve.py:1153 gui/slick/views/displayShow.mako:331
+#: sickbeard/webserve.py:757
+msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
+msgstr "Fejl: Ikke-understøttet anmodning. Send jsonp anmodning med \"callback\" variabel i forespørgselstrengen."
+
+#: sickbeard/webserve.py:801
+msgid "Success. Connected and authenticated"
+msgstr "Succes. Forbundet og godkendt"
+
+#: sickbeard/webserve.py:803
+msgid "Authentication failed. SABnzbd expects"
+msgstr "Godkendelse mislykkedes. SABnzbd forventer"
+
+#: sickbeard/webserve.py:803
+msgid "as authentication method"
+msgstr "som godkendelsesmetode"
+
+#: sickbeard/webserve.py:805
+msgid "Unable to connect to host"
+msgstr "Kan ikke forbinde til serveren"
+
+#: sickbeard/webserve.py:826
+msgid "SMS sent successfully"
+msgstr "SMS sendt succesfuldt"
+
+#: sickbeard/webserve.py:828
+msgid "Problem sending SMS: {message}"
+msgstr "Problemer med at sende SMS: {message}"
+
+#: sickbeard/webserve.py:835
+msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
+msgstr "Telegram anmeldelse lykkedes. Tjek dine Telegram klienter for at sikre sig det virkede"
+
+#: sickbeard/webserve.py:837
+msgid "Error sending Telegram notification: {message}"
+msgstr "Fejl ved afsendelse af Telegram anmeldelse: {message}"
+
+#: sickbeard/webserve.py:847
+msgid " with password"
+msgstr " med adgangskode"
+
+#: sickbeard/webserve.py:849
+msgid "Registered and Tested growl successfully {growl_host}"
+msgstr "Registreret og testet growl med succes {growl_host}"
+
+#: sickbeard/webserve.py:851
+msgid "Registration and Testing of growl failed {growl_host}"
+msgstr "Registrering og test af growl mislykkedes {growl_host}"
+
+#: sickbeard/webserve.py:858
+msgid "Test prowl notice sent successfully"
+msgstr "Test prowl meddelelse sendt succesfuldt"
+
+#: sickbeard/webserve.py:860
+msgid "Test prowl notice failed"
+msgstr "Test prowl meddelelse mislykkedes"
+
+#: sickbeard/webserve.py:867
+msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
+msgstr "Boxcar2 anmeldelse lykkedes. Kontrollere dine Boxcar2 klienter for at sikre sig det virkede"
+
+#: sickbeard/webserve.py:869
+msgid "Error sending Boxcar2 notification"
+msgstr "Fejl ved afsendelse af Boxcar2 anmeldelse"
+
+#: sickbeard/webserve.py:876
+msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
+msgstr "Pushover anmeldelse lykkedes. Tjek din Pushover klienter for at sikre sig det virkede"
+
+#: sickbeard/webserve.py:878
+msgid "Error sending Pushover notification"
+msgstr "Fejl ved afsendelse af Pushover anmeldelse"
+
+#: sickbeard/webserve.py:890
+msgid "Key verification successful"
+msgstr "Nøgle verifikation vellykket"
+
+#: sickbeard/webserve.py:892
+msgid "Unable to verify key"
+msgstr "Kan ikke verificerer nøglen"
+
+#: sickbeard/webserve.py:899
+msgid "Tweet successful, check your twitter to make sure it worked"
+msgstr "Tweet vellykket, tjek din twitter for at sikre sig det virkede"
+
+#: sickbeard/webserve.py:901
+msgid "Error sending tweet"
+msgstr "Fejl ved afsendelse af tweet"
+
+#: sickbeard/webserve.py:911
+msgid "Test KODI notice sent successfully to {kodi_host}"
+msgstr "Test KODI meddelelse sendt til {kodi_host}"
+
+#: sickbeard/webserve.py:913
+msgid "Test KODI notice failed to {kodi_host}"
+msgstr "Test KODI meddelelse fejlede ved {kodi_host}"
+
+#: sickbeard/webserve.py:928
+msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
+msgstr "Vellykket test meddelelse sendt til Plex Home Theater... {plex_clients}"
+
+#: sickbeard/webserve.py:930
+msgid "Test failed for Plex Home Theater ... {plex_clients}"
+msgstr "Test mislykkedes for Plex Home Theater... {plex_clients}"
+
+#: sickbeard/webserve.py:933
+msgid "Tested Plex Home Theater(s)"
+msgstr "Testede Plex Home Theater(s)"
+
+#: sickbeard/webserve.py:947
+msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
+msgstr "Succesfuld test af Plex Media Server(s) ... {plex_servers}"
+
+#: sickbeard/webserve.py:949
+msgid "Test failed, No Plex Media Server host specified"
+msgstr "Test mislykkedes, ingen Plex Media Server vært angivet"
+
+#: sickbeard/webserve.py:951
+msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
+msgstr "Test mislykkedes for Plex Media serverne... {plex_servers}"
+
+#: sickbeard/webserve.py:954
+msgid "Tested Plex Media Server host(s)"
+msgstr "Testede Plex medieserver vært(er)"
+
+#: sickbeard/webserve.py:962
+msgid "Tried sending desktop notification via libnotify"
+msgstr "Prøvede at sende desktop anmeldelse via libnotify"
+
+#: sickbeard/webserve.py:972
+msgid "Test notice sent successfully to {empy_host}"
+msgstr "Test meddelelse sendt til {empy_host}"
+
+#: sickbeard/webserve.py:974
+msgid "Test notice failed to {empy_host}"
+msgstr "Test meddelelse fejlede ved {empy_host}"
+
+#: sickbeard/webserve.py:982
+msgid "Successfully started the scan update"
+msgstr "Startede scan opdatering succesfuldt"
+
+#: sickbeard/webserve.py:984
+msgid "Test failed to start the scan update"
+msgstr "Test mislykkedes at starte scanningen opdatering"
+
+#: sickbeard/webserve.py:1003
+msgid "Test notice sent successfully to {nmj2_host}"
+msgstr "Test meddelelse sendt succesfuldt til {nmj2_host}"
+
+#: sickbeard/webserve.py:1005
+msgid "Test notice failed to {nmj2_host}"
+msgstr "Test meddelelse fejlede ved {nmj2_host}"
+
+#: sickbeard/webserve.py:1025
+msgid "Trakt Authorized"
+msgstr "Trakt tilladt"
+
+#: sickbeard/webserve.py:1026
+msgid "Trakt Not Authorized!"
+msgstr "Trakt ikke tilladt!"
+
+#: sickbeard/webserve.py:1091
+msgid "Test email sent successfully! Check inbox."
+msgstr "Test e-mail sendt med succes! Tjek indbakke."
+
+#: sickbeard/webserve.py:1093
+msgid "ERROR: {last_error}"
+msgstr "FEJL: {last_error}"
+
+#: sickbeard/webserve.py:1100
+msgid "Test NMA notice sent successfully"
+msgstr "Test NMA meddelelse sendt succesfuldt"
+
+#: sickbeard/webserve.py:1102
+msgid "Test NMA notice failed"
+msgstr "Test NMA meddelelse mislykkedes"
+
+#: sickbeard/webserve.py:1109
+msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
+msgstr "Pushalot anmeldelse lykkedes. Tjek dine Pushalot klienter for at sikre sig det virkede"
+
+#: sickbeard/webserve.py:1111
+msgid "Error sending Pushalot notification"
+msgstr "Fejl ved afsendelse af Pushalot anmeldelse"
+
+#: sickbeard/webserve.py:1118
+msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
+msgstr "Pushbullet anmeldelse lykkedes. Kontrollere din enhed for at sikre sig arbejdede"
+
+#: sickbeard/webserve.py:1120 sickbeard/webserve.py:1130 sickbeard/webserve.py:1139
+msgid "Error sending Pushbullet notification"
+msgstr "Fejl ved afsendelse af Pushbullet anmeldelse"
+
+#: sickbeard/webserve.py:1155 gui/slick/views/displayShow.mako:331
 #: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
 msgstr "Status"
 
-#: sickbeard/webserve.py:1172 sickbeard/webserve.py:1201
+#: sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Restarting SickRage"
 msgstr "Genstarter SickRage"
 
-#: sickbeard/webserve.py:1455 sickbeard/webserve.py:1457
+#: sickbeard/webserve.py:1206
+msgid "Update Failed"
+msgstr "Opdatering mislykkedes"
+
+#: sickbeard/webserve.py:1207
+msgid "Update wasn't successful, not restarting. Check your log for more information."
+msgstr ""
+
+#: sickbeard/webserve.py:1214
+msgid "Checking out branch"
+msgstr ""
+
+#: sickbeard/webserve.py:1217
+msgid "Already on branch"
+msgstr ""
+
+#: sickbeard/webserve.py:1245 sickbeard/webserve.py:1248 sickbeard/webserve.py:1417
+#: sickbeard/webserve.py:1426 sickbeard/webserve.py:1618 sickbeard/webserve.py:1629
+#: sickbeard/webserve.py:1652 sickbeard/webserve.py:1665 sickbeard/webserve.py:1670
+#: sickbeard/webserve.py:1686 sickbeard/webserve.py:1691 sickbeard/webserve.py:1755
+#: sickbeard/webserve.py:1758 sickbeard/webserve.py:1764 sickbeard/webserve.py:1767
+#: sickbeard/webserve.py:1774 sickbeard/webserve.py:1777 sickbeard/webserve.py:1800
+#: sickbeard/webserve.py:1897 sickbeard/webserve.py:1902 sickbeard/webserve.py:1907
+#: sickbeard/webserve.py:1936 sickbeard/webserve.py:1940 sickbeard/webserve.py:1945
+msgid "Error"
+msgstr "Fejl"
+
+#: sickbeard/webserve.py:1245
+msgid "Invalid show ID: {show}"
+msgstr "Ugyldigt serie ID: {show}"
+
+#: sickbeard/webserve.py:1248 sickbeard/webserve.py:1772 sickbeard/webserve.py:1902
+#: sickbeard/webserve.py:1940
+msgid "Show not in show list"
+msgstr ""
+
+#: sickbeard/webserve.py:1264 sickbeard/webserve.py:1927
+#: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
+#: gui/slick/views/manage_massEdit.mako:70
+msgid "Edit"
+msgstr "Rediger"
+
+#: sickbeard/webserve.py:1297
+msgid "Resume"
+msgstr "Fortsæt"
+
+#: sickbeard/webserve.py:1299
+msgid "Pause"
+msgstr "Pause"
+
+#: sickbeard/webserve.py:1301 gui/slick/views/editShow.mako:222
+#: gui/slick/views/inc_blackwhitelist.mako:25
+#: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
+#: gui/slick/views/manage_failedDownloads.mako:28
+msgid "Remove"
+msgstr "Fjern"
+
+#: sickbeard/webserve.py:1302
+msgid "Re-scan files"
+msgstr ""
+
+#: sickbeard/webserve.py:1303
+msgid "Force Full Update"
+msgstr "Tving fuld opdatering"
+
+#: sickbeard/webserve.py:1304
+msgid "Update show in KODI"
+msgstr ""
+
+#: sickbeard/webserve.py:1305
+msgid "Update show in Emby"
+msgstr "Opdater show i Emby"
+
+#: sickbeard/webserve.py:1306 sickbeard/webserve.py:1930 sickbeard/webserve.py:1931
+msgid "Preview Rename"
+msgstr "Forhåndsvis omdøb"
+
+#: sickbeard/webserve.py:1309
+msgid "Download Subtitles"
+msgstr "Download undertekster"
+
+#: sickbeard/webserve.py:1395
+msgid "No scene exceptions"
+msgstr ""
+
+#: sickbeard/webserve.py:1413 sickbeard/webserve.py:1665 sickbeard/webserve.py:1686
+msgid "Invalid show ID"
+msgstr "Ugyldigt serie ID"
+
+#: sickbeard/webserve.py:1422 sickbeard/webserve.py:1670 sickbeard/webserve.py:1691
+msgid "Unable to find the specified show"
+msgstr "Kan ikke finde det angivne show"
+
+#: sickbeard/webserve.py:1447
+msgid "Unable to retreive Fansub Groups from AniDB."
+msgstr ""
+
+#: sickbeard/webserve.py:1456 sickbeard/webserve.py:1458
 msgid "Edit Show"
 msgstr "Redigere Show"
 
-#: sickbeard/webserve.py:1928 sickbeard/webserve.py:1929
-msgid "Preview Rename"
-msgstr "Forhåndsvis omdøb"
+#: sickbeard/webserve.py:1541 sickbeard/webserve.py:1572
+msgid "Unable to refresh this show: {error}"
+msgstr ""
+
+#: sickbeard/webserve.py:1562
+msgid "New location <tt>{location}</tt> does not exist"
+msgstr ""
+
+#: sickbeard/webserve.py:1589
+msgid "Unable to update show: {error}"
+msgstr ""
+
+#: sickbeard/webserve.py:1596
+msgid "Unable to force an update on scene exceptions of the show."
+msgstr ""
+
+#: sickbeard/webserve.py:1603
+msgid "Unable to force an update on scene numbering of the show."
+msgstr ""
+
+#: sickbeard/webserve.py:1609 sickbeard/webserve.py:3448
+msgid "{num_errors:d} error{plural} while saving changes:"
+msgstr ""
+
+#: sickbeard/webserve.py:1620
+msgid "{show_name} has been {paused_resumed}"
+msgstr ""
+
+#: sickbeard/webserve.py:1620
+msgid "resumed"
+msgstr "genoptaget"
+
+#: sickbeard/webserve.py:1620
+msgid "paused"
+msgstr ""
+
+#: sickbeard/webserve.py:1632
+msgid "{show_name} has been {deleted_trashed} {was_deleted}"
+msgstr ""
+
+#: sickbeard/webserve.py:1634
+msgid "deleted"
+msgstr "slettet"
+
+#: sickbeard/webserve.py:1634
+msgid "trashed"
+msgstr "slettet"
+
+#: sickbeard/webserve.py:1635
+msgid "(media untouched)"
+msgstr ""
+
+#: sickbeard/webserve.py:1635
+msgid "(with all related media)"
+msgstr ""
+
+#: sickbeard/webserve.py:1656
+msgid "Unable to refresh this show."
+msgstr ""
+
+#: sickbeard/webserve.py:1676
+msgid "Unable to update this show."
+msgstr ""
+
+#: sickbeard/webserve.py:1715
+msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
+msgstr ""
+
+#: sickbeard/webserve.py:1717
+msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
+msgstr ""
+
+#: sickbeard/webserve.py:1726
+msgid "Library update command sent to Plex Media Server host: {plex_server}"
+msgstr ""
+
+#: sickbeard/webserve.py:1729
+msgid "Unable to contact Plex Media Server host: {plex_server}"
+msgstr ""
+
+#: sickbeard/webserve.py:1741
+msgid "Library update command sent to Emby host: {emby_host}"
+msgstr ""
+
+#: sickbeard/webserve.py:1743
+msgid "Unable to contact Emby host: {emby_host}"
+msgstr ""
+
+#: sickbeard/webserve.py:1753 sickbeard/webserve.py:1936
+msgid "You must specify a show and at least one episode"
+msgstr ""
+
+#: sickbeard/webserve.py:1762
+msgid "Invalid status"
+msgstr "Ugyldig status"
+
+#: sickbeard/webserve.py:1854
+msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
+msgstr ""
+
+#: sickbeard/webserve.py:1861 sickbeard/webserve.py:1880
+#: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
+#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
+msgid "Season"
+msgstr "Sæson"
+
+#: sickbeard/webserve.py:1868
+msgid "Backlog started"
+msgstr ""
+
+#: sickbeard/webserve.py:1873
+msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
+msgstr ""
+
+#: sickbeard/webserve.py:1887
+msgid "Retry Search started"
+msgstr ""
+
+#: sickbeard/webserve.py:1897
+msgid "You must specify a show"
+msgstr "Du skal angive et show"
+
+#: sickbeard/webserve.py:1907 sickbeard/webserve.py:1945
+msgid "Can't rename episodes when the show dir is missing."
+msgstr "Kan ikke omdøbe episoder, når serie mappe mangler."
+
+#: sickbeard/webserve.py:2097
+msgid "New subtitles downloaded: {new_subtitle_languages}"
+msgstr ""
+
+#: sickbeard/webserve.py:2099
+msgid "No subtitles downloaded"
+msgstr ""
 
 #: sickbeard/webserve.py:2225 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:207
 msgid "IRC"
 msgstr "IRC"
 
+#: sickbeard/webserve.py:2238
+msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
+msgstr ""
+
+#: sickbeard/webserve.py:2245 sickbeard/webserve.py:2263
+msgid "The was a problem connecting to github, please refresh and try again"
+msgstr ""
+
 #: sickbeard/webserve.py:2247 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:206
 msgid "News"
 msgstr "Nyheder"
 
+#: sickbeard/webserve.py:2260
+msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
+msgstr ""
+
 #: sickbeard/webserve.py:2265 gui/slick/views/layouts/main.mako:208
 msgid "Changelog"
 msgstr "Ændringslog"
 
-#: sickbeard/webserve.py:2275 sickbeard/webserve.py:4203
+#: sickbeard/webserve.py:2275 sickbeard/webserve.py:3745 sickbeard/webserve.py:4163
 #: gui/slick/views/layouts/main.mako:175
 msgid "Post Processing"
 msgstr "Efterbehandling"
 
-#: sickbeard/webserve.py:2319 gui/slick/views/layouts/main.mako:113
+#: sickbeard/webserve.py:2317 gui/slick/views/layouts/main.mako:113
 msgid "Add Shows"
 msgstr "Tilføj show"
 
-#: sickbeard/webserve.py:2504
+#: sickbeard/webserve.py:2382
+msgid "No folders selected."
+msgstr ""
+
+#: sickbeard/webserve.py:2502
 msgid "New Show"
 msgstr "Nyt show"
 
-#: sickbeard/webserve.py:2644
+#: sickbeard/webserve.py:2517
+msgid "Trending Shows"
+msgstr ""
+
+#: sickbeard/webserve.py:2519 sickbeard/webserve.py:2642
 msgid "Popular Shows"
 msgstr "Populære Shows"
 
-#: sickbeard/webserve.py:2664 sickbeard/webserve.py:2665
+#: sickbeard/webserve.py:2521 sickbeard/webserve.py:2535
+msgid "Most Anticipated Shows"
+msgstr ""
+
+#: sickbeard/webserve.py:2531 gui/slick/views/addShows_trendingShows.mako:47
+msgid "New Shows"
+msgstr "Nye Shows"
+
+#: sickbeard/webserve.py:2533 gui/slick/views/addShows_trendingShows.mako:48
+msgid "Season Premieres"
+msgstr "Sæson Præmiere"
+
+#: sickbeard/webserve.py:2662 sickbeard/webserve.py:2663
 msgid "Existing Show"
 msgstr "Eksisterende show"
 
-#: sickbeard/webserve.py:2972 gui/slick/views/layouts/main.mako:138
+#: sickbeard/webserve.py:2743
+msgid "No root directories setup, please go back and add one."
+msgstr ""
+
+#: sickbeard/webserve.py:2753 sickbeard/webserve.py:2869
+msgid "Show added"
+msgstr ""
+
+#: sickbeard/webserve.py:2753
+msgid "Adding the specified show {show_name}"
+msgstr ""
+
+#: sickbeard/webserve.py:2794
+msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
+msgstr ""
+
+#: sickbeard/webserve.py:2803
+msgid "Unknown error. Unable to add show due to problem with show selection."
+msgstr ""
+
+#: sickbeard/webserve.py:2827 sickbeard/webserve.py:2837
+msgid "Unable to add show"
+msgstr ""
+
+#: sickbeard/webserve.py:2827
+msgid "Folder {show_dir} exists already"
+msgstr ""
+
+#: sickbeard/webserve.py:2838
+msgid "Unable to create the folder {show_dir}, can't add the show"
+msgstr ""
+
+#: sickbeard/webserve.py:2869
+msgid "Adding the specified show into {show_dir}"
+msgstr "Tilføjer det angivne show i {show_dir}"
+
+#: sickbeard/webserve.py:2946
+msgid "Shows Added"
+msgstr "Shows tilføjet"
+
+#: sickbeard/webserve.py:2947
+msgid "Automatically added {num_shows} from their existing metadata files"
+msgstr "Automatisk tilføjet {num_shows} fra deres eksisterende metadatafiler"
+
+#: sickbeard/webserve.py:2964 gui/slick/views/layouts/main.mako:138
 msgid "Mass Update"
 msgstr "Masseopdatering"
 
-#: sickbeard/webserve.py:3010 sickbeard/webserve.py:3037 sickbeard/webserve.py:3112
-#: sickbeard/webserve.py:3113
+#: sickbeard/webserve.py:3002 sickbeard/webserve.py:3029 sickbeard/webserve.py:3104
+#: sickbeard/webserve.py:3105
 msgid "Episode Overview"
 msgstr "Episode oversigt"
 
-#: sickbeard/webserve.py:3145
+#: sickbeard/webserve.py:3137
 msgid "Missing Subtitles"
 msgstr "Mangler undertekster"
 
-#: sickbeard/webserve.py:3228 sickbeard/webserve.py:3229
+#: sickbeard/webserve.py:3222 sickbeard/webserve.py:3223
 #: gui/slick/views/layouts/main.mako:139
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Backlog oversigt"
 
-#: sickbeard/webserve.py:3353
+#: sickbeard/webserve.py:3347
 msgid "Mass Edit"
-msgstr ""
+msgstr "Masse Rediger"
 
-#: sickbeard/webserve.py:3603 gui/slick/views/layouts/main.mako:152
-msgid "Manage Torrents"
-msgstr "Administrer Torrents"
+#: sickbeard/webserve.py:3494
+msgid "Unable to update show: {excption_format}"
+msgstr "Kunne ikke opdatere show: {excption_format}"
 
-#: sickbeard/webserve.py:3624 gui/slick/views/layouts/main.mako:155
-msgid "Failed Downloads"
-msgstr "Mislykkede overførsler"
+#: sickbeard/webserve.py:3502
+msgid "Unable to refresh show {show_name}: {excption_format}"
+msgstr "Kunne ikke genopfrisk show {show_name}: {excption_format}"
 
-#: sickbeard/webserve.py:3642 gui/slick/views/layouts/main.mako:140
-msgid "Manage Searches"
-msgstr "Administrer søgninger"
+#: sickbeard/webserve.py:3513
+msgid "Errors encountered"
+msgstr "Stødt på fejl"
 
-#: sickbeard/webserve.py:3755 gui/slick/views/config_general.mako:67
-#: gui/slick/views/layouts/main.mako:130
-msgid "History"
-msgstr "Historik"
+#: sickbeard/webserve.py:3519 gui/slick/views/config_general.mako:171
+msgid "Updates"
+msgstr "Opdateringer"
 
-#: sickbeard/webserve.py:3826 sickbeard/webserve.py:3827
-msgid "SickRage Configuration"
-msgstr "Konfiguration af SickRage"
+#: sickbeard/webserve.py:3524
+msgid "Refreshes"
+msgstr "Opdaterer"
 
-#: sickbeard/webserve.py:3841
-msgid "Config - General"
-msgstr "Konfigurer - General"
+#: sickbeard/webserve.py:3529
+msgid "Renames"
+msgstr "Omdøber"
 
-#: sickbeard/webserve.py:3841
-msgid "General Configuration"
-msgstr "General Konfiguration"
-
-#: sickbeard/webserve.py:4004
-msgid "Config - Backup/Restore"
-msgstr "Konfigurer - Backup/gendannelse"
-
-#: sickbeard/webserve.py:4005
-msgid "Backup/Restore"
-msgstr "Backup/gendannelse"
-
-#: sickbeard/webserve.py:4067
-msgid "Config - Episode Search"
-msgstr "Konfigurer - Episode søgning"
-
-#: sickbeard/webserve.py:4068 gui/slick/views/layouts/main.mako:172
-msgid "Search Settings"
-msgstr "Søgeindstillinger"
-
-#: sickbeard/webserve.py:4202
-msgid "Config - Post Processing"
-msgstr "Konfigurer - efterbehandling"
-
-#: sickbeard/webserve.py:4406
-msgid "Config - Providers"
-msgstr "Konfigurer - udbydere"
-
-#: sickbeard/webserve.py:4407 gui/slick/views/layouts/main.mako:173
-msgid "Search Providers"
-msgstr "Søgemaskiner"
-
-#: sickbeard/webserve.py:4899
-msgid "Config - Notifications"
-msgstr "Konfigurer - meddelelser"
-
-#: sickbeard/webserve.py:4900 gui/slick/views/layouts/main.mako:176
-msgid "Notifications"
-msgstr "Notifikationer"
-
-#: sickbeard/webserve.py:5142
-msgid "Config - Subtitles"
-msgstr "Konfigurer - undertekster"
-
-#: sickbeard/webserve.py:5143 gui/slick/views/displayShow.mako:214
-#: gui/slick/views/displayShow.mako:330 gui/slick/views/displayShow.mako:359
-#: gui/slick/views/displayShow.mako:389 gui/slick/views/editShow.mako:91
-#: gui/slick/views/inc_addShowOptions.mako:20
+#: sickbeard/webserve.py:3534 sickbeard/webserve.py:5104
+#: gui/slick/views/displayShow.mako:214 gui/slick/views/displayShow.mako:330
+#: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
+#: gui/slick/views/editShow.mako:91 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
 msgstr "Undertekster"
 
-#: sickbeard/webserve.py:5213
-msgid "Config - Anime"
-msgstr "Konfigurer - Anime"
+#: sickbeard/webserve.py:3539
+msgid "The following actions were queued"
+msgstr "Følgende aktioner blev sat i kø"
 
-#: sickbeard/webserve.py:5214 gui/slick/views/displayShow.mako:220
-#: gui/slick/views/editShow.mako:128 gui/slick/views/home.mako:258
-#: gui/slick/views/inc_addShowOptions.mako:66 gui/slick/views/manage.mako:45
-#: gui/slick/views/manage_massEdit.mako:188 gui/slick/views/layouts/main.mako:177
+#: sickbeard/webserve.py:3559
+msgid "For best results please set the Download Station alias as"
+msgstr "For de bedste resultater skal du indstille Download Station alias som"
+
+#: sickbeard/webserve.py:3560
+msgid "You can check this setting in the Synology DSM"
+msgstr "Du kan kontrollere denne indstilling i Synology DSM"
+
+#: sickbeard/webserve.py:3560 sickbeard/webserve.py:3562
+msgid "Control Panel"
+msgstr "Kontrolpanel"
+
+#: sickbeard/webserve.py:3560
+msgid "Application Portal"
+msgstr "Applikations Portal"
+
+#: sickbeard/webserve.py:3561
+msgid "Make sure you allow DSM to be embedded with iFrames too in"
+msgstr "Vær sikker du tilllader at DSM integreres med iFrames også i"
+
+#: sickbeard/webserve.py:3562
+msgid "DSM Settings"
+msgstr "DSM indstillinger"
+
+#: sickbeard/webserve.py:3562
+msgid "Security"
+msgstr "Sikkerhed"
+
+#: sickbeard/webserve.py:3570 gui/slick/views/layouts/main.mako:152
+msgid "Manage Torrents"
+msgstr "Administrer Torrents"
+
+#: sickbeard/webserve.py:3591 gui/slick/views/layouts/main.mako:155
+msgid "Failed Downloads"
+msgstr "Mislykkede overførsler"
+
+#: sickbeard/webserve.py:3609 gui/slick/views/layouts/main.mako:140
+msgid "Manage Searches"
+msgstr "Administrer søgninger"
+
+#: sickbeard/webserve.py:3617
+msgid "Backlog search started"
+msgstr "Backlog søgning startet"
+
+#: sickbeard/webserve.py:3627
+msgid "Daily search started"
+msgstr "Daglige søgning startet"
+
+#: sickbeard/webserve.py:3636
+msgid "Find propers search started"
+msgstr "Finde \"ordentlige\" søgning startet"
+
+#: sickbeard/webserve.py:3645
+msgid "Subtitle search started"
+msgstr "Undertekster søgning startet"
+
+#: sickbeard/webserve.py:3709
+msgid "Clear History"
+msgstr "Ryd Historik"
+
+#: sickbeard/webserve.py:3710
+msgid "Trim History"
+msgstr "Trim Historie"
+
+#: sickbeard/webserve.py:3714 gui/slick/views/config_general.mako:67
+#: gui/slick/views/layouts/main.mako:130
+msgid "History"
+msgstr "Historik"
+
+#: sickbeard/webserve.py:3720
+msgid "History cleared"
+msgstr "Historik ryddet"
+
+#: sickbeard/webserve.py:3727
+msgid "Removed history entries older than 30 days"
+msgstr "Oversigtsposter ældre end 30 dage fjernet"
+
+#: sickbeard/webserve.py:3740 gui/slick/views/layouts/main.mako:170
+msgid "General"
+msgstr "Generelt"
+
+#: sickbeard/webserve.py:3741 sickbeard/webserve.py:3965
+msgid "Backup/Restore"
+msgstr "Backup/gendannelse"
+
+#: sickbeard/webserve.py:3742 sickbeard/webserve.py:4028
+#: gui/slick/views/layouts/main.mako:172
+msgid "Search Settings"
+msgstr "Søgeindstillinger"
+
+#: sickbeard/webserve.py:3743 sickbeard/webserve.py:4367
+#: gui/slick/views/layouts/main.mako:173
+msgid "Search Providers"
+msgstr "Søgemaskiner"
+
+#: sickbeard/webserve.py:3744 gui/slick/views/layouts/main.mako:174
+msgid "Subtitles Settings"
+msgstr "Undertekstindstillinger"
+
+#: sickbeard/webserve.py:3746 sickbeard/webserve.py:4860
+#: gui/slick/views/layouts/main.mako:176
+msgid "Notifications"
+msgstr "Notifikationer"
+
+#: sickbeard/webserve.py:3747 sickbeard/webserve.py:5176
+#: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:128
+#: gui/slick/views/home.mako:258 gui/slick/views/inc_addShowOptions.mako:66
+#: gui/slick/views/manage.mako:45 gui/slick/views/manage_massEdit.mako:188
+#: gui/slick/views/layouts/main.mako:177
 msgid "Anime"
 msgstr "Anime"
 
-#: sickbeard/webserve.py:5372
+#: sickbeard/webserve.py:3785 sickbeard/webserve.py:3786
+msgid "SickRage Configuration"
+msgstr "Konfiguration af SickRage"
+
+#: sickbeard/webserve.py:3800
+msgid "Config - General"
+msgstr "Konfigurer - General"
+
+#: sickbeard/webserve.py:3800
+msgid "General Configuration"
+msgstr "General Konfiguration"
+
+#: sickbeard/webserve.py:3935
+msgid "Unable to create directory {directory}, https key directory not changed."
+msgstr ""
+
+#: sickbeard/webserve.py:3948 sickbeard/webserve.py:4146 sickbeard/webserve.py:4282
+#: sickbeard/webserve.py:4843 sickbeard/webserve.py:5087 sickbeard/webserve.py:5158
+#: sickbeard/webserve.py:5195
+msgid "Error(s) Saving Configuration"
+msgstr "Fejl ved gemning af konfiguration"
+
+#: sickbeard/webserve.py:3951 sickbeard/webserve.py:4149 sickbeard/webserve.py:4285
+#: sickbeard/webserve.py:4846 sickbeard/webserve.py:5090 sickbeard/webserve.py:5161
+#: sickbeard/webserve.py:5198
+msgid "Configuration Saved"
+msgstr "Konfiguration Gemt"
+
+#: sickbeard/webserve.py:3964
+msgid "Config - Backup/Restore"
+msgstr "Konfigurer - Backup/gendannelse"
+
+#: sickbeard/webserve.py:4027
+msgid "Config - Episode Search"
+msgstr "Konfigurer - Episode søgning"
+
+#: sickbeard/webserve.py:4162
+msgid "Config - Post Processing"
+msgstr "Konfigurer - efterbehandling"
+
+#: sickbeard/webserve.py:4198
+msgid "Unpacking Not Supported, disabling unpack setting"
+msgstr "Udpakning ikke understøttet, deaktiverer udpak indstilling"
+
+#: sickbeard/webserve.py:4250 sickbeard/webserve.py:4261
+msgid "You tried saving an invalid anime naming config, not saving your naming settings"
+msgstr "Du prøvede at gemme en ugyldig anime navngivnings config, gemmer ikke indstillingerne for navngivning"
+
+#: sickbeard/webserve.py:4252 sickbeard/webserve.py:4263
+msgid "You tried saving an invalid naming config, not saving your naming settings"
+msgstr "Du prøvede at gemme en ugyldig navngivning config, gemmer ikke indstillingerne for navngivning"
+
+#: sickbeard/webserve.py:4366
+msgid "Config - Providers"
+msgstr "Konfigurer - udbydere"
+
+#: sickbeard/webserve.py:4423
+msgid "No Provider Name specified"
+msgstr "Ingen udbydernavn angivet"
+
+#: sickbeard/webserve.py:4425
+msgid "No Provider Url specified"
+msgstr "Ingen udbyder webadresse angivet"
+
+#: sickbeard/webserve.py:4427
+msgid "No Provider Api key specified"
+msgstr "Ingen udbyder Api-nøgle angivet"
+
+#: sickbeard/webserve.py:4859
+msgid "Config - Notifications"
+msgstr "Konfigurer - meddelelser"
+
+#: sickbeard/webserve.py:5103
+msgid "Config - Subtitles"
+msgstr "Konfigurer - undertekster"
+
+#: sickbeard/webserve.py:5175
+msgid "Config - Anime"
+msgstr "Konfigurer - Anime"
+
+#: sickbeard/webserve.py:5211
+msgid "Clear Errors"
+msgstr "Ret fejl"
+
+#: sickbeard/webserve.py:5217
+msgid "Clear Warnings"
+msgstr "Ryd advarsler"
+
+#: sickbeard/webserve.py:5223
+msgid "Submit Errors"
+msgstr "Indsend fejl"
+
+#: sickbeard/webserve.py:5238
+msgid "Logs &amp; Errors"
+msgstr "Logs &amp; fejl"
+
+#: sickbeard/webserve.py:5349
 msgid "Log File"
 msgstr "Logfiler"
 
-#: sickbeard/webserve.py:5372
+#: sickbeard/webserve.py:5349
 msgid "Logs"
 msgstr "Logfiler"
 
@@ -375,7 +1110,7 @@ msgstr "Find et show på theTVDB"
 
 #: gui/slick/views/addShows_newShow.mako:36
 msgid "Show retrieved from existing metadata"
-msgstr ""
+msgstr "Show hentet fra eksisterende metadata"
 
 #: gui/slick/views/addShows_newShow.mako:48
 msgid "All Indexers"
@@ -395,7 +1130,7 @@ msgstr "Vælg den overordnede mappe"
 
 #: gui/slick/views/addShows_newShow.mako:70
 msgid "Pre-chosen Destination Folder"
-msgstr ""
+msgstr "Forhånds valgte destinations mappe"
 
 #: gui/slick/views/addShows_newShow.mako:79
 msgid "Customize options"
@@ -460,14 +1195,6 @@ msgstr "Vælg Trakt liste"
 msgid "Most Anticipated"
 msgstr "Mest ventede"
 
-#: gui/slick/views/addShows_trendingShows.mako:47
-msgid "New Shows"
-msgstr "Nye Shows"
-
-#: gui/slick/views/addShows_trendingShows.mako:48
-msgid "Season Premieres"
-msgstr "Sæson Præmiere"
-
 #: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Trending"
 msgstr "Aktuelt"
@@ -494,7 +1221,7 @@ msgstr "Anbefalet"
 
 #: gui/slick/views/apiBuilder.mako:74
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Skift navigation"
 
 #: gui/slick/views/apiBuilder.mako:88
 msgid "Profile"
@@ -534,7 +1261,7 @@ msgstr "Tilladte værdier"
 
 #: gui/slick/views/apiBuilder.mako:149
 msgid "Playground"
-msgstr ""
+msgstr "Legeplads"
 
 #: gui/slick/views/apiBuilder.mako:170
 msgid "Clear"
@@ -584,7 +1311,7 @@ msgstr "OS"
 
 #: gui/slick/views/config.mako:31
 msgid "Locale"
-msgstr ""
+msgstr "Lokalitet"
 
 #: gui/slick/views/config.mako:34
 msgid "User"
@@ -730,6 +1457,7 @@ msgstr "Vil du tilføje efterbehandlet episoder til MyList?"
 #: gui/slick/views/config_notifications.mako:1886
 #: gui/slick/views/config_postProcessing.mako:226
 #: gui/slick/views/config_postProcessing.mako:1064
+#: gui/slick/views/config_postProcessing.mako:1131
 #: gui/slick/views/config_postProcessing.mako:1137
 #: gui/slick/views/config_providers.mako:97
 #: gui/slick/views/config_providers.mako:757 gui/slick/views/config_search.mako:188
@@ -807,11 +1535,11 @@ msgstr "Nogle indstillinger kan kræve en manuel genstart, før de vil træde i 
 
 #: gui/slick/views/config_general.mako:44
 msgid "Default Indexer Language"
-msgstr ""
+msgstr "Indekserings standardsprog"
 
 #: gui/slick/views/config_general.mako:47
 msgid "for adding shows and metadata providers"
-msgstr ""
+msgstr "for at tilføje shows og metadata udbydere"
 
 #: gui/slick/views/config_general.mako:53
 msgid "Launch browser"
@@ -832,11 +1560,11 @@ msgstr "Serier"
 
 #: gui/slick/views/config_general.mako:71
 msgid "when launching SickRage interface"
-msgstr ""
+msgstr "når SickRage interface startes"
 
 #: gui/slick/views/config_general.mako:77
 msgid "Choose hour to update shows"
-msgstr ""
+msgstr "Vælg time at opdatere shows"
 
 #: gui/slick/views/config_general.mako:80
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
@@ -844,15 +1572,15 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:81
 msgid "Note: minutes are randomized each time SickRage is started"
-msgstr ""
+msgstr "Bemærk: minutter er tilfældige hver gang SickRage startes"
 
 #: gui/slick/views/config_general.mako:87
 msgid "Send to trash for actions"
-msgstr ""
+msgstr "Send til papirkurven handlinger"
 
 #: gui/slick/views/config_general.mako:91
 msgid "when using show \"Remove\" and delete files"
-msgstr ""
+msgstr "når du bruger show \"Fjern\" og slette filer"
 
 #: gui/slick/views/config_general.mako:95
 msgid "on scheduled deletes of the oldest log files"
@@ -864,19 +1592,19 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:103
 msgid "Log file folder location"
-msgstr ""
+msgstr "Log fil mappe placering"
 
 #: gui/slick/views/config_general.mako:112
 msgid "Number of Log files saved"
-msgstr ""
+msgstr "Antal logfiler gemt"
 
 #: gui/slick/views/config_general.mako:115
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
-msgstr ""
+msgstr "antallet af logfiler gemmes, når logs roteres(standard: 5) (KRÆVER GENSTART)"
 
 #: gui/slick/views/config_general.mako:125
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
-msgstr ""
+msgstr "maksimale størrelse i MB af logfilen (standard: 1MB) (KRÆVER GENSTART)"
 
 #: gui/slick/views/config_general.mako:132
 msgid "Use initial indexer set to"
@@ -900,11 +1628,7 @@ msgstr "Vis rod mapper"
 
 #: gui/slick/views/config_general.mako:159
 msgid "where the files of shows are located"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:171
-msgid "Updates"
-msgstr "Opdateringer"
+msgstr "hvor filer af shows er placeret"
 
 #: gui/slick/views/config_general.mako:172
 msgid "Options for software updates."
@@ -944,15 +1668,15 @@ msgstr "Informer om software opdatering"
 
 #: gui/slick/views/config_general.mako:213
 msgid "send a message to all enabled notifiers when SickRage has been updated"
-msgstr ""
+msgstr "send en besked til alle aktiverede anmeldere, når SickRage er blevet opdateret"
 
 #: gui/slick/views/config_general.mako:237
 msgid "Display theme"
-msgstr ""
+msgstr "Vis tema"
 
 #: gui/slick/views/config_general.mako:243
 msgid "for appearance to take effect, save then refresh your browser"
-msgstr ""
+msgstr "for at udseende kan træde i kraft, gem og derefter opdatere din browser"
 
 #: gui/slick/views/config_general.mako:249
 msgid "Show all seasons"
@@ -988,11 +1712,11 @@ msgstr "flyt absolutte datoer ind i værktøjstip og vis fx \"Sidste tor\", \"P�
 
 #: gui/slick/views/config_general.mako:285
 msgid "Trim zero padding"
-msgstr ""
+msgstr "Trim nul padding"
 
 #: gui/slick/views/config_general.mako:288
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
-msgstr ""
+msgstr "fjerne den førende nummer \"0\" vist på time af dagen, og datoen for måned"
 
 #: gui/slick/views/config_general.mako:295
 msgid "Date style"
@@ -1000,7 +1724,7 @@ msgstr "Datoformat"
 
 #: gui/slick/views/config_general.mako:303
 msgid "Use System Default"
-msgstr ""
+msgstr "Anvend systemets standardvalgte"
 
 #: gui/slick/views/config_general.mako:314
 msgid "Time style"
@@ -3782,14 +4506,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -3825,6 +4541,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83
@@ -3986,11 +4706,6 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:83
 #: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
 msgid "Specials"
-msgstr ""
-
-#: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
-#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
-msgid "Season"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:108
@@ -4302,12 +5017,6 @@ msgstr ""
 msgid "Scene Exception"
 msgstr ""
 
-#: gui/slick/views/editShow.mako:222 gui/slick/views/inc_blackwhitelist.mako:25
-#: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
-#: gui/slick/views/manage_failedDownloads.mako:28
-msgid "Remove"
-msgstr ""
-
 #: gui/slick/views/editShow.mako:224
 msgid "This will affect episode search on NZB and torrent providers. This list appends to the original show name."
 msgstr ""
@@ -4404,16 +5113,8 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: gui/slick/views/home.mako:70 gui/slick/views/schedule.mako:47
-msgid "Poster"
-msgstr ""
-
 #: gui/slick/views/home.mako:71
 msgid "Small Poster"
-msgstr ""
-
-#: gui/slick/views/home.mako:72 gui/slick/views/schedule.mako:49
-msgid "Banner"
 msgstr ""
 
 #: gui/slick/views/home.mako:73
@@ -4446,11 +5147,6 @@ msgstr ""
 
 #: gui/slick/views/home.mako:245
 msgid "Prev Ep"
-msgstr ""
-
-#: gui/slick/views/home.mako:246 gui/slick/views/home.mako:258
-#: gui/slick/views/schedule.mako:31 gui/slick/views/schedule.mako:81
-msgid "Show"
 msgstr ""
 
 #: gui/slick/views/home.mako:249
@@ -4597,11 +5293,6 @@ msgstr ""
 msgid "New"
 msgstr ""
 
-#: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
-#: gui/slick/views/manage_massEdit.mako:70
-msgid "Edit"
-msgstr ""
-
 #: gui/slick/views/inc_rootDirs.mako:27
 msgid "Set as Default"
 msgstr ""
@@ -4671,7 +5362,11 @@ msgid "Manage"
 msgstr ""
 
 #: gui/slick/views/manage_episodeStatuses.mako:42
-msgid "Shows containing ${common.statusStrings[whichStatus]} episodes"
+msgid "Shows containing"
+msgstr ""
+
+#: gui/slick/views/manage_episodeStatuses.mako:42
+msgid "episodes"
 msgstr ""
 
 #: gui/slick/views/manage_episodeStatuses.mako:55
@@ -4895,14 +5590,6 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
-msgstr ""
-
-#: gui/slick/views/schedule.mako:48
-msgid "Calendar"
-msgstr ""
-
-#: gui/slick/views/schedule.mako:50
-msgid "List"
 msgstr ""
 
 #: gui/slick/views/schedule.mako:57
@@ -5153,16 +5840,8 @@ msgstr ""
 msgid "Help &amp; Info"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:170
-msgid "General"
-msgstr ""
-
 #: gui/slick/views/layouts/main.mako:171
 msgid "Backup &amp; Restore"
-msgstr ""
-
-#: gui/slick/views/layouts/main.mako:174
-msgid "Subtitles Settings"
 msgstr ""
 
 #: gui/slick/views/layouts/main.mako:202
