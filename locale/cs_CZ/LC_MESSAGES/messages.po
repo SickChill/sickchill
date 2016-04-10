@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:35-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:15-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -27,39 +27,39 @@ msgstr "Stahování dokončeno"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Titulky staženy"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage aktualizován"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage aktualizován na verzi #: "
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage nové přihlášení"
 
 #: sickbeard/common.py:81
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "Nové přihlášení z IP adresy: {0}. http://geomaplookup.NET/?IP={0}"
 
 #: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Nevysíláno"
 
 #: sickbeard/common.py:599 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
-msgstr ""
+msgstr "Nalezeno"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
@@ -68,127 +68,127 @@ msgstr "Staženo"
 
 #: sickbeard/common.py:601 gui/slick/views/displayShow.mako:256
 msgid "Skipped"
-msgstr ""
+msgstr "Přeskočeno"
 
 #: sickbeard/common.py:602
 msgid "Snatched (Proper)"
-msgstr ""
+msgstr "Nalezeno (Vhodný)"
 
 #: sickbeard/common.py:603 gui/slick/views/displayShow.mako:253
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Požadováno"
 
 #: sickbeard/common.py:604
 msgid "Archived"
-msgstr ""
+msgstr "Archivováno"
 
 #: sickbeard/common.py:605
 msgid "Ignored"
-msgstr ""
+msgstr "Ignorováno"
 
 #: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "S titulky"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:59
 msgid "Failed"
-msgstr ""
+msgstr "Selhalo"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
-msgstr ""
+msgstr "Nalezeno (Nejlepší)"
 
 #: sickbeard/webserve.py:176
 msgid "Mako Error"
-msgstr ""
+msgstr "Mako chyba"
 
 #: sickbeard/webserve.py:201
 msgid "Oops"
-msgstr ""
+msgstr "Chybička se vloudila"
 
 #: sickbeard/webserve.py:203
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Použit chybný API klíč"
 
 #: sickbeard/webserve.py:304 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Přihlášení"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "Nevygenerován API klíč"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
-msgstr ""
+msgstr "API Builder"
 
 #: sickbeard/webserve.py:498
 msgid "Sort by:"
-msgstr ""
+msgstr "Seřadit podle:"
 
 #: sickbeard/webserve.py:506
 msgid "Layout:"
-msgstr ""
+msgstr "Rozložení:"
 
 #: sickbeard/webserve.py:508 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
-msgstr ""
+msgstr "Banner"
 
 #: sickbeard/webserve.py:509 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
-msgstr ""
+msgstr "Plakát"
 
 #: sickbeard/webserve.py:510 gui/slick/views/schedule.mako:50
 msgid "List"
-msgstr ""
+msgstr "Seznam"
 
 #: sickbeard/webserve.py:511 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "Kalendář"
 
 #: sickbeard/webserve.py:515
 msgid "View Paused:"
-msgstr ""
+msgstr "Zobrazit pozastavené:"
 
 #: sickbeard/webserve.py:517
 msgid "Hide"
-msgstr ""
+msgstr "Skrýt"
 
 #: sickbeard/webserve.py:519 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "Ukázat"
 
 #: sickbeard/webserve.py:532 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
 msgid "Schedule"
-msgstr ""
+msgstr "Plánování"
 
 #: sickbeard/webserve.py:630
 msgid "Test 1"
-msgstr ""
+msgstr "Test 1"
 
 #: sickbeard/webserve.py:630
 msgid "This is test number 1"
-msgstr ""
+msgstr "Toto je test číslo 1"
 
 #: sickbeard/webserve.py:631
 msgid "Test 2"
-msgstr ""
+msgstr "Test 2"
 
 #: sickbeard/webserve.py:631
 msgid "This is test number 2"
-msgstr ""
+msgstr "To je test číslo 2"
 
 #: sickbeard/webserve.py:683
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "Neplatné parametry seriálu"
 
 #: sickbeard/webserve.py:688
 msgid "Invalid show paramaters"
@@ -200,123 +200,123 @@ msgstr ""
 
 #: sickbeard/webserve.py:698 sickbeard/webserve.py:1800
 msgid "Episode couldn't be retrieved"
-msgstr ""
+msgstr "Epizodu se nepodařilo nalézt"
 
 #: sickbeard/webserve.py:717 sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Home"
-msgstr ""
+msgstr "Hlavní strana"
 
 #: sickbeard/webserve.py:717 gui/slick/views/layouts/main.mako:112
 msgid "Show List"
-msgstr ""
+msgstr "Seznam seriálů"
 
 #: sickbeard/webserve.py:757
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr ""
+msgstr "Chyba: Nepodporovaný požadavek. Odešlete žádost jsonp s proměnnou 'callback' v řetězci dotazu."
 
 #: sickbeard/webserve.py:801
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "Povedlo se. Připojeno a přihlášeno"
 
 #: sickbeard/webserve.py:803
 msgid "Authentication failed. SABnzbd expects"
-msgstr ""
+msgstr "Autentizace selhala. SABnzbd očekává"
 
 #: sickbeard/webserve.py:803
 msgid "as authentication method"
-msgstr ""
+msgstr "jako metodu ověřování"
 
 #: sickbeard/webserve.py:805
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "Nelze se připojit k hostiteli"
 
 #: sickbeard/webserve.py:826
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "SMS odeslána úspěšně"
 
 #: sickbeard/webserve.py:828
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Problém při odesílání SMS: {message}"
 
 #: sickbeard/webserve.py:835
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Oznámení Telegram bylo úspěšně dokončeno. Zkontrolujte své klienty Telegram, a ujistěte se, že to fungovalo"
 
 #: sickbeard/webserve.py:837
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Chyba při odesílání oznámení Telegram: {message}"
 
 #: sickbeard/webserve.py:847
 msgid " with password"
-msgstr ""
+msgstr " s heslem"
 
 #: sickbeard/webserve.py:849
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "Registrace a testování Growl se zdařila {growl_host}"
 
 #: sickbeard/webserve.py:851
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Registrace a testování Growl se nezdařilo {growl_host}"
 
 #: sickbeard/webserve.py:858
 msgid "Test prowl notice sent successfully"
-msgstr ""
+msgstr "Zkouška Prowl upozornění úspěšně odeslána"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice failed"
-msgstr ""
+msgstr "Zkouška Prowl upozornění se nezdařila"
 
 #: sickbeard/webserve.py:867
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr ""
+msgstr "Boxcar2 oznámení bylo úspěšné. Zkontrolujte vaše klienty Boxcar2 a ujistěte se, že to fungovalo"
 
 #: sickbeard/webserve.py:869
 msgid "Error sending Boxcar2 notification"
-msgstr ""
+msgstr "Chyba při odesíláni Boxcar2 upozornění"
 
 #: sickbeard/webserve.py:876
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr ""
+msgstr "Pushover oznámení bylo úspěšné. Zkontrolujte vaše klienty Pushover a ujistěte se, že to fungovalo"
 
 #: sickbeard/webserve.py:878
 msgid "Error sending Pushover notification"
-msgstr ""
+msgstr "Chyba při odesílání Pushover oznámení"
 
 #: sickbeard/webserve.py:890
 msgid "Key verification successful"
-msgstr ""
+msgstr "Ověření klíče úspěšné"
 
 #: sickbeard/webserve.py:892
 msgid "Unable to verify key"
-msgstr ""
+msgstr "Nelze ověřit klíč"
 
 #: sickbeard/webserve.py:899
 msgid "Tweet successful, check your twitter to make sure it worked"
-msgstr ""
+msgstr "Tweet úspěšný. Zkontrolujte vaše Twitter klienty a ujistěte se, že to fungovalo"
 
 #: sickbeard/webserve.py:901
 msgid "Error sending tweet"
-msgstr ""
+msgstr "Chyba při odesílání Tweetu"
 
 #: sickbeard/webserve.py:911
 msgid "Test KODI notice sent successfully to {kodi_host}"
-msgstr ""
+msgstr "Zkouška KODI oznámení úspěšně odeslána na {kodi_host}"
 
 #: sickbeard/webserve.py:913
 msgid "Test KODI notice failed to {kodi_host}"
-msgstr ""
+msgstr "Zkouška KODI oznámení se nezdařila {kodi_host}"
 
 #: sickbeard/webserve.py:928
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "Zkouška oznámení úspěšně odeslána na Plex Home Theater... {plex_clients}"
 
 #: sickbeard/webserve.py:930
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "Zkouška oznámení pro Plex Home Theater se nezdařila... {plex_clients}"
 
 #: sickbeard/webserve.py:933
 msgid "Tested Plex Home Theater(s)"
-msgstr ""
+msgstr "Testované Plex Home Theater(s)"
 
 #: sickbeard/webserve.py:947
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -4502,14 +4498,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4545,6 +4533,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83

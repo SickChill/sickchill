@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-09 21:34-0700\n"
-"PO-Revision-Date: 2016-04-10 00:36-0400\n"
+"POT-Creation-Date: 2016-04-10 14:14-0700\n"
+"PO-Revision-Date: 2016-04-10 17:16-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -119,7 +119,7 @@ msgstr "Användarnamn"
 
 #: sickbeard/webserve.py:394
 msgid "API Key not generated"
-msgstr ""
+msgstr "API nyckeln är inte genererad"
 
 #: sickbeard/webserve.py:397
 msgid "API Builder"
@@ -127,7 +127,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:498
 msgid "Sort by:"
-msgstr ""
+msgstr "Sortera efter:"
 
 #: sickbeard/webserve.py:506
 msgid "Layout:"
@@ -149,7 +149,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:511 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "Kalender"
 
 #: sickbeard/webserve.py:515
 msgid "View Paused:"
@@ -157,13 +157,13 @@ msgstr ""
 
 #: sickbeard/webserve.py:517
 msgid "Hide"
-msgstr ""
+msgstr "Dölj"
 
 #: sickbeard/webserve.py:519 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "Visa"
 
 #: sickbeard/webserve.py:532 gui/slick/views/config_general.mako:66
 #: gui/slick/views/layouts/main.mako:126
@@ -200,7 +200,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:698 sickbeard/webserve.py:1800
 msgid "Episode couldn't be retrieved"
-msgstr ""
+msgstr "Avsnittet kunde inte hämtas"
 
 #: sickbeard/webserve.py:717 sickbeard/webserve.py:1174 sickbeard/webserve.py:1203
 msgid "Home"
@@ -288,7 +288,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:892
 msgid "Unable to verify key"
-msgstr ""
+msgstr "Det gick inte att verifiera nyckeln"
 
 #: sickbeard/webserve.py:899
 msgid "Tweet successful, check your twitter to make sure it worked"
@@ -414,11 +414,11 @@ msgstr "Startar om SickRage"
 
 #: sickbeard/webserve.py:1206
 msgid "Update Failed"
-msgstr ""
+msgstr "Uppdateringen misslyckades"
 
 #: sickbeard/webserve.py:1207
 msgid "Update wasn't successful, not restarting. Check your log for more information."
-msgstr ""
+msgstr "Uppdateringen lyckades ej, startar inte om. Se logg för mer information."
 
 #: sickbeard/webserve.py:1214
 msgid "Checking out branch"
@@ -441,7 +441,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1245
 msgid "Invalid show ID: {show}"
-msgstr ""
+msgstr "Ogiltigt serie ID: {show}"
 
 #: sickbeard/webserve.py:1248 sickbeard/webserve.py:1772 sickbeard/webserve.py:1902
 #: sickbeard/webserve.py:1940
@@ -452,22 +452,22 @@ msgstr ""
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
-msgstr ""
+msgstr "Redigera"
 
 #: sickbeard/webserve.py:1297
 msgid "Resume"
-msgstr ""
+msgstr "Fortsätt"
 
 #: sickbeard/webserve.py:1299
 msgid "Pause"
-msgstr ""
+msgstr "Paus"
 
 #: sickbeard/webserve.py:1301 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr ""
+msgstr "Ta bort"
 
 #: sickbeard/webserve.py:1302
 msgid "Re-scan files"
@@ -475,7 +475,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1303
 msgid "Force Full Update"
-msgstr ""
+msgstr "Tvinga full uppdatering"
 
 #: sickbeard/webserve.py:1304
 msgid "Update show in KODI"
@@ -491,7 +491,7 @@ msgstr "Förhandsgranska namn byte"
 
 #: sickbeard/webserve.py:1309
 msgid "Download Subtitles"
-msgstr ""
+msgstr "Ladda ner undertexter"
 
 #: sickbeard/webserve.py:1395
 msgid "No scene exceptions"
@@ -499,11 +499,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1413 sickbeard/webserve.py:1665 sickbeard/webserve.py:1686
 msgid "Invalid show ID"
-msgstr ""
+msgstr "Ogiltigt serie ID"
 
 #: sickbeard/webserve.py:1422 sickbeard/webserve.py:1670 sickbeard/webserve.py:1691
 msgid "Unable to find the specified show"
-msgstr ""
+msgstr "Det gick inte att hitta den angivna serien"
 
 #: sickbeard/webserve.py:1447
 msgid "Unable to retreive Fansub Groups from AniDB."
@@ -515,7 +515,7 @@ msgstr "Redigera program"
 
 #: sickbeard/webserve.py:1541 sickbeard/webserve.py:1572
 msgid "Unable to refresh this show: {error}"
-msgstr ""
+msgstr "Det gick inte att uppdatera denna serien: {error}"
 
 #: sickbeard/webserve.py:1562
 msgid "New location <tt>{location}</tt> does not exist"
@@ -543,7 +543,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1620
 msgid "resumed"
-msgstr ""
+msgstr "återupptogs"
 
 #: sickbeard/webserve.py:1620
 msgid "paused"
@@ -555,7 +555,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1634
 msgid "deleted"
-msgstr ""
+msgstr "raderad"
 
 #: sickbeard/webserve.py:1634
 msgid "trashed"
@@ -684,7 +684,7 @@ msgstr "Lägg till program"
 
 #: sickbeard/webserve.py:2382
 msgid "No folders selected."
-msgstr ""
+msgstr "Inga mappar har valts."
 
 #: sickbeard/webserve.py:2502
 msgid "New Show"
@@ -720,7 +720,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2753 sickbeard/webserve.py:2869
 msgid "Show added"
-msgstr ""
+msgstr "Serien tillagd"
 
 #: sickbeard/webserve.py:2753
 msgid "Adding the specified show {show_name}"
@@ -736,7 +736,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2827 sickbeard/webserve.py:2837
 msgid "Unable to add show"
-msgstr ""
+msgstr "Det gick inte att lägga till serien"
 
 #: sickbeard/webserve.py:2827
 msgid "Folder {show_dir} exists already"
@@ -818,10 +818,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:3559
 msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "download"
 msgstr ""
 
 #: sickbeard/webserve.py:3560
@@ -1359,7 +1355,7 @@ msgstr ""
 
 #: gui/slick/views/config.mako:50
 msgid "Source"
-msgstr ""
+msgstr "Källa"
 
 #: gui/slick/views/config.mako:51
 msgid "IRC Chat"
@@ -4305,7 +4301,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:378
 msgid "Connect using HTTPS"
-msgstr ""
+msgstr "Ansluta via HTTPS"
 
 #: gui/slick/views/config_search.mako:381
 msgid "enable Secure control in NZBGet and set the correct Secure Port here"
@@ -4377,15 +4373,15 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:463
 msgid "Very low"
-msgstr ""
+msgstr "Mycket låg"
 
 #: gui/slick/views/config_search.mako:464
 msgid "Low"
-msgstr ""
+msgstr "Låg"
 
 #: gui/slick/views/config_search.mako:467
 msgid "Very high"
-msgstr ""
+msgstr "Mycket hög"
 
 #: gui/slick/views/config_search.mako:468
 #: gui/slick/views/manage_manageSearches.mako:18
@@ -4393,7 +4389,7 @@ msgstr ""
 #: gui/slick/views/manage_manageSearches.mako:34
 #: gui/slick/views/manage_manageSearches.mako:45
 msgid "Force"
-msgstr ""
+msgstr "Tvinga"
 
 #: gui/slick/views/config_search.mako:470
 msgid "priority for daily snatches (no backlog)"
@@ -4505,14 +4501,6 @@ msgstr ""
 msgid "use high bandwidth allocation if priority is high"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:12
-msgid "Write to search a language and select it"
-msgstr ""
-
-#: gui/slick/views/config_subtitles.mako:20
-msgid "Select Subtitles Download Directory"
-msgstr ""
-
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Subtitles Search"
@@ -4548,6 +4536,10 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
+msgstr ""
+
+#: gui/slick/views/config_subtitles.mako:81
+msgid "Subtitle Find Frequency"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:83
@@ -4652,15 +4644,15 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:171
 msgid "For Windows: "
-msgstr ""
+msgstr "För Windows: "
 
 #: gui/slick/views/config_subtitles.mako:172
 msgid "For Linux: "
-msgstr ""
+msgstr "För Linux: "
 
 #: gui/slick/views/config_subtitles.mako:186
 msgid "Subtitle Providers"
-msgstr ""
+msgstr "Undertextleverantörer"
 
 #: gui/slick/views/config_subtitles.mako:187
 msgid "Check off and drag the plugins into the order you want them to be used."
@@ -4676,15 +4668,15 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:212
 msgid "Provider Settings"
-msgstr ""
+msgstr "Leverantörsinställningar"
 
 #: gui/slick/views/config_subtitles.mako:213
 msgid "Set user and password for each provider"
-msgstr ""
+msgstr "Ange användarnamn och lösenord för varje leverantör"
 
 #: gui/slick/views/config_subtitles.mako:231
 msgid "User Name"
-msgstr ""
+msgstr "Användarnamn"
 
 #: gui/slick/views/displayShow.mako:26
 msgid "Change Show"
@@ -4704,7 +4696,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:74
 msgid "Jump to Season"
-msgstr ""
+msgstr "Hoppa till säsong"
 
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:83
 #: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
@@ -4717,7 +4709,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:121 gui/slick/views/displayShow.mako:132
 msgid "minutes"
-msgstr ""
+msgstr "minuter"
 
 #: gui/slick/views/displayShow.mako:146
 msgid "View other popular ${genre} shows on trakt.tv."
@@ -4927,11 +4919,11 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:37
 msgid "Advanced"
-msgstr ""
+msgstr "Avancerade"
 
 #: gui/slick/views/editShow.mako:42 gui/slick/views/manage_massEdit.mako:35
 msgid "Main Settings"
-msgstr ""
+msgstr "Huvudinställningar"
 
 #: gui/slick/views/editShow.mako:47
 msgid "Show Location"
@@ -4956,7 +4948,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:113
 msgid "Format Settings"
-msgstr ""
+msgstr "Formatinställningar"
 
 #: gui/slick/views/editShow.mako:118 gui/slick/views/manage_massEdit.mako:217
 msgid "Air by date"
@@ -5154,7 +5146,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:249
 msgid "Downloads"
-msgstr ""
+msgstr "Nedladdningar"
 
 #: gui/slick/views/home.mako:251 gui/slick/views/status.mako:37
 #: gui/slick/views/layouts/main.mako:288
@@ -5163,7 +5155,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:279
 msgid "loading"
-msgstr ""
+msgstr "laddar"
 
 #: gui/slick/views/home_massAddTable.mako:7
 msgid "Directory"
