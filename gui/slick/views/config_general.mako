@@ -239,7 +239,7 @@
                                 <span class="component-desc">
                                     <select id="gui_language" name="gui_language" class="form-control input-sm">
                                         <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
-                                        % for lang in [language for language in os.listdir('locale') if '_' in language]:
+                                        % for lang in [language for language in os.listdir(os.path.join(sickbeard.PROG_DIR, 'locale')) if '_' in language]:
                                             <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
                                         % endfor
                                     </select>

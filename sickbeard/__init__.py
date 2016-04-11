@@ -21,6 +21,7 @@
 import datetime
 import socket
 import os
+import sys
 import re
 import shutil
 import shutil_custom
@@ -32,7 +33,6 @@ gettext.install('messages', 'locale', unicode=1, codeset='UTF-8')
 shutil.copyfile = shutil_custom.copyfile_custom
 
 from threading import Lock
-import sys
 
 from github import Github
 
@@ -796,7 +796,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language', '')
         if GUI_LANG:
-            gettext.translation('messages', 'locale', languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+            gettext.translation('messages', os.path.join(PROG_DIR, 'locale'), languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+        else:
+            gettext.install('messages', os.path.join(PROG_DIR, 'locale'), unicode=1, codeset='UTF-8')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
