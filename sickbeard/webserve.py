@@ -1712,9 +1712,9 @@ class Home(WebRoot):
             host = sickbeard.KODI_HOST
 
         if notifiers.kodi_notifier.update_library(showName=showName):
-            ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_host=host))
+            ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
-            ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_host=host))
+            ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
 
         if show_obj:
             return self.redirect('/home/displayShow?show=' + str(show_obj.indexerid))
