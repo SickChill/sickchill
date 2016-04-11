@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import os
     import datetime
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
@@ -232,6 +233,20 @@
 
                     <fieldset class="component-group-list">
 
+                        <div class="field-pair">
+                            <label for="gui_language">
+                                <span class="component-title">${_('Interface Language')}:</span>
+                                <span class="component-desc">
+                                    <select id="gui_language" name="gui_language" class="form-control input-sm">
+                                        <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
+                                        % for lang in [language for language in os.listdir('locale') if '_' in language]:
+                                            <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
+                                        % endfor
+                                    </select>
+                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
+                                </span>
+                            </label>
+                        </div>
                         <div class="field-pair">
                             <label for="theme_name">
                                 <span class="component-title">${_('Display theme')}:</span>

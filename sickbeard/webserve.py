@@ -25,6 +25,7 @@ import time
 import urllib
 import datetime
 import traceback
+import gettext
 import ast
 
 import sickbeard
@@ -3846,9 +3847,19 @@ class ConfigGeneral(Config):
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
-            git_reset=None, git_username=None, git_password=None, display_all_seasons=None):
+            git_reset=None, git_username=None, git_password=None, display_all_seasons=None, gui_language=None):
 
         results = []
+
+        if gui_language != sickbeard.GUI_LANG:
+            if gui_language:
+                # Selected language
+                gettext.translation('messages', 'locale', languages=[gui_language], codeset='UTF-8').install(unicode=1)
+            else:
+                # System default language
+                gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
+
+            sickbeard.GUI_LANG = gui_language
 
         # Misc
         sickbeard.DOWNLOAD_URL = download_url
