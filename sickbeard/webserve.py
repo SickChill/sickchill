@@ -969,9 +969,9 @@ class Home(WebRoot):
         host = config.clean_host(host)
         result = notifiers.emby_notifier.test_notify(urllib.unquote_plus(host), emby_apikey)
         if result:
-            return _("Test notice sent successfully to {empy_host}").format(empy_host=urllib.unquote_plus(host))
+            return _("Test notice sent successfully to {emby_host}").format(emby_host=urllib.unquote_plus(host))
         else:
-            return _("Test notice failed to {empy_host}").format(empy_host=urllib.unquote_plus(host))
+            return _("Test notice failed to {emby_host}").format(emby_host=urllib.unquote_plus(host))
 
     @staticmethod
     def testNMJ(host=None, database=None, mount=None):
@@ -1242,7 +1242,7 @@ class Home(WebRoot):
             show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
             show_obj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
-            return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(str(show)))
+            return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
@@ -1569,7 +1569,7 @@ class Home(WebRoot):
                         try:
                             sickbeard.showQueueScheduler.action.refreshShow(show_obj)
                         except CantRefreshShowException as e:
-                            errors.append(_("Unable to refresh this show: {error}").format(e))
+                            errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB
                             # show_obj.loadEpisodesFromIndexer()
                             # rescan the episodes in the new folder
@@ -1606,7 +1606,7 @@ class Home(WebRoot):
             return errors
 
         if errors:
-            ui.notifications.error(_('{num_errors:d} error{plural} while saving changes:').format(len(errors), plural="" if len(errors) == 1 else "s"),
+            ui.notifications.error(_('{num_errors:d} error{plural} while saving changes:').format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
                                    '<ul>' + '\n'.join(['<li>{0}</li>'.format(error) for error in errors]) + "</ul>")
 
         return self.redirect("/home/displayShow?show=" + show)
@@ -2944,7 +2944,7 @@ class HomeAddShows(Home):
 
         if num_added:
             ui.notifications.message(_("Shows Added"),
-                                     _("Automatically added {num_shows} from their existing metadata files").format(str(num_added)))
+                                     _("Automatically added {num_shows} from their existing metadata files").format(num_shows=str(num_added)))
 
         # if we're done then go home
         if not dirs_only:
@@ -3920,7 +3920,8 @@ class ConfigGeneral(Config):
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 
         if not config.change_LOG_DIR(log_dir, web_log):
-            results += ["Unable to create directory " + ek(os.path.normpath, log_dir) + ", log directory not changed."]
+            results += [
+                _("Unable to create directory {directory}, log directory not changed.").format(directory=ek(os.path.normpath, log_dir))]
 
         sickbeard.API_KEY = api_key
 
@@ -3928,11 +3929,11 @@ class ConfigGeneral(Config):
 
         if not config.change_HTTPS_CERT(https_cert):
             results += [
-                "Unable to create directory " + ek(os.path.normpath, https_cert) + ", https cert directory not changed."]
+                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=ek(os.path.normpath, https_cert))]
 
         if not config.change_HTTPS_KEY(https_key):
             results += [
-                _("Unable to create directory {directory}, https key directory not changed.").format(ek(os.path.normpath, https_key))]
+                _("Unable to create directory {directory}, https key directory not changed.").format(directory=ek(os.path.normpath, https_key))]
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
