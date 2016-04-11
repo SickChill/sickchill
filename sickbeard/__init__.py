@@ -27,7 +27,7 @@ import shutil_custom
 import random
 
 import gettext
-gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
+gettext.install('messages', 'locale', unicode=1, codeset='UTF-8')
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -792,9 +792,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-        GUI_LANG = check_setting_str(CFG, 'GUI', 'language', 'en')
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
+        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
+        GUI_LANG = check_setting_str(CFG, 'GUI', 'language', '')
+        if GUI_LANG:
+            gettext.translation('messages', 'locale', languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
@@ -1619,7 +1621,7 @@ def halt():
 
 
 def sig_handler(signum=None, frame=None):
-    _ = frame
+    frame_ = frame
     if not isinstance(signum, type(None)):
         logger.log(u"Signal {0:d} caught, saving and exiting...".format(int(signum)))
         Shutdown.stop(PID)

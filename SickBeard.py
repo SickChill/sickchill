@@ -46,9 +46,6 @@ Options:
 from __future__ import unicode_literals
 from __future__ import print_function
 
-import gettext
-gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
-
 import codecs
 import datetime
 import getopt
@@ -200,7 +197,7 @@ class SickRage(object):
         threading.currentThread().name = 'MAIN'
 
         try:
-            opts, _ = getopt.getopt(
+            opts, args_ = getopt.getopt(
                 sys.argv[1:], 'hqdp::',
                 ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=', 'datadir=', 'config=', 'noresize']
             )
