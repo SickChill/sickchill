@@ -3854,10 +3854,10 @@ class ConfigGeneral(Config):
         if gui_language != sickbeard.GUI_LANG:
             if gui_language:
                 # Selected language
-                gettext.translation('messages', 'locale', languages=[gui_language], codeset='UTF-8').install(unicode=1)
+                gettext.translation('messages', os.path.join(PROG_DIR, 'locale'), languages=[gui_language], codeset='UTF-8').install(unicode=1)
             else:
                 # System default language
-                gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
+                gettext.install('messages', os.path.join(PROG_DIR, 'locale'), unicode=1, codeset='UTF-8')
 
             sickbeard.GUI_LANG = gui_language
 
