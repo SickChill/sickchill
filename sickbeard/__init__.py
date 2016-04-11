@@ -28,7 +28,7 @@ import shutil_custom
 import random
 
 import gettext
-gettext.install('messages', 'locale', unicode=1, codeset='UTF-8')
+gettext.install('messages', unicode=1, codeset='UTF-8')
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -85,6 +85,7 @@ ENCRYPTION_SECRET = None
 
 PROG_DIR = '.'
 MY_FULLNAME = None
+LOCALE_DIR = 'locale'
 MY_NAME = None
 MY_ARGS = []
 SYS_ENCODING = ''
@@ -645,7 +646,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
-            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
+            LOCALE_DIR  # pylint: disable=global-variable-not-assigned
 
         if __INITIALIZED__:
             return False
@@ -796,9 +798,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language', '')
         if GUI_LANG:
-            gettext.translation('messages', os.path.join(PROG_DIR, 'locale'), languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
         else:
-            gettext.install('messages', os.path.join(PROG_DIR, 'locale'), unicode=1, codeset='UTF-8')
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
