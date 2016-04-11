@@ -31,7 +31,7 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 
 #### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
 
-##### [SickRage Issue Tracker](https://github.com/SickRage/SickRage)
+##### [SickRage Issue Tracker](https://github.com/SickRage/SickRage/issues)
 
 ##### [FAQ](https://github.com/SickRage/SickRage/wiki/Frequently-Asked-Questions)
 
