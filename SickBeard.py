@@ -165,6 +165,7 @@ class SickRage(object):
         sickbeard.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
         sickbeard.MY_NAME = ek(os.path.basename, sickbeard.MY_FULLNAME)
         sickbeard.PROG_DIR = ek(os.path.dirname, sickbeard.MY_FULLNAME)
+        sickbeard.LOCALE_DIR = ek(os.path.join, sickbeard.PROG_DIR, 'locale')
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
 
