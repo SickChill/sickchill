@@ -2275,7 +2275,7 @@ class HomePostProcess(Home):
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="auto", *args, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", proc_type="auto", *args_, **kwargs):
 
         def argToBool(argument):
             _arg = argument.strip().lower() if isinstance(argument, basestring) else argument
@@ -2287,10 +2287,8 @@ class HomePostProcess(Home):
 
             return argument
 
-        if kwargs:
-            logger.log(u'Extra params were passed to processEpisode: KWARGS={kw!r}, ARGS={extra_args!r}'.format
-                       (kw=kwargs, extra_args=args), logger.ERROR)
-
+        proc_type = kwargs.get('type', proc_type)
+        proc_dir = kwargs.get('dir', proc_dir)
         if not proc_dir:
             return self.redirect("/home/postprocess/")
 
