@@ -26,15 +26,15 @@
         ${_('Change Show')}:
         <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="${_('Prev Show')}" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
-            % for curShowList in sortedShowLists:
-                <% curShowType = curShowList[0] %>
-                <% curShowList = curShowList[1] %>
+            % for cur_show_list in sortedShowLists:
+                <% cur_show_type = cur_show_list[0] %>
+                <% cur_show_list = cur_show_list[1] %>
 
                 % if len(sortedShowLists) > 1:
-                    <optgroup label="${curShowType}">
+                    <optgroup label="${cur_show_type}">
                 % endif
-                    % for curShow in curShowList:
-                    <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                    % for cur_show in cur_show_list:
+                    <option value="${cur_show.indexerid}" ${('', 'selected="selected"')[cur_show == show]}>${cur_show.name}</option>
                     % endfor
                 % if len(sortedShowLists) > 1:
                     </optgroup>
@@ -234,9 +234,9 @@
         % if not sickbeard.USE_FAILED_DOWNLOADS:
         <% availableStatus.remove(FAILED) %>
         % endif
-        % for curStatus in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
-            % if curStatus not in [DOWNLOADED, ARCHIVED]:
-            <option value="${curStatus}">${statusStrings[curStatus]}</option>
+        % for cur_status in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
+            % if cur_status not in [DOWNLOADED, ARCHIVED]:
+            <option value="${cur_status}">${statusStrings[cur_status]}</option>
             % endif
         % endfor
         </select>
@@ -268,7 +268,7 @@
 <br>
 
 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
-    <% curSeason = -1 %>
+    <% cur_season = -1 %>
     <% odd = 0 %>
     % for epResult in sql_results:
         <%
@@ -311,8 +311,8 @@
         if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
             epLoc = epLoc[len(show._location)+1:]
         %>
-        % if int(epResult["season"]) != curSeason:
-            % if curSeason == -1:
+        % if int(epResult["season"]) != cur_season:
+            % if cur_season == -1:
     <thead>
         <tr class="seasoncols" style="display:none;">
                 <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
@@ -393,13 +393,13 @@
             % endif
     </tbody>
         % if sickbeard.DISPLAY_ALL_SEASONS is False:
-        <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
+        <tbody class="toggle collapse${("", " in")[cur_season == -1]}" id="collapseSeason-${epResult['season']}">
         % else:
         <tbody>
         % endif
-        <% curSeason = int(epResult["season"]) %>
+        <% cur_season = int(epResult["season"]) %>
         % endif
-        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
+        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${cur_season} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
                     <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />
@@ -486,11 +486,11 @@
                 % endif
             % endfor
             </td>
-                <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
-                % if curQuality != Quality.NONE:
-                    <td class="col-status">${statusStrings[curStatus]} ${renderQualityPill(curQuality)}</td>
+                <% cur_status, cur_quality = Quality.splitCompositeStatus(int(epResult["status"])) %>
+                % if cur_quality != Quality.NONE:
+                    <td class="col-status">${statusStrings[cur_status]} ${renderQualityPill(cur_quality)}</td>
                 % else:
-                    <td class="col-status">${statusStrings[curStatus]}</td>
+                    <td class="col-status">${statusStrings[cur_status]}</td>
                 % endif
             <td class="col-search">
                 % if int(epResult["season"]) != 0:

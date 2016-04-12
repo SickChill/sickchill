@@ -82,8 +82,8 @@
                     </div>
                 </fieldset>
 
-                % for curNextDir in other_shows:
-                <input type="hidden" name="other_shows" value="${curNextDir}" />
+                % for cur_next_dir in other_shows:
+                <input type="hidden" name="other_shows" value="${cur_next_dir}" />
                 % endfor
                 <input type="hidden" name="skipShow" id="skipShow" value="" />
             </form>

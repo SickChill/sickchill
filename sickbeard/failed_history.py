@@ -205,7 +205,7 @@ def deleteLoggedSnatch(release, size, provider):
                          [release, size, provider])
 
 
-def trimHistory():
+def trim():
     """Trims history table to 1 month of history from today"""
     failed_db_con = db.DBConnection('failed.db')
     failed_db_con.action("DELETE FROM history WHERE date < " + str(

@@ -40,8 +40,8 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
         category = sickbeard.SAB_CATEGORY_ANIME
 
     # if it aired more than 7 days ago, override with the backlog category IDs
-    for curEp in nzb.episodes:
-        if datetime.date.today() - curEp.airdate > datetime.timedelta(days=7):
+    for cur_ep in nzb.episodes:
+        if datetime.date.today() - cur_ep.airdate > datetime.timedelta(days=7):
             category = sickbeard.SAB_CATEGORY_ANIME_BACKLOG if nzb.show.is_anime else sickbeard.SAB_CATEGORY_BACKLOG
 
     # set up a dict with the URL params in it

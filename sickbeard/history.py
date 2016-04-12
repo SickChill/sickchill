@@ -54,11 +54,11 @@ def logSnatch(searchResult):
 
     :param searchResult: search result object
     """
-    for curEpObj in searchResult.episodes:
+    for cur_ep_obj in searchResult.episodes:
 
-        showid = int(curEpObj.show.indexerid)
-        season = int(curEpObj.season)
-        episode = int(curEpObj.episode)
+        showid = int(cur_ep_obj.show.indexerid)
+        season = int(cur_ep_obj.season)
+        episode = int(cur_ep_obj.episode)
         quality = searchResult.quality
         version = searchResult.version
 

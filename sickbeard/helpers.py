@@ -307,7 +307,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
 
             if not (seriesname and series_id):
                 continue
-            ShowObj = Show.find(sickbeard.showList, int(series_id))
+            ShowObj = Show.find(sickbeard.show_list, int(series_id))
             # Check if we can find the show in our list (if not, it's not the right show)
             if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
                 return seriesname, i, int(series_id)
@@ -332,14 +332,14 @@ def listMediaFiles(path):
         return []
 
     files = []
-    for curFile in ek(os.listdir, path):
-        fullCurFile = ek(os.path.join, path, curFile)
+    for cur_file in ek(os.listdir, path):
+        fullCurFile = ek(os.path.join, path, cur_file)
 
         # if it's a folder do it recursively
-        if ek(os.path.isdir, fullCurFile) and not curFile.startswith('.') and not curFile == 'Extras':
+        if ek(os.path.isdir, fullCurFile) and not cur_file.startswith('.') and not cur_file == 'Extras':
             files += listMediaFiles(fullCurFile)
 
-        elif isMediaFile(curFile):
+        elif isMediaFile(cur_file):
             files.append(fullCurFile)
 
     return files
@@ -691,7 +691,7 @@ def is_anime_in_show_list():
     :return: True if global showlist contains Anime, False if not
     """
 
-    for show in sickbeard.showList:
+    for show in sickbeard.show_list:
         if show.is_anime:
             return True
     return False
@@ -738,10 +738,10 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 
     if len(absolute_numbers):
         if not show and indexer_id:
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(sickbeard.show_list, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
-            ep = show.getEpisode(None, None, absolute_number=absolute_number)
+            ep = show.get_episode(None, None, absolute_number=absolute_number)
             if ep:
                 episodes.append(ep.episode)
                 season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well
@@ -904,7 +904,7 @@ def restoreVersionedFile(backup_file, version):
 
     numTries = 0
 
-    new_file, _ = ek(os.path.splitext, backup_file)
+    new_file, ext_ = ek(os.path.splitext, backup_file)
     restore_file = new_file + '.' + 'v' + str(version)
 
     if not ek(os.path.isfile, new_file):
@@ -1036,7 +1036,7 @@ def _check_against_names(nameInQuestion, show, season=-1):
 
 
 def get_show(name, tryIndexers=False):
-    if not sickbeard.showList:
+    if not sickbeard.show_list:
         return
 
     showObj = None
@@ -1050,18 +1050,18 @@ def get_show(name, tryIndexers=False):
         cache = sickbeard.name_cache.retrieveNameFromCache(name)
         if cache:
             fromCache = True
-            showObj = Show.find(sickbeard.showList, int(cache))
+            showObj = Show.find(sickbeard.show_list, int(cache))
 
         # try indexers
         if not showObj and tryIndexers:
             showObj = Show.find(
-                sickbeard.showList, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
+                sickbeard.show_list, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
         # try scene exceptions
         if not showObj:
             ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
             if ShowID:
-                showObj = Show.find(sickbeard.showList, int(ShowID))
+                showObj = Show.find(sickbeard.show_list, int(ShowID))
 
         # add show to cache
         if showObj and not fromCache:
@@ -1274,12 +1274,12 @@ def mapIndexersToShow(showObj):
         [showObj.indexerid, showObj.indexer])
 
     # for each mapped entry
-    for curResult in sql_results:
-        nlist = [i for i in curResult if i is not None]
+    for cur_result in sql_results:
+        nlist = [i for i in cur_result if i is not None]
         # Check if its mapped with both tvdb and tvrage.
         if len(nlist) >= 4:
             logger.log("Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
-            mapped[int(curResult[b'mindexer'])] = int(curResult[b'mindexer_id'])
+            mapped[int(cur_result[b'mindexer'])] = int(cur_result[b'mindexer_id'])
             break
     else:
         sql_l = []
@@ -1498,7 +1498,7 @@ def get_size(start_path='.'):
         return -1
 
     total_size = 0
-    for dirpath, _, filenames in ek(os.walk, start_path):
+    for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
             try:

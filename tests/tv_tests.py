@@ -42,7 +42,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         Set up tests
         """
         super(TVShowTests, self).setUp()
-        sickbeard.showList = []
+        sickbeard.show_list = []
 
     def test_init_indexerid(self):
         """
@@ -94,7 +94,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVEpisodeTests, self).setUp()
-        sickbeard.showList = []
+        sickbeard.show_list = []
 
     def test_init_empty_db(self):
         """
@@ -117,7 +117,7 @@ class TVTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVTests, self).setUp()
-        sickbeard.showList = []
+        sickbeard.show_list = []
 
     @staticmethod
     def test_get_episode():
@@ -134,7 +134,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.airs = "monday"
         show.startyear = 1987
         show.saveToDB()
-        sickbeard.showList = [show]
+        sickbeard.show_list = [show]
         # TODO: implement
 
 

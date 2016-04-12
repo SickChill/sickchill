@@ -157,7 +157,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         https://github.com/dbr/indexer_api/
 
-        The results are saved in the object myShow.
+        The results are saved in the object my_show.
 
         The key values for the tivo metadata file are from:
 
@@ -182,7 +182,7 @@ class TIVOMetadata(generic.GenericMetadata):
                 lINDEXER_API_PARMS['dvdorder'] = True
 
             t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
-            myShow = t[ep_obj.show.indexerid]
+            my_show = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(str(e))
         except sickbeard.indexer_error as e:
@@ -190,25 +190,25 @@ class TIVOMetadata(generic.GenericMetadata):
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + str(e), logger.ERROR)
             return False
 
-        for curEpToWrite in eps_to_write:
+        for cur_ep_to_write in eps_to_write:
 
             try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
+                my_ep = my_show[cur_ep_to_write.season][cur_ep_to_write.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(cur_ep_to_write.season, cur_ep_to_write.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                myEp["firstaired"] = str(datetime.date.fromordinal(1))
+            if ep_obj.season == 0 and not getattr(my_ep, 'firstaired', None):
+                my_ep["firstaired"] = str(datetime.date.fromordinal(1))
 
-            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+            if not (getattr(my_ep, 'episodename', None) and getattr(my_ep, 'firstaired', None)):
                 return None
 
-            if getattr(myShow, 'seriesname', None):
-                data += ("title : " + myShow["seriesname"] + "\n")
-                data += ("seriesTitle : " + myShow["seriesname"] + "\n")
+            if getattr(my_show, 'seriesname', None):
+                data += ("title : " + my_show["seriesname"] + "\n")
+                data += ("seriesTitle : " + my_show["seriesname"] + "\n")
 
-            data += ("episodeTitle : " + curEpToWrite._format_pattern('%Sx%0E %EN') + "\n")
+            data += ("episodeTitle : " + cur_ep_to_write._format_pattern('%Sx%0E %EN') + "\n")
 
             # This should be entered for episodic shows and omitted for movies. The standard tivo format is to enter
             # the season number followed by the episode number for that season. For example, enter 201 for season 2
@@ -219,7 +219,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # This seems to disappear once the video is transferred to TiVo.
 
             # NOTE: May not be correct format, missing season, but based on description from wiki leaving as is.
-            data += ("episodeNumber : " + str(curEpToWrite.episode) + "\n")
+            data += ("episodeNumber : " + str(cur_ep_to_write.episode) + "\n")
 
             # Must be entered as true or false. If true, the year from originalAirDate will be shown in parentheses
             # after the episode's title and before the description on the Program screen.
@@ -229,7 +229,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # Write the synopsis of the video here
             # Micrsoft Word's smartquotes can die in a fire.
-            sanitizedDescription = curEpToWrite.description
+            sanitizedDescription = cur_ep_to_write.description
             # Replace double curly quotes
             sanitizedDescription = sanitizedDescription.replace(u"\u201c", "\"").replace(u"\u201d", "\"")
             # Replace single curly quotes
@@ -239,29 +239,29 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # Usually starts with "SH" and followed by 6-8 digits.
             # Tivo uses zap2it for thier data, so the series id is the zap2it_id.
-            if getattr(myShow, 'zap2it_id', None):
-                data += ("seriesId : " + myShow["zap2it_id"] + "\n")
+            if getattr(my_show, 'zap2it_id', None):
+                data += ("seriesId : " + my_show["zap2it_id"] + "\n")
 
             # This is the call sign of the channel the episode was recorded from.
-            if getattr(myShow, 'network', None):
-                data += ("callsign : " + myShow["network"] + "\n")
+            if getattr(my_show, 'network', None):
+                data += ("callsign : " + my_show["network"] + "\n")
 
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
             # capitalized and never changes). This is the original air date of the episode.
             # NOTE: Hard coded the time to T00:00:00Z as we really don't know when during the day the first run happened.
-            if curEpToWrite.airdate != datetime.date.fromordinal(1):
-                data += ("originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n")
+            if cur_ep_to_write.airdate != datetime.date.fromordinal(1):
+                data += ("originalAirDate : " + str(cur_ep_to_write.airdate) + "T00:00:00Z\n")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
-            if getattr(myShow, '_actors', None):
-                for actor in myShow["_actors"]:
+            if getattr(my_show, '_actors', None):
+                for actor in my_show["_actors"]:
                     if 'name' in actor and actor['name'].strip():
                         data += ("vActor : " + actor['name'].strip() + "\n")
 
             # This is shown on both the Program screen and the Details screen.
-            if getattr(myEp, 'rating', None):
+            if getattr(my_ep, 'rating', None):
                 try:
-                    rating = float(myEp['rating'])
+                    rating = float(my_ep['rating'])
                 except ValueError:
                     rating = 0.0
                 # convert 10 to 4 star rating. 4 * rating / 10
@@ -271,8 +271,8 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
-            if getattr(myShow, 'contentrating', None):
-                data += ("tvRating : " + str(myShow["contentrating"]) + "\n")
+            if getattr(my_show, 'contentrating', None):
+                data += ("tvRating : " + str(my_show["contentrating"]) + "\n")
 
             # This field can be repeated as many times as necessary or omitted completely.
             if ep_obj.show.genre:

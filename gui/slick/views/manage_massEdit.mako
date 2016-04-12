@@ -96,8 +96,8 @@
                                         <option value="keep">&lt; ${_('Keep')} &gt;</option>
                                         <% selected = None %>
                                         <option value="0" ${('', 'selected="selected"')[quality_value is not None and quality_value not in common.qualityPresets]}>${_('Custom')}</option>
-                                        % for curPreset in sorted(common.qualityPresets):
-                                        <option value="${curPreset}" ${('', 'selected="selected"')[quality_value == curPreset]}>${common.qualityPresetStrings[curPreset]}</option>
+                                        % for cur_preset in sorted(common.qualityPresets):
+                                        <option value="${cur_preset}" ${('', 'selected="selected"')[quality_value == cur_preset]}>${common.qualityPresetStrings[cur_preset]}</option>
                                         % endfor
                                     </select>
 
@@ -106,8 +106,8 @@
                                             <h5>${_('Allowed')}</h5>
                                             <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
                                             <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm">
-                                                % for curQuality in sorted(anyQualityList):
-                                                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
+                                                % for cur_quality in sorted(anyQualityList):
+                                                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in anyQualities]}>${common.Quality.qualityStrings[cur_quality]}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -116,8 +116,8 @@
                                             <h5>${_('Preferred')}</h5>
                                             <% bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
                                             <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm">
-                                                % for curQuality in sorted(bestQualityList):
-                                                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
+                                                % for cur_quality in sorted(bestQualityList):
+                                                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in bestQualities]}>${common.Quality.qualityStrings[cur_quality]}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -160,8 +160,8 @@
                                 <span class="component-desc">
                                     <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
                                         <option value="keep">&lt; Keep &gt;</option>
-                                        % for curStatus in [common.WANTED, common.SKIPPED, common.IGNORED]:
-                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${common.statusStrings[curStatus]}</option>
+                                        % for cur_status in [common.WANTED, common.SKIPPED, common.IGNORED]:
+                                        <option value="${cur_status}" ${('', 'selected="selected"')[cur_status == default_ep_status_value]}>${common.statusStrings[cur_status]}</option>
                                         % endfor
                                     </select><br>
                                     ${_('This will set the status for future episodes.')}

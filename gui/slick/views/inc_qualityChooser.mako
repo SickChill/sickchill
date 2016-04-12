@@ -16,8 +16,8 @@ selected = None
 
 <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
     <option value="0">Custom</option>
-    % for curPreset in qualityPresets:
-        <option value="${curPreset}" ${('', 'selected="selected"')[curPreset == overall_quality]} ${('', 'style="padding-left: 15px;"')[qualityPresetStrings[curPreset].endswith("0p")]}>${qualityPresetStrings[curPreset]}</option>
+    % for cur_preset in qualityPresets:
+        <option value="${cur_preset}" ${('', 'selected="selected"')[cur_preset == overall_quality]} ${('', 'style="padding-left: 15px;"')[qualityPresetStrings[cur_preset].endswith("0p")]}>${qualityPresetStrings[cur_preset]}</option>
     % endfor
 </select>
 
@@ -29,8 +29,8 @@ selected = None
             <h5>${_('Allowed')}</h5>
             <% anyQualityList = filter(lambda x: x > Quality.NONE, Quality.qualityStrings) %>
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm">
-            % for curQuality in sorted(anyQualityList):
-                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${Quality.qualityStrings[curQuality]}</option>
+            % for cur_quality in sorted(anyQualityList):
+                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in anyQualities]}>${Quality.qualityStrings[cur_quality]}</option>
             % endfor
             </select>
         </div>
@@ -39,8 +39,8 @@ selected = None
             <h5>${_('Preferred')}</h5>
             <% bestQualityList = filter(lambda x: x >= Quality.SDTV and x < Quality.UNKNOWN, Quality.qualityStrings) %>
             <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm">
-            % for curQuality in sorted(bestQualityList):
-                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${Quality.qualityStrings[curQuality]}</option>
+            % for cur_quality in sorted(bestQualityList):
+                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in bestQualities]}>${Quality.qualityStrings[cur_quality]}</option>
             % endfor
             </select>
         </div>

@@ -51,7 +51,7 @@ class ShowTests(unittest.TestCase):
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        sickbeard.showList = []
+        sickbeard.show_list = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
@@ -97,12 +97,12 @@ class ShowTests(unittest.TestCase):
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        sickbeard.showList = []
+        sickbeard.show_list = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
         show789 = TestTVShow(0, 789)
-        sickbeard.showList = [
+        sickbeard.show_list = [
             show123,
             show456,
             show789,

@@ -39,16 +39,16 @@ class BacklogSearchScheduler(scheduler.Scheduler):
         if self.action._lastBacklog <= 1:
             return datetime.date.today()
         else:
-            return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
+            return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycle_time)
 
 
 class BacklogSearcher(object):
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
-        self.cycleTime = sickbeard.BACKLOG_FREQUENCY / 60 / 24
+        self.cycle_time = sickbeard.BACKLOG_FREQUENCY / 60 / 24
         self.lock = threading.Lock()
-        self.amActive = False
+        self.am_active = False
         self.amPaused = False
         self.amWaiting = False
         self.currentSearchInfo = {'title': 'Initializing'}
@@ -60,61 +60,61 @@ class BacklogSearcher(object):
         self.currentSearchInfo = {'title': 'Initializing'}
 
     def getProgressIndicator(self):
-        if self.amActive:
+        if self.am_active:
             return ui.ProgressIndicator(self.percentDone, self.currentSearchInfo)
         else:
             return None
 
     def am_running(self):
-        logger.log(u"amWaiting: " + str(self.amWaiting) + ", amActive: " + str(self.amActive), logger.DEBUG)
-        return (not self.amWaiting) and self.amActive
+        logger.log(u"amWaiting: " + str(self.amWaiting) + ", am_active: " + str(self.am_active), logger.DEBUG)
+        return (not self.amWaiting) and self.am_active
 
     def searchBacklog(self, which_shows=None):
 
-        if self.amActive:
+        if self.am_active:
             logger.log(u"Backlog is still running, not starting it again", logger.DEBUG)
             return
 
-        self.amActive = True
+        self.am_active = True
         self.amPaused = False
 
         if which_shows:
             show_list = which_shows
         else:
-            show_list = sickbeard.showList
+            show_list = sickbeard.show_list
 
         self._get_lastBacklog()
 
-        curDate = datetime.date.today().toordinal()
+        cur_date = datetime.date.today().toordinal()
         fromDate = datetime.date.fromordinal(1)
 
-        if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
+        if not (which_shows or cur_date - self._lastBacklog >= self.cycle_time):
             logger.log(u"Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
             fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
 
         # go through non air-by-date shows and see if they need any episodes
-        for curShow in show_list:
+        for cur_show in show_list:
 
-            if curShow.paused:
+            if cur_show.paused:
                 continue
 
-            segments = self._get_segments(curShow, fromDate)
+            segments = self._get_segments(cur_show, fromDate)
 
             for season, segment in segments.iteritems():
-                self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
+                self.currentSearchInfo = {'title': cur_show.name + " Season " + str(season)}
 
-                backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
-                sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
+                backlog_queue_item = search_queue.BacklogQueueItem(cur_show, segment)
+                sickbeard.search_queue_scheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
-                logger.log(u"Nothing needs to be downloaded for {0}, skipping".format(curShow.name), logger.DEBUG)
+                logger.log(u"Nothing needs to be downloaded for {0}, skipping".format(cur_show.name), logger.DEBUG)
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
         if fromDate == datetime.date.fromordinal(1) and not which_shows:
-            self._set_lastBacklog(curDate)
+            self._set_lastBacklog(cur_date)
 
-        self.amActive = False
+        self.am_active = False
         self._resetPI()
 
     def _get_lastBacklog(self):
@@ -167,7 +167,7 @@ class BacklogSearcher(object):
                 elif cur_quality in allowed_qualities:
                     continue
 
-            ep_obj = show.getEpisode(sql_result["season"], sql_result["episode"])
+            ep_obj = show.get_episode(sql_result["season"], sql_result["episode"])
 
             if ep_obj.season not in wanted:
                 wanted[ep_obj.season] = [ep_obj]
@@ -193,5 +193,5 @@ class BacklogSearcher(object):
         try:
             self.searchBacklog()
         except:
-            self.amActive = False
+            self.am_active = False
             raise

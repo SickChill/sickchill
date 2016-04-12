@@ -31,8 +31,8 @@
                 <span class="component-title">${_('Status for previously aired episodes')}</span>
                 <span class="component-desc">
                     <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                        <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
+                    % for cur_status in [SKIPPED, WANTED, IGNORED]:
+                        <option value="${cur_status}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == cur_status]}>${statusStrings[cur_status]}</option>
                     % endfor
                     </select>
                 </span>
@@ -43,8 +43,8 @@
                 <span class="component-title">${_('Status for all future episodes')}</span>
                 <span class="component-desc">
                     <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
-                    % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                        <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
+                    % for cur_status in [SKIPPED, WANTED, IGNORED]:
+                        <option value="${cur_status}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == cur_status]}>${statusStrings[cur_status]}</option>
                     % endfor
                     </select>
                 </span>

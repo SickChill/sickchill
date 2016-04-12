@@ -171,7 +171,7 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
         # except:
         # return False
 
-        _ = name
+        name_ = name
 
         return True
 

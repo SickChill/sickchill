@@ -27,7 +27,7 @@
 
 <h3>${_('Daily Search')}:</h3>
 <a class="btn" href="${srRoot}/manage/manageSearches/forceSearch"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
-${('Not in progress')}', '${_('In Progress')}')[dailySearchStatus]}<br>
+${_('Not in progress')}', '${_('In Progress')}')[dailySearchStatus]}<br>
 <br>
 
 <h3>${_('Find Propers Search')}:</h3>

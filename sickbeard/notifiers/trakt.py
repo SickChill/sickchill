@@ -177,7 +177,7 @@ class Notifier(object):
 
     def trakt_show_data_generate(self, data):
 
-        showList = []
+        show_list = []
         for indexer, indexerid, title, year in data:
             trakt_id = sickbeard.indexerApi(indexer).config['trakt_id']
             show = {'title': title, 'year': year, 'ids': {}}
@@ -185,9 +185,9 @@ class Notifier(object):
                 show['ids']['tvdb'] = indexerid
             else:
                 show['ids']['tvrage'] = indexerid
-            showList.append(show)
+            show_list.append(show)
 
-        post_data = {'shows': showList}
+        post_data = {'shows': show_list}
 
         return post_data
 

@@ -7,12 +7,12 @@
     if showTitle:
         allowed_qualities, preferred_qualities = Quality.splitQuality(quality)
         title = _('Allowed Quality:') + '\n'
-        for curQual in allowed_qualities or [None]:
-            title += "  " + Quality.qualityStrings[curQual] + "\n"
+        for cur_quality in allowed_qualities or [None]:
+            title += "  " + Quality.qualityStrings[cur_quality] + "\n"
 
         title += "\n" + _('Preferred Quality:') + "\n"
-        for curQual in preferred_qualities or [None]:
-            title += "  " + Quality.qualityStrings[curQual] + "\n"
+        for cur_quality in preferred_qualities or [None]:
+            title += "  " + Quality.qualityStrings[cur_quality] + "\n"
     else:
         title = ""
 

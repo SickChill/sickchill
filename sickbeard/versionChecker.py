@@ -49,7 +49,7 @@ class CheckVersion(object):
     def __init__(self):
         self.updater = None
         self.install_type = None
-        self.amActive = False
+        self.am_active = False
         if sickbeard.gh:
             self.install_type = self.find_install_type()
             if self.install_type == 'git':
@@ -61,7 +61,7 @@ class CheckVersion(object):
 
     def run(self, force=False):
 
-        self.amActive = True
+        self.am_active = True
 
         if self.updater:
             # set current branch version
@@ -72,7 +72,7 @@ class CheckVersion(object):
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
                     if self.run_backup_if_safe():
-                        if sickbeard.versionCheckScheduler.action.update():
+                        if sickbeard.version_check_scheduler.action.update():
                             logger.log(u"Update was successful!")
                             ui.notifications.message('Update was successful')
                             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
@@ -82,7 +82,7 @@ class CheckVersion(object):
 
             self.check_for_new_news(force)
 
-        self.amActive = False
+        self.am_active = False
 
     def run_backup_if_safe(self):
         return self.safe_to_update() is True and self._runbackup() is True
@@ -180,7 +180,7 @@ class CheckVersion(object):
                 return False
 
         def postprocessor_safe():
-            if not sickbeard.autoPostProcesserScheduler.action.amActive:
+            if not sickbeard.auto_post_processor_scheduler.action.am_active:
                 logger.log(u"We can proceed with the update. Post-Processor is not running", logger.DEBUG)
                 return True
             else:
@@ -188,7 +188,7 @@ class CheckVersion(object):
                 return False
 
         def showupdate_safe():
-            if not sickbeard.showUpdateScheduler.action.amActive:
+            if not sickbeard.show_update_scheduler.action.am_active:
                 logger.log(u"We can proceed with the update. Shows are not being updated", logger.DEBUG)
                 return True
             else:
@@ -212,7 +212,7 @@ class CheckVersion(object):
             cur_hash = str(self.updater.get_newest_commit_hash())
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "http://cdn.rawgit.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
+            check_url = "http://cdn.rawgit.com/{0}/{1}/{2}/sickbeard/databases/main_db.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
             response = helpers.getURL(check_url, session=self.session, returns='text')
             assert response, "Empty response from {0}".format(check_url)
 
@@ -764,13 +764,13 @@ class SourceUpdateManager(UpdateManager):
         # fall back and iterate over last 100 (items per page in gh_api) commits
         if not self._newest_commit_hash:
 
-            for curCommit in sickbeard.gh.get_commits():
+            for cur_commit in sickbeard.gh.get_commits():
                 if not self._newest_commit_hash:
-                    self._newest_commit_hash = curCommit.sha
+                    self._newest_commit_hash = cur_commit.sha
                     if not self._cur_commit_hash:
                         break
 
-                if curCommit.sha == self._cur_commit_hash:
+                if cur_commit.sha == self._cur_commit_hash:
                     break
 
                 # when _cur_commit_hash doesn't match anything _num_commits_behind == 100

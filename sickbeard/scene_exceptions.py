@@ -245,11 +245,11 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
             for ex in cur_exception_dict.iteritems():
-                cur_exception, curSeason = ex
+                cur_exception, cur_season = ex
                 if cur_exception not in existing_exceptions:
                     queries.append(
                         ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);",
-                         [cur_indexer_id, cur_exception, curSeason]])
+                         [cur_indexer_id, cur_exception, cur_season]])
     if queries:
         cache_db_con.mass_action(queries)
         logger.log(u"Updated scene exceptions", logger.DEBUG)
@@ -282,7 +282,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
 def _anidb_exceptions_fetcher():
     if shouldRefresh('anidb'):
         logger.log(u"Checking for scene exception updates for AniDB")
-        for show in sickbeard.showList:
+        for show in sickbeard.show_list:
             if show.is_anime and show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)

@@ -33,7 +33,7 @@ class QueuePriorities(object):
 class GenericQueue(object):
     def __init__(self):
 
-        self.amActive = False
+        self.am_active = False
 
         self.currentItem = None
 
@@ -74,11 +74,11 @@ class GenericQueue(object):
 
         :param force: Force queue processing (currently not implemented)
         """
-        self.amActive = True
+        self.am_active = True
 
         with self.lock:
             # only start a new task if one isn't already going
-            if self.currentItem is None or not self.currentItem.isAlive():
+            if self.currentItem is None or not self.currentItem.is_alive():
 
                 # if the thread is dead then the current item should be finished
                 if self.currentItem:
@@ -112,7 +112,7 @@ class GenericQueue(object):
                     self.currentItem.name = self.queue_name + '-' + self.currentItem.name
                     self.currentItem.start()
 
-        self.amActive = False
+        self.am_active = False
 
 
 class QueueItem(threading.Thread):
@@ -136,4 +136,4 @@ class QueueItem(threading.Thread):
 
         self.inProgress = False
 
-        threading.currentThread().name = self.name
+        threading.current_thread().name = self.name

@@ -191,13 +191,13 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
 
                     <fieldset class="component-group-list" style="margin-left: 50px; margin-top:36px">
                         <ul id="service_order_list">
-                        % for curService in sickbeard.subtitles.sorted_service_list():
-                            <li class="ui-state-default" id="${curService['name']}">
-                                <input type="checkbox" id="enable_${curService['name']}" class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
-                                <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
-                                    <img src="${srRoot}/images/subtitles/${curService['image']}" alt="${curService['url']}" title="${curService['url']}" width="16" height="16" style="vertical-align:middle;"/>
+                        % for cur_service in sickbeard.subtitles.sorted_service_list():
+                            <li class="ui-state-default" id="${cur_service['name']}">
+                                <input type="checkbox" id="enable_${cur_service['name']}" class="service_enabler" ${('', 'checked="checked"')[cur_service['enabled'] is True]}/>
+                                <a href="${anon_url(cur_service['url'])}" class="imgLink" target="_new">
+                                    <img src="${srRoot}/images/subtitles/${cur_service['image']}" alt="${cur_service['url']}" title="${cur_service['url']}" width="16" height="16" style="vertical-align:middle;"/>
                                 </a>
-                            <span style="vertical-align:middle;">${curService['name'].capitalize()}</span>
+                            <span style="vertical-align:middle;">${cur_service['name'].capitalize()}</span>
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         % endfor
@@ -221,22 +221,22 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                                 'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
                                 'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}}
                         %>
-                        % for curService in sickbeard.subtitles.sorted_service_list():
-                            % if curService['name'] not in providerLoginDict.keys():
+                        % for cur_service in sickbeard.subtitles.sorted_service_list():
+                            % if cur_service['name'] not in providerLoginDict.keys():
                                 <% continue %>
                             % endif
-                            ##<div class="field-pair${(' hidden', '')[curService['enabled']]}"> ## Need js to show/hide on save
+                            ##<div class="field-pair${(' hidden', '')[cur_service['enabled']]}"> ## Need js to show/hide on save
                             <div class="field-pair">
-                                <label class="nocheck" for="${curService['name']}_user">
-                                    <span class="component-title">${curService['name'].capitalize()} ${_('User Name')}</span>
+                                <label class="nocheck" for="${cur_service['name']}_user">
+                                    <span class="component-title">${cur_service['name'].capitalize()} ${_('User Name')}</span>
                                     <span class="component-desc">
-                                        <input type="text" name="${curService['name']}_user" id="${curService['name']}_user" value="${providerLoginDict[curService['name']]['user']}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+                                        <input type="text" name="${cur_service['name']}_user" id="${cur_service['name']}_user" value="${providerLoginDict[cur_service['name']]['user']}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
                                     </span>
                                 </label>
-                                <label class="nocheck" for="${curService['name']}_pass">
-                                    <span class="component-title">${curService['name'].capitalize()} ${_('Password')}</span>
+                                <label class="nocheck" for="${cur_service['name']}_pass">
+                                    <span class="component-title">${cur_service['name'].capitalize()} ${_('Password')}</span>
                                     <span class="component-desc">
-                                        <input type="password" name="${curService['name']}_pass" id="${curService['name']}_pass" value="${providerLoginDict[curService['name']]['pass']}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+                                        <input type="password" name="${cur_service['name']}_pass" id="${cur_service['name']}_pass" value="${providerLoginDict[cur_service['name']]['pass']}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                     </span>
                                 </label>
                             </div>

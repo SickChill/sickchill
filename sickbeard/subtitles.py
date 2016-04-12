@@ -371,7 +371,7 @@ class SubtitlesFinder(object):
     """
 
     def __init__(self):
-        self.amActive = False
+        self.am_active = False
 
     @staticmethod
     def subtitles_download_in_pp():  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
@@ -497,7 +497,7 @@ class SubtitlesFinder(object):
                        'search subtitles in the background', logger.WARNING)
             return
 
-        self.amActive = True
+        self.am_active = True
 
         def dhm(td):
             days = td.days
@@ -534,7 +534,7 @@ class SubtitlesFinder(object):
 
         if not sql_results:
             logger.log(u'No subtitles to download', logger.INFO)
-            self.amActive = False
+            self.am_active = False
             return
 
         for ep_to_sub in sql_results:
@@ -581,12 +581,12 @@ class SubtitlesFinder(object):
                            (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
                             episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')), logger.INFO)
 
-                show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
+                show_object = Show.find(sickbeard.show_list, int(ep_to_sub['showid']))
                 if not show_object:
                     logger.log(u'Show with ID {0} not found in the database'.format(ep_to_sub['showid']), logger.DEBUG)
                     continue
 
-                episode_object = show_object.getEpisode(ep_to_sub['season'], ep_to_sub['episode'])
+                episode_object = show_object.get_episode(ep_to_sub['season'], ep_to_sub['episode'])
                 if isinstance(episode_object, str):
                     logger.log(u'{0} {1} not found in the database'.format
                                (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
@@ -613,7 +613,7 @@ class SubtitlesFinder(object):
                 continue
 
         logger.log(u'Finished checking for missed subtitles', logger.INFO)
-        self.amActive = False
+        self.am_active = False
 
 
 def run_subs_extra_scripts(episode_object, subtitle, video, single=False):

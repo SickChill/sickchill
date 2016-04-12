@@ -293,8 +293,8 @@
                 % endif
 
                 &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> ${_('Episodes Downloaded')} ${ep_percentage}
-                | ${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
-                | ${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
+                | ${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.daily_search_scheduler.timeLeft()).split('.')[0]}</span>
+                | ${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlog_search_scheduler.timeLeft()).split('.')[0]}</span>
 
                 <div>
                     % if has_resource_module:

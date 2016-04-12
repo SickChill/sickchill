@@ -540,7 +540,7 @@ HD = Quality.combineQualities([HD720p, HD1080p], [])
 UHD = Quality.combineQualities([UHD_4K, UHD_8K], [])
 ANY = Quality.combineQualities([SD, HD, UHD], [])
 
-# legacy template, cant remove due to reference in mainDB upgrade?
+# legacy template, cant remove due to reference in main_db upgrade?
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
 qualityPresets = (

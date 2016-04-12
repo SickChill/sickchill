@@ -60,8 +60,8 @@
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
-                                        % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                                        <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                        % for cur_action in ('copy', 'move', 'hardlink', 'symlink'):
+                                        <option value="${cur_action}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == cur_action]}>${process_method_text[cur_action]}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -173,8 +173,8 @@
                                 <span class="component-title">${_('Timezone for File Date')}:</span>
                                 <span class="component-desc">
                                     <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm">
-                                        % for curTimezone in ('local','network'):
-                                        <option value="${curTimezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
+                                        % for cur_timezone in ('local','network'):
+                                        <option value="${cur_timezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == cur_timezone]}>${cur_timezone}</option>
                                         % endfor
                                     </select>
                                 </span>

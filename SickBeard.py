@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson (miigotu) <miigotu@gmail.com>
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -191,11 +191,11 @@ class SickRage(object):
             sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
                      'or find another way to force Python to use %s for string encoding.' % sickbeard.SYS_ENCODING)
 
-        # Need console logging for SickBeard.py and SickBeard-console.exe
-        self.console_logging = (not hasattr(sys, 'frozen')) or (sickbeard.MY_NAME.lower().find('-console') > 0)
+        # Need console logging for SickBeard.py
+        self.console_logging = not hasattr(sys, 'frozen')
 
         # Rename the main thread
-        threading.currentThread().name = 'MAIN'
+        threading.current_thread().name = 'MAIN'
 
         try:
             opts, args_ = getopt.getopt(
@@ -311,7 +311,7 @@ class SickRage(object):
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
         # Initialize the config and our threads
-        sickbeard.initialize(consoleLogging=self.console_logging)
+        sickbeard.initialize(console_logging=self.console_logging)
 
         if self.run_as_daemon:
             self.daemonize()
@@ -368,21 +368,21 @@ class SickRage(object):
         sickbeard.start()
 
         # Build internal name cache
-        name_cache.buildNameCache()
+        name_cache.build_name_cache()
 
         # Pre-populate network timezones, it isn't thread safe
         network_timezones.update_network_dict()
 
         # sure, why not?
         if sickbeard.USE_FAILED_DOWNLOADS:
-            failed_history.trimHistory()
+            failed_history.trim()
 
         # Check for metadata indexer updates for shows (sets the next aired ep!)
-        # sickbeard.showUpdateScheduler.forceRun()
+        # sickbeard.show_update_scheduler.force_run()
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):
-            sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.start_port, sickbeard.WEB_ROOT)
+            sickbeard.launch_browser('https' if sickbeard.ENABLE_HTTPS else 'http', self.start_port, sickbeard.WEB_ROOT)
 
         # main loop
         while True:
@@ -397,7 +397,7 @@ class SickRage(object):
         # Access to a protected member of a client class
         # Make a non-session-leader child process
         try:
-            pid = os.fork()  # @UndefinedVariable - only available in UNIX
+            pid = os.fork()
             if pid != 0:
                 os._exit(0)
         except OSError as error:
@@ -405,7 +405,7 @@ class SickRage(object):
                              (error_num=error.errno, error_message=error.strerror))
             sys.exit(1)
 
-        os.setsid()  # @UndefinedVariable - only available in UNIX
+        os.setsid()
 
         # https://github.com/SickRage/SickRage/issues/2969
         # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
@@ -416,7 +416,7 @@ class SickRage(object):
 
         # Make the child a session-leader by detaching from the terminal
         try:
-            pid = os.fork()  # @UndefinedVariable - only available in UNIX
+            pid = os.fork()
             if pid != 0:
                 os._exit(0)
         except OSError as error:
@@ -468,19 +468,19 @@ class SickRage(object):
     @staticmethod
     def load_shows_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show_list with shows from the database
         """
         logger.log('Loading initial show list', logger.DEBUG)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select('SELECT indexer, indexer_id, location FROM tv_shows;')
 
-        sickbeard.showList = []
+        sickbeard.show_list = []
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(sql_show[b'indexer'], sql_show[b'indexer_id'])
-                cur_show.nextEpisode()
-                sickbeard.showList.append(cur_show)
+                cur_show.next_episode()
+                sickbeard.show_list.append(cur_show)
             except Exception as error:  # pylint: disable=broad-except
                 logger.log('There was an error creating the show in {0}: Error {1}'.format
                            (sql_show[b'location'], error), logger.ERROR)
@@ -517,12 +517,12 @@ class SickRage(object):
         """
         if sickbeard.started:
             sickbeard.halt()  # stop all tasks
-            sickbeard.saveAll()  # save all shows to DB
+            sickbeard.save_all()  # save all shows to DB
 
             # shutdown web server
             if self.web_server:
                 logger.log('Shutting down Tornado')
-                self.web_server.shutDown()
+                self.web_server.shutdown()
 
                 try:
                     self.web_server.join(10)
@@ -536,7 +536,7 @@ class SickRage(object):
                 self.remove_pid_file(self.pid_file)
 
             if event == sickbeard.event_queue.Events.SystemEvent.RESTART:
-                install_type = sickbeard.versionCheckScheduler.action.install_type
+                install_type = sickbeard.version_check_scheduler.action.install_type
 
                 popen_list = []
 

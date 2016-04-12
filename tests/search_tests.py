@@ -72,7 +72,7 @@ def generator(cur_data, cur_name, cur_provider):
         show.name = cur_name
         show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
-        sickbeard.showList.append(show)
+        sickbeard.show_list.append(show)
 
         for ep_number in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], ep_number)

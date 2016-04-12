@@ -210,8 +210,8 @@ class ShowQueueItem(generic_queue.QueueItem):
         self.show = show
 
     def isInQueue(self):
-        return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]  # @UndefinedVariable
+        return self in sickbeard.show_queue_scheduler.action.queue + [
+            sickbeard.show_queue_scheduler.action.currentItem]  # @UndefinedVariable
 
     def _getName(self):
         return str(self.show.indexerid)
@@ -369,7 +369,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 newShow = TVShow(self.indexer, self.indexer_id, self.lang)
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
-                existing_show = Show.find(sickbeard.showList, self.indexer_id)
+                existing_show = Show.find(sickbeard.show_list, self.indexer_id)
                 if existing_show and not ek(os.path.isdir, existing_show._location):  # pylint: disable=protected-access
                     newShow = existing_show
                 else:
@@ -448,8 +448,8 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             raise
 
         # add it to the show list
-        if not Show.find(sickbeard.showList, self.indexer_id):
-            sickbeard.showList.append(self.show)
+        if not Show.find(sickbeard.show_list, self.indexer_id):
+            sickbeard.show_list.append(self.show)
 
         try:
             self.show.loadEpisodesFromIndexer()
@@ -460,7 +460,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # update internal name cache
-        name_cache.buildNameCache(self.show)
+        name_cache.build_name_cache(self.show)
 
         try:
             self.show.loadEpisodesFromDir()
@@ -472,7 +472,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
             logger.log('Launching backlog for this show since its episodes are WANTED')
-            sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
+            sickbeard.backlog_search_scheduler.action.searchBacklog([self.show])
 
         self.show.writeMetadata()
         self.show.updateMetadata()
@@ -482,11 +482,11 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
         if sickbeard.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
-            sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
+            sickbeard.trakt_checker_scheduler.action.manageNewShow(self.show)
 
             # add show to trakt.tv library
             if sickbeard.TRAKT_SYNC:
-                sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+                sickbeard.trakt_checker_scheduler.action.addShowToTraktLibrary(self.show)
 
             if sickbeard.TRAKT_SYNC_WATCHLIST:
                 logger.log('update watchlist')
@@ -507,7 +507,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
     def _finishEarly(self):
         if self.show is not None:
-            sickbeard.showQueueScheduler.action.removeShow(self.show)
+            sickbeard.show_queue_scheduler.action.removeShow(self.show)
 
         self.finish()
 
@@ -652,22 +652,22 @@ class QueueItemUpdate(ShowQueueItem):
                        (sickbeard.indexerApi(self.show.indexer).name), logger.ERROR)
         else:
             # for each ep we found on the Indexer delete it from the DB list
-            for curSeason in IndexerEpList:
-                for curEpisode in IndexerEpList[curSeason]:
-                    curEp = self.show.getEpisode(curSeason, curEpisode)
-                    curEp.saveToDB()
+            for cur_season in IndexerEpList:
+                for cur_episode in IndexerEpList[cur_season]:
+                    cur_ep = self.show.get_episode(cur_season, cur_episode)
+                    cur_ep.saveToDB()
 
-                    if curSeason in DBEpList and curEpisode in DBEpList[curSeason]:
-                        del DBEpList[curSeason][curEpisode]
+                    if cur_season in DBEpList and cur_episode in DBEpList[cur_season]:
+                        del DBEpList[cur_season][cur_episode]
 
             # remaining episodes in the DB list are not on the indexer, just delete them from the DB
-            for curSeason in DBEpList:
-                for curEpisode in DBEpList[curSeason]:
+            for cur_season in DBEpList:
+                for cur_episode in DBEpList[cur_season]:
                     logger.log('Permanently deleting episode {0:02d}E{1:02d} from the database'.format
-                               (curSeason, curEpisode), logger.INFO)
-                    curEp = self.show.getEpisode(curSeason, curEpisode)
+                               (cur_season, cur_episode), logger.INFO)
+                    cur_ep = self.show.get_episode(cur_season, cur_episode)
                     try:
-                        curEp.deleteEpisode()
+                        cur_ep.deleteEpisode()
                     except EpisodeDeletedException:
                         pass
 
@@ -680,7 +680,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
-        sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
+        sickbeard.show_queue_scheduler.action.refreshShow(self.show, self.force)
         self.finish()
 
 
@@ -699,7 +699,7 @@ class QueueItemRemove(ShowQueueItem):
 
         if sickbeard.USE_TRAKT:
             try:
-                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
+                sickbeard.trakt_checker_scheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
                 logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
 

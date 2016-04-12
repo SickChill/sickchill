@@ -33,7 +33,7 @@ from sickrage.helper.exceptions import MultipleShowObjectsException
 class DailySearcher(object):  # pylint:disable=too-few-public-methods
     def __init__(self):
         self.lock = threading.Lock()
-        self.amActive = False
+        self.am_active = False
 
     def run(self, force=False):  # pylint:disable=too-many-branches
         """
@@ -41,54 +41,55 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
         :param force: Force search
         """
-        if self.amActive:
+        if self.am_active:
             return
 
-        self.amActive = True
-        _ = force
+        self.am_active = True
+        force_ = force
         logger.log(u"Searching for new released episodes ...")
 
         if not network_timezones.network_dict:
             network_timezones.update_network_dict()
 
         if network_timezones.network_dict:
-            curDate = (datetime.date.today() + datetime.timedelta(days=1)).toordinal()
+            cur_date = (datetime.date.today() + datetime.timedelta(days=1)).toordinal()
         else:
-            curDate = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
+            cur_date = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
 
-        curTime = datetime.datetime.now(network_timezones.sb_timezone)
+        cur_time = datetime.datetime.now(network_timezones.sb_timezone)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
-                                         [common.UNAIRED, curDate])
+                                         [common.UNAIRED, cur_date])
 
         sql_l = []
         show = None
 
-        for sqlEp in sql_results:
+        for sql_ep in sql_results:
             try:
-                if not show or int(sqlEp["showid"]) != show.indexerid:
-                    show = Show.find(sickbeard.showList, int(sqlEp["showid"]))
+                if not show or int(sql_ep["showid"]) != show.indexerid:
+                    show = Show.find(sickbeard.show_list, int(sql_ep["showid"]))
+                    show = Show.find(sickbeard.show_list, int(sql_ep["showid"]))
 
                 # for when there is orphaned series in the database but not loaded into our showlist
                 if not show or show.paused:
                     continue
 
             except MultipleShowObjectsException:
-                logger.log(u"ERROR: expected to find a single show matching " + str(sqlEp['showid']))
+                logger.log(u"ERROR: expected to find a single show matching " + str(sql_ep['showid']))
                 continue
 
             if show.airs and show.network:
                 # This is how you assure it is always converted to local time
-                air_time = network_timezones.parse_date_time(sqlEp['airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
+                air_time = network_timezones.parse_date_time(sql_ep['airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
                 # but set them to the default status while they are airing
                 # so they are snatched faster
-                if air_time > curTime:
+                if air_time > cur_time:
                     continue
 
-            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
+            ep = show.get_episode(sql_ep["season"], sql_ep["episode"])
             with ep.lock:
                 if ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
@@ -107,6 +108,6 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
         # queue episode for daily search
         dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem()
-        sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(dailysearch_queue_item)
 
-        self.amActive = False
+        self.am_active = False

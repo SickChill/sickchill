@@ -27,7 +27,7 @@
 % endif
 </blockquote>
 
-<% curSeason = -1 %>
+<% cur_season = -1 %>
 <% odd = False%>
 
 <table id="SelectAllTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
@@ -52,11 +52,11 @@
 
 % for cur_ep_obj in ep_obj_list:
 <%
-    curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:]
-    curExt = curLoc.split('.')[-1]
-    newLoc = cur_ep_obj.proper_path() + '.' + curExt
+    cur_location = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:]
+    cur_rename = cur_location.split('.')[-1]
+    new_location = cur_ep_obj.proper_path() + '.' + cur_rename
 %>
-% if int(cur_ep_obj.season) != curSeason:
+% if int(cur_ep_obj.season) != cur_season:
     <thead>
         <tr class="seasonheader" id="season-${cur_ep_obj.season}">
             <td colspan="4">
@@ -71,7 +71,7 @@
             <th class="col-name">${_('New Location')}</th>
         </tr>
     </thead>
-<% curSeason = int(cur_ep_obj.season) %>
+<% cur_season = int(cur_ep_obj.season) %>
 % endif
     <tbody>
 <%
@@ -81,15 +81,15 @@ epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps
 if len(epList) > 1:
     epList = [min(epList), max(epList)]
 %>
-        <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
+        <tr class="season-${cur_season} ${('wanted', 'good')[cur_location == new_location]} seasonstyle">
             <td class="col-checkbox">
-            % if curLoc != newLoc:
+            % if cur_location != new_location:
                 <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}" />
             % endif
             </td>
             <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
-            <td width="50%" class="col-name">${curLoc}</td>
-            <td width="50%" class="col-name">${newLoc}</td>
+            <td width="50%" class="col-name">${cur_location}</td>
+            <td width="50%" class="col-name">${new_location}</td>
         </tr>
     </tbody>
 

@@ -24,8 +24,8 @@ pre {
 <div class="align-left">
 <pre>
 % if errors:
-% for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
-${curError.time} ${curError.message}
+% for cur_error in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
+${cur_error.time} ${cur_error.message}
 % endfor
 % else:
 ${_('There are no events to display.')}

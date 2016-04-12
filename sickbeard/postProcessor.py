@@ -474,8 +474,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # search the database for a possible match and return immediately if we find one
         main_db_con = db.DBConnection()
-        for curName in names:
-            search_name = re.sub(r"[\.\- ]", "_", curName)
+        for cur_name in names:
+            search_name = re.sub(r"[\.\- ]", "_", cur_name)
             sql_results = main_db_con.select("SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND (action % 100 = 4 OR action % 100 = 6)", [search_name])
 
             if not sql_results:
@@ -489,7 +489,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(sickbeard.show_list, indexer_id)
 
             self.in_history = True
             self.version = version
@@ -734,8 +734,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # now that we've figured out which episode this file is just load it manually
             try:
-                curEp = show.getEpisode(season, cur_episode)
-                if not curEp:
+                cur_ep = show.get_episode(season, cur_episode)
+                if not cur_ep:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
@@ -743,10 +743,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # associate all the episodes together under a single root episode
             if root_ep is None:
-                root_ep = curEp
+                root_ep = cur_ep
                 root_ep.relatedEps = []
-            elif curEp not in root_ep.relatedEps:
-                root_ep.relatedEps.append(curEp)
+            elif cur_ep not in root_ep.relatedEps:
+                root_ep.relatedEps.append(cur_ep)
 
         return root_ep
 
@@ -838,16 +838,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 # ignore it
                 pass
 
-        for curScriptName in sickbeard.EXTRA_SCRIPTS:
-            if isinstance(curScriptName, unicode):
+        for cur_script_name in sickbeard.EXTRA_SCRIPTS:
+            if isinstance(cur_script_name, unicode):
                 try:
-                    curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
+                    cur_script_name = cur_script_name.encode(sickbeard.SYS_ENCODING)
                 except UnicodeEncodeError:
                     # ignore it
                     pass
 
             # generate a safe command line string to execute the script and provide all the parameters
-            script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
+            script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', cur_script_name) if piece.strip()]
             script_cmd[0] = ek(os.path.abspath, script_cmd[0])
             self._log(u"Absolute path to script: {0}".format(script_cmd[0]), logger.DEBUG)
 
@@ -1042,8 +1042,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 raise EpisodePostProcessingFailedException("Unable to delete the existing files")
 
             # set the status of the episodes
-            # for curEp in [ep_obj] + ep_obj.relatedEps:
-            #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
+            # for cur_ep in [ep_obj] + ep_obj.relatedEps:
+            #    cur_ep.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
         if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:  # pylint: disable=protected-access
