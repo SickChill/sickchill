@@ -204,7 +204,7 @@ def split_result(obj):
             continue
 
         # get all the associated episode objects
-        ep_obj_list = [obj.extraInfo[0].getEpisode(season, ep) for ep in parsed_obj.episode_numbers]
+        ep_obj_list = [obj.extraInfo[0].get_episode(season, ep) for ep in parsed_obj.episode_numbers]
 
         # make a result
         cur_obj = classes.NZBDataSearchResult(ep_obj_list)

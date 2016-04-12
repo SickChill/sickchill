@@ -252,10 +252,10 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
         result.missedfiles.append(u"{0} : Syncfiles found".format(path))
 
     # Process Video File in all TV Subdir
-    for curDir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
+    for cur_dir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
         result.result = True
 
-        for processPath, _, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
+        for processPath, _, fileList in ek(os.walk, ek(os.path.join, path, cur_dir), topdown=False):
 
             if not validateDir(path, processPath, nzbNameOriginal, failed, result):
                 continue
@@ -373,9 +373,9 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
     main_db_con = db.DBConnection()
     sql_results = main_db_con.select("SELECT location FROM tv_shows")
 
-    for sqlShow in sql_results:
-        if dirName.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
-                dirName.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
+    for sql_show in sql_results:
+        if dirName.lower().startswith(ek(os.path.realpath, sql_show["location"]).lower() + os.sep) or \
+                dirName.lower() == ek(os.path.realpath, sql_show["location"]).lower():
 
             result.output += logHelper(
                 u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,

@@ -64,7 +64,7 @@ formtowizard.prototype={
             }
             if (this.setting.persistsection) formtowizard.routines.setCookie(this.setting.formid+"_persist", i); //enable persistence?
             this.currentsection=i;
-            if(i === 0) setTimeout(function() { $('#nameToSearch').focus(); }, 250);
+            if(i === 0) setTimeout(function() { $('#show_search_string').focus(); }, 250);
         }
     },
 

@@ -37,16 +37,16 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowE
 class ShowUpdater(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.lock = threading.Lock()
-        self.amActive = False
+        self.am_active = False
 
         self.session = helpers.make_session()
 
     def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
 
-        if self.amActive:
+        if self.am_active:
             return
 
-        self.amActive = True
+        self.am_active = True
 
         update_timestamp = time.mktime(datetime.datetime.now().timetuple())
         cache_db_con = db.DBConnection('cache.db')
@@ -63,7 +63,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         data = helpers.getURL(url, session=self.session, returns='text', hooks={'response': self.request_hook})
         if not data:
             logger.log('Could not get the recently updated show data from {0}. Retrying later. Url was: {1}'.format(sickbeard.indexerApi(INDEXER_TVDB).name, url))
-            self.amActive = False
+            self.am_active = False
             return
 
         updated_shows = set()
@@ -75,18 +75,18 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
             update_timestamp = last_update
 
         pi_list = []
-        for cur_show in sickbeard.showList:
+        for cur_show in sickbeard.show_list:
             if int(cur_show.indexer) in [INDEXER_TVRAGE]:
                 logger.log('Indexer is no longer available for show [{0}] '.format(cur_show.name), logger.WARNING)
                 continue
 
             try:
-                cur_show.nextEpisode()
+                cur_show.next_episode()
                 if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
                     if cur_show.indexerid in updated_shows:
-                        pi_list.append(sickbeard.showQueueScheduler.action.updateShow(cur_show, True))
+                        pi_list.append(sickbeard.show_queue_scheduler.action.updateShow(cur_show, True))
                     else:
-                        pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, False))
+                        pi_list.append(sickbeard.show_queue_scheduler.action.refreshShow(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
                 logger.log('Automatic update failed: {0}'.format(ex(error)), logger.DEBUG)
 
@@ -94,7 +94,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         cache_db_con.action('UPDATE lastUpdate SET `time` = ? WHERE provider=?', [update_timestamp, 'theTVDB'])
 
-        self.amActive = False
+        self.am_active = False
 
     @staticmethod
     def request_hook(response, **kwargs):

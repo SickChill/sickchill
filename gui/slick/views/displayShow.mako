@@ -7,7 +7,7 @@
     import sickbeard.helpers
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
+    from sickbeard.common import Quality, quality_presets, statusStrings, Overview
     from sickbeard.helpers import anon_url
     from sickrage.helper.common import pretty_file_size
 %>
@@ -26,17 +26,17 @@
         ${_('Change Show')}:
         <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="${_('Prev Show')}" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
-            % for curShowList in sortedShowLists:
-                <% curShowType = curShowList[0] %>
-                <% curShowList = curShowList[1] %>
+            % for cur_show_list in sorted_show_lists:
+                <% cur_show_type = cur_show_list[0] %>
+                <% cur_show_list = cur_show_list[1] %>
 
-                % if len(sortedShowLists) > 1:
-                    <optgroup label="${curShowType}">
+                % if len(sorted_show_lists) > 1:
+                    <optgroup label="${cur_show_type}">
                 % endif
-                    % for curShow in curShowList:
-                    <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                    % for cur_show in cur_show_list:
+                    <option value="${cur_show.indexerid}" ${('', 'selected="selected"')[cur_show == show]}>${cur_show.name}</option>
                     % endfor
-                % if len(sortedShowLists) > 1:
+                % if len(sorted_show_lists) > 1:
                     </optgroup>
                 % endif
             % endfor
@@ -50,15 +50,15 @@
         <h1 class="title" id="scene_exception_${show.indexerid}">${show.name}</h1>
     </div>
 
-    % if seasonResults:
+    % if season_results:
         ##There is a special/season_0?##
-        % if int(seasonResults[-1]["season"]) == 0:
+        % if int(season_results[-1]["season"]) == 0:
             <% season_special = 1 %>
         % else:
             <% season_special = 0 %>
         % endif
         % if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
-            <% lastSeason = seasonResults.pop(-1) %>
+            <% lastSeason = season_results.pop(-1) %>
         % endif
         <span class="h2footer displayspecials pull-right">
             % if season_special:
@@ -69,22 +69,22 @@
 
         <div class="h2footer pull-right">
             <span>
-            % if (len(seasonResults) > 14):
+            % if (len(season_results) > 14):
                 <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
                     <option value="jump">${_('Jump to Season')}</option>
-                % for seasonNum in seasonResults:
+                % for seasonNum in season_results:
                     <option value="#season-${seasonNum["season"]}" data-season="${seasonNum["season"]}">${(_('Specials'), _('Season') + ' ' + str(seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
                 % endfor
                 </select>
             % else:
                 ${_('Season')}:
-                % for seasonNum in seasonResults:
+                % for seasonNum in season_results:
                     % if int(seasonNum["season"]) == 0:
                         <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
                     % else:
                         <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
                     % endif
-                    % if seasonNum != seasonResults[-1]:
+                    % if seasonNum != season_results[-1]:
                         <span class="separator">|</span>
                     % endif
                 % endfor
@@ -116,7 +116,6 @@
     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
 % endif
 
-<% _show = show %>
 % if not show.imdbid:
     <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
 % else:
@@ -131,11 +130,11 @@
     % endif
         ${show.imdb_info['runtimes']} ${_('minutes')}</span>
 
-        <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+        <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
-        <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+        <a href="${anon_url(sickbeard.indexerApi(show.indexer).config['show_url'], show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
 % if xem_numbering or xem_absolute_numbering:
-                <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
             </div>
 
@@ -155,16 +154,16 @@
 
             <div id="summary">
                 <table class="summaryTable pull-left">
-                <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
+                <% allowed_qualities, preferred_qualities = Quality.splitQuality(int(show.quality)) %>
                     <tr><td class="showLegend">${_('Quality')}: </td><td>
-                % if show.quality in qualityPresets:
+                % if show.quality in quality_presets:
                     ${renderQualityPill(show.quality)}
                 % else:
-                % if anyQualities:
-                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
+                % if allowed_qualities:
+                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(allowed_qualities)])}${("", "<br>")[bool(preferred_qualities)]}
                 % endif
-                % if bestQualities:
-                    <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
+                % if preferred_qualities:
+                    <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(preferred_qualities)])}
                 % endif
                 % endif
 
@@ -177,10 +176,10 @@
                 % endif
                     <tr><td class="showLegend">${_('Show Status')}: </td><td>${_(show.status)}</td></tr>
                     <tr><td class="showLegend">${_('Default EP Status')}: </td><td>${statusStrings[show.default_ep_status]}</td></tr>
-                % if showLoc[1]:
-                    <tr><td class="showLegend">${_('Location')}: </td><td>${showLoc[0]}</td></tr>
+                % if show_location[1]:
+                    <tr><td class="showLegend">${_('Location')}: </td><td>${show_location[0]}</td></tr>
                 % else:
-                    <tr><td class="showLegend"><span style="color: red;">${_('Location')}: </span></td><td><span style="color: red;">${showLoc[0]}</span> (${_('Missing')})</td></tr>
+                    <tr><td class="showLegend"><span style="color: red;">${_('Location')}: </span></td><td><span style="color: red;">${show_location[0]}</span> (${_('Missing')})</td></tr>
                 % endif
                     <tr><td class="showLegend">${_('Scene Name')}:</td><td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td></tr>
 
@@ -203,7 +202,7 @@
                     </tr>
                 % endif
 
-                <tr><td class="showLegend">${_('Size')}:</td><td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
+                <tr><td class="showLegend">${_('Size')}:</td><td>${pretty_file_size(sickbeard.helpers.get_size(show_location[0]))}</td></tr>
 
                 </table>
 
@@ -234,9 +233,9 @@
         % if not sickbeard.USE_FAILED_DOWNLOADS:
         <% availableStatus.remove(FAILED) %>
         % endif
-        % for curStatus in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
-            % if curStatus not in [DOWNLOADED, ARCHIVED]:
-            <option value="${curStatus}">${statusStrings[curStatus]}</option>
+        % for cur_status in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
+            % if cur_status not in [DOWNLOADED, ARCHIVED]:
+            <option value="${cur_status}">${statusStrings[cur_status]}</option>
             % endif
         % endfor
         </select>
@@ -249,11 +248,11 @@
 
     <div class="pull-right clearfix" id="checkboxControls">
         <div style="padding-bottom: 5px;">
-            <% total_snatched = epCounts[Overview.SNATCHED] + epCounts[Overview.SNATCHED_PROPER] + epCounts[Overview.SNATCHED_BEST] %>
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${epCounts[Overview.WANTED]}</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${epCounts[Overview.QUAL]}</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> ${_('Preferred')}: <b>${epCounts[Overview.GOOD]}</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
+            <% total_snatched = episode_counts[Overview.SNATCHED] + episode_counts[Overview.SNATCHED_PROPER] + episode_counts[Overview.SNATCHED_BEST] %>
+            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${episode_counts[Overview.WANTED]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${episode_counts[Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> ${_('Preferred')}: <b>${episode_counts[Overview.GOOD]}</b></span></label>
+            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${episode_counts[Overview.SKIPPED]}</b></span></label>
             <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> ${_('Snatched')}: <b>${total_snatched}</b></span></label>
         </div>
 
@@ -268,12 +267,12 @@
 <br>
 
 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
-    <% curSeason = -1 %>
+    <% cur_season = -1 %>
     <% odd = 0 %>
     % for epResult in sql_results:
         <%
         epStr = str(epResult["season"]) + "x" + str(epResult["episode"])
-        if not epStr in epCats:
+        if not epStr in episode_categories:
             continue
 
         if not sickbeard.DISPLAY_SHOW_SPECIALS and int(epResult["season"]) == 0:
@@ -311,8 +310,8 @@
         if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
             epLoc = epLoc[len(show._location)+1:]
         %>
-        % if int(epResult["season"]) != curSeason:
-            % if curSeason == -1:
+        % if int(epResult["season"]) != cur_season:
+            % if cur_season == -1:
     <thead>
         <tr class="seasoncols" style="display:none;">
                 <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
@@ -393,13 +392,13 @@
             % endif
     </tbody>
         % if sickbeard.DISPLAY_ALL_SEASONS is False:
-        <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
+        <tbody class="toggle collapse${("", " in")[cur_season == -1]}" id="collapseSeason-${epResult['season']}">
         % else:
         <tbody>
         % endif
-        <% curSeason = int(epResult["season"]) %>
+        <% cur_season = int(epResult["season"]) %>
         % endif
-        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
+        <tr class="${Overview.overviewStrings[episode_categories[epStr]]} season-${cur_season} seasonstyle" id="${'S' + str(epResult["season"]) + 'E' + str(epResult["episode"])}">
             <td class="col-checkbox">
                 % if int(epResult["status"]) != UNAIRED:
                     <input type="checkbox" class="epCheck" id="${str(epResult["season"])+'x'+str(epResult["episode"])}" name="${str(epResult["season"]) +"x"+str(epResult["episode"])}" />
@@ -486,11 +485,11 @@
                 % endif
             % endfor
             </td>
-                <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
-                % if curQuality != Quality.NONE:
-                    <td class="col-status">${statusStrings[curStatus]} ${renderQualityPill(curQuality)}</td>
+                <% cur_status, cur_quality = Quality.splitCompositeStatus(int(epResult["status"])) %>
+                % if cur_quality != Quality.NONE:
+                    <td class="col-status">${statusStrings[cur_status]} ${renderQualityPill(cur_quality)}</td>
                 % else:
-                    <td class="col-status">${statusStrings[curStatus]}</td>
+                    <td class="col-status">${statusStrings[cur_status]}</td>
                 % endif
             <td class="col-search">
                 % if int(epResult["season"]) != 0:

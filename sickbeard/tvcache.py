@@ -237,7 +237,7 @@ class TVCache(object):
             # create showObj from indexer_id if available
             showObj = None
             if indexer_id:
-                showObj = Show.find(sickbeard.showList, indexer_id)
+                showObj = Show.find(sickbeard.show_list, indexer_id)
 
             try:
                 parse_result = NameParser(showObj=showObj).parse(name)
@@ -257,7 +257,7 @@ class TVCache(object):
             episodeText = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
 
             # get the current timestamp
-            curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
+            cur_timestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
             # get quality of release
             quality = parse_result.quality
@@ -274,7 +274,7 @@ class TVCache(object):
 
             return [
                 "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
-                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
+                [name, season, episodeText, parse_result.show.indexerid, url, cur_timestamp, quality, release_group, version]]
 
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
@@ -312,14 +312,14 @@ class TVCache(object):
             sql_results = list(itertools.chain(*sql_results))
 
         # for each cache entry
-        for curResult in sql_results:
+        for cur_result in sql_results:
             # get the show object, or if it's not one of our shows then ignore it
-            showObj = Show.find(sickbeard.showList, int(curResult["indexerid"]))
+            showObj = Show.find(sickbeard.show_list, int(cur_result["indexerid"]))
             if not showObj:
                 continue
 
             # ignored/required words, and non-tv junk
-            if not show_name_helpers.filterBadReleases(curResult["name"], show=showObj):
+            if not show_name_helpers.filterBadReleases(cur_result["name"], show=showObj):
                 continue
 
             # skip if provider is anime only and show is not anime
@@ -328,30 +328,30 @@ class TVCache(object):
                 continue
 
             # get season and ep data (ignoring multi-eps for now)
-            curSeason = int(curResult["season"])
-            if curSeason == -1:
+            cur_season = int(cur_result["season"])
+            if cur_season == -1:
                 continue
 
-            curEp = curResult["episodes"].split("|")[1]
-            if not curEp:
+            cur_ep = cur_result["episodes"].split("|")[1]
+            if not cur_ep:
                 continue
 
-            curEp = int(curEp)
+            cur_ep = int(cur_ep)
 
-            curQuality = int(curResult["quality"])
-            curReleaseGroup = curResult["release_group"]
-            curVersion = curResult["version"]
+            cur_quality = int(cur_result["quality"])
+            cur_rls_group = cur_result["release_group"]
+            cur_version = cur_result["version"]
 
             # if the show says we want that episode then add it to the list
-            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch, downCurQuality):
-                logger.log(u"Ignoring " + curResult["name"], logger.DEBUG)
+            if not showObj.wantEpisode(cur_season, cur_ep, cur_quality, manualSearch, downCurQuality):
+                logger.log(u"Ignoring " + cur_result["name"], logger.DEBUG)
                 continue
 
-            epObj = showObj.getEpisode(curSeason, curEp)
+            epObj = showObj.get_episode(cur_season, cur_ep)
 
             # build a result object
-            title = curResult["name"]
-            url = curResult["url"]
+            title = cur_result["name"]
+            url = cur_result["url"]
 
             logger.log(u"Found result " + title + " at " + url)
 
@@ -359,9 +359,9 @@ class TVCache(object):
             result.show = showObj
             result.url = url
             result.name = title
-            result.quality = curQuality
-            result.release_group = curReleaseGroup
-            result.version = curVersion
+            result.quality = cur_quality
+            result.release_group = cur_rls_group
+            result.version = cur_version
             result.content = None
 
             # add it to the list

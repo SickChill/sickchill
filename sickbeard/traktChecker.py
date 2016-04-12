@@ -40,7 +40,7 @@ def setEpisodeToWanted(show, s, e):
     """
     Sets an episode to wanted, only if it is currently skipped
     """
-    epObj = show.getEpisode(s, e)
+    epObj = show.get_episode(s, e)
     if epObj:
 
         with epObj.lock:
@@ -55,7 +55,7 @@ def setEpisodeToWanted(show, s, e):
             epObj.saveToDB()
 
         cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [epObj])
-        sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(cur_backlog_queue_item)
 
         logger.log(u"Starting backlog search for {show} {ep} because some episodes were set to wanted".format
                    (show=show.name, ep=episode_num(s, e)))
@@ -69,10 +69,10 @@ class TraktChecker(object):
         self.ShowWatchlist = {}
         self.EpisodeWatchlist = {}
         self.Collectionlist = {}
-        self.amActive = False
+        self.am_active = False
 
     def run(self, force=False):
-        self.amActive = True
+        self.am_active = True
 
         # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_SYNC_WATCHLIST:
@@ -92,7 +92,7 @@ class TraktChecker(object):
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
-        self.amActive = False
+        self.am_active = False
 
     def findShow(self, indexer, indexerid):
         traktShow = None
@@ -253,7 +253,7 @@ class TraktChecker(object):
                 self.addShowToTraktWatchList()
                 self.updateShows()
 
-            if self._getEpisodeWatchlist():
+            if self._get_episodeWatchlist():
                 self.removeEpisodeFromTraktWatchList()
                 self.addEpisodeToTraktWatchList()
                 self.updateEpisodes()
@@ -284,7 +284,7 @@ class TraktChecker(object):
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
-                        self._getEpisodeWatchlist()
+                        self._get_episodeWatchlist()
                     except traktException as e:
                         logger.log(u"Could not connect to Trakt service. Error: {0}".format(ex(e)), logger.WARNING)
 
@@ -316,7 +316,7 @@ class TraktChecker(object):
                     try:
                         data = self.trakt_bulk_data_generate(trakt_data)
                         self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
-                        self._getEpisodeWatchlist()
+                        self._get_episodeWatchlist()
                     except traktException as e:
                         logger.log(u"Could not connect to Trakt service. Error {0}".format(ex(e)), logger.WARNING)
 
@@ -326,10 +326,10 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.log(u"SHOW_WATCHLIST::ADD::START - Look for Shows to Add to Trakt Watchlist", logger.DEBUG)
 
-            if sickbeard.showList is not None:
+            if sickbeard.show_list is not None:
                 trakt_data = []
 
-                for show in sickbeard.showList:
+                for show in sickbeard.show_list:
                     trakt_id = sickbeard.indexerApi(show.indexer).config['trakt_id']
 
                     if not self._checkInList(trakt_id, str(show.indexerid), '0', '0', List='Show'):
@@ -355,8 +355,8 @@ class TraktChecker(object):
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT and sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE:
             logger.log(u"SHOW_SICKRAGE::REMOVE::START - Look for Shows to remove from SickRage", logger.DEBUG)
 
-            if sickbeard.showList:
-                for show in sickbeard.showList:
+            if sickbeard.show_list:
+                for show in sickbeard.show_list:
                     if show.status == "Ended":
                         if not show.imdbid:
                             logger.log(u'Could not check trakt progress for {0} because the imdb id is missing from tvdb data, skipping'.format
@@ -373,7 +373,7 @@ class TraktChecker(object):
                             continue
 
                         if progress.get('aired', True) == progress.get('completed', False):
-                            sickbeard.showQueueScheduler.action.removeShow(show, full=True)
+                            sickbeard.show_queue_scheduler.action.removeShow(show, full=True)
                             logger.log(u"Show: {0} has been removed from SickRage".format(show.name), logger.DEBUG)
 
             logger.log(u"SHOW_SICKRAGE::REMOVE::FINISH - Trakt Show Watchlist", logger.DEBUG)
@@ -399,7 +399,7 @@ class TraktChecker(object):
                 self.addDefaultShow(indexer, indexer_id, show['title'], WANTED)
 
             if int(sickbeard.TRAKT_METHOD_ADD) == 1:
-                newShow = Show.find(sickbeard.showList, indexer_id)
+                newShow = Show.find(sickbeard.show_list, indexer_id)
 
                 if newShow is not None:
                     setEpisodeToWanted(newShow, 1, 1)
@@ -426,7 +426,7 @@ class TraktChecker(object):
             indexer_id = int(show_el)
             show = self.EpisodeWatchlist[trakt_id][show_el]
 
-            newShow = Show.find(sickbeard.showList, indexer_id)
+            newShow = Show.find(sickbeard.show_list, indexer_id)
 
             try:
                 if newShow is None:
@@ -455,7 +455,7 @@ class TraktChecker(object):
         """
         Adds a new show with the default settings
         """
-        if not Show.find(sickbeard.showList, int(indexer_id)):
+        if not Show.find(sickbeard.show_list, int(indexer_id)):
             logger.log(u"Adding show " + str(indexer_id))
             root_dirs = sickbeard.ROOT_DIRS.split('|')
 
@@ -474,7 +474,7 @@ class TraktChecker(object):
                 else:
                     helpers.chmodAsParent(showPath)
 
-                sickbeard.showQueueScheduler.action.addShow(int(indexer), int(indexer_id), showPath,
+                sickbeard.show_queue_scheduler.action.addShow(int(indexer), int(indexer_id), showPath,
                                                             default_status=status,
                                                             quality=int(sickbeard.QUALITY_DEFAULT),
                                                             flatten_folders=int(sickbeard.FLATTEN_FOLDERS_DEFAULT),
@@ -553,7 +553,7 @@ class TraktChecker(object):
             return False
         return True
 
-    def _getEpisodeWatchlist(self):
+    def _get_episodeWatchlist(self):
         """
          Get Watchlist and parse once into addressable structure
         """
@@ -689,7 +689,7 @@ class TraktChecker(object):
                 uniqueSeasons[showid].append(season)
 
         # build the query
-        showList = []
+        show_list = []
         seasonsList = {}
 
         for searchedShow in uniqueShows:
@@ -703,6 +703,6 @@ class TraktChecker(object):
                         episodesList.append({'number': episode})
                 show = uniqueShows[searchedShow]
                 show['seasons'].append({'number': searchedSeason, 'episodes': episodesList})
-            showList.append(show)
-        post_data = {'shows': showList}
+            show_list.append(show)
+        post_data = {'shows': show_list}
         return post_data

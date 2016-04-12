@@ -318,7 +318,7 @@ class DBConnection(object):
 
         changesBefore = self.connection.total_changes
 
-        genParams = lambda myDict: [x + " = ?" for x in myDict.keys()]
+        genParams = lambda my_dict: [x + " = ?" for x in my_dict.keys()]
 
         query = "UPDATE [" + tableName + "] SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
             genParams(keyDict))
@@ -413,7 +413,7 @@ class DBSanityCheck(object):  # pylint: disable=too-few-public-methods
 # = Upgrade API =
 # ===============
 
-def upgradeDatabase(connection, schema):
+def upgrade_database(connection, schema):
     """
     Perform database upgrade and provide logging
 

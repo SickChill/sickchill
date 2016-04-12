@@ -135,12 +135,12 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log(u"Beginning daily search for new episodes")
-            foundResults = search.searchForNeededEpisodes()
+            found_results = search.searchForNeededEpisodes()
 
-            if not foundResults:
+            if not found_results:
                 logger.log(u"No needed episodes found")
             else:
-                for result in foundResults:
+                for result in found_results:
                     # just use the first result for now
                     logger.log(u"Downloading " + result.name + " from " + result.provider.name)
                     self.success = search.snatchEpisode(result)
@@ -176,12 +176,12 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
 
-            searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
+            search_result = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
 
-            if searchResult:
+            if search_result:
                 # just use the first result for now
-                logger.log(u"Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
-                self.success = search.snatchEpisode(searchResult[0])
+                logger.log(u"Downloading " + search_result[0].name + " from " + search_result[0].provider.name)
+                self.success = search.snatchEpisode(search_result[0])
 
                 # give the CPU a break
                 time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
@@ -219,10 +219,10 @@ class BacklogQueueItem(generic_queue.QueueItem):
         if not self.show.paused:
             try:
                 logger.log(u"Beginning backlog search for: [" + self.show.name + "]")
-                searchResult = search.searchProviders(self.show, self.segment, False)
+                search_result = search.searchProviders(self.show, self.segment, False)
 
-                if searchResult:
-                    for result in searchResult:
+                if search_result:
+                    for result in search_result:
                         # just use the first result for now
                         logger.log(u"Downloading " + result.name + " from " + result.provider.name)
                         search.snatchEpisode(result)
@@ -269,10 +269,10 @@ class FailedQueueItem(generic_queue.QueueItem):
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
-            searchResult = search.searchProviders(self.show, self.segment, True, False)
+            search_result = search.searchProviders(self.show, self.segment, True, False)
 
-            if searchResult:
-                for result in searchResult:
+            if search_result:
+                for result in search_result:
                     # just use the first result for now
                     logger.log(u"Downloading " + result.name + " from " + result.provider.name)
                     search.snatchEpisode(result)
@@ -294,7 +294,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.finish()
 
 
-def fifo(myList, item, maxSize=100):
-    if len(myList) >= maxSize:
-        myList.pop(0)
-    myList.append(item)
+def fifo(my_list, item, maxSize=100):
+    if len(my_list) >= maxSize:
+        my_list.pop(0)
+    my_list.append(item)

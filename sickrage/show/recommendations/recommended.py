@@ -60,7 +60,7 @@ class RecommendedShow(object):
         self.image_src = image_src
 
         # Check if the show is currently already in the db
-        self.show_in_list = self.indexer_id in {show.indexerid for show in sickbeard.showList if show.indexerid}
+        self.show_in_list = self.indexer_id in {show.indexerid for show in sickbeard.show_list if show.indexerid}
         self.session = helpers.make_session()
 
     def cache_image(self, image_url):

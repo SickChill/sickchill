@@ -41,26 +41,26 @@ __all__ = [
 ]
 
 
-def sortedProviderList(randomize=False):
-    initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
+def sorted_provider_list(randomize=False):
+    initialList = sickbeard.provider_list + sickbeard.newznab_provider_list + sickbeard.torrent_rss_provider_list
     providerDict = dict(zip([x.get_id() for x in initialList], initialList))
 
     newList = []
 
     # add all modules in the priority list, in order
-    for curModule in sickbeard.PROVIDER_ORDER:
-        if curModule in providerDict:
-            newList.append(providerDict[curModule])
+    for cur_module in sickbeard.PROVIDER_ORDER:
+        if cur_module in providerDict:
+            newList.append(providerDict[cur_module])
 
     # add all enabled providers first
-    for curModule in providerDict:
-        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled():
-            newList.append(providerDict[curModule])
+    for cur_module in providerDict:
+        if providerDict[cur_module] not in newList and providerDict[cur_module].is_enabled():
+            newList.append(providerDict[cur_module])
 
     # add any modules that are missing from that list
-    for curModule in providerDict:
-        if providerDict[curModule] not in newList:
-            newList.append(providerDict[curModule])
+    for cur_module in providerDict:
+        if providerDict[cur_module] not in newList:
+            newList.append(providerDict[cur_module])
 
     if randomize:
         shuffle(newList)
@@ -68,7 +68,7 @@ def sortedProviderList(randomize=False):
     return newList
 
 
-def makeProviderList():
+def make_provider_list():
     return [x.provider for x in (getProviderModule(y) for y in __all__) if x]
 
 
@@ -83,7 +83,7 @@ def getProviderModule(name):
 
 def getProviderClass(provider_id):
     providerMatch = [x for x in
-                     sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
+                     sickbeard.provider_list + sickbeard.newznab_provider_list + sickbeard.torrent_rss_provider_list if
                      x and x.get_id() == provider_id]
 
     if len(providerMatch) != 1:

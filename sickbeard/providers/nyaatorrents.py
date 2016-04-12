@@ -75,14 +75,14 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 if not data:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
 
-                for curItem in data:
+                for cur_item in data:
                     try:
-                        title = curItem['title']
-                        download_url = curItem['link']
+                        title = cur_item['title']
+                        download_url = cur_item['link']
                         if not all([title, download_url]):
                             continue
 
-                        item_info = self.regex.search(curItem['summary'])
+                        item_info = self.regex.search(cur_item['summary'])
                         if not item_info:
                             logger.log('There was a problem parsing an item summary, skipping: {0}'.format
                                        (title), logger.DEBUG)

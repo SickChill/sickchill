@@ -44,7 +44,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
     @staticmethod
     def load_shows_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show_list with shows from the database
         """
 
         test_main_db_con = test.db.DBConnection()
@@ -53,14 +53,14 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                sickbeard.showList.append(cur_show)
+                sickbeard.show_list.append(cur_show)
             except Exception:  # pylint: disable=broad-except
                 pass
 
     @staticmethod
     def load_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show_list with shows from the database
         """
         test_main_db_con = test.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
@@ -68,7 +68,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                sickbeard.showList.append(cur_show)
+                sickbeard.show_list.append(cur_show)
             except Exception as error:  # pylint: disable=broad-except
                 print("There was an error creating the show {0}".format(error))
 
@@ -87,11 +87,11 @@ class XEMBasicTests(test.SickbeardTestDBCase):
             r'(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' + \
             r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
 
-        # print("Checking if show " + name + " matches " + curRegex)
+        # print("Checking if show " + name + " matches " + cur_regex)
 
         match = re.search(cur_regex, name, re.I)
         if match:
-            # print("Matched " + curRegex + " to " + name)
+            # print("Matched " + cur_regex + " to " + name)
             pass
 
 

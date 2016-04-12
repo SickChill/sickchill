@@ -3,7 +3,7 @@
 import sickbeard
 %>
 <%block name="metas">
-<meta data-var="srDefaultPage" data-content="${sbDefaultPage}">
+<meta data-var="defaultHomepage" data-content="${defaultHomepage}">
 </%block>
 
 <%block name="css">

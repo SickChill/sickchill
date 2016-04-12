@@ -239,13 +239,13 @@ class Quality(object):
 
     @staticmethod
     def combineQualities(allowed_qualities, preferred_qualities):
-        any_quality = 0
-        best_quality = 0
+        allowed_quality = 0
+        preferred_quality = 0
         if allowed_qualities:
-            any_quality = reduce(operator.or_, allowed_qualities)
+            allowed_quality = reduce(operator.or_, allowed_qualities)
         if preferred_qualities:
-            best_quality = reduce(operator.or_, preferred_qualities)
-        return any_quality | (best_quality << 16)
+            preferred_quality = reduce(operator.or_, preferred_qualities)
+        return allowed_quality | (preferred_quality << 16)
 
     @staticmethod
     def splitQuality(quality):
@@ -540,17 +540,17 @@ HD = Quality.combineQualities([HD720p, HD1080p], [])
 UHD = Quality.combineQualities([UHD_4K, UHD_8K], [])
 ANY = Quality.combineQualities([SD, HD, UHD], [])
 
-# legacy template, cant remove due to reference in mainDB upgrade?
+# legacy template, cant remove due to reference in main_db upgrade?
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
-qualityPresets = (
+quality_presets = (
     ANY,
     SD,
     HD, HD720p, HD1080p,
     UHD, UHD_4K, UHD_8K,
 )
 
-qualityPresetStrings = NumDict({
+quality_presetStrings = NumDict({
     SD: "SD",
     HD: "HD",
     HD720p: "HD720p",

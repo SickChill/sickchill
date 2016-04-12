@@ -62,7 +62,7 @@ class uTorrentAPI(GenericClient):
     def _add_torrent_uri(self, result):
         """
         Adds a torrent either by magnet or url
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         params = {'action': 'add-url', 's': result.url}
         return self._request(params=params)
@@ -70,7 +70,7 @@ class uTorrentAPI(GenericClient):
     def _add_torrent_file(self, result):
         """
         Adds a torrent file from memory
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         params = {'action': 'add-file'}
         files = {'torrent_file': (result.name + '.torrent', result.content)}
@@ -79,7 +79,7 @@ class uTorrentAPI(GenericClient):
     def _set_torrent_label(self, result):
         """
         Sets a label on an existing torrent in the client
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME
@@ -97,7 +97,7 @@ class uTorrentAPI(GenericClient):
     def _set_torrent_ratio(self, result):
         """
         Sets the desired seed ratio for an existing torrent in the client
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         if result.ratio in (None, ''):
             return True
@@ -122,7 +122,7 @@ class uTorrentAPI(GenericClient):
     def _set_torrent_seed_time(self, result):
         """
         Sets the amount of time a torrent that exists in the client should seed for
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         if not sickbeard.TORRENT_SEED_TIME:
             return True
@@ -147,7 +147,7 @@ class uTorrentAPI(GenericClient):
     def _set_torrent_priority(self, result):
         """
         Sets the priority of a torrent that exists in the client
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         if not result.priority:
             return True
@@ -158,7 +158,7 @@ class uTorrentAPI(GenericClient):
     def _set_torrent_pause(self, result):
         """
         Pauses a torrent that exists on the client
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         params = {
             'action': 'pause' if sickbeard.TORRENT_PAUSED else 'start',

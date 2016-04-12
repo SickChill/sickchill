@@ -6,12 +6,8 @@
 
 <%block name="scripts">
 <%
-    if quality_value is not None:
-        initial_quality = int(quality_value)
-    else:
-        initial_quality = common.SD
-
-    anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
+    initial_quality = int(quality_value) if quality_value is not None else common.SD
+    allowed_qualities, preferred_qualities = common.Quality.splitQuality(initial_quality)
 %>
 <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
@@ -23,7 +19,7 @@
 
     <div id="config-content">
         <form action="massEditSubmit" method="post">
-            <input type="hidden" name="toEdit" value="${showList}" />
+            <input type="hidden" name="toEdit" value="${show_list}" />
 
             <div id="config-components">
                 <ul>
@@ -81,7 +77,7 @@
                         </div>
 
                         <div class="field-pair">
-                            <label for="qualityPreset">
+                            <label for="quality_preset">
                                 <span class="component-title">${_('Preferred Quality')}</span>
                                 <span class="component-desc">
                                     <%
@@ -90,34 +86,34 @@
                                         else:
                                             initial_quality = common.SD
 
-                                        anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
+                                        allowed_qualities, preferred_qualities = common.Quality.splitQuality(initial_quality)
                                     %>
-                                    <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
+                                    <select id="quality_preset" name="quality_preset" class="form-control form-control-inline input-sm">
                                         <option value="keep">&lt; ${_('Keep')} &gt;</option>
                                         <% selected = None %>
-                                        <option value="0" ${('', 'selected="selected"')[quality_value is not None and quality_value not in common.qualityPresets]}>${_('Custom')}</option>
-                                        % for curPreset in sorted(common.qualityPresets):
-                                        <option value="${curPreset}" ${('', 'selected="selected"')[quality_value == curPreset]}>${common.qualityPresetStrings[curPreset]}</option>
+                                        <option value="0" ${('', 'selected="selected"')[quality_value is not None and quality_value not in common.quality_presets]}>${_('Custom')}</option>
+                                        % for cur_preset in sorted(common.quality_presets):
+                                        <option value="${cur_preset}" ${('', 'selected="selected"')[quality_value == cur_preset]}>${common.quality_presetStrings[cur_preset]}</option>
                                         % endfor
                                     </select>
 
                                     <div id="customQuality" style="padding-left: 0px;">
                                         <div style="padding-right: 40px; text-align: left; float: left;">
                                             <h5>${_('Allowed')}</h5>
-                                            <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
-                                            <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm">
-                                                % for curQuality in sorted(anyQualityList):
-                                                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
+                                            <% allowedQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
+                                            <select id="allowed_qualities" name="allowed_qualities" multiple="multiple" size="${len(allowedQualityList)}" class="form-control form-control-inline input-sm">
+                                                % for cur_quality in sorted(allowedQualityList):
+                                                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in allowed_qualities]}>${common.Quality.qualityStrings[cur_quality]}</option>
                                                 % endfor
                                             </select>
                                         </div>
 
                                         <div style="text-align: left; float: left;">
                                             <h5>${_('Preferred')}</h5>
-                                            <% bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
-                                            <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm">
-                                                % for curQuality in sorted(bestQualityList):
-                                                <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
+                                            <% preferredQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
+                                            <select id="preferred_qualities" name="preferred_qualities" multiple="multiple" size="${len(preferredQualityList)}" class="form-control form-control-inline input-sm">
+                                                % for cur_quality in sorted(preferredQualityList):
+                                                <option value="${cur_quality}" ${('', 'selected="selected"')[cur_quality in preferred_qualities]}>${common.Quality.qualityStrings[cur_quality]}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -160,8 +156,8 @@
                                 <span class="component-desc">
                                     <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
                                         <option value="keep">&lt; Keep &gt;</option>
-                                        % for curStatus in [common.WANTED, common.SKIPPED, common.IGNORED]:
-                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == default_ep_status_value]}>${common.statusStrings[curStatus]}</option>
+                                        % for cur_status in [common.WANTED, common.SKIPPED, common.IGNORED]:
+                                        <option value="${cur_status}" ${('', 'selected="selected"')[cur_status == default_ep_status_value]}>${common.statusStrings[cur_status]}</option>
                                         % endfor
                                     </select><br>
                                     ${_('This will set the status for future episodes.')}

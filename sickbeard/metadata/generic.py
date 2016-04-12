@@ -368,11 +368,11 @@ class GenericMetadata(object):
 
         # try all included episodes in case some have thumbs and others don't
         for cur_ep in all_eps:
-            myEp = helpers.validateShow(cur_ep.show, cur_ep.season, cur_ep.episode)
-            if not myEp:
+            my_ep = helpers.validateShow(cur_ep.show, cur_ep.season, cur_ep.episode)
+            if not my_ep:
                 continue
 
-            thumb_url = getattr(myEp, 'filename', None)
+            thumb_url = getattr(my_ep, 'filename', None)
             if thumb_url:
                 return thumb_url
 

@@ -48,29 +48,29 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
         [action, logDate, showid, season, episode, quality, resource, provider, version])
 
 
-def logSnatch(searchResult):
+def logSnatch(search_result):
     """
     Log history of snatch
 
-    :param searchResult: search result object
+    :param search_result: search result object
     """
-    for curEpObj in searchResult.episodes:
+    for cur_ep_obj in search_result.episodes:
 
-        showid = int(curEpObj.show.indexerid)
-        season = int(curEpObj.season)
-        episode = int(curEpObj.episode)
-        quality = searchResult.quality
-        version = searchResult.version
+        showid = int(cur_ep_obj.show.indexerid)
+        season = int(cur_ep_obj.season)
+        episode = int(cur_ep_obj.episode)
+        quality = search_result.quality
+        version = search_result.version
 
-        providerClass = searchResult.provider
+        providerClass = search_result.provider
         if providerClass is not None:
             provider = providerClass.name
         else:
             provider = "unknown"
 
-        action = Quality.compositeStatus(SNATCHED, searchResult.quality)
+        action = Quality.compositeStatus(SNATCHED, search_result.quality)
 
-        resource = searchResult.name
+        resource = search_result.name
 
         _logHistoryItem(action, showid, season, episode, quality, resource, provider, version)
 

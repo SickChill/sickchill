@@ -68,51 +68,49 @@
 
     <tbody>
 <%
-    myShowList = sickbeard.showList
-    myShowList.sort(lambda x, y: cmp(x.name, y.name))
+    my_show_list = sickbeard.show_list
+    my_show_list.sort(lambda x, y: cmp(x.name, y.name))
 %>
-    % for curShow in myShowList:
+    % for cur_show in my_show_list:
     <%
-        curEp = curShow.nextaired
+        disabled = sickbeard.show_queue_scheduler.action.isBeingUpdated(cur_show) or sickbeard.show_queue_scheduler.action.isInUpdateQueue(cur_show)
+        cur_update = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-        disabled = sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow)
-        curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+        disabled = sickbeard.show_queue_scheduler.action.isBeingRefreshed(cur_show) or sickbeard.show_queue_scheduler.action.isInRefreshQueue(cur_show)
+        cur_resfresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-        disabled = sickbeard.showQueueScheduler.action.isBeingRefreshed(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow)
-        curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+        disabled = sickbeard.show_queue_scheduler.action.isBeingRenamed(cur_show) or sickbeard.show_queue_scheduler.action.isInRenameQueue(cur_show)
+        cur_rename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-        disabled = sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow)
-        curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+        disabled = not cur_show.subtitles or sickbeard.show_queue_scheduler.action.isBeingSubtitled(cur_show) or sickbeard.show_queue_scheduler.action.isInSubtitleQueue(cur_show)
+        cur_subtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-        disabled = not curShow.subtitles or sickbeard.showQueueScheduler.action.isBeingSubtitled(curShow) or sickbeard.showQueueScheduler.action.isInSubtitleQueue(curShow)
-        curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+        disabled = sickbeard.show_queue_scheduler.action.isBeingRenamed(cur_show) or sickbeard.show_queue_scheduler.action.isInRenameQueue(cur_show) or sickbeard.show_queue_scheduler.action.isInRefreshQueue(cur_show)
+        cur_delete = "<input type=\"checkbox\" class=\"confirm deleteCheck\" id=\"delete-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-        disabled = sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow)
-        curDelete = "<input type=\"checkbox\" class=\"confirm deleteCheck\" id=\"delete-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-        disabled = sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow)
-        curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+        disabled = sickbeard.show_queue_scheduler.action.isBeingRenamed(cur_show) or sickbeard.show_queue_scheduler.action.isInRenameQueue(cur_show) or sickbeard.show_queue_scheduler.action.isInRefreshQueue(cur_show)
+        cur_remove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(cur_show.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
     %>
     <tr>
-        <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
-        <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
-        <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
-        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
-        <td align="center">${statusStrings[curShow.default_ep_status]}</td>
-        <td align="center">${_(curShow.status)}</td>
-        <td align="center">${curUpdate}</td>
-        <td align="center">${curRefresh}</td>
-        <td align="center">${curRename}</td>
+        <td align="center"><input type="checkbox" class="editCheck" id="edit-${cur_show.indexerid}" /></td>
+        <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${cur_show.indexerid}">${cur_show.name}</a></td>
+        <td align="center">${renderQualityPill(cur_show.quality, showTitle=True)}</td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(cur_show.is_sports) == 1]} width="16" height="16" /></td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(cur_show.is_scene) == 1]} width="16" height="16" /></td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(cur_show.is_anime) == 1]} width="16" height="16" /></td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(cur_show.flatten_folders) == 1]} width="16" height="16" /></td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(cur_show.paused) == 1]} width="16" height="16" /></td>
+        <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(cur_show.subtitles) == 1]} width="16" height="16" /></td>
+        <td align="center">${statusStrings[cur_show.default_ep_status]}</td>
+        <td align="center">${_(cur_show.status)}</td>
+        <td align="center">${cur_update}</td>
+        <td align="center">${cur_resfresh}</td>
+        <td align="center">${cur_rename}</td>
         % if sickbeard.USE_SUBTITLES:
-        <td align="center">${curSubtitle}</td>
+        <td align="center">${cur_subtitle}</td>
         % endif
-        <td align="center">${curDelete}</td>
-        <td align="center">${curRemove}</td>
+        <td align="center">${cur_delete}</td>
+        <td align="center">${cur_remove}</td>
     </tr>
 % endfor
 </tbody>

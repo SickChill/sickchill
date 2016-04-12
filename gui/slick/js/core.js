@@ -6,8 +6,8 @@ function getMeta(pyVar){
 }
 
 var srRoot = getMeta('srRoot'),
-    srDefaultPage = getMeta('srDefaultPage'),
-    srPID = getMeta('srPID'),
+    defaultHomepage = getMeta('defaultHomepage'),
+    sickragePID = getMeta('sickragePID'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
     topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />', // jshint ignore:line
@@ -2518,7 +2518,7 @@ var SICKRAGE = {
             });
         },
         restart: function(){
-            var currentPid = srPID;
+            var currentPid = sickragePID;
             var checkIsAlive = setInterval(function(){
                 $.get(srRoot + '/home/is_alive/', function(data) {
                     if (data.msg.toLowerCase() === 'nope') {
@@ -2536,7 +2536,7 @@ var SICKRAGE = {
                             $('#restart_success').show();
                             $('#refresh_message').show();
                             setTimeout(function(){
-                                window.location = srRoot + '/' + srDefaultPage + '/';
+                                window.location = srRoot + '/' + defaultHomepage + '/';
                             }, 5000);
                         }
                     }
@@ -3100,23 +3100,23 @@ var SICKRAGE = {
 
             var searchRequestXhr = null;
             function searchIndexers() {
-                if (!$('#nameToSearch').val().length) { return; }
+                if (!$('#show_search_string').val().length) { return; }
 
                 if (searchRequestXhr) { searchRequestXhr.abort(); }
 
-                var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
-                $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
+                var searchingFor = $('#show_search_string').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexer_lang_select').val();
+                $('#search_results').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
                 searchRequestXhr = $.ajax({
                     url: srRoot + '/addShows/searchIndexersForShowName',
                     data: {
-                        'search_term': $('#nameToSearch').val().trim(),
-                        'lang': $('#indexerLangSelect').val(),
+                        'search_term': $('#show_search_string').val().trim(),
+                        'lang': $('#indexer_lang_select').val(),
                         'indexer': $('#providedIndexer').val()},
                     timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
                     dataType: 'json',
                     error: function () {
-                        $('#searchResults').empty().html('search timed out, try again or try another indexer');
+                        $('#search_results').empty().html('search timed out, try again or try another indexer');
                     },
                     success: function (data) {
                         var firstResult = true;
@@ -3162,7 +3162,7 @@ var SICKRAGE = {
                             resultStr += '</ul>';
                         }
                         resultStr += '</fieldset>';
-                        $('#searchResults').html(resultStr);
+                        $('#search_results').html(resultStr);
                         updateSampleText();
                         myform.loadsection(0);
                     }
@@ -3171,7 +3171,7 @@ var SICKRAGE = {
 
             $('#searchName').click(function () { searchIndexers(); });
 
-            if ($('#nameToSearch').length && $('#nameToSearch').val().length) {
+            if ($('#show_search_string').length && $('#show_search_string').val().length) {
                 $('#searchName').click();
             }
 
@@ -3190,7 +3190,7 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            $('#qualityPreset').change(function () {
+            $('#quality_preset').change(function () {
                 myform.loadsection(2);
             });
 
@@ -3208,7 +3208,7 @@ var SICKRAGE = {
                 });
             }
 
-            $('#nameToSearch').focus();
+            $('#show_search_string').focus();
 
             // @TODO we need to move to real forms instead of this
             var myform = new formtowizard({ // jshint ignore:line
@@ -3223,9 +3223,9 @@ var SICKRAGE = {
             });
 
             $('#rootDirText').change(updateSampleText);
-            $('#searchResults').on('change', '#whichSeries', updateSampleText);
+            $('#search_results').on('change', '#whichSeries', updateSampleText);
 
-            $('#nameToSearch').keyup(function(event) {
+            $('#show_search_string').keyup(function(event) {
                 if (event.keyCode === 13) {
                     $('#searchName').click();
                 }

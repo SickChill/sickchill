@@ -74,7 +74,7 @@ def saveNameCacheToDb():
         cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
-def buildNameCache(show=None):
+def build_name_cache(show=None):
     """Build internal name cache
 
     :param show: Specify show to build name cache for, if None, just do all shows
@@ -84,13 +84,13 @@ def buildNameCache(show=None):
 
     if not show:
         # logger.log(u"Building internal name cache for all shows", logger.INFO)
-        for show in sickbeard.showList:
-            buildNameCache(show)
+        for show in sickbeard.show_list:
+            build_name_cache(show)
     else:
         # logger.log(u"Building internal name cache for " + show.name, logger.DEBUG)
         clearCache(show.indexerid)
-        for curSeason in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
-            for name in set(sickbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=curSeason) + [show.name]):
+        for cur_season in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
+            for name in set(sickbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=cur_season) + [show.name]):
                 name = sickbeard.helpers.full_sanitizeSceneName(name)
                 if name in nameCache:
                     continue

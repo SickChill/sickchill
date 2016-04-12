@@ -535,17 +535,17 @@ def _history_date_to_datetime_form(time_string):
 def _map_quality(show_obj):
     quality_map = _get_quality_map()
 
-    any_qualities = []
-    best_qualities = []
+    allowed_qualities = []
+    preferred_qualities = []
 
     i_quality_id, a_quality_id = Quality.splitQuality(int(show_obj))
     if i_quality_id:
         for quality in i_quality_id:
-            any_qualities.append(quality_map[quality])
+            allowed_qualities.append(quality_map[quality])
     if a_quality_id:
         for quality in a_quality_id:
-            best_qualities.append(quality_map[quality])
-    return any_qualities, best_qualities
+            preferred_qualities.append(quality_map[quality])
+    return allowed_qualities, preferred_qualities
 
 
 def _get_quality_map():
@@ -718,7 +718,7 @@ class CMD_Episode(ApiCall):
 
     def run(self):
         """ Get detailed information about an episode """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -783,18 +783,18 @@ class CMD_EpisodeSearch(ApiCall):
 
     def run(self):
         """ Search for an episode """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
+        ep_obj = show_obj.get_episode(self.s, self.e)
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, ep_obj)
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
+        sickbeard.search_queue_scheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
         while ep_queue_item.success is None:  # @UndefinedVariable
@@ -839,7 +839,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
     def run(self):
         """ Set the status of an episode or a season (when no episode is provided) """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -854,7 +854,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         ep_list = []
         if self.e:
-            ep_obj = show_obj.getEpisode(self.s, self.e)
+            ep_obj = show_obj.get_episode(self.s, self.e)
             if not ep_obj:
                 return _responds(RESULT_FAILURE, msg="Episode not found")
             ep_list = [ep_obj]
@@ -915,7 +915,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         if start_backlog:
             for season, segment in segments.iteritems():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
+                sickbeard.search_queue_scheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
                 logger.log(u"API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
@@ -952,12 +952,12 @@ class CMD_SubtitleSearch(ApiCall):
 
     def run(self):
         """ Search for an episode subtitles """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
+        ep_obj = show_obj.get_episode(self.s, self.e)
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
@@ -1010,7 +1010,7 @@ class CMD_Exceptions(ApiCall):
                 scene_exceptions[indexerid].append(row["show_name"])
 
         else:
-            show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+            show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1148,25 +1148,25 @@ class CMD_Backlog(ApiCall):
         shows = []
 
         main_db_con = db.DBConnection(row_type="dict")
-        for curShow in sickbeard.showList:
+        for cur_show in sickbeard.show_list:
 
             show_eps = []
 
             sql_results = main_db_con.select(
                 "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
-                [curShow.indexerid])
+                [cur_show.indexerid])
 
-            for curResult in sql_results:
+            for cur_result in sql_results:
 
-                cur_ep_cat = curShow.getOverview(curResult["status"])
+                cur_ep_cat = cur_show.getOverview(cur_result["status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
-                    show_eps.append(curResult)
+                    show_eps.append(cur_result)
 
             if show_eps:
                 shows.append({
-                    "indexerid": curShow.indexerid,
-                    "show_name": curShow.name,
-                    "status": curShow.status,
+                    "indexerid": cur_show.indexerid,
+                    "show_name": cur_show.name,
+                    "status": cur_show.status,
                     "episodes": show_eps
                 })
 
@@ -1440,9 +1440,9 @@ class CMD_SickBeardCheckScheduler(ApiCall):
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
-        backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
+        backlog_paused = sickbeard.search_queue_scheduler.action.is_backlog_paused()  # @UndefinedVariable
+        backlog_running = sickbeard.search_queue_scheduler.action.is_backlog_in_progress()  # @UndefinedVariable
+        next_backlog = sickbeard.backlog_search_scheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         data = {"backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
                 "last_backlog": _ordinal_to_date_form(sql_results[0]["last_backlog"]),
@@ -1478,15 +1478,15 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
         # clean up the list - replace %xx escapes by their single-character equivalent
         root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
         old_root_dir = root_dirs[index]
-        for curRootDir in root_dirs:
-            if not curRootDir == self.location:
-                root_dirs_new.append(curRootDir)
+        for cur_root_dir in root_dirs:
+            if not cur_root_dir == self.location:
+                root_dirs_new.append(cur_root_dir)
             else:
                 new_index = 0
 
-        for curIndex, curNewRootDir in enumerate(root_dirs_new):
-            if curNewRootDir is old_root_dir:
-                new_index = curIndex
+        for cur_index, cur_new_root_dir in enumerate(root_dirs_new):
+            if cur_new_root_dir is old_root_dir:
+                new_index = cur_index
                 break
 
         root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs_new]
@@ -1511,11 +1511,11 @@ class CMD_SickBeardGetDefaults(ApiCall):
     def run(self):
         """ Get SickRage's user default configuration value """
 
-        any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
+        allowed_qualities, preferred_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
         data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": any_qualities,
-                "archive": best_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
+                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": allowed_qualities,
+                "archive": preferred_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1570,10 +1570,10 @@ class CMD_SickBeardPauseBacklog(ApiCall):
     def run(self):
         """ Pause or un-pause the backlog search """
         if self.pause:
-            sickbeard.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
+            sickbeard.search_queue_scheduler.action.pause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
-            sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
+            sickbeard.search_queue_scheduler.action.unpause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
 
 
@@ -1658,10 +1658,10 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                     logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     continue
 
-                for curSeries in api_data:
-                    results.append({indexer_ids[_indexer]: int(curSeries['id']),
-                                    "name": curSeries['seriesname'],
-                                    "first_aired": curSeries['firstaired'],
+                for cur_series in api_data:
+                    results.append({indexer_ids[_indexer]: int(cur_series['id']),
+                                    "name": cur_series['seriesname'],
+                                    "first_aired": cur_series['firstaired'],
                                     "indexer": int(_indexer)})
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
@@ -1878,7 +1878,7 @@ class CMD_Show(ApiCall):
 
     def run(self):
         """ Get detailed information about a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1897,8 +1897,8 @@ class CMD_Show(ApiCall):
         show_dict["genre"] = genre_list
         show_dict["quality"] = get_quality_string(show_obj.quality)
 
-        any_qualities, best_qualities = _map_quality(show_obj.quality)
-        show_dict["quality_details"] = {"initial": any_qualities, "archive": best_qualities}
+        allowed_qualities, preferred_qualities = _map_quality(show_obj.quality)
+        show_dict["quality_details"] = {"initial": allowed_qualities, "archive": preferred_qualities}
 
         try:
             show_dict["location"] = show_obj.location
@@ -1988,7 +1988,7 @@ class CMD_ShowAddExisting(ApiCall):
 
     def run(self):
         """ Add an existing show in SickRage """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
@@ -2036,7 +2036,7 @@ class CMD_ShowAddExisting(ApiCall):
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.show_queue_scheduler.action.addShow(
             int(indexer), int(self.indexerid), self.location,
             default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
             flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
@@ -2099,7 +2099,7 @@ class CMD_ShowAddNew(ApiCall):
 
     def run(self):
         """ Add a new show to SickRage """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
@@ -2205,7 +2205,7 @@ class CMD_ShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(show_path)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.show_queue_scheduler.action.addShow(
             int(indexer), int(self.indexerid), show_path, default_status=new_status,
             quality=new_quality, flatten_folders=int(self.flatten_folders),
             lang=self.lang, subtitles=self.subtitles, anime=self.anime,
@@ -2235,7 +2235,7 @@ class CMD_ShowCache(ApiCall):
 
     def run(self):
         """ Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2307,13 +2307,13 @@ class CMD_ShowGetQuality(ApiCall):
 
     def run(self):
         """ Get the quality setting of a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        any_qualities, best_qualities = _map_quality(show_obj.quality)
+        allowed_qualities, preferred_qualities = _map_quality(show_obj.quality)
 
-        return _responds(RESULT_SUCCESS, {"initial": any_qualities, "archive": best_qualities})
+        return _responds(RESULT_SUCCESS, {"initial": allowed_qualities, "archive": preferred_qualities})
 
 
 class CMD_ShowGetPoster(ApiCall):
@@ -2502,7 +2502,7 @@ class CMD_ShowSeasonList(ApiCall):
 
     def run(self):
         """ Get the list of seasons of a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2542,7 +2542,7 @@ class CMD_ShowSeasons(ApiCall):
 
     def run(self):
         """ Get the list of episodes for one or all seasons of a show """
-        sho_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        sho_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2628,7 +2628,7 @@ class CMD_ShowSetQuality(ApiCall):
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2683,7 +2683,7 @@ class CMD_ShowStats(ApiCall):
 
     def run(self):
         """ Get episode statistics for a given show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2788,12 +2788,12 @@ class CMD_ShowUpdate(ApiCall):
 
     def run(self):
         """ Update a show in SickRage """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(sickbeard.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
+            sickbeard.show_queue_scheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
             logger.log(u"API::Unable to update show: {0}".format(e), logger.DEBUG)
@@ -2820,42 +2820,42 @@ class CMD_Shows(ApiCall):
     def run(self):
         """ Get all shows in SickRage """
         shows = {}
-        for curShow in sickbeard.showList:
+        for cur_show in sickbeard.show_list:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused
-            if self.paused is not None and self.paused != curShow.paused:
+            if self.paused is not None and self.paused != cur_show.paused:
                 continue
 
-            indexer_show = helpers.mapIndexersToShow(curShow)
+            indexer_show = helpers.mapIndexersToShow(cur_show)
 
             show_dict = {
-                "paused": (0, 1)[curShow.paused],
-                "quality": get_quality_string(curShow.quality),
-                "language": curShow.lang,
-                "air_by_date": (0, 1)[curShow.air_by_date],
-                "sports": (0, 1)[curShow.sports],
-                "anime": (0, 1)[curShow.anime],
-                "indexerid": curShow.indexerid,
+                "paused": (0, 1)[cur_show.paused],
+                "quality": get_quality_string(cur_show.quality),
+                "language": cur_show.lang,
+                "air_by_date": (0, 1)[cur_show.air_by_date],
+                "sports": (0, 1)[cur_show.sports],
+                "anime": (0, 1)[cur_show.anime],
+                "indexerid": cur_show.indexerid,
                 "tvdbid": indexer_show[1],
-                "network": curShow.network,
-                "show_name": curShow.name,
-                "status": curShow.status,
-                "subtitles": (0, 1)[curShow.subtitles],
+                "network": cur_show.network,
+                "show_name": cur_show.name,
+                "status": cur_show.status,
+                "subtitles": (0, 1)[cur_show.subtitles],
             }
 
-            if try_int(curShow.nextaired, 1) > 693595:  # 1900
+            if try_int(cur_show.nextaired, 1) > 693595:  # 1900
                 dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
-                    network_timezones.parse_date_time(curShow.nextaired, curShow.airs, show_dict['network']))
+                    network_timezones.parse_date_time(cur_show.nextaired, cur_show.airs, show_dict['network']))
                 show_dict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
             else:
                 show_dict['next_ep_airdate'] = ''
 
-            show_dict["cache"] = CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
+            show_dict["cache"] = CMD_ShowCache((), {"indexerid": cur_show.indexerid}).run()["data"]
             if not show_dict["network"]:
                 show_dict["network"] = ""
             if self.sort == "name":
-                shows[curShow.name] = show_dict
+                shows[cur_show.name] = show_dict
             else:
-                shows[curShow.indexerid] = show_dict
+                shows[cur_show.indexerid] = show_dict
 
         return _responds(RESULT_SUCCESS, shows)
 

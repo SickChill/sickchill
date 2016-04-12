@@ -148,7 +148,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             self.server.listen(self.options['port'], self.options['host'])
         except Exception:
             if sickbeard.LAUNCH_BROWSER and not self.daemon:
-                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
+                sickbeard.launch_browser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
                 logger.log(u"Launching browser and exiting")
             logger.log(u"Could not start webserver on port {0}, already in use!".format(self.options['port']))
             os._exit(1)  # pylint: disable=protected-access
@@ -160,6 +160,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 
-    def shutDown(self):
+    def shutdown(self):
         self.alive = False
         self.io_loop.stop()

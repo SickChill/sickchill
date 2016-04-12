@@ -1,23 +1,23 @@
 $(document).ready(function () {
     $('#saveDefaultsButton').click(function () {
-        var anyQualArray = [];
-        var bestQualArray = [];
-        $('#anyQualities option:selected').each(function (i, d) {
-            anyQualArray.push($(d).val());
+        var allowedQualArray = [];
+        var preferredQualArray = [];
+        $('#allowed_qualities option:selected').each(function (i, d) {
+            allowedQualArray.push($(d).val());
         });
-        $('#bestQualities option:selected').each(function (i, d) {
-            bestQualArray.push($(d).val());
+        $('#preferred_qualities option:selected').each(function (i, d) {
+            preferredQualArray.push($(d).val());
         });
 
         $.get(srRoot + '/config/general/saveAddShowDefaults', {
-            defaultStatus: $('#statusSelect').val(),
-            anyQualities: anyQualArray.join(','),
-            bestQualities: bestQualArray.join(','),
-            defaultFlattenFolders: $('#flatten_folders').prop('checked'),
-            subtitles: $('#subtitles').prop('checked'),
-            anime: $('#anime').prop('checked'),
-            scene: $('#scene').prop('checked'),
-            defaultStatusAfter: $('#statusSelectAfter').val(),
+            'default_ep_status': $('#statusSelect').val(),
+            'allowed_qualities': allowedQualArray.join(','),
+            'preferred_qualities': preferredQualArray.join(','),
+            'default_flatten_folders': $('#flatten_folders').prop('checked'),
+            'subtitles': $('#subtitles').prop('checked'),
+            'anime': $('#anime').prop('checked'),
+            'scene': $('#scene').prop('checked'),
+            'default_status_after_add': $('#statusSelectAfter').val(),
         });
 
         $(this).attr('disabled', true);
@@ -28,11 +28,11 @@ $(document).ready(function () {
         });
     });
 
-    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+    $('#statusSelect, #quality_preset, #flatten_folders, #allowed_qualities, #preferred_qualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
         $('#saveDefaultsButton').attr('disabled', false);
     });
 
-    $('#qualityPreset').on('change', function() {
+    $('#quality_preset').on('change', function() {
         //fix issue #181 - force re-render to correct the height of the outer div
         $('span.prev').click();
         $('span.next').click();

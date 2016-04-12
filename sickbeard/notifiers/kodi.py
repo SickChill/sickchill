@@ -125,30 +125,30 @@ class Notifier(object):
             return False
 
         result = ''
-        for curHost in [x.strip() for x in host.split(",") if x.strip()]:
-            logger.log(u"Sending {0} notification to '{1}' - {2}".format(dest_app, curHost, message), logger.DEBUG)
+        for cur_host in [x.strip() for x in host.split(",") if x.strip()]:
+            logger.log(u"Sending {0} notification to '{1}' - {2}".format(dest_app, cur_host, message), logger.DEBUG)
 
-            kodiapi = self._get_kodi_version(curHost, username, password, dest_app)
+            kodiapi = self._get_kodi_version(cur_host, username, password, dest_app)
             if kodiapi:
                 if kodiapi <= 4:
                     logger.log(u"Detected {0} version <= 11, using {1} HTTP API".format(dest_app, dest_app), logger.DEBUG)
                     command = {'command': 'ExecBuiltIn',
                                'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode(
                                    "utf-8") + ')'}
-                    notifyResult = self._send_to_kodi(command, curHost, username, password)
+                    notifyResult = self._send_to_kodi(command, cur_host, username, password)
                     if notifyResult:
-                        result += curHost + ':' + str(notifyResult)
+                        result += cur_host + ':' + str(notifyResult)
                 else:
                     logger.log(u"Detected {0} version >= 12, using {1} JSON API".format(dest_app, dest_app), logger.DEBUG)
                     command = '{{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{{"title":"{0}","message":"{1}", "image": "{2}"}},"id":1}}'.format(
                         title.encode("utf-8"), message.encode("utf-8"), sickbeard.LOGO_URL)
-                    notifyResult = self._send_to_kodi_json(command, curHost, username, password, dest_app)
+                    notifyResult = self._send_to_kodi_json(command, cur_host, username, password, dest_app)
                     if notifyResult and notifyResult.get('result'):  # pylint: disable=no-member
-                        result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
+                        result += cur_host + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
-                    logger.log(u"Failed to detect {0} version for '{1}', check configuration and try again.".format(dest_app, curHost), logger.WARNING)
-                result += curHost + ':False'
+                    logger.log(u"Failed to detect {0} version for '{1}', check configuration and try again.".format(dest_app, cur_host), logger.WARNING)
+                result += cur_host + ':False'
 
         return result
 
@@ -287,7 +287,7 @@ class Notifier(object):
             xmlCommand = {
                 'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
             # sql used to grab path(s)
-            sqlCommand = {'command': 'QueryVideoDatabase({0})'.format(pathSql)}
+            sql_command = {'command': 'QueryVideoDatabase({0})'.format(pathSql)}
             # set output back to default
             resetCommand = {'command': 'SetResponseFormat()'}
 
@@ -296,14 +296,14 @@ class Notifier(object):
             if not request:
                 return False
 
-            sqlXML = self._send_to_kodi(sqlCommand, host)
+            sql_xml = self._send_to_kodi(sql_command, host)
             request = self._send_to_kodi(resetCommand, host)
 
-            if not sqlXML:
+            if not sql_xml:
                 logger.log(u"Invalid response for " + showName + " on " + host, logger.DEBUG)
                 return False
 
-            encSqlXML = urllib.quote(sqlXML, ':\\/<>')
+            encSqlXML = urllib.quote(sql_xml, ':\\/<>')
             try:
                 et = etree.fromstring(encSqlXML)
             except SyntaxError as e:

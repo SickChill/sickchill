@@ -49,7 +49,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from configobj import ConfigObj
 from sickbeard import db, providers
-from sickbeard.databases import cache_db, failed_db, mainDB
+from sickbeard.databases import cache_db, failed_db, main_db
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode
 import shutil_custom  # pylint: disable=import-error
@@ -101,7 +101,7 @@ def create_test_cache_folder():
 # =================
 sickbeard.SYS_ENCODING = 'UTF-8'
 
-sickbeard.showList = []
+sickbeard.show_list = []
 sickbeard.QUALITY_DEFAULT = 4  # hdtv
 sickbeard.FLATTEN_FOLDERS_DEFAULT = 0
 
@@ -112,8 +112,8 @@ sickbeard.NAMING_MULTI_EP = 1
 
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.get_providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
-sickbeard.providerList = providers.makeProviderList()
+sickbeard.newznab_provider_list = NewznabProvider.get_providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+sickbeard.provider_list = providers.make_provider_list()
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR
@@ -149,7 +149,7 @@ def _dummy_save_config():
 
 # this overrides the SickBeard save_config which gets called during a db upgrade
 # this might be considered a hack
-mainDB.sickbeard.save_config = _dummy_save_config
+main_db.sickbeard.save_config = _dummy_save_config
 
 
 def _fake_specify_ep(self, season, episode):
@@ -179,13 +179,13 @@ class SickbeardTestDBCase(unittest.TestCase):
         tearDown
     """
     def setUp(self):
-        sickbeard.showList = []
+        sickbeard.show_list = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
 
     def tearDown(self):
-        sickbeard.showList = []
+        sickbeard.show_list = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -249,16 +249,16 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), main_db.InitialSchema)
 
     # fix up any db problems
-    db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanityCheckDatabase(db.DBConnection(), main_db.MainSanityCheck)
 
     # and for cache.db too
-    db.upgradeDatabase(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
 
     # and for failed.db too
-    db.upgradeDatabase(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
 
 
 def teardown_test_db():

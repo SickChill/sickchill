@@ -153,7 +153,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with pause
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         return True
 
@@ -161,7 +161,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
     def _get_torrent_hash(result):
         """
         Gets the torrent hash from either the magnet or torrent file content
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
         if result.url.startswith('magnet'):
             result.hash = re.findall(r'urn:btih:([\w]{32,40})', result.url)[0]
@@ -199,7 +199,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
     def sendTORRENT(self, result):
         """
         Sends the magnet, url, or torrent file content to the client
-        params: :result: an instance of the searchResult class
+        params: :result: an instance of the search_result class
         """
 
         r_code = False

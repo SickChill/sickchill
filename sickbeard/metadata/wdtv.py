@@ -198,7 +198,7 @@ class WDTVMetadata(generic.GenericMetadata):
                 lINDEXER_API_PARMS['dvdorder'] = True
 
             t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
-            myShow = t[ep_obj.show.indexerid]
+            my_show = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error as e:
@@ -209,18 +209,18 @@ class WDTVMetadata(generic.GenericMetadata):
         rootNode = etree.Element("details")
 
         # write an WDTV XML containing info for all matching episodes
-        for curEpToWrite in eps_to_write:
+        for cur_ep_to_write in eps_to_write:
 
             try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
+                my_ep = my_show[cur_ep_to_write.season][cur_ep_to_write.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(cur_ep_to_write.season, cur_ep_to_write.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                myEp["firstaired"] = str(datetime.date.fromordinal(1))
+            if ep_obj.season == 0 and not getattr(my_ep, 'firstaired', None):
+                my_ep["firstaired"] = str(datetime.date.fromordinal(1))
 
-            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+            if not (getattr(my_ep, 'episodename', None) and getattr(my_ep, 'firstaired', None)):
                 return None
 
             if len(eps_to_write) > 1:
@@ -230,53 +230,53 @@ class WDTVMetadata(generic.GenericMetadata):
 
             # TODO: get right EpisodeID
             episodeID = etree.SubElement(episode, "id")
-            episodeID.text = str(curEpToWrite.indexerid)
+            episodeID.text = str(cur_ep_to_write.indexerid)
 
             title = etree.SubElement(episode, "title")
             title.text = ep_obj.prettyName()
 
-            if getattr(myShow, 'seriesname', None):
+            if getattr(my_show, 'seriesname', None):
                 seriesName = etree.SubElement(episode, "series_name")
-                seriesName.text = myShow["seriesname"]
+                seriesName.text = my_show["seriesname"]
 
-            if curEpToWrite.name:
+            if cur_ep_to_write.name:
                 episodeName = etree.SubElement(episode, "episode_name")
-                episodeName.text = curEpToWrite.name
+                episodeName.text = cur_ep_to_write.name
 
             seasonNumber = etree.SubElement(episode, "season_number")
-            seasonNumber.text = str(curEpToWrite.season)
+            seasonNumber.text = str(cur_ep_to_write.season)
 
             episodeNum = etree.SubElement(episode, "episode_number")
-            episodeNum.text = str(curEpToWrite.episode)
+            episodeNum.text = str(cur_ep_to_write.episode)
 
             firstAired = etree.SubElement(episode, "firstaired")
 
-            if curEpToWrite.airdate != datetime.date.fromordinal(1):
-                firstAired.text = str(curEpToWrite.airdate)
+            if cur_ep_to_write.airdate != datetime.date.fromordinal(1):
+                firstAired.text = str(cur_ep_to_write.airdate)
 
-            if getattr(myShow, 'firstaired', None):
+            if getattr(my_show, 'firstaired', None):
                 try:
-                    year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(my_show["firstaired"], dateFormat).year)
                     if year_text:
                         year = etree.SubElement(episode, "year")
                         year.text = year_text
                 except Exception:
                     pass
 
-            if curEpToWrite.season != 0 and getattr(myShow, 'runtime', None):
+            if cur_ep_to_write.season != 0 and getattr(my_show, 'runtime', None):
                 runtime = etree.SubElement(episode, "runtime")
-                runtime.text = myShow["runtime"]
+                runtime.text = my_show["runtime"]
 
-            if getattr(myShow, 'genre', None):
+            if getattr(my_show, 'genre', None):
                 genre = etree.SubElement(episode, "genre")
-                genre.text = " / ".join([x.strip() for x in myShow["genre"].split('|') if x.strip()])
+                genre.text = " / ".join([x.strip() for x in my_show["genre"].split('|') if x.strip()])
 
-            if getattr(myEp, 'director', None):
+            if getattr(my_ep, 'director', None):
                 director = etree.SubElement(episode, "director")
-                director.text = myEp['director']
+                director.text = my_ep['director']
 
-            if getattr(myShow, '_actors', None):
-                for actor in myShow['_actors']:
+            if getattr(my_show, '_actors', None):
+                for actor in my_show['_actors']:
                     if not ('name' in actor and actor['name'].strip()):
                         continue
 
@@ -289,9 +289,9 @@ class WDTVMetadata(generic.GenericMetadata):
                         cur_actor_role = etree.SubElement(cur_actor, "role")
                         cur_actor_role.text = actor['role'].strip()
 
-            if curEpToWrite.description:
+            if cur_ep_to_write.description:
                 overview = etree.SubElement(episode, "overview")
-                overview.text = curEpToWrite.description
+                overview.text = cur_ep_to_write.description
 
             # Make it purdy
             helpers.indentXML(rootNode)

@@ -135,21 +135,21 @@ def allPossibleShowNames(show, season=-1):
         newShowNames = []
         country_list = common.countryList
         country_list.update(dict(zip(common.countryList.values(), common.countryList.keys())))
-        for curName in set(showNames):
-            if not curName:
+        for cur_name in set(showNames):
+            if not cur_name:
                 continue
 
             # if we have "Show Name Australia" or "Show Name (Australia)" this will add "Show Name (AU)" for
             # any countries defined in common.countryList
             # (and vice versa)
-            for curCountry in country_list:
-                if curName.endswith(' ' + curCountry):
-                    newShowNames.append(curName.replace(' ' + curCountry, ' (' + country_list[curCountry] + ')'))
-                elif curName.endswith(' (' + curCountry + ')'):
-                    newShowNames.append(curName.replace(' (' + curCountry + ')', ' (' + country_list[curCountry] + ')'))
+            for cur_country in country_list:
+                if cur_name.endswith(' ' + cur_country):
+                    newShowNames.append(cur_name.replace(' ' + cur_country, ' (' + country_list[cur_country] + ')'))
+                elif cur_name.endswith(' (' + cur_country + ')'):
+                    newShowNames.append(cur_name.replace(' (' + cur_country + ')', ' (' + country_list[cur_country] + ')'))
 
             # # if we have "Show Name (2013)" this will strip the (2013) show year from the show name
-            # newShowNames.append(re.sub('\(\d{4}\)', '', curName))
+            # newShowNames.append(re.sub('\(\d{4}\)', '', cur_name))
 
         showNames += newShowNames
 

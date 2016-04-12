@@ -38,7 +38,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException, Inval
 
 class ProperFinder(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
-        self.amActive = False
+        self.am_active = False
 
     def run(self, force=False):  # pylint: disable=unused-argument
         """
@@ -48,7 +48,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         """
         logger.log(u"Beginning the search for new propers")
 
-        self.amActive = True
+        self.am_active = True
 
         propers = self._getProperList()
 
@@ -58,8 +58,8 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
         run_at = ""
-        if None is sickbeard.properFinderScheduler.start_time:
-            run_in = sickbeard.properFinderScheduler.lastRun + sickbeard.properFinderScheduler.cycleTime - datetime.datetime.now()
+        if None is sickbeard.proper_search_scheduler.start_time:
+            run_in = sickbeard.proper_search_scheduler.lastRun + sickbeard.proper_search_scheduler.cycle_time - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             run_at = u", next check in approx. " + (
@@ -67,7 +67,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         logger.log(u"Completed the search for new propers{0}".format(run_at))
 
-        self.amActive = False
+        self.am_active = False
 
     def _getProperList(self):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         """
@@ -78,25 +78,25 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         search_date = datetime.datetime.today() - datetime.timedelta(days=2)
 
         # for each provider get a list of the
-        origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
-        for curProvider in providers:
-            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+        original_thread_name = threading.current_thread().name
+        providers = [x for x in sickbeard.providers.sorted_provider_list(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
+        for cur_provider in providers:
+            threading.current_thread().name = original_thread_name + " :: [" + cur_provider.name + "]"
 
-            logger.log(u"Searching for any new PROPER releases from " + curProvider.name)
+            logger.log(u"Searching for any new PROPER releases from " + cur_provider.name)
 
             try:
-                curPropers = curProvider.find_propers(search_date)
+                cur_propers = cur_provider.find_propers(search_date)
             except AuthException as e:
                 logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
                 continue
             except Exception as e:
-                logger.log(u"Exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                logger.log(u"Exception while searching propers in " + cur_provider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
-            for x in curPropers:
+            for x in cur_propers:
                 if not re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
                     logger.log(u'find_propers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
                     continue
@@ -104,19 +104,19 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 name = self._genericName(x.name)
                 if name not in propers:
                     logger.log(u"Found new proper: " + x.name, logger.DEBUG)
-                    x.provider = curProvider
+                    x.provider = cur_provider
                     propers[name] = x
 
-            threading.currentThread().name = origThreadName
+            threading.current_thread().name = original_thread_name
 
         # take the list of unique propers and get it sorted by
         sortedPropers = sorted(propers.values(), key=operator.attrgetter('date'), reverse=True)
         finalPropers = []
 
-        for curProper in sortedPropers:
+        for cur_proper in sortedPropers:
 
             try:
-                parse_result = NameParser(False).parse(curProper.name)
+                parse_result = NameParser(False).parse(cur_proper.name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log(u"{0}".format(error), logger.DEBUG)
                 continue
@@ -126,7 +126,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
             if not parse_result.episode_numbers:
                 logger.log(
-                    u"Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
+                    u"Ignoring " + cur_proper.name + " because it's for a full season rather than specific episode",
                     logger.DEBUG)
                 continue
 
@@ -135,24 +135,24 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 logger.DEBUG)
 
             # set the indexerid in the db to the show's indexerid
-            curProper.indexerid = parse_result.show.indexerid
+            cur_proper.indexerid = parse_result.show.indexerid
 
             # set the indexer in the db to the show's indexer
-            curProper.indexer = parse_result.show.indexer
+            cur_proper.indexer = parse_result.show.indexer
 
             # populate our Proper instance
-            curProper.show = parse_result.show
-            curProper.season = parse_result.season_number if parse_result.season_number is not None else 1
-            curProper.episode = parse_result.episode_numbers[0]
-            curProper.release_group = parse_result.release_group
-            curProper.version = parse_result.version
-            curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
-            curProper.content = None
+            cur_proper.show = parse_result.show
+            cur_proper.season = parse_result.season_number if parse_result.season_number is not None else 1
+            cur_proper.episode = parse_result.episode_numbers[0]
+            cur_proper.release_group = parse_result.release_group
+            cur_proper.version = parse_result.version
+            cur_proper.quality = Quality.nameQuality(cur_proper.name, parse_result.is_anime)
+            cur_proper.content = None
 
             # filter release
-            bestResult = pickBestResult(curProper, parse_result.show)
+            bestResult = pickBestResult(cur_proper, parse_result.show)
             if not bestResult:
-                logger.log(u"Proper " + curProper.name + " were rejected by our release filters.", logger.DEBUG)
+                logger.log(u"Proper " + cur_proper.name + " were rejected by our release filters.", logger.DEBUG)
                 continue
 
             # only get anime proper if it has release group and version
@@ -170,8 +170,8 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 continue
 
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
-            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
-            if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != bestResult.quality:
+            old_status, old_quality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
+            if old_status not in (DOWNLOADED, SNATCHED) or old_quality != bestResult.quality:
                 continue
 
             # check if we actually want this proper (if it's the right release group and a higher version)
@@ -181,16 +181,16 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                     [bestResult.indexerid, bestResult.season, bestResult.episode])
 
-                oldVersion = int(sql_results[0]["version"])
-                oldRelease_group = (sql_results[0]["release_group"])
+                old_version = int(sql_results[0]["version"])
+                old_release_group = (sql_results[0]["release_group"])
 
-                if -1 < oldVersion < bestResult.version:
-                    logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
+                if -1 < old_version < bestResult.version:
+                    logger.log(u"Found new anime v" + str(bestResult.version) + " to replace existing v" + str(old_version))
                 else:
                     continue
 
-                if oldRelease_group != bestResult.release_group:
-                    logger.log(u"Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
+                if old_release_group != bestResult.release_group:
+                    logger.log(u"Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + old_release_group)
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
@@ -207,7 +207,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         :param properList:
         """
 
-        for curProper in properList:
+        for cur_proper in properList:
 
             historyLimit = datetime.datetime.today() - datetime.timedelta(days=30)
 
@@ -217,23 +217,23 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 "SELECT resource FROM history " +
                 "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? " +
                 "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED]) + ")",
-                [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
+                [cur_proper.indexerid, cur_proper.season, cur_proper.episode, cur_proper.quality,
                  historyLimit.strftime(History.date_format)])
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if not historyResults:
                 logger.log(
-                    u"Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
+                    u"Unable to find an original history entry for proper " + cur_proper.name + " so I'm not downloading it.")
                 continue
 
             else:
 
                 # make sure that none of the existing history downloads are the same proper we're trying to download
-                clean_proper_name = self._genericName(helpers.remove_non_release_groups(curProper.name))
+                clean_proper_name = self._genericName(helpers.remove_non_release_groups(cur_proper.name))
                 isSame = False
-                for curResult in historyResults:
+                for cur_result in historyResults:
                     # if the result exists in history already we need to skip it
-                    if self._genericName(helpers.remove_non_release_groups(curResult["resource"])) == clean_proper_name:
+                    if self._genericName(helpers.remove_non_release_groups(cur_result["resource"])) == clean_proper_name:
                         isSame = True
                         break
                 if isSame:
@@ -241,17 +241,17 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                     continue
 
                 # get the episode object
-                epObj = curProper.show.getEpisode(curProper.season, curProper.episode)
+                epObj = cur_proper.show.get_episode(cur_proper.season, cur_proper.episode)
 
                 # make the result object
-                result = curProper.provider.get_result([epObj])
-                result.show = curProper.show
-                result.url = curProper.url
-                result.name = curProper.name
-                result.quality = curProper.quality
-                result.release_group = curProper.release_group
-                result.version = curProper.version
-                result.content = curProper.content
+                result = cur_proper.provider.get_result([epObj])
+                result.show = cur_proper.show
+                result.url = cur_proper.url
+                result.name = cur_proper.name
+                result.quality = cur_proper.quality
+                result.release_group = cur_proper.release_group
+                result.version = cur_proper.version
+                result.content = cur_proper.content
 
                 # snatch it
                 snatchEpisode(result, SNATCHED_PROPER)

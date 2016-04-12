@@ -62,7 +62,7 @@
 
         <tbody>
         % for hItem in historyResults:
-            <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"])) %>
+            <% cur_status, cur_quality = Quality.splitCompositeStatus(int(hItem["action"])) %>
             <tr>
                 <td align="center">
                     <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["date"]), History.date_format), show_seconds=True) %>
@@ -70,14 +70,14 @@
                     <time datetime="${isoDate}" class="date">${airDate}</time>
                 </td>
                 <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
-                <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
-                % if curStatus == SUBTITLED:
+                <td align="center" ${('', 'class="subtitles_column"')[cur_status == SUBTITLED]}>
+                % if cur_status == SUBTITLED:
                     <img width="16" height="11" style="vertical-align:middle;" src="${srRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';">
                 % endif
-                    <span style="cursor: help; vertical-align:middle;" title="${ek(os.path.basename, hItem['resource'])}">${statusStrings[curStatus]}</span>
+                    <span style="cursor: help; vertical-align:middle;" title="${ek(os.path.basename, hItem['resource'])}">${statusStrings[cur_status]}</span>
                 </td>
                 <td align="center">
-                % if curStatus in [DOWNLOADED, ARCHIVED]:
+                % if cur_status in [DOWNLOADED, ARCHIVED]:
                     % if hItem["provider"] != "-1":
                         <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
                     % else:
@@ -85,7 +85,7 @@
                     % endif
                 % else:
                     % if hItem["provider"] > 0:
-                        % if curStatus in [SNATCHED, FAILED]:
+                        % if cur_status in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                             % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
@@ -98,8 +98,8 @@
                     % endif
                 % endif
                 </td>
-                <span style="display: none;">${curQuality}</span>
-                <td align="center">${renderQualityPill(curQuality)}</td>
+                <span style="display: none;">${cur_quality}</span>
+                <td align="center">${renderQualityPill(cur_quality)}</td>
             </tr>
         % endfor
         </tbody>
@@ -139,8 +139,8 @@
                 </td>
                 <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
                     % for action in sorted(hItem["actions"]):
-                        <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
-                        % if curStatus in [SNATCHED, FAILED]:
+                        <% cur_status, cur_quality = Quality.splitCompositeStatus(int(action["action"])) %>
+                        % if cur_status in [SNATCHED, FAILED]:
                             <% provider = providers.getProviderClass(GenericProvider.make_id(action["provider"])) %>
                             % if provider is not None:
                                 <img src="${srRoot}/images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${ek(os.path.basename, action["resource"])}"/>
@@ -152,8 +152,8 @@
                 </td>
                 <td align="center">
                     % for action in sorted(hItem["actions"]):
-                        <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
-                        % if curStatus in [DOWNLOADED, ARCHIVED]:
+                        <% cur_status, cur_quality = Quality.splitCompositeStatus(int(action["action"])) %>
+                        % if cur_status in [DOWNLOADED, ARCHIVED]:
                             % if action["provider"] != "-1":
                                 <span style="cursor: help;" title="${ek(os.path.basename, action["resource"])}"><i>${action["provider"]}</i></span>
                             % else:
@@ -165,8 +165,8 @@
                 % if sickbeard.USE_SUBTITLES:
                 <td align="center">
                     % for action in sorted(hItem["actions"]):
-                        <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
-                        % if curStatus == SUBTITLED:
+                        <% cur_status, cur_quality = Quality.splitCompositeStatus(int(action["action"])) %>
+                        % if cur_status == SUBTITLED:
                             <img src="${srRoot}/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="${action["provider"]}" title="${action["provider"].capitalize()}: ${ek(os.path.basename, action["resource"])}"/>
                             <span style="vertical-align:middle;"> / </span>
                             <img width="16" height="11" style="vertical-align:middle;" src="${srRoot}/images/subtitles/flags/${action['resource']}.png" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" style="vertical-align: middle !important;">
@@ -175,7 +175,7 @@
                     % endfor
                 </td>
                 % endif
-                <td align="center" width="14%" quality="${curQuality}">${renderQualityPill(curQuality)}</td>
+                <td align="center" width="14%" quality="${cur_quality}">${renderQualityPill(cur_quality)}</td>
             </tr>
         % endfor
         </tbody>

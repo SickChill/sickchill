@@ -51,7 +51,7 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     if indexer_id is None or season is None or episode is None:
         return season, episode
 
-    showObj = Show.find(sickbeard.showList, int(indexer_id))
+    showObj = Show.find(sickbeard.show_list, int(indexer_id))
     if showObj and not showObj.is_scene:
         return season, episode
 
@@ -103,7 +103,7 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    showObj = Show.find(sickbeard.showList, indexer_id)
+    showObj = Show.find(sickbeard.show_list, indexer_id)
     if showObj and not showObj.is_scene:
         return absolute_number
 
@@ -222,7 +222,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None,  # pylin
             [sceneAbsolute, indexer, indexer_id, absolute_number])
 
     # Reload data from DB so that cache and db are in sync
-    show = Show.find(sickbeard.showList, indexer_id)
+    show = Show.find(sickbeard.show_list, indexer_id)
     show.flushEpisodes()
 
 

@@ -680,7 +680,7 @@
                                 <span class="component-title">${_('Branch version')}:</span>
                                 <span class="component-desc">
                                     <select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-                                    <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
+                                    <% gh_branch = sickbeard.version_check_scheduler.action.list_remote_branches() %>
                                     % if gh_branch:
                                         % for cur_branch in gh_branch:
                                             % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1:

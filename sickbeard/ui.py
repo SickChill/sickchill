@@ -130,9 +130,9 @@ class ProgressIndicators(object):
             return []
 
         # if any of the progress indicators are done take them off the list
-        for curPI in ProgressIndicators._pi[name]:
-            if curPI is not None and curPI.percentComplete() == 100:
-                ProgressIndicators._pi[name].remove(curPI)
+        for cur_progress_indicator in ProgressIndicators._pi[name]:
+            if cur_progress_indicator is not None and cur_progress_indicator.percentComplete() == 100:
+                ProgressIndicators._pi[name].remove(cur_progress_indicator)
 
         # return the list of progress indicators associated with this name
         return ProgressIndicators._pi[name]
@@ -160,9 +160,9 @@ class QueueProgressIndicator(object):
         return len([x for x in self.queueItemList if x.isInQueue()])
 
     def nextName(self):
-        for curItem in [sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
-            if curItem in self.queueItemList:
-                return curItem.name
+        for cur_item in [sickbeard.show_queue_scheduler.action.currentItem] + sickbeard.show_queue_scheduler.action.queue:  # @UndefinedVariable
+            if cur_item in self.queueItemList:
+                return cur_item.name
 
         return "Unknown"
 

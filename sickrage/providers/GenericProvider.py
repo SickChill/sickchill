@@ -275,7 +275,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
             episode_object = []
             for current_episode in actual_episodes:
-                episode_object.append(show_object.getEpisode(actual_season, current_episode))
+                episode_object.append(show_object.get_episode(actual_season, current_episode))
 
             result = self.get_result(episode_object)
             result.show = show_object

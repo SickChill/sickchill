@@ -51,8 +51,8 @@
                                     <span class="component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm">
 <% check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"} %>
-% for curInterval in ('daily', '4h', '90m', '45m', '15m'):
-                                            <option value="${curInterval}" ${('', 'selected="selected"')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
+% for cur_interval in ('daily', '4h', '90m', '45m', '15m'):
+                                            <option value="${cur_interval}" ${('', 'selected="selected"')[sickbeard.CHECK_PROPERS_INTERVAL == cur_interval]}>${check_propers_interval_text[cur_interval]}</option>
 % endfor
                                         </select>
                                     </span>
@@ -216,8 +216,8 @@
                                 <span class="component-desc">
                                     <select name="nzb_method" id="nzb_method" class="form-control input-sm">
                                         <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
-                                        % for curAction in ('sabnzbd', 'blackhole', 'nzbget', 'download_station'):
-                                            <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                        % for cur_action in ('sabnzbd', 'blackhole', 'nzbget', 'download_station'):
+                                            <option value="${cur_action}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == cur_action]}>${nzb_method_text[cur_action]}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -511,8 +511,8 @@
                                     <span class="component-desc">
                                     <select name="torrent_method" id="torrent_method" class="form-control input-sm">
                                     <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
-                                    % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
-                                        <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                    % for cur_action in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
+                                        <option value="${cur_action}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == cur_action]}>${torrent_method_text[cur_action]}</option>
                                     % endfor
                                     </select>
                                 </label>

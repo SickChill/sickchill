@@ -29,8 +29,8 @@
             <td>
                 <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" >
                 <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
-                % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                % for cur_action in ('copy', 'move', 'hardlink', 'symlink'):
+                    <option value="${cur_action}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == cur_action]}>${process_method_text[cur_action]}</option>
                 % endfor
                 </select>
             </td>

@@ -76,14 +76,14 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
     dupekey = ''
     dupescore = 0
     # if it aired recently make it high priority and generate DupeKey/Score
-    for curEp in nzb.episodes:
+    for cur_ep in nzb.episodes:
         if dupekey == '':
-            if curEp.show.indexer == 1:
-                dupekey = 'SickRage-' + str(curEp.show.indexerid)
-            elif curEp.show.indexer == 2:
-                dupekey = 'SickRage-tvr' + str(curEp.show.indexerid)
-        dupekey += '-' + str(curEp.season) + '.' + str(curEp.episode)
-        if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
+            if cur_ep.show.indexer == 1:
+                dupekey = 'SickRage-' + str(cur_ep.show.indexerid)
+            elif cur_ep.show.indexer == 2:
+                dupekey = 'SickRage-tvr' + str(cur_ep.show.indexerid)
+        dupekey += '-' + str(cur_ep.season) + '.' + str(cur_ep.episode)
+        if datetime.date.today() - cur_ep.airdate <= datetime.timedelta(days=7):
             addToTop = True
             nzbgetprio = sickbeard.NZBGET_PRIORITY
         else:

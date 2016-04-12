@@ -72,7 +72,7 @@ def generator(cur_data, cur_name, cur_provider):
         show.name = cur_name
         show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
-        sickbeard.showList.append(show)
+        sickbeard.show_list.append(show)
 
         for ep_number in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], ep_number)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         for name, data in TESTS.items():
             filename = name.replace(' ', '_')
 
-            for provider in sickbeard.providers.sortedProviderList():
+            for provider in sickbeard.providers.sorted_provider_list():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
                         test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)

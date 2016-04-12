@@ -97,7 +97,7 @@ class GenericMedia(object):
         """
 
         try:
-            return Show.find(sickbeard.showList, self.indexer_id)
+            return Show.find(sickbeard.show_list, self.indexer_id)
         except MultipleShowObjectsException:
             return None
 

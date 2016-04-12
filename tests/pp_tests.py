@@ -74,7 +74,7 @@ class PPBasicTests(test.SickbeardTestDBCase):
         show.location = test.SHOW_DIR
         show.saveToDB()
 
-        sickbeard.showList = [show]
+        sickbeard.show_list = [show]
         episode = TVEpisode(show, test.SEASON, test.EPISODE)
         episode.name = "some episode name"
         episode.saveToDB()

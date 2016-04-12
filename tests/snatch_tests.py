@@ -93,7 +93,7 @@ class SearchTest(test.SickbeardTestDBCase):
         :return:
         """
 
-        for provider in sickbeard.providers.sortedProviderList():
+        for provider in sickbeard.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
             # provider.is_active = self._fake_is_active
 
@@ -120,7 +120,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         show.name = show_name
         show.quality = cur_data["q"]
         show.saveToDB()
-        sickbeard.showList.append(show)
+        sickbeard.show_list.append(show)
         episode = None
 
         for epNumber in cur_data["e"]:

@@ -110,7 +110,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("table", id="searchResult")
+                    torrent_table = html.find("table", id="search_result")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found

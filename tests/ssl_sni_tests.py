@@ -76,7 +76,7 @@ if __name__ == "__main__":
     print "=================="
     print "######################################################################"
     # Just checking all providers - we should make this error on non-existent urls.
-    for provider in [p for p in providers.makeProviderList()]:
+    for provider in [p for p in providers.make_provider_list()]:
         test_name = 'test_{0}'.format(provider.name)
         test = generator(provider)
         setattr(SniTests, test_name, test)

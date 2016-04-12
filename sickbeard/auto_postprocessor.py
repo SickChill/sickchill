@@ -29,7 +29,7 @@ from sickrage.helper.encoding import ek
 class PostProcessor(object):
     def __init__(self):
         self.lock = threading.Lock()
-        self.amActive = False
+        self.am_active = False
 
     def run(self, force=False):
         """
@@ -38,24 +38,24 @@ class PostProcessor(object):
         :param force: Forces postprocessing run
         :return: Returns when done without a return state/code
         """
-        self.amActive = True
+        self.am_active = True
 
         if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
             logger.log(u"Automatic post-processing attempted but directory doesn't exist: {0}".format(
                        sickbeard.TV_DOWNLOAD_DIR), logger.WARNING)
-            self.amActive = False
+            self.am_active = False
             return
 
         if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
             logger.log(u"Automatic post-processing attempted but directory is relative "
                        u"(and probably not what you really want to process): %s" %
                        sickbeard.TV_DOWNLOAD_DIR, logger.WARNING)
-            self.amActive = False
+            self.am_active = False
             return
 
         processTV.processDir(sickbeard.TV_DOWNLOAD_DIR, force=force)
 
-        self.amActive = False
+        self.am_active = False
 
     def __del__(self):
         pass

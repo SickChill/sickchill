@@ -203,11 +203,11 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_unaired_episodes(self):
 
-        curDate = datetime.date.today()
+        cur_date = datetime.date.today()
 
         sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
-            [curDate.toordinal(), common.SKIPPED, common.WANTED])
+            [cur_date.toordinal(), common.SKIPPED, common.WANTED])
 
         for cur_unaired in sql_results:
             logger.log(u"Fixing unaired episode status for episode_id: {0}".format(cur_unaired["episode_id"]))
