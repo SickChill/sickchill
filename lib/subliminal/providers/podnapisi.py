@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class PodnapisiSubtitle(Subtitle):
+    """Podnapisi Subtitle."""
     provider_name = 'podnapisi'
 
     def __init__(self, language, hearing_impaired, page_link, pid, releases, title, season=None, episode=None,
@@ -78,9 +79,13 @@ class PodnapisiSubtitle(Subtitle):
 
 
 class PodnapisiProvider(Provider):
+    """Podnapisi Provider."""
     languages = ({Language('por', 'BR'), Language('srp', script='Latn')} |
                  {Language.fromalpha2(l) for l in language_converters['alpha2'].codes})
     server_url = 'http://podnapisi.net/subtitles/'
+
+    def __init__(self):
+        self.session = None
 
     def initialize(self):
         self.session = Session()
