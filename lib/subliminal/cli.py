@@ -19,7 +19,7 @@ from dogpile.core import ReadWriteMutex
 from six.moves import configparser
 
 from subliminal import (AsyncProviderPool, Episode, Movie, Video, __version__, check_video, compute_score, get_scores,
-                        provider_manager, refine, region, save_subtitles, scan_video, scan_videos)
+                        provider_manager, refine, refiner_manager, region, save_subtitles, scan_video, scan_videos)
 from subliminal.core import ARCHIVE_EXTENSIONS, search_external_subtitles
 
 logger = logging.getLogger(__name__)
@@ -62,6 +62,7 @@ class Config(object):
         self.config.add_section('general')
         self.config.set('general', 'languages', json.dumps(['en']))
         self.config.set('general', 'providers', json.dumps(sorted([p.name for p in provider_manager])))
+        self.config.set('general', 'refiners', json.dumps(sorted([r.name for r in refiner_manager])))
         self.config.set('general', 'single', str(0))
         self.config.set('general', 'embedded_subtitles', str(1))
         self.config.set('general', 'age', str(int(timedelta(weeks=2).total_seconds())))
@@ -92,6 +93,14 @@ class Config(object):
     @providers.setter
     def providers(self, value):
         self.config.set('general', 'providers', json.dumps(sorted([p.lower() for p in value])))
+
+    @property
+    def refiners(self):
+        return json.loads(self.config.get('general', 'refiners'))
+
+    @refiners.setter
+    def refiners(self, value):
+        self.config.set('general', 'refiners', json.dumps([r.lower() for r in value]))
 
     @property
     def single(self):
@@ -196,6 +205,8 @@ AGE = AgeParamType()
 
 PROVIDER = click.Choice(sorted(provider_manager.names()))
 
+REFINER = click.Choice(sorted(refiner_manager.names()))
+
 dirs = AppDirs('subliminal')
 cache_file = 'subliminal.dbm'
 config_file = 'config.ini'
@@ -204,7 +215,6 @@ config_file = 'config.ini'
 @click.group(context_settings={'max_content_width': 100}, epilog='Suggestions and bug reports are greatly appreciated: '
              'https://github.com/Diaoul/subliminal/')
 @click.option('--addic7ed', type=click.STRING, nargs=2, metavar='USERNAME PASSWORD', help='Addic7ed configuration.')
-@click.option('--itasa', type=click.STRING, nargs=2, metavar='USERNAME PASSWORD', help='ItaSA configuration.')
 @click.option('--legendastv', type=click.STRING, nargs=2, metavar='USERNAME PASSWORD', help='LegendasTV configuration.')
 @click.option('--opensubtitles', type=click.STRING, nargs=2, metavar='USERNAME PASSWORD',
               help='OpenSubtitles configuration.')
@@ -214,7 +224,7 @@ config_file = 'config.ini'
 @click.option('--debug', is_flag=True, help='Print useful information for debugging subliminal and for reporting bugs.')
 @click.version_option(__version__)
 @click.pass_context
-def subliminal(ctx, addic7ed, itasa, legendastv, opensubtitles, subscenter, cache_dir, debug):
+def subliminal(ctx, addic7ed, legendastv, opensubtitles, subscenter, cache_dir, debug):
     """Subtitles, faster than your thoughts."""
     # create cache directory
     try:
@@ -230,7 +240,6 @@ def subliminal(ctx, addic7ed, itasa, legendastv, opensubtitles, subscenter, cach
     # configure logging
     if debug:
         handler = logging.StreamHandler()
-        # TODO: change format to something nicer (use colorlogs + funcName)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
         logging.getLogger('subliminal').addHandler(handler)
         logging.getLogger('subliminal').setLevel(logging.DEBUG)
@@ -239,8 +248,6 @@ def subliminal(ctx, addic7ed, itasa, legendastv, opensubtitles, subscenter, cach
     ctx.obj = {'provider_configs': {}}
     if addic7ed:
         ctx.obj['provider_configs']['addic7ed'] = {'username': addic7ed[0], 'password': addic7ed[1]}
-    if itasa:
-        ctx.obj['provider_configs']['itasa'] = {'username': itasa[0], 'password': itasa[1]}
     if legendastv:
         ctx.obj['provider_configs']['legendastv'] = {'username': legendastv[0], 'password': legendastv[1]}
     if opensubtitles:
@@ -266,6 +273,7 @@ def cache(ctx, clear_subliminal):
 @click.option('-l', '--language', type=LANGUAGE, required=True, multiple=True, help='Language as IETF code, '
               'e.g. en, pt-BR (can be used multiple times).')
 @click.option('-p', '--provider', type=PROVIDER, multiple=True, help='Provider to use (can be used multiple times).')
+@click.option('-r', '--refiner', type=REFINER, multiple=True, help='Refiner to use (can be used multiple times).')
 @click.option('-a', '--age', type=AGE, help='Filter videos newer than AGE, e.g. 12h, 1w2d.')
 @click.option('-d', '--directory', type=click.STRING, metavar='DIR', help='Directory where to save subtitles, '
               'default is next to the video file.')
@@ -283,8 +291,8 @@ def cache(ctx, clear_subliminal):
 @click.option('-v', '--verbose', count=True, help='Increase verbosity.')
 @click.argument('path', type=click.Path(), required=True, nargs=-1)
 @click.pass_obj
-def download(obj, provider, language, age, directory, encoding, single, force, hearing_impaired,
-             min_score, max_workers, archives, verbose, path):
+def download(obj, provider, refiner, language, age, directory, encoding, single, force, hearing_impaired, min_score,
+             max_workers, archives, verbose, path):
     """Download best subtitles.
 
     PATH can be an directory containing videos, a video file path or a video file name. It can be used multiple times.
@@ -314,15 +322,14 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
                     continue
                 if not force:
                     video.subtitle_languages |= set(search_external_subtitles(video.name, directory=directory).values())
-                refine(video, embedded_subtitles=not force)
+                refine(video, episode_refiners=refiner, movie_refiners=refiner, embedded_subtitles=not force)
                 videos.append(video)
                 continue
 
             # directories
             if os.path.isdir(p):
                 try:
-                    scanned_videos = scan_videos(p, age=age, archives=archives, subtitles=not force,
-                                                 subtitles_dir=directory)
+                    scanned_videos = scan_videos(p, age=age, archives=archives)
                 except:
                     logger.exception('Unexpected error while collecting directory path %s', p)
                     errored_paths.append(p)
@@ -332,7 +339,7 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
                         if not force:
                             video.subtitle_languages |= set(search_external_subtitles(video.name,
                                                                                       directory=directory).values())
-                        refine(video, embedded_subtitles=not force)
+                        refine(video, episode_refiners=refiner, movie_refiners=refiner, embedded_subtitles=not force)
                         videos.append(video)
                     else:
                         ignored_videos.append(video)
@@ -348,7 +355,7 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
             if check_video(video, languages=language, age=age, undefined=single):
                 if not force:
                     video.subtitle_languages |= set(search_external_subtitles(video.name, directory=directory).values())
-                refine(video, embedded_subtitles=not force)
+                refine(video, episode_refiners=refiner, movie_refiners=refiner, embedded_subtitles=not force)
                 videos.append(video)
             else:
                 ignored_videos.append(video)
@@ -394,7 +401,10 @@ def download(obj, provider, language, age, directory, encoding, single, force, h
                                                       hearing_impaired=hearing_impaired, only_one=single)
                 downloaded_subtitles[v] = subtitles
 
-    # TODO: warn about discarded providers
+        if p.discarded_providers:
+            click.secho('Some providers have been discarded due to unexpected errors: %s' %
+                        ', '.join(p.discarded_providers), fg='yellow')
+
     # save subtitles
     total_subtitles = 0
     for v, subtitles in downloaded_subtitles.items():
