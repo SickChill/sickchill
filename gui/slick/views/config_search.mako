@@ -675,7 +675,7 @@
                                 </div>
 
                                 <div class="testNotification" id="test_torrent_result">${_('Click below to test')}</div>
-                                <input class="btn" type="button" value="Test Connection" id="test_torrent" class="btn test-button"/>
+                                <input class="btn" type="button" value="${_('Test Connection')}" id="test_torrent" class="btn test-button"/>
                                 <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" /><br>
                                 </div>
                         </div><!-- /content_use_torrents //-->
@@ -683,7 +683,7 @@
                 </div><!-- /component-group3 //-->
 
                 <br>
-                <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
+                <h6 class="pull-right"><b>${_('All non-absolute folder locations are relative to')} <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}" />
 
             </div><!-- /config-components //-->
