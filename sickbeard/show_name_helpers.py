@@ -102,7 +102,7 @@ def filterBadReleases(name, parse=True, show=None):
     require_words = sickbeard.REQUIRE_WORDS.split(',') if sickbeard.REQUIRE_WORDS else []
     if show:
         if show.rls_ignore_words:
-            require_words = set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip())
+            require_words = list(set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip()))
         if show.rls_require_words:
             require_words.extend(show.rls_require_words.split(','))
 
