@@ -41,7 +41,7 @@ __all__ = [
 ]
 
 
-def sortedProviderList(randomize=False):
+def sorted_provider_list(randomize=False):
     initialList = sickbeard.provider_list + sickbeard.newznab_provider_list + sickbeard.torrent_rss_provider_list
     providerDict = dict(zip([x.get_id() for x in initialList], initialList))
 
@@ -68,7 +68,7 @@ def sortedProviderList(randomize=False):
     return newList
 
 
-def makeProviderList():
+def make_provider_list():
     return [x.provider for x in (getProviderModule(y) for y in __all__) if x]
 
 

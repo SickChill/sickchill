@@ -10,12 +10,12 @@
 $(document).ready(function(){
     % if sickbeard.USE_NZBS:
         var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
-        % for cur_newznab_provider in sickbeard.newznabProviderList:
+        % for cur_newznab_provider in sickbeard.newznab_provider_list:
         $(this).addProvider('${cur_newznab_provider.get_id()}', '${cur_newznab_provider.name}', '${cur_newznab_provider.url}', '${cur_newznab_provider.key}', '${cur_newznab_provider.catIDs}', ${int(cur_newznab_provider.default)}, show_nzb_providers);
         % endfor
     % endif
     % if sickbeard.USE_TORRENTS:
-        % for cur_torrent_rss_provider in sickbeard.torrentRssProviderList:
+        % for cur_torrent_rss_provider in sickbeard.torrent_rss_provider_list:
         $(this).addTorrentRssProvider('${cur_torrent_rss_provider.get_id()}', '${cur_torrent_rss_provider.name}', '${cur_torrent_rss_provider.url}', '${cur_torrent_rss_provider.cookies}', '${cur_torrent_rss_provider.titleTAG}');
         % endfor
     % endif
@@ -67,7 +67,7 @@ $('#config-components').tabs();
 
                     <fieldset class="component-group-list">
                         <ul id="provider_order_list">
-                        % for cur_provider in sickbeard.providers.sortedProviderList():
+                        % for cur_provider in sickbeard.providers.sorted_provider_list():
                             <%
                                 ## These will show the '!' not saying they are broken
                                 broken_providers = {}
@@ -93,7 +93,7 @@ $('#config-components').tabs();
                             </li>
                         % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id()+':'+str(int(x.is_enabled())) for x in sickbeard.providers.sortedProviderList()])}"/>
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id()+':'+str(int(x.is_enabled())) for x in sickbeard.providers.sorted_provider_list()])}"/>
                         <br><input type="submit" class="btn config_submitter" value="${_('Save Changes')}" /><br>
                     </fieldset>
                 </div><!-- /component-group1 //-->
@@ -113,7 +113,7 @@ $('#config-components').tabs();
                                 <span class="component-desc">
                                     <%
                                         provider_config_list = []
-                                        for cur_provider in sickbeard.providers.sortedProviderList():
+                                        for cur_provider in sickbeard.providers.sorted_provider_list():
                                             if cur_provider.provider_type == GenericProvider.NZB and (not sickbeard.USE_NZBS or not cur_provider.is_enabled()):
                                                 continue
                                             elif cur_provider.provider_type == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not cur_provider.is_enabled()):
@@ -135,7 +135,7 @@ $('#config-components').tabs();
 
 
                     <!-- start div for editing providers //-->
-                    % for cur_newznab_provider in [cur_provider for cur_provider in sickbeard.newznabProviderList]:
+                    % for cur_newznab_provider in [cur_provider for cur_provider in sickbeard.newznab_provider_list]:
                     <div class="providerDiv" id="${cur_newznab_provider.get_id()}Div">
                         % if cur_newznab_provider.default and cur_newznab_provider.needs_auth:
                         <div class="field-pair">
@@ -218,7 +218,7 @@ $('#config-components').tabs();
                     </div>
                     % endfor
 
-                    % for cur_nzb_provider in [cur_provider for cur_provider in sickbeard.providers.sortedProviderList() if cur_provider.provider_type == GenericProvider.NZB and cur_provider not in sickbeard.newznabProviderList]:
+                    % for cur_nzb_provider in [cur_provider for cur_provider in sickbeard.providers.sorted_provider_list() if cur_provider.provider_type == GenericProvider.NZB and cur_provider not in sickbeard.newznab_provider_list]:
                     <div class="providerDiv" id="${cur_nzb_provider.get_id()}Div">
                         % if hasattr(cur_nzb_provider, 'username'):
                         <div class="field-pair">
@@ -305,7 +305,7 @@ $('#config-components').tabs();
                     </div>
                     % endfor
 
-                    % for cur_torrent_provider in [cur_provider for cur_provider in sickbeard.providers.sortedProviderList() if cur_provider.provider_type == GenericProvider.TORRENT]:
+                    % for cur_torrent_provider in [cur_provider for cur_provider in sickbeard.providers.sorted_provider_list() if cur_provider.provider_type == GenericProvider.TORRENT]:
                     <div class="providerDiv" id="${cur_torrent_provider.get_id()}Div">
 
                         % if hasattr(cur_torrent_provider, 'custom_url'):

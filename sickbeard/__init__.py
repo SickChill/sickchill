@@ -1277,7 +1277,7 @@ def initialize(console_logging=True):  # pylint: disable=too-many-locals, too-ma
         DISPLAY_ALL_SEASONS = bool(check_setting_int(CFG, 'General', 'display_all_seasons', 1))
 
         # initialize NZB and TORRENT providers
-        provider_list = providers.makeProviderList()
+        provider_list = providers.make_provider_list()
 
         NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data', '')
         newznab_provider_list = NewznabProvider.get_providers_list(NEWZNAB_DATA)
@@ -1287,7 +1287,7 @@ def initialize(console_logging=True):  # pylint: disable=too-many-locals, too-ma
 
         # dynamically load provider settings
         for cur_torrent_provider in [
-                cur_provider for cur_provider in providers.sortedProviderList() if cur_provider.provider_type == GenericProvider.TORRENT]:
+                cur_provider for cur_provider in providers.sorted_provider_list() if cur_provider.provider_type == GenericProvider.TORRENT]:
 
             cur_torrent_provider.enabled = bool(check_setting_int(
                 CFG, cur_torrent_provider.get_id().upper(), cur_torrent_provider.get_id(), 0))
@@ -1389,7 +1389,7 @@ def initialize(console_logging=True):  # pylint: disable=too-many-locals, too-ma
                     CFG, cur_torrent_provider.get_id().upper(), cur_torrent_provider.get_id() + '_subtitle', 0))
 
         for cur_nzb_provider in [
-                cur_provider for cur_provider in providers.sortedProviderList() if cur_provider.provider_type == GenericProvider.NZB]:
+                cur_provider for cur_provider in providers.sorted_provider_list() if cur_provider.provider_type == GenericProvider.NZB]:
 
             cur_nzb_provider.enabled = bool(check_setting_int(
                 CFG, cur_nzb_provider.get_id().upper(), cur_nzb_provider.get_id(), 0))
@@ -1664,7 +1664,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for cur_torrent_provider in [cur_provider for cur_provider in providers.sortedProviderList() if
+    for cur_torrent_provider in [cur_provider for cur_provider in providers.sorted_provider_list() if
                                cur_provider.provider_type == GenericProvider.TORRENT]:
         new_config[cur_torrent_provider.get_id().upper()] = {}
         new_config[cur_torrent_provider.get_id().upper()][cur_torrent_provider.get_id()] = int(cur_torrent_provider.enabled)
@@ -1740,7 +1740,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             new_config[cur_torrent_provider.get_id().upper()][cur_torrent_provider.get_id() + '_subtitle'] = int(
                 cur_torrent_provider.subtitle)
 
-    for cur_nzb_provider in [cur_provider for cur_provider in providers.sortedProviderList() if
+    for cur_nzb_provider in [cur_provider for cur_provider in providers.sorted_provider_list() if
                            cur_provider.provider_type == GenericProvider.NZB]:
         new_config[cur_nzb_provider.get_id().upper()] = {}
         new_config[cur_nzb_provider.get_id().upper()][cur_nzb_provider.get_id()] = int(cur_nzb_provider.enabled)
@@ -2245,7 +2245,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
     new_config.write()
 
 
-def launch_browser(protocol='http', startPort=None, web_root='/'):
+def launch_browser(protocol='http', web_port=None, web_root='/'):
 
     try:
         import webbrowser
@@ -2253,10 +2253,10 @@ def launch_browser(protocol='http', startPort=None, web_root='/'):
         logger.log(u"Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
         return
 
-    if not startPort:
-        startPort = WEB_PORT
+    if not web_port:
+        web_port = WEB_PORT
 
-    browserURL = '{0}://localhost:{1:d}{2}/home/'.format(protocol, startPort, web_root)
+    browserURL = '{0}://localhost:{1:d}{2}/home/'.format(protocol, web_port, web_root)
 
     try:
         webbrowser.open(browserURL, 2, 1)

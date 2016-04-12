@@ -63,10 +63,10 @@
                         </div>
 
                         <div class="field-pair">
-                            <label for="defaultEpStatusSelect">
+                            <label for="default_ep_statusSelect">
                                 <span class="component-title">${_('Default Episode Status')}</span>
                                 <span class="component-desc">
-                                    <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
+                                    <select name="default_ep_status" id="default_ep_statusSelect" class="form-control form-control-inline input-sm">
                                         % for cur_status in [WANTED, SKIPPED, IGNORED]:
                                         <option value="${cur_status}" ${('', 'selected="selected"')[cur_status == show.default_ep_status]}>${statusStrings[cur_status]}</option>
                                         % endfor

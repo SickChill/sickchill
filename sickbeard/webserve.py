@@ -135,7 +135,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
         self.arguments['sbHandleReverseProxy'] = sickbeard.HANDLE_REVERSE_PROXY
         self.arguments['sbThemeName'] = sickbeard.THEME_NAME
-        self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
+        self.arguments['default_homepage'] = sickbeard.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
 
@@ -1249,7 +1249,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         main_db_con = db.DBConnection()
-        seasonResults = main_db_con.select(
+        season_results = main_db_con.select(
             "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season IS NOT NULL ORDER BY season DESC",
             [show_obj.indexerid]
         )
@@ -1265,9 +1265,9 @@ class Home(WebRoot):
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'ui-icon ui-icon-pencil'}]
 
         try:
-            showLoc = (show_obj.location, True)
+            show_location = (show_obj.location, True)
         except ShowDirectoryNotFoundException:
-            showLoc = (show_obj._location, False)  # pylint: disable=protected-access
+            show_location = (show_obj._location, False)  # pylint: disable=protected-access
 
         show_message = ''
 
@@ -1309,7 +1309,7 @@ class Home(WebRoot):
                 if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.show_queue_scheduler.action.isBeingSubtitled(show_obj):
                     submenu.append({'title': _('Download Subtitles'), 'path': 'home/subtitleShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'menu-icon-backlog'})
 
-        epCounts = {
+        episode_counts = {
             Overview.SKIPPED: 0,
             Overview.WANTED: 0,
             Overview.QUAL: 0,
@@ -1319,13 +1319,13 @@ class Home(WebRoot):
             Overview.SNATCHED_PROPER: 0,
             Overview.SNATCHED_BEST: 0
         }
-        epCats = {}
+        episode_categories = {}
 
         for cur_result in sql_results:
             cur_epCat = show_obj.getOverview(cur_result["status"])
             if cur_epCat:
-                epCats[str(cur_result["season"]) + "x" + str(cur_result["episode"])] = cur_epCat
-                epCounts[cur_epCat] += 1
+                episode_categories[str(cur_result["season"]) + "x" + str(cur_result["episode"])] = cur_epCat
+                episode_counts[cur_epCat] += 1
 
         def titler(x):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
@@ -1338,10 +1338,10 @@ class Home(WebRoot):
                     anime.append(show)
                 else:
                     shows.append(show)
-            sortedShowLists = [["Shows", sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
+            sorted_show_lists = [["Shows", sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
                                ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
         else:
-            sortedShowLists = [
+            sorted_show_lists = [
                 ["Shows", sorted(sickbeard.show_list, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
 
         bwl = None
@@ -1368,10 +1368,10 @@ class Home(WebRoot):
         })
 
         return t.render(
-            submenu=submenu, showLoc=showLoc, show_message=show_message,
-            show=show_obj, sql_results=sql_results, seasonResults=seasonResults,
-            sortedShowLists=sortedShowLists, bwl=bwl, epCounts=epCounts,
-            epCats=epCats, all_scene_exceptions=show_obj.exceptions,
+            submenu=submenu, show_location=show_location, show_message=show_message,
+            show=show_obj, sql_results=sql_results, season_results=season_results,
+            sorted_show_lists=sorted_show_lists, bwl=bwl, episode_counts=episode_counts,
+            episode_categories=episode_categories, all_scene_exceptions=show_obj.exceptions,
             scene_numbering=get_scene_numbering_for_show(indexerid, indexer),
             xem_numbering=get_xem_numbering_for_show(indexerid, indexer),
             scene_absolute_numbering=get_scene_absolute_numbering_for_show(indexerid, indexer),
@@ -1391,40 +1391,40 @@ class Home(WebRoot):
 
     @staticmethod
     def sceneExceptions(show):
-        exceptionsList = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
-        if not exceptionsList:
+        scene_exceptions_list = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
+        if not scene_exceptions_list:
             return _("No scene exceptions")
 
         out = []
-        for season, names in iter(sorted(exceptionsList.iteritems())):
+        for season, names in iter(sorted(scene_exceptions_list.iteritems())):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(names))
         return "<br>".join(out)
 
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
-                 exceptions_list=None, flatten_folders=None, paused=None, directCall=False,
+                 exceptions_list=None, flatten_folders=None, paused=None, direct_call=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
-                 defaultEpStatus=None, quality_preset=None):
+                 default_ep_status=None, quality_preset=None):
 
         anidb_failed = False
         if not show:
-            errString = _("Invalid show ID") + ": {show}".format(show=str(show))
-            if directCall:
-                return [errString]
+            error_msg = _("Invalid show ID") + ": {show}".format(show=str(show))
+            if direct_call:
+                return [error_msg]
             else:
-                return self._genericMessage(_("Error"), errString)
+                return self._genericMessage(_("Error"), error_msg)
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
         if not show_obj:
-            errString = _("Unable to find the specified show") + ": {show}".format(show=str(show))
-            if directCall:
-                return [errString]
+            error_msg = _("Unable to find the specified show") + ": {show}".format(show=str(show))
+            if direct_call:
+                return [error_msg]
             else:
-                return self._genericMessage(_("Error"), errString)
+                return self._genericMessage(_("Error"), error_msg)
 
         show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
@@ -1443,10 +1443,10 @@ class Home(WebRoot):
                     try:
                         anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_obj.name)
                         groups = anime.get_groups()
-                    except Exception as e:
+                    except Exception as error:
                         anidb_failed = True
                         ui.notifications.error(_('Unable to retreive Fansub Groups from AniDB.'))
-                        logger.log(u'Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e), logger.DEBUG)
+                        logger.log(u'Unable to retreive Fansub Groups from AniDB. Error is {error}'.format(error=error), logger.DEBUG)
 
             with show_obj.lock:
                 show = show_obj
@@ -1502,8 +1502,8 @@ class Home(WebRoot):
         if not isinstance(exceptions_list, list):
             exceptions_list = [exceptions_list]
 
-        # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
-        if directCall:
+        # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
+        if direct_call:
             do_update_exceptions = False
         else:
             if set(exceptions_list) == set(show_obj.exceptions):
@@ -1547,9 +1547,9 @@ class Home(WebRoot):
             show_obj.sports = sports
             show_obj.subtitles = subtitles
             show_obj.air_by_date = air_by_date
-            show_obj.default_ep_status = int(defaultEpStatus)
+            show_obj.default_ep_status = int(default_ep_status)
 
-            if not directCall:
+            if not direct_call:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
@@ -1603,7 +1603,7 @@ class Home(WebRoot):
             except CantUpdateShowException as e:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
-        if directCall:
+        if direct_call:
             return errors
 
         if errors:
@@ -2745,9 +2745,11 @@ class HomeAddShows(Home):
         show_dir = None
 
         # add the show
-        sickbeard.show_queue_scheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders,
-                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
-                                                    int(default_status_after), root_dir=location)
+        sickbeard.show_queue_scheduler.action.addShow(
+            1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders,
+            indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
+            int(default_status_after), root_dir=location
+        )
 
         ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
 
@@ -3180,14 +3182,14 @@ class Manage(Home, WebRoot):
     def backlogOverview(self):
         t = PageTemplate(rh=self, filename="manage_backlogOverview.mako")
 
-        showCounts = {}
+        show_counts = {}
         showCats = {}
         showSQLResults = {}
 
         main_db_con = db.DBConnection()
         for cur_show in sickbeard.show_list:
 
-            epCounts = {
+            episode_counts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
                 Overview.QUAL: 0,
@@ -3197,7 +3199,7 @@ class Manage(Home, WebRoot):
                 Overview.SNATCHED_PROPER: 0,
                 Overview.SNATCHED_BEST: 0
             }
-            epCats = {}
+            episode_categories = {}
 
             sql_results = main_db_con.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.season IS NOT NULL "
@@ -3208,15 +3210,15 @@ class Manage(Home, WebRoot):
             for cur_result in sql_results:
                 cur_epCat = cur_show.getOverview(cur_result["status"])
                 if cur_epCat:
-                    epCats[u'{ep}'.format(ep=episode_num(cur_result['season'], cur_result['episode']))] = cur_epCat
-                    epCounts[cur_epCat] += 1
+                    episode_categories[u'{ep}'.format(ep=episode_num(cur_result['season'], cur_result['episode']))] = cur_epCat
+                    episode_counts[cur_epCat] += 1
 
-            showCounts[cur_show.indexerid] = epCounts
-            showCats[cur_show.indexerid] = epCats
+            show_counts[cur_show.indexerid] = episode_counts
+            showCats[cur_show.indexerid] = episode_categories
             showSQLResults[cur_show.indexerid] = sql_results
 
         return t.render(
-            showCounts=showCounts, showCats=showCats,
+            show_counts=show_counts, showCats=showCats,
             showSQLResults=showSQLResults, controller='manage',
             action='backlogOverview', title=_('Backlog Overview'),
             header=_('Backlog Overview'), topmenu='manage')
@@ -3429,14 +3431,11 @@ class Manage(Home, WebRoot):
 
             exceptions_list = []
 
-            cur_errors += self.editShow(cur_show, new_show_dir, anyQualities,
-                                       bestQualities, exceptions_list,
-                                       defaultEpStatus=new_default_ep_status,
-                                       flatten_folders=new_flatten_folders,
-                                       paused=new_paused, sports=new_sports,
-                                       subtitles=new_subtitles, anime=new_anime,
-                                       scene=new_scene, air_by_date=new_air_by_date,
-                                       directCall=True)
+            cur_errors += self.editShow(
+                cur_show, new_show_dir, anyQualities, bestQualities, exceptions_list,
+                default_ep_status=new_default_ep_status, flatten_folders=new_flatten_folders,
+                paused=new_paused, sports=new_sports, subtitles=new_subtitles, anime=new_anime,
+                scene=new_scene, air_by_date=new_air_by_date, direct_call=True)
 
             if cur_errors:
                 logger.log(u"Errors: " + str(cur_errors), logger.ERROR)
@@ -4631,7 +4630,7 @@ class ConfigProviders(Config):
             cur_provider, cur_enabled = cur_providerStr.split(':')
             cur_enabled = try_int(cur_enabled)
 
-            cur_provider_obj = [x for x in sickbeard.providers.sortedProviderList() if
+            cur_provider_obj = [x for x in sickbeard.providers.sorted_provider_list() if
                           x.get_id() == cur_provider and hasattr(x, 'enabled')]
             if cur_provider_obj:
                 cur_provider_obj[0].enabled = bool(cur_enabled)
@@ -4649,7 +4648,7 @@ class ConfigProviders(Config):
         provider_list = provider_list + disabled_list
 
         # dynamically load provider settings
-        for cur_torrent_provider in [prov for prov in sickbeard.providers.sortedProviderList() if
+        for cur_torrent_provider in [prov for prov in sickbeard.providers.sorted_provider_list() if
                                    prov.provider_type == GenericProvider.TORRENT]:
 
             if hasattr(cur_torrent_provider, 'custom_url'):
@@ -4800,7 +4799,7 @@ class ConfigProviders(Config):
                 except Exception:
                     cur_torrent_provider.subtitle = 0
 
-        for cur_nzb_provider in [prov for prov in sickbeard.providers.sortedProviderList() if
+        for cur_nzb_provider in [prov for prov in sickbeard.providers.sorted_provider_list() if
                                prov.provider_type == GenericProvider.NZB]:
 
             if hasattr(cur_nzb_provider, 'api_key'):

@@ -6,7 +6,7 @@ function getMeta(pyVar){
 }
 
 var srRoot = getMeta('srRoot'),
-    srDefaultPage = getMeta('srDefaultPage'),
+    default_homepage = getMeta('default_homepage'),
     srPID = getMeta('srPID'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
@@ -2536,7 +2536,7 @@ var SICKRAGE = {
                             $('#restart_success').show();
                             $('#refresh_message').show();
                             setTimeout(function(){
-                                window.location = srRoot + '/' + srDefaultPage + '/';
+                                window.location = srRoot + '/' + default_homepage + '/';
                             }, 5000);
                         }
                     }

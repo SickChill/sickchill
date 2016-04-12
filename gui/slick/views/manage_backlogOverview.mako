@@ -23,12 +23,12 @@
     showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
     totalWanted = totalQual = totalQualSnatched = 0
-    backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.name)
+    backLogShows = sorted([x for x in sickbeard.showList if show_counts[x.indexerid][Overview.QUAL] + show_counts[x.indexerid][Overview.WANTED] + (0, show_counts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.name)
     for cur_show in backLogShows:
-        totalWanted += showCounts[cur_show.indexerid][Overview.WANTED]
-        totalQual += showCounts[cur_show.indexerid][Overview.QUAL]
+        totalWanted += show_counts[cur_show.indexerid][Overview.WANTED]
+        totalQual += show_counts[cur_show.indexerid][Overview.QUAL]
         if showQualSnatched(cur_show):
-            totalQualSnatched += showCounts[x.indexerid][Overview.SNATCHED]
+            totalQualSnatched += show_counts[x.indexerid][Overview.SNATCHED]
 %>
 
 <div class="h2footer pull-right">
@@ -56,23 +56,23 @@ Jump to Show:
 
 <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
 % for cur_show in backLogShows:
-    % if not showQualSnatched(cur_show) and not showCounts[cur_show.indexerid][Overview.WANTED] + showCounts[cur_show.indexerid][Overview.QUAL]:
+    % if not showQualSnatched(cur_show) and not show_counts[cur_show.indexerid][Overview.WANTED] + show_counts[cur_show.indexerid][Overview.QUAL]:
         <% continue %>
     % endif
     <tr class="seasonheader" id="show-${cur_show.indexerid}">
         <td colspan="3" class="align-left" style="position: relative;">
             <h2 style="display: inline-block;"><a href="${srRoot}/home/displayShow?show=${cur_show.indexerid}">${cur_show.name}</a></h2>
             <div style="position: absolute; bottom: 10px; right: 0;">
-                % if showCounts[cur_show.indexerid][Overview.WANTED] > 0:
-                <span class="listing-key wanted">${_('Wanted')}: <b>${showCounts[cur_show.indexerid][Overview.WANTED]}</b></span>
+                % if show_counts[cur_show.indexerid][Overview.WANTED] > 0:
+                <span class="listing-key wanted">${_('Wanted')}: <b>${show_counts[cur_show.indexerid][Overview.WANTED]}</b></span>
                 % endif
 
-                % if showQualSnatched(cur_show) and showCounts[cur_show.indexerid][Overview.SNATCHED] > 0:
-                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${showCounts[cur_show.indexerid][Overview.SNATCHED]}</b></span>
+                % if showQualSnatched(cur_show) and show_counts[cur_show.indexerid][Overview.SNATCHED] > 0:
+                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${show_counts[cur_show.indexerid][Overview.SNATCHED]}</b></span>
                 % endif
 
-                % if showCounts[cur_show.indexerid][Overview.QUAL] > 0:
-                <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[cur_show.indexerid][Overview.QUAL]}</b></span>
+                % if show_counts[cur_show.indexerid][Overview.QUAL] > 0:
+                <span class="listing-key qual">${_('Allowed')}: <b>${show_counts[cur_show.indexerid][Overview.QUAL]}</b></span>
                 % endif
 
                 <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${cur_show.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>

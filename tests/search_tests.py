@@ -151,7 +151,7 @@ if __name__ == '__main__':
         for name, data in TESTS.items():
             filename = name.replace(' ', '_')
 
-            for provider in sickbeard.providers.sortedProviderList():
+            for provider in sickbeard.providers.sorted_provider_list():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
                         test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)

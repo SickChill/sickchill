@@ -75,26 +75,26 @@ def get_scene_exceptions(indexer_id, season=-1):
     Given a indexer_id, return a list of all the scene exceptions.
     """
 
-    exceptionsList = []
+    scene_exceptions_list = []
 
     if indexer_id not in exceptionsCache or season not in exceptionsCache[indexer_id]:
         cache_db_con = db.DBConnection('cache.db')
         exceptions = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
                                          [indexer_id, season])
         if exceptions:
-            exceptionsList = list({cur_exception["show_name"] for cur_exception in exceptions})
+            scene_exceptions_list = list({cur_exception["show_name"] for cur_exception in exceptions})
 
             if indexer_id not in exceptionsCache:
                 exceptionsCache[indexer_id] = {}
-            exceptionsCache[indexer_id][season] = exceptionsList
+            exceptionsCache[indexer_id][season] = scene_exceptions_list
     else:
-        exceptionsList = exceptionsCache[indexer_id][season]
+        scene_exceptions_list = exceptionsCache[indexer_id][season]
 
     # Add generic exceptions regardless of the season if there is no exception for season
-    if season != -1 and not exceptionsList:
-        exceptionsList += get_scene_exceptions(indexer_id, season=-1)
+    if season != -1 and not scene_exceptions_list:
+        scene_exceptions_list += get_scene_exceptions(indexer_id, season=-1)
 
-    return list({exception for exception in exceptionsList})
+    return list({exception for exception in scene_exceptions_list})
 
 
 def get_all_scene_exceptions(indexer_id):

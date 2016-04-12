@@ -93,7 +93,7 @@ class SearchTest(test.SickbeardTestDBCase):
         :return:
         """
 
-        for provider in sickbeard.providers.sortedProviderList():
+        for provider in sickbeard.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
             # provider.is_active = self._fake_is_active
 

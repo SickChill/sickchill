@@ -79,7 +79,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         # for each provider get a list of the
         original_thread_name = threading.current_thread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
+        providers = [x for x in sickbeard.providers.sorted_provider_list(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
         for cur_provider in providers:
             threading.current_thread().name = original_thread_name + " :: [" + cur_provider.name + "]"
 
