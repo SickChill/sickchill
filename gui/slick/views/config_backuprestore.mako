@@ -59,7 +59,7 @@
                             <br><br>
 
                             <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" autocapitalize="off" />
-                            <input class="btn btn-inline" type="button" value="Restore" id="Restore" />
+                            <input class="btn btn-inline" type="button" value="${_('Restore')}" id="Restore" />
 
                             <br>
 
