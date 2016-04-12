@@ -8,7 +8,7 @@
             <label for="customQuality" class="clearfix">
                 <span class="component-title">${_('Preferred Quality')}</span>
                 <span class="component-desc">
-                    <% anyQualities, bestQualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
+                    <% allowed_qualities, preferred_qualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
                     <%include file="/inc_qualityChooser.mako"/>
                 </span>
             </label>
@@ -30,7 +30,7 @@
             <label for="statusSelect">
                 <span class="component-title">${_('Status for previously aired episodes')}</span>
                 <span class="component-desc">
-                    <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm">
+                    <select name="default_ep_status" id="statusSelect" class="form-control form-control-inline input-sm">
                     % for cur_status in [SKIPPED, WANTED, IGNORED]:
                         <option value="${cur_status}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == cur_status]}>${statusStrings[cur_status]}</option>
                     % endfor
@@ -42,7 +42,7 @@
             <label for="statusSelectAfter">
                 <span class="component-title">${_('Status for all future episodes')}</span>
                 <span class="component-desc">
-                    <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
+                    <select name="default_status_after_add" id="statusSelectAfter" class="form-control form-control-inline input-sm">
                     % for cur_status in [SKIPPED, WANTED, IGNORED]:
                         <option value="${cur_status}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == cur_status]}>${statusStrings[cur_status]}</option>
                     % endfor

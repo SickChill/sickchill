@@ -135,7 +135,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
         self.arguments['sbHandleReverseProxy'] = sickbeard.HANDLE_REVERSE_PROXY
         self.arguments['sbThemeName'] = sickbeard.THEME_NAME
-        self.arguments['default_homepage'] = sickbeard.DEFAULT_PAGE
+        self.arguments['defaultHomepage'] = sickbeard.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
 
@@ -674,7 +674,7 @@ class Home(WebRoot):
     def __init__(self, *args, **kwargs):
         super(Home, self).__init__(*args, **kwargs)
 
-    def _genericMessage(self, subject, message):
+    def _generic_message(self, subject, message):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
 
@@ -1164,7 +1164,7 @@ class Home(WebRoot):
         title = "Shutting down"
         message = "SickRage is shutting down..."
 
-        return self._genericMessage(title, message)
+        return self._generic_message(title, message)
 
     def restart(self, pid=None):
         if not Restart.restart(pid):
@@ -1204,8 +1204,8 @@ class Home(WebRoot):
                 return t.render(title=_("Home"), header=_("Restarting SickRage"), topmenu="home",
                                 controller="home", action="restart")
             else:
-                return self._genericMessage(_("Update Failed"),
-                                            _("Update wasn't successful, not restarting. Check your log for more information."))
+                return self._generic_message(
+                    _("Update Failed"), _("Update wasn't successful, not restarting. Check your log for more information."))
         else:
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -1243,10 +1243,10 @@ class Home(WebRoot):
             show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
             show_obj = Show.find(sickbeard.show_list, show)
         except (ValueError, TypeError):
-            return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
+            return self._generic_message(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
 
         if not show_obj:
-            return self._genericMessage(_("Error"), _("Show not in show list"))
+            return self._generic_message(_("Error"), _("Show not in show list"))
 
         main_db_con = db.DBConnection()
         season_results = main_db_con.select(
@@ -1331,18 +1331,21 @@ class Home(WebRoot):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         if sickbeard.ANIME_SPLIT_HOME:
-            shows = []
-            anime = []
+            shows = anime = []
             for show in sickbeard.show_list:
                 if show.is_anime:
                     anime.append(show)
                 else:
                     shows.append(show)
-            sorted_show_lists = [["Shows", sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
-                               ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+
+            sorted_show_lists = [
+                ["Shows", sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
+                ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]
+            ]
         else:
             sorted_show_lists = [
-                ["Shows", sorted(sickbeard.show_list, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+                ["Shows", sorted(sickbeard.show_list, lambda x, y: cmp(titler(x.name), titler(y.name)))]
+            ]
 
         bwl = None
         if show_obj.is_anime:
@@ -1354,8 +1357,8 @@ class Home(WebRoot):
         indexer = int(show_obj.indexer)
 
         # Delete any previous occurrances
-        for index, recentShow in enumerate(sickbeard.SHOWS_RECENT):
-            if recentShow['indexerid'] == indexerid:
+        for index, recent_show in enumerate(sickbeard.SHOWS_RECENT):
+            if recent_show['indexerid'] == indexerid:
                 del sickbeard.SHOWS_RECENT[index]
 
         # Only track 5 most recent shows
@@ -1402,9 +1405,9 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(names))
         return "<br>".join(out)
 
-    def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
+    def editShow(self, show=None, location=None, allowed_qualities=None, preferred_qualities=None,
                  exceptions_list=None, flatten_folders=None, paused=None, direct_call=False,
-                 air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
+                 air_by_date=None, sports=None, dvdorder=None, indexer_lang=None,
                  subtitles=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
                  default_ep_status=None, quality_preset=None):
@@ -1415,7 +1418,7 @@ class Home(WebRoot):
             if direct_call:
                 return [error_msg]
             else:
-                return self._genericMessage(_("Error"), error_msg)
+                return self._generic_message(_("Error"), error_msg)
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
@@ -1424,14 +1427,14 @@ class Home(WebRoot):
             if direct_call:
                 return [error_msg]
             else:
-                return self._genericMessage(_("Error"), error_msg)
+                return self._generic_message(_("Error"), error_msg)
 
         show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
         if try_int(quality_preset, None):
-            bestQualities = []
+            preferred_qualities = []
 
-        if not (location or anyQualities or bestQualities or flatten_folders):
+        if not (location or allowed_qualities or preferred_qualities or flatten_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
 
             if show_obj.is_anime:
@@ -1468,8 +1471,8 @@ class Home(WebRoot):
         anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
 
-        if indexerLang and indexerLang in sickbeard.indexerApi(show_obj.indexer).indexer().config['valid_languages']:
-            indexer_lang = indexerLang
+        if indexer_lang and indexer_lang in sickbeard.indexerApi(show_obj.indexer).indexer().config['valid_languages']:
+            indexer_lang = indexer_lang
         else:
             indexer_lang = show_obj.lang
 
@@ -1484,20 +1487,20 @@ class Home(WebRoot):
         else:
             do_update_scene_numbering = True
 
-        if not anyQualities:
-            anyQualities = []
+        if not allowed_qualities:
+            allowed_qualities = []
 
-        if not bestQualities:
-            bestQualities = []
+        if not preferred_qualities:
+            preferred_qualities = []
 
         if not exceptions_list:
             exceptions_list = []
 
-        if not isinstance(anyQualities, list):
-            anyQualities = [anyQualities]
+        if not isinstance(allowed_qualities, list):
+            allowed_qualities = [allowed_qualities]
 
-        if not isinstance(bestQualities, list):
-            bestQualities = [bestQualities]
+        if not isinstance(preferred_qualities, list):
+            preferred_qualities = [preferred_qualities]
 
         if not isinstance(exceptions_list, list):
             exceptions_list = [exceptions_list]
@@ -1530,8 +1533,8 @@ class Home(WebRoot):
 
         errors = []
         with show_obj.lock:
-            newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
-            show_obj.quality = newQuality
+            new_quality = Quality.combineQualities([int(q) for q in allowed_qualities], [int(q) for q in preferred_qualities])
+            show_obj.quality = new_quality
 
             # reversed for now
             if bool(show_obj.flatten_folders) != bool(flatten_folders):
@@ -1616,7 +1619,7 @@ class Home(WebRoot):
         error, show = Show.pause(show)
 
         if error:
-            return self._genericMessage(_('Error'), error)
+            return self._generic_message(_('Error'), error)
 
         ui.notifications.message(_('{show_name} has been {paused_resumed}').format(show_name=show.name, paused_resumed=(_('resumed'), _('paused'))[show.paused]))
 
@@ -1627,7 +1630,7 @@ class Home(WebRoot):
             error, show = Show.delete(show, full)
 
             if error:
-                return self._genericMessage(_('Error'), error)
+                return self._generic_message(_('Error'), error)
 
             ui.notifications.message(
                 _('{show_name} has been {deleted_trashed} {was_deleted}').format(
@@ -1650,7 +1653,7 @@ class Home(WebRoot):
 
         # This is a show validation error
         if error and not show:
-            return self._genericMessage(_('Error'), error)
+            return self._generic_message(_('Error'), error)
 
         # This is a refresh error
         if error:
@@ -1663,12 +1666,12 @@ class Home(WebRoot):
     def updateShow(self, show=None, force=0):
 
         if not show:
-            return self._genericMessage(_("Error"), _("Invalid show ID"))
+            return self._generic_message(_("Error"), _("Invalid show ID"))
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
         if not show_obj:
-            return self._genericMessage(_("Error"), _("Unable to find the specified show"))
+            return self._generic_message(_("Error"), _("Unable to find the specified show"))
 
         # force the update
         try:
@@ -1684,12 +1687,12 @@ class Home(WebRoot):
     def subtitleShow(self, show=None, force=0):
 
         if not show:
-            return self._genericMessage(_("Error"), _("Invalid show ID"))
+            return self._generic_message(_("Error"), _("Invalid show ID"))
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
         if not show_obj:
-            return self._genericMessage(_("Error"), _("Unable to find the specified show"))
+            return self._generic_message(_("Error"), _("Unable to find the specified show"))
 
         # search and download subtitles
         sickbeard.show_queue_scheduler.action.download_subtitles(show_obj, bool(force))
@@ -1756,7 +1759,7 @@ class Home(WebRoot):
                 ui.notifications.error(_('Error'), errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return self._genericMessage(_("Error"), errMsg)
+                return self._generic_message(_("Error"), errMsg)
 
         # Use .has_key() since it is overridden for statusStrings in common.py
         if status not in statusStrings:
@@ -1765,7 +1768,7 @@ class Home(WebRoot):
                 ui.notifications.error(_('Error'), errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return self._genericMessage(_("Error"), errMsg)
+                return self._generic_message(_("Error"), errMsg)
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
@@ -1775,7 +1778,7 @@ class Home(WebRoot):
                 ui.notifications.error(_('Error'), errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return self._genericMessage(_("Error"), errMsg)
+                return self._generic_message(_("Error"), errMsg)
 
         segments = {}
         trakt_data = []
@@ -1798,7 +1801,7 @@ class Home(WebRoot):
                 ep_obj = show_obj.get_episode(epInfo[0], epInfo[1])
 
                 if not ep_obj:
-                    return self._genericMessage(_("Error"), _("Episode couldn't be retrieved"))
+                    return self._generic_message(_("Error"), _("Episode couldn't be retrieved"))
 
                 if int(status) in [WANTED, FAILED]:
                     # figure out what episodes are wanted so we can backlog them
@@ -1895,17 +1898,17 @@ class Home(WebRoot):
     def testRename(self, show=None):
 
         if not show:
-            return self._genericMessage(_("Error"), _("You must specify a show"))
+            return self._generic_message(_("Error"), _("You must specify a show"))
 
         show_obj = Show.find(sickbeard.show_list, int(show))
 
         if not show_obj:
-            return self._genericMessage(_("Error"), _("Show not in show list"))
+            return self._generic_message(_("Error"), _("Show not in show list"))
 
         try:
             show_obj.location  # @UnusedVariable
         except ShowDirectoryNotFoundException:
-            return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
+            return self._generic_message(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         ep_obj_rename_list = []
 
@@ -1934,16 +1937,16 @@ class Home(WebRoot):
 
     def doRename(self, show=None, eps=None):
         if not (show and eps):
-            return self._genericMessage(_("Error"), _("You must specify a show and at least one episode"))
+            return self._generic_message(_("Error"), _("You must specify a show and at least one episode"))
 
         show_obj = Show.find(sickbeard.show_list, int(show))
         if not show_obj:
-            return self._genericMessage(_("Error"), _("Show not in show list"))
+            return self._generic_message(_("Error"), _("Show not in show list"))
 
         try:
             show_obj.location  # @UnusedVariable
         except ShowDirectoryNotFoundException:
-            return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
+            return self._generic_message(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         if not eps:
             return self.redirect("/home/displayShow?show=" + show)
@@ -2303,7 +2306,7 @@ class HomePostProcess(Home):
             return result
 
         result = result.replace("\n", "<br>\n")
-        return self._genericMessage("Postprocessing results", result)
+        return self._generic_message("Postprocessing results", result)
 
 
 @route('/addShows(/?.*)')
@@ -2665,7 +2668,7 @@ class HomeAddShows(Home):
     def addShowByID(  # pylint: disable=unused-argument
             self, indexer_id, show_name, indexer="TVDB", which_series=None,
             indexer_lang=None, root_dir=None, default_status=None,
-            quality_preset=None, any_qualities=None, best_qualities=None,
+            quality_preset=None, allowed_qualities=None, preferred_qualities=None,
             flatten_folders=None, subtitles=None, full_show_path=None,
             other_shows=None, skip_show=None, provided_indexer=None,
             anime=None, scene=None, blacklist=None, whitelist=None,
@@ -2687,9 +2690,9 @@ class HomeAddShows(Home):
         if Show.find(sickbeard.show_list, int(indexer_id)):
             return
 
-        # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
-        any_qualities = any_qualities.split(',') if any_qualities else []
-        best_qualities = best_qualities.split(',') if best_qualities else []
+        # Sanitize the paramater allowed_qualities and preferred_qualities. As these would normally be passed as lists
+        allowed_qualities = allowed_qualities.split(',') if allowed_qualities else []
+        preferred_qualities = preferred_qualities.split(',') if preferred_qualities else []
 
         # If configure_show_options is enabled let's use the provided settings
         configure_show_options = config.checkbox_to_value(configure_show_options)
@@ -2706,19 +2709,19 @@ class HomeAddShows(Home):
             if blacklist:
                 blacklist = short_group_names(blacklist)
 
-            if not any_qualities:
-                any_qualities = []
+            if not allowed_qualities:
+                allowed_qualities = []
 
-            if not best_qualities or try_int(quality_preset, None):
-                best_qualities = []
+            if not preferred_qualities or try_int(quality_preset, None):
+                preferred_qualities = []
 
-            if not isinstance(any_qualities, list):
-                any_qualities = [any_qualities]
+            if not isinstance(allowed_qualities, list):
+                allowed_qualities = [allowed_qualities]
 
-            if not isinstance(best_qualities, list):
-                best_qualities = [best_qualities]
+            if not isinstance(preferred_qualities, list):
+                preferred_qualities = [preferred_qualities]
 
-            quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
+            quality = Quality.combineQualities([int(q) for q in allowed_qualities], [int(q) for q in preferred_qualities])
 
             location = root_dir
 
@@ -2756,17 +2759,17 @@ class HomeAddShows(Home):
         # done adding show
         return self.redirect('/home/')
 
-    def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-                   quality_preset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
+    def addNewShow(self, whichSeries=None, indexer_lang=None, rootDir=None, default_ep_status=None,
+                   quality_preset=None, allowed_qualities=None, preferred_qualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
+                   scene=None, blacklist=None, whitelist=None, default_status_after_add=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        if not indexerLang:
-            indexerLang = sickbeard.INDEXER_DEFAULT_LANGUAGE
+        if not indexer_lang:
+            indexer_lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         # grab our list of other dirs if given
         if not other_shows:
@@ -2853,20 +2856,21 @@ class HomeAddShows(Home):
         if blacklist:
             blacklist = short_group_names(blacklist)
 
-        if not anyQualities:
-            anyQualities = []
-        if not bestQualities or try_int(quality_preset, None):
-            bestQualities = []
-        if not isinstance(anyQualities, list):
-            anyQualities = [anyQualities]
-        if not isinstance(bestQualities, list):
-            bestQualities = [bestQualities]
-        newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
+        if not allowed_qualities:
+            allowed_qualities = []
+        if not preferred_qualities or try_int(quality_preset, None):
+            preferred_qualities = []
+        if not isinstance(allowed_qualities, list):
+            allowed_qualities = [allowed_qualities]
+        if not isinstance(preferred_qualities, list):
+            preferred_qualities = [preferred_qualities]
+        new_quality = Quality.combineQualities([int(q) for q in allowed_qualities], [int(q) for q in preferred_qualities])
 
         # add the show
-        sickbeard.show_queue_scheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+        sickbeard.show_queue_scheduler.action.addShow(
+            indexer, indexer_id, show_dir, int(default_ep_status), new_quality, flatten_folders, indexer_lang, subtitles, anime,
+            scene, None, blacklist, whitelist, int(default_status_after_add))
+
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
         return finishAddShow()
@@ -3349,7 +3353,7 @@ class Manage(Home, WebRoot):
 
     def massEditSubmit(self, paused=None, default_ep_status=None,
                        anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=None,
-                       subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args_,
+                       subtitles=None, air_by_date=None, allowed_qualities=None, preferred_qualities=None, toEdit=None, *args_,
                        **kwargs):
         dir_map = {}
         for cur_arg in kwargs:
@@ -3425,14 +3429,14 @@ class Manage(Home, WebRoot):
             new_subtitles = 'on' if new_subtitles else 'off'
 
             if quality_preset == 'keep':
-                anyQualities, bestQualities = Quality.splitQuality(show_obj.quality)
+                allowed_qualities, preferred_qualities = Quality.splitQuality(show_obj.quality)
             elif try_int(quality_preset, None):
-                bestQualities = []
+                preferred_qualities = []
 
             exceptions_list = []
 
             cur_errors += self.editShow(
-                cur_show, new_show_dir, anyQualities, bestQualities, exceptions_list,
+                cur_show, new_show_dir, allowed_qualities, preferred_qualities, exceptions_list,
                 default_ep_status=new_default_ep_status, flatten_folders=new_flatten_folders,
                 paused=new_paused, sports=new_sports, subtitles=new_subtitles, anime=new_anime,
                 scene=new_scene, air_by_date=new_air_by_date, direct_call=True)
@@ -3808,26 +3812,26 @@ class ConfigGeneral(Config):
         sickbeard.ROOT_DIRS = rootDirString
 
     @staticmethod
-    def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED):
+    def saveAddShowDefaults(default_ep_status, allowed_qualities, preferred_qualities, default_flatten_folders, subtitles=False,
+                            anime=False, scene=False, default_status_after_add=WANTED):
 
-        if anyQualities:
-            anyQualities = anyQualities.split(',')
+        if allowed_qualities:
+            allowed_qualities = allowed_qualities.split(',')
         else:
-            anyQualities = []
+            allowed_qualities = []
 
-        if bestQualities:
-            bestQualities = bestQualities.split(',')
+        if preferred_qualities:
+            preferred_qualities = preferred_qualities.split(',')
         else:
-            bestQualities = []
+            preferred_qualities = []
 
-        newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
+        new_quality = Quality.combineQualities([int(quality) for quality in allowed_qualities], [int(quality) for quality in preferred_qualities])
 
-        sickbeard.STATUS_DEFAULT = int(defaultStatus)
-        sickbeard.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
-        sickbeard.QUALITY_DEFAULT = int(newQuality)
+        sickbeard.STATUS_DEFAULT = int(default_ep_status)
+        sickbeard.STATUS_DEFAULT_AFTER = int(default_status_after_add)
+        sickbeard.QUALITY_DEFAULT = int(new_quality)
 
-        sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(defaultFlattenFolders)
+        sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(default_flatten_folders)
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
@@ -4630,8 +4634,9 @@ class ConfigProviders(Config):
             cur_provider, cur_enabled = cur_providerStr.split(':')
             cur_enabled = try_int(cur_enabled)
 
-            cur_provider_obj = [x for x in sickbeard.providers.sorted_provider_list() if
-                          x.get_id() == cur_provider and hasattr(x, 'enabled')]
+            cur_provider_obj = [
+                x for x in sickbeard.providers.sorted_provider_list() if x.get_id() == cur_provider and hasattr(x, 'enabled')]
+
             if cur_provider_obj:
                 cur_provider_obj[0].enabled = bool(cur_enabled)
 
@@ -4648,8 +4653,8 @@ class ConfigProviders(Config):
         provider_list = provider_list + disabled_list
 
         # dynamically load provider settings
-        for cur_torrent_provider in [prov for prov in sickbeard.providers.sorted_provider_list() if
-                                   prov.provider_type == GenericProvider.TORRENT]:
+        for cur_torrent_provider in [
+                prov for prov in sickbeard.providers.sorted_provider_list() if prov.provider_type == GenericProvider.TORRENT]:
 
             if hasattr(cur_torrent_provider, 'custom_url'):
                 try:
@@ -4799,8 +4804,8 @@ class ConfigProviders(Config):
                 except Exception:
                     cur_torrent_provider.subtitle = 0
 
-        for cur_nzb_provider in [prov for prov in sickbeard.providers.sorted_provider_list() if
-                               prov.provider_type == GenericProvider.NZB]:
+        for cur_nzb_provider in [prov for prov in sickbeard.providers.sorted_provider_list()
+                                 if prov.provider_type == GenericProvider.NZB]:
 
             if hasattr(cur_nzb_provider, 'api_key'):
                 try:

@@ -114,8 +114,8 @@
                                 <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
                                 % if sickbeard.SHOWS_RECENT:
                                     <li role="separator" class="divider"></li>
-                                    % for recentShow in sickbeard.SHOWS_RECENT:
-                                        <li><a href="${srRoot}/home/displayShow?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                    % for recent_show in sickbeard.SHOWS_RECENT:
+                                        <li><a href="${srRoot}/home/displayShow?show=${recent_show['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recent_show['name']|trim,h}</a></li>
                                     % endfor
                                 % endif
                             </ul>

@@ -535,17 +535,17 @@ def _history_date_to_datetime_form(time_string):
 def _map_quality(show_obj):
     quality_map = _get_quality_map()
 
-    any_qualities = []
-    best_qualities = []
+    allowed_qualities = []
+    preferred_qualities = []
 
     i_quality_id, a_quality_id = Quality.splitQuality(int(show_obj))
     if i_quality_id:
         for quality in i_quality_id:
-            any_qualities.append(quality_map[quality])
+            allowed_qualities.append(quality_map[quality])
     if a_quality_id:
         for quality in a_quality_id:
-            best_qualities.append(quality_map[quality])
-    return any_qualities, best_qualities
+            preferred_qualities.append(quality_map[quality])
+    return allowed_qualities, preferred_qualities
 
 
 def _get_quality_map():
@@ -1511,11 +1511,11 @@ class CMD_SickBeardGetDefaults(ApiCall):
     def run(self):
         """ Get SickRage's user default configuration value """
 
-        any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
+        allowed_qualities, preferred_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
         data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": any_qualities,
-                "archive": best_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
+                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": allowed_qualities,
+                "archive": preferred_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1897,8 +1897,8 @@ class CMD_Show(ApiCall):
         show_dict["genre"] = genre_list
         show_dict["quality"] = get_quality_string(show_obj.quality)
 
-        any_qualities, best_qualities = _map_quality(show_obj.quality)
-        show_dict["quality_details"] = {"initial": any_qualities, "archive": best_qualities}
+        allowed_qualities, preferred_qualities = _map_quality(show_obj.quality)
+        show_dict["quality_details"] = {"initial": allowed_qualities, "archive": preferred_qualities}
 
         try:
             show_dict["location"] = show_obj.location
@@ -2311,9 +2311,9 @@ class CMD_ShowGetQuality(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        any_qualities, best_qualities = _map_quality(show_obj.quality)
+        allowed_qualities, preferred_qualities = _map_quality(show_obj.quality)
 
-        return _responds(RESULT_SUCCESS, {"initial": any_qualities, "archive": best_qualities})
+        return _responds(RESULT_SUCCESS, {"initial": allowed_qualities, "archive": preferred_qualities})
 
 
 class CMD_ShowGetPoster(ApiCall):

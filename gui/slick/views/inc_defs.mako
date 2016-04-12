@@ -1,5 +1,5 @@
 <%!
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard.common import Quality, quality_presets, quality_presetStrings
 %>
 <%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)">
 <%
@@ -30,9 +30,9 @@
     if sum_allowed_qualities == sum_preferred_qualities:
         quality = sum_allowed_qualities
 
-    if quality in qualityPresets:
-        cssClass = qualityPresetStrings[quality]
-        qualityString = qualityPresetStrings[quality]
+    if quality in quality_presets:
+        cssClass = quality_presetStrings[quality]
+        qualityString = quality_presetStrings[quality]
     elif quality in Quality.combinedQualityStrings:
         cssClass = Quality.cssClassStrings[quality]
         qualityString = Quality.combinedQualityStrings[quality]

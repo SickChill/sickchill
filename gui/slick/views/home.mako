@@ -272,7 +272,7 @@
     <tbody class="tablesorter-infoOnly">
 % for cur_loading_show in sickbeard.show_queue_scheduler.action.loadingShowList:
 
-    % if cur_loading_show.show is not None and cur_loading_show.show in sickbeard.showList:
+    % if cur_loading_show.show is not None and cur_loading_show.show in sickbeard.show_list:
          <% continue %>
     % endif
   <tr>

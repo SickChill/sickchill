@@ -34,14 +34,14 @@
 
                         % if use_provided_info:
                             ${_('Show retrieved from existing metadata')}: <a href="${anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id)}">${provided_indexer_name}</a>
-                            <input type="hidden" id="indexerLang" name="indexerLang" value="en" />
+                            <input type="hidden" id="indexer_lang" name="indexer_lang" value="en" />
                             <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}" />
                             <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}" />
                             <input type="hidden" id="providedName" value="${provided_indexer_name}" />
                         % else:
-                            <input type="text" id="nameToSearch" value="${default_show_name}" class="form-control form-control-inline input-sm input350" autocapitalize="off" />
+                            <input type="text" id="show_search_string" value="${default_show_name}" class="form-control form-control-inline input-sm input350" autocapitalize="off" />
                             &nbsp;&nbsp;
-                            <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}">
+                            <select name="indexer_lang" id="indexer_lang_select" class="form-control form-control-inline input-sm bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}">
                             </select><b>*</b>
                             &nbsp;
                             <select name="providedIndexer" id="providedIndexer" class="form-control form-control-inline input-sm">
@@ -58,7 +58,7 @@
                             <br><br>
                             <b>*</b> ${_('This will only affect the language of the retrieved metadata file contents and episode filenames.')}<br>
                             ${_('This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!')}<br><br>
-                            <div id="searchResults" style="height: 100%;"><br></div>
+                            <div id="search_results" style="height: 100%;"><br></div>
                         % endif
                     </div>
                 </fieldset>

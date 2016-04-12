@@ -27,9 +27,10 @@ from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
 
-class Scheduler(threading.Thread):
-    def __init__(self, action, cycle_time=datetime.timedelta(minutes=10), run_delay=datetime.timedelta(minutes=0),
-                 start_time=None, thread_name="ScheduledThread", silent=True):
+class Scheduler(threading.Thread):  # pylint: disable=too-many-instance-attributes
+    def __init__(  # pylint: disable=too-many-arguments
+            self, action, cycle_time=datetime.timedelta(minutes=10), run_delay=datetime.timedelta(minutes=0),
+            start_time=None, thread_name="ScheduledThread", silent=True):
         super(Scheduler, self).__init__()
 
         self.run_delay = run_delay

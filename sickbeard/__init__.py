@@ -646,8 +646,7 @@ def initialize(console_logging=True):  # pylint: disable=too-many-locals, too-ma
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
-            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            LOCALE_DIR  # pylint: disable=global-variable-not-assigned
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG
 
         if __INITIALIZED__:
             return False
@@ -1330,7 +1329,7 @@ def initialize(console_logging=True):  # pylint: disable=too-many-locals, too-ma
 
             if hasattr(cur_torrent_provider, 'ranked'):
                 cur_torrent_provider.ranked = bool(check_setting_int(
-                    CFG, cur_torrent_provider.get_id().upper(),  cur_torrent_provider.get_id() + '_ranked', 1))
+                    CFG, cur_torrent_provider.get_id().upper(), cur_torrent_provider.get_id() + '_ranked', 1))
 
             if hasattr(cur_torrent_provider, 'engrelease'):
                 cur_torrent_provider.engrelease = bool(check_setting_int(
@@ -1664,8 +1663,9 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for cur_torrent_provider in [cur_provider for cur_provider in providers.sorted_provider_list() if
-                               cur_provider.provider_type == GenericProvider.TORRENT]:
+    for cur_torrent_provider in [cur_provider for cur_provider in providers.sorted_provider_list()
+                                 if cur_provider.provider_type == GenericProvider.TORRENT]:
+
         new_config[cur_torrent_provider.get_id().upper()] = {}
         new_config[cur_torrent_provider.get_id().upper()][cur_torrent_provider.get_id()] = int(cur_torrent_provider.enabled)
         if hasattr(cur_torrent_provider, 'custom_url'):
@@ -1741,7 +1741,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
                 cur_torrent_provider.subtitle)
 
     for cur_nzb_provider in [cur_provider for cur_provider in providers.sorted_provider_list() if
-                           cur_provider.provider_type == GenericProvider.NZB]:
+                             cur_provider.provider_type == GenericProvider.NZB]:
+
         new_config[cur_nzb_provider.get_id().upper()] = {}
         new_config[cur_nzb_provider.get_id().upper()][cur_nzb_provider.get_id()] = int(cur_nzb_provider.enabled)
 

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard.common import Quality, qualityPresetStrings
+from sickbeard.common import Quality, quality_presetStrings
 
 
 def get_quality_string(quality):
@@ -26,8 +26,8 @@ def get_quality_string(quality):
     :return: The string representation of the provided quality
     """
 
-    if quality in qualityPresetStrings:
-        return qualityPresetStrings[quality]
+    if quality in quality_presetStrings:
+        return quality_presetStrings[quality]
 
     if quality in Quality.qualityStrings:
         return Quality.qualityStrings[quality]

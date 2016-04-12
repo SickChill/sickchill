@@ -68,7 +68,7 @@
 
     <tbody>
 <%
-    my_show_list = sickbeard.showList
+    my_show_list = sickbeard.show_list
     my_show_list.sort(lambda x, y: cmp(x.name, y.name))
 %>
     % for cur_show in my_show_list:

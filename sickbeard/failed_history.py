@@ -164,29 +164,29 @@ def markFailed(epObj):
     return log_str
 
 
-def logSnatch(searchResult):
+def logSnatch(search_result):
     """
     Logs a successful snatch
 
-    :param searchResult: Search result that was successful
+    :param search_result: Search result that was successful
     """
     logDate = datetime.datetime.today().strftime(History.date_format)
-    release = prepareFailedName(searchResult.name)
+    release = prepareFailedName(search_result.name)
 
-    providerClass = searchResult.provider
+    providerClass = search_result.provider
     if providerClass is not None:
         provider = providerClass.name
     else:
         provider = "unknown"
 
-    show_obj = searchResult.episodes[0].show
+    show_obj = search_result.episodes[0].show
 
     failed_db_con = db.DBConnection('failed.db')
-    for episode in searchResult.episodes:
+    for episode in search_result.episodes:
         failed_db_con.action(
             "INSERT INTO history (date, size, release, provider, showid, season, episode, old_status)"
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            [logDate, searchResult.size, release, provider, show_obj.indexerid, episode.season, episode.episode,
+            [logDate, search_result.size, release, provider, show_obj.indexerid, episode.season, episode.episode,
              episode.status])
 
 

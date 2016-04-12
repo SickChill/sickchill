@@ -53,10 +53,10 @@
                         </div>
 
                         <div class="field-pair">
-                            <label for="qualityPreset">
+                            <label for="quality_preset">
                                 <span class="component-title">${_('Preferred Quality')}</span>
                                 <span class="component-desc">
-                                    <% anyQualities, bestQualities = common.Quality.splitQuality(int(show.quality)) %>
+                                    <% allowed_qualities, preferred_qualities = common.Quality.splitQuality(int(show.quality)) %>
                                     <%include file="/inc_qualityChooser.mako"/>
                                 </span>
                             </label>
@@ -77,10 +77,10 @@
                         </div>
 
                         <div class="field-pair">
-                            <label for="indexerLangSelect">
+                            <label for="indexer_lang_select">
                                 <span class="component-title">${_('Info Language')}</span>
                                 <span class="component-desc">
-                                    <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                    <select name="indexer_lang" id="indexer_lang_select" class="form-control form-control-inline input-sm bfh-languages" data-language="${show.lang}" data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
                                     <div class="clear-left"><p>${_('This only applies to episode filenames and the contents of metadata files.')}</p></div>
                                 </span>
                             </label>

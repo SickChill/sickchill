@@ -3,7 +3,7 @@
 import sickbeard
 %>
 <%block name="metas">
-<meta data-var="default_homepage" data-content="${default_homepage}">
+<meta data-var="defaultHomepage" data-content="${defaultHomepage}">
 </%block>
 
 <%block name="css">

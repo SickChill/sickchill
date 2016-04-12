@@ -7,7 +7,7 @@
     import sickbeard.helpers
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
+    from sickbeard.common import Quality, quality_presets, statusStrings, Overview
     from sickbeard.helpers import anon_url
     from sickrage.helper.common import pretty_file_size
 %>
@@ -154,16 +154,16 @@
 
             <div id="summary">
                 <table class="summaryTable pull-left">
-                <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
+                <% allowed_qualities, preferred_qualities = Quality.splitQuality(int(show.quality)) %>
                     <tr><td class="showLegend">${_('Quality')}: </td><td>
-                % if show.quality in qualityPresets:
+                % if show.quality in quality_presets:
                     ${renderQualityPill(show.quality)}
                 % else:
-                % if anyQualities:
-                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
+                % if allowed_qualities:
+                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(allowed_qualities)])}${("", "<br>")[bool(preferred_qualities)]}
                 % endif
-                % if bestQualities:
-                    <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
+                % if preferred_qualities:
+                    <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(preferred_qualities)])}
                 % endif
                 % endif
 
