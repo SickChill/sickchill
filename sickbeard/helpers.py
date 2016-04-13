@@ -398,7 +398,7 @@ def link(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), None) == 0:
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(unicode(dst)), ctypes.c_wchar_p(unicode(src)), None) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
@@ -430,7 +430,7 @@ def symlink(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(unicode(dst)), ctypes.c_wchar_p(unicode(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
             raise ctypes.WinError()
     else:
         ek(os.symlink, src, dst)
@@ -904,7 +904,7 @@ def restoreVersionedFile(backup_file, version):
 
     numTries = 0
 
-    new_file, _ = ek(os.path.splitext, backup_file)
+    new_file, ext_ = ek(os.path.splitext, backup_file)
     restore_file = new_file + '.' + 'v' + str(version)
 
     if not ek(os.path.isfile, new_file):
@@ -1084,7 +1084,7 @@ def is_hidden_folder(folder):
 
     def has_hidden_attribute(filepath):
         try:
-            attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(filepath))
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(unicode(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
         except (AttributeError, AssertionError):
@@ -1498,7 +1498,7 @@ def get_size(start_path='.'):
         return -1
 
     total_size = 0
-    for dirpath, _, filenames in ek(os.walk, start_path):
+    for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
             try:
@@ -1531,15 +1531,8 @@ def generateCookieSecret():
 
 def disk_usage(path):
     if platform.system() == 'Windows':
-        import sys
-        _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), ctypes.c_ulonglong()
-        if sys.version_info >= (3,) or isinstance(path, unicode):
-            method = ctypes.windll.kernel32.GetDiskFreeSpaceExW
-        else:
-            method = ctypes.windll.kernel32.GetDiskFreeSpaceExA
-        ret = method(path, ctypes.byref(_), ctypes.byref(total), ctypes.byref(free))
-        if ret == 0:
-            logger.log("Unable to determine free space, something went wrong", logger.WARNING)
+        free = ctypes.c_ulonglong(0)
+        if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(unicode(path)), None, None, ctypes.pointer(free)) == 0:
             raise ctypes.WinError()
         return free.value
 
@@ -1581,8 +1574,10 @@ def verify_freespace(src, dest, oldfile=None):
 
     try:
         diskfree = disk_usage(dest)
-    except Exception:
+    except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
+        logger.log("Error: {error}".format(error=error), logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return True
 
     neededspace = ek(os.path.getsize, src)
@@ -1608,8 +1603,10 @@ def getDiskSpaceUsage(diskPath=None):
     if diskPath and ek(os.path.exists, diskPath):
         try:
             free = disk_usage(diskPath)
-        except Exception:
+        except Exception as error:
             logger.log("Unable to determine free space", logger.WARNING)
+            logger.log("Error: {error}".format(error=error), logger.DEBUG)
+            logger.log(traceback.format_exc(), logger.DEBUG)
         else:
             return pretty_file_size(free)
 
