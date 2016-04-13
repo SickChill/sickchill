@@ -6,6 +6,10 @@
     from sickbeard import network_timezones
     from sickrage.helper.common import pretty_file_size
     import re
+
+    ## Need to initialize these for gettext, they are done dynamically in the ui
+    _('Continuing')
+    _('Ended')
 %>
 <%block name="metas">
 <meta data-var="max_download_count" data-content="${max_download_count}">
@@ -27,46 +31,46 @@
             <div>
                 % if sickbeard.HOME_LAYOUT != 'poster':
                     <span class="show-option">
-                        <button id="popover" type="button" class="btn btn-inline">Select Columns <b class="caret"></b></button>
+                        <button id="popover" type="button" class="btn btn-inline">${_('Select Columns')} <b class="caret"></b></button>
                     </span>
 
                     <span class="show-option">
-                        <button type="button" class="resetsorting btn btn-inline">Clear Filter(s)</button>
+                        <button type="button" class="resetsorting btn btn-inline">${_('Clear Filter(s)')}</button>
                     </span>
                 % endif
 
                 % if sickbeard.HOME_LAYOUT == 'poster':
-                    <span class="show-option"> Poster Size:
+                    <span class="show-option"> ${_('Poster Size')}:
                         <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
                     </span>
 
                     <span class="show-option">
-                        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="Filter Show Name">
+                        <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="${_('Filter Show Name')}">
                     </span>
 
-                    <span class="show-option"> Sort By:
+                    <span class="show-option"> ${_('Sort By')}:
                         <select id="postersort" class="form-control form-control-inline input-sm">
-                            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
-                            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
-                            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
-                            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
+                            <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'name']}>${_('Name')}</option>
+                            <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>${_('Next Episode')}</option>
+                            <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>${_('Network')}</option>
+                            <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>${_('Progress')}</option>
                         </select>
                     </span>
 
-                    <span class="show-option"> Direction:
+                    <span class="show-option"> ${_('Direction')}:
                         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-                            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>Ascending </option>
-                            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>Descending</option>
+                            <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 1]}>${_('Ascending')} </option>
+                            <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[sickbeard.POSTER_SORTDIR == 0]}>${_('Descending')}</option>
                         </select>
                     </span>
                 % endif
 
-                <span class="show-option"> Layout:
+                <span class="show-option"> ${_('Layout')}:
                     <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-                        <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
-                        <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
-                        <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
-                        <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'poster']}>${_('Poster')}</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'small']}>${_('Small Poster')}</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'banner']}>${_('Banner')}</option>
+                        <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[sickbeard.HOME_LAYOUT == 'simple']}>${_('Simple')}</option>
                     </select>
                 </span>
             </div>
@@ -81,7 +85,7 @@
     <% curListType = curShowlist[0] %>
     <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
-        <h1 class="header">Anime List</h1>
+        <h1 class="header">${_('Anime List')}</h1>
         % if sickbeard.HOME_LAYOUT == 'poster':
             <div class="loading-spinner"></div>
     % endif
@@ -94,7 +98,7 @@
         <div class="show-container" data-name="0" data-date="010101" data-network="0" data-progress="101">
             <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/images/poster.png" />
             <div class="show-details">
-                <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
+                <div class="show-add">${_('Loading...')} (${curLoadingShow.show_name})</div>
             </div>
         </div>
 
@@ -134,33 +138,33 @@
             cur_total = 0
 
     download_stat = str(cur_downloaded)
-    download_stat_tip = "Downloaded: " + str(cur_downloaded)
+    download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
 
     if cur_snatched:
         download_stat = download_stat + "+" + str(cur_snatched)
-        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + _('Snatched') + ": " + str(cur_snatched)
 
     download_stat = download_stat + " / " + str(cur_total)
-    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + _('Total') + ": " + str(cur_total)
 
     nom = cur_downloaded
     if cur_total:
         den = cur_total
     else:
         den = 1
-        download_stat_tip = "Unaired"
+        download_stat_tip = _('Unaired')
 
     progressbar_percent = nom * 100 / den
 
     data_date = '6000000000.0'
     if cur_airs_next:
         data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
-    elif None is not display_status:
-        if 'nded' not in display_status and 1 == int(curShow.paused):
+    elif display_status:
+        if display_status != 'Ended' and 1 == int(curShow.paused):
             data_date = '5000000500.0'
-        elif 'ontinu' in display_status:
+        elif display_status == 'Continuing':
             data_date = '5000000000.0'
-        elif 'nded' in display_status:
+        elif display_status == 'Ended':
             data_date = '5000000100.0'
 %>
     <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
@@ -181,7 +185,7 @@
         try:
             out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
         except ValueError:
-            out = 'Invalid date'
+            out = _('Invalid date')
             pass
     %>
         ${out}
@@ -189,13 +193,13 @@
     <%
     output_html = '?'
     display_status = curShow.status
-    if None is not display_status:
-        if 'nded' not in display_status and 1 == int(curShow.paused):
+    if display_status:
+        if display_status != 'Ended' and 1 == int(curShow.paused):
           output_html = 'Paused'
         elif display_status:
             output_html = display_status
     %>
-    ${output_html}
+    ${_(output_html)}
 % endif
         </div>
 
@@ -211,7 +215,7 @@
                             % if curShow.network:
                                 <span title="${curShow.network}"><img class="show-network-image" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
                             % else:
-                                <span title="No Network"><img class="show-network-image" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                                <span title="${_('No Network')}"><img class="show-network-image" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                             % endif
                         % else:
                             <span title="${curShow.network}">${curShow.network}</span>
@@ -237,21 +241,21 @@
 
     <thead>
         <tr>
-            <th class="nowrap">Next Ep</th>
-            <th class="nowrap">Prev Ep</th>
-            <th>Show</th>
-            <th>Network</th>
-            <th>Quality</th>
-            <th>Downloads</th>
-            <th>Size</th>
-            <th>Active</th>
-            <th>Status</th>
+            <th class="nowrap">${_('Next Ep')}</th>
+            <th class="nowrap">${_('Prev Ep')}</th>
+            <th>${_('Show')}</th>
+            <th>${_('Network')}</th>
+            <th>${_('Quality')}</th>
+            <th>${_('Downloads')}</th>
+            <th>${_('Size')}</th>
+            <th>${_('Active')}</th>
+            <th>${_('Status')}</th>
         </tr>
     </thead>
 
     <tfoot class="hidden-print">
         <tr>
-            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">Add ${('Show', 'Anime')[curListType == 'Anime']}</a></th>
+            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
@@ -272,11 +276,11 @@
          <% continue %>
     % endif
   <tr>
-    <td align="center">(loading)</td>
+    <td align="center">(${_('loading')})</td>
     <td></td>
     <td>
     % if curLoadingShow.show is None:
-    <span title="">Loading... (${curLoadingShow.show_name})</span>
+    <span title="">${_('Loading...')} (${curLoadingShow.show_name})</span>
     % else:
     <a href="displayShow?show=${curLoadingShow.show.indexerid}">${curLoadingShow.show.name}</a>
     % endif
@@ -322,21 +326,21 @@
         show_size = show_stat[curShow.indexerid]['show_size']
 
     download_stat = str(cur_downloaded)
-    download_stat_tip = "Downloaded: " + str(cur_downloaded)
+    download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
 
     if cur_snatched:
         download_stat = download_stat + "+" + str(cur_snatched)
-        download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+        download_stat_tip = download_stat_tip + "&#013;" + _('Snatched') + ": " + str(cur_snatched)
 
     download_stat = download_stat + " / " + str(cur_total)
-    download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
+    download_stat_tip = download_stat_tip + "&#013;" + _('Total') + ": " + str(cur_total)
 
     nom = cur_downloaded
     if cur_total:
         den = cur_total
     else:
         den = 1
-        download_stat_tip = "Unaired"
+        download_stat_tip = _('Unaired')
 
     progressbar_percent = nom * 100 / den
 %>
@@ -395,7 +399,7 @@
             <span class="visible-print-inline">${curShow.network}</span>
         % else:
             <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
-            <span class="visible-print-inline">No Network</span>
+            <span class="visible-print-inline">${_('No Network')}</span>
         % endif
         </td>
     % else:
@@ -423,13 +427,14 @@
         <td align="center">
         <%
             display_status = curShow.status
-            if None is not display_status:
+            if display_status:
                 if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
                     display_status = 'Continuing'
                 elif re.search('(?i)(?:nded)', curShow.status):
                     display_status = 'Ended'
+
         %>
-        ${display_status}
+        ${_(display_status)}
         </td>
     </tr>
 % endfor

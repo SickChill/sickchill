@@ -71,7 +71,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapsed">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only">${_('Toggle navigation')}</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -85,15 +85,15 @@
         <div class="collapse navbar-collapse" id="nav-collapsed">
             <div class="btn-group navbar-btn" data-toggle="buttons">
                 <label class="btn btn-primary">
-                    <input autocomplete="off" id="option-profile" type="checkbox" /> Profile
+                    <input autocomplete="off" id="option-profile" type="checkbox" /> ${_('Profile')}
                 </label>
                 <label class="btn btn-primary">
-                    <input autocomplete="off" id="option-jsonp" type="checkbox" /> JSONP
+                    <input autocomplete="off" id="option-jsonp" type="checkbox" /> ${_('JSONP')}
                 </label>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="${srRoot}/home/">Back to SickRage</a></li>
+                <li><a href="${srRoot}/home/">${_('Back to SickRage')}</a></li>
                 <li class="hidden-xs">
                     <a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;">
                         <img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon" />
@@ -128,17 +128,17 @@
                     <blockquote>${help['message']}</blockquote>
 
                     % if help['data']['optionalParameters'] or help['data']['requiredParameters']:
-                    <h4>Parameters</h4>
+                    <h4>${_('Parameters')}</h4>
 
                     <table class="tablesorter">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Required</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Default value</th>
-                            <th>Allowed values</th>
+                            <th>${_('Name')}</th>
+                            <th>${_('Required')}</th>
+                            <th>${_('Description')}</th>
+                            <th>${_('Type')}</th>
+                            <th>${_('Default value')}</th>
+                            <th>${_('Allowed values')}</th>
                         </tr>
                     </thead>
                     ${display_parameters_doc(help['data']['requiredParameters'], True)}
@@ -146,7 +146,7 @@
                     </table>
                     % endif
 
-                    <h4>Playground</h4>
+                    <h4>${_('Playground')}</h4>
 
                     URL: <kbd id="command-${command_id}-base-url">/api/${apikey}/?cmd=${command}</kbd><br>
 
@@ -167,7 +167,7 @@
                                 URL: <kbd id="command-${command_id}-url"></kbd>
                             </span>
                             <span class="pull-right">
-                                <button class="btn btn-default" data-action="clear-result" data-target="#command-${command_id}-response">Clear</button>
+                                <button class="btn btn-default" data-action="clear-result" data-target="#command-${command_id}-response">${_('Clear')}</button>
                             </span>
                         </div>
 
@@ -204,9 +204,9 @@ var episodes = ${episodes};
         </td>
         <td class="text-center">
             % if required:
-                <span class="glyphicon glyphicon-ok text-success" title="Yes"></span>
+                <span class="glyphicon glyphicon-ok text-success" title="${_('Yes')}"></span>
             % else:
-                <span class="glyphicon glyphicon-remove text-muted" title="No"></span>
+                <span class="glyphicon glyphicon-remove text-muted" title="${_('No')}"></span>
             % endif
         </td>
         <td>${parameter_help.get('desc', '')}</td>
@@ -232,8 +232,8 @@ var episodes = ${episodes};
             <option>${parameter}</option>
 
             % if allowed_values == [0, 1]:
-                <option value="0">No</option>
-                <option value="1">Yes</option>
+                <option value="0">${_('No')}</option>
+                <option value="1">${_('Yes')}</option>
             % else:
                 % for allowed_value in allowed_values:
                 <option value="${allowed_value}">${allowed_value}</option>
@@ -251,13 +251,13 @@ var episodes = ${episodes};
 
         % if 'season' in parameters:
         <select class="form-control hidden" name="season" data-action="update-episodes" data-command="${command}">
-            <option>season</option>
+            <option>${_('season')}</option>
         </select>
         % endif
 
         % if 'episode' in parameters:
         <select class="form-control hidden" name="episode" data-command="${command}">
-            <option>episode</option>
+            <option>${_('episode')}</option>
         </select>
         % endif
     % elif parameter == 'tvdbid':

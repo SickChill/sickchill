@@ -10,29 +10,29 @@
     <h1 class="title">${title}</h1>
 % endif
 
-<div class="h2footer pull-right"><b>Limit:</b>
+<div class="h2footer pull-right"><b>${_('Limit')}:</b>
     <select name="limit" id="limit" class="form-control form-control-inline input-sm">
-        <option value="100" ${('', 'selected="selected"')[limit == '100']}>100</option>
-        <option value="250" ${('', 'selected="selected"')[limit == '250']}>250</option>
-        <option value="500" ${('', 'selected="selected"')[limit == '500']}>500</option>
-        <option value="0" ${('', 'selected="selected"')[limit == '0']}>All</option>
+        <option value="100" ${('', 'selected="selected"')[limit == '100']}>${_('100')}</option>
+        <option value="250" ${('', 'selected="selected"')[limit == '250']}>${_('250')}</option>
+        <option value="500" ${('', 'selected="selected"')[limit == '500']}>${_('500')}</option>
+        <option value="0" ${('', 'selected="selected"')[limit == '0']}>${_('All')}</option>
     </select>
 </div>
 
 <table id="failedTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
   <thead>
     <tr>
-      <th class="nowrap" width="75%" style="text-align: left;">Release</th>
-      <th width="10%">Size</th>
-      <th width="14%">Provider</th>
-      <th width="1%">Remove<br>
+      <th class="nowrap" width="75%" style="text-align: left;">${_('Release')}</th>
+      <th width="10%">${_('Size')}</th>
+      <th width="14%">${_('Provider')}</th>
+      <th width="1%">${_('Remove')}<br>
           <input type="checkbox" class="bulkCheck" id="removeCheck" />
       </th>
     </tr>
   </thead>
   <tfoot>
     <tr>
-      <td rowspan="1" colspan="4"><input type="button" class="btn pull-right" value="Submit" id="submitMassRemove"></td>
+      <td rowspan="1" colspan="4"><input type="button" class="btn pull-right" value="${_('Submit')}" id="submitMassRemove"></td>
     </tr>
   </tfoot>
   <tbody>

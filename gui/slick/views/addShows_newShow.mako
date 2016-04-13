@@ -33,7 +33,7 @@
                         <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" />
 
                         % if use_provided_info:
-                            ${_('Show retrieved from existing metadata:')} <a href="${anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id)}">${provided_indexer_name}</a>
+                            ${_('Show retrieved from existing metadata')}: <a href="${anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id)}">${provided_indexer_name}</a>
                             <input type="hidden" id="indexerLang" name="indexerLang" value="en" />
                             <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}" />
                             <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}" />
@@ -67,7 +67,7 @@
                     <legend class="legendStep">${_('Pick the parent folder')}</legend>
                     <div class="stepDiv">
                         % if provided_show_dir:
-                            ${_('Pre-chosen Destination Folder:')} <b>${provided_show_dir}</b> <br>
+                            ${_('Pre-chosen Destination Folder')}: <b>${provided_show_dir}</b> <br>
                             <input type="hidden" id="fullShowPath" name="fullShowPath" value="${provided_show_dir}" /><br>
                         % else:
                             <%include file="/inc_rootDirs.mako"/>

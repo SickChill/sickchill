@@ -12,6 +12,7 @@
         <form id="configForm" action="saveAnime" method="post">
 
             <div id="config-components">
+
                 <ul>
                     <li><a href="#animedb-settings">${_('AnimeDB Settings')}</a></li>
                     <li><a href="#anime-look-feel">${_('Look &amp; Feel')}</a></li>

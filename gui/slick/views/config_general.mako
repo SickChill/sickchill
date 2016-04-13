@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import os
     import datetime
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
@@ -44,7 +45,7 @@
                                 <span class="component-title">${_('Default Indexer Language')}</span>
                                 <span class="component-desc">
                                     <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
-                                    <span>${_('For adding shows and metadata providers')}</span>
+                                    <span>${_('for adding shows and metadata providers')}</span>
                                 </span>
                             </label>
                         </div>
@@ -53,7 +54,7 @@
                                 <span class="component-title">${_('Launch browser')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="launch_browser" id="launch_browser" ${('', 'checked="checked"')[bool(sickbeard.LAUNCH_BROWSER)]}/>
-                                    <p>${_('Open the SickRage home page on startup')}</p>
+                                    <p>${_('open the SickRage home page on startup')}</p>
                                 </span>
                             </label>
                         </div>
@@ -68,7 +69,7 @@
                                         <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>${_('News')}</option>
                                         <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>${_('IRC')}</option>
                                     </select>
-                                    <span>${_('What page SickRage loads when launching the SickRage interface')}</span>
+                                    <span>${_('when launching SickRage interface')}</span>
                                 </span>
                             </label>
                         </div>
@@ -77,8 +78,8 @@
                                 <span class="component-title">${_('Choose hour to update shows')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="0" max="23" step="1" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>${_('With information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc.')}</p>
-                                    <p><b>${_('Note:')}</b> ${_('Minutes are randomized each time SickRage is started')}</p>
+                                    <p>${_('with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc.')}</p>
+                                    <p>${_('Note: minutes are randomized each time SickRage is started')}</p>
                                 </span>
                             </label>
                         </div>
@@ -88,13 +89,13 @@
                             <span class="component-desc">
                                 <label for="trash_remove_show" class="nextline-block">
                                     <input type="checkbox" name="trash_remove_show" id="trash_remove_show" ${('', 'checked="checked"')[bool(sickbeard.TRASH_REMOVE_SHOW)]}/>
-                                    <p>${_('When using show "Remove" and delete files')}</p>
+                                    <p>${_('when using show "Remove" and delete files')}</p>
                                 </label>
                                 <label for="trash_rotate_logs" class="nextline-block">
                                     <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" ${('', 'checked="checked"')[bool(sickbeard.TRASH_ROTATE_LOGS)]}/>
-                                    <p>${_('On scheduled deletes of the oldest log files')}</p>
+                                    <p>${_('on scheduled deletes of the oldest log files')}</p>
                                 </label>
-                                <div class="clear-left"><p>${_('Selected actions use trash (recycle bin) instead of the default permanent delete')}</p></div>
+                                <div class="clear-left"><p>${_('selected actions use trash (recycle bin) instead of the default permanent delete')}</p></div>
                             </span>
                         </div>
 
@@ -112,7 +113,7 @@
                                 <span class="component-title">${_('Number of Log files saved')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>${_('Number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</p>
+                                    <p>${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -122,7 +123,7 @@
                                 <span class="component-title">Size of Log files saved')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>${_('Maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</p>
+                                    <p>${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -137,7 +138,7 @@
                                         <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor
                                     </select>
-                                    <span>${_('As the default selection when adding new shows')}</span>
+                                    <span>${_('as the default selection when adding new shows')}</span>
                                 </span>
                             </label>
                         </div>
@@ -147,7 +148,7 @@
                                 <span class="component-title">${_('Timeout show indexer at')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>${_('Seconds of inactivity when finding new shows (default:20)')}</p>
+                                    <p>${_('seconds of inactivity when finding new shows (default:20)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -156,7 +157,7 @@
                             <label>
                                 <span class="component-title">${_('Show root directories')}</span>
                                 <span class="component-desc">
-                                    <p>${_('Where the files of shows are located')}</p>
+                                    <p>${_('where the files of shows are located')}</p>
                                     <%include file="/inc_rootDirs.mako"/>
                                 </span>
                             </label>
@@ -200,7 +201,7 @@
                                 <span class="component-title">${_('Check the server every*')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="1" step="1" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>${_('Hours between checks for software updates (default:1)')}</p>
+                                    <p>${_('hours for software updates (default:1)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -210,7 +211,7 @@
                                 <span class="component-title">${_('Notify on software update')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="notify_on_update" id="notify_on_update" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_UPDATE)]}/>
-                                    <p>${_('Send a message to all enabled notifiers when SickRage has been updated')}</p>
+                                    <p>${_('send a message to all enabled notifiers when SickRage has been updated')}</p>
                                 </span>
                             </label>
                         </div>
@@ -233,14 +234,28 @@
                     <fieldset class="component-group-list">
 
                         <div class="field-pair">
+                            <label for="gui_language">
+                                <span class="component-title">${_('Interface Language')}:</span>
+                                <span class="component-desc">
+                                    <select id="gui_language" name="gui_language" class="form-control input-sm">
+                                        <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
+                                        % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
+                                            <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
+                                        % endfor
+                                    </select>
+                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <label for="theme_name">
-                                <span class="component-title">${_('Display theme:')}</span>
+                                <span class="component-title">${_('Display theme')}:</span>
                                 <span class="component-desc">
                                     <select id="theme_name" name="theme_name" class="form-control input-sm">
                                         <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
                                         <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>Light</option>
                                     </select>
-                                    <span class="red-text">${_('For appearance to take effect, save then refresh your browser')}</span>
+                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
                                 </span>
                             </label>
                         </div>
@@ -249,7 +264,7 @@
                                 <span class="component-title">${_('Show all seasons')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
-                                    <p>${_('On the show summary page')}</p>
+                                    <p>${_('on the show summary page')}</p>
                                 </span>
                             </label>
                         </div>
@@ -258,7 +273,7 @@
                                 <span class="component-title">${_('Sort with "The", "A", "An"')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(sickbeard.SORT_ARTICLE)]}/>
-                                    <p>${_('Include articles ("The", "A", "An") when sorting show lists')}</p>
+                                    <p>${_('include articles ("The", "A", "An") when sorting show lists')}</p>
                                 </span>
                             </label>
                         </div>
@@ -276,7 +291,7 @@
                                 <span class="component-title">${_('Display fuzzy dates')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" ${('', 'checked="checked"')[bool(sickbeard.FUZZY_DATING)]}/>
-                                    <p>${_('Move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"')}</p>
+                                    <p>${_('move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"')}</p>
                                 </span>
                             </label>
                         </div>
@@ -285,14 +300,14 @@
                                 <span class="component-title">${_('Trim zero padding')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="trim_zero" id="trim_zero" ${('', 'checked="checked"')[bool(sickbeard.TRIM_ZERO)]}/>
-                                    <p>${_('Remove the leading number "0" shown on hour of day, and date of month')}</p>
+                                    <p>${_('remove the leading number "0" shown on hour of day, and date of month')}</p>
                                 </span>
                             </label>
                         </div>
 
                         <div class="field-pair">
                             <label for="date_presets">
-                                <span class="component-title">${_('Date style:')}</span>
+                                <span class="component-title">${_('Date style')}:</span>
                                 <span class="component-desc">
                                     <select class="form-control input-sm ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
                                         % for cur_preset in date_presets:
@@ -311,20 +326,20 @@
 
                         <div class="field-pair">
                             <label for="time_presets">
-                                <span class="component-title">${_('Time style:')}</span>
+                                <span class="component-title">${_('Time style')}:</span>
                                 <span class="component-desc">
                                     <select id="time_presets" name="time_preset" class="form-control input-sm">
                                          % for cur_preset in time_presets:
                                             <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
                                          % endfor
                                     </select>
-                                    <span><b>${_('Note:')}</b> ${_('Seconds are only shown on the History page')}</span>
+                                    <span><b>note:</b>${_(' seconds are only shown on the History page')}</span>
                                 </span>
                             </label>
                         </div>
 
                         <div class="field-pair">
-                            <span class="component-title">${_('Timezone:')}</span>
+                            <span class="component-title">${_('Timezone')}:</span>
                             <span class="component-desc">
                                 <label for="local" class="space-right">
                                     <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} />${_('Local')}
@@ -333,10 +348,10 @@
                                     <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />${_('Network')}
                                 </label>
                                 <div class="clear-left">
-                                <p>${_('Display dates and times in either your timezone or the shows network timezone')}</p>
+                                <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
                                 </div>
                                 <div class="clear-left">
-                                <p><b>${_('Note:')}</b> ${_('Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
+                                <p>${_(' <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
                                 </div>
                             </span>
                         </div>
@@ -376,8 +391,8 @@
                                     <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" autocapitalize="off" />
                                     <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
                                     <div class="clear-left">
-                                        <p>${_('Used to give 3rd party programs limited access to SickRage')}</p>
-                                        <p>${_('You can try all the features of the API {link_open} here {link_close}').format(link_open='<a href="${srRoot}/apibuilder/">', link_close='</a>')}</a></p>
+                                        <p>${_('used to give 3rd party programs limited access to SickRage')}</p>
+                                        <p>${_('you can try all the features of the API')} <a href="${srRoot}/apibuilder/">${_('here')}</a></p>
                                     </div>
                                 </span>
                             </label>
@@ -388,7 +403,7 @@
                                 <span class="component-title">${_('HTTP logs')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
-                                    <p>${_('Enable logs from the internal Tornado web server')}</p>
+                                    <p>${_('enable logs from the internal Tornado web server')}</p>
                                 </span>
                             </label>
                         </div>
@@ -398,7 +413,7 @@
                                 <span class="component-title">${_('HTTP username')}</span>
                                 <span class="component-desc">
                                     <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-                                    <p>${_('Set a blank value for no login')}</p>
+                                    <p>${_('set blank for no login')}</p>
                                 </span>
                             </label>
                         </div>
@@ -408,7 +423,7 @@
                                 <span class="component-title">${_('HTTP password')}</span>
                                 <span class="component-desc">
                                     <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-                                    <p>${_('Set a blank value for no authentication')}</span>
+                                    <p>blank = ${_('no authentication')}</span>
                             </label>
                         </div>
 
@@ -417,7 +432,7 @@
                                 <span class="component-title">${_('HTTP port')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
-                                    <p>${_('Web port to browse and access SickRage (default:8081)')}</p>
+                                    <p>${_('web port to browse and access SickRage (default:8081)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -427,7 +442,7 @@
                                 <span class="component-title">${_('Notify on login')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_LOGIN)]}/>
-                                    <p>${_('Enable to be notified when a new login happens in webserver')}</p>
+                                    <p>${_('enable to be notified when a new login happens in webserver')}</p>
                                 </span>
                             </label>
                         </div>
@@ -437,7 +452,7 @@
                                 <span class="component-title">${_('Listen on IPv6')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[bool(sickbeard.WEB_IPV6)]}/>
-                                    <p>${_('Attempt binding to any available IPv6 address')}</p>
+                                    <p>${_('attempt binding to any available IPv6 address')}</p>
                                 </span>
                             </label>
                         </div>
@@ -447,7 +462,7 @@
                                 <span class="component-title">${_('Enable HTTPS')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[bool(sickbeard.ENABLE_HTTPS)]}/>
-                                    <p>${_('Enable access to the web interface using a HTTPS address (requires restart)')}</p>
+                                    <p>${_('enable access to the web interface using a HTTPS address')}</p>
                                 </span>
                             </label>
                         </div>
@@ -457,7 +472,7 @@
                                     <span class="component-title">${_('HTTPS certificate')}</span>
                                     <span class="component-desc">
                                         <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" autocapitalize="off" />
-                                        <div class="clear-left"><p>${_('File name or path to HTTPS certificate, relative to {sickbeard_py}').format(sickbeard_py='SickBeard.py')}</p></div>
+                                        <div class="clear-left"><p>${_('file name or path to HTTPS certificate')}</p></div>
                                     </span>
                                 </label>
                             </div>
@@ -466,7 +481,7 @@
                                     <span class="component-title">${_('HTTPS key')}</span>
                                     <span class="component-desc">
                                         <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" autocapitalize="off" />
-                                        <div class="clear-left"><p>${_('File name or path to HTTPS key, relative to {sickbeard_py}').format(sickbeard_py='SickBeard.py')}</p></div>
+                                        <div class="clear-left"><p>${_('file name or path to HTTPS key')}</p></div>
                                     </span>
                                 </label>
                             </div>
@@ -477,7 +492,7 @@
                                 <span class="component-title">${_('Reverse proxy headers')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
-                                    <p>${_('Accept the following reverse proxy headers (advanced)...')}<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)</p>
+                                    <p>${_('accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -502,7 +517,7 @@
 
                         <div class="field-pair">
                             <label>
-                                <span class="component-title">${_('CPU throttling:')}</span>
+                                <span class="component-title">${_('CPU throttling')}:</span>
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
                                     % for cur_preset in cpu_presets:
@@ -519,7 +534,7 @@
                                 <span class="component-title">${_('Anonymous redirect')}</span>
                                 <span class="component-desc">
                                     <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" autocapitalize="off" />
-                                    <div class="clear-left"><p>${_('Backlink protection via an anonymizer service, must end in "?"')}</p></div>
+                                    <div class="clear-left"><p>${_('backlink protection via anonymizer service, must end in "?"')}</p></div>
                                 </span>
                             </label>
                         </div>
@@ -561,7 +576,7 @@
                                 <span class="component-title">${_('Encrypt passwords')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
-                                    <p>${_('In the {config_ini} file').format(config_ini='<code>config.ini</code>')}
+                                    <p>${_('in the <code>config.ini</code> file.')}
                                     ${_('<b>Warning:</b> Passwords must only contain')} <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a></p>
                                 </span>
                             </label>
@@ -584,7 +599,7 @@
                                 <span class="component-title">${_('Google Calendar Icons')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="calendar_icons" id="calendar_icons" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_ICONS)]}/>
-                                    <p>${_('Show an icon next to exported calendar events in Google Calendar.')}</p>
+                                    <p>${_('show an icon next to exported calendar events in Google Calendar.')}</p>
                                 </span>
 
                             </label>
@@ -595,7 +610,7 @@
                                 <span class="component-title">${_('Proxy host')}</span>
                                 <span class="component-desc">
                                     <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" autocapitalize="off" />
-                                    <div class="clear-left"><p>${_('Proxy to use when making network requests, or blank for none')}</p></div>
+                                    <div class="clear-left"><p>${_('blank to disable or proxy to use when connecting to providers')}</p></div>
                             </label>
                         </div>
 
@@ -604,7 +619,7 @@
                                 <span class="component-title">${_('Use proxy for indexers')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
-                                    <p>${_('Use proxy host for connecting to indexers (thetvdb)')}</p>
+                                    <p>${_('use proxy host for connecting to indexers (thetvdb)')}</p>
                                 </span>
                             </label>
                         </div>
@@ -617,13 +632,13 @@
                                 <p>${_('Skip detection of removed files. If disabled the episode will be set to the default deleted status')}</p>
                                  </span>
                                 <div class="clear-left">
-                                <span class="component-desc"><b>${_('Note:')}</b> ${_('This may mean SickRage misses renames as well')}</span>
+                                <span class="component-desc"><b>${_('Note')}:</b> ${_('This may mean SickRage misses renames as well')}</span>
                                 </div>
                         </div>
 
                         <div class="field-pair">
                             <label for="ep_default_deleted_status">
-                                <span class="component-title">${_('Default deleted episode status:')}</span>
+                                <span class="component-title">${_('Default deleted episode status')}:</span>
                                     <span class="component-desc">
 % if not sickbeard.SKIP_REMOVED_FILES:
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
@@ -641,7 +656,7 @@
 % endif
                                     <span>${_('Define the status to be set for media file that has been deleted.')}</span>
                                     <div class="clear-left">
-                                    <p><b>${_('Note:')}</b> ${_('Archived option will keep previous downloaded quality')}</p>
+                                    <p> <b>${_('Note')}:</b> ${_('Archived option will keep previous downloaded quality')}</p>
                                     <p>${_('Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</p>
                                     </div>
                                 </span>
@@ -662,7 +677,7 @@
 
                         <div class="field-pair">
                             <label>
-                                <span class="component-title">${_('Branch version:')}</span>
+                                <span class="component-title">${_('Branch version')}:</span>
                                 <span class="component-desc">
                                     <select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
                                     <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
@@ -686,7 +701,7 @@
                                     % if not gh_branch:
                                        <div class="clear-left" style="color:#FF0000"><p>${_('Error: No branches found.')}</p></div>
                                     % else:
-                                       <div class="clear-left"><p>${_('Select branch to use (restart required)')}</p></div>
+                                       <div class="clear-left"><p>${_('select branch to use (restart required)')}</p></div>
                                     % endif
                                 </span>
                             </label>
@@ -717,7 +732,7 @@
                                 <span class="component-title">${_('GitHub remote for branch')}</span>
                                 <span class="component-desc">
                                     <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
-                                    <div class="clear-left"><p>${_('Default: origin. Access repo configured remotes (save then refresh browser)')}</p></div>
+                                    <div class="clear-left"><p>${_('default:origin. Access repo configured remotes (save then refresh browser)')}</p></div>
                                 </span>
                             </label>
                         </div>
@@ -727,7 +742,7 @@
                                 <span class="component-title">${_('Git executable path')}</span>
                                 <span class="component-desc">
                                     <input type="text" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
-                                    <div class="clear-left"><p>${_('Only needed if OS is unable to locate git from env')}</p></div>
+                                    <div class="clear-left"><p>${_('only needed if OS is unable to locate git from env')}</p></div>
                                 </span>
                             </label>
                         </div>
@@ -737,7 +752,7 @@
                                 <span class="component-title">${_('Git reset')}</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="git_reset" id="git_reset" ${('', 'checked="checked"')[bool(sickbeard.GIT_RESET)]}/>
-                                    <p>${_('Removes untracked files and performs a hard reset on git branch automatically to help resolve update issues')}</p>
+                                    <p>${_('removes untracked files and performs a hard reset on git branch automatically to help resolve update issues')}</p>
                                 </span>
                             </label>
                         </div>

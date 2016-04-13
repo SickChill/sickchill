@@ -24,7 +24,6 @@ import os.path
 import datetime
 import threading
 import re
-import glob
 import stat
 import traceback
 
@@ -51,6 +50,8 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import network_timezones
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+
+from sickrage.helper import glob
 from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename, try_int, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
@@ -986,7 +987,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # clear the cache
         image_cache_dir = ek(os.path.join, sickbeard.CACHE_DIR, 'images')
-        for cache_file in ek(glob.glob, ek(os.path.join, image_cache_dir, str(self.indexerid) + '.*')):
+        for cache_file in ek(glob.glob, ek(os.path.join, glob.escape(image_cache_dir), str(self.indexerid) + '.*')):
             logger.log('Attempt to {0} cache file {1}'.format(action, cache_file))
             try:
                 if sickbeard.TRASH_REMOVE_SHOW:
@@ -2446,12 +2447,12 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return
 
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location, base_name_only=True, subfolders=True)
+            self.location, subfolders=True)
 
         # This is wrong. Cause of pp not moving subs.
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
-            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
-                                                                                            subtitles_only=True, subfolders=True)
+            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
+                sickbeard.SUBTITLES_DIR, subtitles_only=True, subfolders=True)
             absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)

@@ -46,9 +46,6 @@ Options:
 from __future__ import unicode_literals
 from __future__ import print_function
 
-import gettext
-gettext.install(gettext.textdomain(), 'locale', unicode=1, codeset='UTF-8')
-
 import codecs
 import datetime
 import getopt
@@ -168,6 +165,7 @@ class SickRage(object):
         sickbeard.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
         sickbeard.MY_NAME = ek(os.path.basename, sickbeard.MY_FULLNAME)
         sickbeard.PROG_DIR = ek(os.path.dirname, sickbeard.MY_FULLNAME)
+        sickbeard.LOCALE_DIR = ek(os.path.join, sickbeard.PROG_DIR, 'locale')
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
 
@@ -200,7 +198,7 @@ class SickRage(object):
         threading.currentThread().name = 'MAIN'
 
         try:
-            opts, _ = getopt.getopt(
+            opts, args_ = getopt.getopt(
                 sys.argv[1:], 'hqdp::',
                 ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=', 'datadir=', 'config=', 'noresize']
             )

@@ -86,22 +86,30 @@ def filterBadReleases(name, parse=True, show=None):
     if sickbeard.IGNORE_WORDS:
         ignore_words.extend(sickbeard.IGNORE_WORDS.split(','))
 
-    if show and show.rls_require_words:
-        ignore_words = set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip())
+    if show:
+        if show.rls_ignore_words:
+            ignore_words.extend(show.rls_ignore_words.split(','))
+        if show.rls_require_words:
+            ignore_words = set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip())
+
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
-        logger.log(u"Invalid scene release: " + name + " contains " + word + ", ignoring it", logger.DEBUG)
+        logger.log(u"Release: " + name + " contains " + word + ", ignoring it", logger.INFO)
         return False
 
     # if any of the good strings aren't in the name then say no
-    if sickbeard.REQUIRE_WORDS:
-        require_words = sickbeard.REQUIRE_WORDS.split(',')
-        if show and show.rls_ignore_words:
-            require_words = set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip())
-        if not containsAtLeastOneWord(name, require_words):
-            logger.log(u"Invalid scene release: " + name + " doesn't contain any of " + sickbeard.REQUIRE_WORDS +
-                       ", ignoring it", logger.DEBUG)
-            return False
+
+    require_words = sickbeard.REQUIRE_WORDS.split(',') if sickbeard.REQUIRE_WORDS else []
+    if show:
+        if show.rls_ignore_words:
+            require_words = list(set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip()))
+        if show.rls_require_words:
+            require_words.extend(show.rls_require_words.split(','))
+
+    if require_words and not containsAtLeastOneWord(name, require_words):
+        logger.log(u"Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
+                   ", ignoring it", logger.INFO)
+        return False
 
     return True
 

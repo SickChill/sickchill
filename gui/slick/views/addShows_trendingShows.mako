@@ -35,13 +35,13 @@
         <option value="rating_votes">% ${_('Rating > Votes')}</option>
     </select>
 
-    <span style="margin-left:12px">${_('Sort Order:')}</span>
+    <span style="margin-left:12px">${_('Sort Order')}:</span>
     <select id="showsortdirection" class="form-control form-control-inline input-sm">
         <option value="asc" selected="selected">${_('Asc')}</option>
         <option value="desc">${_('Desc')}</option>
     </select>
 
-    <span style="margin-left:12px">${_('Select Trakt List:')}</span>
+    <span style="margin-left:12px">${_('Select Trakt List')}:</span>
     <select id="traktlistselection" class="form-control form-control-inline input-sm">
         <option value="anticipated" ${' selected="selected"' if traktList == "anticipated" else ''}>${_('Most Anticipated')}</option>
         <option value="newshow" ${' selected="selected"' if traktList == "newshow" else ''}>${_('New Shows')}</option>

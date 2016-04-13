@@ -102,7 +102,7 @@ class BitCannonProvider(TorrentProvider):
                             continue
 
                         size = convert_size(result.pop("size", -1)) or -1
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != "RSS":
                             logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)

@@ -144,6 +144,9 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                 #If the user is seeding
                                 download_item = torrent_row.find('a', {'title': 'Currently Seeding Torrent'})
                             if not download_item:
+                                #If the user is leeching
+                                download_item = torrent_row.find('a', {'title': 'Currently Leeching Torrent'})
+                            if not download_item:
                                 #If there are none
                                 continue
 
@@ -174,7 +177,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             torrent_size = cells[5].text.strip()
                             size = convert_size(torrent_size) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
                                 logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
