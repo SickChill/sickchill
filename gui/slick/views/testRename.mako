@@ -95,5 +95,5 @@ if len(epList) > 1:
 
 % endfor
 </table><br>
-<input type="submit" value="${_('Rename Selected')}" class="btn btn-success"> <a href=${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">${_('Cancel Rename')}</a>
+<input type="submit" value="${_('Rename Selected')}" class="btn btn-success"> <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">${_('Cancel Rename')}</a>
 </%block>
