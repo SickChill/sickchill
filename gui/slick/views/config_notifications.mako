@@ -1244,7 +1244,7 @@
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushbullet" alt="" title="${_('Pushbullet')}"></span>
                         <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushbullet</a></h3>
-                        <p>${_('Pushbullet is a platform for receiving custom push notifications to connected devices running Android and desktop Chrome browsers.')}</p>
+                        <p>${_('Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera.')}</p>
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
