@@ -173,7 +173,7 @@
                                 <span class="component-title">${_('Timezone for File Date')}:</span>
                                 <span class="component-desc">
                                     <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm">
-                                        % for curTimezone in ('local','network'):
+                                        % for curTimezone in (_('local'), _('network')):
                                         <option value="${curTimezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
                                         % endfor
                                     </select>

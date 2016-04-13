@@ -140,7 +140,7 @@ $('#config-components').tabs();
                         % if curNewznabProvider.default and curNewznabProvider.needs_auth:
                         <div class="field-pair">
                             <label for="${curNewznabProvider.get_id()}_url">
-                                <span class="component-title">URL:</span>
+                                <span class="component-title">${_('URL')}:</span>
                                 <span class="component-desc">
                                     <input type="text" id="${curNewznabProvider.get_id()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled autocapitalize="off" />
                                 </span>
@@ -148,7 +148,7 @@ $('#config-components').tabs();
                         </div>
                         <div class="field-pair">
                             <label for="${curNewznabProvider.get_id()}_hash">
-                                <span class="component-title">API key:</span>
+                                <span class="component-title">${_('API key')}:</span>
                                 <span class="component-desc">
                                     <input type="text" id="${curNewznabProvider.get_id()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.get_id()}_hash" class="newznab_key form-control input-sm input350" autocapitalize="off" />
                                 </span>
@@ -191,13 +191,13 @@ $('#config-components').tabs();
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>season packs only.
+                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_sponly" value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>${_('season packs only.')}
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>episodes only.
+                                    <input type="radio" name="${curNewznabProvider.get_id()}_search_mode" id="${curNewznabProvider.get_id()}_search_mode_eponly" value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>${_('episodes only.')}
                                 </span>
                             </label>
                         </div>
@@ -608,7 +608,7 @@ $('#config-components').tabs();
 
                     <!-- end div for editing providers -->
 
-                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br>
+                    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" /><br>
 
                     </fieldset>
                 </div><!-- /component-group2 //-->
