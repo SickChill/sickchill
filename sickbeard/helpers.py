@@ -1574,8 +1574,10 @@ def verify_freespace(src, dest, oldfile=None):
 
     try:
         diskfree = disk_usage(dest)
-    except Exception:
+    except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
+        logger.log("Error: {error}".format(error=error), logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return True
 
     neededspace = ek(os.path.getsize, src)
@@ -1601,8 +1603,10 @@ def getDiskSpaceUsage(diskPath=None):
     if diskPath and ek(os.path.exists, diskPath):
         try:
             free = disk_usage(diskPath)
-        except Exception:
+        except Exception as error:
             logger.log("Unable to determine free space", logger.WARNING)
+            logger.log("Error: {error}".format(error=error), logger.DEBUG)
+            logger.log(traceback.format_exc(), logger.DEBUG)
         else:
             return pretty_file_size(free)
 
