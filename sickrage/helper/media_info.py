@@ -24,13 +24,13 @@ import io
 import binascii
 from enzyme import MKV
 
-from pkg_resources import get_distribution
+from pkg_resources import get_distribution, DistributionNotFound
 import sickbeard
 
 try:
     get_distribution('pymediainfo')
-    from pymediainfo import MediaInfo as mediainfo  # pylint: disable=import-error
-except Exception:
+    from pymediainfo import MediaInfo as mediainfo
+except (ImportError, DistributionNotFound):
     mediainfo = None
 
 
@@ -41,7 +41,6 @@ def _avi_screen_size(filename):
     :type: unicode
     :returns tuple: (width, height)
     """
-    width = height = None
     try:
         if not filename.endswith('.avi'):
             with io.open(filename, 'rb') as f:
@@ -55,11 +54,11 @@ def _avi_screen_size(filename):
             width = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
             assert 100 < width < 7680
 
-            del header
+            return width, height
     except Exception:
         pass
 
-    return width, height
+    return None, None
 
 
 def _mkv_screen_size(filename):
@@ -69,19 +68,16 @@ def _mkv_screen_size(filename):
     :type: unicode
     :returns tuple: (width, height)
     """
-    width = height = None
     try:
         if filename.endswith('.mkv'):
             with io.open(filename, 'rb') as f:
                 mkv = MKV(f)
 
-            if mkv:
-                width, height = mkv.video_tracks[0].width, mkv.video_tracks[0].height
-                del mkv
+            return mkv.video_tracks[0].width, mkv.video_tracks[0].height
     except Exception:
         pass
 
-    return width, height
+    return None, None
 
 
 def _mediainfo_screen_size(filename):
@@ -91,21 +87,20 @@ def _mediainfo_screen_size(filename):
     :type: unicode
     :returns tuple: (width, height)
     """
-    width = height = None
     try:
         if mediainfo:
             _media_info = mediainfo.parse(filename)
-            if _media_info:
-                for track in _media_info.tracks:
-                    if track.track_type == 'Video':
-                        width, height = track.width, track.height
-                        break
-
-                del _media_info
-    except Exception:
+            for track in _media_info.tracks:
+                if track.track_type == 'Video':
+                    return track.width, track.height
+    except (OSError, TypeError):
         pass
 
-    return width, height
+    return None, None
+
+
+# Only try to parse processable files once. Resets on restart ofc
+bad_files = set()
 
 
 def video_screen_size(filename):
@@ -118,12 +113,16 @@ def video_screen_size(filename):
     :returns tuple: (width, height)
     """
 
-    if not sickbeard.helpers.isMediaFile(filename):
+    if filename in bad_files or not sickbeard.helpers.isMediaFile(filename):
         return None, None
 
-    for method in (_mediainfo_screen_size, _mkv_screen_size, _avi_screen_size):
+    # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults
+    # for method in [_mediainfo_screen_size, _mkv_screen_size, _avi_screen_size]:
+    for method in [_mkv_screen_size, _avi_screen_size]:
+
         screen_size = method(filename)
-        if all(screen_size):
+        if screen_size != (None, None):
             return screen_size
 
+    bad_files.add(filename)
     return None, None
