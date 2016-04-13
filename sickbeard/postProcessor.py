@@ -159,7 +159,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, _, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING)):
+            for base, dirnames_, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING)):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
                     found_file = ek(os.path.join, base, f)
@@ -194,7 +194,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
             for filefound in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
-                file_name, _, file_extension = filefound.rpartition('.')
+                file_name, dirnames_, file_extension = filefound.rpartition('.')
 
                 # Handles subtitles with language code
                 if file_extension in subtitle_extensions and file_name.rpartition('.')[0].lower() == base_name.lower():
@@ -763,7 +763,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # if there is a quality available in the status then we don't need to bother guessing from the filename
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            _, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -793,7 +793,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # Try getting quality from the episode (snatched) status
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            _, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -863,7 +863,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR
                 )
-                out, _ = p.communicate()
+                out, err_ = p.communicate()
 
                 self._log(u"Script result: {0}".format(out), logger.DEBUG)
 
@@ -883,7 +883,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if self.is_priority:
             return True
 
-        _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # if SR downloaded this on purpose we likely have a priority download
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
@@ -954,7 +954,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(show, season, episodes)
-        _, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
+        old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # get the quality of the episode we're processing
         if quality and not common.Quality.qualityStrings[quality] == 'Unknown':
@@ -990,7 +990,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 if self.is_proper and new_ep_quality == old_ep_quality:
                     self._log(u"New file is a proper/repack, marking it safe to replace")
                 else:
-                    _, preferred_qualities = common.Quality.splitQuality(int(show.quality))
+                    allowed_qualities_, preferred_qualities = common.Quality.splitQuality(int(show.quality))
                     if new_ep_quality not in preferred_qualities:
                         self._log(u"File exists and new file quality is not in a preferred quality list, marking it unsafe to replace")
                         return False

@@ -1142,6 +1142,7 @@ class Home(WebRoot):
     def status(self):
         tvdirFree = helpers.getDiskSpaceUsage(sickbeard.TV_DOWNLOAD_DIR)
         rootDir = {}
+
         if sickbeard.ROOT_DIRS:
             backend_pieces = sickbeard.ROOT_DIRS.split('|')
             backend_dirs = backend_pieces[1:]
