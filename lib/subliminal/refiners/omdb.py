@@ -104,8 +104,6 @@ def refine(video, **kwargs):
       * :attr:`~subliminal.video.Movie.year`
       * :attr:`~subliminal.video.Video.imdb_id`
 
-    :param video: the video to refine.
-
     """
     if isinstance(video, Episode):
         # exit if the information is complete
@@ -116,7 +114,7 @@ def refine(video, **kwargs):
         # search the series
         results = search(video.series, 'series', video.year)
         if not results:
-            logger.warning('No result for series')
+            logger.warning('No results for series')
             return
         logger.debug('Found %d results', len(results))
 
@@ -156,7 +154,7 @@ def refine(video, **kwargs):
         # search the movie
         results = search(video.title, 'movie', video.year)
         if not results:
-            logger.warning('No result')
+            logger.warning('No results')
             return
         logger.debug('Found %d results', len(results))
 

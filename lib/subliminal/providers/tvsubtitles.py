@@ -13,18 +13,19 @@ from .. import __short_version__
 from ..cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
 from ..exceptions import ProviderError
 from ..subtitle import Subtitle, fix_line_ending, guess_matches
-from ..utils import sanitize
+from ..utils import sanitize, sanitize_release_group
 from ..video import Episode
 
 logger = logging.getLogger(__name__)
 
 language_converters.register('tvsubtitles = subliminal.converters.tvsubtitles:TVsubtitlesConverter')
 
-link_re = re.compile('^(?P<series>.+?)(?: \(?\d{4}\)?| \((?:US|UK)\))? \((?P<first_year>\d{4})-\d{4}\)$')
-episode_id_re = re.compile('^episode-\d+\.html$')
+link_re = re.compile(r'^(?P<series>.+?)(?: \(?\d{4}\)?| \((?:US|UK)\))? \((?P<first_year>\d{4})-\d{4}\)$')
+episode_id_re = re.compile(r'^episode-\d+\.html$')
 
 
 class TVsubtitlesSubtitle(Subtitle):
+    """TVsubtitles Subtitle."""
     provider_name = 'tvsubtitles'
 
     def __init__(self, language, page_link, subtitle_id, series, season, episode, year, rip, release):
@@ -57,7 +58,8 @@ class TVsubtitlesSubtitle(Subtitle):
         if video.original_series and self.year is None or video.year and video.year == self.year:
             matches.add('year')
         # release_group
-        if video.release_group and self.release and video.release_group.lower() in self.release.lower():
+        if (video.release_group and self.release and
+                sanitize_release_group(video.release_group) in sanitize_release_group(self.release)):
             matches.add('release_group')
         # other properties
         if self.release:
@@ -69,6 +71,7 @@ class TVsubtitlesSubtitle(Subtitle):
 
 
 class TVsubtitlesProvider(Provider):
+    """TVsubtitles Provider."""
     languages = {Language('por', 'BR')} | {Language(l) for l in [
         'ara', 'bul', 'ces', 'dan', 'deu', 'ell', 'eng', 'fin', 'fra', 'hun', 'ita', 'jpn', 'kor', 'nld', 'pol', 'por',
         'ron', 'rus', 'spa', 'swe', 'tur', 'ukr', 'zho'
@@ -89,9 +92,9 @@ class TVsubtitlesProvider(Provider):
 
         :param str series: series of the episode.
         :param year: year of the series, if any.
-        :type year: int or None
+        :type year: int
         :return: the show id, if any.
-        :rtype: int or None
+        :rtype: int
 
         """
         # make the search

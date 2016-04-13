@@ -46,7 +46,7 @@
 </div><br>
 
 <div class="float-left">
-Jump to Show:
+${_('Jump to Show')}:
     <select id="pickShow" class="form-control form-control-inline input-sm">
     % for curShow in backLogShows:
         <option value="${curShow.indexerid}">${curShow.name}</option>

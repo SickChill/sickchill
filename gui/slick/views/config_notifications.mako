@@ -168,7 +168,7 @@
                         <div id="content_use_plex_server">
                             <div class="field-pair">
                                 <label for="plex_server_token">
-                                    <span class="component-title">Plex Media Server Auth Token</span>
+                                    <span class="component-title">${_('Plex Media Server Auth Token')}</span>
                                     <input type="text" name="plex_server_token" id="plex_server_token" value="${sickbeard.PLEX_SERVER_TOKEN}" class="form-control input-sm input250" autocapitalize="off" />
                                 </label>
                                 <label>
@@ -403,7 +403,7 @@
                             <div class="field-pair">
                                 <label>
                                     <span class="component-title">${_('Get settings')}</span>
-                                    <input class="btn btn-inline" type="button" value="Get Settings" id="settingsNMJ" />
+                                    <input class="btn btn-inline" type="button" value="${_('Get Settings')}" id="settingsNMJ" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -500,7 +500,7 @@
                             <div class="field-pair">
                                 <label for="settingsNMJv2">
                                     <span class="component-title">${_('Find database')}</span>
-                                    <input type="button" class="btn btn-inline" value="Find Database" id="settingsNMJv2" />
+                                    <input type="button" class="btn btn-inline" value="${_('Find Database')}" id="settingsNMJv2" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -744,7 +744,7 @@
                                 </label>
                             </div>
                             <div class="testNotification" id="testGrowl-result">${_('Click below to register and test Growl, this is required for Growl notifications to work.')}</div>
-                            <input  class="btn" type="button" value="Register Growl" id="testGrowl" />
+                            <input  class="btn" type="button" value="${_('Register Growl')}" id="testGrowl" />
                             <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
                         </div><!-- /content_use_growl //-->
 
@@ -1542,7 +1542,7 @@
                                 </label>
                                 <label>
                                     <span style="font-size: 11px;">Click the "Request Authorization" button.<br> This will open a new page containing an auth key.<br> <b>Note:</b> if nothing happens check your popup blocker.')}<br></span>
-                                    <input class="btn" type="button" value="Request Authorization" id="twitterStep1" />
+                                    <input class="btn" type="button" value="${_('Request Authorization')}" id="twitterStep1" />
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1599,7 +1599,7 @@
                                 </p>
                             </div>
                             <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
-                            <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="Get Trakt PIN" id="TraktGetPin" />
+                            <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
                             <div class="field-pair">
                                 <label for="trakt_pin">
                                     <span class="component-title">${_('Trakt PIN')}</span>
@@ -1891,7 +1891,7 @@
             </div><!-- /config-components //-->
         </form>
 
-        <br><input type="submit" class="config_submitter btn" value="Save Changes" /><br>
+        <br><input type="submit" class="config_submitter btn" value="${_('Save Changes')}" /><br>
 
     </div>
 </div>

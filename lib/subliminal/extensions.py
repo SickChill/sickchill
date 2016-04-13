@@ -50,8 +50,8 @@ class RegistrableExtensionManager(ExtensionManager):
     def register(self, entry_point):
         """Register an extension
 
-        :param str entry_point: extension to register (entry point syntax)
-        :raise: ValueError if already registered
+        :param str entry_point: extension to register (entry point syntax).
+        :raise: ValueError if already registered.
 
         """
         if entry_point in self.registered_extensions:
@@ -70,7 +70,7 @@ class RegistrableExtensionManager(ExtensionManager):
     def unregister(self, entry_point):
         """Unregister a provider
 
-        :param str entry_point: provider to unregister (entry point syntax)
+        :param str entry_point: provider to unregister (entry point syntax).
 
         """
         if entry_point not in self.registered_extensions:
@@ -89,8 +89,10 @@ class RegistrableExtensionManager(ExtensionManager):
 #: Provider manager
 provider_manager = RegistrableExtensionManager('subliminal.providers', [
     'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+    'legendastv = subliminal.providers.legendastv:LegendasTVProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
+    'shooter = subliminal.providers.shooter:ShooterProvider',
     'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
     'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
     'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
