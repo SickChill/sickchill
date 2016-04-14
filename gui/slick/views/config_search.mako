@@ -50,7 +50,7 @@
                                     <span class="component-title">${_('Check propers every')}:</span>
                                     <span class="component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm">
-<% check_propers_interval_text = {'daily': "${_('24 hours')}", '4h': "${_('4 hours')}", '90m': "${_('90 mins')}", '45m': "${_('45 mins')}", '15m': "${_('15 mins')}"} %>
+<% check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"} %>
 % for curInterval in ('daily', '4h', '90m', '45m', '15m'):
                                             <option value="${curInterval}" ${('', 'selected="selected"')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
 % endfor
@@ -75,7 +75,7 @@
                                 <span class="component-title">${_('Backlog search frequency')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="720" step="60" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
-                                    <p>time in minutes between searches (min.')} ${sickbeard.MIN_BACKLOG_FREQUENCY})</p>
+                                    <p>${_('time in minutes between searches (min.')} ${sickbeard.MIN_BACKLOG_FREQUENCY})</p>
                                 </span>
                             </label>
                         </div>
