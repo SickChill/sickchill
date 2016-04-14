@@ -1102,6 +1102,7 @@ span.snatched b {
     border: none;
     empty-cells: show;
     color: #000 !important;
+	opacity: 0.8; # adding opacity to bleed object a bit
 }
 
 .displayShowTable.display_show {
@@ -1110,10 +1111,10 @@ span.snatched b {
 
 .displayShowTable th.row-seasonheader {
     border: none !important;
-    background-color: #222 !important;
     color: #fff !important;
     padding-top: 15px !important;
     text-align: left !important;
+	background-color:transparent; # removing the background for season headers
 }
 
 .displayShowTable td.col-search {
