@@ -154,9 +154,6 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
-                            if not title:
-                                title = torrent_row.find('a', onmouseout='return nd();').string
-                                title = title.replace("[", "").replace("]", "").replace("/ ", "") if title else ''
 
                             temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
                             if not all([title, download_url]):
@@ -174,8 +171,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = cells[5].text.strip()
-                            size = convert_size(torrent_size) or -1
+                            size = temp_anchor['data-filesize'] or -1
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
