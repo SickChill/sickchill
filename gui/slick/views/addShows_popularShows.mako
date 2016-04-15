@@ -14,7 +14,7 @@
 % endif
 
 <div id="tabs">
-    <span>Sort By:</span>
+    <span>${_('Sort By')}:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
         <option value="name">${_('Name')}</option>
         <option value="original" selected="selected">${_('Original')}</option>
@@ -71,7 +71,7 @@
                         <p>${int(float(cur_rating)*10)}% <img src="${srRoot}/images/heart.png"></p>
                         <i>${cur_votes} votes</i>
                         <div class="traktShowTitleIcons">
-                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>Add Show</a>
+                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB" class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                         </div>
                     </div>
                 </div>
