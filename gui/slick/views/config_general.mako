@@ -510,7 +510,7 @@
                 <div class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Advanced Settings</h3>
+                        <h3>${_('Advanced Settings')}</h3>
                     </div>
 
                     <fieldset class="component-group-list">
