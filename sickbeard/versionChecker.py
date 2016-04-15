@@ -90,7 +90,7 @@ class CheckVersion(object):
     def _runbackup(self):
         # Do a system backup before update
         logger.log(u"Config backup in progress...")
-        ui.notifications.message(_('Backup', 'Config backup in progress...'))
+        ui.notifications.message(_('Backup)', '(_Config backup in progress...'))
         try:
             backupDir = ek(os.path.join, sickbeard.DATA_DIR, 'backup')
             if not ek(os.path.isdir, backupDir):
@@ -98,15 +98,15 @@ class CheckVersion(object):
 
             if self._keeplatestbackup(backupDir) and self._backup(backupDir):
                 logger.log(u"Config backup successful, updating...")
-                ui.notifications.message(_('Backup', 'Config backup successful, updating...'))
+                ui.notifications.message(_('Backup)', '(_Config backup successful, updating...'))
                 return True
             else:
                 logger.log(u"Config backup failed, aborting update", logger.ERROR)
-                ui.notifications.message(_('Backup', 'Config backup failed, aborting update'))
+                ui.notifications.message(_('Backup)', '(_Config backup failed, aborting update'))
                 return False
         except Exception as e:
             logger.log(u'Update: Config backup failed. Error: {0}'.format(ex(e)), logger.ERROR)
-            ui.notifications.message(_('Backup', 'Config backup failed, aborting update'))
+            ui.notifications.message(_('Backup)', '(_Config backup failed, aborting update'))
             return False
 
     @staticmethod
