@@ -90,7 +90,7 @@
                             <label for="subtitles">
                                 <span class="component-title">${_('Subtitles')}</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/> search for subtitles
+                                    <input type="checkbox" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/> ${_('search for subtitles')}
                                 </span>
                             </label>
                         </div>
@@ -99,7 +99,7 @@
                             <label for="paused">
                                 <span class="component-title">${_('Paused')}</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]} /> pause this show (SickRage will not download episodes)
+                                    <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]} /> ${_('pause this show (SickRage will not download episodes)')}
                                 </span>
                             </label>
                         </div>
@@ -212,7 +212,7 @@
                             <label for="SceneName">
                                 <span class="component-title">${_('Scene Exception')}</span>
                                 <span class="component-desc">
-                                    <input type="text" id="SceneName" class="form-control form-control-inline input-sm input200" autocapitalize="off" /><input class="btn btn-inline" type="button" value="Add" id="addSceneName" /><br><br>
+                                    <input type="text" id="SceneName" class="form-control form-control-inline input-sm input200" autocapitalize="off" /><input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName" /><br><br>
                                     <div class="pull-left">
                                         <select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:200px;height:99px;">
                                         % for cur_exception in show.exceptions:
