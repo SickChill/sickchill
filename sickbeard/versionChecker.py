@@ -70,15 +70,15 @@ class CheckVersion(object):
             if self.check_for_new_version(force):
                 if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
-                    ui.notifications.message('New update found for SickRage, starting auto-updater')
+                    ui.notifications.message(_('New update found for SickRage, starting auto-updater'))
                     if self.run_backup_if_safe():
                         if sickbeard.versionCheckScheduler.action.update():
                             logger.log(u"Update was successful!")
-                            ui.notifications.message('Update was successful')
+                            ui.notifications.message(_('Update was successful'))
                             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
                         else:
                             logger.log(u"Update failed!")
-                            ui.notifications.message('Update failed!')
+                            ui.notifications.message(_('Update failed!'))
 
             self.check_for_new_news()
 
@@ -90,7 +90,7 @@ class CheckVersion(object):
     def _runbackup(self):
         # Do a system backup before update
         logger.log(u"Config backup in progress...")
-        ui.notifications.message('Backup', 'Config backup in progress...')
+        ui.notifications.message(_('Backup', 'Config backup in progress...'))
         try:
             backupDir = ek(os.path.join, sickbeard.DATA_DIR, 'backup')
             if not ek(os.path.isdir, backupDir):
@@ -98,15 +98,15 @@ class CheckVersion(object):
 
             if self._keeplatestbackup(backupDir) and self._backup(backupDir):
                 logger.log(u"Config backup successful, updating...")
-                ui.notifications.message('Backup', 'Config backup successful, updating...')
+                ui.notifications.message(_('Backup', 'Config backup successful, updating...'))
                 return True
             else:
                 logger.log(u"Config backup failed, aborting update", logger.ERROR)
-                ui.notifications.message('Backup', 'Config backup failed, aborting update')
+                ui.notifications.message(_('Backup', 'Config backup failed, aborting update'))
                 return False
         except Exception as e:
             logger.log(u'Update: Config backup failed. Error: {0}'.format(ex(e)), logger.ERROR)
-            ui.notifications.message('Backup', 'Config backup failed, aborting update')
+            ui.notifications.message(_('Backup', 'Config backup failed, aborting update'))
             return False
 
     @staticmethod
@@ -270,7 +270,7 @@ class CheckVersion(object):
             sickbeard.NEWEST_VERSION_STRING = None
 
             if force:
-                ui.notifications.message('No update needed')
+                ui.notifications.message(_('No update needed'))
                 logger.log(u"No update needed")
 
             # no updates needed
