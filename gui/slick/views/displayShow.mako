@@ -110,6 +110,8 @@
 
         <div id="showCol">
 
+            <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="float:right;height:50px;border:1px solid black">
+
             <div id="showinfo">
 % if 'rating' in show.imdb_info:
     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
@@ -208,7 +210,7 @@
 
                 </table>
 
-                <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
+                <table style="width:180px; float: right; vertical-align: middle;">
                     <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                     <tr><td class="showLegend">${_('Info Language')}:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:
