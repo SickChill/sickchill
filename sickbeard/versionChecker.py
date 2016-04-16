@@ -90,7 +90,7 @@ class CheckVersion(object):
     def _runbackup(self):
         # Do a system backup before update
         logger.log(u"Config backup in progress...")
-        ui.notifications.message(_('Backup'), (_'Config backup in progress...'))
+        ui.notifications.message(_('Backup'), _('Config backup in progress...'))
         try:
             backupDir = ek(os.path.join, sickbeard.DATA_DIR, 'backup')
             if not ek(os.path.isdir, backupDir):
