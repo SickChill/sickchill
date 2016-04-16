@@ -227,8 +227,8 @@
                 <div class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>User Interface</h3>
-                        <p>Options for visual appearance.</p>
+                        <h3>${_('User Interface')}</h3>
+                        <p>${_('Options for visual appearance.')}</p>
                     </div>
 
                     <fieldset class="component-group-list">
@@ -510,7 +510,7 @@
                 <div class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Advanced Settings</h3>
+                        <h3>${_('Advanced Settings')}</h3>
                     </div>
 
                     <fieldset class="component-group-list">
