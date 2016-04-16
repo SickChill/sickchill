@@ -110,6 +110,8 @@
 
         <div id="showCol">
 
+            <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="float:right;height:50px;border:1px solid black">
+
             <div id="showinfo">
 % if 'rating' in show.imdb_info:
     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
