@@ -53,7 +53,7 @@
                                 % endfor
                             </select>
                             &nbsp;
-                            <input class="btn btn-inline" type="button" id="searchName" value="Search" />
+                            <input class="btn btn-inline" type="button" id="searchName" value="${_('Search')}" />
 
                             <br><br>
                             <b>*</b> ${_('This will only affect the language of the retrieved metadata file contents and episode filenames.')}<br>
@@ -90,9 +90,9 @@
             <br>
 
             <div style="width: 100%; text-align: center;">
-                <input class="btn" type="button" id="addShowButton" value="Add Show" disabled="disabled" />
+                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled" />
                 % if provided_show_dir:
-                <input class="btn" type="button" id="skipShowButton" value="Skip Show" />
+                <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}" />
                 % endif
             </div>
         </div>

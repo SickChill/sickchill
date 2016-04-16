@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-14 03:45-0700\n"
-"PO-Revision-Date: 2016-04-15 02:21-0400\n"
+"POT-Creation-Date: 2016-04-16 12:50-0700\n"
+"PO-Revision-Date: 2016-04-16 15:53-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "SickRage päivitetty"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage päivitetty Commit #: "
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
@@ -55,7 +55,7 @@ msgstr "Tuntematon"
 msgid "Unaired"
 msgstr "Esittämätön"
 
-#: sickbeard/common.py:599 gui/slick/views/displayShow.mako:257
+#: sickbeard/common.py:599 gui/slick/views/displayShow.mako:260
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
 msgid "Snatched"
@@ -66,7 +66,7 @@ msgstr "Napattu"
 msgid "Downloaded"
 msgstr "Ladattu"
 
-#: sickbeard/common.py:601 gui/slick/views/displayShow.mako:256
+#: sickbeard/common.py:601 gui/slick/views/displayShow.mako:259
 msgid "Skipped"
 msgstr "Ohitettu"
 
@@ -74,7 +74,7 @@ msgstr "Ohitettu"
 msgid "Snatched (Proper)"
 msgstr "Napattu (Proper)"
 
-#: sickbeard/common.py:603 gui/slick/views/displayShow.mako:253
+#: sickbeard/common.py:603 gui/slick/views/displayShow.mako:256
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
@@ -100,6 +100,41 @@ msgstr "Epäonnistunut"
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
 msgstr "Napattu (Paras)"
+
+#: sickbeard/versionChecker.py:73
+msgid "New update found for SickRage, starting auto-updater"
+msgstr ""
+
+#: sickbeard/versionChecker.py:77
+msgid "Update was successful"
+msgstr ""
+
+#: sickbeard/versionChecker.py:81
+msgid "Update failed!"
+msgstr ""
+
+#: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
+#: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
+#: gui/slick/views/config_backuprestore.mako:22
+#: gui/slick/views/config_backuprestore.mako:28
+msgid "Backup"
+msgstr "Varmuuskopioi"
+
+#: sickbeard/versionChecker.py:93
+msgid "Config backup in progress..."
+msgstr ""
+
+#: sickbeard/versionChecker.py:101
+msgid "Config backup successful, updating..."
+msgstr ""
+
+#: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
+msgid "Config backup failed, aborting update"
+msgstr ""
+
+#: sickbeard/versionChecker.py:273
+msgid "No update needed"
+msgstr ""
 
 #: sickbeard/webserve.py:177
 msgid "Mako Error"
@@ -284,19 +319,19 @@ msgstr "Virhe lähetettäessä Pushover-ilmoitusta"
 
 #: sickbeard/webserve.py:891
 msgid "Key verification successful"
-msgstr ""
+msgstr "Avaimen tarkistaminen onnistui"
 
 #: sickbeard/webserve.py:893
 msgid "Unable to verify key"
-msgstr ""
+msgstr "Avaimen tarkistus ei onnistu"
 
 #: sickbeard/webserve.py:900
 msgid "Tweet successful, check your twitter to make sure it worked"
-msgstr ""
+msgstr "Tweettaus onnistui, mutta varmista asia vielä Twitteristä"
 
 #: sickbeard/webserve.py:902
 msgid "Error sending tweet"
-msgstr ""
+msgstr "Virhe tweetiä lähetettäessä"
 
 #: sickbeard/webserve.py:912
 msgid "Test KODI notice sent successfully to {kodi_host}"
@@ -344,15 +379,15 @@ msgstr ""
 
 #: sickbeard/webserve.py:975
 msgid "Test notice failed to {emby_host}"
-msgstr ""
+msgstr "Testi-ilmoituksen lähetys epäonnistui {emby_host}"
 
 #: sickbeard/webserve.py:983
 msgid "Successfully started the scan update"
-msgstr ""
+msgstr "Skannauspäivitys käynnistetty onnistuneesti"
 
 #: sickbeard/webserve.py:985
 msgid "Test failed to start the scan update"
-msgstr ""
+msgstr "Skannauspäivityksen käynnistäminen epäonnistui"
 
 #: sickbeard/webserve.py:1004
 msgid "Test notice sent successfully to {nmj2_host}"
@@ -376,11 +411,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1094
 msgid "ERROR: {last_error}"
-msgstr ""
+msgstr "VIRHE: {last_error}"
 
 #: sickbeard/webserve.py:1101
 msgid "Test NMA notice sent successfully"
-msgstr ""
+msgstr "NMA-testi-ilmoitus lähetetty onnistuneesti"
 
 #: sickbeard/webserve.py:1103
 msgid "Test NMA notice failed"
@@ -402,8 +437,8 @@ msgstr ""
 msgid "Error sending Pushbullet notification"
 msgstr ""
 
-#: sickbeard/webserve.py:1157 gui/slick/views/displayShow.mako:331
-#: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
+#: sickbeard/webserve.py:1157 gui/slick/views/displayShow.mako:334
+#: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
 msgstr "Tila"
@@ -559,11 +594,11 @@ msgstr "poistettu"
 
 #: sickbeard/webserve.py:1636
 msgid "trashed"
-msgstr ""
+msgstr "poistettu"
 
 #: sickbeard/webserve.py:1637
 msgid "(media untouched)"
-msgstr ""
+msgstr "(mediaan ei koskettu)"
 
 #: sickbeard/webserve.py:1637
 msgid "(with all related media)"
@@ -615,7 +650,7 @@ msgstr "Rästissä olevien haku aloitettiin automaattisesti sarjan <b>{show_name
 
 #: sickbeard/webserve.py:1863 sickbeard/webserve.py:1882
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
-#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
+#: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Season"
 msgstr "Kausi"
 
@@ -684,7 +719,7 @@ msgstr "Lisää sarjoja"
 
 #: sickbeard/webserve.py:2382
 msgid "No folders selected."
-msgstr ""
+msgstr "Yhtään kansiota ei ole valittu."
 
 #: sickbeard/webserve.py:2502
 msgid "New Show"
@@ -805,8 +840,8 @@ msgid "Renames"
 msgstr ""
 
 #: sickbeard/webserve.py:3534 sickbeard/webserve.py:5115
-#: gui/slick/views/displayShow.mako:214 gui/slick/views/displayShow.mako:330
-#: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
+#: gui/slick/views/displayShow.mako:217 gui/slick/views/displayShow.mako:333
+#: gui/slick/views/displayShow.mako:362 gui/slick/views/displayShow.mako:392
 #: gui/slick/views/editShow.mako:91 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
@@ -826,7 +861,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3560 sickbeard/webserve.py:3562
 msgid "Control Panel"
-msgstr ""
+msgstr "Ohjauspaneli"
 
 #: sickbeard/webserve.py:3560
 msgid "Application Portal"
@@ -838,11 +873,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:3562
 msgid "DSM Settings"
-msgstr ""
+msgstr "DSM-asetukset"
 
 #: sickbeard/webserve.py:3562
 msgid "Security"
-msgstr ""
+msgstr "Turvallisuus"
 
 #: sickbeard/webserve.py:3570 gui/slick/views/layouts/main.mako:152
 msgid "Manage Torrents"
@@ -870,7 +905,7 @@ msgstr "Proper-versioiden haku haku alkoi"
 
 #: sickbeard/webserve.py:3645
 msgid "Subtitle search started"
-msgstr ""
+msgstr "Tekstityste haku aloitettu"
 
 #: sickbeard/webserve.py:3709
 msgid "Clear History"
@@ -921,7 +956,7 @@ msgid "Notifications"
 msgstr "Ilmoitukset"
 
 #: sickbeard/webserve.py:3747 sickbeard/webserve.py:5187
-#: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:128
+#: gui/slick/views/displayShow.mako:223 gui/slick/views/editShow.mako:128
 #: gui/slick/views/home.mako:258 gui/slick/views/inc_addShowOptions.mako:66
 #: gui/slick/views/manage.mako:45 gui/slick/views/manage_massEdit.mako:188
 #: gui/slick/views/layouts/main.mako:177
@@ -956,7 +991,7 @@ msgstr ""
 #: sickbeard/webserve.py:4854 sickbeard/webserve.py:5098 sickbeard/webserve.py:5169
 #: sickbeard/webserve.py:5206
 msgid "Error(s) Saving Configuration"
-msgstr ""
+msgstr "Virhe(itä) asetuksia tallennettaessa"
 
 #: sickbeard/webserve.py:3962 sickbeard/webserve.py:4160 sickbeard/webserve.py:4296
 #: sickbeard/webserve.py:4857 sickbeard/webserve.py:5101 sickbeard/webserve.py:5172
@@ -1110,6 +1145,11 @@ msgstr "Kysy asetukset jokaiseen sarjaan"
 msgid "Displaying folders within these directories which aren't already added to SickRage"
 msgstr ""
 
+#: gui/slick/views/addShows_addExistingShow.mako:49 gui/slick/views/manage.mako:25
+#: gui/slick/views/manage.mako:65 gui/slick/views/manage_failedDownloads.mako:35
+msgid "Submit"
+msgstr "Lähetä"
+
 #: gui/slick/views/addShows_newShow.mako:30
 msgid "Find a show on theTVDB"
 msgstr "Etsi sarja theTVDB:stä"
@@ -1120,6 +1160,12 @@ msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:48
 msgid "All Indexers"
+msgstr ""
+
+#: gui/slick/views/addShows_newShow.mako:56 gui/slick/views/displayShow.mako:335
+#: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
+#: gui/slick/views/schedule.mako:88
+msgid "Search"
 msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:59
@@ -1140,12 +1186,27 @@ msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:79
 msgid "Customize options"
+msgstr "Asetusten mukauttaminen"
+
+#: gui/slick/views/addShows_newShow.mako:93
+#: gui/slick/views/addShows_popularShows.mako:74
+#: gui/slick/views/trendingShows.mako:44
+msgid "Add Show"
+msgstr "Lisää sarja"
+
+#: gui/slick/views/addShows_newShow.mako:95
+msgid "Skip Show"
 msgstr ""
+
+#: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
+#: gui/slick/views/schedule.mako:27
+msgid "Sort By"
+msgstr "Lajittele"
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:31
-#: gui/slick/views/apiBuilder.mako:136 gui/slick/views/displayShow.mako:325
-#: gui/slick/views/displayShow.mako:354 gui/slick/views/displayShow.mako:384
+#: gui/slick/views/apiBuilder.mako:136 gui/slick/views/displayShow.mako:328
+#: gui/slick/views/displayShow.mako:357 gui/slick/views/displayShow.mako:387
 #: gui/slick/views/home.mako:53 gui/slick/views/manage_backlogOverview.mako:83
 msgid "Name"
 msgstr "Nimi"
@@ -1168,7 +1229,7 @@ msgstr "Arvostelu"
 #: gui/slick/views/addShows_popularShows.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:35
 msgid "Rating > Votes"
-msgstr ""
+msgstr "Pisteet > Äänet"
 
 #: gui/slick/views/addShows_popularShows.mako:26
 #: gui/slick/views/addShows_trendingShows.mako:38
@@ -1178,12 +1239,12 @@ msgstr "Lajittelujärjestys"
 #: gui/slick/views/addShows_popularShows.mako:28
 #: gui/slick/views/addShows_trendingShows.mako:40
 msgid "Asc"
-msgstr ""
+msgstr "Nouseva"
 
 #: gui/slick/views/addShows_popularShows.mako:29
 #: gui/slick/views/addShows_trendingShows.mako:41
 msgid "Desc"
-msgstr ""
+msgstr "Laskeva"
 
 #: gui/slick/views/addShows_popularShows.mako:40
 msgid "Fetching of IMDB Data failed. Are you online?"
@@ -1247,7 +1308,7 @@ msgstr "Parametrit"
 
 #: gui/slick/views/apiBuilder.mako:137
 msgid "Required"
-msgstr ""
+msgstr "Pakollinen"
 
 #: gui/slick/views/apiBuilder.mako:138
 msgid "Description"
@@ -1255,7 +1316,7 @@ msgstr "Kuvaus"
 
 #: gui/slick/views/apiBuilder.mako:139 gui/slick/views/status.mako:192
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
 #: gui/slick/views/apiBuilder.mako:140
 msgid "Default value"
@@ -1267,11 +1328,11 @@ msgstr "Sallitut arvot"
 
 #: gui/slick/views/apiBuilder.mako:149
 msgid "Playground"
-msgstr ""
+msgstr "Leikkikenttä"
 
 #: gui/slick/views/apiBuilder.mako:170
 msgid "Clear"
-msgstr ""
+msgstr "Tyhjennä"
 
 #: gui/slick/views/apiBuilder.mako:207 gui/slick/views/apiBuilder.mako:236
 #: gui/slick/views/manage_massEdit.mako:135
@@ -1303,67 +1364,67 @@ msgstr "kausi"
 msgid "episode"
 msgstr "jakso"
 
-#: gui/slick/views/config.mako:28
+#: gui/slick/views/config.mako:29
 msgid "Python Version"
 msgstr "Python versio"
 
-#: gui/slick/views/config.mako:29
+#: gui/slick/views/config.mako:30
 msgid "SSL Version"
 msgstr "SSL versio"
 
-#: gui/slick/views/config.mako:30
-msgid "OS"
-msgstr ""
-
 #: gui/slick/views/config.mako:31
+msgid "OS"
+msgstr "OS"
+
+#: gui/slick/views/config.mako:32
 msgid "Locale"
 msgstr "Alueasetus"
 
-#: gui/slick/views/config.mako:34
-msgid "User"
-msgstr ""
-
 #: gui/slick/views/config.mako:35
-msgid "Program Folder"
-msgstr ""
+msgid "User"
+msgstr "Käyttäjä"
 
 #: gui/slick/views/config.mako:36
-msgid "Config File"
-msgstr ""
+msgid "Program Folder"
+msgstr "Ohjelman kansio"
 
 #: gui/slick/views/config.mako:37
-msgid "Database File"
-msgstr ""
+msgid "Config File"
+msgstr "Asetustiedosto"
 
 #: gui/slick/views/config.mako:38
-msgid "Cache Folder"
-msgstr ""
+msgid "Database File"
+msgstr "Tietokantatiedosto"
 
 #: gui/slick/views/config.mako:39
+msgid "Cache Folder"
+msgstr "Välimuistikansio"
+
+#: gui/slick/views/config.mako:40
 msgid "Log Folder"
-msgstr ""
+msgstr "Lokikansio"
 
-#: gui/slick/views/config.mako:41
+#: gui/slick/views/config.mako:42
 msgid "Arguments"
-msgstr ""
+msgstr "Muuttujat"
 
-#: gui/slick/views/config.mako:44
+#: gui/slick/views/config.mako:45
 msgid "Web Root"
 msgstr ""
 
-#: gui/slick/views/config.mako:48
+#: gui/slick/views/config.mako:49
 msgid "Website"
 msgstr "Sivusto"
 
-#: gui/slick/views/config.mako:49
+#: gui/slick/views/config.mako:50
 msgid "Wiki"
 msgstr "Wiki"
 
-#: gui/slick/views/config.mako:50
+#: gui/slick/views/config.mako:51
 msgid "Source"
 msgstr "Lähde"
 
-#: gui/slick/views/config.mako:51
+#: gui/slick/views/config.mako:52
 msgid "IRC Chat"
 msgstr "IRC Chat"
 
@@ -1424,7 +1485,7 @@ msgstr "AniDB salasana"
 
 #: gui/slick/views/config_anime.mako:56
 msgid "Password of your AniDB account"
-msgstr ""
+msgstr "AniDB-tilisi salasanaa"
 
 #: gui/slick/views/config_anime.mako:62
 msgid "AniDB MyList"
@@ -1495,11 +1556,6 @@ msgstr ""
 msgid "Separate anime and normal shows in groups"
 msgstr ""
 
-#: gui/slick/views/config_backuprestore.mako:22
-#: gui/slick/views/config_backuprestore.mako:28
-msgid "Backup"
-msgstr "Varmuuskopioi"
-
 #: gui/slick/views/config_backuprestore.mako:23
 #: gui/slick/views/config_backuprestore.mako:51
 #: gui/slick/views/config_backuprestore.mako:62
@@ -1530,7 +1586,8 @@ msgstr ""
 msgid "Interface"
 msgstr "Käyttöliittymä"
 
-#: gui/slick/views/config_general.mako:29 gui/slick/views/editShow.mako:182
+#: gui/slick/views/config_general.mako:29 gui/slick/views/config_general.mako:513
+#: gui/slick/views/editShow.mako:182
 msgid "Advanced Settings"
 msgstr "Lisäasetukset"
 
@@ -1675,6 +1732,14 @@ msgstr "Ilmoita ohjelmistopäivityksistä"
 
 #: gui/slick/views/config_general.mako:214
 msgid "send a message to all enabled notifiers when SickRage has been updated"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:230
+msgid "User Interface"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:231
+msgid "Options for visual appearance."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:238
@@ -2126,7 +2191,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:1496
 #: gui/slick/views/config_notifications.mako:1755
 msgid "Notify on snatch"
-msgstr ""
+msgstr "Ilmoita napattaessa"
 
 #: gui/slick/views/config_notifications.mako:58
 #: gui/slick/views/config_notifications.mako:268
@@ -3641,7 +3706,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:587
 #: gui/slick/views/config_postProcessing.mako:764
 #: gui/slick/views/config_postProcessing.mako:962
-#: gui/slick/views/displayShow.mako:159 gui/slick/views/history.mako:53
+#: gui/slick/views/displayShow.mako:162 gui/slick/views/history.mako:53
 #: gui/slick/views/history.mako:119 gui/slick/views/home.mako:248
 #: gui/slick/views/manage.mako:42 gui/slick/views/schedule.mako:86
 #: gui/slick/views/schedule.mako:324
@@ -4232,7 +4297,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:154
 msgid "Allow high priority"
-msgstr ""
+msgstr "Salli korkea prioriteetti"
 
 #: gui/slick/views/config_search.mako:157
 msgid "set downloads of recently aired episodes to high priority"
@@ -4478,7 +4543,7 @@ msgstr "Pakota"
 
 #: gui/slick/views/config_search.mako:470
 msgid "priority for daily snatches (no backlog)"
-msgstr ""
+msgstr "päivittäisten nappausten prioriteetti (ei rästitöiden)"
 
 #: gui/slick/views/config_search.mako:476 gui/slick/views/config_search.mako:479
 #: gui/slick/views/config_search.mako:677
@@ -4540,7 +4605,7 @@ msgstr ""
 #: gui/slick/views/config_search.mako:612 gui/slick/views/config_search.mako:615
 #: gui/slick/views/config_search.mako:627 gui/slick/views/config_search.mako:630
 msgid "(blank spaces are not allowed)"
-msgstr ""
+msgstr "(välilyönnit eivät ole sallittuja)"
 
 #: gui/slick/views/config_search.mako:613 gui/slick/views/config_search.mako:628
 msgid "note: label plugin must be enabled in Deluge clients"
@@ -4777,7 +4842,7 @@ msgstr "Käyttäjänimi"
 
 #: gui/slick/views/displayShow.mako:26
 msgid "Change Show"
-msgstr "Muuta sarjaa"
+msgstr "Vaihda sarjaa"
 
 #: gui/slick/views/displayShow.mako:27
 msgid "Prev Show"
@@ -4796,7 +4861,7 @@ msgid "Jump to Season"
 msgstr "Hyppää kauteen"
 
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:83
-#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
+#: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Specials"
 msgstr ""
 
@@ -4804,19 +4869,19 @@ msgstr ""
 msgid "View Poster for"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:121 gui/slick/views/displayShow.mako:132
+#: gui/slick/views/displayShow.mako:123 gui/slick/views/displayShow.mako:134
 msgid "minutes"
 msgstr "minuuttia"
 
-#: gui/slick/views/displayShow.mako:146
+#: gui/slick/views/displayShow.mako:149
 msgid "View other popular ${genre} shows on trakt.tv."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:150
+#: gui/slick/views/displayShow.mako:153
 msgid "View other popular ${imdbgenre} shows on IMDB."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:164 gui/slick/views/displayShow.mako:254
+#: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
 #: gui/slick/views/manage_backlogOverview.mako:44
 #: gui/slick/views/manage_backlogOverview.mako:75
@@ -4824,185 +4889,180 @@ msgstr ""
 msgid "Allowed"
 msgstr "Sallittu"
 
-#: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:255
+#: gui/slick/views/displayShow.mako:170 gui/slick/views/displayShow.mako:258
 #: gui/slick/views/inc_qualityChooser.mako:39
 #: gui/slick/views/manage_massEdit.mako:116
 msgid "Preferred"
 msgstr "Ensisijainen"
 
-#: gui/slick/views/displayShow.mako:172 gui/slick/views/displayShow.mako:174
-#: gui/slick/views/displayShow.mako:176
+#: gui/slick/views/displayShow.mako:175 gui/slick/views/displayShow.mako:177
+#: gui/slick/views/displayShow.mako:179
 msgid "Originally Airs"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:178
+#: gui/slick/views/displayShow.mako:181
 msgid "Show Status"
 msgstr "Sarjan tila"
 
-#: gui/slick/views/displayShow.mako:179
+#: gui/slick/views/displayShow.mako:182
 msgid "Default EP Status"
 msgstr "Jakson oletustila"
 
-#: gui/slick/views/displayShow.mako:181 gui/slick/views/displayShow.mako:183
+#: gui/slick/views/displayShow.mako:184 gui/slick/views/displayShow.mako:186
 #: gui/slick/views/status.mako:193
 msgid "Location"
 msgstr "Sijainti"
 
-#: gui/slick/views/displayShow.mako:183 gui/slick/views/status.mako:205
+#: gui/slick/views/displayShow.mako:186 gui/slick/views/status.mako:205
 #: gui/slick/views/status.mako:216
 msgid "Missing"
 msgstr "Puuttuu"
 
-#: gui/slick/views/displayShow.mako:185
+#: gui/slick/views/displayShow.mako:188
 msgid "Scene Name"
 msgstr "Scene-nimi"
 
-#: gui/slick/views/displayShow.mako:188 gui/slick/views/editShow.mako:200
+#: gui/slick/views/displayShow.mako:191 gui/slick/views/editShow.mako:200
 msgid "Required Words"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:191 gui/slick/views/editShow.mako:187
+#: gui/slick/views/displayShow.mako:194 gui/slick/views/editShow.mako:187
 msgid "Ignored Words"
 msgstr "Jätä huomiotta -sanat"
 
-#: gui/slick/views/displayShow.mako:206 gui/slick/views/displayShow.mako:327
-#: gui/slick/views/displayShow.mako:356 gui/slick/views/displayShow.mako:386
+#: gui/slick/views/displayShow.mako:209 gui/slick/views/displayShow.mako:330
+#: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
 #: gui/slick/views/home.mako:250 gui/slick/views/manage_failedDownloads.mako:26
 msgid "Size"
 msgstr "Koko"
 
-#: gui/slick/views/displayShow.mako:212 gui/slick/views/editShow.mako:81
+#: gui/slick/views/displayShow.mako:215 gui/slick/views/editShow.mako:81
 msgid "Info Language"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:216
+#: gui/slick/views/displayShow.mako:219
 msgid "Season Folders"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:217 gui/slick/views/editShow.mako:100
+#: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:100
 #: gui/slick/views/manage.mako:47 gui/slick/views/manage_manageSearches.mako:16
 #: gui/slick/views/manage_massEdit.mako:145 gui/slick/views/status.mako:60
 msgid "Paused"
 msgstr "Keskeytetty"
 
-#: gui/slick/views/displayShow.mako:218
+#: gui/slick/views/displayShow.mako:221
 msgid "Air-by-Date"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:219 gui/slick/views/editShow.mako:140
+#: gui/slick/views/displayShow.mako:222 gui/slick/views/editShow.mako:140
 #: gui/slick/views/manage.mako:43 gui/slick/views/manage_massEdit.mako:202
 msgid "Sports"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:221 gui/slick/views/editShow.mako:168
+#: gui/slick/views/displayShow.mako:224 gui/slick/views/editShow.mako:168
 msgid "DVD Order"
 msgstr "DVD-järjestys"
 
-#: gui/slick/views/displayShow.mako:222 gui/slick/views/editShow.mako:159
+#: gui/slick/views/displayShow.mako:225 gui/slick/views/editShow.mako:159
 #: gui/slick/views/inc_addShowOptions.mako:77
 #: gui/slick/views/manage_massEdit.mako:174
 msgid "Scene Numbering"
 msgstr "Scene-numerointi"
 
-#: gui/slick/views/displayShow.mako:231
+#: gui/slick/views/displayShow.mako:234
 msgid "Change selected episodes to"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:260 gui/slick/views/home.mako:34
+#: gui/slick/views/displayShow.mako:263 gui/slick/views/home.mako:34
 #: gui/slick/views/manage.mako:27 gui/slick/views/schedule.mako:25
 msgid "Select Columns"
 msgstr "Valitse sarakkeet"
 
-#: gui/slick/views/displayShow.mako:262
+#: gui/slick/views/displayShow.mako:265
 msgid "Select Filtered Episodes"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:263
+#: gui/slick/views/displayShow.mako:266
 msgid "Clear All"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:319 gui/slick/views/displayShow.mako:348
-#: gui/slick/views/displayShow.mako:378
+#: gui/slick/views/displayShow.mako:322 gui/slick/views/displayShow.mako:351
+#: gui/slick/views/displayShow.mako:381
 msgid "NFO"
 msgstr "NFO"
 
-#: gui/slick/views/displayShow.mako:320 gui/slick/views/displayShow.mako:349
-#: gui/slick/views/displayShow.mako:379
+#: gui/slick/views/displayShow.mako:323 gui/slick/views/displayShow.mako:352
+#: gui/slick/views/displayShow.mako:382
 msgid "TBN"
 msgstr "TBN"
 
-#: gui/slick/views/displayShow.mako:321 gui/slick/views/displayShow.mako:350
-#: gui/slick/views/displayShow.mako:380 gui/slick/views/history.mako:50
+#: gui/slick/views/displayShow.mako:324 gui/slick/views/displayShow.mako:353
+#: gui/slick/views/displayShow.mako:383 gui/slick/views/history.mako:50
 #: gui/slick/views/history.mako:113 gui/slick/views/manage_backlogOverview.mako:83
 #: gui/slick/views/testRename.mako:69
 msgid "Episode"
 msgstr "Jakso"
 
-#: gui/slick/views/displayShow.mako:322 gui/slick/views/displayShow.mako:351
-#: gui/slick/views/displayShow.mako:381
+#: gui/slick/views/displayShow.mako:325 gui/slick/views/displayShow.mako:354
+#: gui/slick/views/displayShow.mako:384
 msgid "Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:323 gui/slick/views/displayShow.mako:352
-#: gui/slick/views/displayShow.mako:382 gui/slick/views/manage.mako:44
+#: gui/slick/views/displayShow.mako:326 gui/slick/views/displayShow.mako:355
+#: gui/slick/views/displayShow.mako:385 gui/slick/views/manage.mako:44
 msgid "Scene"
 msgstr "Scene"
 
-#: gui/slick/views/displayShow.mako:324 gui/slick/views/displayShow.mako:353
-#: gui/slick/views/displayShow.mako:383
+#: gui/slick/views/displayShow.mako:327 gui/slick/views/displayShow.mako:356
+#: gui/slick/views/displayShow.mako:386
 msgid "Scene Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:326 gui/slick/views/displayShow.mako:355
-#: gui/slick/views/displayShow.mako:385
+#: gui/slick/views/displayShow.mako:329 gui/slick/views/displayShow.mako:358
+#: gui/slick/views/displayShow.mako:388
 msgid "File Name"
 msgstr "Tiedostonimi"
 
-#: gui/slick/views/displayShow.mako:328 gui/slick/views/displayShow.mako:357
-#: gui/slick/views/displayShow.mako:387
+#: gui/slick/views/displayShow.mako:331 gui/slick/views/displayShow.mako:360
+#: gui/slick/views/displayShow.mako:390
 #: gui/slick/views/manage_backlogOverview.mako:83 gui/slick/views/schedule.mako:79
 msgid "Airdate"
 msgstr "Lähetysaika"
 
-#: gui/slick/views/displayShow.mako:329 gui/slick/views/displayShow.mako:358
-#: gui/slick/views/displayShow.mako:388 gui/slick/views/displayShow.mako:479
+#: gui/slick/views/displayShow.mako:332 gui/slick/views/displayShow.mako:361
+#: gui/slick/views/displayShow.mako:391 gui/slick/views/displayShow.mako:482
 msgid "Download"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:332 gui/slick/views/displayShow.mako:361
-#: gui/slick/views/displayShow.mako:391 gui/slick/views/schedule.mako:88
-msgid "Search"
-msgstr ""
-
-#: gui/slick/views/displayShow.mako:340 gui/slick/views/displayShow.mako:370
+#: gui/slick/views/displayShow.mako:343 gui/slick/views/displayShow.mako:373
 msgid "Show Episodes"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:423
+#: gui/slick/views/displayShow.mako:426
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:435
+#: gui/slick/views/displayShow.mako:438
 msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:519 gui/slick/views/displayShow.mako:538
+#: gui/slick/views/displayShow.mako:522 gui/slick/views/displayShow.mako:541
 msgid "Manual Search"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:522
+#: gui/slick/views/displayShow.mako:525
 msgid "Do you want to mark this episode as failed?"
 msgstr "Haluatko merkitä tämän jakson epäonnistuneeksi?"
 
-#: gui/slick/views/displayShow.mako:523
+#: gui/slick/views/displayShow.mako:526
 msgid "The episode release name will be added to the failed history, preventing it to be downloaded again."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:541
+#: gui/slick/views/displayShow.mako:544
 msgid "Do you want to include the current episode quality in the search?"
-msgstr ""
+msgstr "Haluatko sisällyttää nykyisen jakson laadun hakuun?"
 
-#: gui/slick/views/displayShow.mako:542
+#: gui/slick/views/displayShow.mako:545
 msgid "Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched."
 msgstr ""
 
@@ -5185,10 +5245,6 @@ msgstr ""
 msgid "Filter Show Name"
 msgstr ""
 
-#: gui/slick/views/home.mako:51 gui/slick/views/schedule.mako:27
-msgid "Sort By"
-msgstr "Lajittele"
-
 #: gui/slick/views/home.mako:54 gui/slick/views/schedule.mako:317
 msgid "Next Episode"
 msgstr "Seuraava jakso"
@@ -5308,7 +5364,7 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:52
 msgid "(Check it to replace the file even if it exists at higher quality)"
-msgstr ""
+msgstr "(Valitse korvataksesi tiedoston, vaikka se olisi jo olemassa korkeammalla laadulla)"
 
 #: gui/slick/views/home_postprocess.mako:57
 msgid "Delete files and folders"
@@ -5395,15 +5451,15 @@ msgstr "Musta lista"
 
 #: gui/slick/views/inc_defs.mako:9
 msgid "Allowed Quality:"
-msgstr ""
+msgstr "Sallittu laatu:"
 
 #: gui/slick/views/inc_defs.mako:13
 msgid "Preferred Quality:"
-msgstr ""
+msgstr "Ensisijainen laatu:"
 
 #: gui/slick/views/inc_qualityChooser.mako:26
 msgid "<p><b><u>Preferred</u></b> qualities will replace those in <b><u>allowed</u></b>, even if they are lower.</p>"
-msgstr ""
+msgstr "<p><b><u>Ensisijaiset</u></b> laadut korvaavat <b><u>sallitut</u></b>, vaikka ne olisivat matalampia.</p>"
 
 #: gui/slick/views/inc_rootDirs.mako:24 gui/slick/views/manage_massEdit.mako:59
 msgid "New"
@@ -5420,11 +5476,6 @@ msgstr "Muista minut"
 #: gui/slick/views/manage.mako:24 gui/slick/views/manage.mako:64
 msgid "Edit Selected"
 msgstr "Muokkaa valittuja"
-
-#: gui/slick/views/manage.mako:25 gui/slick/views/manage.mako:65
-#: gui/slick/views/manage_failedDownloads.mako:35
-msgid "Submit"
-msgstr "Lähetä"
 
 #: gui/slick/views/manage.mako:48
 msgid "Subtitle"
@@ -5913,10 +5964,6 @@ msgstr ""
 #: gui/slick/views/trendingShows.mako:42
 msgid "votes"
 msgstr ""
-
-#: gui/slick/views/trendingShows.mako:44
-msgid "Add Show"
-msgstr "Lisää sarja"
 
 #: gui/slick/views/trendingShows.mako:46
 msgid "Remove Show"
