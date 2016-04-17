@@ -7,13 +7,13 @@
 <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <div id="tabs">
+    % if not header is UNDEFINED:
+		<h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
     <span>${_('Sort By')}:</span>
     <select id="showsort" class="form-control form-control-inline input-sm">
         <option value="name">${_('Name')}</option>

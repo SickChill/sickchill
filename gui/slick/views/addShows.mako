@@ -1,12 +1,12 @@
 <%inherit file="/layouts/main.mako"/>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <div id="addShowPortal">
+    % if not header is UNDEFINED:
+		<h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
     <a href="${srRoot}/addShows/newShow/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="add-list-icon-addnewshow"></div></div>
         <div class="buttontext">

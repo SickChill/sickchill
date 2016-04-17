@@ -4,13 +4,13 @@
 <script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
 </%block>
 <%block name="content">
-% if not header is UNDEFINED:
-<h1 class="header">${header}</h1>
-% else:
-<h1 class="title">${title}</h1>
-% endif
-
 <div id="newShowPortal">
+    % if not header is UNDEFINED:
+		<h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
     <div id="config-components">
         <ul><li><a href="#core-component-group1">${_('Add Existing Show')}</a></li></ul>
 

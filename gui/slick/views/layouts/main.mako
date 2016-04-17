@@ -26,9 +26,9 @@
 
         <!-- These values come from css/dark.css and css/light.css -->
         % if sickbeard.THEME_NAME == "dark":
-        <meta name="theme-color" content="#15528F">
-        % elif sickbeard.THEME_NAME == "light":
-        <meta name="theme-color" content="#333333">
+            <meta name="theme-color" content="#15528F">
+        % else:
+            <meta name="theme-color" content="#333333">
         % endif
 
         <title>SickRage - ${title}</title>
@@ -37,6 +37,7 @@
             <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
+
         <meta name="msapplication-TileColor" content="#FFFFFF">
         <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
@@ -83,10 +84,15 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
+
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/light.css?${sbPID}" />
+        % if sickbeard.THEME_NAME != 'light':
+	        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        % endif
+
         % if srLogin:
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
+            <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
         % endif
         <%block name="css" />
     </head>
@@ -100,7 +106,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
+                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;padding: 3px;" class="img-responsive pull-left" /></a>
                 </div>
 
             % if srLogin:
@@ -234,97 +240,99 @@
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
-        % if submenu:
-        <div id="SubMenu" class="hidden-print">
-            <span>
-            <% first = True %>
-            % for menuItem in submenu:
-                % if 'requires' not in menuItem or menuItem['requires']:
-                    <% icon_class = '' if 'icon' not in menuItem else ' ' + menuItem['icon'] %>
-                      % if type(menuItem['path']) == dict:
-                          ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
-                          <%
-                              first = False
-                              inner_first = True
-                          %>
-                          % for cur_link in menuItem['path']:
-                              ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
-                              <% inner_first = False %>
-                          % endfor
-                      % else:
-                          <a href="${srRoot}/${menuItem['path']}" class="btn${('', ' confirm ' + menuItem.get('class', ''))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
-                          <% first = False %>
-                      % endif
+        <div class="container-fluid">
+            <div id="SubMenuContainer" class="row">
+                % if submenu:
+                    <div id="SubMenu" class="hidden-print">
+                        <% first = True %>
+                        % for menuItem in submenu:
+                            % if 'requires' not in menuItem or menuItem['requires']:
+                                <% icon_class = '' if 'icon' not in menuItem else ' ' + menuItem['icon'] %>
+                                % if type(menuItem['path']) == dict:
+                                ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
+                                <%
+                                    first = False
+                                    inner_first = True
+                                %>
+                                % for cur_link in menuItem['path']:
+                                ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                                <% inner_first = False %>
+                                % endfor
+                                % else:
+                                    <a href="${srRoot}/${menuItem['path']}" class="btn${('', ' confirm ' + menuItem.get('class', ''))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
+                                <% first = False %>
+                                % endif
+                            % endif
+                        % endfor
+                    </div>
                 % endif
-            % endfor
-            </span>
-        </div>
-        % endif
-        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
-        <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
-            <span>${_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)}</span>
-        </div>
-        % endif
-
-        % if sickbeard.NEWEST_VERSION_STRING and srLogin:
-        <div class="alert alert-success upgrade-notification hidden-print" role="alert">
-            <span>${sickbeard.NEWEST_VERSION_STRING}</span>
-        </div>
-        % endif
-
-        <div id="contentWrapper">
-            <div id="content">
-                <%block name="content" />
-            </div> <!-- /content -->
-        </div> <!-- /contentWrapper -->
-    % if srLogin:
-        <footer>
-            <div class="footer clearfix">
-            <%
-                stats = Show.overall_stats()
-                ep_downloaded = stats['episodes']['downloaded']
-                ep_snatched = stats['episodes']['snatched']
-                ep_total = stats['episodes']['total']
-                ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
-            %>
-                <span class="footerhighlight">${stats['shows']['total']}</span> ${_('Shows')} (<span class="footerhighlight">${stats['shows']['active']}</span> ${_('Active')})
-                | <span class="footerhighlight">${ep_downloaded}</span>
-
-                % if ep_snatched:
-                <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="${_('View overview of snatched episodes')}">+${ep_snatched}</a></span> ${_('Snatched')}
+                <div class="clearfix"></div>
+                % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
+                    <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
+                        <span>${_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)}</span>
+                    </div>
                 % endif
 
-                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> ${_('Episodes Downloaded')} ${ep_percentage}
-                | ${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
-                | ${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
-
-                <div>
-                    % if has_resource_module:
-                    ${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
-                    % endif
-                    ${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
-                    ${_('Branch')}: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
-                    ${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
+                % if sickbeard.NEWEST_VERSION_STRING and srLogin:
+                    <div class="alert alert-success upgrade-notification hidden-print" role="alert">
+                        <span>${sickbeard.NEWEST_VERSION_STRING}</span>
+                    </div>
+                % endif
+            </div>
+            <div id="contentWrapper">
+                <div id="content">
+                        <%block name="content" />
                 </div>
             </div>
-        </footer>
-        <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.form.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
-        <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
-        % if sickbeard.DEVELOPER:
-        <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
-        % else:
-        <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
-        % endif
-        <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
-    % endif
-        <%block name="scripts" />
+            % if srLogin:
+                <div class="row">
+                    <div class="footer clearfix col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+                        <%
+                            stats = Show.overall_stats()
+                            ep_downloaded = stats['episodes']['downloaded']
+                            ep_snatched = stats['episodes']['snatched']
+                            ep_total = stats['episodes']['total']
+                            ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
+                        %>
+                        <span class="footerhighlight">${stats['shows']['total']}</span> ${_('Shows')} (<span class="footerhighlight">${stats['shows']['active']}</span> ${_('Active')})
+                        | <span class="footerhighlight">${ep_downloaded}</span>
+
+                        % if ep_snatched:
+                            <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="${_('View overview of snatched episodes')}">+${ep_snatched}</a></span> ${_('Snatched')}
+                        % endif
+
+                        &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> ${_('Episodes Downloaded')} ${ep_percentage}
+                        | ${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
+                        | ${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
+
+                        <div>
+                            % if has_resource_module:
+                            ${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
+                            % endif
+                            ${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
+                            ${_('Branch')}: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
+                            ${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/lib/jquery.cookiejar.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/lib/jquery.form.min.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/lib/jquery.json-2.2.min.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
+                <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+                % if sickbeard.DEVELOPER:
+                <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
+                % else:
+                <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
+                % endif
+                <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
+            % endif
+            <%block name="scripts" />
+        </div>
     </body>
 </html>

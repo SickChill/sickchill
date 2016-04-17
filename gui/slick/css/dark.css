@@ -93,7 +93,6 @@ inc_bottom.mako
 ========================================================================== */
 
 .footer {
-    width: 100%;
     padding: 20px 0;
     color: #fff;
     text-align: center;
@@ -113,7 +112,6 @@ home.mako
     border: 1px solid #111;
     overflow: hidden;
     height: 66px;
-    overflow: hidden;
     border-radius: 8px;
     vertical-align: top;
     width: 360px;

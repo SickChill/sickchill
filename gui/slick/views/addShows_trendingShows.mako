@@ -7,13 +7,14 @@
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 </%block>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
 
 <div id="tabs">
+    % if not header is UNDEFINED:
+		<h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
     <ul>
         <li><a href="#tabs-1">${_('Manage Directories')}</a></li>
         <li><a href="#tabs-2">${_('Customize Options')}</a></li>

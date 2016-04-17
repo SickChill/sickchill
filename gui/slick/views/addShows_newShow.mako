@@ -10,14 +10,14 @@
 <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 </%block>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <div id="newShowPortal">
-    <div id="config-components">
+    % if not header is UNDEFINED:
+	    <h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
+	<div id="config-components">
         <ul>
             <li><a href="#core-component-group1">${_('Add New Show')}</a></li>
         </ul>

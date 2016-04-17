@@ -4,13 +4,14 @@
 %>
 <%block name="content">
 <div id="content800">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
 
 <div id="postProcess">
+    % if not header is UNDEFINED:
+		<h1 class="header">${header}</h1>
+    % else:
+		<h1 class="title">${title}</h1>
+    % endif
+
     <form name="processForm" method="post" action="processEpisode" style="line-height: 40px;">
     <table>
         <input type="hidden" id="proc_type" name="proc_type" value="manual">
