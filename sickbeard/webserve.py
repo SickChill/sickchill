@@ -28,51 +28,6 @@ import traceback
 import gettext
 import ast
 
-import sickbeard
-from sickbeard import config, sab
-from sickbeard import clients
-from sickbeard import notifiers, processTV
-from sickbeard import ui
-from sickbeard import logger, helpers, classes, db
-from sickbeard import search_queue
-from sickbeard import naming
-from sickbeard import subtitles as subtitle_module
-from sickbeard import network_timezones
-from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
-from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickbeard.browser import foldersAtPath
-from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
-    get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
-    get_scene_absolute_numbering
-from sickbeard.webapi import function_mapper
-
-from sickbeard.imdbPopular import imdb_popular
-from sickbeard.helpers import get_showname_from_indexer
-
-from dateutil import tz
-from unrar2 import RarFile
-import adba
-from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException
-from sickrage.helper.common import sanitize_filename, try_int, episode_num
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
-from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
-from sickrage.media.ShowBanner import ShowBanner
-from sickrage.media.ShowFanArt import ShowFanArt
-from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
-from sickrage.media.ShowPoster import ShowPoster
-from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.show.ComingEpisodes import ComingEpisodes
-from sickrage.show.History import History as HistoryTool
-from sickrage.show.Show import Show
-from sickrage.system.Restart import Restart
-from sickrage.system.Shutdown import Shutdown
-
-from sickbeard.versionChecker import CheckVersion
-
 from requests.compat import urljoin
 import markdown2
 
@@ -96,6 +51,52 @@ from tornado.process import cpu_count
 from tornado.concurrent import run_on_executor
 
 from mako.runtime import UNDEFINED
+
+from dateutil import tz
+from unrar2 import RarFile
+import adba
+from libtrakt import TraktAPI
+from libtrakt.exceptions import traktException
+
+import sickbeard
+from sickbeard import config, sab
+from sickbeard import clients
+from sickbeard import notifiers, processTV
+from sickbeard import ui
+from sickbeard import logger, helpers, classes, db
+from sickbeard import search_queue
+from sickbeard import naming
+from sickbeard import subtitles as subtitle_module
+from sickbeard import network_timezones
+from sickbeard.providers import newznab, rsstorrent
+from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickbeard.browser import foldersAtPath
+from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
+    get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
+    get_scene_absolute_numbering
+from sickbeard.webapi import function_mapper
+
+from sickbeard.imdbPopular import imdb_popular
+from sickbeard.helpers import get_showname_from_indexer
+
+from sickrage.helper import setup_github, episode_num, try_int, sanitize_filename
+from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
+from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
+from sickrage.media.ShowBanner import ShowBanner
+from sickrage.media.ShowFanArt import ShowFanArt
+from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
+from sickrage.media.ShowPoster import ShowPoster
+from sickrage.providers.GenericProvider import GenericProvider
+from sickrage.show.ComingEpisodes import ComingEpisodes
+from sickrage.show.History import History as HistoryTool
+from sickrage.show.Show import Show
+from sickrage.system.Restart import Restart
+from sickrage.system.Shutdown import Shutdown
+
+from sickbeard.versionChecker import CheckVersion
 
 mako_lookup = None
 mako_cache = None
@@ -3847,7 +3848,7 @@ class ConfigGeneral(Config):
             proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
+            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             git_reset=None, git_username=None, git_password=None, display_all_seasons=None, gui_language=None):
 
         results = []
@@ -3885,8 +3886,15 @@ class ConfigGeneral(Config):
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
+
+        git_credentials_changed = sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD != git_username, git_password
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
+
+        if git_credentials_changed:
+            # Re-Initializes sickbeard.gh, so a restart isn't necessary
+            setup_github()
+
         # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
         sickbeard.GIT_RESET = 1
@@ -3896,6 +3904,8 @@ class ConfigGeneral(Config):
         sickbeard.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         sickbeard.NO_RESTART = config.checkbox_to_value(no_restart)
         sickbeard.DEBUG = config.checkbox_to_value(debug)
+        logger.set_level()
+
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
@@ -3948,6 +3958,8 @@ class ConfigGeneral(Config):
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
+        sickbeard.FANART_BACKGROUND = fanart_background
+        sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
 
         sickbeard.DEFAULT_PAGE = default_page
 

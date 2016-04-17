@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Common helper functions
+"""
+
 from __future__ import unicode_literals
 
 import os
@@ -24,12 +28,14 @@ import re
 import glob
 from fnmatch import fnmatch
 
+from github import Github
+
 import sickbeard
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
 # Mapping HTTP status codes to official W3C names
-http_status_code = {
+HTTP_STATUS_CODES = {
     300: 'Multiple Choices',
     301: 'Moved Permanently',
     302: 'Found',
@@ -106,11 +112,13 @@ http_status_code = {
     598: 'Network read timeout error',
     599: 'Network connect timeout error',
 }
-media_extensions = [
-    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'img', 'iso', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg',
-    'ogm', 'ogv', 'rmvb', 'tp', 'ts', 'vob', 'webm', 'wmv', 'wtv',
+MEDIA_EXTENSIONS = [
+    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'img', 'iso', 'm2ts', 'm4v',
+    'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'rmvb', 'tp', 'ts', 'vob',
+    'webm', 'wmv', 'wtv',
 ]
-subtitle_extensions = ['ass', 'idx', 'srt', 'ssa', 'sub']
+
+SUBTITLE_EXTENSIONS = ['ass', 'idx', 'srt', 'ssa', 'sub']
 timeFormat = '%A %I:%M %p'
 
 
@@ -121,7 +129,7 @@ def http_code_description(http_code):
     :return: The description of the provided ``http_code``
     """
 
-    description = http_status_code.get(try_int(http_code))
+    description = HTTP_STATUS_CODES.get(try_int(http_code))
 
     if isinstance(description, list):
         return '({0})'.format(', '.join(description))
@@ -166,7 +174,8 @@ def pretty_file_size(size, use_decimal=False, **kwargs):
     :param size: The size to convert
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
 
-    :keyword units: A list of unit names in ascending order. Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    :keyword units: A list of unit names in ascending order.
+        Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
     :return: The converted size
     """
@@ -194,8 +203,11 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
 
     :keyword sep: Separator between size and units, default is space
-    :keyword units: A list of (uppercase) unit names in ascending order. Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-    :keyword default_units: Default unit if none is given, default is lowest unit in the scale, e.g. bytes
+    :keyword units: A list of (uppercase) unit names in ascending order.
+        Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+    :keyword default_units: Default unit if none is given,
+        default is lowest unit on the scale, e.g. bytes
 
     :returns: the number of bytes, the default value, or 0
     """
@@ -241,7 +253,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
 def remove_extension(filename):
     """
     Remove the extension of the provided ``filename``.
-    The extension is only removed if it is in `sickrage.helper.common.media_extensions` or ['nzb', 'torrent'].
+    The extension is only removed if it is in MEDIA_EXTENSIONS or ['nzb', 'torrent'].
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
@@ -249,7 +261,7 @@ def remove_extension(filename):
     if isinstance(filename, (str, unicode)) and '.' in filename:
         basename, _, extension = filename.rpartition('.')
 
-        if basename and extension.lower() in ['nzb', 'torrent'] + media_extensions:
+        if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
             return basename
 
     return filename
@@ -326,8 +338,8 @@ def episode_num(season=None, episode=None, **kwargs):
 
 # Backport glob.escape from python 3.4
 # https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87
-magic_check = re.compile('([*?[])')
-magic_check_bytes = re.compile(b'([*?[])')
+MAGIC_CHECK = re.compile('([*?[])')
+MAGIC_CHECK_BYTES = re.compile(b'([*?[])')
 
 
 # https://hg.python.org/cpython/file/3.4/Lib/glob.py#l100
@@ -338,10 +350,35 @@ def glob_escape(pathname):
     # Metacharacters do not work in the drive part and shouldn't be escaped.
     drive, pathname = os.path.splitdrive(pathname)
     if isinstance(pathname, bytes):
-        pathname = magic_check_bytes.sub(br'[\1]', pathname)
+        pathname = MAGIC_CHECK_BYTES.sub(br'[\1]', pathname)
     else:
-        pathname = magic_check.sub(r'[\1]', pathname)
+        pathname = MAGIC_CHECK.sub(r'[\1]', pathname)
     return drive + pathname
 
-custom_glob = glob
-custom_glob.escape = glob_escape
+CUSTOM_GLOB = glob
+CUSTOM_GLOB.escape = glob_escape
+
+
+def setup_github():
+    """
+    Instantiate the global github connection, for checking for updates and submitting issues
+    """
+
+    try:
+        if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+            sickbeard.gh = Github(
+                login_or_token=sickbeard.GIT_USERNAME,
+                password=sickbeard.GIT_PASSWORD, user_agent="SickRage")
+
+    except Exception as error:
+        sickbeard.gh = None
+        sickbeard.logger.log(u'Unable to setup GitHub properly with your github login. Please'
+                             ' check your credentials. Error: {0}'.format(error), sickbeard.logger.WARNING)
+
+    if not sickbeard.gh:
+        try:
+            sickbeard.gh = Github(user_agent="SickRage")
+        except Exception as error:
+            sickbeard.gh = None
+            sickbeard.logger.log(u'Unable to setup GitHub properly. GitHub will not be '
+                                 'available. Error: {0}'.format(error), sickbeard.logger.WARNING)

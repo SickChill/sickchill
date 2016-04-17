@@ -50,7 +50,7 @@ import ssl
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT
 from sickbeard import db
-from sickrage.helper.common import media_extensions, pretty_file_size, subtitle_extensions, episode_num
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, pretty_file_size, episode_num
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
 from cachecontrol import CacheControl
@@ -197,7 +197,7 @@ def isMediaFile(filename):
         if re.search('extras?$', filname_parts[0], re.I):
             return False
 
-        return filname_parts[-1].lower() in media_extensions
+        return filname_parts[-1].lower() in MEDIA_EXTENSIONS
     except TypeError as error:  # Not a string
         logger.log('Invalid filename. Filename must be a string. {0}'.format(error), logger.DEBUG)  # pylint: disable=no-member
         return False
@@ -520,7 +520,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
         cur_file_ext = cur_path[old_path_length:]
         cur_file_name = cur_path[:old_path_length]
 
-    if cur_file_ext[1:] in subtitle_extensions:
+    if cur_file_ext[1:] in SUBTITLE_EXTENSIONS:
         # Extract subtitle language from filename
         sublang = ek(os.path.splitext, cur_file_name)[1][1:]
 
