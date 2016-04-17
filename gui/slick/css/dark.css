@@ -297,6 +297,7 @@ ul.tags li {
     height: 250px;
     overflow: auto;
     cursor: default;
+    opacity: 0.8;
 }
 
 .sickbeardTable {
@@ -326,7 +327,7 @@ ul.tags li {
 
 th.row-seasonheader {
     border: none;
-    background-color: #222;
+    background-color: transparent;
     color: #fff;
     padding-top: 15px;
     text-align: left;
@@ -803,7 +804,7 @@ tablesorter.css
     margin-left: auto;
     color: #fff;
     text-align: left;
-    background-color: #333;
+    background-color: transparent;
     border-spacing: 0;
 }
 

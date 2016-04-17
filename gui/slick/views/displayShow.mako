@@ -18,6 +18,11 @@
 <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
+<script src='${srRoot}/js/backstretch.js'></script>
+<script>
+    $.backstretch('${srRoot}/showPoster/?show=${show.indexerid}&which=fanart');
+    $('.backstretch').css("opacity", 0.2).fadeIn("500");
+</script>
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
