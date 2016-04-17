@@ -35,7 +35,7 @@ from sickbeard import db
 from sickbeard import processTV
 from sickbeard.common import Quality
 from sickbeard.helpers import remove_non_release_groups, isMediaFile, isRarFile
-from sickrage.helper.common import episode_num, dateTimeFormat, subtitle_extensions
+from sickrage.helper.common import episode_num, dateTimeFormat, SUBTITLE_EXTENSIONS
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
@@ -415,7 +415,7 @@ class SubtitlesFinder(object):
                                    (ex(error)), logger.DEBUG)
 
                     # Delete unwanted subtitles before downloading new ones
-                    if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in subtitle_extensions:
+                    if sickbeard.SUBTITLES_MULTI and sickbeard.SUBTITLES_KEEP_ONLY_WANTED and filename.rpartition('.')[2] in SUBTITLE_EXTENSIONS:
                         subtitle_language = filename.rsplit('.', 2)[1].lower()
                         if len(subtitle_language) == 2 and subtitle_language in language_converters['opensubtitles'].codes:
                             subtitle_language = Language.fromcode(subtitle_language, 'alpha2').opensubtitles

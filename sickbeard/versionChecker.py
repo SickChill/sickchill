@@ -738,10 +738,11 @@ class SourceUpdateManager(UpdateManager):
         self._num_commits_behind = 0
         self._newest_commit_hash = None
 
+        repo = sickbeard.gh.get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)
         # try to get newest commit hash and commits behind directly by comparing branch and current commit
         if self._cur_commit_hash:
             try:
-                branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
+                branch_compared = repo.compare(base=self.branch, head=self._cur_commit_hash)
                 self._newest_commit_hash = branch_compared.base_commit.sha
                 self._num_commits_behind = branch_compared.behind_by
             except Exception:  # UnknownObjectException
@@ -752,7 +753,7 @@ class SourceUpdateManager(UpdateManager):
         # fall back and iterate over last 100 (items per page in gh_api) commits
         if not self._newest_commit_hash:
 
-            for curCommit in sickbeard.gh.get_commits():
+            for curCommit in repo.get_commits():
                 if not self._newest_commit_hash:
                     self._newest_commit_hash = curCommit.sha
                     if not self._cur_commit_hash:
@@ -887,4 +888,8 @@ class SourceUpdateManager(UpdateManager):
 
     @staticmethod
     def list_remote_branches():
-        return [x.name for x in sickbeard.gh.get_branches() if x]
+        if not sickbeard.gh:
+            return []
+
+        repo = sickbeard.gh.get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)
+        return [x.name for x in repo.get_branches() if x]

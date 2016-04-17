@@ -34,8 +34,6 @@ shutil.copyfile = shutil_custom.copyfile_custom
 
 from threading import Lock
 
-from github import Github
-
 from sickbeard import metadata
 from sickbeard import providers
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator
@@ -59,6 +57,7 @@ from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.providers.newznab import NewznabProvider
 
+from sickrage.helper import setup_github
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
@@ -647,7 +646,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
             FANART_BACKGROUND, FANART_BACKGROUND_OPACITY
 
@@ -710,19 +709,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # init logging
         logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=DEBUG, database_logging=DBDEBUG)
 
-        try:
-            if GIT_USERNAME and GIT_PASSWORD:
-                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except Exception as error:
-            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {0}'.format(error), logger.WARNING)
-            gh = None
-
-        if not gh:
-            try:
-                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-            except Exception as error:
-                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {0}'.format(error), logger.WARNING)
-                gh = None
+        # Initializes sickbeard.gh
+        setup_github()
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))

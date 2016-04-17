@@ -38,7 +38,7 @@ from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from sickrage.helper import glob
-from sickrage.helper.common import remove_extension, replace_extension, subtitle_extensions
+from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
@@ -197,7 +197,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 file_name, dirnames_, file_extension = filefound.rpartition('.')
 
                 # Handles subtitles with language code
-                if file_extension in subtitle_extensions and file_name.rpartition('.')[0].lower() == base_name.lower():
+                if file_extension in SUBTITLE_EXTENSIONS and file_name.rpartition('.')[0].lower() == base_name.lower():
                     filelist.append(filefound)
                 # Handles all files with same basename, including subtitles without language code
                 elif file_name.lower() == base_name.lower():
@@ -209,7 +209,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 continue
 
             # Exlude non-subtitle files with the 'only subtitles' option (not implemented yet)
-            if subtitles_only and not associated_file_path[-3:] in subtitle_extensions:
+            if subtitles_only and not associated_file_path[-3:] in SUBTITLE_EXTENSIONS:
                 continue
 
             # Exclude .rar files from associated list
@@ -323,7 +323,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             cur_extension = cur_file_path[old_base_name_length + 1:]
 
             # check if file have subtitles language
-            if ek(os.path.splitext, cur_extension)[1][1:] in subtitle_extensions:
+            if ek(os.path.splitext, cur_extension)[1][1:] in SUBTITLE_EXTENSIONS:
                 cur_lang = ek(os.path.splitext, cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
@@ -345,7 +345,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             else:
                 new_file_name = replace_extension(cur_file_name, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in subtitle_extensions:
+            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in SUBTITLE_EXTENSIONS:
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
