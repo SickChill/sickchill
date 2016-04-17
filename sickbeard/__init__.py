@@ -534,6 +534,8 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
+FANART_BACKGROUND = None
+FANART_BACKGROUND_OPACITY = None
 
 USE_SUBTITLES = False
 SUBTITLES_LANGUAGES = []
@@ -647,7 +649,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            LOCALE_DIR  # pylint: disable=global-variable-not-assigned
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY
 
         if __INITIALIZED__:
             return False
@@ -795,6 +797,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
+        FANART_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'fanart_background', 1))
+        FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4)
+
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language', '')
         if GUI_LANG:
@@ -2163,6 +2168,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'gui_name': GUI_NAME,
             'language': GUI_LANG,
             'theme_name': THEME_NAME,
+            'fanart_background': FANART_BACKGROUND,
+            'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
             'history_limit': HISTORY_LIMIT,
