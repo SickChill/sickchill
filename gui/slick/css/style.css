@@ -893,11 +893,6 @@ displayShow.mako
     margin-bottom: 20px;
 }
 
-#showCol {
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
 .navShow {
     display: inline;
     cursor: pointer;
@@ -933,7 +928,6 @@ h1.title {
 #showinfo {
     display: inline-block;
     position: relative;
-    top: -3px;
 }
 
 span.imdbstars {
@@ -959,7 +953,7 @@ span.imdbstars > * {
 ul.tags {
     list-style-type: none;
     position: relative;
-    top: -5px;
+    top: 4px;
     margin-left: -40px;
 }
 
@@ -983,24 +977,23 @@ ul.tags li a{
 .tvshowImg {
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 311px;
-    width: auto;
-    float: left;
+    max-height: 311px;
+    margin: 0 auto;
 }
 
 #summary {
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 10px;
     background-color: #efefef;
     border: 1px solid #dfdede;
     width: 100%;
-    height: 250px;
     overflow: auto;
     cursor: default;
     opacity: 0.8;
 }
 
 .summaryTable {
-    max-width: 70%;
     overflow: hidden;
 }
 
@@ -1018,6 +1011,7 @@ ul.tags li a{
 #checkboxControls label {
     white-space: nowrap;
     display: inline-block;
+    margin: 7px 2px;
 }
 
 #checkboxControls input[type="checkbox"] {
@@ -3394,4 +3388,50 @@ input.tablesorter-filter.disabled {
 /* @TODO replace this with proper CSS overrides */
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header {
     font-weight: normal !important;
+}
+
+@media (max-width: 767px) {
+    .pull-xs-left {
+        float: left;
+    }
+    .pull-xs-right {
+        float: right;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .pull-sm-left {
+        float: left;
+    }
+    .pull-sm-right {
+        float: right;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .pull-md-left {
+        float: left;
+    }
+    .pull-md-right {
+        float: right;
+    }
+    .tvshowImg {
+        max-height: 245px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .pull-lg-left {
+        float: left;
+    }
+    .pull-lg-right {
+        float: right;
+    }
+    .tvshowImg {
+        max-height: 245px;
+    }
+}
+
+.horizontal-scroll {
+    overflow-x: auto;
 }

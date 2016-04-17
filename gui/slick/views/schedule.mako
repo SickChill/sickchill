@@ -8,64 +8,65 @@
     import re
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 </%block>
 <%block name="css">
-<style type="text/css">
-#SubMenu {display:none;}
-#contentWrapper {padding-top:30px;}
-</style>
+    <style type="text/css">
+        #SubMenu {display:none;}
+        #contentWrapper {padding-top:30px;}
+    </style>
 </%block>
 <%block name="content">
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<h1 class="header">${header}</h1>
-<div class="h2footer pull-right">
-% if layout == 'list':
-    <button id="popover" type="button" class="btn btn-inline">${_('Select Columns')} <b class="caret"></b></button>
-% else:
-    <span>${_('Sort By')}:
-        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
-        </select>
-    </span>
-% endif
-    &nbsp;
+    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 
-    <span>${_('View Paused')}:
-        <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
-            <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
-        </select>
-    </span>
-    &nbsp;
+    <div class="h2footer pull-right">
+    % if layout == 'list':
+        <button id="popover" type="button" class="btn btn-inline">${_('Select Columns')} <b class="caret"></b></button>
+    % else:
+        <span>${_('Sort By')}:
+            <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+                <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+                <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+                <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+            </select>
+        </span>
+    % endif
+        &nbsp;
 
-    <span>${_('Layout')}:
-        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
-            <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
-        </select>
-    </span>
-</div>
+        <span>${_('View Paused')}:
+            <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+                <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
+                <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
+            </select>
+        </span>
+        &nbsp;
 
-<div class="key pull-right">
-% if 'calendar' != layout:
-    <b>${_('Key')}:</b>
-    <span class="listing-key listing-overdue">${_('Missed')}</span>
-    <span class="listing-key listing-current">${_('Today')}</span>
-    <span class="listing-key listing-default">${_('Soon')}</span>
-    <span class="listing-key listing-toofar">${_('Later')}</span>
-% endif
-    <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
-    <i class="icon-calendar icon-white"></i>${_('Subscribe')}</a>
-</div>
+        <span>${_('Layout')}:
+            <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+                <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
+                <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
+                <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
+                <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
+            </select>
+        </span>
+    </div>
 
-<br>
+    <div class="key pull-right">
+    % if 'calendar' != layout:
+        <b>${_('Key')}:</b>
+        <span class="listing-key listing-overdue">${_('Missed')}</span>
+        <span class="listing-key listing-current">${_('Today')}</span>
+        <span class="listing-key listing-default">${_('Soon')}</span>
+        <span class="listing-key listing-toofar">${_('Later')}</span>
+    % endif
+        <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
+        <i class="icon-calendar icon-white"></i>${_('Subscribe')}</a>
+    </div>
 
+    <br>
+
+    <h1 class="header">${header}</h1>
 % if 'list' == layout:
 <!-- start list view //-->
 <% show_div = 'listing-default' %>
