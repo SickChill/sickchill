@@ -1150,12 +1150,14 @@ class MatchFailedForkVersion(AddMinorVersion):
     Moves DB major version up to 43 since bonehead bumped his to break our updater.
     """
     def test(self):
-        return self.connection.version >= 43, 1
+        return self.connection.version >= (43, 1)
 
     def execute(self):
         backupDatabase(self.checkDBVersion())
 
-        logger.log(u'SRTV Bumper cars')
+        minor_version = self.connection.version[1]
         self.inc_major_version()
+        while self.connection.version[1] < minor_version:
+            self.inc_minor_version()
 
         logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
