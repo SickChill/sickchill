@@ -260,6 +260,15 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <label for="fanart_background">
+                                <span class="component-title">${_('Show fanart in the background')}</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(sickbeard.FANART_BACKGROUND)]}>
+                                    <p>${_('on the show summary page')}</p>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <label for="display_all_seasons">
                                 <span class="component-title">${_('Show all seasons')}</span>
                                 <span class="component-desc">

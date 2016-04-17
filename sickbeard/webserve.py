@@ -3847,7 +3847,7 @@ class ConfigGeneral(Config):
             proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
+            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None,
             git_reset=None, git_username=None, git_password=None, display_all_seasons=None, gui_language=None):
 
         results = []
@@ -3948,6 +3948,7 @@ class ConfigGeneral(Config):
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
+        sickbeard.FANART_BACKGROUND = fanart_background
 
         sickbeard.DEFAULT_PAGE = default_page
 
