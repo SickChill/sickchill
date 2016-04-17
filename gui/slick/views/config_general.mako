@@ -120,7 +120,7 @@
 
                         <div class="field-pair">
                             <label for="log_size">
-                                <span class="component-title">Size of Log files saved')}</span>
+                                <span class="component-title">${_('Size of Log files saved')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</p>
