@@ -29,7 +29,7 @@ from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
     NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
 
-from sickrage.helper.common import http_status_code
+from sickrage.helper import HTTP_STATUS_CODES
 
 
 class Notifier(object):
@@ -86,7 +86,7 @@ class Notifier(object):
                 if e.code in error_message:
                     message = error_message.get(e.code)
                 else:
-                    http_status_code.get(e.code, message)
+                    HTTP_STATUS_CODES.get(e.code, message)
         except Exception as e:
             message = 'Error while sending Telegram message: {0} '.format(e)
         finally:

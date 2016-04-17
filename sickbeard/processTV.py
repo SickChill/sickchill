@@ -29,7 +29,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, subtitle_extensions
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, SUBTITLE_EXTENSIONS
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
@@ -566,7 +566,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             # This feature prevents PP for files that do not have subtitle associated with the video file
             if sickbeard.POSTPONE_IF_NO_SUBS and subtitles_enabled(cur_video_file):
                 associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
-                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
+                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in SUBTITLE_EXTENSIONS]:
                     result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: {0}".format(cur_video_file), logger.DEBUG)
                     continue
                 else:
