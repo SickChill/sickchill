@@ -279,7 +279,7 @@
                 % endif
             </div>
             <div id="contentWrapper">
-                <div id="content">
+                <div id="content" class="row">
                     <%block name="content" />
                 </div>
             </div>

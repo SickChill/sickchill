@@ -174,11 +174,6 @@ inc_top.mako
     border-top-right-radius: 5px;
 }
 
-#content {
-    clear: both;
-	max-width: 100%;
-}
-
 #SubMenuContainer {
 	margin: 0;
 }
