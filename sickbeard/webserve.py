@@ -3896,6 +3896,8 @@ class ConfigGeneral(Config):
         sickbeard.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         sickbeard.NO_RESTART = config.checkbox_to_value(no_restart)
         sickbeard.DEBUG = config.checkbox_to_value(debug)
+        logger.set_level()
+
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
