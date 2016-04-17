@@ -16,9 +16,9 @@
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 % if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
+	<h1 class="header">${header}</h1>
 % else:
-    <h1 class="title">${title}</h1>
+	<h1 class="title">${title}</h1>
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm">

@@ -11,14 +11,13 @@
 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
 </%block>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <div id="config">
     <div id="config-content">
+        % if not header is UNDEFINED:
+		    <h1 class="header">${header}</h1>
+        % else:
+		    <h1 class="title">${title}</h1>
+        % endif
 
         <form id="configForm" action="saveGeneral" method="post">
             <div id="config-components">

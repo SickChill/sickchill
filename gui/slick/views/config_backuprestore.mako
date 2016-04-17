@@ -3,18 +3,17 @@
     import sickbeard
 %>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <% indexer = 0 %>
 % if sickbeard.INDEXER_DEFAULT:
     <% indexer = sickbeard.INDEXER_DEFAULT %>
 % endif
 <div id="config">
     <div id="config-content">
+        % if not header is UNDEFINED:
+            <h1 class="header">${header}</h1>
+        % else:
+            <h1 class="title">${title}</h1>
+        % endif
 
         <form name="configForm" method="post" action="backuprestore">
             <div id="config-components">

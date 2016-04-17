@@ -5,14 +5,14 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="content">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
-
 <div id="config">
     <div id="config-content">
+        % if not header is UNDEFINED:
+		    <h1 class="header">${header}</h1>
+        % else:
+		    <h1 class="title">${title}</h1>
+        % endif
+
         <form id="configForm" action="saveNotifications" method="post">
             <div id="config-components">
                 <ul>
@@ -1790,7 +1790,7 @@
                             <div class="field-pair">
                                 <label for="email_port">
                                     <span class="component-title">${_('SMTP port')}</span>
-                                    <input type="number" min"1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
+                                    <input type="number" min="1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -1883,12 +1883,12 @@
 
                             <div class="testNotification" id="testEmail-result">${_('Click below to test.')}</div>
                             <input class="btn" type="button" value="Test Email" id="testEmail" />
-                            <input class="btn" type="submit" class="config_submitter" value="${_('Save Changes')}" />
+                            <input class="btn config_submitter" type="submit" value="${_('Save Changes')}" />
                         </div><!-- /content_use_email //-->
                     </fieldset>
                 </div><!-- /email component-group //-->
-
-            </div><!-- /config-components //-->
+                </div><!-- /config-components //-->
+            </div>
         </form>
 
         <br><input type="submit" class="config_submitter btn" value="${_('Save Changes')}" /><br>
