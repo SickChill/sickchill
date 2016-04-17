@@ -2178,6 +2178,8 @@ var SICKRAGE = {
             });
         },
         displayShow: function() {
+            $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
+            $('.backstretch').css("opacity", 0.2).fadeIn("500");
             $('#srRoot').ajaxEpSearch({'colorRow': true});
 
             $('#srRoot').ajaxEpSubtitlesSearch();
