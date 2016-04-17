@@ -179,6 +179,16 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             for logger in self.loggers:
                 logger.addHandler(rfh)
 
+    def set_level(self):
+        self.debug_logging = sickbeard.DEBUG
+        self.database_logging = sickbeard.DBDEBUG
+
+        level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
+        for logger in self.loggers:
+            logger.setLevel(level)
+            for handler in logger.handlers:
+                handler.setLevel(level)
+
     @staticmethod
     def shutdown():
         """
