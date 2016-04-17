@@ -3847,7 +3847,7 @@ class ConfigGeneral(Config):
             proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None,
+            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             git_reset=None, git_username=None, git_password=None, display_all_seasons=None, gui_language=None):
 
         results = []
@@ -3949,6 +3949,8 @@ class ConfigGeneral(Config):
 
         sickbeard.THEME_NAME = theme_name
         sickbeard.FANART_BACKGROUND = fanart_background
+        sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
+
 
         sickbeard.DEFAULT_PAGE = default_page
 

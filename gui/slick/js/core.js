@@ -2180,7 +2180,7 @@ var SICKRAGE = {
         displayShow: function() {
             if (metaToBool('sickbeard.FANART_BACKGROUND')) {
                 $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
-                $('.backstretch').css("opacity", 0.2).fadeIn("500");
+                $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
             }
             $('#srRoot').ajaxEpSearch({'colorRow': true});
 
