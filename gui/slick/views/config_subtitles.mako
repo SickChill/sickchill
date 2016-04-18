@@ -112,7 +112,7 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc"><b>${_('NOTE:</b> This option is required if you use multiple subtitle languages.')}</span>
+                                        <span class="component-desc"><b>${_('Note')}:</b> ${_('This option is required if you use multiple subtitle languages.')}</span>
                                     </label>
                                 </div>
                                 <div class="field-pair">
@@ -142,7 +142,7 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                                         <span class="component-desc">
                                             <input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]}/>
                                             <p>${_('Ignore subtitles embedded inside video file?')}</p>
-                                            <p>${_('<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!')}</p>
+                                            <p><b>${_('Warning')}: </b>${_('this will ignore <u>all</u> embedded subtitles for every video file!')}</p>
                                         </span>
                                     </label>
                                 </div>
@@ -218,13 +218,11 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                             providerLoginDict = {
                                 'legendastv': {'user': sickbeard.LEGENDASTV_USER, 'pass': sickbeard.LEGENDASTV_PASS},
                                 'addic7ed': {'user': sickbeard.ADDIC7ED_USER, 'pass': sickbeard.ADDIC7ED_PASS},
-                                'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
-                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}}
+                                ## 'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
+                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}
+                            }
                         %>
-                        % for curService in sickbeard.subtitles.sorted_service_list():
-                            % if curService['name'] not in providerLoginDict.keys():
-                                <% continue %>
-                            % endif
+                        % for curService in providerLoginDict:
                             ##<div class="field-pair${(' hidden', '')[curService['enabled']]}"> ## Need js to show/hide on save
                             <div class="field-pair">
                                 <label class="nocheck" for="${curService['name']}_user">

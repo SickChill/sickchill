@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 05:15-0700\n"
-"PO-Revision-Date: 2016-04-17 08:18-0400\n"
+"POT-Creation-Date: 2016-04-17 23:48-0700\n"
+"PO-Revision-Date: 2016-04-18 02:57-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -1009,7 +1009,7 @@ msgstr "الضبط - البحث عن الحلقة"
 
 #: sickbeard/webserve.py:4185
 msgid "Config - Post Processing"
-msgstr "الضبط - مرحلة ما بعد المعالجة"
+msgstr "الضبط - المعالجة"
 
 #: sickbeard/webserve.py:4221
 msgid "Unpacking Not Supported, disabling unpack setting"
@@ -1093,7 +1093,7 @@ msgstr "إضافة مسلسل جديد"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
-msgstr ""
+msgstr "للمسلسلات اللتي لم تقم بتحميلها بعد، هذا الخيار يبحث عن المسلسل في موقع theTVDB.com، و ينشيء مسار خاص بحلقاته، ويضيفه إلى SickRage."
 
 #: gui/slick/views/addShows.mako:22
 msgid "Add From Trakt Lists"
@@ -1160,7 +1160,7 @@ msgstr "البحث عن مسلسل في موقع theTVDB"
 msgid "Show retrieved from existing metadata"
 msgstr "تم استرجاع المسلسل من بيانات التعريف الموجودة"
 
-#: gui/slick/views/addShows_newShow.mako:48
+#: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
 msgstr "جميع المفهرسات"
 
@@ -1536,8 +1536,8 @@ msgstr "هل تريد إضافة الحلقات المعالجة إلى MyList؟
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:244
-#: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:242
+#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "حفظ التغييرات"
@@ -1670,6 +1670,10 @@ msgstr "عدد ملفات السجلات المحفوظة"
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
 msgstr "عدد ملفات السجلات المحفوظة عند تدوير السجلات (الافتراضي: 5) (يتطلب إعادة التشغيل)"
 
+#: gui/slick/views/config_general.mako:123
+msgid "Size of Log files saved"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
 msgstr "الحجم الأقصى بالميغا بايت لملف السجل (الافتراضي: 1 ميغابايت) (يتطلب إعادة التشغيل)"
@@ -1762,6 +1766,14 @@ msgstr "لكي يتم تفعيل المظهر، احفظ، ثم قم بتحدي�
 msgid "Display theme"
 msgstr "سمة العرض"
 
+#: gui/slick/views/config_general.mako:255
+msgid "Dark"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:256
+msgid "Light"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
 msgstr ""
@@ -1827,8 +1839,8 @@ msgid "Time style"
 msgstr "نمط الوقت"
 
 #: gui/slick/views/config_general.mako:359
-msgid " seconds are only shown on the History page"
-msgstr " الثواني تظهر فقط في صفحة المحفوظات"
+msgid "seconds are only shown on the History page"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
@@ -1848,9 +1860,28 @@ msgstr "الشبكة"
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "عرض التواريخ والأوقات إما للمنطقة الزمنية الخاصة بك أو للمنطقة الزمنية للشبكة المعروض عليها المسلسل"
 
+#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr "ملاحظة"
+
 #: gui/slick/views/config_general.mako:377
-msgid " <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
-msgstr " <b>ملاحظة:</b> استخدام التوقيت المحلي في بدء البحث عن الحلقات بعد انتهاء العرض بدقائق (يعتمد على تكرار بحثك اليومي)"
+msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:384
 msgid "Download url"
@@ -1912,8 +1943,12 @@ msgid "HTTP password"
 msgstr "كلمة مرور HTTP"
 
 #: gui/slick/views/config_general.mako:449
-msgid "no authentication"
-msgstr "بدون مصادقة"
+#: gui/slick/views/config_notifications.mako:189
+#: gui/slick/views/config_notifications.mako:198
+#: gui/slick/views/config_notifications.mako:307
+#: gui/slick/views/config_notifications.mako:316
+msgid "blank = no authentication"
+msgstr "فارغ = بدون مصادقة"
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
@@ -2022,8 +2057,13 @@ msgid "in the <code>config.ini</code> file."
 msgstr "في ملف <code>config.ini</code>."
 
 #: gui/slick/views/config_general.mako:603
-msgid "<b>Warning:</b> Passwords must only contain"
-msgstr "<b>تحذير:</b> كلمات المرور يجب أن تحتوي فقط على"
+#: gui/slick/views/config_subtitles.mako:145
+msgid "Warning"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "Passwords must only contain"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:603
 msgid "ASCII characters"
@@ -2070,23 +2110,6 @@ msgstr "تخطي إزالة الكشف"
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
 msgstr "تخطي الكشف عن ملفات تمت إزالتها. في حال تعطيل هذا الخيار، الحلقة ستوضع على حالة الحذف الافتراضية"
-
-#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-msgid "Note"
-msgstr "ملاحظة"
 
 #: gui/slick/views/config_general.mako:658
 msgid "This may mean SickRage misses renames as well"
@@ -2349,7 +2372,7 @@ msgstr "اسم المستخدم الخاص بـ KODI (فارغة إذا لم ي�
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:237 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "كلمة المرور"
 
@@ -2392,13 +2415,6 @@ msgstr "رمز المصادقة لـ Plex Media Server"
 #: gui/slick/views/config_notifications.mako:176
 msgid "Auth Token used by plex"
 msgstr "رمز المصادقة المستخدم من طرف plex"
-
-#: gui/slick/views/config_notifications.mako:189
-#: gui/slick/views/config_notifications.mako:198
-#: gui/slick/views/config_notifications.mako:307
-#: gui/slick/views/config_notifications.mako:316
-msgid "blank = no authentication"
-msgstr "فارغ = بدون مصادقة"
 
 #: gui/slick/views/config_notifications.mako:206
 msgid "Update Library"
@@ -3386,7 +3402,7 @@ msgstr "الزر أدناه بعد كل إدخال."
 #: gui/slick/views/config_postProcessing.mako:22
 #: gui/slick/views/config_postProcessing.mako:28
 msgid "Post-Processing"
-msgstr "مرحلة ما بعد المعالجة"
+msgstr "المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:23
 #: gui/slick/views/config_postProcessing.mako:232
@@ -3400,7 +3416,7 @@ msgstr "بيانات التعريف"
 
 #: gui/slick/views/config_postProcessing.mako:29
 msgid "Settings that dictate how SickRage should process completed downloads."
-msgstr ""
+msgstr "الإعدادات التي تملي على SickRage كيفية معالجة الحلقات اللتي تم تحميلها."
 
 #: gui/slick/views/config_postProcessing.mako:36
 msgid "Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir"
@@ -3412,7 +3428,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:45
 msgid "Post Processing Dir"
-msgstr ""
+msgstr "مسار المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:50
 msgid "The folder where your download client puts the completed TV downloads."
@@ -3424,7 +3440,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:59
 msgid "Processing Method"
-msgstr "أسلوب المعالجة"
+msgstr "طريقة المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:71
 msgid "What method should be used to put files into the library?"
@@ -3437,11 +3453,11 @@ msgstr "ملاحظة"
 
 #: gui/slick/views/config_postProcessing.mako:75
 msgid "If you keep seeding torrents after they finish, please avoid the 'move' processing method to prevent errors."
-msgstr ""
+msgstr "إذا كنت تستمر برفع ملفات التورنت بعد اكتمال تحميلها، الرجاء تجنب ضبط طريقة المعالجة على الخيار \"نقل\" لمنع حدوث الأخطاء."
 
 #: gui/slick/views/config_postProcessing.mako:80
 msgid "Auto Post-Processing Frequency"
-msgstr ""
+msgstr "تكرار المعالجة التلقائي"
 
 #: gui/slick/views/config_postProcessing.mako:85
 msgid "Time in minutes to check for new files to auto post-process (min 10)"
@@ -3449,7 +3465,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:91
 msgid "Postpone post processing"
-msgstr ""
+msgstr "تأجيل المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:92
 msgid "Wait to process a folder if sync files are present."
@@ -3465,27 +3481,27 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:108
 msgid "Postpone if no subtitle"
-msgstr ""
+msgstr "تأجيل المعالجة إذا لم توجد الترجمة"
 
 #: gui/slick/views/config_postProcessing.mako:109
 msgid "Wait to process a file until subtitles are present"
-msgstr ""
+msgstr "الانتظار عن معالجة الملف حتى تتوفر الترجمة"
 
 #: gui/slick/views/config_postProcessing.mako:110
 msgid "Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)"
-msgstr ""
+msgstr "أسماء اللغة مسموح بها في اسم ملف الترجمة (en.srt، pt-br.srt، ita.srt، إلخ.)"
 
 #: gui/slick/views/config_postProcessing.mako:112
 msgid "Automatic post processor must be disabled"
-msgstr ""
+msgstr "المعالجة التلقائية يجب أن يتم تعطيلها"
 
 #: gui/slick/views/config_postProcessing.mako:118
 msgid "Rename Episodes"
-msgstr ""
+msgstr "إعادة تسمية الحلقات"
 
 #: gui/slick/views/config_postProcessing.mako:119
 msgid "Rename episode using the Episode Naming settings?"
-msgstr ""
+msgstr "قم بإعادة تسمية الحلقة باستخدام إعدادات التسمية؟"
 
 #: gui/slick/views/config_postProcessing.mako:125
 msgid "Create missing show directories"
@@ -3497,23 +3513,23 @@ msgstr "إنشاء مسارات المسلسلات المفقودة عندما �
 
 #: gui/slick/views/config_postProcessing.mako:132
 msgid "Add shows without directory"
-msgstr ""
+msgstr "إضافة المسلسلات دون مسار"
 
 #: gui/slick/views/config_postProcessing.mako:133
 msgid "Add shows without creating a directory (not recommended)"
-msgstr ""
+msgstr "إضافة المسلسلات دون إنشاء مسار(غير مستحسن)"
 
 #: gui/slick/views/config_postProcessing.mako:139
 msgid "Delete associated files"
-msgstr ""
+msgstr "حذف الملفات المقترنة"
 
 #: gui/slick/views/config_postProcessing.mako:140
 msgid "Delete srt/srr/sfv/etc files while post processing?"
-msgstr ""
+msgstr "حذف ملفات srt/srr/sfv/إلخ أثناء المعالجة؟"
 
 #: gui/slick/views/config_postProcessing.mako:145
 msgid "Keep associated file extensions"
-msgstr ""
+msgstr "الحفاظ على إمتدادات الملفات المقترنة"
 
 #: gui/slick/views/config_postProcessing.mako:150
 msgid "Comma seperated list of associated file extensions SickRage should keep while post processing. Leaving it empty means all associated files will be deleted"
@@ -3521,71 +3537,71 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:156
 msgid "Rename .nfo file"
-msgstr ""
+msgstr "إعادة تسمية ملف.nfo"
 
 #: gui/slick/views/config_postProcessing.mako:157
 msgid "Rename the original .nfo file to .nfo-orig to avoid conflicts?"
-msgstr ""
+msgstr "إعادة تسمية ملف.nfo الأصلي إلى.nfo-orig لتجنب التعارض؟"
 
 #: gui/slick/views/config_postProcessing.mako:163
 msgid "Change File Date"
-msgstr ""
+msgstr "تغيير تاريخ الملف"
 
 #: gui/slick/views/config_postProcessing.mako:164
 msgid "Set last modified filedate to the date that the episode aired?"
-msgstr ""
+msgstr "ضبط آخر تعديل لتاريخ الملف إلى تاريخ بثت الحلقة؟"
 
 #: gui/slick/views/config_postProcessing.mako:168
 msgid "Some systems may ignore this feature."
-msgstr ""
+msgstr "بعض الأنظمة قد تتجاهل هذه الميزة."
 
 #: gui/slick/views/config_postProcessing.mako:173
 msgid "Timezone for File Date"
-msgstr ""
+msgstr "المنطقة الزمنية لتاريخ الملف"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "local"
-msgstr ""
+msgstr "محلي"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "network"
-msgstr ""
+msgstr "الشبكة"
 
 #: gui/slick/views/config_postProcessing.mako:184
 msgid "What timezone should be used to change File Date?"
-msgstr ""
+msgstr "ما هي المنطقة الزمنية التي ينبغي استخدامها لتغيير \"تاريخ الملف\"؟"
 
 #: gui/slick/views/config_postProcessing.mako:190
 msgid "Unpack"
-msgstr ""
+msgstr "فك الضغط"
 
 #: gui/slick/views/config_postProcessing.mako:191
 msgid "Unpack any TV releases in your <i>TV Download Dir</i>?"
-msgstr ""
+msgstr "فك ضغط الحلقات في <i>مسار تحميل المسلسلات</i>؟"
 
 #: gui/slick/views/config_postProcessing.mako:195
 msgid "Only working with RAR archive"
-msgstr ""
+msgstr "تعمل فقط مع ملفات الضغط من نوع RAR"
 
 #: gui/slick/views/config_postProcessing.mako:201
 msgid "Delete RAR contents"
-msgstr ""
+msgstr "حذف محتويات الملفات المغوطه"
 
 #: gui/slick/views/config_postProcessing.mako:202
 msgid "Delete content of RAR files, even if Process Method not set to move?"
-msgstr ""
+msgstr "حذف محتوى ملفات الضغط، حتى لو كانت طريقة المعالجة المختارة هي النقل؟"
 
 #: gui/slick/views/config_postProcessing.mako:208
 msgid "Don't delete empty folders"
-msgstr ""
+msgstr "لا تقم بحذف المجلدات الفارغة"
 
 #: gui/slick/views/config_postProcessing.mako:209
 msgid "Leave empty folders when Post Processing?"
-msgstr ""
+msgstr "اترك المجلدات الفارغة بعد المعالجة؟"
 
 #: gui/slick/views/config_postProcessing.mako:213
 msgid "Can be overridden using manual Post Processing"
-msgstr ""
+msgstr "يمكن أن يتم تجاوزه باستخدام المعالجه اليدوية"
 
 #: gui/slick/views/config_postProcessing.mako:218
 #: gui/slick/views/config_subtitles.mako:160
@@ -3595,7 +3611,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:223
 #: gui/slick/views/config_subtitles.mako:166
 msgid "See"
-msgstr ""
+msgstr "انظر"
 
 #: gui/slick/views/config_postProcessing.mako:223
 msgid "for script arguments description and usage."
@@ -3603,38 +3619,38 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:233
 msgid "How SickRage will name and sort your episodes."
-msgstr ""
+msgstr "كيف يمكن لـ SickRage تسمية و ترتيب الحلقات."
 
 #: gui/slick/views/config_postProcessing.mako:239
 #: gui/slick/views/config_postProcessing.mako:491
 #: gui/slick/views/config_postProcessing.mako:668
 #: gui/slick/views/config_postProcessing.mako:846
 msgid "Name Pattern"
-msgstr ""
+msgstr "نمط التسمية"
 
 #: gui/slick/views/config_postProcessing.mako:269
 msgid "Don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality"
-msgstr ""
+msgstr "لا تنسى إضافة نمط الجودة. و إلا ستكون الحلقة مجهولة الجودة بعد معالجتها"
 
 #: gui/slick/views/config_postProcessing.mako:277
 #: gui/slick/views/config_postProcessing.mako:525
 #: gui/slick/views/config_postProcessing.mako:702
 #: gui/slick/views/config_postProcessing.mako:880
 msgid "Meaning"
-msgstr ""
+msgstr "المعنى"
 
 #: gui/slick/views/config_postProcessing.mako:278
 #: gui/slick/views/config_postProcessing.mako:526
 #: gui/slick/views/config_postProcessing.mako:703
 msgid "Pattern"
-msgstr ""
+msgstr "النمط"
 
 #: gui/slick/views/config_postProcessing.mako:279
 #: gui/slick/views/config_postProcessing.mako:527
 #: gui/slick/views/config_postProcessing.mako:704
 #: gui/slick/views/config_postProcessing.mako:882
 msgid "Result"
-msgstr ""
+msgstr "النتيجة"
 
 #: gui/slick/views/config_postProcessing.mako:284
 #: gui/slick/views/config_postProcessing.mako:532
@@ -3642,7 +3658,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:887
 #, python-format
 msgid "Use lower case if you want lower case names (eg. %sn, %e.n, %q_n etc)"
-msgstr ""
+msgstr "استخدم الأحرف الصغيرة إذا كنت تريد أسماء بالأحرف الصغيرة (eg. %sn, %e.n, %q_n etc)"
 
 #: gui/slick/views/config_postProcessing.mako:289
 #: gui/slick/views/config_postProcessing.mako:291
@@ -3653,7 +3669,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:892
 #: gui/slick/views/config_postProcessing.mako:894 gui/slick/views/manage.mako:41
 msgid "Show Name"
-msgstr ""
+msgstr "اسم المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:296
 #: gui/slick/views/config_postProcessing.mako:421
@@ -3663,32 +3679,32 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:806
 #: gui/slick/views/config_postProcessing.mako:979
 msgid "Show.Name"
-msgstr ""
+msgstr "اسم.المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:301
 #: gui/slick/views/config_postProcessing.mako:549
 #: gui/slick/views/config_postProcessing.mako:726
 msgid "Show_Name"
-msgstr ""
+msgstr "اسم_المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:304
 #: gui/slick/views/config_postProcessing.mako:907
 msgid "Season Number"
-msgstr ""
+msgstr "رقم الموسم"
 
 #: gui/slick/views/config_postProcessing.mako:314
 msgid "XEM Season Number"
-msgstr ""
+msgstr "رقم الموسم من XEM"
 
 #: gui/slick/views/config_postProcessing.mako:324
 #: gui/slick/views/config_postProcessing.mako:927
 msgid "Episode Number"
-msgstr ""
+msgstr "رقم الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:334
 #: gui/slick/views/config_postProcessing.mako:937
 msgid "XEM Episode Number"
-msgstr ""
+msgstr "رقم الحلقة من XEM"
 
 #: gui/slick/views/config_postProcessing.mako:344
 #: gui/slick/views/config_postProcessing.mako:346
@@ -3698,27 +3714,27 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:751
 #: gui/slick/views/config_postProcessing.mako:947
 msgid "Episode Name"
-msgstr ""
+msgstr "اسم الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:351
 #: gui/slick/views/config_postProcessing.mako:579
 #: gui/slick/views/config_postProcessing.mako:756
 msgid "Episode.Name"
-msgstr ""
+msgstr "اسم.الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:356
 #: gui/slick/views/config_postProcessing.mako:584
 #: gui/slick/views/config_postProcessing.mako:761
 msgid "Episode_Name"
-msgstr ""
+msgstr "اسم_الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:359
 msgid "Air Date"
-msgstr ""
+msgstr "تاريخ العرض"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Post-Processing Date"
-msgstr ""
+msgstr "تاريخ المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:389
 #: gui/slick/views/config_postProcessing.mako:587
@@ -3729,52 +3745,52 @@ msgstr ""
 #: gui/slick/views/manage.mako:42 gui/slick/views/schedule.mako:86
 #: gui/slick/views/schedule.mako:324
 msgid "Quality"
-msgstr ""
+msgstr "الجودة"
 
 #: gui/slick/views/config_postProcessing.mako:404
 msgid "Scene Quality"
-msgstr ""
+msgstr "جودة المشهد"
 
 #: gui/slick/views/config_postProcessing.mako:424
 #: gui/slick/views/config_postProcessing.mako:632
 #: gui/slick/views/config_postProcessing.mako:809
 #: gui/slick/views/config_postProcessing.mako:982
 msgid "SickRage' is used in place of RLSGROUP if it could not be properly detected"
-msgstr ""
+msgstr "سيتم استبدال اسم مجموعة الإصدار في حالة عدم القدرة على العثور عليه باسم SickRage"
 
 #: gui/slick/views/config_postProcessing.mako:424
 #: gui/slick/views/config_postProcessing.mako:632
 #: gui/slick/views/config_postProcessing.mako:809
 #: gui/slick/views/config_postProcessing.mako:982
 msgid "Release Group"
-msgstr ""
+msgstr "اسم مجموعة الإصدار"
 
 #: gui/slick/views/config_postProcessing.mako:429
 #: gui/slick/views/config_postProcessing.mako:637
 #: gui/slick/views/config_postProcessing.mako:814
 #: gui/slick/views/config_postProcessing.mako:987
 msgid "If episode is proper/repack add 'proper' to name."
-msgstr ""
+msgstr "إذا كانت الحلقة اصدار مصحح أو معاد ضغطها قم بإضافة عِبارة 'مصحح proper' إلى اسم الحلقة."
 
 #: gui/slick/views/config_postProcessing.mako:429
 #: gui/slick/views/config_postProcessing.mako:637
 #: gui/slick/views/config_postProcessing.mako:814
 #: gui/slick/views/config_postProcessing.mako:987
 msgid "Release Type"
-msgstr ""
+msgstr "نوع الإصدار"
 
 #: gui/slick/views/config_postProcessing.mako:441
 #: gui/slick/views/config_postProcessing.mako:999
 msgid "Multi-Episode Style"
-msgstr ""
+msgstr "أسلوب الحلقة المتعددة الأجزاء"
 
 #: gui/slick/views/config_postProcessing.mako:453
 msgid "Single-EP Sample"
-msgstr ""
+msgstr "عينة الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:461
 msgid "Multi-EP sample"
-msgstr ""
+msgstr "عينة الحلقة المتعددة الأجزاء"
 
 #: gui/slick/views/config_postProcessing.mako:471
 msgid "Strip Show Year"
@@ -3782,11 +3798,11 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:472
 msgid "Remove the TV show's year when renaming the file?"
-msgstr ""
+msgstr "إزالة تاريخ سنة عرض المسلسل عند إعادة تسمية الملف؟"
 
 #: gui/slick/views/config_postProcessing.mako:476
 msgid "Only applies to shows that have year inside parentheses"
-msgstr ""
+msgstr "لا ينطبق إلا على المسلسلات اللتي تحتوي على تاريخ سنة العرض داخل أقواس"
 
 #: gui/slick/views/config_postProcessing.mako:483
 msgid "Custom Air-By-Date"
@@ -4753,7 +4769,7 @@ msgid "Append language codes to subtitle filenames?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:115
-msgid "NOTE:</b> This option is required if you use multiple subtitle languages."
+msgid "This option is required if you use multiple subtitle languages."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:120
@@ -4793,7 +4809,7 @@ msgid "Ignore subtitles embedded inside video file?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:145
-msgid "<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!"
+msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:151
@@ -4852,7 +4868,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:231
+#: gui/slick/views/config_subtitles.mako:229
 msgid "User Name"
 msgstr ""
 
@@ -5352,7 +5368,7 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:27
 msgid "Process Method to be used"
-msgstr ""
+msgstr "طريقة المعالجة اللتي تريد استخدامها"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Copy"
@@ -5935,7 +5951,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:200
 msgid "TV Download Directory"
-msgstr ""
+msgstr "مسار تحميل المسلسلات"
 
 #: gui/slick/views/status.mako:210
 msgid "Media Root Directories"
