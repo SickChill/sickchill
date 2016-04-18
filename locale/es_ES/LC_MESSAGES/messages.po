@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 05:15-0700\n"
-"PO-Revision-Date: 2016-04-17 08:19-0400\n"
+"POT-Creation-Date: 2016-04-17 23:48-0700\n"
+"PO-Revision-Date: 2016-04-18 02:58-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -1158,7 +1158,7 @@ msgstr "Encontrar una serie en theTVDB"
 msgid "Show retrieved from existing metadata"
 msgstr "Serie extraída utilizando metadatos almacenados"
 
-#: gui/slick/views/addShows_newShow.mako:48
+#: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
 msgstr "Todos los Indexadores"
 
@@ -1534,8 +1534,8 @@ msgstr "Le gustaría añadir los episodios post-procesados a su ListaPersonal?"
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:244
-#: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:242
+#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Guardar los cambios"
@@ -1668,6 +1668,10 @@ msgstr "Número de archivos de registro guardados"
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:123
+msgid "Size of Log files saved"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
 msgstr ""
@@ -1760,6 +1764,14 @@ msgstr "para que el aspecto surja efecto, guardar y después refrescar el navega
 msgid "Display theme"
 msgstr "Mostrar tema"
 
+#: gui/slick/views/config_general.mako:255
+msgid "Dark"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:256
+msgid "Light"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
 msgstr ""
@@ -1825,7 +1837,7 @@ msgid "Time style"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:359
-msgid " seconds are only shown on the History page"
+msgid "seconds are only shown on the History page"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:365
@@ -1846,8 +1858,27 @@ msgstr "Red"
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:377
-msgid " <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
+msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:384
@@ -1910,8 +1941,12 @@ msgid "HTTP password"
 msgstr "Contraseña HTTP"
 
 #: gui/slick/views/config_general.mako:449
-msgid "no authentication"
-msgstr "sin autenticación"
+#: gui/slick/views/config_notifications.mako:189
+#: gui/slick/views/config_notifications.mako:198
+#: gui/slick/views/config_notifications.mako:307
+#: gui/slick/views/config_notifications.mako:316
+msgid "blank = no authentication"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
@@ -2019,7 +2054,12 @@ msgid "in the <code>config.ini</code> file."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:603
-msgid "<b>Warning:</b> Passwords must only contain"
+#: gui/slick/views/config_subtitles.mako:145
+msgid "Warning"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "Passwords must only contain"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:603
@@ -2065,23 +2105,6 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-msgid "Note"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:658
@@ -2345,7 +2368,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:237 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Contraseña"
 
@@ -2387,13 +2410,6 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:176
 msgid "Auth Token used by plex"
-msgstr ""
-
-#: gui/slick/views/config_notifications.mako:189
-#: gui/slick/views/config_notifications.mako:198
-#: gui/slick/views/config_notifications.mako:307
-#: gui/slick/views/config_notifications.mako:316
-msgid "blank = no authentication"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:206
@@ -4749,7 +4765,7 @@ msgid "Append language codes to subtitle filenames?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:115
-msgid "NOTE:</b> This option is required if you use multiple subtitle languages."
+msgid "This option is required if you use multiple subtitle languages."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:120
@@ -4789,7 +4805,7 @@ msgid "Ignore subtitles embedded inside video file?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:145
-msgid "<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!"
+msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:151
@@ -4848,7 +4864,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:231
+#: gui/slick/views/config_subtitles.mako:229
 msgid "User Name"
 msgstr ""
 

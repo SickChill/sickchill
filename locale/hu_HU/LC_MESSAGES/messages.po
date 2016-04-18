@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 05:15-0700\n"
-"PO-Revision-Date: 2016-04-17 08:18-0400\n"
+"POT-Creation-Date: 2016-04-17 23:48-0700\n"
+"PO-Revision-Date: 2016-04-18 02:58-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -107,18 +107,18 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr ""
+msgstr "A frissítés sikeres volt"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
-msgstr ""
+msgstr "Frissítés sikertelen!"
 
 #: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr ""
+msgstr "Biztonsági mentés"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
@@ -267,7 +267,7 @@ msgstr "Nem tud csatlakozni a Host-hoz"
 
 #: sickbeard/webserve.py:828
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "SMS sikeresen elküldve"
 
 #: sickbeard/webserve.py:830
 msgid "Problem sending SMS: {message}"
@@ -441,7 +441,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "Állapot"
 
 #: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
@@ -449,7 +449,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
-msgstr ""
+msgstr "Frissítés sikertelen"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
@@ -472,7 +472,7 @@ msgstr ""
 #: sickbeard/webserve.py:1900 sickbeard/webserve.py:1905 sickbeard/webserve.py:1910
 #: sickbeard/webserve.py:1939 sickbeard/webserve.py:1943 sickbeard/webserve.py:1948
 msgid "Error"
-msgstr ""
+msgstr "Hiba"
 
 #: sickbeard/webserve.py:1248
 msgid "Invalid show ID: {show}"
@@ -487,22 +487,22 @@ msgstr ""
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
-msgstr ""
+msgstr "Szerkesztés"
 
 #: sickbeard/webserve.py:1300
 msgid "Resume"
-msgstr ""
+msgstr "Visszaállítás"
 
 #: sickbeard/webserve.py:1302
 msgid "Pause"
-msgstr ""
+msgstr "Szünet"
 
 #: sickbeard/webserve.py:1304 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr ""
+msgstr "Törlés"
 
 #: sickbeard/webserve.py:1305
 msgid "Re-scan files"
@@ -510,7 +510,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1306
 msgid "Force Full Update"
-msgstr ""
+msgstr "Teljes frissítés kényszerítése"
 
 #: sickbeard/webserve.py:1307
 msgid "Update show in KODI"
@@ -652,7 +652,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
 #: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Season"
-msgstr ""
+msgstr "Évad"
 
 #: sickbeard/webserve.py:1871
 msgid "Backlog started"
@@ -698,7 +698,7 @@ msgstr ""
 #: sickbeard/webserve.py:2250 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:208
 msgid "News"
-msgstr ""
+msgstr "Hírek"
 
 #: sickbeard/webserve.py:2263
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
@@ -829,7 +829,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3520 gui/slick/views/config_general.mako:172
 msgid "Updates"
-msgstr ""
+msgstr "Frissítések"
 
 #: sickbeard/webserve.py:3525
 msgid "Refreshes"
@@ -837,7 +837,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3530
 msgid "Renames"
-msgstr ""
+msgstr "Átnevezése"
 
 #: sickbeard/webserve.py:3535 sickbeard/webserve.py:5127
 #: gui/slick/views/displayShow.mako:217 gui/slick/views/displayShow.mako:333
@@ -845,7 +845,7 @@ msgstr ""
 #: gui/slick/views/editShow.mako:91 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
-msgstr ""
+msgstr "Feliratok"
 
 #: sickbeard/webserve.py:3540
 msgid "The following actions were queued"
@@ -861,7 +861,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3561 sickbeard/webserve.py:3563
 msgid "Control Panel"
-msgstr ""
+msgstr "Vezérlőpult"
 
 #: sickbeard/webserve.py:3561
 msgid "Application Portal"
@@ -877,7 +877,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3563
 msgid "Security"
-msgstr ""
+msgstr "Biztonság"
 
 #: sickbeard/webserve.py:3571 gui/slick/views/layouts/main.mako:154
 msgid "Manage Torrents"
@@ -909,7 +909,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3710
 msgid "Clear History"
-msgstr ""
+msgstr "Előzmények törlése"
 
 #: sickbeard/webserve.py:3711
 msgid "Trim History"
@@ -918,11 +918,11 @@ msgstr ""
 #: sickbeard/webserve.py:3715 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:132
 msgid "History"
-msgstr ""
+msgstr "Előzmények"
 
 #: sickbeard/webserve.py:3721
 msgid "History cleared"
-msgstr ""
+msgstr "Előzmények törölve"
 
 #: sickbeard/webserve.py:3728
 msgid "Removed history entries older than 30 days"
@@ -953,7 +953,7 @@ msgstr ""
 #: sickbeard/webserve.py:3747 sickbeard/webserve.py:4883
 #: gui/slick/views/layouts/main.mako:178
 msgid "Notifications"
-msgstr ""
+msgstr "Értesítések"
 
 #: sickbeard/webserve.py:3748 sickbeard/webserve.py:5199
 #: gui/slick/views/displayShow.mako:223 gui/slick/views/editShow.mako:128
@@ -1157,7 +1157,7 @@ msgstr ""
 msgid "Show retrieved from existing metadata"
 msgstr ""
 
-#: gui/slick/views/addShows_newShow.mako:48
+#: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
 msgstr ""
 
@@ -1165,7 +1165,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
 #: gui/slick/views/schedule.mako:88
 msgid "Search"
-msgstr ""
+msgstr "Keresés"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1208,12 +1208,12 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:357 gui/slick/views/displayShow.mako:387
 #: gui/slick/views/home.mako:53 gui/slick/views/manage_backlogOverview.mako:83
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: gui/slick/views/addShows_popularShows.mako:20
 #: gui/slick/views/addShows_trendingShows.mako:32
 msgid "Original"
-msgstr ""
+msgstr "Eredeti"
 
 #: gui/slick/views/addShows_popularShows.mako:21
 #: gui/slick/views/addShows_trendingShows.mako:33
@@ -1223,7 +1223,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:22
 #: gui/slick/views/addShows_trendingShows.mako:34
 msgid "Rating"
-msgstr ""
+msgstr "Értékelés"
 
 #: gui/slick/views/addShows_popularShows.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:35
@@ -1291,7 +1291,7 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:88
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: gui/slick/views/apiBuilder.mako:91
 msgid "JSONP"
@@ -1315,11 +1315,11 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:139 gui/slick/views/status.mako:192
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #: gui/slick/views/apiBuilder.mako:140
 msgid "Default value"
-msgstr ""
+msgstr "Alapértelmezett érték"
 
 #: gui/slick/views/apiBuilder.mako:141
 msgid "Allowed values"
@@ -1342,7 +1342,7 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:221
 #: gui/slick/views/manage_massEdit.mako:236
 msgid "Yes"
-msgstr ""
+msgstr "Igen"
 
 #: gui/slick/views/apiBuilder.mako:209 gui/slick/views/apiBuilder.mako:235
 #: gui/slick/views/manage_massEdit.mako:136
@@ -1353,23 +1353,23 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:222
 #: gui/slick/views/manage_massEdit.mako:237
 msgid "No"
-msgstr ""
+msgstr "Nem"
 
 #: gui/slick/views/apiBuilder.mako:254
 msgid "season"
-msgstr ""
+msgstr "Évad"
 
 #: gui/slick/views/apiBuilder.mako:260
 msgid "episode"
-msgstr ""
+msgstr "epizód"
 
 #: gui/slick/views/config.mako:29
 msgid "Python Version"
-msgstr ""
+msgstr "Python verzió"
 
 #: gui/slick/views/config.mako:30
 msgid "SSL Version"
-msgstr ""
+msgstr "SSL-verzió"
 
 #: gui/slick/views/config.mako:31
 msgid "OS"
@@ -1377,11 +1377,11 @@ msgstr ""
 
 #: gui/slick/views/config.mako:32
 msgid "Locale"
-msgstr ""
+msgstr "Helyi"
 
 #: gui/slick/views/config.mako:35
 msgid "User"
-msgstr ""
+msgstr "Felhasználó"
 
 #: gui/slick/views/config.mako:36
 msgid "Program Folder"
@@ -1389,11 +1389,11 @@ msgstr ""
 
 #: gui/slick/views/config.mako:37
 msgid "Config File"
-msgstr ""
+msgstr "Konfigurációs fájl"
 
 #: gui/slick/views/config.mako:38
 msgid "Database File"
-msgstr ""
+msgstr "Adatbázis fájl"
 
 #: gui/slick/views/config.mako:39
 msgid "Cache Folder"
@@ -1401,7 +1401,7 @@ msgstr ""
 
 #: gui/slick/views/config.mako:40
 msgid "Log Folder"
-msgstr ""
+msgstr "Napló mappa"
 
 #: gui/slick/views/config.mako:42
 msgid "Arguments"
@@ -1421,11 +1421,11 @@ msgstr ""
 
 #: gui/slick/views/config.mako:51
 msgid "Source"
-msgstr ""
+msgstr "Forrás"
 
 #: gui/slick/views/config.mako:52
 msgid "IRC Chat"
-msgstr ""
+msgstr "IRC Chat"
 
 #: gui/slick/views/config_anime.mako:17
 msgid "AnimeDB Settings"
@@ -1533,8 +1533,8 @@ msgstr ""
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:244
-#: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:242
+#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr ""
@@ -1559,7 +1559,7 @@ msgstr ""
 #: gui/slick/views/config_backuprestore.mako:51
 #: gui/slick/views/config_backuprestore.mako:62
 msgid "Restore"
-msgstr ""
+msgstr "Visszaállítás"
 
 #: gui/slick/views/config_backuprestore.mako:29
 msgid "Backup your main database file and config."
@@ -1583,12 +1583,12 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:28
 msgid "Interface"
-msgstr ""
+msgstr "Kezelőfelület"
 
 #: gui/slick/views/config_general.mako:29 gui/slick/views/config_general.mako:536
 #: gui/slick/views/editShow.mako:182
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Részletes Beállítások"
 
 #: gui/slick/views/config_general.mako:37
 msgid "Startup options. Indexer options. Log and show file locations."
@@ -1667,6 +1667,10 @@ msgstr ""
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:123
+msgid "Size of Log files saved"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
 msgstr ""
@@ -1710,7 +1714,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:190
 msgid "Automatically update"
-msgstr ""
+msgstr "Automatikus frissítése"
 
 #: gui/slick/views/config_general.mako:193
 msgid "fetch and install software updates.\n"
@@ -1735,7 +1739,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:230
 msgid "User Interface"
-msgstr ""
+msgstr "Felhasználói felület"
 
 #: gui/slick/views/config_general.mako:231
 msgid "Options for visual appearance."
@@ -1743,11 +1747,11 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:238
 msgid "Interface Language"
-msgstr ""
+msgstr "Kezelőfelület nyelve"
 
 #: gui/slick/views/config_general.mako:241
 msgid "System Language"
-msgstr ""
+msgstr "Rendszer nyelv"
 
 #: gui/slick/views/config_general.mako:246 gui/slick/views/config_general.mako:258
 msgid "for appearance to take effect, save then refresh your browser"
@@ -1755,6 +1759,14 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:252
 msgid "Display theme"
+msgstr "Megjelenítési téma"
+
+#: gui/slick/views/config_general.mako:255
+msgid "Dark"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:256
+msgid "Light"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:265
@@ -1822,16 +1834,16 @@ msgid "Time style"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:359
-msgid " seconds are only shown on the History page"
+msgid "seconds are only shown on the History page"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
-msgstr ""
+msgstr "Időzóna"
 
 #: gui/slick/views/config_general.mako:368
 msgid "Local"
-msgstr ""
+msgstr "Helyi"
 
 #: gui/slick/views/config_general.mako:371 gui/slick/views/home.mako:55
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:30
@@ -1843,13 +1855,32 @@ msgstr ""
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:377
-msgid " <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
+msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:384
 msgid "Download url"
-msgstr ""
+msgstr "Letöltés url"
 
 #: gui/slick/views/config_general.mako:389
 msgid "URL where the shows can be downloaded."
@@ -1872,7 +1903,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:237
 #: gui/slick/views/config_providers.mako:652
 msgid "API key"
-msgstr ""
+msgstr "API-kulcs"
 
 #: gui/slick/views/config_general.mako:417
 msgid "used to give 3rd party programs limited access to SickRage"
@@ -1896,7 +1927,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:436
 msgid "HTTP username"
-msgstr ""
+msgstr "HTTP felhasználónév"
 
 #: gui/slick/views/config_general.mako:439
 msgid "set blank for no login"
@@ -1904,15 +1935,19 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:446
 msgid "HTTP password"
-msgstr ""
+msgstr "HTTP jelszó"
 
 #: gui/slick/views/config_general.mako:449
-msgid "no authentication"
+#: gui/slick/views/config_notifications.mako:189
+#: gui/slick/views/config_notifications.mako:198
+#: gui/slick/views/config_notifications.mako:307
+#: gui/slick/views/config_notifications.mako:316
+msgid "blank = no authentication"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
-msgstr ""
+msgstr "HTTP-port"
 
 #: gui/slick/views/config_general.mako:458
 msgid "web port to browse and access SickRage (default:8081)"
@@ -2016,7 +2051,12 @@ msgid "in the <code>config.ini</code> file."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:603
-msgid "<b>Warning:</b> Passwords must only contain"
+#: gui/slick/views/config_subtitles.mako:145
+msgid "Warning"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "Passwords must only contain"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:603
@@ -2062,23 +2102,6 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-msgid "Note"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:658
@@ -2331,7 +2354,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:226
 #: gui/slick/views/config_providers.mako:364 gui/slick/views/login.mako:6
 msgid "Username"
-msgstr ""
+msgstr "Felhasználónév"
 
 #: gui/slick/views/config_notifications.mako:128
 msgid "username for your KODI server (blank for none)"
@@ -2342,9 +2365,9 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:237 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
 msgid "Password"
-msgstr ""
+msgstr "Jelszó"
 
 #: gui/slick/views/config_notifications.mako:138
 msgid "password for your KODI server (blank for none)"
@@ -2386,16 +2409,9 @@ msgstr ""
 msgid "Auth Token used by plex"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:189
-#: gui/slick/views/config_notifications.mako:198
-#: gui/slick/views/config_notifications.mako:307
-#: gui/slick/views/config_notifications.mako:316
-msgid "blank = no authentication"
-msgstr ""
-
 #: gui/slick/views/config_notifications.mako:206
 msgid "Update Library"
-msgstr ""
+msgstr "Könyvtár frissítés"
 
 #: gui/slick/views/config_notifications.mako:209
 msgid "update Plex Media Server library when a download finishes"
@@ -2411,7 +2427,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:227
 msgid "HTTPS"
-msgstr ""
+msgstr "HTTPS"
 
 #: gui/slick/views/config_notifications.mako:230
 msgid "use https for plex media server requests?"
@@ -2455,7 +2471,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:335
 msgid "Emby"
-msgstr ""
+msgstr "Emby"
 
 #: gui/slick/views/config_notifications.mako:337
 msgid "A home media server built using other popular open source technologies."
@@ -2475,7 +2491,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:362
 msgid "Emby API Key"
-msgstr ""
+msgstr "Emby API-kulcs"
 
 #: gui/slick/views/config_notifications.mako:377
 msgid "Networked Media Jukebox"
@@ -2541,7 +2557,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:470
 msgid "Database location"
-msgstr ""
+msgstr "Adatbázis helye"
 
 #: gui/slick/views/config_notifications.mako:482
 msgid "Database instance"
@@ -2573,7 +2589,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:531
 msgid "Synology"
-msgstr ""
+msgstr "Synology"
 
 #: gui/slick/views/config_notifications.mako:533
 msgid "The Synology DiskStation NAS."
@@ -3106,7 +3122,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1474
 msgid "Twitter"
-msgstr ""
+msgstr "Twitter"
 
 #: gui/slick/views/config_notifications.mako:1476
 msgid "A social networking and microblogging service, enabling its users to send and read other users' messages called tweets."
@@ -3722,7 +3738,7 @@ msgstr ""
 #: gui/slick/views/manage.mako:42 gui/slick/views/schedule.mako:86
 #: gui/slick/views/schedule.mako:324
 msgid "Quality"
-msgstr ""
+msgstr "Minőség"
 
 #: gui/slick/views/config_postProcessing.mako:404
 msgid "Scene Quality"
@@ -4746,7 +4762,7 @@ msgid "Append language codes to subtitle filenames?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:115
-msgid "NOTE:</b> This option is required if you use multiple subtitle languages."
+msgid "This option is required if you use multiple subtitle languages."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:120
@@ -4786,7 +4802,7 @@ msgid "Ignore subtitles embedded inside video file?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:145
-msgid "<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!"
+msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:151
@@ -4845,7 +4861,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:231
+#: gui/slick/views/config_subtitles.mako:229
 msgid "User Name"
 msgstr ""
 
@@ -5010,7 +5026,7 @@ msgstr ""
 #: gui/slick/views/history.mako:113 gui/slick/views/manage_backlogOverview.mako:83
 #: gui/slick/views/testRename.mako:69
 msgid "Episode"
-msgstr ""
+msgstr "Epizód"
 
 #: gui/slick/views/displayShow.mako:325 gui/slick/views/displayShow.mako:354
 #: gui/slick/views/displayShow.mako:384
@@ -5212,19 +5228,19 @@ msgstr ""
 
 #: gui/slick/views/history.mako:39
 msgid "Detailed"
-msgstr ""
+msgstr "Részletes"
 
 #: gui/slick/views/history.mako:49 gui/slick/views/history.mako:112
 msgid "Time"
-msgstr ""
+msgstr "Időpont"
 
 #: gui/slick/views/history.mako:51
 msgid "Action"
-msgstr ""
+msgstr "Művelet"
 
 #: gui/slick/views/history.mako:52 gui/slick/views/manage_failedDownloads.mako:27
 msgid "Provider"
-msgstr ""
+msgstr "Szolgáltató"
 
 #: gui/slick/views/history.mako:93
 msgid "Missing Provider"
@@ -5560,33 +5576,33 @@ msgstr ""
 #: gui/slick/views/manage_episodeStatuses.mako:77
 #: gui/slick/views/manage_subtitleMissed.mako:62
 msgid "Select all"
-msgstr ""
+msgstr "Mind kiválaszt"
 
 #: gui/slick/views/manage_episodeStatuses.mako:78
 #: gui/slick/views/manage_subtitleMissed.mako:63
 msgid "Clear all"
-msgstr ""
+msgstr "Az összes törlése"
 
 #: gui/slick/views/manage_failedDownloads.mako:13
 msgid "Limit"
-msgstr ""
+msgstr "Korlát"
 
 #: gui/slick/views/manage_failedDownloads.mako:15
 msgid "100"
-msgstr ""
+msgstr "100"
 
 #: gui/slick/views/manage_failedDownloads.mako:16
 msgid "250"
-msgstr ""
+msgstr "250"
 
 #: gui/slick/views/manage_failedDownloads.mako:17
 msgid "500"
-msgstr ""
+msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
-msgstr ""
+msgstr "Összes"
 
 #: gui/slick/views/manage_failedDownloads.mako:25
 msgid "Release"
@@ -5649,11 +5665,11 @@ msgstr ""
 
 #: gui/slick/views/manage_manageSearches.mako:32
 msgid "Daily"
-msgstr ""
+msgstr "Napi"
 
 #: gui/slick/views/manage_manageSearches.mako:33
 msgid "Manual"
-msgstr ""
+msgstr "Kézi"
 
 #: gui/slick/views/manage_massEdit.mako:37
 msgid "Changing any settings marked with (<span class=\"separator\">*</span>) will force a refresh of the selected shows."
@@ -5756,7 +5772,7 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:29
 msgid "Date"
-msgstr ""
+msgstr "Dátum"
 
 #: gui/slick/views/schedule.mako:37
 msgid "View Paused"
@@ -5764,7 +5780,7 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:39
 msgid "Hidden"
-msgstr ""
+msgstr "Rejtett"
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
@@ -5776,19 +5792,19 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:239
 msgid "Missed"
-msgstr ""
+msgstr "Kimaradt"
 
 #: gui/slick/views/schedule.mako:59
 msgid "Today"
-msgstr ""
+msgstr "Ma"
 
 #: gui/slick/views/schedule.mako:60
 msgid "Soon"
-msgstr ""
+msgstr "Hamarosan"
 
 #: gui/slick/views/schedule.mako:61 gui/slick/views/schedule.mako:242
 msgid "Later"
-msgstr ""
+msgstr "Később"
 
 #: gui/slick/views/schedule.mako:64
 msgid "Subscribe"
@@ -5884,7 +5900,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:78 gui/slick/views/status.mako:86
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: gui/slick/views/status.mako:113
 msgid "Show id"
@@ -5908,23 +5924,23 @@ msgstr ""
 
 #: gui/slick/views/status.mako:142 gui/slick/views/status.mako:174
 msgid "LOW"
-msgstr ""
+msgstr "ALACSONY"
 
 #: gui/slick/views/status.mako:144 gui/slick/views/status.mako:176
 msgid "NORMAL"
-msgstr ""
+msgstr "NORMÁL"
 
 #: gui/slick/views/status.mako:146 gui/slick/views/status.mako:178
 msgid "HIGH"
-msgstr ""
+msgstr "MAGAS"
 
 #: gui/slick/views/status.mako:188
 msgid "Disk Space"
-msgstr ""
+msgstr "Lemezterület"
 
 #: gui/slick/views/status.mako:194
 msgid "Free space"
-msgstr ""
+msgstr "Szabad hely"
 
 #: gui/slick/views/status.mako:200
 msgid "TV Download Directory"
@@ -6068,15 +6084,15 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:297
 msgid "Episodes Downloaded"
-msgstr ""
+msgstr "Letöltött epizód"
 
 #: gui/slick/views/layouts/main.mako:303
 msgid "Memory used"
-msgstr ""
+msgstr "Használt memória"
 
 #: gui/slick/views/layouts/main.mako:305
 msgid "Load time"
-msgstr ""
+msgstr "Betöltési idő"
 
 #: gui/slick/views/layouts/main.mako:306
 msgid "Branch"
@@ -6084,5 +6100,5 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:307
 msgid "Now"
-msgstr ""
+msgstr "Most"
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 05:15-0700\n"
-"PO-Revision-Date: 2016-04-17 08:19-0400\n"
+"POT-Creation-Date: 2016-04-17 23:48-0700\n"
+"PO-Revision-Date: 2016-04-18 02:59-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -103,15 +103,15 @@ msgstr "Yakalandı(En İyi)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
-msgstr ""
+msgstr "SickRage için yeni güncelleme bulundu, otomatik güncelleştirme başlatılıyor"
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr ""
+msgstr "Güncelleştirme başarıyla gerçekleştirildi"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
-msgstr ""
+msgstr "Güncelleştirme başarısız!"
 
 #: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
@@ -122,19 +122,19 @@ msgstr "Yedekle"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr ""
+msgstr "Yapılandırma yedeklemesi devam ediyor..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr ""
+msgstr "Yapılandırma yedekleme başarılı, güncelleştiriliyor..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr ""
+msgstr "Yapılandırma yedeklemesi başarısız, güncelleme durduruluyor"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
-msgstr ""
+msgstr "Hiçbir güncelleme gerekmiyor"
 
 #: sickbeard/webserve.py:178
 msgid "Mako Error"
@@ -1160,7 +1160,7 @@ msgstr "theTVDB üzerinde bir dizi bul"
 msgid "Show retrieved from existing metadata"
 msgstr "Önceden var olan meta veriden getirilen dizi"
 
-#: gui/slick/views/addShows_newShow.mako:48
+#: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
 msgstr "Tüm içerik oluşturucular"
 
@@ -1168,7 +1168,7 @@ msgstr "Tüm içerik oluşturucular"
 #: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
 #: gui/slick/views/schedule.mako:88
 msgid "Search"
-msgstr ""
+msgstr "Ara"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1198,7 +1198,7 @@ msgstr "Dizi Ekle"
 
 #: gui/slick/views/addShows_newShow.mako:95
 msgid "Skip Show"
-msgstr ""
+msgstr "Diziyi Atla"
 
 #: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
 #: gui/slick/views/schedule.mako:27
@@ -1495,7 +1495,7 @@ msgstr ""
 
 #: gui/slick/views/config_anime.mako:63
 msgid "Do you want to add the PostProcessed Episodes to the MyList ?"
-msgstr ""
+msgstr "Son-İşlem'den geçirilmiş bölümleri BenimListem'e eklemek ister misiniz?"
 
 #: gui/slick/views/config_anime.mako:67 gui/slick/views/config_anime.mako:87
 #: gui/slick/views/config_anime.mako:91 gui/slick/views/config_general.mako:166
@@ -1536,8 +1536,8 @@ msgstr ""
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:244
-#: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:242
+#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Değişiklikleri Kaydet"
@@ -1586,12 +1586,12 @@ msgstr "Diğer"
 
 #: gui/slick/views/config_general.mako:28
 msgid "Interface"
-msgstr ""
+msgstr "Arayüz"
 
 #: gui/slick/views/config_general.mako:29 gui/slick/views/config_general.mako:536
 #: gui/slick/views/editShow.mako:182
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Gelişmiş Ayarlar"
 
 #: gui/slick/views/config_general.mako:37
 msgid "Startup options. Indexer options. Log and show file locations."
@@ -1599,7 +1599,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:38
 msgid "Some options may require a manual restart to take effect."
-msgstr ""
+msgstr "Bazı seçeneklerin etkili kılınabilmesi için el ile yeniden başlatma gerekebilir."
 
 #: gui/slick/views/config_general.mako:45
 msgid "Default Indexer Language"
@@ -1668,6 +1668,10 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:116
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:123
+msgid "Size of Log files saved"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:126
@@ -1740,11 +1744,11 @@ msgstr "sickRage güncelleştirildiğinde tüm etkinleştirilmiş bildiricilere 
 
 #: gui/slick/views/config_general.mako:230
 msgid "User Interface"
-msgstr ""
+msgstr "Kullanıcı Arayüzü"
 
 #: gui/slick/views/config_general.mako:231
 msgid "Options for visual appearance."
-msgstr ""
+msgstr "Görünüm için seçenekler."
 
 #: gui/slick/views/config_general.mako:238
 msgid "Interface Language"
@@ -1762,9 +1766,17 @@ msgstr "görünümün değişebilmesi için kaydedip tarayıcınızı yenileyin"
 msgid "Display theme"
 msgstr "Görünüm teması"
 
+#: gui/slick/views/config_general.mako:255
+msgid "Dark"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:256
+msgid "Light"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
-msgstr ""
+msgstr "Hayranlar tarafından hazırlanan duvar kağıtlarını göster"
 
 #: gui/slick/views/config_general.mako:268 gui/slick/views/config_general.mako:290
 msgid "on the show summary page"
@@ -1772,11 +1784,11 @@ msgstr "dizi özet sayfasında"
 
 #: gui/slick/views/config_general.mako:275
 msgid "Fanart transparency"
-msgstr ""
+msgstr "Duvar kağıdı saydamlığı"
 
 #: gui/slick/views/config_general.mako:280
 msgid "Transparency of the fanart in the background"
-msgstr ""
+msgstr "Hayranlar tarafından hazırlanan duvar kağıtlarının saydamlığı"
 
 #: gui/slick/views/config_general.mako:287
 msgid "Show all seasons"
@@ -1827,8 +1839,8 @@ msgid "Time style"
 msgstr "Zaman biçimi"
 
 #: gui/slick/views/config_general.mako:359
-msgid " seconds are only shown on the History page"
-msgstr " saniyeler sadece Geçmiş sayfasında gösterilir"
+msgid "seconds are only shown on the History page"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
@@ -1848,9 +1860,28 @@ msgstr "Ağ"
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "gün ve saati sizin yerel saatinizde veya dizi kanalının yerel saatinde gösterir"
 
+#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr "Not"
+
 #: gui/slick/views/config_general.mako:377
-msgid " <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
-msgstr " <b>Not:</b> Yerel saati dizi bitiminden birkaç dakika sonra bölüm araması için kullan (günlük arama sıklığına bağlıdır)"
+msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:384
 msgid "Download url"
@@ -1912,8 +1943,12 @@ msgid "HTTP password"
 msgstr "HTTP şifresi"
 
 #: gui/slick/views/config_general.mako:449
-msgid "no authentication"
-msgstr "kimlik doğrulama yok"
+#: gui/slick/views/config_notifications.mako:189
+#: gui/slick/views/config_notifications.mako:198
+#: gui/slick/views/config_notifications.mako:307
+#: gui/slick/views/config_notifications.mako:316
+msgid "blank = no authentication"
+msgstr "boş = kimlik doğrulaması yok"
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
@@ -2021,7 +2056,12 @@ msgid "in the <code>config.ini</code> file."
 msgstr "<code>config.ini</code> dosyası içinde."
 
 #: gui/slick/views/config_general.mako:603
-msgid "<b>Warning:</b> Passwords must only contain"
+#: gui/slick/views/config_subtitles.mako:145
+msgid "Warning"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "Passwords must only contain"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:603
@@ -2068,23 +2108,6 @@ msgstr "Kaldırma Algılamasını Atla"
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
 msgstr "Kaldırılan dosyaların algılanmasını atla. Devre dışı bıraktığınızda bölüm, varsayılan olarak silinmiş durumuna ayarlanacak"
-
-#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-msgid "Note"
-msgstr "Not"
 
 #: gui/slick/views/config_general.mako:658
 msgid "This may mean SickRage misses renames as well"
@@ -2347,7 +2370,7 @@ msgstr "KODI sunucunuzun kullanıcı adı (yoksa boş bırakın)"
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:237 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Şifre"
 
@@ -2390,13 +2413,6 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:176
 msgid "Auth Token used by plex"
 msgstr ""
-
-#: gui/slick/views/config_notifications.mako:189
-#: gui/slick/views/config_notifications.mako:198
-#: gui/slick/views/config_notifications.mako:307
-#: gui/slick/views/config_notifications.mako:316
-msgid "blank = no authentication"
-msgstr "boş = kimlik doğrulaması yok"
 
 #: gui/slick/views/config_notifications.mako:206
 msgid "Update Library"
@@ -2746,7 +2762,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:846
 #: gui/slick/views/config_notifications.mako:1160
 msgid "Very Low"
-msgstr ""
+msgstr "Çok Düşük"
 
 #: gui/slick/views/config_notifications.mako:847
 #: gui/slick/views/config_notifications.mako:1161
@@ -4537,15 +4553,15 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:463
 msgid "Very low"
-msgstr ""
+msgstr "Çok düşük"
 
 #: gui/slick/views/config_search.mako:464
 msgid "Low"
-msgstr ""
+msgstr "Düşük"
 
 #: gui/slick/views/config_search.mako:467
 msgid "Very high"
-msgstr ""
+msgstr "Çok yüksek"
 
 #: gui/slick/views/config_search.mako:468
 #: gui/slick/views/manage_manageSearches.mako:14
@@ -4619,7 +4635,7 @@ msgstr ""
 #: gui/slick/views/config_search.mako:612 gui/slick/views/config_search.mako:615
 #: gui/slick/views/config_search.mako:627 gui/slick/views/config_search.mako:630
 msgid "(blank spaces are not allowed)"
-msgstr ""
+msgstr "(boşluklara izin verilmez)"
 
 #: gui/slick/views/config_search.mako:613 gui/slick/views/config_search.mako:628
 msgid "note: label plugin must be enabled in Deluge clients"
@@ -4663,11 +4679,11 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:669
 msgid "Allow high bandwidth"
-msgstr ""
+msgstr "Yüksek bant genişliğine izin ver"
 
 #: gui/slick/views/config_search.mako:672
 msgid "use high bandwidth allocation if priority is high"
-msgstr ""
+msgstr "öncelik yüksek ise yüksek bant genişliği kullan"
 
 #: gui/slick/views/config_search.mako:678
 msgid "Test Connection"
@@ -4692,7 +4708,7 @@ msgstr "Eklenti Ayarları"
 
 #: gui/slick/views/config_subtitles.mako:46
 msgid "Settings that dictate how SickRage handles subtitles search results."
-msgstr ""
+msgstr "SickRage'in alt yazı arama sonuçlarını nasıl ele alacağını belirleyen seçenekler."
 
 #: gui/slick/views/config_subtitles.mako:52
 msgid "Search Subtitles"
@@ -4751,7 +4767,7 @@ msgid "Append language codes to subtitle filenames?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:115
-msgid "NOTE:</b> This option is required if you use multiple subtitle languages."
+msgid "This option is required if you use multiple subtitle languages."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:120
@@ -4791,7 +4807,7 @@ msgid "Ignore subtitles embedded inside video file?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:145
-msgid "<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!"
+msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:151
@@ -4850,7 +4866,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:231
+#: gui/slick/views/config_subtitles.mako:229
 msgid "User Name"
 msgstr "Kullanıcı Adı"
 
@@ -5062,7 +5078,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:522 gui/slick/views/displayShow.mako:541
 msgid "Manual Search"
-msgstr ""
+msgstr "El ile arama"
 
 #: gui/slick/views/displayShow.mako:525
 msgid "Do you want to mark this episode as failed?"
@@ -5119,7 +5135,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:93
 msgid "search for subtitles"
-msgstr ""
+msgstr "alt yazıları ara"
 
 #: gui/slick/views/editShow.mako:102
 msgid "pause this show (SickRage will not download episodes)"
@@ -5169,7 +5185,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:171
 msgid "A \"Force Full Update\" is necessary, and if you have existing episodes you need to sort them manually."
-msgstr ""
+msgstr "Bir \"Tam Güncellemeye Zorla\" gerekmekte ve önceden var olan bölümlerinizi el ile sıralamanız gerekecek."
 
 #: gui/slick/views/editShow.mako:191
 msgid "comma-separated <i>e.g. \"word1,word2,word3\""
@@ -5465,7 +5481,7 @@ msgstr ""
 
 #: gui/slick/views/inc_defs.mako:9
 msgid "Allowed Quality:"
-msgstr ""
+msgstr "İzin Verilen Kalite:"
 
 #: gui/slick/views/inc_defs.mako:13
 msgid "Preferred Quality:"
@@ -5696,7 +5712,7 @@ msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:152
 msgid "Pause these shows (SickRage will not download episodes)."
-msgstr ""
+msgstr "Bu dizileri duraksat (SickRage bölümleri indirmeyecek)."
 
 #: gui/slick/views/manage_massEdit.mako:181
 msgid "Search by scene numbering (set to \"No\" to search by indexer numbering)."
@@ -5913,7 +5929,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:142 gui/slick/views/status.mako:174
 msgid "LOW"
-msgstr ""
+msgstr "DÜŞÜK"
 
 #: gui/slick/views/status.mako:144 gui/slick/views/status.mako:176
 msgid "NORMAL"
@@ -5921,7 +5937,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:146 gui/slick/views/status.mako:178
 msgid "HIGH"
-msgstr ""
+msgstr "YÜKSEK"
 
 #: gui/slick/views/status.mako:188
 msgid "Disk Space"
@@ -5993,7 +6009,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:116
 msgid "Manual Post-Processing"
-msgstr ""
+msgstr "El ile Son-İşlem Gerçekleştir"
 
 #: gui/slick/views/layouts/main.mako:143
 msgid "Episode Status Management"
@@ -6021,7 +6037,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:173
 msgid "Backup &amp; Restore"
-msgstr ""
+msgstr "Yedekle &amp; Geri Yükle"
 
 #: gui/slick/views/layouts/main.mako:204
 msgid "Tools"
