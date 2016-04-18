@@ -126,30 +126,30 @@
                                             </label>
                                         </div>
 
-                                        <div class="field-pair">
-                                            <label for="log_size">
-                                                <span class="component-title">${_('Size of Log files saved')}</span>
-                                                <span class="component-desc">
-                                                    <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-                                                    ${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}
-                                                </span>
-                                            </label>
-                                        </div>
+				                        <div class="field-pair">
+				                            <label for="log_size">
+				                                <span class="component-title">${_('Size of Log files saved')}</span>
+				                                <span class="component-desc">
+				                                    <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
+				                                    <p>${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</p>
+				                                </span>
+				                            </label>
+				                        </div>
 
-                                        <div class="field-pair">
-                                            <label for="indexer_default">
-                                                <span class="component-title">${_('Use initial indexer set to')}</span>
-                                                <span class="component-desc">
-                                                    <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>All Indexers</option>
-                                                        % for indexer in sickbeard.indexerApi().indexers:
-                                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
-                                                        % endfor
-                                                    </select>
-                                                    <span>${_('as the default selection when adding new shows')}</span>
-                                                </span>
-                                            </label>
-                                        </div>
+				                        <div class="field-pair">
+				                            <label for="indexer_default">
+				                                <span class="component-title">${_('Use initial indexer set to')}</span>
+				                                <span class="component-desc">
+				                                    <select id="indexer_default" name="indexer_default" class="form-control input-sm">
+				                                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
+				                                        % for indexer in sickbeard.indexerApi().indexers:
+				                                        <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+				                                        % endfor
+				                                    </select>
+				                                    <span>${_('as the default selection when adding new shows')}</span>
+				                                </span>
+				                            </label>
+				                        </div>
 
                                         <div class="field-pair">
                                             <label for="indexer_timeout">
@@ -250,37 +250,37 @@
 						        <div class="field-pair">
 							        <label for="gui_language">
 								        <span class="component-title">${_('Interface Language')}:</span>
-                                <span class="component-desc">
-                                    <select id="gui_language" name="gui_language" class="form-control input-sm">
-	                                    <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
-                                        % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
-		                                    <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
-                                        % endfor
-                                    </select>
-                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
-                                </span>
+		                                <span class="component-desc">
+		                                    <select id="gui_language" name="gui_language" class="form-control input-sm">
+			                                    <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
+		                                        % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
+				                                    <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
+		                                        % endfor
+		                                    </select>
+		                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
+		                                </span>
 							        </label>
 						        </div>
 						        <div class="field-pair">
 							        <label for="theme_name">
 								        <span class="component-title">${_('Display theme')}:</span>
-                                <span class="component-desc">
-                                    <select id="theme_name" name="theme_name" class="form-control input-sm">
-	                                    <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
-	                                    <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>Light</option>
-                                    </select>
-                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
-                                </span>
+		                                <span class="component-desc">
+		                                    <select id="theme_name" name="theme_name" class="form-control input-sm">
+		                                        <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>${_('Dark')}</option>
+		                                        <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>${_('Light')}</option>
+		                                    </select>
+		                                    <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
+		                                </span>
 							        </label>
 						        </div>
 						        <fieldset class="component-group-list">
 							        <div class="field-pair">
 								        <label for="fanart_background">
 									        <span class="component-title">${_('Show fanart in the background')}</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(sickbeard.FANART_BACKGROUND)]}>
-                                        <p>${_('on the show summary page')}</p>
-                                    </span>
+		                                    <span class="component-desc">
+		                                        <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(sickbeard.FANART_BACKGROUND)]}>
+		                                        <p>${_('on the show summary page')}</p>
+		                                    </span>
 								        </label>
 							        </div>
 							        <div id="content_fanart_background">
@@ -299,28 +299,28 @@
 						        <div class="field-pair">
 							        <label for="display_all_seasons">
 								        <span class="component-title">${_('Show all seasons')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
-                                    <p>${_('on the show summary page')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
+		                                    <p>${_('on the show summary page')}</p>
+		                                </span>
 							        </label>
 						        </div>
 						        <div class="field-pair">
 							        <label for="sort_article">
 								        <span class="component-title">${_('Sort with "The", "A", "An"')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(sickbeard.SORT_ARTICLE)]}/>
-                                    <p>${_('include articles ("The", "A", "An") when sorting show lists')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(sickbeard.SORT_ARTICLE)]}/>
+		                                    <p>${_('include articles ("The", "A", "An") when sorting show lists')}</p>
+		                                </span>
 							        </label>
 						        </div>
 						        <div class="field-pair">
 							        <label for="coming_eps_missed_range">
 								        <span class="component-title">${_('Missed episodes range')}</span>
-                                <span class="component-desc">
-                                    <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
-                                    <p>${_('Set the range in days of the missed episodes in the Schedule page')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
+		                                    <p>${_('Set the range in days of the missed episodes in the Schedule page')}</p>
+		                                </span>
 							        </label>
 						        </div>
 						        <div class="field-pair">
@@ -335,29 +335,29 @@
 						        <div class="field-pair show_if_fuzzy_dating ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}">
 							        <label for="trim_zero">
 								        <span class="component-title">${_('Trim zero padding')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="trim_zero" id="trim_zero" ${('', 'checked="checked"')[bool(sickbeard.TRIM_ZERO)]}/>
-                                    <p>${_('remove the leading number "0" shown on hour of day, and date of month')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="trim_zero" id="trim_zero" ${('', 'checked="checked"')[bool(sickbeard.TRIM_ZERO)]}/>
+		                                    <p>${_('remove the leading number "0" shown on hour of day, and date of month')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="date_presets">
 								        <span class="component-title">${_('Date style')}:</span>
-                                <span class="component-desc">
-                                    <select class="form-control input-sm ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
-                                        % for cur_preset in date_presets:
-		                                    <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
-                                        % endfor
-                                    </select>
-                                    <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
-	                                    <option value="%x" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == '%x']}>${_('Use System Default')}</option>
-                                        % for cur_preset in date_presets:
-		                                    <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
-                                        % endfor
-                                    </select>
-                                </span>
+		                                <span class="component-desc">
+		                                    <select class="form-control input-sm ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
+		                                        % for cur_preset in date_presets:
+				                                    <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+		                                        % endfor
+		                                    </select>
+		                                    <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
+			                                    <option value="%x" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == '%x']}>${_('Use System Default')}</option>
+		                                        % for cur_preset in date_presets:
+				                                    <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+		                                        % endfor
+		                                    </select>
+		                                </span>
 							        </label>
 						        </div>
 
@@ -370,27 +370,27 @@
 		                                    <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
                                         % endfor
                                     </select>
-                                    <span><b>note:</b>${_(' seconds are only shown on the History page')}</span>
+                                    <span><b>{_('Note')}:</b> ${_('seconds are only shown on the History page')}</span>
                                 </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <span class="component-title">${_('Timezone')}:</span>
-                            <span class="component-desc">
-                                <label for="local" class="space-right">
-	                                <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} />${_('Local')}
-                                </label>
-                                <label for="network">
-	                                <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />${_('Network')}
-                                </label>
-                                <div class="clear-left">
-	                                <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
-                                </div>
-                                <div class="clear-left">
-	                                <p>${_(' <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
-                                </div>
-                            </span>
+		                            <span class="component-desc">
+		                                <label for="local" class="space-right">
+			                                <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} />${_('Local')}
+		                                </label>
+		                                <label for="network">
+			                                <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />${_('Network')}
+		                                </label>
+		                                <div class="clear-left">
+			                                <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
+		                                </div>
+		                                <div class="clear-left">
+		                                    <p><b>${_('Note')}:</b> ${_('Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
+		                                </div>
+		                            </span>
 						        </div>
 
 						        <div class="field-pair">
@@ -403,7 +403,6 @@
 								        <span class="component-desc">${_('URL where the shows can be downloaded.')}</span>
 							        </label>
 						        </div>
-
 
 						        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
 
@@ -438,88 +437,89 @@
 						        <div class="field-pair">
 							        <label for="web_log">
 								        <span class="component-title">${_('HTTP logs')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
-                                    <p>${_('enable logs from the internal Tornado web server')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
+		                                    <p>${_('enable logs from the internal Tornado web server')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="web_username">
 								        <span class="component-title">${_('HTTP username')}</span>
-                                <span class="component-desc">
-                                    <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-                                    <p>${_('set blank for no login')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+		                                    <p>${_('set blank for no login')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="web_password">
 								        <span class="component-title">${_('HTTP password')}</span>
-                                <span class="component-desc">
-                                    <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-                                    <p>blank = ${_('no authentication')}</span>
-							        </label>
-						        </div>
+		                                <span class="component-desc">
+		                                    <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+		                                    <p>${_('blank = no authentication')}
+		                                </span>
+	                                </label>
+	                            </div>
 
 						        <div class="field-pair">
 							        <label for="web_port">
 								        <span class="component-title">${_('HTTP port')}</span>
-                                <span class="component-desc">
-                                    <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
-                                    <p>${_('web port to browse and access SickRage (default:8081)')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
+		                                    <p>${_('web port to browse and access SickRage (default:8081)')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="notify_on_login">
 								        <span class="component-title">${_('Notify on login')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_LOGIN)]}/>
-                                    <p>${_('enable to be notified when a new login happens in webserver')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_LOGIN)]}/>
+		                                    <p>${_('enable to be notified when a new login happens in webserver')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="web_ipv6">
 								        <span class="component-title">${_('Listen on IPv6')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[bool(sickbeard.WEB_IPV6)]}/>
-                                    <p>${_('attempt binding to any available IPv6 address')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[bool(sickbeard.WEB_IPV6)]}/>
+		                                    <p>${_('attempt binding to any available IPv6 address')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
 						        <div class="field-pair">
 							        <label for="enable_https">
 								        <span class="component-title">${_('Enable HTTPS')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[bool(sickbeard.ENABLE_HTTPS)]}/>
-                                    <p>${_('enable access to the web interface using a HTTPS address')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[bool(sickbeard.ENABLE_HTTPS)]}/>
+		                                    <p>${_('enable access to the web interface using a HTTPS address')}</p>
+		                                </span>
 							        </label>
 						        </div>
 						        <div id="content_enable_https">
 							        <div class="field-pair">
 								        <label for="https_cert">
 									        <span class="component-title">${_('HTTPS certificate')}</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" autocapitalize="off" />
-                                        <div class="clear-left"><p>${_('file name or path to HTTPS certificate')}</p></div>
-                                    </span>
+		                                    <span class="component-desc">
+		                                        <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" autocapitalize="off" />
+		                                        <div class="clear-left"><p>${_('file name or path to HTTPS certificate')}</p></div>
+		                                    </span>
 								        </label>
 							        </div>
 							        <div class="field-pair">
 								        <label for="https_key">
 									        <span class="component-title">${_('HTTPS key')}</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" autocapitalize="off" />
-                                        <div class="clear-left"><p>${_('file name or path to HTTPS key')}</p></div>
-                                    </span>
+		                                    <span class="component-desc">
+		                                        <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" autocapitalize="off" />
+		                                        <div class="clear-left"><p>${_('file name or path to HTTPS key')}</p></div>
+		                                    </span>
 								        </label>
 							        </div>
 						        </div>
@@ -527,10 +527,10 @@
 						        <div class="field-pair">
 							        <label for="handle_reverse_proxy">
 								        <span class="component-title">${_('Reverse proxy headers')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
-                                    <p>${_('accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
+		                                    <p>${_('accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</p>
+		                                </span>
 							        </label>
 						        </div>
 
@@ -611,11 +611,11 @@
 						        <div class="field-pair">
 							        <label for="encryption_version">
 								        <span class="component-title">${_('Encrypt passwords')}</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
-                                    <p>${_('in the <code>config.ini</code> file.')}
-                                        ${_('<b>Warning:</b> Passwords must only contain')} <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a></p>
-                                </span>
+		                                <span class="component-desc">
+		                                    <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
+		                                    <p>${_('in the <code>config.ini</code> file.')}
+		                                    <b>${_('Warning')}:</b> ${_('Passwords must only contain')} <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a></p>
+		                                </span>
 							        </label>
 						        </div>
 

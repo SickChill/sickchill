@@ -125,15 +125,15 @@
                                                    id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]}/>
                                             <p>${_('Append language codes to subtitle filenames?')}</p>
                                         </span>
-									</label>
-									<label>
-										<span class="component-title">&nbsp;</span>
-										<span class="component-desc"><b>${_('NOTE:</b> This option is required if you use multiple subtitle languages.')}</span>
-									</label>
-								</div>
-								<div class="field-pair">
-									<label class="clearfix" for="subtitles_download_in_pp">
-										<span class="component-title">${_('Subtitles in Post-Process folder')}</span>
+                                    </label>
+                                    <label>
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc"><b>${_('Note')}:</b> ${_('This option is required if you use multiple subtitle languages.')}</span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
+                                    <label class="clearfix" for="subtitles_download_in_pp">
+                                        <span class="component-title">${_('Subtitles in Post-Process folder')}</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="subtitles_download_in_pp"
                                                    id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]}/>
@@ -161,7 +161,7 @@
                                             <input type="checkbox" name="embedded_subtitles_all"
                                                    id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]}/>
                                             <p>${_('Ignore subtitles embedded inside video file?')}</p>
-                                            <p>${_('<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!')}</p>
+                                            <p><b>${_('Warning')}: </b>${_('this will ignore <u>all</u> embedded subtitles for every video file!')}</p>
                                         </span>
 									</label>
 								</div>
@@ -250,35 +250,35 @@
                                 providerLoginDict = {
                                 'legendastv': {'user': sickbeard.LEGENDASTV_USER, 'pass': sickbeard.LEGENDASTV_PASS},
                                 'addic7ed': {'user': sickbeard.ADDIC7ED_USER, 'pass': sickbeard.ADDIC7ED_PASS},
-                                'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
-                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}}
-                            %>
-                            % for curService in sickbeard.subtitles.sorted_service_list():
-                            % if curService['name'] not in providerLoginDict.keys():
-                                <% continue %>
-                            % endif
-                            ##<div class="field-pair${(' hidden', '')[curService['enabled']]}"> ## Need js to show/hide on save
-
+                                ## 'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
+                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}
+	                            }
+	                        %>
+	                        % for curService in sickbeard.subtitles.sorted_service_list():
+	                            <%
+	                                if curService['name'] not in providerLoginDict.keys():
+	                                    continue
+	                            %>
 								<div class="field-pair">
 									<label class="nocheck" for="${curService['name']}_user">
 										<span class="component-title">${curService['name'].capitalize()} ${_('User Name')}</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="${curService['name']}_user"
-                                               id="${curService['name']}_user"
-                                               value="${providerLoginDict[curService['name']]['user']}"
-                                               class="form-control input-sm input300" autocapitalize="off"
-                                               autocomplete="no"/>
-                                    </span>
+	                                    <span class="component-desc">
+	                                        <input type="text" name="${curService['name']}_user"
+	                                               id="${curService['name']}_user"
+	                                               value="${providerLoginDict[curService['name']]['user']}"
+	                                               class="form-control input-sm input300" autocapitalize="off"
+	                                               autocomplete="no"/>
+	                                    </span>
 									</label>
 									<label class="nocheck" for="${curService['name']}_pass">
 										<span class="component-title">${curService['name'].capitalize()} ${_('Password')}</span>
-                                    <span class="component-desc">
-                                        <input type="password" name="${curService['name']}_pass"
-                                               id="${curService['name']}_pass"
-                                               value="${providerLoginDict[curService['name']]['pass']}"
-                                               class="form-control input-sm input300" autocomplete="no"
-                                               autocapitalize="off"/>
-                                    </span>
+	                                    <span class="component-desc">
+	                                        <input type="password" name="${curService['name']}_pass"
+	                                               id="${curService['name']}_pass"
+	                                               value="${providerLoginDict[curService['name']]['pass']}"
+	                                               class="form-control input-sm input300" autocomplete="no"
+	                                               autocapitalize="off"/>
+	                                    </span>
 									</label>
 								</div>
                             % endfor
@@ -291,6 +291,5 @@
 			</form>
 		</div>
 	</div>
-
 	<div class="clearfix"></div>
 </%block>
