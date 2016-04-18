@@ -224,7 +224,7 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                         %>
                         % for curService in sickbeard.subtitles.sorted_service_list():
                             <%
-                                if curService not in providerLoginDict.keys():
+                                if curService['name'] not in providerLoginDict.keys():
                                     continue
                             %>
                             ##<div class="field-pair${(' hidden', '')[curService['enabled']]}"> ## Need js to show/hide on save
