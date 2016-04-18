@@ -35,7 +35,6 @@ class PutioAPI(GenericClient):
             PUTIO_BASE_URL,API_CLIENT_ID, urllib.urlencode(API_CLIENT_REGISTERED_URL))
 
     def _get_auth(self):
-
         post_data = {
             'name': self.username,
             'password': self.password,
@@ -46,6 +45,7 @@ class PutioAPI(GenericClient):
             self.response = self.session.get(self.url, timeout=120)
             self.tok_response = self.session.post('https://api.put.io/login',
                                                   data=post_data, allow_redirects=False)
+            # Grab the token from the response header.
             self.tok_response = self.session.get(self.tok_response.headers['location'], allow_redirects=False)
             self.auth = re.search('{}#access_token=(.*)'.format(re.escape(API_CLIENT_REGISTERED_URL)),
                                   self.tok_response.headers['location']).group(1)
@@ -64,6 +64,7 @@ class PutioAPI(GenericClient):
             'save_parent_id': 0,
             'extract': True
         }
+
         self.response = self.session.post('{}/transfers/add'.format(PUTIO_BASE_URL),  data=post_data, params=params)
         j = self.response.json()
         return "transfer" in j and j['transfer']['save_parent_id'] == 0
