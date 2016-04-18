@@ -53,7 +53,7 @@ fi
 su -c "git clone https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
 
 if [[ $distro = ubuntu ]]; then
-	if [[ $(/sbin/init --version) =~ upstart ]]; then
+	if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
 
 		cp /opt/sickrage/runscripts/init.upstart /etc/init/sickrage.conf
 		
