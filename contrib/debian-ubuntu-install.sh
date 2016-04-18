@@ -64,9 +64,9 @@ if [[ ! -d /opt/sickrage ]]; then
 else
     whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
     choice=$?
-    if [[ $choice == 1 ]]; then
+    if [[ $choice == 0 ]]; then
         rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
-        su -c "git clone https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+        su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
     else
         echo
         exit 1
