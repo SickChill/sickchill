@@ -77,7 +77,7 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
 
     logger.log('Result text from SAB: {0}'.format(jdata), logger.DEBUG)
 
-    result, _ = _checkSabResponse(jdata)
+    result, error_ = _checkSabResponse(jdata)
     return result
 
 
@@ -107,7 +107,7 @@ def getSabAccesMethod(host=None):
     '''
     params = {'mode': 'auth', 'output': 'json'}
     url = urljoin(host, 'api')
-    data = helpers.getURL(url, params=params, session=session, returns='json')
+    data = helpers.getURL(url, params=params, session=session, returns='json', verify=False)
     if not data:
         return False, data
 
@@ -136,7 +136,7 @@ def testAuthentication(host=None, username=None, password=None, apikey=None):
 
     url = urljoin(host, 'api')
 
-    data = helpers.getURL(url, params=params, session=session, returns='json')
+    data = helpers.getURL(url, params=params, session=session, returns='json', verify=False)
     if not data:
         return False, data
 
