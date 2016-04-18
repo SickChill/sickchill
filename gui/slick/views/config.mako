@@ -21,8 +21,9 @@
         Branch: <a href="${anon_url('https://github.com/SickRage/SickRage/tree/%s' % sickbeard.BRANCH)}">${sickbeard.BRANCH}</a><br>
         Commit: <a href="${anon_url('https://github.com/SickRage/SickRage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">${sickbeard.CUR_COMMIT_HASH}</a><br>
         % if sr_version:
-        Version: <a href="${anon_url('https://github.com/SickRage/SickRage/releases/tag/%s' % sr_version)}">${sr_version}</a>
+        Version: <a href="${anon_url('https://github.com/SickRage/SickRage/releases/tag/%s' % sr_version)}">${sr_version}</a><br>
         % endif
+        Database Version: ${'{}.{}'.format(*db.DBConnection().version)}
         </td>
     </tr>
     <tr><td class="infoTableHeader"><i class="icon16-config-python"></i> ${_('Python Version')}:</td><td class="infoTableCell">${sys.version[:120]}</td></tr>

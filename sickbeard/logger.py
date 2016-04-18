@@ -37,7 +37,7 @@ import locale
 import traceback
 
 from urllib import quote
-from github import Github, InputFileContent  # pylint: disable=import-error
+from github import InputFileContent
 
 import sickbeard
 from sickbeard import classes
@@ -179,6 +179,16 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             for logger in self.loggers:
                 logger.addHandler(rfh)
 
+    def set_level(self):
+        self.debug_logging = sickbeard.DEBUG
+        self.database_logging = sickbeard.DBDEBUG
+
+        level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
+        for logger in self.loggers:
+            logger.setLevel(level)
+            for handler in logger.handlers:
+                handler.setLevel(level)
+
     @staticmethod
     def shutdown():
         """
@@ -242,7 +252,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         submitter_result = ''
         issue_id = None
 
-        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
+        if not all((sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
             submitter_result = 'Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
@@ -264,11 +274,6 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             return submitter_result, issue_id
 
         self.submitter_running = True
-
-        gh_org = sickbeard.GIT_ORG or 'SickRage'
-        gh_repo = sickbeard.GIT_REPO or 'SickRage'
-
-        git = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent='SickRage')
 
         try:
             # read log file
@@ -308,7 +313,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(log_data[i:i + 50])
                             if paste_data:
-                                gist = git.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
@@ -341,7 +346,9 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
                 message = '\n'.join(msg)
                 title_error = '[APP SUBMITTED]: {0}'.format(title_error)
-                reports = git.get_organization(gh_org).get_repo(gh_repo).get_issues(state='all')
+
+                repo = sickbeard.gh.get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)
+                reports = repo.get_issues(state='all')
 
                 def is_ascii_error(title):
                     # [APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
@@ -374,7 +381,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         break
 
                 if not issue_found:
-                    issue = git.get_organization(gh_org).get_repo(gh_repo).create_issue(title_error, message)
+                    issue = repo.create_issue(title_error, message)
                     if issue:
                         issue_id = issue.number
                         submitter_result = 'Your issue ticket #{0} was submitted successfully!'.format(issue_id)

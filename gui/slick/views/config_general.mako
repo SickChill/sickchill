@@ -120,7 +120,7 @@
 
                         <div class="field-pair">
                             <label for="log_size">
-                                <span class="component-title">Size of Log files saved')}</span>
+                                <span class="component-title">${_('Size of Log files saved')}</span>
                                 <span class="component-desc">
                                     <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
                                     <p>${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</p>
@@ -133,7 +133,7 @@
                                 <span class="component-title">${_('Use initial indexer set to')}</span>
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>All Indexers</option>
+                                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
                                         % for indexer in sickbeard.indexerApi().indexers:
                                         <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor
@@ -227,8 +227,8 @@
                 <div class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>User Interface</h3>
-                        <p>Options for visual appearance.</p>
+                        <h3>${_('User Interface')}</h3>
+                        <p>${_('Options for visual appearance.')}</p>
                     </div>
 
                     <fieldset class="component-group-list">
@@ -252,13 +252,36 @@
                                 <span class="component-title">${_('Display theme')}:</span>
                                 <span class="component-desc">
                                     <select id="theme_name" name="theme_name" class="form-control input-sm">
-                                        <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
-                                        <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>Light</option>
+                                        <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>${_('Dark')}</option>
+                                        <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>${_('Light')}</option>
                                     </select>
                                     <span class="red-text">${_('for appearance to take effect, save then refresh your browser')}</span>
                                 </span>
                             </label>
                         </div>
+                        <fieldset class="component-group-list">
+                            <div class="field-pair">
+                                <label for="fanart_background">
+                                    <span class="component-title">${_('Show fanart in the background')}</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(sickbeard.FANART_BACKGROUND)]}>
+                                        <p>${_('on the show summary page')}</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div id="content_fanart_background">
+                                <div class="field-pair">
+                                    <label class="nocheck">
+                                        <span class="component-title">${_('Fanart transparency')}</span>
+                                        <input type="number" step="0.1" min="0.1" max="1.0" name="fanart_background_opacity" id="fanart_background_opacity" value="${sickbeard.FANART_BACKGROUND_OPACITY}" class="form-control input-sm input75" />
+                                    </label>
+                                    <label class="nocheck">
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc">${_('Transparency of the fanart in the background')}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
                         <div class="field-pair">
                             <label for="display_all_seasons">
                                 <span class="component-title">${_('Show all seasons')}</span>
@@ -333,7 +356,7 @@
                                             <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
                                          % endfor
                                     </select>
-                                    <span><b>note:</b>${_(' seconds are only shown on the History page')}</span>
+                                    <span><b>{_('Note')}:</b> ${_('seconds are only shown on the History page')}</span>
                                 </span>
                             </label>
                         </div>
@@ -351,7 +374,7 @@
                                 <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
                                 </div>
                                 <div class="clear-left">
-                                <p>${_(' <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
+                                <p><b>${_('Note')}:</b> ${_('Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
                                 </div>
                             </span>
                         </div>
@@ -423,7 +446,7 @@
                                 <span class="component-title">${_('HTTP password')}</span>
                                 <span class="component-desc">
                                     <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-                                    <p>blank = ${_('no authentication')}</span>
+                                    <p>${_('blank = no authentication')}</span>
                             </label>
                         </div>
 
@@ -510,7 +533,7 @@
                 <div class="component-group">
 
                     <div class="component-group-desc">
-                        <h3>Advanced Settings</h3>
+                        <h3>${_('Advanced Settings')}</h3>
                     </div>
 
                     <fieldset class="component-group-list">
@@ -577,7 +600,7 @@
                                 <span class="component-desc">
                                     <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
                                     <p>${_('in the <code>config.ini</code> file.')}
-                                    ${_('<b>Warning:</b> Passwords must only contain')} <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a></p>
+                                    <b>${_('Warning')}:</b> ${_('Passwords must only contain')} <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a></p>
                                 </span>
                             </label>
                         </div>

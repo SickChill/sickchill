@@ -997,6 +997,7 @@ ul.tags li a{
     height: 250px;
     overflow: auto;
     cursor: default;
+    opacity: 0.8;
 }
 
 .summaryTable {
@@ -1105,12 +1106,13 @@ span.snatched b {
 }
 
 .displayShowTable.display_show {
-    clear:both
+    clear:both;
+    opacity: 0.8;
 }
 
 .displayShowTable th.row-seasonheader {
     border: none !important;
-    background-color: #222 !important;
+    background-color: transparent;
     color: #fff !important;
     padding-top: 15px !important;
     text-align: left !important;

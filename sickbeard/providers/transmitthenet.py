@@ -25,7 +25,7 @@ from requests.compat import urljoin
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
-from sickrage.helper.common import convert_size, try_int
+from sickrage.helper.common import try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -134,31 +134,26 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             if self.freeleech and not freeleech:
                                 continue
 
-                            #Normal Download Link
+                            # Normal Download Link
                             download_item = torrent_row.find('a', {'title': 'Download Torrent'})
 
                             if not download_item:
-                                #If the user has downloaded it
+                                # If the user has downloaded it
                                 download_item = torrent_row.find('a', {'title': 'Previously Grabbed Torrent File'})
                             if not download_item:
-                                #If the user is seeding
+                                # If the user is seeding
                                 download_item = torrent_row.find('a', {'title': 'Currently Seeding Torrent'})
                             if not download_item:
-                                #If the user is leeching
+                                # If the user is leeching
                                 download_item = torrent_row.find('a', {'title': 'Currently Leeching Torrent'})
                             if not download_item:
-                                #If there are none
+                                # If there are none
                                 continue
 
                             download_url = urljoin(self.url, download_item['href'])
 
                             temp_anchor = torrent_row.find('a', {"data-src": True})
                             title = temp_anchor['data-src'].rsplit('.', 1)[0]
-                            if not title:
-                                title = torrent_row.find('a', onmouseout='return nd();').string
-                                title = title.replace("[", "").replace("]", "").replace("/ ", "") if title else ''
-
-                            temp_anchor = torrent_row.find('span', class_='time').parent.find_next_sibling()
                             if not all([title, download_url]):
                                 continue
 
@@ -174,8 +169,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = cells[5].text.strip()
-                            size = convert_size(torrent_size) or -1
+                            size = temp_anchor['data-filesize'] or -1
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':

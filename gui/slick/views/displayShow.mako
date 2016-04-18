@@ -110,6 +110,8 @@
 
         <div id="showCol">
 
+            <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="float:right;height:50px;border:1px solid black">
+
             <div id="showinfo">
 % if 'rating' in show.imdb_info:
     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
@@ -137,6 +139,7 @@
 % if xem_numbering or xem_absolute_numbering:
                 <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
 % endif
+                <a href="${anon_url('https://fanart.tv/series/', _show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><img alt="[fanart.tv]" height="16" width="16" src="${srRoot}/images/fanart.tv.png" style="margin-top: -1px; vertical-align:middle;"/></a>
             </div>
 
             <div id="tags">
@@ -207,7 +210,7 @@
 
                 </table>
 
-                <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
+                <table style="width:180px; float: right; vertical-align: middle;">
                     <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                     <tr><td class="showLegend">${_('Info Language')}:</td><td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td></tr>
                     % if sickbeard.USE_SUBTITLES:

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-12 19:57-0700\n"
-"PO-Revision-Date: 2016-04-12 23:07-0400\n"
+"POT-Creation-Date: 2016-04-17 23:48-0700\n"
+"PO-Revision-Date: 2016-04-18 02:57-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -55,9 +55,9 @@ msgstr "غير معروف"
 msgid "Unaired"
 msgstr "غير مذاع"
 
-#: sickbeard/common.py:599 gui/slick/views/displayShow.mako:257
+#: sickbeard/common.py:599 gui/slick/views/displayShow.mako:260
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
-#: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:292
+#: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:294
 msgid "Snatched"
 msgstr "تم جلبها"
 
@@ -66,7 +66,7 @@ msgstr "تم جلبها"
 msgid "Downloaded"
 msgstr "تم التنزيل"
 
-#: sickbeard/common.py:601 gui/slick/views/displayShow.mako:256
+#: sickbeard/common.py:601 gui/slick/views/displayShow.mako:259
 msgid "Skipped"
 msgstr "متخطى"
 
@@ -74,7 +74,7 @@ msgstr "متخطى"
 msgid "Snatched (Proper)"
 msgstr "تم جلبها (إصدار مصحح)"
 
-#: sickbeard/common.py:603 gui/slick/views/displayShow.mako:253
+#: sickbeard/common.py:603 gui/slick/views/displayShow.mako:256
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
@@ -101,942 +101,977 @@ msgstr "فشل"
 msgid "Snatched (Best)"
 msgstr "تم جلبها (الإصدار الأفضل)"
 
-#: sickbeard/webserve.py:177
+#: sickbeard/versionChecker.py:73
+msgid "New update found for SickRage, starting auto-updater"
+msgstr ""
+
+#: sickbeard/versionChecker.py:77
+msgid "Update was successful"
+msgstr ""
+
+#: sickbeard/versionChecker.py:81
+msgid "Update failed!"
+msgstr ""
+
+#: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
+#: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
+#: gui/slick/views/config_backuprestore.mako:22
+#: gui/slick/views/config_backuprestore.mako:28
+msgid "Backup"
+msgstr "النسخ الاحتياطي"
+
+#: sickbeard/versionChecker.py:93
+msgid "Config backup in progress..."
+msgstr ""
+
+#: sickbeard/versionChecker.py:101
+msgid "Config backup successful, updating..."
+msgstr ""
+
+#: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
+msgid "Config backup failed, aborting update"
+msgstr ""
+
+#: sickbeard/versionChecker.py:273
+msgid "No update needed"
+msgstr ""
+
+#: sickbeard/webserve.py:178
 msgid "Mako Error"
 msgstr "خطأ Mako"
 
-#: sickbeard/webserve.py:202
+#: sickbeard/webserve.py:203
 msgid "Oops"
 msgstr "عفوا"
 
-#: sickbeard/webserve.py:204
+#: sickbeard/webserve.py:205
 msgid "Wrong API key used"
 msgstr "تم استخدام مفتاح API خاطيء"
 
-#: sickbeard/webserve.py:305 gui/slick/views/login.mako:10
+#: sickbeard/webserve.py:306 gui/slick/views/login.mako:10
 msgid "Login"
 msgstr "الدخول"
 
-#: sickbeard/webserve.py:395
+#: sickbeard/webserve.py:396
 msgid "API Key not generated"
 msgstr "لم يتم إنشاء مفتاح API"
 
-#: sickbeard/webserve.py:398
+#: sickbeard/webserve.py:399
 msgid "API Builder"
 msgstr "منشئ API"
 
-#: sickbeard/webserve.py:499
+#: sickbeard/webserve.py:500
 msgid "Sort by:"
 msgstr "تصنيف بحسب:"
 
-#: sickbeard/webserve.py:507
+#: sickbeard/webserve.py:508
 msgid "Layout:"
 msgstr "التخطيط:"
 
-#: sickbeard/webserve.py:509 gui/slick/views/home.mako:72
+#: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
 msgstr "شعار"
 
-#: sickbeard/webserve.py:510 gui/slick/views/home.mako:70
+#: sickbeard/webserve.py:511 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
 msgstr "ملصق"
 
-#: sickbeard/webserve.py:511 gui/slick/views/schedule.mako:50
+#: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:50
 msgid "List"
 msgstr "القائمة"
 
-#: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:48
+#: sickbeard/webserve.py:513 gui/slick/views/schedule.mako:48
 msgid "Calendar"
 msgstr "التقويم"
 
-#: sickbeard/webserve.py:516
+#: sickbeard/webserve.py:517
 msgid "View Paused:"
 msgstr "العرض متوقف:"
 
-#: sickbeard/webserve.py:518
+#: sickbeard/webserve.py:519
 msgid "Hide"
 msgstr "اخفاء"
 
-#: sickbeard/webserve.py:520 gui/slick/views/home.mako:246
+#: sickbeard/webserve.py:521 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
 msgstr "مسلسل"
 
-#: sickbeard/webserve.py:533 gui/slick/views/config_general.mako:67
-#: gui/slick/views/layouts/main.mako:126
+#: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
+#: gui/slick/views/layouts/main.mako:128
 msgid "Schedule"
 msgstr "الجدول الزمني"
 
-#: sickbeard/webserve.py:631
+#: sickbeard/webserve.py:632
 msgid "Test 1"
 msgstr "اختبار 1"
 
-#: sickbeard/webserve.py:631
+#: sickbeard/webserve.py:632
 msgid "This is test number 1"
 msgstr "هذا الاختبار رقم 1"
 
-#: sickbeard/webserve.py:632
+#: sickbeard/webserve.py:633
 msgid "Test 2"
 msgstr "اختبار 2"
 
-#: sickbeard/webserve.py:632
+#: sickbeard/webserve.py:633
 msgid "This is test number 2"
 msgstr "هذا الاختبار رقم 2"
 
-#: sickbeard/webserve.py:684
+#: sickbeard/webserve.py:685
 msgid "Invalid show parameters"
 msgstr "متغيرات المسلسل غير صالحة"
 
-#: sickbeard/webserve.py:689
+#: sickbeard/webserve.py:690
 msgid "Invalid show paramaters"
 msgstr "متغيرات المسلسل غير صالحة"
 
-#: sickbeard/webserve.py:696
+#: sickbeard/webserve.py:697
 msgid "Invalid paramaters"
 msgstr "متغيرات غير صالحة"
 
-#: sickbeard/webserve.py:699 sickbeard/webserve.py:1801
+#: sickbeard/webserve.py:700 sickbeard/webserve.py:1803
 msgid "Episode couldn't be retrieved"
 msgstr "لا يمكن العثورعلى الحلقة"
 
-#: sickbeard/webserve.py:718 sickbeard/webserve.py:1175 sickbeard/webserve.py:1204
+#: sickbeard/webserve.py:719 sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Home"
 msgstr "الصفحة الرئيسية"
 
-#: sickbeard/webserve.py:718 gui/slick/views/layouts/main.mako:112
+#: sickbeard/webserve.py:719 gui/slick/views/layouts/main.mako:114
 msgid "Show List"
 msgstr "إظهار القائمة"
 
-#: sickbeard/webserve.py:758
+#: sickbeard/webserve.py:759
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
 msgstr "خطأ: الطلب غير مدعوم. Send jsonp request with 'callback' variable in the query string."
 
-#: sickbeard/webserve.py:802
+#: sickbeard/webserve.py:803
 msgid "Success. Connected and authenticated"
 msgstr "تم الإتصال و المصادقة بنجاح"
 
-#: sickbeard/webserve.py:804
+#: sickbeard/webserve.py:805
 msgid "Authentication failed. SABnzbd expects"
 msgstr "فشلت المصادقة، يجب استخدام SABnzbd"
 
-#: sickbeard/webserve.py:804
+#: sickbeard/webserve.py:805
 msgid "as authentication method"
 msgstr "كطريقة مصادقة"
 
-#: sickbeard/webserve.py:806
+#: sickbeard/webserve.py:807
 msgid "Unable to connect to host"
 msgstr "غير قادر على الاتصال بالمضيف"
 
-#: sickbeard/webserve.py:827
+#: sickbeard/webserve.py:828
 msgid "SMS sent successfully"
 msgstr "تم إرسالة رسالة قصيرة بنجاح"
 
-#: sickbeard/webserve.py:829
+#: sickbeard/webserve.py:830
 msgid "Problem sending SMS: {message}"
 msgstr "مشكلة عند إرسال الرسائل القصيرة: {message}"
 
-#: sickbeard/webserve.py:836
+#: sickbeard/webserve.py:837
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
 msgstr "تم إرسال إشعار تيليغرام بنجاح. تحقق من برنامج تيليغرام الخاص بك للتأكد من وصول الإشعار"
 
-#: sickbeard/webserve.py:838
+#: sickbeard/webserve.py:839
 msgid "Error sending Telegram notification: {message}"
 msgstr "خطأ في إرسال إشعار لبرنامج تيليغرام: {message}"
 
-#: sickbeard/webserve.py:848
+#: sickbeard/webserve.py:849
 msgid " with password"
 msgstr " مع كلمة المرور"
 
-#: sickbeard/webserve.py:850
+#: sickbeard/webserve.py:851
 msgid "Registered and Tested growl successfully {growl_host}"
 msgstr "تم التسجيل و التأكد growl بنجاح {growl_host}"
 
-#: sickbeard/webserve.py:852
+#: sickbeard/webserve.py:853
 msgid "Registration and Testing of growl failed {growl_host}"
 msgstr "فشل التسجيل و التأكد من growl بنجاح {growl_host}"
 
-#: sickbeard/webserve.py:859
+#: sickbeard/webserve.py:860
 msgid "Test prowl notice sent successfully"
 msgstr "تم التحقق من تجربة ارسال إشعار prowl بنجاح"
 
-#: sickbeard/webserve.py:861
+#: sickbeard/webserve.py:862
 msgid "Test prowl notice failed"
 msgstr "فشل التحقق من تجربة إرسال إشعار prowl"
 
-#: sickbeard/webserve.py:868
+#: sickbeard/webserve.py:869
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
 msgstr "تم إرسال إشعار Boxcar2 بنجاح. تحقق من Boxcar2 الخاص بك للتأكد من وصول الإشعار"
 
-#: sickbeard/webserve.py:870
+#: sickbeard/webserve.py:871
 msgid "Error sending Boxcar2 notification"
 msgstr "خطأ في إرسال إشعار Boxcar2"
 
-#: sickbeard/webserve.py:877
+#: sickbeard/webserve.py:878
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
 msgstr "تم إرسال إشعار Pushover بنجاح. تحقق من Pushover الخاص بك للتأكد من وصول الإشعار"
 
-#: sickbeard/webserve.py:879
+#: sickbeard/webserve.py:880
 msgid "Error sending Pushover notification"
 msgstr "خطأ في إرسال إشعار Pushover"
 
-#: sickbeard/webserve.py:891
+#: sickbeard/webserve.py:892
 msgid "Key verification successful"
 msgstr "تم التحقق من المفتاح بنجاح"
 
-#: sickbeard/webserve.py:893
+#: sickbeard/webserve.py:894
 msgid "Unable to verify key"
 msgstr "غير قادر على التحقق من المفتاح"
 
-#: sickbeard/webserve.py:900
+#: sickbeard/webserve.py:901
 msgid "Tweet successful, check your twitter to make sure it worked"
 msgstr "تم إرسال التغريدة بنجاح. تحقق من تويتر الخاص بك للتأكد من وصول التغريدة"
 
-#: sickbeard/webserve.py:902
+#: sickbeard/webserve.py:903
 msgid "Error sending tweet"
 msgstr "خطأ في إرسال التغريدة"
 
-#: sickbeard/webserve.py:912
+#: sickbeard/webserve.py:913
 msgid "Test KODI notice sent successfully to {kodi_host}"
 msgstr "تم تجربة إرسال إشعار لبرنامج KODI إلى {kodi_host} بنجاح"
 
-#: sickbeard/webserve.py:914
+#: sickbeard/webserve.py:915
 msgid "Test KODI notice failed to {kodi_host}"
 msgstr "فشل تجربة إرسال إشعار لبرنامج KODI إلى {kodi_host}"
 
-#: sickbeard/webserve.py:929
+#: sickbeard/webserve.py:930
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr "تم تجربة إرسال إشعار لبرنامج Plex Home Theater بنجاح... {plex_clients}"
 
-#: sickbeard/webserve.py:931
+#: sickbeard/webserve.py:932
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr "تجربة برنامج Plex Home Theater فشلت... {plex_clients}"
 
-#: sickbeard/webserve.py:934
+#: sickbeard/webserve.py:935
 msgid "Tested Plex Home Theater(s)"
 msgstr "سيرفرات Plex Home Theater المجربة بنجاح"
 
-#: sickbeard/webserve.py:948
+#: sickbeard/webserve.py:949
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr "تم تجربة Plex Media Server بنجاح... {plex_servers}"
 
-#: sickbeard/webserve.py:950
+#: sickbeard/webserve.py:951
 msgid "Test failed, No Plex Media Server host specified"
 msgstr "تجربة Plex Media Server فشلت، لم يتم تحديد عنوان المضيف"
 
-#: sickbeard/webserve.py:952
+#: sickbeard/webserve.py:953
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr "تجربة Plex Media Server فشلت... {plex_servers}"
 
-#: sickbeard/webserve.py:955
+#: sickbeard/webserve.py:956
 msgid "Tested Plex Media Server host(s)"
 msgstr "سيرفرات Plex Media Server المجربة بنجاح"
 
-#: sickbeard/webserve.py:963
+#: sickbeard/webserve.py:964
 msgid "Tried sending desktop notification via libnotify"
 msgstr "محاولة إرسال إشعار سطح المكتب عن طريق libnotify"
 
-#: sickbeard/webserve.py:973
+#: sickbeard/webserve.py:974
 msgid "Test notice sent successfully to {emby_host}"
 msgstr "تم تجربة إرسال الإشعار بنجاح إلى {emby_host}"
 
-#: sickbeard/webserve.py:975
+#: sickbeard/webserve.py:976
 msgid "Test notice failed to {emby_host}"
 msgstr "فشل تجربة إرسال الإشعار إلى {emby_host}"
 
-#: sickbeard/webserve.py:983
+#: sickbeard/webserve.py:984
 msgid "Successfully started the scan update"
 msgstr "بدأ البحث عن التحديث بنجاح"
 
-#: sickbeard/webserve.py:985
+#: sickbeard/webserve.py:986
 msgid "Test failed to start the scan update"
 msgstr "فشل بدأ البحث عن التحديث"
 
-#: sickbeard/webserve.py:1004
+#: sickbeard/webserve.py:1005
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr "تم تجربة إرسال الإشعار بنجاح إلى {nmj2_host}"
 
-#: sickbeard/webserve.py:1006
+#: sickbeard/webserve.py:1007
 msgid "Test notice failed to {nmj2_host}"
 msgstr "فشل تجربة إرسال الإشعار إلى {nmj2_host}"
 
-#: sickbeard/webserve.py:1026
+#: sickbeard/webserve.py:1027
 msgid "Trakt Authorized"
 msgstr "Trakt مفوض"
 
-#: sickbeard/webserve.py:1027
+#: sickbeard/webserve.py:1028
 msgid "Trakt Not Authorized!"
 msgstr "Trakt غير مفوض!"
 
-#: sickbeard/webserve.py:1092
+#: sickbeard/webserve.py:1093
 msgid "Test email sent successfully! Check inbox."
 msgstr "تم إرسال بريد إليكتروني بنجاح! تحقق من صندوق الوارد."
 
-#: sickbeard/webserve.py:1094
+#: sickbeard/webserve.py:1095
 msgid "ERROR: {last_error}"
 msgstr "خطأ: {last_error}"
 
-#: sickbeard/webserve.py:1101
+#: sickbeard/webserve.py:1102
 msgid "Test NMA notice sent successfully"
 msgstr "تم التحقق من تجربة ارسال إشعار NMA بنجاح"
 
-#: sickbeard/webserve.py:1103
+#: sickbeard/webserve.py:1104
 msgid "Test NMA notice failed"
 msgstr "فشل تجربة إرسال إشعار لـ NMA"
 
-#: sickbeard/webserve.py:1110
+#: sickbeard/webserve.py:1111
 msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
 msgstr "تم إرسال إشعار Pushalot بنجاح. تحقق من Pushalot الخاص بك للتأكد من وصول الإشعار"
 
-#: sickbeard/webserve.py:1112
+#: sickbeard/webserve.py:1113
 msgid "Error sending Pushalot notification"
 msgstr "خطأ في إرسال إشعار Pushalot"
 
-#: sickbeard/webserve.py:1119
+#: sickbeard/webserve.py:1120
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
 msgstr "تم إرسال إشعار Pushbullet بنجاح. تحقق من Pushbullet الخاص بك للتأكد من وصول الإشعار"
 
-#: sickbeard/webserve.py:1121 sickbeard/webserve.py:1131 sickbeard/webserve.py:1140
+#: sickbeard/webserve.py:1122 sickbeard/webserve.py:1132 sickbeard/webserve.py:1141
 msgid "Error sending Pushbullet notification"
 msgstr "خطأ في إرسال إشعار Pushbullet"
 
-#: sickbeard/webserve.py:1156 gui/slick/views/displayShow.mako:331
-#: gui/slick/views/displayShow.mako:360 gui/slick/views/displayShow.mako:390
+#: sickbeard/webserve.py:1158 gui/slick/views/displayShow.mako:334
+#: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
 msgstr "الحالة"
 
-#: sickbeard/webserve.py:1175 sickbeard/webserve.py:1204
+#: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
 msgstr "إعادة تشغيل سيكراج"
 
-#: sickbeard/webserve.py:1207
+#: sickbeard/webserve.py:1209
 msgid "Update Failed"
 msgstr "فشل التحديث"
 
-#: sickbeard/webserve.py:1208
+#: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
 msgstr "التحديث لم يكن ناجحاً، لن اعيد التشغيل. تحقق من السجل الخاص بك للحصول على مزيد من المعلومات."
 
-#: sickbeard/webserve.py:1215
+#: sickbeard/webserve.py:1217
 msgid "Checking out branch"
 msgstr "التحقق من الفرع"
 
-#: sickbeard/webserve.py:1218
+#: sickbeard/webserve.py:1220
 msgid "Already on branch"
 msgstr "موجود مسبقا في الفرع"
 
-#: sickbeard/webserve.py:1246 sickbeard/webserve.py:1249 sickbeard/webserve.py:1418
-#: sickbeard/webserve.py:1427 sickbeard/webserve.py:1619 sickbeard/webserve.py:1630
-#: sickbeard/webserve.py:1653 sickbeard/webserve.py:1666 sickbeard/webserve.py:1671
-#: sickbeard/webserve.py:1687 sickbeard/webserve.py:1692 sickbeard/webserve.py:1756
-#: sickbeard/webserve.py:1759 sickbeard/webserve.py:1765 sickbeard/webserve.py:1768
-#: sickbeard/webserve.py:1775 sickbeard/webserve.py:1778 sickbeard/webserve.py:1801
-#: sickbeard/webserve.py:1898 sickbeard/webserve.py:1903 sickbeard/webserve.py:1908
-#: sickbeard/webserve.py:1937 sickbeard/webserve.py:1941 sickbeard/webserve.py:1946
+#: sickbeard/webserve.py:1248 sickbeard/webserve.py:1251 sickbeard/webserve.py:1420
+#: sickbeard/webserve.py:1429 sickbeard/webserve.py:1621 sickbeard/webserve.py:1632
+#: sickbeard/webserve.py:1655 sickbeard/webserve.py:1668 sickbeard/webserve.py:1673
+#: sickbeard/webserve.py:1689 sickbeard/webserve.py:1694 sickbeard/webserve.py:1758
+#: sickbeard/webserve.py:1761 sickbeard/webserve.py:1767 sickbeard/webserve.py:1770
+#: sickbeard/webserve.py:1777 sickbeard/webserve.py:1780 sickbeard/webserve.py:1803
+#: sickbeard/webserve.py:1900 sickbeard/webserve.py:1905 sickbeard/webserve.py:1910
+#: sickbeard/webserve.py:1939 sickbeard/webserve.py:1943 sickbeard/webserve.py:1948
 msgid "Error"
 msgstr "خطأ"
 
-#: sickbeard/webserve.py:1246
+#: sickbeard/webserve.py:1248
 msgid "Invalid show ID: {show}"
 msgstr "رقم معرف المسلسل غير صحيح: {show}"
 
-#: sickbeard/webserve.py:1249 sickbeard/webserve.py:1773 sickbeard/webserve.py:1903
-#: sickbeard/webserve.py:1941
+#: sickbeard/webserve.py:1251 sickbeard/webserve.py:1775 sickbeard/webserve.py:1905
+#: sickbeard/webserve.py:1943
 msgid "Show not in show list"
 msgstr "العرض غير موجود في قائمة العروض"
 
-#: sickbeard/webserve.py:1265 sickbeard/webserve.py:1928
+#: sickbeard/webserve.py:1267 sickbeard/webserve.py:1930
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
 msgstr "تحرير"
 
-#: sickbeard/webserve.py:1298
+#: sickbeard/webserve.py:1300
 msgid "Resume"
 msgstr "استئناف"
 
-#: sickbeard/webserve.py:1300
+#: sickbeard/webserve.py:1302
 msgid "Pause"
 msgstr "إيقاف مؤقت"
 
-#: sickbeard/webserve.py:1302 gui/slick/views/editShow.mako:222
+#: sickbeard/webserve.py:1304 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
 msgstr "إزالة"
 
-#: sickbeard/webserve.py:1303
+#: sickbeard/webserve.py:1305
 msgid "Re-scan files"
 msgstr "إعادة تفحص الملفات"
 
-#: sickbeard/webserve.py:1304
+#: sickbeard/webserve.py:1306
 msgid "Force Full Update"
 msgstr "إجبار التحديث الكامل"
 
-#: sickbeard/webserve.py:1305
+#: sickbeard/webserve.py:1307
 msgid "Update show in KODI"
 msgstr "تحديث المسلسل في برنامج KODI"
 
-#: sickbeard/webserve.py:1306
+#: sickbeard/webserve.py:1308
 msgid "Update show in Emby"
 msgstr "تحديث المسلسل في برنامج Emby"
 
-#: sickbeard/webserve.py:1307 sickbeard/webserve.py:1931 sickbeard/webserve.py:1932
+#: sickbeard/webserve.py:1309 sickbeard/webserve.py:1933 sickbeard/webserve.py:1934
 msgid "Preview Rename"
 msgstr "معاينة التسمية"
 
-#: sickbeard/webserve.py:1310
+#: sickbeard/webserve.py:1312
 msgid "Download Subtitles"
 msgstr "تحميل الترجمة"
 
-#: sickbeard/webserve.py:1396
+#: sickbeard/webserve.py:1398
 msgid "No scene exceptions"
 msgstr "لا توجد (استثناءات للأسماء)"
 
-#: sickbeard/webserve.py:1414 sickbeard/webserve.py:1666 sickbeard/webserve.py:1687
+#: sickbeard/webserve.py:1416 sickbeard/webserve.py:1668 sickbeard/webserve.py:1689
 msgid "Invalid show ID"
 msgstr "رقم معرف المسلسل غير صحيح"
 
-#: sickbeard/webserve.py:1423 sickbeard/webserve.py:1671 sickbeard/webserve.py:1692
+#: sickbeard/webserve.py:1425 sickbeard/webserve.py:1673 sickbeard/webserve.py:1694
 msgid "Unable to find the specified show"
 msgstr "غير قادر على العثور على العرض المحدد"
 
-#: sickbeard/webserve.py:1448
+#: sickbeard/webserve.py:1450
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr "غير قادر على استرداد مجموعات Fansub من AniDB."
 
-#: sickbeard/webserve.py:1457 sickbeard/webserve.py:1459
+#: sickbeard/webserve.py:1459 sickbeard/webserve.py:1461
 msgid "Edit Show"
 msgstr "تعديل العرض"
 
-#: sickbeard/webserve.py:1542 sickbeard/webserve.py:1573
+#: sickbeard/webserve.py:1544 sickbeard/webserve.py:1575
 msgid "Unable to refresh this show: {error}"
 msgstr "غير قادر على تحديث هذا المسلسل: {error}"
 
-#: sickbeard/webserve.py:1563
+#: sickbeard/webserve.py:1565
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr "موقع جديد <tt>{location}</tt> غير موجود"
 
-#: sickbeard/webserve.py:1590
+#: sickbeard/webserve.py:1592
 msgid "Unable to update show: {error}"
 msgstr "غير قادر على تحديث المسلسل: {error}"
 
-#: sickbeard/webserve.py:1597
+#: sickbeard/webserve.py:1599
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr "غير قادر على فرض التحديث على (استثناءات الأسماء) للمسلسل."
 
-#: sickbeard/webserve.py:1604
+#: sickbeard/webserve.py:1606
 msgid "Unable to force an update on scene numbering of the show."
 msgstr "غير قادر على فرض التحديث على (استثناءات أرقام الحلقات) للمسلسل."
 
-#: sickbeard/webserve.py:1610 sickbeard/webserve.py:3447
+#: sickbeard/webserve.py:1612 sickbeard/webserve.py:3449
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} خطأ {plural} أثناء حفظ التغييرات:"
 
-#: sickbeard/webserve.py:1621
+#: sickbeard/webserve.py:1623
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} قد تم{paused_resumed}"
 
-#: sickbeard/webserve.py:1621
+#: sickbeard/webserve.py:1623
 msgid "resumed"
 msgstr "استأنفت"
 
-#: sickbeard/webserve.py:1621
+#: sickbeard/webserve.py:1623
 msgid "paused"
 msgstr "توقف مؤقت"
 
-#: sickbeard/webserve.py:1633
+#: sickbeard/webserve.py:1635
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} قد تم {deleted_trashed} {was_deleted}"
 
-#: sickbeard/webserve.py:1635
+#: sickbeard/webserve.py:1637
 msgid "deleted"
 msgstr "محذوف"
 
-#: sickbeard/webserve.py:1635
+#: sickbeard/webserve.py:1637
 msgid "trashed"
 msgstr "مهمل"
 
-#: sickbeard/webserve.py:1636
+#: sickbeard/webserve.py:1638
 msgid "(media untouched)"
 msgstr ""
 
-#: sickbeard/webserve.py:1636
+#: sickbeard/webserve.py:1638
 msgid "(with all related media)"
 msgstr "(مع كل الوسائط المتعلقة)"
 
-#: sickbeard/webserve.py:1657
+#: sickbeard/webserve.py:1659
 msgid "Unable to refresh this show."
 msgstr "غير قادر على تحديث هذا المسلسل."
 
-#: sickbeard/webserve.py:1677
+#: sickbeard/webserve.py:1679
 msgid "Unable to update this show."
 msgstr "غير قادر على تحديث هذا العرض."
 
-#: sickbeard/webserve.py:1716
+#: sickbeard/webserve.py:1718
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr "تم إرسال أمرالتحديث إلى مضيفين برنامج KODI؛ {kodi_hosts}"
 
-#: sickbeard/webserve.py:1718
+#: sickbeard/webserve.py:1720
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr "غير قادر على الاتصال بواحد أو أكثر من مضيفين برنامج KODI؛ {kodi_hosts}"
 
-#: sickbeard/webserve.py:1727
+#: sickbeard/webserve.py:1729
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr "تم إرسال أمرالتحديث إلى مضيف برنامج Plex Media Server؛ {plex_server}"
 
-#: sickbeard/webserve.py:1730
+#: sickbeard/webserve.py:1732
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr "غير قادر على الاتصال بواحد أو أكثر من مضيف برنامج Plex Media Server؛ {plex_server}"
 
-#: sickbeard/webserve.py:1742
+#: sickbeard/webserve.py:1744
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr "تم إرسال أمرالتحديث إلى مضيف برنامج Emby؛ {emby_host}"
 
-#: sickbeard/webserve.py:1744
+#: sickbeard/webserve.py:1746
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr "غير قادر على الاتصال بواحد أو أكثر من مضيف برنامج Emby؛ {emby_host}"
 
-#: sickbeard/webserve.py:1754 sickbeard/webserve.py:1937
+#: sickbeard/webserve.py:1756 sickbeard/webserve.py:1939
 msgid "You must specify a show and at least one episode"
 msgstr "يجب عليك تحديد مسلسل وحلقة واحدة على الأقل"
 
-#: sickbeard/webserve.py:1763
+#: sickbeard/webserve.py:1765
 msgid "Invalid status"
 msgstr "حالة غير صالحة"
 
-#: sickbeard/webserve.py:1855
+#: sickbeard/webserve.py:1857
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
 msgstr ""
 
-#: sickbeard/webserve.py:1862 sickbeard/webserve.py:1881
+#: sickbeard/webserve.py:1864 sickbeard/webserve.py:1883
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
-#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
+#: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Season"
 msgstr "الموسم"
 
-#: sickbeard/webserve.py:1869
+#: sickbeard/webserve.py:1871
 msgid "Backlog started"
 msgstr ""
 
-#: sickbeard/webserve.py:1874
+#: sickbeard/webserve.py:1876
 msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
 msgstr "إعادة محاولة البحث تلقائياً بدأت في الموسم التالي من <b>{show_name}</b>"
 
-#: sickbeard/webserve.py:1888
+#: sickbeard/webserve.py:1890
 msgid "Retry Search started"
 msgstr "بدأت إعادة البحث"
 
-#: sickbeard/webserve.py:1898
+#: sickbeard/webserve.py:1900
 msgid "You must specify a show"
 msgstr "يجب عليك تحديد مسلسل"
 
-#: sickbeard/webserve.py:1908 sickbeard/webserve.py:1946
+#: sickbeard/webserve.py:1910 sickbeard/webserve.py:1948
 msgid "Can't rename episodes when the show dir is missing."
 msgstr "لا يمكن إعادة تسمية الحلقات اذا كان دليل ملفات المسلسل مفقود."
 
-#: sickbeard/webserve.py:2098
+#: sickbeard/webserve.py:2100
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr "تم تحميل ترجمات جديدة: {new_subtitle_languages}"
 
-#: sickbeard/webserve.py:2100
+#: sickbeard/webserve.py:2102
 msgid "No subtitles downloaded"
 msgstr "لم يتم تحميل الترجمة"
 
-#: sickbeard/webserve.py:2226 gui/slick/views/config_general.mako:70
-#: gui/slick/views/layouts/main.mako:207
+#: sickbeard/webserve.py:2228 gui/slick/views/config_general.mako:70
+#: gui/slick/views/layouts/main.mako:209
 msgid "IRC"
 msgstr "IRC"
 
-#: sickbeard/webserve.py:2239
+#: sickbeard/webserve.py:2241
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
-msgstr ""
+msgstr "تعذر تحميل الأخبار من المصدر. [انقر هنا للأخبار]{news_url}"
 
-#: sickbeard/webserve.py:2246 sickbeard/webserve.py:2264
+#: sickbeard/webserve.py:2248 sickbeard/webserve.py:2266
 msgid "The was a problem connecting to github, please refresh and try again"
-msgstr ""
+msgstr "كانت هناك مشكلة تتعلق بالاتصال بـ github، الرجاء التحديث ثم حاول مرة أخرى"
 
-#: sickbeard/webserve.py:2248 gui/slick/views/config_general.mako:69
-#: gui/slick/views/layouts/main.mako:206
+#: sickbeard/webserve.py:2250 gui/slick/views/config_general.mako:69
+#: gui/slick/views/layouts/main.mako:208
 msgid "News"
 msgstr "الأخبار"
 
-#: sickbeard/webserve.py:2261
+#: sickbeard/webserve.py:2263
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
-msgstr ""
+msgstr "تعذر تحميل التغييرات من المصدر. [انقر هنا للتغييرات]{changes_url}"
 
-#: sickbeard/webserve.py:2266 gui/slick/views/layouts/main.mako:208
+#: sickbeard/webserve.py:2268 gui/slick/views/layouts/main.mako:210
 msgid "Changelog"
 msgstr "سجل التغييرات"
 
-#: sickbeard/webserve.py:2276 sickbeard/webserve.py:3744 sickbeard/webserve.py:4173
-#: gui/slick/views/layouts/main.mako:175
+#: sickbeard/webserve.py:2278 sickbeard/webserve.py:3746 sickbeard/webserve.py:4186
+#: gui/slick/views/layouts/main.mako:177
 msgid "Post Processing"
 msgstr "مرحلة ما بعد المعالجة"
 
-#: sickbeard/webserve.py:2316 gui/slick/views/layouts/main.mako:113
+#: sickbeard/webserve.py:2318 gui/slick/views/layouts/main.mako:115
 msgid "Add Shows"
 msgstr "إضافة عروض"
 
-#: sickbeard/webserve.py:2381
+#: sickbeard/webserve.py:2383
 msgid "No folders selected."
 msgstr "لم يتم تحديد أي مجلد."
 
-#: sickbeard/webserve.py:2501
+#: sickbeard/webserve.py:2503
 msgid "New Show"
 msgstr "عرض جديد"
 
-#: sickbeard/webserve.py:2516
+#: sickbeard/webserve.py:2518
 msgid "Trending Shows"
 msgstr "مسلسلات ساخنة"
 
-#: sickbeard/webserve.py:2518 sickbeard/webserve.py:2641
+#: sickbeard/webserve.py:2520 sickbeard/webserve.py:2643
 msgid "Popular Shows"
 msgstr "عروض محبوبة"
 
-#: sickbeard/webserve.py:2520 sickbeard/webserve.py:2534
+#: sickbeard/webserve.py:2522 sickbeard/webserve.py:2536
 msgid "Most Anticipated Shows"
 msgstr "مسلسلات الأكثر إنتظارا"
 
-#: sickbeard/webserve.py:2530 gui/slick/views/addShows_trendingShows.mako:47
+#: sickbeard/webserve.py:2532 gui/slick/views/addShows_trendingShows.mako:47
 msgid "New Shows"
 msgstr "عروض جديدة"
 
-#: sickbeard/webserve.py:2532 gui/slick/views/addShows_trendingShows.mako:48
+#: sickbeard/webserve.py:2534 gui/slick/views/addShows_trendingShows.mako:48
 msgid "Season Premieres"
 msgstr "بدايات الموسم"
 
-#: sickbeard/webserve.py:2661 sickbeard/webserve.py:2662
+#: sickbeard/webserve.py:2663 sickbeard/webserve.py:2664
 msgid "Existing Show"
 msgstr "عرض موجود"
 
-#: sickbeard/webserve.py:2742
+#: sickbeard/webserve.py:2744
 msgid "No root directories setup, please go back and add one."
-msgstr ""
+msgstr "لم يتم إضافة مسار رئيسي، الرجاء الرجوع و إضافة المسار."
 
-#: sickbeard/webserve.py:2752 sickbeard/webserve.py:2868
+#: sickbeard/webserve.py:2754 sickbeard/webserve.py:2870
 msgid "Show added"
 msgstr "تم إضافة المسلسل"
 
-#: sickbeard/webserve.py:2752
+#: sickbeard/webserve.py:2754
 msgid "Adding the specified show {show_name}"
 msgstr "إضافة المسلسل المحدد {show_name}"
 
-#: sickbeard/webserve.py:2793
+#: sickbeard/webserve.py:2795
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
-msgstr ""
+msgstr "المعاملات مفقودة، لايوجد رقم معرف المفهرس أو المجلد: {show_to_add} و {root_dir} / {show_path}"
 
-#: sickbeard/webserve.py:2802
+#: sickbeard/webserve.py:2804
 msgid "Unknown error. Unable to add show due to problem with show selection."
-msgstr ""
+msgstr "خطأ غير معروف. غير قادر على إضافة المسلسل بسبب مشكلة في تحديد المسلسل."
 
-#: sickbeard/webserve.py:2826 sickbeard/webserve.py:2836
+#: sickbeard/webserve.py:2828 sickbeard/webserve.py:2838
 msgid "Unable to add show"
 msgstr "غير قادر على اضافة المسلسل"
 
-#: sickbeard/webserve.py:2826
+#: sickbeard/webserve.py:2828
 msgid "Folder {show_dir} exists already"
-msgstr ""
+msgstr "مجلد {show_dir} موجود مسبقا"
 
-#: sickbeard/webserve.py:2837
+#: sickbeard/webserve.py:2839
 msgid "Unable to create the folder {show_dir}, can't add the show"
-msgstr ""
+msgstr "غير قادر على إنشاء المجلد {show_dir}، لا يمكن إضافة المسلسل"
 
-#: sickbeard/webserve.py:2868
+#: sickbeard/webserve.py:2870
 msgid "Adding the specified show into {show_dir}"
-msgstr ""
+msgstr "إضافة المسلسل المحدد إلى {show_dir}"
 
-#: sickbeard/webserve.py:2945
+#: sickbeard/webserve.py:2947
 msgid "Shows Added"
 msgstr "تم إضافة المسلسلات"
 
-#: sickbeard/webserve.py:2946
+#: sickbeard/webserve.py:2948
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr "إضافة تلقائية لـ {num_shows} مسلسل من بياناتها التعريفية الموجودة"
 
-#: sickbeard/webserve.py:2963 gui/slick/views/layouts/main.mako:138
+#: sickbeard/webserve.py:2965 gui/slick/views/layouts/main.mako:140
 msgid "Mass Update"
 msgstr "تحديث شامل"
 
-#: sickbeard/webserve.py:3001 sickbeard/webserve.py:3028 sickbeard/webserve.py:3103
-#: sickbeard/webserve.py:3104
+#: sickbeard/webserve.py:3003 sickbeard/webserve.py:3030 sickbeard/webserve.py:3105
+#: sickbeard/webserve.py:3106
 msgid "Episode Overview"
 msgstr "نظرة عامة على الحلقة"
 
-#: sickbeard/webserve.py:3136
+#: sickbeard/webserve.py:3138
 msgid "Missing Subtitles"
 msgstr "ترجمات مفقودة"
 
-#: sickbeard/webserve.py:3221 sickbeard/webserve.py:3222
-#: gui/slick/views/layouts/main.mako:139
+#: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
+#: gui/slick/views/layouts/main.mako:141
 msgid "Backlog Overview"
 msgstr "نظرة عامة على السجل التراكمي"
 
-#: sickbeard/webserve.py:3346
+#: sickbeard/webserve.py:3348
 msgid "Mass Edit"
 msgstr "تعديل شامل"
 
-#: sickbeard/webserve.py:3493
+#: sickbeard/webserve.py:3495
 msgid "Unable to update show: {excption_format}"
-msgstr ""
+msgstr "غير قادر على تحديث المسلسل: {excption_format}"
 
-#: sickbeard/webserve.py:3501
+#: sickbeard/webserve.py:3503
 msgid "Unable to refresh show {show_name}: {excption_format}"
-msgstr ""
+msgstr "غير قادر على تحديث المسلسل {show_name}؛ {excption_format}"
 
-#: sickbeard/webserve.py:3512
+#: sickbeard/webserve.py:3514
 msgid "Errors encountered"
-msgstr ""
+msgstr "صادف وجود أخطاء"
 
-#: sickbeard/webserve.py:3518 gui/slick/views/config_general.mako:172
+#: sickbeard/webserve.py:3520 gui/slick/views/config_general.mako:172
 msgid "Updates"
-msgstr ""
+msgstr "التحديثات"
 
-#: sickbeard/webserve.py:3523
+#: sickbeard/webserve.py:3525
 msgid "Refreshes"
-msgstr ""
+msgstr "يقوم بتحديث"
 
-#: sickbeard/webserve.py:3528
+#: sickbeard/webserve.py:3530
 msgid "Renames"
-msgstr ""
+msgstr "إعادة تسمية"
 
-#: sickbeard/webserve.py:3533 sickbeard/webserve.py:5114
-#: gui/slick/views/displayShow.mako:214 gui/slick/views/displayShow.mako:330
-#: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
+#: sickbeard/webserve.py:3535 sickbeard/webserve.py:5127
+#: gui/slick/views/displayShow.mako:217 gui/slick/views/displayShow.mako:333
+#: gui/slick/views/displayShow.mako:362 gui/slick/views/displayShow.mako:392
 #: gui/slick/views/editShow.mako:91 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
-msgstr ""
+msgstr "ترجمة"
 
-#: sickbeard/webserve.py:3538
+#: sickbeard/webserve.py:3540
 msgid "The following actions were queued"
-msgstr ""
-
-#: sickbeard/webserve.py:3558
-msgid "For best results please set the Download Station alias as"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "You can check this setting in the Synology DSM"
-msgstr ""
-
-#: sickbeard/webserve.py:3559 sickbeard/webserve.py:3561
-msgid "Control Panel"
-msgstr ""
-
-#: sickbeard/webserve.py:3559
-msgid "Application Portal"
-msgstr ""
+msgstr "الإجراءات التالية في قائمة الانتظار"
 
 #: sickbeard/webserve.py:3560
+msgid "For best results please set the Download Station alias as"
+msgstr "للحصول على أفضل النتائج يرجى تعيين اسم مستعار لـ Download Station"
+
+#: sickbeard/webserve.py:3561
+msgid "You can check this setting in the Synology DSM"
+msgstr "يمكنك التحقق من هذا الإعداد في Synology DSM"
+
+#: sickbeard/webserve.py:3561 sickbeard/webserve.py:3563
+msgid "Control Panel"
+msgstr "لوحة التحكم"
+
+#: sickbeard/webserve.py:3561
+msgid "Application Portal"
+msgstr "بوابة التطبيقات"
+
+#: sickbeard/webserve.py:3562
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
-msgstr ""
+msgstr "تأكد من السماح لـ DSM بأن يكون مضمّن في iFrames أيضاً في"
 
-#: sickbeard/webserve.py:3561
+#: sickbeard/webserve.py:3563
 msgid "DSM Settings"
-msgstr ""
+msgstr "إعدادات DSM"
 
-#: sickbeard/webserve.py:3561
+#: sickbeard/webserve.py:3563
 msgid "Security"
-msgstr ""
+msgstr "الأمان"
 
-#: sickbeard/webserve.py:3569 gui/slick/views/layouts/main.mako:152
+#: sickbeard/webserve.py:3571 gui/slick/views/layouts/main.mako:154
 msgid "Manage Torrents"
 msgstr "إدارة التورنت"
 
-#: sickbeard/webserve.py:3590 gui/slick/views/layouts/main.mako:155
+#: sickbeard/webserve.py:3592 gui/slick/views/layouts/main.mako:157
 msgid "Failed Downloads"
 msgstr "تنزيلات فشلت"
 
-#: sickbeard/webserve.py:3608 gui/slick/views/layouts/main.mako:140
+#: sickbeard/webserve.py:3610 gui/slick/views/layouts/main.mako:142
 msgid "Manage Searches"
 msgstr "إدارة عمليات البحث"
 
-#: sickbeard/webserve.py:3616
+#: sickbeard/webserve.py:3618
 msgid "Backlog search started"
-msgstr ""
+msgstr "بدأ البحث عن حلقات متراكمة"
 
-#: sickbeard/webserve.py:3626
+#: sickbeard/webserve.py:3628
 msgid "Daily search started"
-msgstr ""
+msgstr "بدأ البحث اليومي"
 
-#: sickbeard/webserve.py:3635
+#: sickbeard/webserve.py:3637
 msgid "Find propers search started"
-msgstr ""
+msgstr "بدأ البحث عن النسخ المصححه"
 
-#: sickbeard/webserve.py:3644
+#: sickbeard/webserve.py:3646
 msgid "Subtitle search started"
-msgstr ""
+msgstr "بدأ البحث عن الترجمة"
 
-#: sickbeard/webserve.py:3708
+#: sickbeard/webserve.py:3710
 msgid "Clear History"
 msgstr "مسح المحفوظات"
 
-#: sickbeard/webserve.py:3709
+#: sickbeard/webserve.py:3711
 msgid "Trim History"
 msgstr "تخفيض حجم سجل المحفوظات"
 
-#: sickbeard/webserve.py:3713 gui/slick/views/config_general.mako:68
-#: gui/slick/views/layouts/main.mako:130
+#: sickbeard/webserve.py:3715 gui/slick/views/config_general.mako:68
+#: gui/slick/views/layouts/main.mako:132
 msgid "History"
 msgstr "السجل"
 
-#: sickbeard/webserve.py:3719
+#: sickbeard/webserve.py:3721
 msgid "History cleared"
 msgstr "تم مسح المحفوظات"
 
-#: sickbeard/webserve.py:3726
+#: sickbeard/webserve.py:3728
 msgid "Removed history entries older than 30 days"
 msgstr "إزالة السجلات الأقدم من 30 يوما"
 
-#: sickbeard/webserve.py:3739 gui/slick/views/layouts/main.mako:170
+#: sickbeard/webserve.py:3741 gui/slick/views/layouts/main.mako:172
 msgid "General"
 msgstr "عام"
 
-#: sickbeard/webserve.py:3740 sickbeard/webserve.py:3975
+#: sickbeard/webserve.py:3742 sickbeard/webserve.py:3988
 msgid "Backup/Restore"
 msgstr "النسخ الاحتياطي/الاستعادة"
 
-#: sickbeard/webserve.py:3741 sickbeard/webserve.py:4038
-#: gui/slick/views/layouts/main.mako:172
+#: sickbeard/webserve.py:3743 sickbeard/webserve.py:4051
+#: gui/slick/views/layouts/main.mako:174
 msgid "Search Settings"
 msgstr "إعدادات البحث"
 
-#: sickbeard/webserve.py:3742 sickbeard/webserve.py:4377
-#: gui/slick/views/layouts/main.mako:173
+#: sickbeard/webserve.py:3744 sickbeard/webserve.py:4390
+#: gui/slick/views/layouts/main.mako:175
 msgid "Search Providers"
 msgstr "مقدمي خدمة البحث"
 
-#: sickbeard/webserve.py:3743 gui/slick/views/layouts/main.mako:174
+#: sickbeard/webserve.py:3745 gui/slick/views/layouts/main.mako:176
 msgid "Subtitles Settings"
 msgstr "إعدادات الترجمة"
 
-#: sickbeard/webserve.py:3745 sickbeard/webserve.py:4870
-#: gui/slick/views/layouts/main.mako:176
+#: sickbeard/webserve.py:3747 sickbeard/webserve.py:4883
+#: gui/slick/views/layouts/main.mako:178
 msgid "Notifications"
 msgstr "الإشعارات"
 
-#: sickbeard/webserve.py:3746 sickbeard/webserve.py:5186
-#: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:128
+#: sickbeard/webserve.py:3748 sickbeard/webserve.py:5199
+#: gui/slick/views/displayShow.mako:223 gui/slick/views/editShow.mako:128
 #: gui/slick/views/home.mako:258 gui/slick/views/inc_addShowOptions.mako:66
 #: gui/slick/views/manage.mako:45 gui/slick/views/manage_massEdit.mako:188
-#: gui/slick/views/layouts/main.mako:177
+#: gui/slick/views/layouts/main.mako:179
 msgid "Anime"
 msgstr "أنمي"
 
-#: sickbeard/webserve.py:3784 sickbeard/webserve.py:3785
+#: sickbeard/webserve.py:3786 sickbeard/webserve.py:3787
 msgid "SickRage Configuration"
 msgstr "ضبط سيكراج"
 
-#: sickbeard/webserve.py:3799
+#: sickbeard/webserve.py:3801
 msgid "Config - General"
 msgstr "ضبط - عام"
 
-#: sickbeard/webserve.py:3799
+#: sickbeard/webserve.py:3801
 msgid "General Configuration"
 msgstr "ضبط عام"
 
-#: sickbeard/webserve.py:3933
+#: sickbeard/webserve.py:3944
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr "غير قادر على إنشاء الدليل {directory}، دليل السجل لم يتغير."
 
-#: sickbeard/webserve.py:3941
+#: sickbeard/webserve.py:3952
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr "غير قادر على إنشاء الدليل {directory}، دليل شهادة https لم يتغير."
 
-#: sickbeard/webserve.py:3945
+#: sickbeard/webserve.py:3956
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "غير قادر على إنشاء الدليل {directory}، دليل مفتاح https لم يتغير."
 
-#: sickbeard/webserve.py:3958 sickbeard/webserve.py:4156 sickbeard/webserve.py:4292
-#: sickbeard/webserve.py:4853 sickbeard/webserve.py:5097 sickbeard/webserve.py:5168
-#: sickbeard/webserve.py:5205
+#: sickbeard/webserve.py:3971 sickbeard/webserve.py:4169 sickbeard/webserve.py:4305
+#: sickbeard/webserve.py:4866 sickbeard/webserve.py:5110 sickbeard/webserve.py:5181
+#: sickbeard/webserve.py:5218
 msgid "Error(s) Saving Configuration"
 msgstr "خطأ (أخطاء) حفظ الضبط"
 
-#: sickbeard/webserve.py:3961 sickbeard/webserve.py:4159 sickbeard/webserve.py:4295
-#: sickbeard/webserve.py:4856 sickbeard/webserve.py:5100 sickbeard/webserve.py:5171
-#: sickbeard/webserve.py:5208
+#: sickbeard/webserve.py:3974 sickbeard/webserve.py:4172 sickbeard/webserve.py:4308
+#: sickbeard/webserve.py:4869 sickbeard/webserve.py:5113 sickbeard/webserve.py:5184
+#: sickbeard/webserve.py:5221
 msgid "Configuration Saved"
 msgstr "تم حفظ الضبط"
 
-#: sickbeard/webserve.py:3974
+#: sickbeard/webserve.py:3987
 msgid "Config - Backup/Restore"
 msgstr "ضبط - نسخ الاحتياط/الاستعادة"
 
-#: sickbeard/webserve.py:4037
+#: sickbeard/webserve.py:4050
 msgid "Config - Episode Search"
 msgstr "الضبط - البحث عن الحلقة"
 
-#: sickbeard/webserve.py:4172
+#: sickbeard/webserve.py:4185
 msgid "Config - Post Processing"
-msgstr "الضبط - مرحلة ما بعد المعالجة"
+msgstr "الضبط - المعالجة"
 
-#: sickbeard/webserve.py:4208
+#: sickbeard/webserve.py:4221
 msgid "Unpacking Not Supported, disabling unpack setting"
-msgstr ""
+msgstr "فك الضغط غير مدعوم، يتم تعطيل اعداد فك الضغط"
 
-#: sickbeard/webserve.py:4260 sickbeard/webserve.py:4271
+#: sickbeard/webserve.py:4273 sickbeard/webserve.py:4284
 msgid "You tried saving an invalid anime naming config, not saving your naming settings"
-msgstr ""
+msgstr "لقد حاولت حفظ إعدادات تسمية أنمي غير صالحة، لم يتم حفظ إعدادات التسمية"
 
-#: sickbeard/webserve.py:4262 sickbeard/webserve.py:4273
+#: sickbeard/webserve.py:4275 sickbeard/webserve.py:4286
 msgid "You tried saving an invalid naming config, not saving your naming settings"
-msgstr ""
+msgstr "لقد حاولت حفظ إعدادات تسمية غير صالحة، لم يتم حفظ إعدادات التسمية"
 
-#: sickbeard/webserve.py:4376
+#: sickbeard/webserve.py:4389
 msgid "Config - Providers"
 msgstr "التكوين - مقدمي الخدمات"
 
-#: sickbeard/webserve.py:4433
+#: sickbeard/webserve.py:4446
 msgid "No Provider Name specified"
 msgstr "لم يتم تحديد اسم مقدم الخدمة"
 
-#: sickbeard/webserve.py:4435
+#: sickbeard/webserve.py:4448
 msgid "No Provider Url specified"
 msgstr "لم يتم تحديدعنوان مقدم الخدمة"
 
-#: sickbeard/webserve.py:4437
+#: sickbeard/webserve.py:4450
 msgid "No Provider Api key specified"
 msgstr "لم يتم تحديد مفاح Api لمقدم الخدمة"
 
-#: sickbeard/webserve.py:4869
+#: sickbeard/webserve.py:4882
 msgid "Config - Notifications"
 msgstr "الضبط - الإشعارات"
 
-#: sickbeard/webserve.py:5113
+#: sickbeard/webserve.py:5126
 msgid "Config - Subtitles"
 msgstr "الضبط - الترجمة"
 
-#: sickbeard/webserve.py:5185
+#: sickbeard/webserve.py:5198
 msgid "Config - Anime"
 msgstr "الضبط - أنيمي"
 
-#: sickbeard/webserve.py:5221
+#: sickbeard/webserve.py:5234
 msgid "Clear Errors"
 msgstr "مسح الأخطاء"
 
-#: sickbeard/webserve.py:5227
+#: sickbeard/webserve.py:5240
 msgid "Clear Warnings"
 msgstr "مسح التحذيرات"
 
-#: sickbeard/webserve.py:5233
+#: sickbeard/webserve.py:5246
 msgid "Submit Errors"
 msgstr "إرسال الأخطاء"
 
-#: sickbeard/webserve.py:5248
+#: sickbeard/webserve.py:5261
 msgid "Logs &amp; Errors"
 msgstr "السجلات &amp; الأخطاء"
 
-#: sickbeard/webserve.py:5359
+#: sickbeard/webserve.py:5372
 msgid "Log File"
 msgstr "ملف السجل"
 
-#: sickbeard/webserve.py:5359
+#: sickbeard/webserve.py:5372
 msgid "Logs"
 msgstr "سجلات"
 
@@ -1048,7 +1083,9 @@ msgstr "لقد وصلت إلى هذه الصفحة بالخطأ، الرجاء �
 msgid "A mako error has occured.<br>\n"
 "If this happened during an update a simple page refresh may be the solution.<br>\n"
 "Mako errors that happen during updates may be a one time error if there were significant ui changes."
-msgstr ""
+msgstr "لقد حدث خطأ mako؛<br>؛ \n"
+"هذا حدث أثناء التحديث، تحديث بسيطة في للصفحة قد يكون الحل.<br>؛\n"
+"الأخطاء التي تحدث أثناء التحديثات قد تكون مرة واحدة إذا كانت هناك تغييرات كبيرة في واجهة المستخدم."
 
 #: gui/slick/views/addShows.mako:13 gui/slick/views/addShows_newShow.mako:22
 msgid "Add New Show"
@@ -1056,7 +1093,7 @@ msgstr "إضافة مسلسل جديد"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
-msgstr ""
+msgstr "للمسلسلات اللتي لم تقم بتحميلها بعد، هذا الخيار يبحث عن المسلسل في موقع theTVDB.com، و ينشيء مسار خاص بحلقاته، ويضيفه إلى SickRage."
 
 #: gui/slick/views/addShows.mako:22
 msgid "Add From Trakt Lists"
@@ -1064,7 +1101,7 @@ msgstr "إضافة من Trakt Lists"
 
 #: gui/slick/views/addShows.mako:23
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr ""
+msgstr "للمسلسلات اللتي لم تقم بتحميلها حتى الآن، هذا الخيار يتيح لك اختيار المسلسل من إحدى قوائم Trakt وإضافته إلى SickRage."
 
 #: gui/slick/views/addShows.mako:32
 msgid "Add From IMDB's Popular Shows"
@@ -1072,7 +1109,7 @@ msgstr "إضافة مسلسلات مشهورة في موقع IMDB"
 
 #: gui/slick/views/addShows.mako:33
 msgid "View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series."
-msgstr ""
+msgstr "عرض قائمة IMDB للمسلسلات الأكثر شعبية. تستخدم هذه الميزة خوارزمية MOVIEMeter في IMDB لتحديد شعبية المسلسل التلفزيوني."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add Existing Shows"
@@ -1080,7 +1117,7 @@ msgstr "إضافة مسلسلات موجود"
 
 #: gui/slick/views/addShows.mako:43
 msgid "Use this option to add shows that already have a folder created on your hard drive. SickRage will scan your existing metadata/episodes and add the show accordingly."
-msgstr ""
+msgstr "استخدم هذا الخيار لإضافة مسلسلات لديها بالفعل مجلد تم إنشاؤه على محرك القرص الثابت. SickRage سوف يبحث في البيانات التعريفية/الحلقات الخاص بك الموجودة وإضافة المسلسل وفقا لذلك."
 
 #: gui/slick/views/addShows_addExistingShow.mako:15
 msgid "Add Existing Show"
@@ -1089,7 +1126,7 @@ msgstr "إضافة مسلسل موجود"
 #: gui/slick/views/addShows_addExistingShow.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:18
 msgid "Manage Directories"
-msgstr "إدارة الدلائل"
+msgstr "إدارة المسارات"
 
 #: gui/slick/views/addShows_addExistingShow.mako:24
 #: gui/slick/views/addShows_trendingShows.mako:19
@@ -1099,14 +1136,20 @@ msgstr "تخصيص الخيارات"
 #: gui/slick/views/addShows_addExistingShow.mako:35
 msgid "SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction.\n"
 "    If you would rather have SickRage prompt you to customize each show, then use the checkbox below."
-msgstr ""
+msgstr "يمكن لـ SickRage إضافة مسلسلات موجوده لديك، باستخدام الخيارات الحالية، و استخدام بيانات التعريف NFO/XML دون الحاجة إلى تدخل المستخدم. \n"
+" إذا كنت بدلاً من ذلك تريد من SickRage أن يطلب منك تخصيص كل مسلسل، استخدم خانة الاختيار أدناه."
 
 #: gui/slick/views/addShows_addExistingShow.mako:38
 msgid "Prompt me to set settings for each show"
-msgstr ""
+msgstr "أظهر لي إعدادات كل مسلسل على حده"
 
 #: gui/slick/views/addShows_addExistingShow.mako:42
 msgid "Displaying folders within these directories which aren't already added to SickRage"
+msgstr "عرض المجلدات الموجودة في هذه المسارات التي لم يتم إضافتها بالفعل إلى SickRage"
+
+#: gui/slick/views/addShows_addExistingShow.mako:49 gui/slick/views/manage.mako:25
+#: gui/slick/views/manage.mako:65 gui/slick/views/manage_failedDownloads.mako:35
+msgid "Submit"
 msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:30
@@ -1117,17 +1160,23 @@ msgstr "البحث عن مسلسل في موقع theTVDB"
 msgid "Show retrieved from existing metadata"
 msgstr "تم استرجاع المسلسل من بيانات التعريف الموجودة"
 
-#: gui/slick/views/addShows_newShow.mako:48
+#: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
 msgstr "جميع المفهرسات"
 
+#: gui/slick/views/addShows_newShow.mako:56 gui/slick/views/displayShow.mako:335
+#: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
+#: gui/slick/views/schedule.mako:88
+msgid "Search"
+msgstr ""
+
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
-msgstr ""
+msgstr "هذا يؤثرفقط على لغة ملف محتويات بيانات التعريف وأسماء الحلقات."
 
 #: gui/slick/views/addShows_newShow.mako:60
 msgid "This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!"
-msgstr ""
+msgstr "هذا <b>لا</b> يسمح لـ SickRage بتحميل الحلقات التلفزيونية غير الإنجليزية!"
 
 #: gui/slick/views/addShows_newShow.mako:67
 msgid "Pick the parent folder"
@@ -1141,10 +1190,25 @@ msgstr "المجلد الوجهة الذي اخترته مسبقاً"
 msgid "Customize options"
 msgstr "تخصيص الخيارات"
 
+#: gui/slick/views/addShows_newShow.mako:93
+#: gui/slick/views/addShows_popularShows.mako:74
+#: gui/slick/views/trendingShows.mako:44
+msgid "Add Show"
+msgstr ""
+
+#: gui/slick/views/addShows_newShow.mako:95
+msgid "Skip Show"
+msgstr ""
+
+#: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
+#: gui/slick/views/schedule.mako:27
+msgid "Sort By"
+msgstr ""
+
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:31
-#: gui/slick/views/apiBuilder.mako:136 gui/slick/views/displayShow.mako:325
-#: gui/slick/views/displayShow.mako:354 gui/slick/views/displayShow.mako:384
+#: gui/slick/views/apiBuilder.mako:136 gui/slick/views/displayShow.mako:328
+#: gui/slick/views/displayShow.mako:357 gui/slick/views/displayShow.mako:387
 #: gui/slick/views/home.mako:53 gui/slick/views/manage_backlogOverview.mako:83
 msgid "Name"
 msgstr "الإسم"
@@ -1152,7 +1216,7 @@ msgstr "الإسم"
 #: gui/slick/views/addShows_popularShows.mako:20
 #: gui/slick/views/addShows_trendingShows.mako:32
 msgid "Original"
-msgstr ""
+msgstr "المنشأ"
 
 #: gui/slick/views/addShows_popularShows.mako:21
 #: gui/slick/views/addShows_trendingShows.mako:33
@@ -1302,67 +1366,67 @@ msgstr "الموسم"
 msgid "episode"
 msgstr "الحلقة"
 
-#: gui/slick/views/config.mako:28
-msgid "Python Version"
-msgstr ""
-
 #: gui/slick/views/config.mako:29
-msgid "SSL Version"
-msgstr ""
+msgid "Python Version"
+msgstr "نسخة Python"
 
 #: gui/slick/views/config.mako:30
-msgid "OS"
-msgstr ""
+msgid "SSL Version"
+msgstr "نسخة SSL"
 
 #: gui/slick/views/config.mako:31
+msgid "OS"
+msgstr "نظام التشغيل"
+
+#: gui/slick/views/config.mako:32
 msgid "Locale"
 msgstr "الإعدادات المحلية"
 
-#: gui/slick/views/config.mako:34
+#: gui/slick/views/config.mako:35
 msgid "User"
 msgstr "مستخدم"
 
-#: gui/slick/views/config.mako:35
+#: gui/slick/views/config.mako:36
 msgid "Program Folder"
 msgstr "مجلد البرنامج"
 
-#: gui/slick/views/config.mako:36
+#: gui/slick/views/config.mako:37
 msgid "Config File"
 msgstr "ملف الضبط"
 
-#: gui/slick/views/config.mako:37
+#: gui/slick/views/config.mako:38
 msgid "Database File"
 msgstr "ملف قاعدة البيانات"
 
-#: gui/slick/views/config.mako:38
+#: gui/slick/views/config.mako:39
 msgid "Cache Folder"
 msgstr "مجلد التخزين المؤقت"
 
-#: gui/slick/views/config.mako:39
+#: gui/slick/views/config.mako:40
 msgid "Log Folder"
 msgstr "مجلد السجل"
 
-#: gui/slick/views/config.mako:41
+#: gui/slick/views/config.mako:42
 msgid "Arguments"
 msgstr ""
 
-#: gui/slick/views/config.mako:44
+#: gui/slick/views/config.mako:45
 msgid "Web Root"
-msgstr ""
+msgstr "الشبكة الرئيسية"
 
-#: gui/slick/views/config.mako:48
+#: gui/slick/views/config.mako:49
 msgid "Website"
 msgstr "الموقع"
 
-#: gui/slick/views/config.mako:49
+#: gui/slick/views/config.mako:50
 msgid "Wiki"
 msgstr "ويكي"
 
-#: gui/slick/views/config.mako:50
+#: gui/slick/views/config.mako:51
 msgid "Source"
 msgstr "المصدر"
 
-#: gui/slick/views/config.mako:51
+#: gui/slick/views/config.mako:52
 msgid "IRC Chat"
 msgstr "دردشة IRC"
 
@@ -1435,9 +1499,9 @@ msgstr "هل تريد إضافة الحلقات المعالجة إلى MyList؟
 
 #: gui/slick/views/config_anime.mako:67 gui/slick/views/config_anime.mako:87
 #: gui/slick/views/config_anime.mako:91 gui/slick/views/config_general.mako:166
-#: gui/slick/views/config_general.mako:219 gui/slick/views/config_general.mako:371
-#: gui/slick/views/config_general.mako:500 gui/slick/views/config_general.mako:666
-#: gui/slick/views/config_general.mako:759 gui/slick/views/config_general.mako:768
+#: gui/slick/views/config_general.mako:219 gui/slick/views/config_general.mako:394
+#: gui/slick/views/config_general.mako:523 gui/slick/views/config_general.mako:689
+#: gui/slick/views/config_general.mako:782 gui/slick/views/config_general.mako:791
 #: gui/slick/views/config_notifications.mako:143
 #: gui/slick/views/config_notifications.mako:237
 #: gui/slick/views/config_notifications.mako:325
@@ -1472,8 +1536,8 @@ msgstr "هل تريد إضافة الحلقات المعالجة إلى MyList؟
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:244
-#: gui/slick/views/config_subtitles.mako:247 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:242
+#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "حفظ التغييرات"
@@ -1484,7 +1548,7 @@ msgstr "الشكل و المظهر"
 
 #: gui/slick/views/config_anime.mako:77
 msgid "How should the anime functions show and behave."
-msgstr ""
+msgstr "كيف ينبغي أن تظهر مهام الأنيمي وتتصرف."
 
 #: gui/slick/views/config_anime.mako:83
 msgid "Split show lists"
@@ -1493,11 +1557,6 @@ msgstr "تقسيم قوائم المسلسل"
 #: gui/slick/views/config_anime.mako:84
 msgid "Separate anime and normal shows in groups"
 msgstr "فصل مسلسلات الأنمي و المسلسلات العادية في مجموعات"
-
-#: gui/slick/views/config_backuprestore.mako:22
-#: gui/slick/views/config_backuprestore.mako:28
-msgid "Backup"
-msgstr "النسخ الاحتياطي"
 
 #: gui/slick/views/config_backuprestore.mako:23
 #: gui/slick/views/config_backuprestore.mako:51
@@ -1523,13 +1582,14 @@ msgstr "حدد ملف النسخة الاحتياطية التي ترغب في �
 
 #: gui/slick/views/config_general.mako:27 gui/slick/views/config_general.mako:36
 msgid "Misc"
-msgstr ""
+msgstr "متفرقات"
 
 #: gui/slick/views/config_general.mako:28
 msgid "Interface"
 msgstr "واجهة"
 
-#: gui/slick/views/config_general.mako:29 gui/slick/views/editShow.mako:182
+#: gui/slick/views/config_general.mako:29 gui/slick/views/config_general.mako:536
+#: gui/slick/views/editShow.mako:182
 msgid "Advanced Settings"
 msgstr "الإعدادات المتقدمة"
 
@@ -1561,8 +1621,8 @@ msgstr "فتح الصفحة الرئيسية لـ SickRage في بدء التش�
 msgid "Initial page"
 msgstr "صفحة البداية"
 
-#: gui/slick/views/config_general.mako:66 gui/slick/views/layouts/main.mako:108
-#: gui/slick/views/layouts/main.mako:288
+#: gui/slick/views/config_general.mako:66 gui/slick/views/layouts/main.mako:110
+#: gui/slick/views/layouts/main.mako:290
 msgid "Shows"
 msgstr "مسلسلات"
 
@@ -1576,7 +1636,7 @@ msgstr "اختر ساعة لتحديث المسلسلات"
 
 #: gui/slick/views/config_general.mako:81
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
-msgstr "مع معلومات مثل تواريخ عرض الحلقات القادمة، نهاية المسلسلات، إلخ. استخدم مثلا 15 لـ 03: 00 مساء, 4 لـ 04: 00 صصباحا إلخ."
+msgstr "مع معلومات مثل تواريخ عرض الحلقات القادمة، نهاية المسلسلات، إلخ. استخدم مثلا 15 لـ 3 مساء, 4 لـ 4 صباحا إلخ."
 
 #: gui/slick/views/config_general.mako:82
 msgid "Note: minutes are randomized each time SickRage is started"
@@ -1584,43 +1644,47 @@ msgstr "ملاحظة: الدقائق عشوائية في كل مرة يتم في
 
 #: gui/slick/views/config_general.mako:88
 msgid "Send to trash for actions"
-msgstr ""
+msgstr "إرسال إلى سلة المهملات لإتخاذ إجراءات"
 
 #: gui/slick/views/config_general.mako:92
 msgid "when using show \"Remove\" and delete files"
-msgstr ""
+msgstr "عند استخدام عرض \"إزالة\" وحذف الملفات"
 
 #: gui/slick/views/config_general.mako:96
 msgid "on scheduled deletes of the oldest log files"
-msgstr ""
+msgstr "حذف ملفات السجل الأقدم في الوقت المحدد"
 
 #: gui/slick/views/config_general.mako:98
 msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
-msgstr ""
+msgstr "الإجراءات المحددة تستخدام سلة المهملات (سلة المحذوفات) بدلاً من الحذف الدائم"
 
 #: gui/slick/views/config_general.mako:104
 msgid "Log file folder location"
-msgstr ""
+msgstr "موقع مجلد ملف السجل"
 
 #: gui/slick/views/config_general.mako:113
 msgid "Number of Log files saved"
-msgstr ""
+msgstr "عدد ملفات السجلات المحفوظة"
 
 #: gui/slick/views/config_general.mako:116
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
+msgstr "عدد ملفات السجلات المحفوظة عند تدوير السجلات (الافتراضي: 5) (يتطلب إعادة التشغيل)"
+
+#: gui/slick/views/config_general.mako:123
+msgid "Size of Log files saved"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
-msgstr ""
+msgstr "الحجم الأقصى بالميغا بايت لملف السجل (الافتراضي: 1 ميغابايت) (يتطلب إعادة التشغيل)"
 
 #: gui/slick/views/config_general.mako:133
 msgid "Use initial indexer set to"
-msgstr ""
+msgstr "المفهرس المبدئي هو"
 
 #: gui/slick/views/config_general.mako:141
 msgid "as the default selection when adding new shows"
-msgstr ""
+msgstr "كإختيار افتراضي عند إضافة مسلسلات جديدة"
 
 #: gui/slick/views/config_general.mako:148
 msgid "Timeout show indexer at"
@@ -1628,366 +1692,176 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:151
 msgid "seconds of inactivity when finding new shows (default:20)"
-msgstr ""
+msgstr "ثواني سكون عند العثور على مسلسلات جديدة (الافتراضي: 20)"
 
 #: gui/slick/views/config_general.mako:158
 msgid "Show root directories"
-msgstr ""
+msgstr "إظهار المسارات الرئيسية"
 
 #: gui/slick/views/config_general.mako:160
 msgid "where the files of shows are located"
-msgstr ""
+msgstr "حيث توجد ملفات المسلسلات"
 
 #: gui/slick/views/config_general.mako:173
 msgid "Options for software updates."
-msgstr ""
+msgstr "خيارات للحصول على تحديثات البرنامج."
 
 #: gui/slick/views/config_general.mako:179
 msgid "Check software updates"
-msgstr ""
+msgstr "التحقق من تحديثات البرنامج"
 
 #: gui/slick/views/config_general.mako:182
 msgid "and display notifications when updates are available.\n"
 "                                    Checks are run on startup and at the frequency set below*"
-msgstr ""
+msgstr "وعرض إعلامات عند توفر تحديثات. \n"
+"                                    التحقق يعمل عند بدء التشغيل وعند التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:190
 msgid "Automatically update"
-msgstr ""
+msgstr "تحديث تلقائي"
 
 #: gui/slick/views/config_general.mako:193
 msgid "fetch and install software updates.\n"
 "                                    Updates are run on startup and in the background at the frequency set below*"
-msgstr ""
+msgstr "جلب وتثبيت تحديثات البرنامج. \n"
+"                                     التحديثات يتم تشغيلها عند بدء التشغيل وفي الخلفية بناءً على التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:201
 msgid "Check the server every*"
-msgstr ""
+msgstr "تحقق من الخادم كل*"
 
 #: gui/slick/views/config_general.mako:204
 msgid "hours for software updates (default:1)"
-msgstr ""
+msgstr "ساعات لتحديثات البرنامج (الافتراضي: 1)"
 
 #: gui/slick/views/config_general.mako:211
 msgid "Notify on software update"
-msgstr ""
+msgstr "إشعار عند تحديث البرنامج"
 
 #: gui/slick/views/config_general.mako:214
 msgid "send a message to all enabled notifiers when SickRage has been updated"
+msgstr "إرسال رسالة إلى جميع مرسلي الإشعارات المفعلين عندما يتم تحديث SickRage"
+
+#: gui/slick/views/config_general.mako:230
+msgid "User Interface"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:231
+msgid "Options for visual appearance."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:238
 msgid "Interface Language"
-msgstr ""
+msgstr "لغة الواجهة"
 
 #: gui/slick/views/config_general.mako:241
 msgid "System Language"
-msgstr ""
+msgstr "لغة النظام"
 
 #: gui/slick/views/config_general.mako:246 gui/slick/views/config_general.mako:258
 msgid "for appearance to take effect, save then refresh your browser"
-msgstr ""
+msgstr "لكي يتم تفعيل المظهر، احفظ، ثم قم بتحديث المستعرض الخاص بك"
 
 #: gui/slick/views/config_general.mako:252
 msgid "Display theme"
+msgstr "سمة العرض"
+
+#: gui/slick/views/config_general.mako:255
+msgid "Dark"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:264
-msgid "Show all seasons"
+#: gui/slick/views/config_general.mako:256
+msgid "Light"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:267
+#: gui/slick/views/config_general.mako:265
+msgid "Show fanart in the background"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:268 gui/slick/views/config_general.mako:290
 msgid "on the show summary page"
 msgstr "في صفحة ملخص المسلسل"
 
-#: gui/slick/views/config_general.mako:273
+#: gui/slick/views/config_general.mako:275
+msgid "Fanart transparency"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:280
+msgid "Transparency of the fanart in the background"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:287
+msgid "Show all seasons"
+msgstr "إظهار جميع المواسم"
+
+#: gui/slick/views/config_general.mako:296
 msgid "Sort with \"The\", \"A\", \"An\""
 msgstr "الفرز مع \"The\", \"A\", \"An\""
 
-#: gui/slick/views/config_general.mako:276
+#: gui/slick/views/config_general.mako:299
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
 msgstr "شمول (\"The\", \"A\", \"An\") عند ترتيب قوائم المسلسل"
 
-#: gui/slick/views/config_general.mako:282
+#: gui/slick/views/config_general.mako:305
 msgid "Missed episodes range"
 msgstr "نطاق الحلقات المفقودة"
 
-#: gui/slick/views/config_general.mako:285
+#: gui/slick/views/config_general.mako:308
 msgid "Set the range in days of the missed episodes in the Schedule page"
 msgstr "تعيين النطاق في أيام للحلقات المفقودة في صفحة الجدول الزمني"
 
-#: gui/slick/views/config_general.mako:291
+#: gui/slick/views/config_general.mako:314
 msgid "Display fuzzy dates"
 msgstr "عرض التواريخ الغامضة"
 
-#: gui/slick/views/config_general.mako:294
+#: gui/slick/views/config_general.mako:317
 msgid "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On Tue\""
 msgstr "نقل التواريخ المطلقة في تلميحات الأدوات و العرض مثل \"آخر خميس\"، \"الثلاثاء\""
 
-#: gui/slick/views/config_general.mako:300
+#: gui/slick/views/config_general.mako:323
 msgid "Trim zero padding"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:303
+#: gui/slick/views/config_general.mako:326
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr "إزالة الرقم \"0\" في بدايات ساعات النهار، وتاريخ الشهر"
 
-#: gui/slick/views/config_general.mako:310
+#: gui/slick/views/config_general.mako:333
 msgid "Date style"
 msgstr "نمط التاريخ"
 
-#: gui/slick/views/config_general.mako:318
+#: gui/slick/views/config_general.mako:341
 msgid "Use System Default"
 msgstr "استخدام الإعداد الافتراضي للنظام"
 
-#: gui/slick/views/config_general.mako:329
+#: gui/slick/views/config_general.mako:352
 msgid "Time style"
 msgstr "نمط الوقت"
 
-#: gui/slick/views/config_general.mako:336
-msgid " seconds are only shown on the History page"
-msgstr " الثواني تظهر فقط في صفحة المحفوظات"
+#: gui/slick/views/config_general.mako:359
+msgid "seconds are only shown on the History page"
+msgstr ""
 
-#: gui/slick/views/config_general.mako:342
+#: gui/slick/views/config_general.mako:365
 msgid "Timezone"
 msgstr "المنطقة الزمنية"
 
-#: gui/slick/views/config_general.mako:345
+#: gui/slick/views/config_general.mako:368
 msgid "Local"
 msgstr "محلي"
 
-#: gui/slick/views/config_general.mako:348 gui/slick/views/home.mako:55
+#: gui/slick/views/config_general.mako:371 gui/slick/views/home.mako:55
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:30
 #: gui/slick/views/schedule.mako:84
 msgid "Network"
 msgstr "الشبكة"
 
-#: gui/slick/views/config_general.mako:351
+#: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "عرض التواريخ والأوقات إما للمنطقة الزمنية الخاصة بك أو للمنطقة الزمنية للشبكة المعروض عليها المسلسل"
 
-#: gui/slick/views/config_general.mako:354
-msgid " <b>Note:</b> Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
-msgstr " <b>ملاحظة:</b> استخدام التوقيت المحلي في بدء البحث عن الحلقات بعد انتهاء العرض بدقائق (يعتمد على تكرار بحثك اليومي)"
-
-#: gui/slick/views/config_general.mako:361
-msgid "Download url"
-msgstr "عنوان التحميل"
-
-#: gui/slick/views/config_general.mako:366
-msgid "URL where the shows can be downloaded."
-msgstr "عنوان URL اللذي يمكن تحميل المسلسلات منه."
-
-#: gui/slick/views/config_general.mako:380
-msgid "Web Interface"
-msgstr "واجهة ويب"
-
-#: gui/slick/views/config_general.mako:381
-msgid "It is recommended that you enable a username and password to secure SickRage from being tampered with remotely."
-msgstr "من المستحسن أن تقوم بتمكين اسم مستخدم وكلمة مرور لتأمين SickRage من العبث عن بعد."
-
-#: gui/slick/views/config_general.mako:382
-msgid "These options require a manual restart to take effect."
-msgstr "هذه الخيارات تتطلب إعادة تشغيل يدوي لتصبح فعالة."
-
-#: gui/slick/views/config_general.mako:389
-#: gui/slick/views/config_providers.mako:151
-#: gui/slick/views/config_providers.mako:237
-#: gui/slick/views/config_providers.mako:652
-msgid "API key"
-msgstr "مفتاح API"
-
-#: gui/slick/views/config_general.mako:394
-msgid "used to give 3rd party programs limited access to SickRage"
-msgstr "تستخدم لإعطاء البرامج الخارجية صلاحية محدودة للوصول إلى SickRage"
-
-#: gui/slick/views/config_general.mako:395
-msgid "you can try all the features of the API"
-msgstr "يمكنك أن تجرب كافة ميزات API"
-
-#: gui/slick/views/config_general.mako:395
-msgid "here"
-msgstr "هنا"
-
-#: gui/slick/views/config_general.mako:403
-msgid "HTTP logs"
-msgstr "سجلات HTTP"
-
-#: gui/slick/views/config_general.mako:406
-msgid "enable logs from the internal Tornado web server"
-msgstr "تمكين السجلات من ملقم ويب الداخلي Tornado"
-
-#: gui/slick/views/config_general.mako:413
-msgid "HTTP username"
-msgstr "اسم المستخدم HTTP"
-
-#: gui/slick/views/config_general.mako:416
-msgid "set blank for no login"
-msgstr "اتركه فارغاً للدخول بدون تسجيل دخول"
-
-#: gui/slick/views/config_general.mako:423
-msgid "HTTP password"
-msgstr "كلمة مرور HTTP"
-
-#: gui/slick/views/config_general.mako:426
-msgid "no authentication"
-msgstr "بدون مصادقة"
-
-#: gui/slick/views/config_general.mako:432
-msgid "HTTP port"
-msgstr "منفذ HTTP"
-
-#: gui/slick/views/config_general.mako:435
-msgid "web port to browse and access SickRage (default:8081)"
-msgstr "منفذ الشبكة للتصفح والوصول إلى SickRage (الافتراضي: 8081)"
-
-#: gui/slick/views/config_general.mako:442
-msgid "Notify on login"
-msgstr "إشعار عند تسجيل الدخول"
-
-#: gui/slick/views/config_general.mako:445
-msgid "enable to be notified when a new login happens in webserver"
-msgstr "مكِّن هذا الخيار لكي يتم إشعارك عند حدوث تسجيل دخول جديد في خادم الويب"
-
-#: gui/slick/views/config_general.mako:452
-msgid "Listen on IPv6"
-msgstr "الاستماع على IPv6"
-
-#: gui/slick/views/config_general.mako:455
-msgid "attempt binding to any available IPv6 address"
-msgstr "محاولة ربط إلى أي عنوان IPv6 متوفر"
-
-#: gui/slick/views/config_general.mako:462
-msgid "Enable HTTPS"
-msgstr "تمكين HTTPS"
-
-#: gui/slick/views/config_general.mako:465
-msgid "enable access to the web interface using a HTTPS address"
-msgstr "تمكين الوصول إلى واجهة الويب باستخدام عنوان HTTPS"
-
-#: gui/slick/views/config_general.mako:472
-msgid "HTTPS certificate"
-msgstr "شهادة HTTPS"
-
-#: gui/slick/views/config_general.mako:475
-msgid "file name or path to HTTPS certificate"
-msgstr "اسم الملف أو المسار إلى شهادة HTTPS"
-
-#: gui/slick/views/config_general.mako:481
-msgid "HTTPS key"
-msgstr "مفتاح HTTPS"
-
-#: gui/slick/views/config_general.mako:484
-msgid "file name or path to HTTPS key"
-msgstr "اسم الملف أو المسار إلى مفتاح HTTPS"
-
-#: gui/slick/views/config_general.mako:492
-msgid "Reverse proxy headers"
-msgstr "عكس proxy headers"
-
-#: gui/slick/views/config_general.mako:495
-msgid "accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
-msgstr "قبول عكس الـ proxy headers التالية (متقدم)... <br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
-
-#: gui/slick/views/config_general.mako:520
-msgid "CPU throttling"
-msgstr "اختناق المعالج"
-
-#: gui/slick/views/config_general.mako:527
-msgid "Normal (default). High is lower and Low is higher CPU use"
-msgstr "عادي (افتراضي). العالي هو منخفض و المنخفض هو الأعلى في استخدام المعالج"
-
-#: gui/slick/views/config_general.mako:534
-msgid "Anonymous redirect"
-msgstr "إعادة التوجيه المجهولة"
-
-#: gui/slick/views/config_general.mako:537
-msgid "backlink protection via anonymizer service, must end in \"?\""
-msgstr ""
-
-#: gui/slick/views/config_general.mako:544
-msgid "Enable debug"
-msgstr "تمكين التصحيح"
-
-#: gui/slick/views/config_general.mako:547
-msgid "Enable debug logs"
-msgstr "تمكين سجلات التصحيح"
-
-#: gui/slick/views/config_general.mako:554
-msgid "Verify SSL Certs"
-msgstr "التحقق من شهادات SSL"
-
-#: gui/slick/views/config_general.mako:557
-msgid "Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:564
-msgid "No Restart"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:567
-msgid "Only shutdown when restarting SR.\n"
-"                                    Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:576
-msgid "Encrypt passwords"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:579
-msgid "in the <code>config.ini</code> file."
-msgstr ""
-
-#: gui/slick/views/config_general.mako:580
-msgid "<b>Warning:</b> Passwords must only contain"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:580
-msgid "ASCII characters"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:587
-msgid "Unprotected calendar"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:590
-msgid "allow subscribing to the calendar without user and password.\n"
-"                                    Some services like Google Calendar only work this way"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:599
-msgid "Google Calendar Icons"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:602
-msgid "show an icon next to exported calendar events in Google Calendar."
-msgstr ""
-
-#: gui/slick/views/config_general.mako:610
-msgid "Proxy host"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:613
-msgid "blank to disable or proxy to use when connecting to providers"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:619
-msgid "Use proxy for indexers"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:622
-msgid "use proxy host for connecting to indexers (thetvdb)"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:629
-msgid "Skip Remove Detection"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:632
-msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:635 gui/slick/views/config_general.mako:659
+#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:682
 #: gui/slick/views/config_notifications.mako:548
 #: gui/slick/views/config_notifications.mako:578
 #: gui/slick/views/config_notifications.mako:632
@@ -2001,89 +1875,322 @@ msgstr ""
 #: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
 #: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
 #: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
 msgid "Note"
+msgstr "ملاحظة"
+
+#: gui/slick/views/config_general.mako:377
+msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:635
+#: gui/slick/views/config_general.mako:384
+msgid "Download url"
+msgstr "عنوان التحميل"
+
+#: gui/slick/views/config_general.mako:389
+msgid "URL where the shows can be downloaded."
+msgstr "عنوان URL اللذي يمكن تحميل المسلسلات منه."
+
+#: gui/slick/views/config_general.mako:403
+msgid "Web Interface"
+msgstr "واجهة ويب"
+
+#: gui/slick/views/config_general.mako:404
+msgid "It is recommended that you enable a username and password to secure SickRage from being tampered with remotely."
+msgstr "من المستحسن أن تقوم بتمكين اسم مستخدم وكلمة مرور لتأمين SickRage من العبث عن بعد."
+
+#: gui/slick/views/config_general.mako:405
+msgid "These options require a manual restart to take effect."
+msgstr "هذه الخيارات تتطلب إعادة تشغيل يدوي لتصبح فعالة."
+
+#: gui/slick/views/config_general.mako:412
+#: gui/slick/views/config_providers.mako:151
+#: gui/slick/views/config_providers.mako:237
+#: gui/slick/views/config_providers.mako:652
+msgid "API key"
+msgstr "مفتاح API"
+
+#: gui/slick/views/config_general.mako:417
+msgid "used to give 3rd party programs limited access to SickRage"
+msgstr "تستخدم لإعطاء البرامج الخارجية صلاحية محدودة للوصول إلى SickRage"
+
+#: gui/slick/views/config_general.mako:418
+msgid "you can try all the features of the API"
+msgstr "يمكنك أن تجرب كافة ميزات API"
+
+#: gui/slick/views/config_general.mako:418
+msgid "here"
+msgstr "هنا"
+
+#: gui/slick/views/config_general.mako:426
+msgid "HTTP logs"
+msgstr "سجلات HTTP"
+
+#: gui/slick/views/config_general.mako:429
+msgid "enable logs from the internal Tornado web server"
+msgstr "تمكين السجلات من ملقم ويب الداخلي Tornado"
+
+#: gui/slick/views/config_general.mako:436
+msgid "HTTP username"
+msgstr "اسم المستخدم HTTP"
+
+#: gui/slick/views/config_general.mako:439
+msgid "set blank for no login"
+msgstr "اتركه فارغاً للدخول بدون تسجيل دخول"
+
+#: gui/slick/views/config_general.mako:446
+msgid "HTTP password"
+msgstr "كلمة مرور HTTP"
+
+#: gui/slick/views/config_general.mako:449
+#: gui/slick/views/config_notifications.mako:189
+#: gui/slick/views/config_notifications.mako:198
+#: gui/slick/views/config_notifications.mako:307
+#: gui/slick/views/config_notifications.mako:316
+msgid "blank = no authentication"
+msgstr "فارغ = بدون مصادقة"
+
+#: gui/slick/views/config_general.mako:455
+msgid "HTTP port"
+msgstr "منفذ HTTP"
+
+#: gui/slick/views/config_general.mako:458
+msgid "web port to browse and access SickRage (default:8081)"
+msgstr "منفذ الشبكة للتصفح والوصول إلى SickRage (الافتراضي: 8081)"
+
+#: gui/slick/views/config_general.mako:465
+msgid "Notify on login"
+msgstr "إشعار عند تسجيل الدخول"
+
+#: gui/slick/views/config_general.mako:468
+msgid "enable to be notified when a new login happens in webserver"
+msgstr "مكِّن هذا الخيار لكي يتم إشعارك عند حدوث تسجيل دخول جديد في خادم الويب"
+
+#: gui/slick/views/config_general.mako:475
+msgid "Listen on IPv6"
+msgstr "الاستماع على IPv6"
+
+#: gui/slick/views/config_general.mako:478
+msgid "attempt binding to any available IPv6 address"
+msgstr "محاولة ربط إلى أي عنوان IPv6 متوفر"
+
+#: gui/slick/views/config_general.mako:485
+msgid "Enable HTTPS"
+msgstr "تمكين HTTPS"
+
+#: gui/slick/views/config_general.mako:488
+msgid "enable access to the web interface using a HTTPS address"
+msgstr "تمكين الوصول إلى واجهة الويب باستخدام عنوان HTTPS"
+
+#: gui/slick/views/config_general.mako:495
+msgid "HTTPS certificate"
+msgstr "شهادة HTTPS"
+
+#: gui/slick/views/config_general.mako:498
+msgid "file name or path to HTTPS certificate"
+msgstr "اسم الملف أو المسار إلى شهادة HTTPS"
+
+#: gui/slick/views/config_general.mako:504
+msgid "HTTPS key"
+msgstr "مفتاح HTTPS"
+
+#: gui/slick/views/config_general.mako:507
+msgid "file name or path to HTTPS key"
+msgstr "اسم الملف أو المسار إلى مفتاح HTTPS"
+
+#: gui/slick/views/config_general.mako:515
+msgid "Reverse proxy headers"
+msgstr "عكس proxy headers"
+
+#: gui/slick/views/config_general.mako:518
+msgid "accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
+msgstr "قبول عكس الـ proxy headers التالية (متقدم)... <br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
+
+#: gui/slick/views/config_general.mako:543
+msgid "CPU throttling"
+msgstr "اختناق المعالج"
+
+#: gui/slick/views/config_general.mako:550
+msgid "Normal (default). High is lower and Low is higher CPU use"
+msgstr "عادي (افتراضي). العالي هو منخفض و المنخفض هو الأعلى في استخدام المعالج"
+
+#: gui/slick/views/config_general.mako:557
+msgid "Anonymous redirect"
+msgstr "إعادة التوجيه المجهولة"
+
+#: gui/slick/views/config_general.mako:560
+msgid "backlink protection via anonymizer service, must end in \"?\""
+msgstr ""
+
+#: gui/slick/views/config_general.mako:567
+msgid "Enable debug"
+msgstr "تمكين التصحيح"
+
+#: gui/slick/views/config_general.mako:570
+msgid "Enable debug logs"
+msgstr "تمكين سجلات التصحيح"
+
+#: gui/slick/views/config_general.mako:577
+msgid "Verify SSL Certs"
+msgstr "التحقق من شهادات SSL"
+
+#: gui/slick/views/config_general.mako:580
+msgid "Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
+msgstr "التحقق من شهادات SSL (تعطيل هذا للـ SSL المعطوبة (مثل QNAP))"
+
+#: gui/slick/views/config_general.mako:587
+msgid "No Restart"
+msgstr "لا يتطلب إعادة التشغيل"
+
+#: gui/slick/views/config_general.mako:590
+msgid "Only shutdown when restarting SR.\n"
+"                                    Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
+msgstr "إيقاف التشغيل فقط عند إعادة تشغيل SickRage ؛ \n"
+" فقط حدد هذا الخيار عندما يكون لديك برامج خارجية  تقوم بإعادة تشغيل SickRage عندما يتوقف تلقائياً (مثل FireDaemon)"
+
+#: gui/slick/views/config_general.mako:599
+msgid "Encrypt passwords"
+msgstr "تشفير كلمة المرور"
+
+#: gui/slick/views/config_general.mako:602
+msgid "in the <code>config.ini</code> file."
+msgstr "في ملف <code>config.ini</code>."
+
+#: gui/slick/views/config_general.mako:603
+#: gui/slick/views/config_subtitles.mako:145
+msgid "Warning"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "Passwords must only contain"
+msgstr ""
+
+#: gui/slick/views/config_general.mako:603
+msgid "ASCII characters"
+msgstr "رموز ASCII"
+
+#: gui/slick/views/config_general.mako:610
+msgid "Unprotected calendar"
+msgstr "تقويم غير محمي"
+
+#: gui/slick/views/config_general.mako:613
+msgid "allow subscribing to the calendar without user and password.\n"
+"                                    Some services like Google Calendar only work this way"
+msgstr "السماح بالاشتراك في التقويم بدون اسم المستخدم وكلمة المرور. \n"
+"                                    بعض الخدمات مثل تقويم Google تعمل فقط بهذه الطريقة"
+
+#: gui/slick/views/config_general.mako:622
+msgid "Google Calendar Icons"
+msgstr "أيقونات تقويم جوجل"
+
+#: gui/slick/views/config_general.mako:625
+msgid "show an icon next to exported calendar events in Google Calendar."
+msgstr "أظهر أيقونة بجوار أحداث التقويم اللتي تم تصديرها في تقويم Google."
+
+#: gui/slick/views/config_general.mako:633
+msgid "Proxy host"
+msgstr "مضيف الوكيل"
+
+#: gui/slick/views/config_general.mako:636
+msgid "blank to disable or proxy to use when connecting to providers"
+msgstr "اتركه فارغاً لتعطيله أو استخدم الوكيل عند الاتصال بمقدمي الخدمات"
+
+#: gui/slick/views/config_general.mako:642
+msgid "Use proxy for indexers"
+msgstr "استخدام الوكيل للمفهرسين"
+
+#: gui/slick/views/config_general.mako:645
+msgid "use proxy host for connecting to indexers (thetvdb)"
+msgstr "استخدام مضيف الوكيل للإتصال بالمفهرسين (thetvdb)"
+
+#: gui/slick/views/config_general.mako:652
+msgid "Skip Remove Detection"
+msgstr "تخطي إزالة الكشف"
+
+#: gui/slick/views/config_general.mako:655
+msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
+msgstr "تخطي الكشف عن ملفات تمت إزالتها. في حال تعطيل هذا الخيار، الحلقة ستوضع على حالة الحذف الافتراضية"
+
+#: gui/slick/views/config_general.mako:658
 msgid "This may mean SickRage misses renames as well"
-msgstr ""
+msgstr "وهذا قد يعني أن SickRage قد يٌفوت إعادة التسميات أيضا"
 
-#: gui/slick/views/config_general.mako:641
+#: gui/slick/views/config_general.mako:664
 msgid "Default deleted episode status"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:657
-msgid "Define the status to be set for media file that has been deleted."
-msgstr ""
-
-#: gui/slick/views/config_general.mako:659
-msgid "Archived option will keep previous downloaded quality"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:660
-msgid "Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:674
-msgid "Options for github related features."
-msgstr ""
+msgstr "الحالة الافتراضية لحذف الحلقة"
 
 #: gui/slick/views/config_general.mako:680
+msgid "Define the status to be set for media file that has been deleted."
+msgstr "تحديد الحالة لملفات الوسائط اللتي يتم حذفها."
+
+#: gui/slick/views/config_general.mako:682
+msgid "Archived option will keep previous downloaded quality"
+msgstr "سيحافظ الخيار المؤرشف على جودة التحميل السابقة"
+
+#: gui/slick/views/config_general.mako:683
+msgid "Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
+msgstr "على سبيل المثال: المحملة (1080p WEB-DL) ==> المؤرشفة (1080p WEB-DL)"
+
+#: gui/slick/views/config_general.mako:697
+msgid "Options for github related features."
+msgstr "خيارات مميزات github ذات الصلة."
+
+#: gui/slick/views/config_general.mako:703
 msgid "Branch version"
 msgstr "فرع إصدار"
 
-#: gui/slick/views/config_general.mako:702
+#: gui/slick/views/config_general.mako:725
 msgid "Error: No branches found."
 msgstr "خطأ: لا يوجد فروع."
 
-#: gui/slick/views/config_general.mako:704
+#: gui/slick/views/config_general.mako:727
 msgid "select branch to use (restart required)"
 msgstr "حدد فرع لإستخدامه (يتطلب إعادة التشغيل)"
 
-#: gui/slick/views/config_general.mako:712
+#: gui/slick/views/config_general.mako:735
 msgid "GitHub username"
 msgstr "اسم المستخدم GitHub"
 
-#: gui/slick/views/config_general.mako:715 gui/slick/views/config_general.mako:725
+#: gui/slick/views/config_general.mako:738 gui/slick/views/config_general.mako:748
 msgid "*** (REQUIRED FOR SUBMITTING ISSUES) ***"
 msgstr "*** (مطلوب لإرسال المشاكل) * * *"
 
-#: gui/slick/views/config_general.mako:722
+#: gui/slick/views/config_general.mako:745
 msgid "GitHub password"
 msgstr "كلمة مرور GitHub"
 
-#: gui/slick/views/config_general.mako:732
+#: gui/slick/views/config_general.mako:755
 msgid "GitHub remote for branch"
-msgstr ""
+msgstr "GitHub عن بعد للفرع"
 
-#: gui/slick/views/config_general.mako:735
+#: gui/slick/views/config_general.mako:758
 msgid "default:origin. Access repo configured remotes (save then refresh browser)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:742
+#: gui/slick/views/config_general.mako:765
 msgid "Git executable path"
-msgstr ""
+msgstr "مسار التنفيذ الخاص بـ Git"
 
-#: gui/slick/views/config_general.mako:745
+#: gui/slick/views/config_general.mako:768
 msgid "only needed if OS is unable to locate git from env"
-msgstr ""
+msgstr "تحتاج إليه فقط إذا كان نظام التشغيل غير قادر على تحديد موقع git من النظام"
 
-#: gui/slick/views/config_general.mako:752
+#: gui/slick/views/config_general.mako:775
 msgid "Git reset"
-msgstr ""
+msgstr "إعادة تعيين Git"
 
-#: gui/slick/views/config_general.mako:755
+#: gui/slick/views/config_general.mako:778
 msgid "removes untracked files and performs a hard reset on git branch automatically to help resolve update issues"
-msgstr ""
+msgstr "إزالة الملفات الغير متعقبة و القيام بإعادة تعيين فرع Git تلقائياً للمساعدة على حل مشاكل التحديث"
 
-#: gui/slick/views/config_general.mako:767
+#: gui/slick/views/config_general.mako:790
 #: gui/slick/views/config_postProcessing.mako:1136
 msgid "All non-absolute folder locations are relative to "
-msgstr ""
+msgstr "جميع مواقع المجلدات غير المطلقة منسوبة إلى "
 
 #: gui/slick/views/config_notifications.mako:19
 msgid "Home Theater / NAS"
-msgstr ""
+msgstr "مسرح منزلي/ وحدة التخزين الشبكية NAS"
 
 #: gui/slick/views/config_notifications.mako:20
 msgid "Devices"
@@ -2091,15 +2198,15 @@ msgstr "الأجهزة"
 
 #: gui/slick/views/config_notifications.mako:21
 msgid "Social"
-msgstr ""
+msgstr "اجتماعي"
 
 #: gui/slick/views/config_notifications.mako:30
 msgid "A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV."
-msgstr ""
+msgstr "نظام وسائط وترفيه منزلي مجاني ومفتوح المصدر يعمل على منصات مختلفة يعمل بواجهة مستخدم مخصصه لأجهزة العرض الكبيرة كالتلفزيون."
 
 #: gui/slick/views/config_notifications.mako:38
 msgid "Send KODI commands?"
-msgstr ""
+msgstr "إرسال أوامر برنامج KODI؟"
 
 #: gui/slick/views/config_notifications.mako:46
 msgid "Always on"
@@ -2141,7 +2248,7 @@ msgstr "إشعار عند جلب الحلقات"
 #: gui/slick/views/config_notifications.mako:1499
 #: gui/slick/views/config_notifications.mako:1758
 msgid "send a notification when a download starts?"
-msgstr "إرسال إشعار عند بدء تحميل؟"
+msgstr "إرسال إشعار عند بدء التحميل؟"
 
 #: gui/slick/views/config_notifications.mako:64
 #: gui/slick/views/config_notifications.mako:274
@@ -2209,43 +2316,43 @@ msgstr "إشعار عند تحميل الترجمة"
 #: gui/slick/views/config_notifications.mako:1517
 #: gui/slick/views/config_notifications.mako:1776
 msgid "send a notification when subtitles are downloaded?"
-msgstr ""
+msgstr "إرسال إشعر عندما يتم تحميل الترجمة؟"
 
 #: gui/slick/views/config_notifications.mako:82
 msgid "Update library"
-msgstr ""
+msgstr "تحديث المكتبة"
 
 #: gui/slick/views/config_notifications.mako:85
 msgid "update KODI library when a download finishes?"
-msgstr ""
+msgstr "تحديث مكتبة برنامج KODI عند انتهاء تحميل؟"
 
 #: gui/slick/views/config_notifications.mako:91
 msgid "Full library update"
-msgstr ""
+msgstr "تحديث كامل للمكتبة"
 
 #: gui/slick/views/config_notifications.mako:94
 msgid "perform a full library update if update per-show fails?"
-msgstr ""
+msgstr "تنفيذ تحديث كامل للمكتبة في حالة فشل التحديث لكل مسلسل؟"
 
 #: gui/slick/views/config_notifications.mako:100
 msgid "Only update first host"
-msgstr ""
+msgstr "تحديث المضيف الأول فقط"
 
 #: gui/slick/views/config_notifications.mako:103
 msgid "only send library updates to the first active host?"
-msgstr ""
+msgstr "إرسال أمر تحديث المكتبة للمضيف المفعل الأول فقط؟"
 
 #: gui/slick/views/config_notifications.mako:109
 msgid "KODI IP:Port"
-msgstr ""
+msgstr "عنوان IP والمنفذ لبرنامج KODI"
 
 #: gui/slick/views/config_notifications.mako:114
 msgid "host running KODI (eg. 192.168.1.100:8080)"
-msgstr ""
+msgstr "المضيف الموجود عليه KODI (مثلا. 192.168.1.100:8096)"
 
 #: gui/slick/views/config_notifications.mako:118
 msgid "(multiple host strings must be separated by commas)"
-msgstr ""
+msgstr "(عناوين المضيفين المتعددة يجب أن تكون مفصولة بفواصل)"
 
 #: gui/slick/views/config_notifications.mako:123
 #: gui/slick/views/config_notifications.mako:186
@@ -2258,14 +2365,14 @@ msgstr "اسم المُستخدم"
 
 #: gui/slick/views/config_notifications.mako:128
 msgid "username for your KODI server (blank for none)"
-msgstr ""
+msgstr "اسم المستخدم الخاص بـ KODI (فارغة إذا لم يوجد)"
 
 #: gui/slick/views/config_notifications.mako:133
 #: gui/slick/views/config_notifications.mako:195
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:237 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "كلمة المرور"
 
@@ -2287,11 +2394,11 @@ msgstr "كلمة المرور الخاصة بـ KODI (فارغة إذا لم ي�
 #: gui/slick/views/config_notifications.mako:1728
 #: gui/slick/views/config_notifications.mako:1884
 msgid "Click below to test."
-msgstr ""
+msgstr "انقر أدناه للتحقق."
 
 #: gui/slick/views/config_notifications.mako:154
 msgid "Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!"
-msgstr ""
+msgstr "عش تجربة تشغيل الوسائط الخاصة بك على واجهة سهلة الاستخدام مذهلة بصريا، على ماك الخاص بك متصل بجهاز التلفزيون. مكتبة الوسائط الخاصة بك لم تنظهر ابدأ بهذا الجمال!"
 
 #: gui/slick/views/config_notifications.mako:155
 msgid "For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>."
@@ -2303,18 +2410,11 @@ msgstr "إرسال تحديثات المكتبة إلى Plex Media Server؟"
 
 #: gui/slick/views/config_notifications.mako:171
 msgid "Plex Media Server Auth Token"
-msgstr ""
+msgstr "رمز المصادقة لـ Plex Media Server"
 
 #: gui/slick/views/config_notifications.mako:176
 msgid "Auth Token used by plex"
 msgstr "رمز المصادقة المستخدم من طرف plex"
-
-#: gui/slick/views/config_notifications.mako:189
-#: gui/slick/views/config_notifications.mako:198
-#: gui/slick/views/config_notifications.mako:307
-#: gui/slick/views/config_notifications.mako:316
-msgid "blank = no authentication"
-msgstr "فارغ = بدون مصادقة"
 
 #: gui/slick/views/config_notifications.mako:206
 msgid "Update Library"
@@ -2427,7 +2527,7 @@ msgstr "الحصول على الإعدادات"
 
 #: gui/slick/views/config_notifications.mako:406
 msgid "Get Settings"
-msgstr ""
+msgstr "الحصول على الإعدادات"
 
 #: gui/slick/views/config_notifications.mako:410
 msgid "the Popcorn Hour device must be powered on and NMJ running."
@@ -2480,7 +2580,7 @@ msgstr "العثور على قاعدة البيانات"
 
 #: gui/slick/views/config_notifications.mako:503
 msgid "Find Database"
-msgstr ""
+msgstr "العثور على قاعدة البيانات"
 
 #: gui/slick/views/config_notifications.mako:507
 msgid "the Popcorn Hour device must be powered on."
@@ -2512,59 +2612,59 @@ msgstr "إرسال إشعارات Synology؟"
 
 #: gui/slick/views/config_notifications.mako:548
 msgid "requires SickRage to be running on your Synology NAS."
-msgstr ""
+msgstr "يتطلب SickRage أن يعمل على Synology (وحدة التخزين الشبكية NAS)؛ الخاص بك."
 
 #: gui/slick/views/config_notifications.mako:562
 msgid "Synology Indexer"
-msgstr ""
+msgstr "مفهرس Synology"
 
 #: gui/slick/views/config_notifications.mako:564
 msgid "Synology Notifier is the notification system of Synology DSM"
-msgstr ""
+msgstr "Synology Notifier هو نظام الإشعارات الخاص بنظام التشغيل Synology DSM"
 
 #: gui/slick/views/config_notifications.mako:573
 msgid "Send notifications to the Synology Notifier?"
-msgstr ""
+msgstr "إرسال إشعارات إلى Synology Notifier؟"
 
 #: gui/slick/views/config_notifications.mako:578
 msgid "requires SickRage to be running on your Synology DSM."
-msgstr ""
+msgstr "يتطلب SickRage أن يعمل على نظام تشغيل Synology الخاص بك."
 
 #: gui/slick/views/config_notifications.mako:617
 msgid "pyTivo"
-msgstr ""
+msgstr "pyTivo"
 
 #: gui/slick/views/config_notifications.mako:619
 msgid "pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo."
-msgstr ""
+msgstr "pyTivo هو خادم HMO و GoBack معاً. مزود خدمة الإشعارات هذا سيرفع جميع التنزيلات المكتملة إلى Tivo الخاص بك."
 
 #: gui/slick/views/config_notifications.mako:627
 msgid "Send notifications to pyTivo?"
-msgstr ""
+msgstr "ارسال الإخطارات إلى pyTivo؟"
 
 #: gui/slick/views/config_notifications.mako:632
 msgid "requires the downloaded files to be accessible by pyTivo."
-msgstr ""
+msgstr "يتطلب الملفات التي تم تحميلها ليتمكن pyTivo من الوصول إليها."
 
 #: gui/slick/views/config_notifications.mako:639
 msgid "pyTivo IP:Port"
-msgstr ""
+msgstr "عنوان IP ومنفذ pyTivo"
 
 #: gui/slick/views/config_notifications.mako:644
 msgid "host running pyTivo (eg. 192.168.1.1:9032)"
-msgstr ""
+msgstr "المضيف الموجود عليه pyTivo (مثلا. 192.168.1.100:8096)"
 
 #: gui/slick/views/config_notifications.mako:649
 msgid "pyTivo share name"
-msgstr ""
+msgstr "اسم مشاركة pyTivo"
 
 #: gui/slick/views/config_notifications.mako:654
 msgid "value used in pyTivo Web Configuration to name the share."
-msgstr ""
+msgstr "القيمة المستخدمة لتسمية المشاركة في ملف تكوين ويب الخص بـ pyTivo."
 
 #: gui/slick/views/config_notifications.mako:659
 msgid "Tivo name"
-msgstr ""
+msgstr "اسم Tivo"
 
 #: gui/slick/views/config_notifications.mako:664
 msgid "(Messages &amp; Settings > Account &amp; System Information > System Information > DVR name)"
@@ -2572,59 +2672,59 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:679
 msgid "Growl"
-msgstr ""
+msgstr "Growl"
 
 #: gui/slick/views/config_notifications.mako:681
 msgid "A cross-platform unobtrusive global notification system."
-msgstr ""
+msgstr "نظام إشعرات عالمي غير مزعج يعمل على منصات تشغيل متعددة."
 
 #: gui/slick/views/config_notifications.mako:689
 msgid "Send Growl notifications?"
-msgstr ""
+msgstr "إرسال إشعارات لـ Growl؟"
 
 #: gui/slick/views/config_notifications.mako:724
 msgid "Growl IP:Port"
-msgstr ""
+msgstr "عنوان IP ومنفذ Growl"
 
 #: gui/slick/views/config_notifications.mako:729
 msgid "host running Growl (eg. 192.168.1.100:23053)"
-msgstr ""
+msgstr "المضيف الموجود عليه Growl (مثلا. 192.168.1.100:8096)"
 
 #: gui/slick/views/config_notifications.mako:739
 msgid "may leave blank if SickRage is on the same host."
-msgstr ""
+msgstr "اتركه فارغاً إذا كان SickRage يعمل على نفس المضيف."
 
 #: gui/slick/views/config_notifications.mako:743
 msgid "otherwise Growl <b>requires</b> a password to be used."
-msgstr ""
+msgstr "خلاف ذلك Growl؛<b>يتطلب</b> كلمة مرور لاستخدامها."
 
 #: gui/slick/views/config_notifications.mako:746
 msgid "Click below to register and test Growl, this is required for Growl notifications to work."
-msgstr ""
+msgstr "انقر أدناه لتسجيل واختبار Growl، وهذا مطلوب لكي تعمل إشعارات Growl."
 
 #: gui/slick/views/config_notifications.mako:747
 msgid "Register Growl"
-msgstr ""
+msgstr "سجل Growl"
 
 #: gui/slick/views/config_notifications.mako:757
 msgid "Prowl"
-msgstr ""
+msgstr "Prowl"
 
 #: gui/slick/views/config_notifications.mako:759
 msgid "A Growl client for iOS."
-msgstr ""
+msgstr "عميل Growl للأجهزة اللتي تعمل بنظام iOS."
 
 #: gui/slick/views/config_notifications.mako:767
 msgid "Send Prowl notifications?"
-msgstr ""
+msgstr "إرسال إشعارات لـ Prowl؟"
 
 #: gui/slick/views/config_notifications.mako:802
 msgid "Prowl Message Title"
-msgstr ""
+msgstr "عنوان رسالة Prowl"
 
 #: gui/slick/views/config_notifications.mako:808
 msgid "Global Prowl API key(s)"
-msgstr ""
+msgstr "مفاتيح API الشاملة لـ Prowl"
 
 #: gui/slick/views/config_notifications.mako:813
 msgid "Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.\n"
@@ -2634,17 +2734,17 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:817
 #: gui/slick/views/config_notifications.mako:1847
 msgid "(This field may be blank except when testing.)"
-msgstr ""
+msgstr "(قد يكون هذا الحقل فارغاً ما عدا عند التحقق)"
 
 #: gui/slick/views/config_notifications.mako:822
 #: gui/slick/views/config_notifications.mako:1863
 msgid "Show notification list"
-msgstr ""
+msgstr "قائمة إشعارات المسلسل"
 
 #: gui/slick/views/config_notifications.mako:824
 #: gui/slick/views/config_notifications.mako:1865
 msgid "-- Select a Show --"
-msgstr ""
+msgstr "--حدد مسلسل-"
 
 #: gui/slick/views/config_notifications.mako:833
 msgid "Configure per-show notifications here by entering Prowl API key(s), separated by commas,\n"
@@ -2655,11 +2755,11 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:839
 #: gui/slick/views/config_notifications.mako:1880
 msgid "Save for this show"
-msgstr ""
+msgstr "حفظ لهذا المسلسل"
 
 #: gui/slick/views/config_notifications.mako:844
 msgid "Prowl priority"
-msgstr ""
+msgstr "أولوية Prowl"
 
 #: gui/slick/views/config_notifications.mako:846
 #: gui/slick/views/config_notifications.mako:1160
@@ -2690,11 +2790,11 @@ msgstr "طارئة"
 
 #: gui/slick/views/config_notifications.mako:855
 msgid "priority of Prowl messages from SickRage."
-msgstr ""
+msgstr "الأولوية في Prowl للرسائل من SickRage."
 
 #: gui/slick/views/config_notifications.mako:869
 msgid "Libnotify"
-msgstr ""
+msgstr "Libnotify"
 
 #: gui/slick/views/config_notifications.mako:871
 msgid "The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href=\"apt:python-notify\">python-notify</a>)."
@@ -2702,52 +2802,52 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:879
 msgid "Send Libnotify notifications?"
-msgstr ""
+msgstr "إرسال إشعارات Libnotify؟"
 
 #: gui/slick/views/config_notifications.mako:923
 #: gui/slick/views/config_notifications.mako:1000
 msgid "Pushover"
-msgstr ""
+msgstr "Pushover"
 
 #: gui/slick/views/config_notifications.mako:925
 msgid "Pushover makes it easy to send real-time notifications to your Android and iOS devices."
-msgstr ""
+msgstr "Pushover يجعل من السهل إرسال إشعارات مباشرةً لأجهزة الأندرويد و الـ iOS."
 
 #: gui/slick/views/config_notifications.mako:933
 msgid "Send Pushover notifications?"
-msgstr ""
+msgstr "إرسال إشعارات لـ Pushover؟"
 
 #: gui/slick/views/config_notifications.mako:968
 msgid "Pushover key"
-msgstr ""
+msgstr "مفتاح Pushover"
 
 #: gui/slick/views/config_notifications.mako:973
 msgid "user key of your Pushover account"
-msgstr ""
+msgstr "مفتاح المستخدم الخاص بحسابك في Pushover"
 
 #: gui/slick/views/config_notifications.mako:978
 msgid "Pushover API key"
-msgstr ""
+msgstr "مفتاح API للـ Pushover"
 
 #: gui/slick/views/config_notifications.mako:988
 msgid "Pushover devices"
-msgstr ""
+msgstr "أجهزة Pushover"
 
 #: gui/slick/views/config_notifications.mako:993
 msgid "comma separated list of pushover devices you want to send notifications to"
-msgstr ""
+msgstr "قائمة بأجهزة pushover اللتي تريد إرسال إشعارات لها، مفصولة بفاصلة"
 
 #: gui/slick/views/config_notifications.mako:998
 msgid "Pushover notification sound"
-msgstr ""
+msgstr "صوت الإشعار لـ Pushover"
 
 #: gui/slick/views/config_notifications.mako:1001
 msgid "Bike"
-msgstr ""
+msgstr "الدراجة"
 
 #: gui/slick/views/config_notifications.mako:1002
 msgid "Bugle"
-msgstr ""
+msgstr "بوق"
 
 #: gui/slick/views/config_notifications.mako:1003
 msgid "Cash Register"
@@ -2910,8 +3010,8 @@ msgid "Pushbullet"
 msgstr "Pushbullet"
 
 #: gui/slick/views/config_notifications.mako:1247
-msgid "Pushbullet is a platform for receiving custom push notifications to connected devices running Android and desktop Chrome browsers."
-msgstr "Pushbullet هي منصة لتلقي إشعارات مخصصة للأجهزة العاملة بأنظمة أندرويد أو متصفح الكروم على سطح المكتب."
+msgid "Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera."
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1255
 msgid "Send Pushbullet notifications?"
@@ -2967,57 +3067,57 @@ msgstr "إرسال رسالة نصية قصيرة عندما يتم تحميل �
 
 #: gui/slick/views/config_notifications.mako:1371
 msgid "Free Mobile customer ID"
-msgstr ""
+msgstr "معرف العميل في Free Mobile"
 
 #: gui/slick/views/config_notifications.mako:1376
 msgid "It's your Free Mobile customer ID (8 digits)"
-msgstr ""
+msgstr "هو معرف العميل الخاصة بك في Free Mobile؛ (8 أرقام)"
 
 #: gui/slick/views/config_notifications.mako:1381
 msgid "Free Mobile API Key"
-msgstr ""
+msgstr "مفتاح API لـ Free Mobile"
 
 #: gui/slick/views/config_notifications.mako:1386
 msgid "Find your API Key in your customer portal."
-msgstr ""
+msgstr "العثور على مفتاح API في صفحة العميل الخاص بك."
 
 #: gui/slick/views/config_notifications.mako:1389
 #: gui/slick/views/config_notifications.mako:1461
 msgid "Click below to test your settings."
-msgstr ""
+msgstr "انقر أدناه لاختبار الإعدادات الخاصة بك."
 
 #: gui/slick/views/config_notifications.mako:1398
 #: gui/slick/views/config_notifications.mako:1399
 msgid "Telegram"
-msgstr ""
+msgstr "تيليغرام"
 
 #: gui/slick/views/config_notifications.mako:1400
 msgid "Telegram is a cloud-based instant messaging service."
-msgstr ""
+msgstr "تيليغرام هو خدمة مراسلة فورية سحابية."
 
 #: gui/slick/views/config_notifications.mako:1408
 msgid "Send Telegram notifications?"
-msgstr ""
+msgstr "إرسال إشعارات إلى تيليغرام؟"
 
 #: gui/slick/views/config_notifications.mako:1419
 msgid "Send a message when a download starts?"
-msgstr ""
+msgstr "إرسال رسالة عند بدء تحميل؟"
 
 #: gui/slick/views/config_notifications.mako:1428
 msgid "Send a message when a download finishes?"
-msgstr ""
+msgstr "إرسال رسالة عند انتهاء التحميل؟"
 
 #: gui/slick/views/config_notifications.mako:1437
 msgid "Send a message when subtitles are downloaded?"
-msgstr ""
+msgstr "إرسال رسالة عندما يتم تحميل الترجمة؟"
 
 #: gui/slick/views/config_notifications.mako:1443
 msgid "User/group ID"
-msgstr ""
+msgstr "المستخدم/معرف المجموعة"
 
 #: gui/slick/views/config_notifications.mako:1448
 msgid "Contact @myidbot on Telegram to get an ID"
-msgstr ""
+msgstr "تواصل مع @myidbot في تيليغرام للحصول على المعرف"
 
 #: gui/slick/views/config_notifications.mako:1453
 msgid "Bot API token"
@@ -3029,7 +3129,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1474
 msgid "Twitter"
-msgstr ""
+msgstr "تويتر"
 
 #: gui/slick/views/config_notifications.mako:1476
 msgid "A social networking and microblogging service, enabling its users to send and read other users' messages called tweets."
@@ -3037,51 +3137,51 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1484
 msgid "Should SickRage post tweets on Twitter?"
-msgstr ""
+msgstr "هل ينشر SickRage تغريدات على حسابك؟"
 
 #: gui/slick/views/config_notifications.mako:1489
 msgid "you may want to use a secondary account."
-msgstr ""
+msgstr "قد ترغب في استخدام حساب ثانوي."
 
 #: gui/slick/views/config_notifications.mako:1523
 msgid "Send direct message"
-msgstr ""
+msgstr "إرسال رسالة خاصة"
 
 #: gui/slick/views/config_notifications.mako:1526
 msgid "send a notification via Direct Message, not via status update"
-msgstr ""
+msgstr "إرسال إشعار عبر رسالة خاصة، وليس عن طريق تحديث الحالة"
 
 #: gui/slick/views/config_notifications.mako:1532
 msgid "Send DM to"
-msgstr ""
+msgstr "إرسال رسالة خاصة إلى"
 
 #: gui/slick/views/config_notifications.mako:1536
 msgid "Twitter account to send Direct Messages to (must follow you)"
-msgstr ""
+msgstr "حساب تويتر إرسال رسائل خاصة إلى (يجب أن يكون متابعاً لك)"
 
 #: gui/slick/views/config_notifications.mako:1541
 msgid "Step One"
-msgstr ""
+msgstr "الخطوة الأولى"
 
 #: gui/slick/views/config_notifications.mako:1545
 msgid "Request Authorization"
-msgstr ""
+msgstr "طلب التفويض"
 
 #: gui/slick/views/config_notifications.mako:1550
 msgid "Step Two"
-msgstr ""
+msgstr "الخطوة الثانية"
 
 #: gui/slick/views/config_notifications.mako:1553
 msgid "Enter the key Twitter gave you below, and click \"Verify Key\"."
-msgstr ""
+msgstr "أدخل المفتاح اللذي أعطاك إياه تويتر أدناه، ثم انقر فوق \"التحقق من المفتاح\"."
 
 #: gui/slick/views/config_notifications.mako:1561
 msgid "Step Three"
-msgstr ""
+msgstr "الخطوة الثالثة"
 
 #: gui/slick/views/config_notifications.mako:1576
 msgid "Trakt"
-msgstr ""
+msgstr "Trakt"
 
 #: gui/slick/views/config_notifications.mako:1578
 msgid "trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, trakt recommends additional shows and movies you'll enjoy!"
@@ -3089,23 +3189,23 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1586
 msgid "Send Trakt.tv notifications?"
-msgstr ""
+msgstr "إرسال إشعارات لـ Trakt.tv؟"
 
 #: gui/slick/views/config_notifications.mako:1598
 msgid "username of your Trakt account."
-msgstr ""
+msgstr "اسم المستخدم للحساب الخاص بك في Trakt."
 
 #: gui/slick/views/config_notifications.mako:1602
 msgid "Get Trakt PIN"
-msgstr ""
+msgstr "الحصول على رقم PIN من Trakt"
 
 #: gui/slick/views/config_notifications.mako:1605
 msgid "Trakt PIN"
-msgstr ""
+msgstr "رقم PIN لـ Trakt"
 
 #: gui/slick/views/config_notifications.mako:1609
 msgid "PIN code to authorize SickRage to access Trakt on your behalf."
-msgstr ""
+msgstr "رقم PIN يعطي الإذن لـ SickRage للوصول إلى Trakt بالنيابة عنك."
 
 #: gui/slick/views/config_notifications.mako:1615
 msgid "API Timeout"
@@ -3302,7 +3402,7 @@ msgstr "الزر أدناه بعد كل إدخال."
 #: gui/slick/views/config_postProcessing.mako:22
 #: gui/slick/views/config_postProcessing.mako:28
 msgid "Post-Processing"
-msgstr "مرحلة ما بعد المعالجة"
+msgstr "المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:23
 #: gui/slick/views/config_postProcessing.mako:232
@@ -3316,7 +3416,7 @@ msgstr "بيانات التعريف"
 
 #: gui/slick/views/config_postProcessing.mako:29
 msgid "Settings that dictate how SickRage should process completed downloads."
-msgstr ""
+msgstr "الإعدادات التي تملي على SickRage كيفية معالجة الحلقات اللتي تم تحميلها."
 
 #: gui/slick/views/config_postProcessing.mako:36
 msgid "Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir"
@@ -3328,7 +3428,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:45
 msgid "Post Processing Dir"
-msgstr ""
+msgstr "مسار المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:50
 msgid "The folder where your download client puts the completed TV downloads."
@@ -3340,7 +3440,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:59
 msgid "Processing Method"
-msgstr "أسلوب المعالجة"
+msgstr "طريقة المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:71
 msgid "What method should be used to put files into the library?"
@@ -3353,11 +3453,11 @@ msgstr "ملاحظة"
 
 #: gui/slick/views/config_postProcessing.mako:75
 msgid "If you keep seeding torrents after they finish, please avoid the 'move' processing method to prevent errors."
-msgstr ""
+msgstr "إذا كنت تستمر برفع ملفات التورنت بعد اكتمال تحميلها، الرجاء تجنب ضبط طريقة المعالجة على الخيار \"نقل\" لمنع حدوث الأخطاء."
 
 #: gui/slick/views/config_postProcessing.mako:80
 msgid "Auto Post-Processing Frequency"
-msgstr ""
+msgstr "تكرار المعالجة التلقائي"
 
 #: gui/slick/views/config_postProcessing.mako:85
 msgid "Time in minutes to check for new files to auto post-process (min 10)"
@@ -3365,7 +3465,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:91
 msgid "Postpone post processing"
-msgstr ""
+msgstr "تأجيل المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:92
 msgid "Wait to process a folder if sync files are present."
@@ -3381,55 +3481,55 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:108
 msgid "Postpone if no subtitle"
-msgstr ""
+msgstr "تأجيل المعالجة إذا لم توجد الترجمة"
 
 #: gui/slick/views/config_postProcessing.mako:109
 msgid "Wait to process a file until subtitles are present"
-msgstr ""
+msgstr "الانتظار عن معالجة الملف حتى تتوفر الترجمة"
 
 #: gui/slick/views/config_postProcessing.mako:110
 msgid "Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)"
-msgstr ""
+msgstr "أسماء اللغة مسموح بها في اسم ملف الترجمة (en.srt، pt-br.srt، ita.srt، إلخ.)"
 
 #: gui/slick/views/config_postProcessing.mako:112
 msgid "Automatic post processor must be disabled"
-msgstr ""
+msgstr "المعالجة التلقائية يجب أن يتم تعطيلها"
 
 #: gui/slick/views/config_postProcessing.mako:118
 msgid "Rename Episodes"
-msgstr ""
+msgstr "إعادة تسمية الحلقات"
 
 #: gui/slick/views/config_postProcessing.mako:119
 msgid "Rename episode using the Episode Naming settings?"
-msgstr ""
+msgstr "قم بإعادة تسمية الحلقة باستخدام إعدادات التسمية؟"
 
 #: gui/slick/views/config_postProcessing.mako:125
 msgid "Create missing show directories"
-msgstr ""
+msgstr "إنشاء مسارات المسلسلات المفقودة"
 
 #: gui/slick/views/config_postProcessing.mako:126
 msgid "Create missing show directories when they get deleted"
-msgstr ""
+msgstr "إنشاء مسارات المسلسلات المفقودة عندما يتم حذفها"
 
 #: gui/slick/views/config_postProcessing.mako:132
 msgid "Add shows without directory"
-msgstr ""
+msgstr "إضافة المسلسلات دون مسار"
 
 #: gui/slick/views/config_postProcessing.mako:133
 msgid "Add shows without creating a directory (not recommended)"
-msgstr ""
+msgstr "إضافة المسلسلات دون إنشاء مسار(غير مستحسن)"
 
 #: gui/slick/views/config_postProcessing.mako:139
 msgid "Delete associated files"
-msgstr ""
+msgstr "حذف الملفات المقترنة"
 
 #: gui/slick/views/config_postProcessing.mako:140
 msgid "Delete srt/srr/sfv/etc files while post processing?"
-msgstr ""
+msgstr "حذف ملفات srt/srr/sfv/إلخ أثناء المعالجة؟"
 
 #: gui/slick/views/config_postProcessing.mako:145
 msgid "Keep associated file extensions"
-msgstr ""
+msgstr "الحفاظ على إمتدادات الملفات المقترنة"
 
 #: gui/slick/views/config_postProcessing.mako:150
 msgid "Comma seperated list of associated file extensions SickRage should keep while post processing. Leaving it empty means all associated files will be deleted"
@@ -3437,71 +3537,71 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:156
 msgid "Rename .nfo file"
-msgstr ""
+msgstr "إعادة تسمية ملف.nfo"
 
 #: gui/slick/views/config_postProcessing.mako:157
 msgid "Rename the original .nfo file to .nfo-orig to avoid conflicts?"
-msgstr ""
+msgstr "إعادة تسمية ملف.nfo الأصلي إلى.nfo-orig لتجنب التعارض؟"
 
 #: gui/slick/views/config_postProcessing.mako:163
 msgid "Change File Date"
-msgstr ""
+msgstr "تغيير تاريخ الملف"
 
 #: gui/slick/views/config_postProcessing.mako:164
 msgid "Set last modified filedate to the date that the episode aired?"
-msgstr ""
+msgstr "ضبط آخر تعديل لتاريخ الملف إلى تاريخ بثت الحلقة؟"
 
 #: gui/slick/views/config_postProcessing.mako:168
 msgid "Some systems may ignore this feature."
-msgstr ""
+msgstr "بعض الأنظمة قد تتجاهل هذه الميزة."
 
 #: gui/slick/views/config_postProcessing.mako:173
 msgid "Timezone for File Date"
-msgstr ""
+msgstr "المنطقة الزمنية لتاريخ الملف"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "local"
-msgstr ""
+msgstr "محلي"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "network"
-msgstr ""
+msgstr "الشبكة"
 
 #: gui/slick/views/config_postProcessing.mako:184
 msgid "What timezone should be used to change File Date?"
-msgstr ""
+msgstr "ما هي المنطقة الزمنية التي ينبغي استخدامها لتغيير \"تاريخ الملف\"؟"
 
 #: gui/slick/views/config_postProcessing.mako:190
 msgid "Unpack"
-msgstr ""
+msgstr "فك الضغط"
 
 #: gui/slick/views/config_postProcessing.mako:191
 msgid "Unpack any TV releases in your <i>TV Download Dir</i>?"
-msgstr ""
+msgstr "فك ضغط الحلقات في <i>مسار تحميل المسلسلات</i>؟"
 
 #: gui/slick/views/config_postProcessing.mako:195
 msgid "Only working with RAR archive"
-msgstr ""
+msgstr "تعمل فقط مع ملفات الضغط من نوع RAR"
 
 #: gui/slick/views/config_postProcessing.mako:201
 msgid "Delete RAR contents"
-msgstr ""
+msgstr "حذف محتويات الملفات المغوطه"
 
 #: gui/slick/views/config_postProcessing.mako:202
 msgid "Delete content of RAR files, even if Process Method not set to move?"
-msgstr ""
+msgstr "حذف محتوى ملفات الضغط، حتى لو كانت طريقة المعالجة المختارة هي النقل؟"
 
 #: gui/slick/views/config_postProcessing.mako:208
 msgid "Don't delete empty folders"
-msgstr ""
+msgstr "لا تقم بحذف المجلدات الفارغة"
 
 #: gui/slick/views/config_postProcessing.mako:209
 msgid "Leave empty folders when Post Processing?"
-msgstr ""
+msgstr "اترك المجلدات الفارغة بعد المعالجة؟"
 
 #: gui/slick/views/config_postProcessing.mako:213
 msgid "Can be overridden using manual Post Processing"
-msgstr ""
+msgstr "يمكن أن يتم تجاوزه باستخدام المعالجه اليدوية"
 
 #: gui/slick/views/config_postProcessing.mako:218
 #: gui/slick/views/config_subtitles.mako:160
@@ -3511,7 +3611,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:223
 #: gui/slick/views/config_subtitles.mako:166
 msgid "See"
-msgstr ""
+msgstr "انظر"
 
 #: gui/slick/views/config_postProcessing.mako:223
 msgid "for script arguments description and usage."
@@ -3519,38 +3619,38 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:233
 msgid "How SickRage will name and sort your episodes."
-msgstr ""
+msgstr "كيف يمكن لـ SickRage تسمية و ترتيب الحلقات."
 
 #: gui/slick/views/config_postProcessing.mako:239
 #: gui/slick/views/config_postProcessing.mako:491
 #: gui/slick/views/config_postProcessing.mako:668
 #: gui/slick/views/config_postProcessing.mako:846
 msgid "Name Pattern"
-msgstr ""
+msgstr "نمط التسمية"
 
 #: gui/slick/views/config_postProcessing.mako:269
 msgid "Don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality"
-msgstr ""
+msgstr "لا تنسى إضافة نمط الجودة. و إلا ستكون الحلقة مجهولة الجودة بعد معالجتها"
 
 #: gui/slick/views/config_postProcessing.mako:277
 #: gui/slick/views/config_postProcessing.mako:525
 #: gui/slick/views/config_postProcessing.mako:702
 #: gui/slick/views/config_postProcessing.mako:880
 msgid "Meaning"
-msgstr ""
+msgstr "المعنى"
 
 #: gui/slick/views/config_postProcessing.mako:278
 #: gui/slick/views/config_postProcessing.mako:526
 #: gui/slick/views/config_postProcessing.mako:703
 msgid "Pattern"
-msgstr ""
+msgstr "النمط"
 
 #: gui/slick/views/config_postProcessing.mako:279
 #: gui/slick/views/config_postProcessing.mako:527
 #: gui/slick/views/config_postProcessing.mako:704
 #: gui/slick/views/config_postProcessing.mako:882
 msgid "Result"
-msgstr ""
+msgstr "النتيجة"
 
 #: gui/slick/views/config_postProcessing.mako:284
 #: gui/slick/views/config_postProcessing.mako:532
@@ -3558,7 +3658,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:887
 #, python-format
 msgid "Use lower case if you want lower case names (eg. %sn, %e.n, %q_n etc)"
-msgstr ""
+msgstr "استخدم الأحرف الصغيرة إذا كنت تريد أسماء بالأحرف الصغيرة (eg. %sn, %e.n, %q_n etc)"
 
 #: gui/slick/views/config_postProcessing.mako:289
 #: gui/slick/views/config_postProcessing.mako:291
@@ -3569,7 +3669,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:892
 #: gui/slick/views/config_postProcessing.mako:894 gui/slick/views/manage.mako:41
 msgid "Show Name"
-msgstr ""
+msgstr "اسم المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:296
 #: gui/slick/views/config_postProcessing.mako:421
@@ -3579,32 +3679,32 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:806
 #: gui/slick/views/config_postProcessing.mako:979
 msgid "Show.Name"
-msgstr ""
+msgstr "اسم.المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:301
 #: gui/slick/views/config_postProcessing.mako:549
 #: gui/slick/views/config_postProcessing.mako:726
 msgid "Show_Name"
-msgstr ""
+msgstr "اسم_المسلسل"
 
 #: gui/slick/views/config_postProcessing.mako:304
 #: gui/slick/views/config_postProcessing.mako:907
 msgid "Season Number"
-msgstr ""
+msgstr "رقم الموسم"
 
 #: gui/slick/views/config_postProcessing.mako:314
 msgid "XEM Season Number"
-msgstr ""
+msgstr "رقم الموسم من XEM"
 
 #: gui/slick/views/config_postProcessing.mako:324
 #: gui/slick/views/config_postProcessing.mako:927
 msgid "Episode Number"
-msgstr ""
+msgstr "رقم الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:334
 #: gui/slick/views/config_postProcessing.mako:937
 msgid "XEM Episode Number"
-msgstr ""
+msgstr "رقم الحلقة من XEM"
 
 #: gui/slick/views/config_postProcessing.mako:344
 #: gui/slick/views/config_postProcessing.mako:346
@@ -3614,83 +3714,83 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:751
 #: gui/slick/views/config_postProcessing.mako:947
 msgid "Episode Name"
-msgstr ""
+msgstr "اسم الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:351
 #: gui/slick/views/config_postProcessing.mako:579
 #: gui/slick/views/config_postProcessing.mako:756
 msgid "Episode.Name"
-msgstr ""
+msgstr "اسم.الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:356
 #: gui/slick/views/config_postProcessing.mako:584
 #: gui/slick/views/config_postProcessing.mako:761
 msgid "Episode_Name"
-msgstr ""
+msgstr "اسم_الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:359
 msgid "Air Date"
-msgstr ""
+msgstr "تاريخ العرض"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Post-Processing Date"
-msgstr ""
+msgstr "تاريخ المعالجة"
 
 #: gui/slick/views/config_postProcessing.mako:389
 #: gui/slick/views/config_postProcessing.mako:587
 #: gui/slick/views/config_postProcessing.mako:764
 #: gui/slick/views/config_postProcessing.mako:962
-#: gui/slick/views/displayShow.mako:159 gui/slick/views/history.mako:53
+#: gui/slick/views/displayShow.mako:162 gui/slick/views/history.mako:53
 #: gui/slick/views/history.mako:119 gui/slick/views/home.mako:248
 #: gui/slick/views/manage.mako:42 gui/slick/views/schedule.mako:86
 #: gui/slick/views/schedule.mako:324
 msgid "Quality"
-msgstr ""
+msgstr "الجودة"
 
 #: gui/slick/views/config_postProcessing.mako:404
 msgid "Scene Quality"
-msgstr ""
+msgstr "جودة المشهد"
 
 #: gui/slick/views/config_postProcessing.mako:424
 #: gui/slick/views/config_postProcessing.mako:632
 #: gui/slick/views/config_postProcessing.mako:809
 #: gui/slick/views/config_postProcessing.mako:982
 msgid "SickRage' is used in place of RLSGROUP if it could not be properly detected"
-msgstr ""
+msgstr "سيتم استبدال اسم مجموعة الإصدار في حالة عدم القدرة على العثور عليه باسم SickRage"
 
 #: gui/slick/views/config_postProcessing.mako:424
 #: gui/slick/views/config_postProcessing.mako:632
 #: gui/slick/views/config_postProcessing.mako:809
 #: gui/slick/views/config_postProcessing.mako:982
 msgid "Release Group"
-msgstr ""
+msgstr "اسم مجموعة الإصدار"
 
 #: gui/slick/views/config_postProcessing.mako:429
 #: gui/slick/views/config_postProcessing.mako:637
 #: gui/slick/views/config_postProcessing.mako:814
 #: gui/slick/views/config_postProcessing.mako:987
 msgid "If episode is proper/repack add 'proper' to name."
-msgstr ""
+msgstr "إذا كانت الحلقة اصدار مصحح أو معاد ضغطها قم بإضافة عِبارة 'مصحح proper' إلى اسم الحلقة."
 
 #: gui/slick/views/config_postProcessing.mako:429
 #: gui/slick/views/config_postProcessing.mako:637
 #: gui/slick/views/config_postProcessing.mako:814
 #: gui/slick/views/config_postProcessing.mako:987
 msgid "Release Type"
-msgstr ""
+msgstr "نوع الإصدار"
 
 #: gui/slick/views/config_postProcessing.mako:441
 #: gui/slick/views/config_postProcessing.mako:999
 msgid "Multi-Episode Style"
-msgstr ""
+msgstr "أسلوب الحلقة المتعددة الأجزاء"
 
 #: gui/slick/views/config_postProcessing.mako:453
 msgid "Single-EP Sample"
-msgstr ""
+msgstr "عينة الحلقة"
 
 #: gui/slick/views/config_postProcessing.mako:461
 msgid "Multi-EP sample"
-msgstr ""
+msgstr "عينة الحلقة المتعددة الأجزاء"
 
 #: gui/slick/views/config_postProcessing.mako:471
 msgid "Strip Show Year"
@@ -3698,11 +3798,11 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:472
 msgid "Remove the TV show's year when renaming the file?"
-msgstr ""
+msgstr "إزالة تاريخ سنة عرض المسلسل عند إعادة تسمية الملف؟"
 
 #: gui/slick/views/config_postProcessing.mako:476
 msgid "Only applies to shows that have year inside parentheses"
-msgstr ""
+msgstr "لا ينطبق إلا على المسلسلات اللتي تحتوي على تاريخ سنة العرض داخل أقواس"
 
 #: gui/slick/views/config_postProcessing.mako:483
 msgid "Custom Air-By-Date"
@@ -4075,7 +4175,8 @@ msgid "Update Categories"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:680
-#: gui/slick/views/config_providers.mako:747 gui/slick/views/home.mako:258
+#: gui/slick/views/config_providers.mako:747 gui/slick/views/editShow.mako:215
+#: gui/slick/views/home.mako:258
 msgid "Add"
 msgstr ""
 
@@ -4141,6 +4242,26 @@ msgstr ""
 msgid "Check propers every"
 msgstr ""
 
+#: gui/slick/views/config_search.mako:53
+msgid "24 hours"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:53
+msgid "4 hours"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:53
+msgid "90 mins"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:53
+msgid "45 mins"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:53
+msgid "15 mins"
+msgstr ""
+
 #: gui/slick/views/config_search.mako:65
 msgid "Backlog search day(s)"
 msgstr ""
@@ -4153,12 +4274,12 @@ msgstr ""
 msgid "Backlog search frequency"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:85
-msgid "Daily search frequency"
+#: gui/slick/views/config_search.mako:78 gui/slick/views/config_search.mako:88
+msgid "time in minutes between searches (min."
 msgstr ""
 
-#: gui/slick/views/config_search.mako:88
-msgid "time in minutes between searches (min."
+#: gui/slick/views/config_search.mako:85
+msgid "Daily search frequency"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:95
@@ -4609,11 +4730,11 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
-msgstr ""
+msgstr "اتركه فارغاً إذا كنت تريد تخزين الترجمة في مسار الحلقة."
 
 #: gui/slick/views/config_subtitles.mako:81
 msgid "Subtitle Find Frequency"
-msgstr ""
+msgstr "تكرار البحث عن الترجمة"
 
 #: gui/slick/views/config_subtitles.mako:83
 msgid "time in hours between scans (default: 1)"
@@ -4648,7 +4769,7 @@ msgid "Append language codes to subtitle filenames?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:115
-msgid "NOTE:</b> This option is required if you use multiple subtitle languages."
+msgid "This option is required if you use multiple subtitle languages."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:120
@@ -4688,7 +4809,7 @@ msgid "Ignore subtitles embedded inside video file?"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:145
-msgid "<b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!"
+msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:151
@@ -4747,7 +4868,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:231
+#: gui/slick/views/config_subtitles.mako:229
 msgid "User Name"
 msgstr ""
 
@@ -4772,7 +4893,7 @@ msgid "Jump to Season"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:83
-#: gui/slick/views/displayShow.mako:338 gui/slick/views/displayShow.mako:368
+#: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Specials"
 msgstr ""
 
@@ -4780,19 +4901,19 @@ msgstr ""
 msgid "View Poster for"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:121 gui/slick/views/displayShow.mako:132
+#: gui/slick/views/displayShow.mako:123 gui/slick/views/displayShow.mako:134
 msgid "minutes"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:146
+#: gui/slick/views/displayShow.mako:149
 msgid "View other popular ${genre} shows on trakt.tv."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:150
+#: gui/slick/views/displayShow.mako:153
 msgid "View other popular ${imdbgenre} shows on IMDB."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:164 gui/slick/views/displayShow.mako:254
+#: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
 #: gui/slick/views/manage_backlogOverview.mako:44
 #: gui/slick/views/manage_backlogOverview.mako:75
@@ -4800,185 +4921,180 @@ msgstr ""
 msgid "Allowed"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:255
+#: gui/slick/views/displayShow.mako:170 gui/slick/views/displayShow.mako:258
 #: gui/slick/views/inc_qualityChooser.mako:39
 #: gui/slick/views/manage_massEdit.mako:116
 msgid "Preferred"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:172 gui/slick/views/displayShow.mako:174
-#: gui/slick/views/displayShow.mako:176
+#: gui/slick/views/displayShow.mako:175 gui/slick/views/displayShow.mako:177
+#: gui/slick/views/displayShow.mako:179
 msgid "Originally Airs"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:178
+#: gui/slick/views/displayShow.mako:181
 msgid "Show Status"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:179
+#: gui/slick/views/displayShow.mako:182
 msgid "Default EP Status"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:181 gui/slick/views/displayShow.mako:183
+#: gui/slick/views/displayShow.mako:184 gui/slick/views/displayShow.mako:186
 #: gui/slick/views/status.mako:193
 msgid "Location"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:183 gui/slick/views/status.mako:205
+#: gui/slick/views/displayShow.mako:186 gui/slick/views/status.mako:205
 #: gui/slick/views/status.mako:216
 msgid "Missing"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:185
+#: gui/slick/views/displayShow.mako:188
 msgid "Scene Name"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:188 gui/slick/views/editShow.mako:200
+#: gui/slick/views/displayShow.mako:191 gui/slick/views/editShow.mako:200
 msgid "Required Words"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:191 gui/slick/views/editShow.mako:187
+#: gui/slick/views/displayShow.mako:194 gui/slick/views/editShow.mako:187
 msgid "Ignored Words"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:206 gui/slick/views/displayShow.mako:327
-#: gui/slick/views/displayShow.mako:356 gui/slick/views/displayShow.mako:386
+#: gui/slick/views/displayShow.mako:209 gui/slick/views/displayShow.mako:330
+#: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
 #: gui/slick/views/home.mako:250 gui/slick/views/manage_failedDownloads.mako:26
 msgid "Size"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:212 gui/slick/views/editShow.mako:81
+#: gui/slick/views/displayShow.mako:215 gui/slick/views/editShow.mako:81
 msgid "Info Language"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:216
+#: gui/slick/views/displayShow.mako:219
 msgid "Season Folders"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:217 gui/slick/views/editShow.mako:100
+#: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:100
 #: gui/slick/views/manage.mako:47 gui/slick/views/manage_manageSearches.mako:16
 #: gui/slick/views/manage_massEdit.mako:145 gui/slick/views/status.mako:60
 msgid "Paused"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:218
+#: gui/slick/views/displayShow.mako:221
 msgid "Air-by-Date"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:219 gui/slick/views/editShow.mako:140
+#: gui/slick/views/displayShow.mako:222 gui/slick/views/editShow.mako:140
 #: gui/slick/views/manage.mako:43 gui/slick/views/manage_massEdit.mako:202
 msgid "Sports"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:221 gui/slick/views/editShow.mako:168
+#: gui/slick/views/displayShow.mako:224 gui/slick/views/editShow.mako:168
 msgid "DVD Order"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:222 gui/slick/views/editShow.mako:159
+#: gui/slick/views/displayShow.mako:225 gui/slick/views/editShow.mako:159
 #: gui/slick/views/inc_addShowOptions.mako:77
 #: gui/slick/views/manage_massEdit.mako:174
 msgid "Scene Numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:231
+#: gui/slick/views/displayShow.mako:234
 msgid "Change selected episodes to"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:260 gui/slick/views/home.mako:34
+#: gui/slick/views/displayShow.mako:263 gui/slick/views/home.mako:34
 #: gui/slick/views/manage.mako:27 gui/slick/views/schedule.mako:25
 msgid "Select Columns"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:262
+#: gui/slick/views/displayShow.mako:265
 msgid "Select Filtered Episodes"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:263
+#: gui/slick/views/displayShow.mako:266
 msgid "Clear All"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:319 gui/slick/views/displayShow.mako:348
-#: gui/slick/views/displayShow.mako:378
+#: gui/slick/views/displayShow.mako:322 gui/slick/views/displayShow.mako:351
+#: gui/slick/views/displayShow.mako:381
 msgid "NFO"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:320 gui/slick/views/displayShow.mako:349
-#: gui/slick/views/displayShow.mako:379
+#: gui/slick/views/displayShow.mako:323 gui/slick/views/displayShow.mako:352
+#: gui/slick/views/displayShow.mako:382
 msgid "TBN"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:321 gui/slick/views/displayShow.mako:350
-#: gui/slick/views/displayShow.mako:380 gui/slick/views/history.mako:50
+#: gui/slick/views/displayShow.mako:324 gui/slick/views/displayShow.mako:353
+#: gui/slick/views/displayShow.mako:383 gui/slick/views/history.mako:50
 #: gui/slick/views/history.mako:113 gui/slick/views/manage_backlogOverview.mako:83
 #: gui/slick/views/testRename.mako:69
 msgid "Episode"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:322 gui/slick/views/displayShow.mako:351
-#: gui/slick/views/displayShow.mako:381
+#: gui/slick/views/displayShow.mako:325 gui/slick/views/displayShow.mako:354
+#: gui/slick/views/displayShow.mako:384
 msgid "Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:323 gui/slick/views/displayShow.mako:352
-#: gui/slick/views/displayShow.mako:382 gui/slick/views/manage.mako:44
+#: gui/slick/views/displayShow.mako:326 gui/slick/views/displayShow.mako:355
+#: gui/slick/views/displayShow.mako:385 gui/slick/views/manage.mako:44
 msgid "Scene"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:324 gui/slick/views/displayShow.mako:353
-#: gui/slick/views/displayShow.mako:383
+#: gui/slick/views/displayShow.mako:327 gui/slick/views/displayShow.mako:356
+#: gui/slick/views/displayShow.mako:386
 msgid "Scene Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:326 gui/slick/views/displayShow.mako:355
-#: gui/slick/views/displayShow.mako:385
+#: gui/slick/views/displayShow.mako:329 gui/slick/views/displayShow.mako:358
+#: gui/slick/views/displayShow.mako:388
 msgid "File Name"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:328 gui/slick/views/displayShow.mako:357
-#: gui/slick/views/displayShow.mako:387
+#: gui/slick/views/displayShow.mako:331 gui/slick/views/displayShow.mako:360
+#: gui/slick/views/displayShow.mako:390
 #: gui/slick/views/manage_backlogOverview.mako:83 gui/slick/views/schedule.mako:79
 msgid "Airdate"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:329 gui/slick/views/displayShow.mako:358
-#: gui/slick/views/displayShow.mako:388 gui/slick/views/displayShow.mako:479
+#: gui/slick/views/displayShow.mako:332 gui/slick/views/displayShow.mako:361
+#: gui/slick/views/displayShow.mako:391 gui/slick/views/displayShow.mako:482
 msgid "Download"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:332 gui/slick/views/displayShow.mako:361
-#: gui/slick/views/displayShow.mako:391 gui/slick/views/schedule.mako:88
-msgid "Search"
-msgstr ""
-
-#: gui/slick/views/displayShow.mako:340 gui/slick/views/displayShow.mako:370
+#: gui/slick/views/displayShow.mako:343 gui/slick/views/displayShow.mako:373
 msgid "Show Episodes"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:423
+#: gui/slick/views/displayShow.mako:426
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:435
+#: gui/slick/views/displayShow.mako:438
 msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:519 gui/slick/views/displayShow.mako:538
+#: gui/slick/views/displayShow.mako:522 gui/slick/views/displayShow.mako:541
 msgid "Manual Search"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:522
+#: gui/slick/views/displayShow.mako:525
 msgid "Do you want to mark this episode as failed?"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:523
+#: gui/slick/views/displayShow.mako:526
 msgid "The episode release name will be added to the failed history, preventing it to be downloaded again."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:541
+#: gui/slick/views/displayShow.mako:544
 msgid "Do you want to include the current episode quality in the search?"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:542
+#: gui/slick/views/displayShow.mako:545
 msgid "Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched."
 msgstr ""
 
@@ -5017,6 +5133,14 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:84
 msgid "This only applies to episode filenames and the contents of metadata files."
+msgstr ""
+
+#: gui/slick/views/editShow.mako:93
+msgid "search for subtitles"
+msgstr ""
+
+#: gui/slick/views/editShow.mako:102
+msgid "pause this show (SickRage will not download episodes)"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:113
@@ -5153,10 +5277,6 @@ msgstr ""
 msgid "Filter Show Name"
 msgstr ""
 
-#: gui/slick/views/home.mako:51 gui/slick/views/schedule.mako:27
-msgid "Sort By"
-msgstr ""
-
 #: gui/slick/views/home.mako:54 gui/slick/views/schedule.mako:317
 msgid "Next Episode"
 msgstr ""
@@ -5222,7 +5342,7 @@ msgid "Downloads"
 msgstr ""
 
 #: gui/slick/views/home.mako:251 gui/slick/views/status.mako:37
-#: gui/slick/views/layouts/main.mako:288
+#: gui/slick/views/layouts/main.mako:290
 msgid "Active"
 msgstr ""
 
@@ -5248,7 +5368,7 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:27
 msgid "Process Method to be used"
-msgstr ""
+msgstr "طريقة المعالجة اللتي تريد استخدامها"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Copy"
@@ -5389,11 +5509,6 @@ msgstr ""
 msgid "Edit Selected"
 msgstr ""
 
-#: gui/slick/views/manage.mako:25 gui/slick/views/manage.mako:65
-#: gui/slick/views/manage_failedDownloads.mako:35
-msgid "Submit"
-msgstr ""
-
 #: gui/slick/views/manage.mako:48
 msgid "Subtitle"
 msgstr ""
@@ -5445,7 +5560,7 @@ msgstr ""
 
 #: gui/slick/views/manage_episodeStatuses.mako:34
 #: gui/slick/views/manage_subtitleMissed.mako:43
-#: gui/slick/views/layouts/main.mako:134
+#: gui/slick/views/layouts/main.mako:136
 msgid "Manage"
 msgstr ""
 
@@ -5501,7 +5616,7 @@ msgid "Release"
 msgstr ""
 
 #: gui/slick/views/manage_manageSearches.mako:13
-#: gui/slick/views/layouts/main.mako:297
+#: gui/slick/views/layouts/main.mako:299
 msgid "Backlog Search"
 msgstr ""
 
@@ -5520,7 +5635,7 @@ msgid "In Progress"
 msgstr ""
 
 #: gui/slick/views/manage_manageSearches.mako:18 gui/slick/views/status.mako:17
-#: gui/slick/views/layouts/main.mako:296
+#: gui/slick/views/layouts/main.mako:298
 msgid "Daily Search"
 msgstr ""
 
@@ -5573,7 +5688,7 @@ msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:53
 msgid "Root Directories"
-msgstr ""
+msgstr "المسارات الرئيسية"
 
 #: gui/slick/views/manage_massEdit.mako:58
 msgid "Current"
@@ -5716,7 +5831,7 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:87
 msgid "Indexers"
-msgstr ""
+msgstr "المفهرسين"
 
 #: gui/slick/views/schedule.mako:320
 msgid "Airs"
@@ -5836,11 +5951,11 @@ msgstr ""
 
 #: gui/slick/views/status.mako:200
 msgid "TV Download Directory"
-msgstr ""
+msgstr "مسار تحميل المسلسلات"
 
 #: gui/slick/views/status.mako:210
 msgid "Media Root Directories"
-msgstr ""
+msgstr "المسارات الرئيسية للوسائط"
 
 #: gui/slick/views/testRename.mako:17
 msgid "Preview of the proposed name changes"
@@ -5882,10 +5997,6 @@ msgstr ""
 msgid "votes"
 msgstr ""
 
-#: gui/slick/views/trendingShows.mako:44
-msgid "Add Show"
-msgstr ""
-
 #: gui/slick/views/trendingShows.mako:46
 msgid "Remove Show"
 msgstr ""
@@ -5898,103 +6009,103 @@ msgstr ""
 msgid "Search log by"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:114
+#: gui/slick/views/layouts/main.mako:116
 msgid "Manual Post-Processing"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:141
+#: gui/slick/views/layouts/main.mako:143
 msgid "Episode Status Management"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:143
+#: gui/slick/views/layouts/main.mako:145
 msgid "Update PLEX"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:146
+#: gui/slick/views/layouts/main.mako:148
 msgid "Update KODI"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:149
+#: gui/slick/views/layouts/main.mako:151
 msgid "Update Emby"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:158
+#: gui/slick/views/layouts/main.mako:160
 msgid "Missed Subtitle Management"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:169
+#: gui/slick/views/layouts/main.mako:171
 msgid "Help &amp; Info"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:171
+#: gui/slick/views/layouts/main.mako:173
 msgid "Backup &amp; Restore"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:202
+#: gui/slick/views/layouts/main.mako:204
 msgid "Tools"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:209
+#: gui/slick/views/layouts/main.mako:211
 msgid "Support SickRage"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:212
+#: gui/slick/views/layouts/main.mako:214
 msgid "View Errors"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:215
+#: gui/slick/views/layouts/main.mako:217
 msgid "View Warnings"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:217
+#: gui/slick/views/layouts/main.mako:219
 msgid "View Log"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:219
+#: gui/slick/views/layouts/main.mako:221
 msgid "Check For Updates"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:220
+#: gui/slick/views/layouts/main.mako:222
 msgid "Restart"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:221
+#: gui/slick/views/layouts/main.mako:223
 msgid "Shutdown"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:223
+#: gui/slick/views/layouts/main.mako:225
 msgid "Logout"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:226
+#: gui/slick/views/layouts/main.mako:228
 msgid "Server Status"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:263
+#: gui/slick/views/layouts/main.mako:265
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:292
+#: gui/slick/views/layouts/main.mako:294
 msgid "View overview of snatched episodes"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:295
+#: gui/slick/views/layouts/main.mako:297
 msgid "Episodes Downloaded"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:301
+#: gui/slick/views/layouts/main.mako:303
 msgid "Memory used"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:303
+#: gui/slick/views/layouts/main.mako:305
 msgid "Load time"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:304
+#: gui/slick/views/layouts/main.mako:306
 msgid "Branch"
 msgstr ""
 
-#: gui/slick/views/layouts/main.mako:305
+#: gui/slick/views/layouts/main.mako:307
 msgid "Now"
 msgstr ""
 

@@ -25,6 +25,8 @@
     "grunt-contrib-cssmin": "^0.14.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-qunit": "^0.7.0",
     "grunt-contrib-uglify": "^0.11.1",
     "grunt-mocha": "^0.4.15",
     "grunt-sass": "^1.1.0",

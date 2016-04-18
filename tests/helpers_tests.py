@@ -93,7 +93,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import helpers
-from sickrage.helper.common import media_extensions, subtitle_extensions
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -266,10 +266,10 @@ class HelpersFileTests(unittest.TestCase):
 
         # Test all valid media extensions
         temp_name = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
-        extension_tests = {'.'.join((temp_name, ext)): True for ext in media_extensions}
+        extension_tests = {'.'.join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
         # ...and some invalid ones
         other_extensions = ['txt', 'sfv', 'srr', 'rar', 'nfo', 'zip']
-        extension_tests.update({'.'.join((temp_name, ext)): False for ext in other_extensions + subtitle_extensions})
+        extension_tests.update({'.'.join((temp_name, ext)): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
 
         # Samples should be ignored
         sample_tests = {  # Samples should be ignored, valid samples will return False
