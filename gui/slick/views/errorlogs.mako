@@ -20,18 +20,22 @@
             errors = sickbeard.classes.ErrorViewer.errors
             title = _('ERROR logs')
     %>
-    <div class="container-fluid">
-	    <h1 class="header">${title}</h1>
-	    <div class="align-left">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="header">${title}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 align-left">
             <pre>
                 % if errors:
                     % for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
-                        ${curError.time} ${curError.message}
+${curError.time} ${curError.message}
                     % endfor
                 % else:
                     ${_('There are no events to display.')}
                 % endif
             </pre>
-	    </div>
+        </div>
     </div>
 </%block>

@@ -7,10 +7,6 @@ inc_top.mako
     margin-bottom: -15px;
 }
 
-#contentWrapper {
-/*	background: url("../images/bg.png") repeat 0 0 transparent; */
-}
-
 .icon-white {
     background-image: url("../images/glyphicons-halflings-white.png");
 }
@@ -380,13 +376,13 @@ inc_rootDirs.mako
 .rootdir-selectbox,
 .rootdir-selectbox #rootDirs,
 .rootdir-controls {
-    width: 430px
+    width: 100%;
 }
 .rootdir-selectbox {
-    padding: 0 0 5px
+    padding: 0 0 5px;
 }
 .rootdir-controls {
-    text-align: center
+    text-align: center;
 }
 
 /* =======================================================================
@@ -706,9 +702,7 @@ home_addShows.mako
 
 #addShowPortal {
     max-width: 700px;
-    padding: 10px 0;
-    margin-right: auto;
-    margin-left: auto;
+    margin: 15px auto;
 }
 
 #addShowPortal  a {
@@ -771,18 +765,7 @@ home_newShow.mako
 ========================================================================== */
 
 #addShowForm, #recommendedShowsForm {
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 10px 0;
     font-size:13px;
-}
-
-#newShowPortal {
-    width: 960px;
-    padding: 10px 0;
-    margin-right: auto;
-    margin-left: auto;
 }
 
 #displayText {
@@ -809,6 +792,7 @@ ul#rootDirStaticList {
     margin-right: auto;
     margin-left: auto;
     text-align: left;
+    padding-left: 0;
 }
 
 ul#rootDirStaticList li {
@@ -1302,7 +1286,7 @@ h2.day, h2.network {
     margin: auto;
     padding: 0px;
     text-align: left;
-    width: 750px;
+    width: 100%;
     border-radius: 5px;
     background: #fff;
     cursor: default;
@@ -1346,7 +1330,7 @@ h2.day, h2.network {
 .bannerThumb {
     vertical-align: top;
     height: auto;
-    width: 748px;
+    width: 100%;
     border-bottom: 1px solid #ccc;
 }
 
@@ -1436,7 +1420,6 @@ config*.mako
 }
 
 .component-group {
-    padding: 15px 15px 25px;
     border-bottom: 1px dotted #ccc;
     min-height: 200px;
 }
@@ -1490,7 +1473,6 @@ config*.mako
     font-size: 12px;
     font-weight: normal;
     display:block;
-    width:475px;
     margin-left:182px
 }
 
@@ -3386,6 +3368,9 @@ input.tablesorter-filter.disabled {
     .pull-xs-right {
         float: right;
     }
+    .no-padding-xs {
+        padding: 0;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -3394,6 +3379,9 @@ input.tablesorter-filter.disabled {
     }
     .pull-sm-right {
         float: right;
+    }
+    .no-padding-sm {
+        padding: 0;
     }
 }
 
