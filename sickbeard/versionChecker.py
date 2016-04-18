@@ -617,26 +617,20 @@ class GitUpdateManager(UpdateManager):
             self.reset()
 
         if self.branch == self._find_installed_branch():
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'pull -f {0} {1}'.format(sickbeard.GIT_REMOTE, self.branch))  # @UnusedVariable
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'pull -f {0} {1}'.format(sickbeard.GIT_REMOTE, self.branch))
         else:
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)
 
         if exit_status == 0:
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'submodule update --init --recursive')
+            self._find_installed_version()
 
-            if exit_status == 0:
-                self._find_installed_version()
-
-                # Notify update successful
-                if sickbeard.NOTIFY_ON_UPDATE:
-                    try:
-                        notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
-                    except Exception:
-                        logger.log(u"Unable to send update notification. Continuing the update process", logger.DEBUG)
-                return True
-
-            else:
-                return False
+            # Notify update successful
+            if sickbeard.NOTIFY_ON_UPDATE:
+                try:
+                    notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
+                except Exception:
+                    logger.log(u"Unable to send update notification. Continuing the update process", logger.DEBUG)
+            return True
 
         else:
             return False
