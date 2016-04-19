@@ -1666,6 +1666,13 @@ var SICKRAGE = {
                     $('#torrent_paused_option').show();
                     $('#torrent_rpcurl_option').hide();
                     $('#torrent_host_option').show();
+                    $('#get_token').hide();
+                    $('#host_title').text(client + host);
+                    $('#torrent_username_title').text(client + username);
+                    $('#password_title').text(client + password);
+                    $('#torrent_client').text(client);
+                    $('#rpcurl_title').text(client + rpcurl);
+                    $('#blank_username').show();
 
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
@@ -1736,6 +1743,9 @@ var SICKRAGE = {
                     }
                     else if (selectedProvider.toLowerCase() === 'putio'){
                         client = 'putio';
+                        $('#get_token').show();
+                        $('#blank_username').hide();
+                        $('#torrent_username_title').text('Access Token');
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
                         $('#torrent_verify_cert_option').hide();
@@ -1744,13 +1754,8 @@ var SICKRAGE = {
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
-                        $('#host_desc_torrent').text('URL to your putio client (e.g. http://localhost:8080)');
+                        $('#torrent_password_option').hide();
                     }
-                    $('#host_title').text(client + host);
-                    $('#username_title').text(client + username);
-                    $('#password_title').text(client + password);
-                    $('#torrent_client').text(client);
-                    $('#rpcurl_title').text(client + rpcurl);
                     optionPanel = '#options_torrent_clients';
                 }
                 $(optionPanel).show();

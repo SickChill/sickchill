@@ -510,7 +510,7 @@
                                     <span class="component-title">Send .torrent files to:</span>
                                     <span class="component-desc">
                                     <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-                                    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey", 'putio' : "Putio"} %>
+                                    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey", 'putio' : "putio"} %>
                                     % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
                                         <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
                                     % endfor
@@ -534,7 +534,7 @@
                             </div>
 
                             <div id="options_torrent_clients">
-                                <div class="field-pair">
+                                <div class="field-pair" id="torrent_host_option">
                                     <label>
                                         <span class="component-title" id="host_title">Torrent host:port</span>
                                         <span class="component-desc">
@@ -586,11 +586,13 @@
 
                                 <div class="field-pair" id="torrent_username_option">
                                     <label>
-                                        <span class="component-title" id="username_title">Client username</span>
+                                        <span class="component-title" id="torrent_username_title">Client username</span>
                                         <span class="component-desc">
                                             <input type="text" name="torrent_username" id="torrent_username" value="${sickbeard.TORRENT_USERNAME}" class="form-control input-sm input200" autocapitalize="off" autocomplete="no" />
-                                            <p>(blank for none)</p>
+                                            <p id="blank_username">(blank for none)</p>
+                                            <p id="get_token"><a href="https://api.put.io/v2/oauth2/authenticate?client_id=2392&response_type=token&redirect_uri=https://sickrage.github.io">Get Token</a>
                                         </span>
+
                                     </label>
                                 </div>
 

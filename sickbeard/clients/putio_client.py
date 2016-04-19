@@ -31,8 +31,8 @@ API_CLIENT_REGISTERED_URL='https://sickrage.github.io'
 class PutioAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
         super(PutioAPI, self).__init__('put_io', host, username, password)
-        self.url = '{}/oauth2/authenticate?client_id={}&response_type=token&redirect_uri={}'.format(
-            PUTIO_BASE_URL,API_CLIENT_ID, urllib.urlencode(API_CLIENT_REGISTERED_URL))
+        self.url = '{}/files/list?oauth_token={}'.format(PUTIO_BASE_URL,username)
+        self.access_token = username
 
     def _get_auth(self):
         post_data = {
@@ -43,17 +43,11 @@ class PutioAPI(GenericClient):
         }
         try:
             self.response = self.session.get(self.url, timeout=120)
-            self.tok_response = self.session.post('https://api.put.io/login',
-                                                  data=post_data, allow_redirects=False)
-            # Grab the token from the response header.
-            self.tok_response = self.session.get(self.tok_response.headers['location'], allow_redirects=False)
-            self.auth = re.search('{}#access_token=(.*)'.format(re.escape(API_CLIENT_REGISTERED_URL)),
-                                  self.tok_response.headers['location']).group(1)
-        except Exception:
-            logger.log("Putio Auth Error: {}".format(Exception), logger.INFO)
+            self.response.status_code == 200
+            self.auth = self.response.status_code == 200
+        except Exception as e:
+            logger.log("Putio Auth Error: {}".format(e), logger.INFO)
             return None
-        self.access_token = self.auth
-        logger.log("Putio Access Token: {}".format(self.access_token) , logger.INFO)
         return self.auth
 
     # If we get an URL, it is easy peasy since Put.io will grab it for us.
