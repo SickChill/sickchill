@@ -52,7 +52,7 @@ class PutioAPI(GenericClient):
 
     # If we get an URL, it is easy peasy since Put.io will grab it for us.
     def _add_torrent_uri(self, result):
-        params={ 'oauth_token': self.auth }
+        params={ 'oauth_token': self.access_token }
         post_data = {
             'url': result.url,
             'save_parent_id': 0,
@@ -66,7 +66,7 @@ class PutioAPI(GenericClient):
     # We got a Torrent file, so upload that file to Put.io
     def _add_torrent_file(self, result):
         post_data = { 'name': 'putio_torrent','parent': 0 }
-        params={ 'oauth_token': self.auth }
+        params={ 'oauth_token': self.access_token }
 
         self.response = self.session.post('{}/files/upload?oauth_token={}'.format(PUTIO_BASE_URL,self.access_token),
                                           data=post_data, files=('putio_torrent',result.name), params=params)
