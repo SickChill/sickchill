@@ -4,10 +4,6 @@
     from sickbeard.helpers import anon_url
 %>
 
-<%block name="title">
-	<h1 class="header">${header}</h1>
-</%block>
-
 <%block name="tabs">
 	<li><a href="#animedb-settings">${_('AnimeDB Settings')}</a></li>
 	<li><a href="#anime-look-feel">${_('Look &amp; Feel')}</a></li>
