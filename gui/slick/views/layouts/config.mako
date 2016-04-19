@@ -23,28 +23,34 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<form id="configForm" action="saveGeneral" method="post">
-                <div class="row">
-                    <div class="col-md-12">
-	                    <div id="config-components">
-		                    <ul>
-                                <%block name="tabs"/>
-		                    </ul>
-
-                            <%block name="pages"/>
-	                    </div>
-
-                        <br/>
-	                    <h6 class="pull-right">
-		                    <b>
-                                ${_('All non-absolute folder locations are relative to ')}
-			                    <span class="path">${sickbeard.DATA_DIR}</span>
-		                    </b>
-	                    </h6>
-	                    <input type="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
-                    </div>
-                </div>
-			</form>
+			<div class="row">
+				<div class="col-md-12">
+					<div id="config-components">
+						<ul>
+                            <%block name="tabs"/>
+						</ul>
+						<div id="config">
+							<div id="config-components">
+                                <%block name="pages"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br/>
+			<div class="row">
+				<div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 pull-right">
+					<h6 class="pull-right">
+						<b>
+							<span class="path pull-right">${sickbeard.DATA_DIR}</span>
+							<span>${_('All non-absolute folder locations are relative to ')}</span>
+						</b>
+					</h6>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+					<input type="button" onclick="$('#configForm').submit()" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
+				</div>
+			</div>
 		</div>
 	</div>
 </%block>
