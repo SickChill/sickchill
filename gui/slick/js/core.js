@@ -1673,6 +1673,7 @@ var SICKRAGE = {
                     $('#torrent_client').text(client);
                     $('#rpcurl_title').text(client + rpcurl);
                     $('#blank_username').show();
+                    $('#torrent_password_option').show();
 
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
