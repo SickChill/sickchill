@@ -39,7 +39,7 @@
 				        </div>
 				        <br>
 
-				        <p>${_('''SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below.''')}</p>
+				        <p><b>${_('SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below.')}:</b></p>
 
 				        <p><input type="checkbox" name="promptForSettings" id="promptForSettings" /> <label for="promptForSettings">${_('Prompt me to set settings for each show')}</label></p>
 
