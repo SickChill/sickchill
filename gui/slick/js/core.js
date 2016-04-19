@@ -1667,11 +1667,6 @@ var SICKRAGE = {
                     $('#torrent_rpcurl_option').hide();
                     $('#torrent_host_option').show();
                     $('#get_token').hide();
-                    $('#host_title').text(client + host);
-                    $('#torrent_username_title').text(client + username);
-                    $('#password_title').text(client + password);
-                    $('#torrent_client').text(client);
-                    $('#rpcurl_title').text(client + rpcurl);
                     $('#blank_username').show();
                     $('#torrent_password_option').show();
 
@@ -1746,7 +1741,7 @@ var SICKRAGE = {
                         client = 'putio';
                         $('#get_token').show();
                         $('#blank_username').hide();
-                        $('#torrent_username_title').text('Access Token');
+                        username = 'Access Token';
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
                         $('#torrent_verify_cert_option').hide();
@@ -1757,6 +1752,11 @@ var SICKRAGE = {
                         $('#torrent_host_option').hide();
                         $('#torrent_password_option').hide();
                     }
+                    $('#host_title').text(client + host);
+                    $('#torrent_username_title').text(client + username);
+                    $('#password_title').text(client + password);
+                    $('#torrent_client').text(client);
+                    $('#rpcurl_title').text(client + rpcurl);
                     optionPanel = '#options_torrent_clients';
                 }
                 $(optionPanel).show();
