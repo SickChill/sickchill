@@ -8,14 +8,14 @@
     from sickrage.helper.encoding import ek
 %>
 <%block name="content">
-<div id="content960">
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
 <div id="config">
     <div id="config-content">
+        % if not header is UNDEFINED:
+		    <h1 class="header">${header}</h1>
+        % else:
+		    <h1 class="title">${title}</h1>
+        % endif
+
         <form id="configForm" action="savePostProcessing" method="post">
             <div id="config-components">
                 <ul>
@@ -33,7 +33,7 @@
                             <input type="checkbox" name="process_automatically" id="process_automatically" ${('', 'checked="checked"')[bool(sickbeard.PROCESS_AUTOMATICALLY)]}/>
                             <label for="process_automatically">
                                 <span class="component-title">${_('Enable')}</span>
-                                <span class="component-desc">${_('Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir')}</i>?</span>
+                                <span class="component-desc"><i>${_('Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir')}</i>?</span>
                             </label>
                             <label class="nocheck" for="process_automatically">
                                 <span class="component-title">&nbsp;</span>
@@ -914,7 +914,7 @@
                                               <td>02</td>
                                             </tr>
                                             <tr class="even">
-                                              <td class="align-right"><b${_('>XEM Season Number')}:</b></td>
+                                              <td class="align-right"><b>${_('>XEM Season Number')}:</b></td>
                                               <td>%XS</td>
                                               <td>2</td>
                                             </tr>
@@ -1083,7 +1083,7 @@
                                     </select>
                                 </span>
                             </label>
-                            <span>${_('Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.')}</b></span>
+                            <span><b>${_('Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.')}</b></span>
                         </div>
 
                         % for (cur_name, cur_generator) in sickbeard.metadata_provider_dict.iteritems():
@@ -1135,6 +1135,7 @@
                 <br>
                 <h6 class="pull-right"><b>${_('All non-absolute folder locations are relative to ')}<span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}" />
+            </div>
         </form>
     </div>
 </div>

@@ -7,10 +7,6 @@ inc_top.mako
     margin-bottom: -15px;
 }
 
-#contentWrapper {
-/*	background: url("../images/bg.png") repeat 0 0 transparent; */
-}
-
 .icon-white {
     background-image: url("../images/glyphicons-halflings-white.png");
 }
@@ -44,8 +40,7 @@ inc_top.mako
 
 .ui-accordion-content,
 .ui-tabs-panel {
-    background: #ededed !important;
-    background-image: none !important;
+	background: #EDEDED none !important;
 }
 
 .ui-widget {
@@ -145,18 +140,18 @@ inc_top.mako
 }
 
 .ui-tabs {
-    padding: 0px;
+    padding: 0;
     background: none;
-    border-width: 0px;
+    border-width: 0;
 }
 
 .ui-tabs .ui-tabs-nav {
-    padding-left: 0px;
+    padding-left: 0;
     background: transparent;
-    border-width: 0px 0px 0px 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
+    border-width: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
 }
 
 .ui-tabs .ui-tabs-panel {
@@ -175,29 +170,26 @@ inc_top.mako
     border-top-right-radius: 5px;
 }
 
-#content {
-    width: 95%;
-    min-width: 875px;
-    padding: 15px;
-    margin-left: auto;
-    margin-right: auto;
-    clear: both;
+#SubMenuContainer {
+	margin: 0;
 }
 
 #SubMenu {
-    padding-right: 20px;
     clear: both;
     font-size: 12px;
-    float: right;
+    align-content: flex-end;
+}
+
+#SubMenu a {
+    clear-after: top;
+    margin: 2px;
+    float:right;
 }
 
 .upgrade-notification {
-    width: 600px;
+    max-width: 600px;
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-    margin-bottom: 0px;
+    margin: 10px auto;
 }
 
 [class^="menu-icon-"], [class*=" menu-icon-"] {
@@ -367,7 +359,6 @@ inc_bottom.mako
 ========================================================================== */
 
 .footer {
-    width: 100%;
     padding: 20px 0;
     color: #4e4e4e;
     text-align: center;
@@ -385,18 +376,22 @@ inc_rootDirs.mako
 .rootdir-selectbox,
 .rootdir-selectbox #rootDirs,
 .rootdir-controls {
-    width: 430px
+    width: 100%;
 }
 .rootdir-selectbox {
-    padding: 0 0 5px
+    padding: 0 0 5px;
 }
 .rootdir-controls {
-    text-align: center
+    text-align: center;
 }
 
 /* =======================================================================
 home.mako
 ========================================================================== */
+
+.home-container {
+	overflow-x: auto;
+}
 
 .imgbanner .banner {
     border: 1px solid #ccc;
@@ -706,10 +701,8 @@ home_addShows.mako
 ========================================================================== */
 
 #addShowPortal {
-    width: 700px;
-    padding: 10px 0;
-    margin-right: auto;
-    margin-left: auto;
+    max-width: 700px;
+    margin: 15px auto;
 }
 
 #addShowPortal  a {
@@ -772,18 +765,7 @@ home_newShow.mako
 ========================================================================== */
 
 #addShowForm, #recommendedShowsForm {
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 10px 0;
     font-size:13px;
-}
-
-#newShowPortal {
-    width: 960px;
-    padding: 10px 0;
-    margin-right: auto;
-    margin-left: auto;
 }
 
 #displayText {
@@ -810,6 +792,7 @@ ul#rootDirStaticList {
     margin-right: auto;
     margin-left: auto;
     text-align: left;
+    padding-left: 0;
 }
 
 ul#rootDirStaticList li {
@@ -874,28 +857,12 @@ home_trendingShows.mako
 }
 
 /* =======================================================================
-home_postprocess.mako
-========================================================================== */
-
-#postProcess {
-    width: 800px;
-    padding-top: 10px;
-    margin-right: auto;
-    margin-left: auto;
-}
-
-/* =======================================================================
 displayShow.mako
 ========================================================================== */
 
 #posterCol {
     float: left;
     margin-right: 10px;
-    margin-bottom: 20px;
-}
-
-#showCol {
-    overflow: hidden;
     margin-bottom: 20px;
 }
 
@@ -934,7 +901,6 @@ h1.title {
 #showinfo {
     display: inline-block;
     position: relative;
-    top: -3px;
 }
 
 span.imdbstars {
@@ -960,7 +926,7 @@ span.imdbstars > * {
 ul.tags {
     list-style-type: none;
     position: relative;
-    top: -5px;
+    top: 4px;
     margin-left: -40px;
 }
 
@@ -984,24 +950,23 @@ ul.tags li a{
 .tvshowImg {
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 311px;
-    width: auto;
-    float: left;
+    max-height: 311px;
+    margin: 0 auto;
 }
 
 #summary {
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 10px;
     background-color: #efefef;
     border: 1px solid #dfdede;
     width: 100%;
-    height: 250px;
     overflow: auto;
     cursor: default;
     opacity: 0.8;
 }
 
 .summaryTable {
-    max-width: 70%;
     overflow: hidden;
 }
 
@@ -1019,6 +984,7 @@ ul.tags li a{
 #checkboxControls label {
     white-space: nowrap;
     display: inline-block;
+    margin: 7px 2px;
 }
 
 #checkboxControls input[type="checkbox"] {
@@ -1320,7 +1286,7 @@ h2.day, h2.network {
     margin: auto;
     padding: 0px;
     text-align: left;
-    width: 750px;
+    width: 100%;
     border-radius: 5px;
     background: #fff;
     cursor: default;
@@ -1364,7 +1330,7 @@ h2.day, h2.network {
 .bannerThumb {
     vertical-align: top;
     height: auto;
-    width: 748px;
+    width: 100%;
     border-bottom: 1px solid #ccc;
 }
 
@@ -1454,7 +1420,6 @@ config*.mako
 }
 
 .component-group {
-    padding: 15px 15px 25px;
     border-bottom: 1px dotted #ccc;
     min-height: 200px;
 }
@@ -1508,7 +1473,6 @@ config*.mako
     font-size: 12px;
     font-weight: normal;
     display:block;
-    width:475px;
     margin-left:182px
 }
 
@@ -2204,11 +2168,6 @@ input, textarea, select, .uneditable-input {
     color: #000;
 }
 
-.container-fluid {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
 .navbar-brand {
     padding: 0px;
 }
@@ -2262,6 +2221,11 @@ input, textarea, select, .uneditable-input {
 
 .navbar-default .navbar-toggle .icon-bar {
     background-color: #333333;
+}
+
+.navbar-default .navbar-toggle:hover .icon-bar,
+.navbar-default .navbar-toggle:focus .icon-bar {
+	background-color: #15528F;
 }
 
 .navbar-default .navbar-nav > .open > a,
@@ -3387,11 +3351,6 @@ IMDB Popular
     margin-bottom:0px;
 }
 
-table.home-header {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
 input.tablesorter-filter.disabled {
     display: none;
 }
@@ -3400,4 +3359,56 @@ input.tablesorter-filter.disabled {
 /* @TODO replace this with proper CSS overrides */
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header {
     font-weight: normal !important;
+}
+
+@media (max-width: 767px) {
+    .pull-xs-left {
+        float: left;
+    }
+    .pull-xs-right {
+        float: right;
+    }
+    .no-padding-xs {
+        padding: 0;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .pull-sm-left {
+        float: left;
+    }
+    .pull-sm-right {
+        float: right;
+    }
+    .no-padding-sm {
+        padding: 0;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .pull-md-left {
+        float: left;
+    }
+    .pull-md-right {
+        float: right;
+    }
+    .tvshowImg {
+        max-height: 245px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .pull-lg-left {
+        float: left;
+    }
+    .pull-lg-right {
+        float: right;
+    }
+    .tvshowImg {
+        max-height: 245px;
+    }
+}
+
+.horizontal-scroll {
+    overflow-x: auto;
 }

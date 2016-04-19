@@ -93,7 +93,6 @@ inc_bottom.mako
 ========================================================================== */
 
 .footer {
-    width: 100%;
     padding: 20px 0;
     color: #fff;
     text-align: center;
@@ -113,7 +112,6 @@ home.mako
     border: 1px solid #111;
     overflow: hidden;
     height: 66px;
-    overflow: hidden;
     border-radius: 8px;
     vertical-align: top;
     width: 360px;
@@ -284,20 +282,11 @@ ul.tags li {
 .tvshowImg {
     border: 1px solid #111;
     border-radius: 5px;
-    height: 311px;
-    width: auto;
-    float: left;
 }
 
 #summary {
-    padding: 10px;
     background-color: #3d3d3d;
     border: 1px solid #111;
-    width: 100%;
-    height: 250px;
-    overflow: auto;
-    cursor: default;
-    opacity: 0.8;
 }
 
 .sickbeardTable {
@@ -352,29 +341,10 @@ schedule.mako
 ========================================================================== */
 
 h2.day, h2.network {
-    margin: 10px 0;
-    font-size: 24px;
-    line-height: 36px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #FFF;
-    text-align: center;
-    text-shadow: -1px -1px 0px rgba(0, 0, 0, 0.3);
     background-color: #15528F;
 }
 
 .tvshowDiv {
-    display: block;
-    clear: both;
-    border: 1px solid #ccc;
-    margin: auto;
-    padding: 0px;
-    text-align: left;
-    width: 750px;
-    border-radius: 5px;
-    background: #fff;
-    cursor: default;
-    overflow: hidden;
     color: #000;
 }
 
@@ -412,7 +382,7 @@ config*.mako
 ========================================================================== */
 
 .component-group {
-    padding: 15px 15px 25px;
+    padding: 25px 0;
     border-bottom: 1px dotted #555;
     min-height: 200px;
 }
