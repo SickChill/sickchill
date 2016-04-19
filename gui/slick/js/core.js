@@ -1741,7 +1741,7 @@ var SICKRAGE = {
                         client = 'putio';
                         $('#get_token').show();
                         $('#blank_username').hide();
-                        username = 'Access Token';
+                        username = ' Access Token';
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
                         $('#torrent_verify_cert_option').hide();
