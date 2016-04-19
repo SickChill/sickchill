@@ -1754,7 +1754,7 @@ var SICKRAGE = {
                     }
                     $('#host_title').text(client + host);
                     $('#torrent_username_title').text(client + username);
-                    $('#password_title').text(client + password);
+                    $('#torrent_password_title').text(client + password);
                     $('#torrent_client').text(client);
                     $('#rpcurl_title').text(client + rpcurl);
                     optionPanel = '#options_torrent_clients';

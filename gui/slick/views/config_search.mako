@@ -598,7 +598,7 @@
 
                                 <div class="field-pair" id="torrent_password_option">
                                     <label>
-                                        <span class="component-title" id="password_title">Client password</span>
+                                        <span class="component-title" id="torrent_password_title">Client password</span>
                                         <span class="component-desc">
                                             <input type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD}" class="form-control input-sm input200" autocomplete="no" autocapitalize="off" />
                                             <p>(blank for none)</p>
