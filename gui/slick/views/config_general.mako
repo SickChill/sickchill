@@ -356,7 +356,7 @@
                                             <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
                                          % endfor
                                     </select>
-                                    <span><b>{_('Note')}:</b> ${_('seconds are only shown on the History page')}</span>
+                                    <span><b>${_('Note')}:</b> ${_('seconds are only shown on the History page')}</span>
                                 </span>
                             </label>
                         </div>
