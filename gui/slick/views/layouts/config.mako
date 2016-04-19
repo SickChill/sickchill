@@ -47,9 +47,11 @@
 						</b>
 					</h6>
 				</div>
-				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-					<input type="button" onclick="$('#configForm').submit()" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
-				</div>
+                <%block name="saveButton">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <input type="button" onclick="$('#configForm').submit()" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
+                    </div>
+                </%block>
 			</div>
 		</div>
 	</div>
