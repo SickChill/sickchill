@@ -1431,7 +1431,6 @@ config*.mako
 
 .component-group-desc{
     float: left;
-    width: 250px;
 }
 
 .component-group-desc h3{
@@ -1473,7 +1472,6 @@ config*.mako
     font-size: 12px;
     font-weight: normal;
     display:block;
-    margin-left:182px
 }
 
 #config label.space-right {
@@ -2703,37 +2701,37 @@ input sizing (for config pages)
 }
 
 .input75 {
-    width: 75px;
+    max-width: 75px;
     margin-top: -4px;
 }
 
 .input100 {
-    width: 100px;
+    max-width: 100px;
     margin-top: -4px;
 }
 
 .input150 {
-    width: 150px;
+    max-width: 150px;
     margin-top: -4px;
 }
 
 .input200 {
-    width: 200px;
+    max-width: 200px;
     margin-top: -4px;
 }
 
 .input250 {
-    width: 250px;
+    max-width: 250px;
     margin-top: -4px;
 }
 
 .input300 {
-    width: 300px;
+    max-width: 300px;
     margin-top: -4px;
 }
 
 .input350 {
-    width: 350px;
+    max-width: 350px;
     margin-top: -4px;
 }
 
@@ -2833,7 +2831,7 @@ div.formpaginate .prev, div.formpaginate .next {
 }
 
 div.field-pair input {
-    margin-right: 6px;
+    margin: 6px 6px 6px 0;
     float: left;
 }
 
@@ -3370,6 +3368,9 @@ input.tablesorter-filter.disabled {
     }
     .no-padding-xs {
         padding: 0;
+    }
+    .nocheck {
+        padding-left: 0 !important;
     }
 }
 
