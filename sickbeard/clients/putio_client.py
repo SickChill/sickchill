@@ -35,15 +35,9 @@ class PutioAPI(GenericClient):
         self.access_token = username
 
     def _get_auth(self):
-        post_data = {
-            'name': self.username,
-            'password': self.password,
-            'next': '/v2/oauth2/authenticate?client_id={}&response_type=token&redirect_uri={}'.format(
-                API_CLIENT_ID,API_CLIENT_REGISTERED_URL)
-        }
         try:
             self.response = self.session.get(self.url, timeout=120)
-            self.response.status_code == 200
+            self.response.status_code = 200
             self.auth = self.response.status_code == 200
         except Exception as e:
             logger.log("Putio Auth Error: {}".format(e), logger.INFO)
@@ -52,7 +46,7 @@ class PutioAPI(GenericClient):
 
     # If we get an URL, it is easy peasy since Put.io will grab it for us.
     def _add_torrent_uri(self, result):
-        params={ 'oauth_token': self.access_token }
+        params={ 'oauth_token': self.username }
         post_data = {
             'url': result.url,
             'save_parent_id': 0,
@@ -66,9 +60,9 @@ class PutioAPI(GenericClient):
     # We got a Torrent file, so upload that file to Put.io
     def _add_torrent_file(self, result):
         post_data = { 'name': 'putio_torrent','parent': 0 }
-        params={ 'oauth_token': self.access_token }
+        params={ 'oauth_token': self.username }
 
-        self.response = self.session.post('{}/files/upload?oauth_token={}'.format(PUTIO_BASE_URL,self.access_token),
+        self.response = self.session.post('{}/files/upload?oauth_token={}'.format(PUTIO_BASE_URL,self.username),
                                           data=post_data, files=('putio_torrent',result.name), params=params)
         return self.response.json()['status'] == "OK"
 
