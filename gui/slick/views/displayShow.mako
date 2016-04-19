@@ -101,7 +101,9 @@
                     % endif
                 </div>
             </div>
+
             % if show_message:
+                <!-- Alert -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="alert alert-info">
@@ -110,13 +112,15 @@
                     </div>
                 </div>
             % endif
+
+            <!-- Header -->
             <div class="row">
-                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
                          class="pull-md-left pull-lg-left tvshowImg img-responsive" alt="Show Image"
                          onclick="location.href='${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster'"/>
                 </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <div class="row">
                         <div class="col-md-12" id="showinfo">
                             <div class="row">
@@ -303,6 +307,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Labels -->
             <div class="row">
                 <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 pull-right">
                     <div class="pull-right" id="checkboxControls">
@@ -323,6 +328,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 5px; padding-top: 5px;">
                     ${_('Change selected episodes to')}:<br>

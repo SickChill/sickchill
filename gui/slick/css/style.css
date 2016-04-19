@@ -3375,6 +3375,9 @@ input.tablesorter-filter.disabled {
     .nocheck {
         padding-left: 0 !important;
     }
+    .tvshowImg {
+        margin-bottom: 10px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -3386,6 +3389,9 @@ input.tablesorter-filter.disabled {
     }
     .no-padding-sm {
         padding: 0;
+    }
+    .tvshowImg {
+        max-height: 245px;
     }
 }
 
