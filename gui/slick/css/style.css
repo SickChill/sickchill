@@ -1419,6 +1419,11 @@ config*.mako
     text-align: left;
 }
 
+.config-group-divider {
+    margin: 10px 0;
+    border-bottom: 1px dotted #ccc;
+}
+
 .component-group {
     border-bottom: 1px dotted #ccc;
     min-height: 200px;
@@ -1462,13 +1467,12 @@ config*.mako
 
 #config span.component-title {
     float: left;
-    width: 172px;
     margin-right: 10px;
     font-size: 13px;
     font-weight: bold;
 }
 
-#config span.component-desc {
+#config .component-desc {
     font-size: 12px;
     font-weight: normal;
     display:block;
@@ -2693,7 +2697,6 @@ input sizing (for config pages)
     min-width: 0;
     width: auto;
     display: inline;
-    margin-top: -4px;
 }
 
 .btn-inline {
