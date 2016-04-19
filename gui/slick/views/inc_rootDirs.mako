@@ -14,7 +14,7 @@
 
 <input type="hidden" id="whichDefaultRootDir" value="${backend_default}" />
 <div class="rootdir-selectbox">
-    <select name="rootDir" id="rootDirs" size="6">
+    <select name="rootDir" id="rootDirs" size="6" title="Root directory">
     % for cur_dir in backend_dirs:
         <option value="${cur_dir}">${cur_dir}</option>
     % endfor
