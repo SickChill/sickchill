@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-19 20:31-0700\n"
-"PO-Revision-Date: 2016-04-19 23:33-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:30-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -495,7 +495,7 @@ msgstr "Fortsetzen"
 
 #: sickbeard/webserve.py:1302
 msgid "Pause"
-msgstr "Anhalten"
+msgstr "Pausieren"
 
 #: sickbeard/webserve.py:1304 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
@@ -889,7 +889,7 @@ msgstr "Fehlgeschlagene Downloads"
 
 #: sickbeard/webserve.py:3610 gui/slick/views/layouts/main.mako:142
 msgid "Manage Searches"
-msgstr "Suchen verwalten"
+msgstr "Suchverwaltung"
 
 #: sickbeard/webserve.py:3618
 msgid "Backlog search started"
@@ -901,7 +901,7 @@ msgstr "Tägliche Suche gestartet"
 
 #: sickbeard/webserve.py:3637
 msgid "Find propers search started"
-msgstr "Suche nach korrigierten/nachgebesserten Versionen gestartet"
+msgstr "Suche nach Korrekturen (Propers) gestartet"
 
 #: sickbeard/webserve.py:3646
 msgid "Subtitle search started"
@@ -1101,11 +1101,11 @@ msgstr "Von Trakt Listen hinzufügen"
 
 #: gui/slick/views/addShows.mako:23
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr "Für Sendungen die Sie noch nicht heruntergeladen haben lässt Sie diese Funktion aus einer Trakt Sendungsliste auswählen und fügt die Sendung zu SickRage hinzu."
+msgstr "Für Serien, die Sie noch nicht heruntergeladen haben, ermöglicht diese Option Serien aus einer Trakt Liste auszuwählen und sie SickRage hinzuzufügen."
 
 #: gui/slick/views/addShows.mako:32
 msgid "Add From IMDB's Popular Shows"
-msgstr "Aus populären Sendungen von IMDB hinzufügen"
+msgstr "Aus beliebten Serien von IMDB hinzufügen"
 
 #: gui/slick/views/addShows.mako:33
 msgid "View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series."
@@ -1262,11 +1262,11 @@ msgstr "Wähle Trakt Liste"
 
 #: gui/slick/views/addShows_trendingShows.mako:46
 msgid "Most Anticipated"
-msgstr "Meist erwartete"
+msgstr "Meisterwartet"
 
 #: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Trending"
-msgstr "Beliebt"
+msgstr "Im Trend"
 
 #: gui/slick/views/addShows_trendingShows.mako:50
 msgid "Popular"
@@ -3196,7 +3196,7 @@ msgstr "Trakt.tv-Benachrichtigungen senden?"
 
 #: gui/slick/views/config_notifications.mako:1598
 msgid "username of your Trakt account."
-msgstr "Benutzername des Trakt-Kontos."
+msgstr "Benutzername Ihres Trakt Kontos."
 
 #: gui/slick/views/config_notifications.mako:1602
 msgid "Get Trakt PIN"
@@ -3308,7 +3308,7 @@ msgstr "Name der Trakt Blacklist"
 
 #: gui/slick/views/config_notifications.mako:1725
 msgid "Name(slug) of List on Trakt for blacklisting show on 'Add Trending Show' & 'Add Recommended Shows' pages"
-msgstr "Name (slug) einer Trakt-Liste, um eine Serie auf den Seiten \"Add Trending Show\" & \"Add Recommended Shows\" auf die Blacklist zu setzen"
+msgstr "Name (slug) einer Trakt Liste, um eine Serie auf den Seiten \"Add Trending Show\" & \"Add Recommended Shows\" auf die Blacklist zu setzen"
 
 #: gui/slick/views/config_notifications.mako:1737
 msgid "Email"
@@ -4682,7 +4682,7 @@ msgstr "Stunden. (Standard: '0' übergibt Leerstelle an Client' und '-1' übergi
 
 #: gui/slick/views/config_search.mako:659
 msgid "Start torrent paused"
-msgstr "Torrent angehalten starten"
+msgstr "Torrent pausiert starten"
 
 #: gui/slick/views/config_search.mako:662
 msgid "add .torrent to client but do <b style=\"font-weight:900\">not</b> start downloading"
@@ -4916,11 +4916,11 @@ msgstr "Minuten"
 
 #: gui/slick/views/displayShow.mako:149
 msgid "View other popular {genre} shows on trakt.tv."
-msgstr ""
+msgstr "Andere beliebte {genre} Serien auf trakt.tv anzeigen."
 
 #: gui/slick/views/displayShow.mako:153
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "Andere beliebte {imdbgenre} Serien auf trakt. tv anzeigen."
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -5621,6 +5621,7 @@ msgid "500"
 msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "Alle"
@@ -5659,7 +5660,7 @@ msgstr "Suche korrigierter Versionen"
 
 #: gui/slick/views/manage_manageSearches.mako:24
 msgid "Propers search disabled"
-msgstr "Korrigierte Versions--Suche deativiert"
+msgstr "Suche nach korrigierten Versionen (Propers) deaktiviert"
 
 #: gui/slick/views/manage_manageSearches.mako:26
 msgid "Subtitle Search"
@@ -5752,7 +5753,7 @@ msgstr "Suche nach Untertiteln."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
 msgid "All of your episodes have {subsLanguage} subtitles."
-msgstr ""
+msgstr "All Ihre Folgen haben {subsLanguage} Untertitel."
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5761,11 +5762,11 @@ msgstr "Verwalten von Folgen ohne"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
 msgid "Episodes without {subsLanguage} subtitles."
-msgstr ""
+msgstr "Folgen ohne {subsLanguage} Untertitel."
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
-msgstr ""
+msgstr "Folgen ohne {subtitleLanguage} Untertitel (undefiniert)."
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"
@@ -5781,7 +5782,7 @@ msgstr "SickRage wird heruntergefahren"
 
 #: gui/slick/views/restart.mako:33
 msgid "Waiting for SickRage to start again"
-msgstr "SickRage wird neugestartet"
+msgstr "SickRage wird neu gestartet"
 
 #: gui/slick/views/restart.mako:40
 msgid "Loading the default page"
@@ -6017,11 +6018,11 @@ msgstr "Serie entfernen"
 
 #: gui/slick/views/viewlogs.mako:22
 msgid "Minimum logging level to display"
-msgstr "Minimale Protokollierungsstufe anzeigen"
+msgstr "Protokollierungsstufe"
 
 #: gui/slick/views/viewlogs.mako:41
 msgid "Search log by"
-msgstr "Protokoll durchsuchen nach"
+msgstr "Protokoll durchsuchen"
 
 #: gui/slick/views/layouts/main.mako:116
 msgid "Manual Post-Processing"
@@ -6029,7 +6030,7 @@ msgstr "Manuelle Nachbearbeitung"
 
 #: gui/slick/views/layouts/main.mako:143
 msgid "Episode Status Management"
-msgstr "Folgen Statusverwaltung"
+msgstr "Folgenstatusverwaltung"
 
 #: gui/slick/views/layouts/main.mako:145
 msgid "Update PLEX"

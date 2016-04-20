@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-19 20:31-0700\n"
-"PO-Revision-Date: 2016-04-19 23:33-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:31-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -19,215 +19,215 @@ msgstr ""
 
 #: sickbeard/common.py:75
 msgid "Started Download"
-msgstr ""
+msgstr "Preberanie začalo"
 
 #: sickbeard/common.py:76
 msgid "Download Finished"
-msgstr ""
+msgstr "Preberanie dokončené"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Sťahovanie titulkov dokončené"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage aktualizovaný"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
-msgstr ""
+msgstr "SickRage aktualizovaný na Commit#: "
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage nové prihlasovacie údaje"
 
 #: sickbeard/common.py:81
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
-msgstr ""
+msgstr "Nové prihlásenie z IP adresy: {0}. http://geomaplookup.net/?IP={0}"
 
 #: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámy"
 
 #: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "Nevysielané"
 
 #: sickbeard/common.py:599 gui/slick/views/displayShow.mako:260
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
 #: gui/slick/views/home.mako:333 gui/slick/views/layouts/main.mako:294
 msgid "Snatched"
-msgstr ""
+msgstr "Chňapnuté"
 
 #: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "Stiahnuté"
 
 #: sickbeard/common.py:601 gui/slick/views/displayShow.mako:259
 msgid "Skipped"
-msgstr ""
+msgstr "Vynechané"
 
 #: sickbeard/common.py:602
 msgid "Snatched (Proper)"
-msgstr ""
+msgstr "Chňapnuté (Proper)"
 
 #: sickbeard/common.py:603 gui/slick/views/displayShow.mako:256
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Požadované"
 
 #: sickbeard/common.py:604
 msgid "Archived"
-msgstr ""
+msgstr "Archivované"
 
 #: sickbeard/common.py:605
 msgid "Ignored"
-msgstr ""
+msgstr "Ignorované"
 
 #: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "S titulkami"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:34
 msgid "Failed"
-msgstr ""
+msgstr "Zlyhalo"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
-msgstr ""
+msgstr "Chňapnuté (Najlepšie)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
-msgstr ""
+msgstr "Nová aktualizácia SickRage, začínam auto-aktualizáciu"
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr ""
+msgstr "Aktualizácia bola úspešná"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
-msgstr ""
+msgstr "Aktualizácia zlyhala!"
 
 #: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr ""
+msgstr "Záloha"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr ""
+msgstr "Prebieha záloha nastavení..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr ""
+msgstr "Záloha nastavení úspešná, aktualizujem..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr ""
+msgstr "Záloha nastavení zlyhala, ruším aktualizáciu"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
-msgstr ""
+msgstr "Žiadna aktualizácia"
 
 #: sickbeard/webserve.py:178
 msgid "Mako Error"
-msgstr ""
+msgstr "Mako chyba"
 
 #: sickbeard/webserve.py:203
 msgid "Oops"
-msgstr ""
+msgstr "Jejda"
 
 #: sickbeard/webserve.py:205
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Použitý zlý API kľúč"
 
 #: sickbeard/webserve.py:306 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Prihlásenie"
 
 #: sickbeard/webserve.py:396
 msgid "API Key not generated"
-msgstr ""
+msgstr "API kľúč nebol generovaný"
 
 #: sickbeard/webserve.py:399
 msgid "API Builder"
-msgstr ""
+msgstr "API Builder"
 
 #: sickbeard/webserve.py:500
 msgid "Sort by:"
-msgstr ""
+msgstr "Zoradiť podľa:"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
-msgstr ""
+msgstr "Rozloženie:"
 
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
-msgstr ""
+msgstr "Banner"
 
 #: sickbeard/webserve.py:511 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
-msgstr ""
+msgstr "Plagát"
 
 #: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:50
 msgid "List"
-msgstr ""
+msgstr "Zoznam"
 
 #: sickbeard/webserve.py:513 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "Kalendár"
 
 #: sickbeard/webserve.py:517
 msgid "View Paused:"
-msgstr ""
+msgstr "Zobraziť pozastavené:"
 
 #: sickbeard/webserve.py:519
 msgid "Hide"
-msgstr ""
+msgstr "Skryť"
 
 #: sickbeard/webserve.py:521 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "Zobraziť"
 
 #: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:128
 msgid "Schedule"
-msgstr ""
+msgstr "Rozvrh"
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
-msgstr ""
+msgstr "Test 1"
 
 #: sickbeard/webserve.py:632
 msgid "This is test number 1"
-msgstr ""
+msgstr "Toto je test číslo 1"
 
 #: sickbeard/webserve.py:633
 msgid "Test 2"
-msgstr ""
+msgstr "Test 2"
 
 #: sickbeard/webserve.py:633
 msgid "This is test number 2"
-msgstr ""
+msgstr "Toto je test číslo 2"
 
 #: sickbeard/webserve.py:685
 msgid "Invalid show parameters"
-msgstr ""
+msgstr "Neplatné parametre relácie"
 
 #: sickbeard/webserve.py:690
 msgid "Invalid show paramaters"
-msgstr ""
+msgstr "Neplatné parametre relácie"
 
 #: sickbeard/webserve.py:697
 msgid "Invalid paramaters"
@@ -235,15 +235,15 @@ msgstr ""
 
 #: sickbeard/webserve.py:700 sickbeard/webserve.py:1803
 msgid "Episode couldn't be retrieved"
-msgstr ""
+msgstr "Epizódu sa nepodarilo získať"
 
 #: sickbeard/webserve.py:719 sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Home"
-msgstr ""
+msgstr "Úvod"
 
 #: sickbeard/webserve.py:719 gui/slick/views/layouts/main.mako:114
 msgid "Show List"
-msgstr ""
+msgstr "Zoznam relácií"
 
 #: sickbeard/webserve.py:759
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
@@ -251,51 +251,51 @@ msgstr ""
 
 #: sickbeard/webserve.py:803
 msgid "Success. Connected and authenticated"
-msgstr ""
+msgstr "Úspech. Pripojené a overené"
 
 #: sickbeard/webserve.py:805
 msgid "Authentication failed. SABnzbd expects"
-msgstr ""
+msgstr "Overenie zlyhalo. SABnzbd očakáva"
 
 #: sickbeard/webserve.py:805
 msgid "as authentication method"
-msgstr ""
+msgstr "ako metóda overovania"
 
 #: sickbeard/webserve.py:807
 msgid "Unable to connect to host"
-msgstr ""
+msgstr "Nedá sa pripojiť k hostiteľovi"
 
 #: sickbeard/webserve.py:828
 msgid "SMS sent successfully"
-msgstr ""
+msgstr "Správa úspešne odoslaná"
 
 #: sickbeard/webserve.py:830
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Problém s odosielaním SMS: {message}"
 
 #: sickbeard/webserve.py:837
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Telegram oznámenie odoslané. Skontrolujte Telegram klientov, či fungovalo"
 
 #: sickbeard/webserve.py:839
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Chyba pri odosielaní Telegram oznámenia: {message}"
 
 #: sickbeard/webserve.py:849
 msgid " with password"
-msgstr ""
+msgstr " s heslom"
 
 #: sickbeard/webserve.py:851
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "growl úspešne zaregistrované a otestované {growl_host}"
 
 #: sickbeard/webserve.py:853
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Registrácia a testovanie growl neúspešné {growl_host}"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice sent successfully"
-msgstr ""
+msgstr "Prowl oznámenie úspešne odoslané"
 
 #: sickbeard/webserve.py:862
 msgid "Test prowl notice failed"
@@ -427,29 +427,29 @@ msgstr ""
 
 #: sickbeard/webserve.py:1113
 msgid "Error sending Pushalot notification"
-msgstr ""
+msgstr "Chyba pri odosielaní oznámení Pushalot"
 
 #: sickbeard/webserve.py:1120
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
-msgstr ""
+msgstr "Pushbullet oznámenie odoslané. Skontrolujte svoje zariadenie aby ste sa presvedčili, že to fungovalo"
 
 #: sickbeard/webserve.py:1122 sickbeard/webserve.py:1132 sickbeard/webserve.py:1141
 msgid "Error sending Pushbullet notification"
-msgstr ""
+msgstr "Chyba pri odosielaní oznámení Pushbullet"
 
 #: sickbeard/webserve.py:1158 gui/slick/views/displayShow.mako:334
 #: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
 #: gui/slick/views/home.mako:252 gui/slick/views/manage.mako:50
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 #: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "SickRage sa reštartuje"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
-msgstr ""
+msgstr "Aktualizácia zlyhala"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
@@ -457,11 +457,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1217
 msgid "Checking out branch"
-msgstr ""
+msgstr "Prepínam vetvu (branch)"
 
 #: sickbeard/webserve.py:1220
 msgid "Already on branch"
-msgstr ""
+msgstr "Vybraná vetva je použitá"
 
 #: sickbeard/webserve.py:1248 sickbeard/webserve.py:1251 sickbeard/webserve.py:1420
 #: sickbeard/webserve.py:1429 sickbeard/webserve.py:1621 sickbeard/webserve.py:1632
@@ -472,81 +472,81 @@ msgstr ""
 #: sickbeard/webserve.py:1900 sickbeard/webserve.py:1905 sickbeard/webserve.py:1910
 #: sickbeard/webserve.py:1939 sickbeard/webserve.py:1943 sickbeard/webserve.py:1948
 msgid "Error"
-msgstr ""
+msgstr "Chyba"
 
 #: sickbeard/webserve.py:1248
 msgid "Invalid show ID: {show}"
-msgstr ""
+msgstr "Neplatné ID relácie: {show}"
 
 #: sickbeard/webserve.py:1251 sickbeard/webserve.py:1775 sickbeard/webserve.py:1905
 #: sickbeard/webserve.py:1943
 msgid "Show not in show list"
-msgstr ""
+msgstr "Relácia nie je v zozname relácií"
 
 #: sickbeard/webserve.py:1267 sickbeard/webserve.py:1930
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
-msgstr ""
+msgstr "Upraviť"
 
 #: sickbeard/webserve.py:1300
 msgid "Resume"
-msgstr ""
+msgstr "Obnoviť"
 
 #: sickbeard/webserve.py:1302
 msgid "Pause"
-msgstr ""
+msgstr "Pozastaviť"
 
 #: sickbeard/webserve.py:1304 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_blackwhitelist.mako:25
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr ""
+msgstr "Odstrániť"
 
 #: sickbeard/webserve.py:1305
 msgid "Re-scan files"
-msgstr ""
+msgstr "Opätovné skenovanie súborov"
 
 #: sickbeard/webserve.py:1306
 msgid "Force Full Update"
-msgstr ""
+msgstr "Vynútiť úplnú aktualizáciu"
 
 #: sickbeard/webserve.py:1307
 msgid "Update show in KODI"
-msgstr ""
+msgstr "Zobraziť reláciu v KODI"
 
 #: sickbeard/webserve.py:1308
 msgid "Update show in Emby"
-msgstr ""
+msgstr "Zobraziť reláciu v Emby"
 
 #: sickbeard/webserve.py:1309 sickbeard/webserve.py:1933 sickbeard/webserve.py:1934
 msgid "Preview Rename"
-msgstr ""
+msgstr "Ukážka premenovania"
 
 #: sickbeard/webserve.py:1312
 msgid "Download Subtitles"
-msgstr ""
+msgstr "Stiahnuť titulky"
 
 #: sickbeard/webserve.py:1398
 msgid "No scene exceptions"
-msgstr ""
+msgstr "Žiadne \"scene exceptions\""
 
 #: sickbeard/webserve.py:1416 sickbeard/webserve.py:1668 sickbeard/webserve.py:1689
 msgid "Invalid show ID"
-msgstr ""
+msgstr "Neplatné ID relácie"
 
 #: sickbeard/webserve.py:1425 sickbeard/webserve.py:1673 sickbeard/webserve.py:1694
 msgid "Unable to find the specified show"
-msgstr ""
+msgstr "Nepodarilo sa nájsť zadanú reláciu"
 
 #: sickbeard/webserve.py:1450
 msgid "Unable to retreive Fansub Groups from AniDB."
-msgstr ""
+msgstr "Nepodarilo sa načítať Fansub skupiny z AniDB."
 
 #: sickbeard/webserve.py:1459 sickbeard/webserve.py:1461
 msgid "Edit Show"
-msgstr ""
+msgstr "Upraviť reláciu"
 
 #: sickbeard/webserve.py:1544 sickbeard/webserve.py:1575
 msgid "Unable to refresh this show: {error}"
@@ -5600,6 +5600,7 @@ msgid "500"
 msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr ""

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-19 20:31-0700\n"
-"PO-Revision-Date: 2016-04-19 23:33-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:30-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: English, United Kingdom\n"
 "MIME-Version: 1.0\n"
@@ -4915,11 +4915,11 @@ msgstr "minutes"
 
 #: gui/slick/views/displayShow.mako:149
 msgid "View other popular {genre} shows on trakt.tv."
-msgstr ""
+msgstr "View other popular {genre} shows on trakt.tv."
 
 #: gui/slick/views/displayShow.mako:153
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "View other popular {imdbgenre} shows on IMDB."
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -5620,6 +5620,7 @@ msgid "500"
 msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "All"
@@ -5751,7 +5752,7 @@ msgstr "Search for subtitles."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
 msgid "All of your episodes have {subsLanguage} subtitles."
-msgstr ""
+msgstr "All of your episodes have {subsLanguage} subtitles."
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5760,11 +5761,11 @@ msgstr "Manage episodes without"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
 msgid "Episodes without {subsLanguage} subtitles."
-msgstr ""
+msgstr "Episodes without {subsLanguage} subtitles."
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
-msgstr ""
+msgstr "Episodes without {subtitleLanguage} (undefined) subtitles."
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"

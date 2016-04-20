@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-19 20:31-0700\n"
-"PO-Revision-Date: 2016-04-19 23:33-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:31-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -203,7 +203,7 @@ msgstr "Serie"
 #: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:128
 msgid "Schedule"
-msgstr "Tidsplan"
+msgstr "Sendeplan"
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
@@ -4918,11 +4918,11 @@ msgstr "minutter"
 
 #: gui/slick/views/displayShow.mako:149
 msgid "View other popular {genre} shows on trakt.tv."
-msgstr ""
+msgstr "Vis andre populære {genre} serier på trakt.tv."
 
 #: gui/slick/views/displayShow.mako:153
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "Vis andre populære {imdbgenre}serier på IMDB."
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -5623,6 +5623,7 @@ msgid "500"
 msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "Alle"
@@ -5754,7 +5755,7 @@ msgstr "Søk etter undertekster."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
 msgid "All of your episodes have {subsLanguage} subtitles."
-msgstr ""
+msgstr "Alle episodene har {subsLanguage} undertekster."
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5763,11 +5764,11 @@ msgstr "Behandle episoder uten"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
 msgid "Episodes without {subsLanguage} subtitles."
-msgstr ""
+msgstr "Episoder uten {subsLanguage} undertekster."
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
-msgstr ""
+msgstr "Episoder uten {subtitleLanguage} (udefinerte) undertekster."
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"
