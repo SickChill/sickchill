@@ -198,7 +198,7 @@ inc_top.mako
     width: 16px;
     display: inline-block;
     position: relative;
-    top: 2px;
+    left: -3px;
     float: left;
 }
 
@@ -1565,9 +1565,7 @@ select .selected {
 }
 
 [class^="icon16-config-"], [class*=" icon16-config-"] {
-    background-image: url("../images/16x_sprite_colored_help-info.png");
-    background-position: -40px 0;
-    background-repeat: no-repeat;
+    background: url("../images/16x_sprite_colored_help-info.png") no-repeat -40px 0;
     display: inline-block;
     height: 16px;
     line-height: 16px;
