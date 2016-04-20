@@ -23,7 +23,7 @@
         <form action="${srRoot}/manage/subtitleMissed" method="get">
             % if sickbeard.SUBTITLES_MULTI:
                 ${_('Manage episodes without')} <select name="whichSubs" class="form-control form-control-inline input-sm">
-                <option value="all">All')}</option>
+                <option value="all">${_('All')}</option>
                 % for sub_code in subtitles.wanted_languages():
                     <option value="${sub_code}">${subtitles.name_from_code(sub_code)}</option>
                 % endfor
