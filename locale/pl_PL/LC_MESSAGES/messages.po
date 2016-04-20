@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:58-0400\n"
+"POT-Creation-Date: 2016-04-19 20:31-0700\n"
+"PO-Revision-Date: 2016-04-19 23:33-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -1536,8 +1536,8 @@ msgstr "Czy chcesz dodać przetwarzane odcinki do MyList?"
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Zapisz zmiany"
@@ -1672,7 +1672,7 @@ msgstr "liczba zapisanych logów podczas ich rotacji (domyślnie: 5) (POTRZEBNY 
 
 #: gui/slick/views/config_general.mako:123
 msgid "Size of Log files saved"
-msgstr ""
+msgstr "Rozmiar zapisywanych plików dziennika"
 
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
@@ -1768,11 +1768,11 @@ msgstr "Wyświetl motyw"
 
 #: gui/slick/views/config_general.mako:255
 msgid "Dark"
-msgstr ""
+msgstr "Ciemny"
 
 #: gui/slick/views/config_general.mako:256
 msgid "Light"
-msgstr ""
+msgstr "Jasny"
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
@@ -1838,9 +1838,28 @@ msgstr "Użyj domyślnych ustawień systemowych"
 msgid "Time style"
 msgstr "Styl wyświetlania czasu"
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr "Uwaga"
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
-msgstr ""
+msgstr "sekundy są widoczne jedynie na stronie Historii"
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
@@ -1860,28 +1879,9 @@ msgstr "Sieć"
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "wyświetl daty i czas albo twojej strefy czasowej lub strefy czasowej programu"
 
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
-msgstr "Uwaga"
-
 #: gui/slick/views/config_general.mako:377
 msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
-msgstr ""
+msgstr "Użyj lokalnej strefy czasowej aby wyszukiwać odcinki tuż po zakończeniu ich emisji (zależne od ustawionej częstotliwości wyszukiwania)"
 
 #: gui/slick/views/config_general.mako:384
 msgid "Download url"
@@ -2059,11 +2059,11 @@ msgstr "w pliku <code>config.ini</code>."
 #: gui/slick/views/config_general.mako:603
 #: gui/slick/views/config_subtitles.mako:145
 msgid "Warning"
-msgstr ""
+msgstr "Uwaga!"
 
 #: gui/slick/views/config_general.mako:603
 msgid "Passwords must only contain"
-msgstr ""
+msgstr "Hasła muszą zawierać jedynie"
 
 #: gui/slick/views/config_general.mako:603
 msgid "ASCII characters"
@@ -2372,7 +2372,7 @@ msgstr "nazwa użytkownika na serwerze KODI (puste jeżeli brak)"
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Hasło"
 
@@ -3590,7 +3590,7 @@ msgstr "Usuń zawartość RAR"
 
 #: gui/slick/views/config_postProcessing.mako:202
 msgid "Delete content of RAR files, even if Process Method not set to move?"
-msgstr ""
+msgstr "Usunąć zawartość plików RAR, nawet jeśli Przetwarzanie jest ustawione na metodę przenoszenia?"
 
 #: gui/slick/views/config_postProcessing.mako:208
 msgid "Don't delete empty folders"
@@ -3631,7 +3631,7 @@ msgstr "Wzór nazewnictwa"
 
 #: gui/slick/views/config_postProcessing.mako:269
 msgid "Don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality"
-msgstr ""
+msgstr "Nie zapomnij ustawić wzoru jakości, ponieważ Przetworzony odcinek będzie oznaczony jako \"Nieznana jakość\""
 
 #: gui/slick/views/config_postProcessing.mako:277
 #: gui/slick/views/config_postProcessing.mako:525
@@ -4620,7 +4620,7 @@ msgstr "Torrent RPC URL"
 
 #: gui/slick/views/config_search.mako:555
 msgid "The path without leading and trailing slashes (e.g. transmission)"
-msgstr ""
+msgstr "Ścieżka bez ukośników na początku i na końcu (n.p. transmission)"
 
 #: gui/slick/views/config_search.mako:563
 msgid "Http Authentication"
@@ -4778,7 +4778,7 @@ msgstr "Dodać kod języka do pliku napisów?"
 
 #: gui/slick/views/config_subtitles.mako:115
 msgid "This option is required if you use multiple subtitle languages."
-msgstr ""
+msgstr "Ta opcja jest wymagana jeśli używasz wielu napisów z różnymi jezykami"
 
 #: gui/slick/views/config_subtitles.mako:120
 msgid "Subtitles in Post-Process folder"
@@ -4818,7 +4818,7 @@ msgstr "Ignoruj napisy osadzone wewnątrz pliku z filmem?"
 
 #: gui/slick/views/config_subtitles.mako:145
 msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
-msgstr ""
+msgstr "to zignoruje <u>wszystkie</u> wbudowane napisy dla każdego pliku video!"
 
 #: gui/slick/views/config_subtitles.mako:151
 msgid "Hearing Impaired Subtitles"
@@ -4876,7 +4876,7 @@ msgstr "Ustawienia dostawcy"
 msgid "Set user and password for each provider"
 msgstr "Ustaw użytkownika i hasło dla każdego dostawcy"
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr "Nazwa użytkownika"
 
@@ -4914,12 +4914,12 @@ msgid "minutes"
 msgstr "minut"
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
-msgstr "Pokaż inne popularne ${genre} programów na trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
-msgstr "Pokaż inne popularne ${imdbgenre} programów na IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -5219,7 +5219,7 @@ msgstr "Wyjątki sceny"
 
 #: gui/slick/views/editShow.mako:224
 msgid "This will affect episode search on NZB and torrent providers. This list appends to the original show name."
-msgstr ""
+msgstr "Wpłynie to na wyszukiwanie odcinków przy użyciu NZB i sieci torrent. Lista ta zostanie dopisana do oryginalnej nazwy programu."
 
 #: gui/slick/views/errorlogs.mako:18
 msgid "WARNING logs"
@@ -5504,7 +5504,7 @@ msgstr "Preferowana jakość:"
 
 #: gui/slick/views/inc_qualityChooser.mako:26
 msgid "<p><b><u>Preferred</u></b> qualities will replace those in <b><u>allowed</u></b>, even if they are lower.</p>"
-msgstr ""
+msgstr "<p><b><u>Preferowane</u></b> jakości zastąpią te z <b><u>dozwolonych</u></b>, nawet jeżeli są niższe.</p>"
 
 #: gui/slick/views/inc_rootDirs.mako:24 gui/slick/views/manage_massEdit.mako:59
 msgid "New"
@@ -5548,7 +5548,7 @@ msgstr "Szukaj napisów"
 
 #: gui/slick/views/manage.mako:57
 msgid "Force Metadata Regen"
-msgstr ""
+msgstr "Wymuś odświeżenie metadanych"
 
 #: gui/slick/views/manage_backlogOverview.mako:40
 #: gui/slick/views/manage_backlogOverview.mako:71
@@ -5731,27 +5731,27 @@ msgstr "Wstrzymaj te programy (SickRage nie będzie ściągał odcinków)."
 
 #: gui/slick/views/manage_massEdit.mako:181
 msgid "Search by scene numbering (set to \"No\" to search by indexer numbering)."
-msgstr ""
+msgstr "Szukaj wg numeru sceny (wybierz \"Nie\" aby szukać wg numeru indeksu)."
 
 #: gui/slick/views/manage_massEdit.mako:195
 msgid "Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr ""
+msgstr "Ustaw jeśli te seriale są Anime i odcinki są wypuszczone jako Show.265 zamiast Show.S02E03"
 
 #: gui/slick/views/manage_massEdit.mako:209
 msgid "Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03."
-msgstr ""
+msgstr "Wybierz jeżeli program jest wydarzeniem \"sportowym\" czy \"MMA\" wydanym w formacie \"Show.03.02.2010\" zamiast \"Show.S02E03\"."
 
 #: gui/slick/views/manage_massEdit.mako:224
 msgid "Set if these shows are released as Show.03.02.2010 rather than Show.S02E03."
-msgstr ""
+msgstr "Ustaw jeśli te Seriale są wypuszczone jako Show.03.02.2010 niżeli Show.S02E03."
 
 #: gui/slick/views/manage_massEdit.mako:239
 msgid "Search for subtitles."
 msgstr "Szukaj napisów."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
-msgstr "Wszystkie Twoje odcinki mają ${subsLanguage} napisy."
+msgid "All of your episodes have {subsLanguage} subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5759,12 +5759,12 @@ msgid "Manage episodes without"
 msgstr "Zarządzaj odcinkami bez"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
-msgstr "Odcinki bez ${subsLanguage} napisów."
+msgid "Episodes without {subsLanguage} subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
-msgstr "Odcinki bez ${subtitles.name_from_code(sub_code)} (undefined) napisów."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"
