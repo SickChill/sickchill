@@ -13,7 +13,7 @@
     <form id="configForm" action="saveAnime" method="post">
 
         <!-- /component-group //-->
-        <div id="animedb-settings" class="tab-pane active component-group">
+        <div id="animedb-settings" class="component-group">
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
@@ -98,7 +98,7 @@
         </div>
 
         <!-- /component-group //-->
-        <div id="anime-look-feel" class="tab-pane component-group">
+        <div id="anime-look-feel" class="component-group">
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
@@ -123,5 +123,6 @@
                 </div>
             </div>
         </div>
+
 	</form>
 </%block>
