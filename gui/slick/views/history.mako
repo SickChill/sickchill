@@ -16,7 +16,7 @@
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
-        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 pull-right">
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
 	        <div class="pull-right"><b>Limit:</b>
 		        <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
 			        <option value="10" ${('', 'selected="selected"')[limit == 10]}>10</option>
@@ -37,7 +37,7 @@
                 </span>
 	        </div>
         </div>
-	    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+	    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
             % if not header is UNDEFINED:
 			    <h1 class="header">${header}</h1>
             % else:
