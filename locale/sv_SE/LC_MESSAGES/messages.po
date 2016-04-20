@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-19 20:31-0700\n"
-"PO-Revision-Date: 2016-04-19 23:34-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:31-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -5620,6 +5620,7 @@ msgid "500"
 msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "Alla"
