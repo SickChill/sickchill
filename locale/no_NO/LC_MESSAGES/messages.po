@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:58-0400\n"
+"POT-Creation-Date: 2016-04-19 20:31-0700\n"
+"PO-Revision-Date: 2016-04-19 23:33-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -1536,8 +1536,8 @@ msgstr "Vil du legge etterbehandlede episoder til MyList?"
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Lagre endringer"
@@ -1672,7 +1672,7 @@ msgstr "antall loggfiler lagret når logger roteres (standard: 5) (KREVER OMSTAR
 
 #: gui/slick/views/config_general.mako:123
 msgid "Size of Log files saved"
-msgstr ""
+msgstr "Størrelse på loggfilene som er lagret"
 
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
@@ -1768,11 +1768,11 @@ msgstr "Vis tema"
 
 #: gui/slick/views/config_general.mako:255
 msgid "Dark"
-msgstr ""
+msgstr "Mørk"
 
 #: gui/slick/views/config_general.mako:256
 msgid "Light"
-msgstr ""
+msgstr "Lys"
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
@@ -1838,9 +1838,28 @@ msgstr "Bruk systemstandarden"
 msgid "Time style"
 msgstr "Klokkeslettstil"
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr "Notat"
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
-msgstr ""
+msgstr "sekunder vises kun på historiesiden"
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
@@ -1860,28 +1879,9 @@ msgstr "TV-Kanal"
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "vis datoer og klokkeslett i din tidssone eller bruk tidssonen serien vises i"
 
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
-msgstr "Notat"
-
 #: gui/slick/views/config_general.mako:377
 msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
-msgstr ""
+msgstr "Bruk lokal tidssone hvis du vil starte å søke etter episoder minutter etter at episoden er avsluttet (avhenger av intervall på daglig søk)"
 
 #: gui/slick/views/config_general.mako:384
 msgid "Download url"
@@ -2059,11 +2059,11 @@ msgstr "i <code>config.ini</code> filen."
 #: gui/slick/views/config_general.mako:603
 #: gui/slick/views/config_subtitles.mako:145
 msgid "Warning"
-msgstr ""
+msgstr "Advarsel"
 
 #: gui/slick/views/config_general.mako:603
 msgid "Passwords must only contain"
-msgstr ""
+msgstr "Passord må bare inneholde"
 
 #: gui/slick/views/config_general.mako:603
 msgid "ASCII characters"
@@ -2372,7 +2372,7 @@ msgstr "brukernavn for KODI serveren (tomt for ingen)"
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Passord"
 
@@ -4781,7 +4781,7 @@ msgstr "Legge til språkkoder i filnavnet til undertekster?"
 
 #: gui/slick/views/config_subtitles.mako:115
 msgid "This option is required if you use multiple subtitle languages."
-msgstr ""
+msgstr "Dette alternativet er påkrevd hvis du bruker flere undertekstspråk."
 
 #: gui/slick/views/config_subtitles.mako:120
 msgid "Subtitles in Post-Process folder"
@@ -4821,7 +4821,7 @@ msgstr "Ignorer undertekster innebygd i videofil?"
 
 #: gui/slick/views/config_subtitles.mako:145
 msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
-msgstr ""
+msgstr "dette vil ignorere <u>alle</u> innebygde undertekster for alle videofiler!"
 
 #: gui/slick/views/config_subtitles.mako:151
 msgid "Hearing Impaired Subtitles"
@@ -4879,7 +4879,7 @@ msgstr "Instillinger for søkeleverandører"
 msgid "Set user and password for each provider"
 msgstr "Angi brukernavn og passord for hver søkeleverandør"
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr "Brukernavn"
 
@@ -4917,12 +4917,12 @@ msgid "minutes"
 msgstr "minutter"
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
-msgstr "Vis andre populære ${genre} serier på trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
-msgstr "Vis andre populære ${imdbgenre} serier på IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -5753,8 +5753,8 @@ msgid "Search for subtitles."
 msgstr "Søk etter undertekster."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
-msgstr "Alle episodene har ${subsLanguage} undertekster."
+msgid "All of your episodes have {subsLanguage} subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5762,12 +5762,12 @@ msgid "Manage episodes without"
 msgstr "Behandle episoder uten"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
-msgstr "Episoder uten ${subsLanguage} undertekster."
+msgid "Episodes without {subsLanguage} subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
-msgstr "Episoder uten ${subtitles.name_from_code(sub_code)} (udefinert) undertekster."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
+msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"
