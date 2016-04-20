@@ -66,28 +66,14 @@ class Notifier(object):
             "icon": "https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage.png"
         }
         payload = urllib.urlencode(params)
-        req = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload
-
-        logger.log('Join iurl : {0}'.format(join_api), logger.DEBUG)
+        join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload
+        logger.log('Join url in use : {0}'.format(join_api), logger.DEBUG)
         success = False
         try:
-            urllib2.urlopen(req)
+            urllib2.urlopen(join_api)
             message = 'Join message sent successfully.'
             logger.log('Join message returned : {0}'.format(message), logger.DEBUG) 
             success = True
-        except IOError as e:
-            message = 'Unknown IO error: {0}'.format(e)
-            if hasattr(e, b'code'):
-                error_message = {
-                    400: 'Missing parameter(s). Double check your settings or if the channel/user exists.',
-                    401: 'Authentication failed.',
-                    420: 'Too many messages.',
-                    500: 'Server error. Please retry in a few moments.',
-                }
-                if e.code in error_message:
-                    message = error_message.get(e.code)
-                else:
-                    HTTP_STATUS_CODES.get(e.code, message)
         except Exception as e:
             message = 'Error while sending Join message: {0} '.format(e)
         finally:
