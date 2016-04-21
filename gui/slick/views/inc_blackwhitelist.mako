@@ -16,7 +16,7 @@
             <div class="blackwhitelist anidb">
                 <div class="blackwhitelist white">
                     <span><h4>${_('Whitelist')}</h4></span>
-                    <select id="white" multiple="multiple" size="12">
+                    <select id="white" multiple="multiple" size="12" title="white">
                         % for keyword in whitelist:
                             <option value="${keyword}">${keyword}</option>
                         % endfor

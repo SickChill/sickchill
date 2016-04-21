@@ -27,7 +27,7 @@
 			        <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
 			        <option value="750" ${('', 'selected="selected"')[limit == 750]}>750</option>
 			        <option value="1000" ${('', 'selected="selected"')[limit == 1000]}>1000</option>
-			        <option value="0"   ${('', 'selected="selected"')[limit == 0  ]}>All</option>
+			        <option value="0" ${('', 'selected="selected"')[limit == 0  ]}>All</option>
 		        </select>
                 <span> Layout:
                     <select name="${_('HistoryLayout')}" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
