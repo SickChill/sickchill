@@ -389,10 +389,6 @@ inc_rootDirs.mako
 home.mako
 ========================================================================== */
 
-.home-container {
-	overflow-x: auto;
-}
-
 .imgbanner .banner {
     border: 1px solid #ccc;
     overflow: hidden;
