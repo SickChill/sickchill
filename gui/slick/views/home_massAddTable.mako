@@ -9,8 +9,8 @@
 			<th class="col-checkbox"><input type="checkbox" id="checkAll" checked=checked></th>
 			<th>${_('Directory')}</th>
 			<th width="20%">${_('Show Name (tvshow.nfo)')}
-			<th width="20%">
-                ${_('Indexer')}</td></tr>
+			<th width="20%">${_('Indexer')}</th>
+        </tr>
 	</thead>
 	<tbody>
         % for curDir in dirList:
