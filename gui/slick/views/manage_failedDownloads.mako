@@ -5,15 +5,9 @@
 %>
 <%block name="content">
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
-            % if not header is UNDEFINED:
-		        <h1 class="header">${header}</h1>
-            % else:
-		        <h1 class="title">${title}</h1>
-            % endif
-        </div>
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pull-right">
-	        <div class="h2footer pull-right"><b>${_('Limit')}:</b>
+	        <div class="pull-right">
+                <b>${_('Limit')}:</b>
 		        <select name="limit" id="limit" class="form-control form-control-inline input-sm" title="limit">
 			        <option value="100" ${('', 'selected="selected"')[limit == '100']}>${_('100')}</option>
 			        <option value="250" ${('', 'selected="selected"')[limit == '250']}>${_('250')}</option>
@@ -22,6 +16,13 @@
 		        </select>
 	        </div>
         </div>
+	    <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
+            % if not header is UNDEFINED:
+			    <h1 class="header">${header}</h1>
+            % else:
+			    <h1 class="title">${title}</h1>
+            % endif
+	    </div>
     </div>
     <div class="row">
         <div class="col-md-12 horizontal-scroll">
