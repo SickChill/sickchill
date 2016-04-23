@@ -2114,53 +2114,12 @@ option.flag {
 	background: no-repeat 10px 50%;
 }
 
-/* Anime section for editShow */
-.bwlWrapper {
-	height: auto;
+div.fansub-picker h4 {
 	margin: 0 auto;
 }
 
-#Anime {
-	clear: both;
-	overflow-x: hidden;
-	overflow-y: hidden;
-	font-size: 14px;
-}
-
-#Anime div.component-group-desc {
-	float: left;
-	width: 165px;
-}
-
-#Anime div.component-group-desc p {
-	margin: 0.4em 0;
-	width: 95%;
-}
-
-div.blackwhitelist {
-	float: left;
-	text-align: center;
-}
-
-div.blackwhitelist input {
-	margin: 5px 0;
-}
-
-div.blackwhitelist.pool select {
-	width: 230px;
-}
-
-div.blackwhitelist.white select, div.blackwhitelist.black select {
-	width: 150px;
-}
-
-div.blackwhitelist span {
-	display: block;
-	text-align: center;
-}
-
-div.blackwhitelist.anidb, div.blackwhitelist.manual {
-	margin: 7px 0;
+div.fansub-picker select {
+	width: 100% !important;
 }
 
 /* =======================================================================
