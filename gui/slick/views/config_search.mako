@@ -585,13 +585,14 @@
 								<div class="field-pair">
 									<label for="torrent_method">
 										<span class="component-title">${_('Send .torrent files to')}:</span>
-                                    <span class="component-desc">
-                                    <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-                                    <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey"} %>
-                                        % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
-		                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
-                                        % endfor
-                                    </select>
+                                        <span class="component-desc">
+                                            <select name="torrent_method" id="torrent_method" class="form-control input-sm">
+                                                <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey", 'putio' : "Putio"} %>
+                                                % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
+                                                    <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                                % endfor
+                                            </select>
+                                        </span>
 									</label>
 
 									<div id="options_torrent_blackhole">
@@ -604,19 +605,15 @@
                                                        class="form-control input-sm input350" autocapitalize="off"/>
                                                 <div class="clear-left"><p>${_('<b>.torrent</b> files are stored at this location for external software to find and use')}</p></div>
                                             </span>
-											</label>
-										</div>
-
-										<div></div>
-										<input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/><br>
-									</div>
-								</div>
-
-								<div id="options_torrent_clients">
-									<div class="field-pair">
-										<label>
-											<span class="component-title"
-											      id="host_title">${_('Torrent host:port')}</span>
+                                        </label>
+                                    </div>
+                                    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" /><br>
+                                </div>
+                            </div>
+                            <div id="options_torrent_clients" id="torrent_host_option">
+                                <div class="field-pair">
+                                    <label>
+                                        <span class="component-title" id="host_title">${_('Torrent host:port')}</span>
                                         <span class="component-desc">
                                             <input type="text" name="torrent_host" id="torrent_host"
                                                    value="${sickbeard.TORRENT_HOST}"

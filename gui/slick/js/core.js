@@ -733,6 +733,29 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testJoin').on('click', function () {
+                var join = {};
+                join.id = $.trim($('#join_id').val());
+                if (!join.id ) {
+                    $('#testJoin-result').html('Please fill out the necessary fields above.');
+                    if (!join.id) {
+                        $('#join_id').addClass('warning');
+                    } else {
+                        $('#join_id').removeClass('warning');
+                    }
+                    return;
+                }
+                $('#join_id,#join_apikey').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testJoin-result').html(loading);
+                $.get(srRoot + '/home/testJoin', {
+                    'join_id': join.id
+                }).done(function (data) {
+                    $('#testJoin-result').html(data);
+                    $('#testJoin').prop('disabled', false);
+                });
+            });
+
             $('#TraktGetPin').on('click', function () {
                 window.open($('#trakt_pin_url').val(), "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
                 $('#trakt_pin').removeClass('hide');
@@ -1665,7 +1688,7 @@ var SICKRAGE = {
                     $('#path_synology').hide();
                     $('#torrent_paused_option').show();
                     $('#torrent_rpcurl_option').hide();
-
+                    $('#torrent_host_option').show();
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
                         $('#torrent_path_option').hide();
@@ -1732,6 +1755,18 @@ var SICKRAGE = {
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your MLDonkey (e.g. http://localhost:4080)');
+                    }
+                    else if (selectedProvider.toLowerCase() === 'putio'){
+                        client = 'putio';
+                        $('#torrent_path_option').hide();
+                        $('#torrent_label_option').hide();
+                        $('#torrent_verify_cert_option').hide();
+                        $('#torrent_verify_deluge').hide();
+                        $('#torrent_verify_rtorrent').hide();
+                        $('#torrent_label_anime_option').hide();
+                        $('#torrent_paused_option').hide();
+                        $('#torrent_host_option').hide();
+                        $('#host_desc_torrent').text('URL to your putio client (e.g. http://localhost:8080)');
                     }
                     $('#host_title').text(client + host);
                     $('#username_title').text(client + username);

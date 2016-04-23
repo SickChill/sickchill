@@ -16,14 +16,14 @@
     % endif
     % if not whichSubs or (whichSubs and not ep_counts):
         % if whichSubs:
-        <h2>${_('All of your episodes have ${subsLanguage} subtitles.')}</h2>
+        <h2>${_('All of your episodes have {subsLanguage} subtitles.').format(subsLanguage=subsLanguage)}</h2>
         <br>
         % endif
 
         <form action="${srRoot}/manage/subtitleMissed" method="get">
             % if sickbeard.SUBTITLES_MULTI:
                 ${_('Manage episodes without')} <select name="whichSubs" class="form-control form-control-inline input-sm">
-                <option value="all">All')}</option>
+                <option value="all">${_('All')}</option>
                 % for sub_code in subtitles.wanted_languages():
                     <option value="${sub_code}">${subtitles.name_from_code(sub_code)}</option>
                 % endfor
@@ -48,11 +48,11 @@
         <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
         <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
             % if sickbeard.SUBTITLES_MULTI:
-                <h2>${_('Episodes without ${subsLanguage} subtitles.')}</h2>
+                <h2>${_('Episodes without {subsLanguage} subtitles.').format(subsLanguage=subsLanguage)}</h2>
             % else:
                 % for index, sub_code in enumerate(subtitles.wanted_languages()):
                     % if index == 0:
-                        <h2>${_('Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles.')}</h2>
+                        <h2>${_('Episodes without {subtitleLanguage} (undefined) subtitles.').format(subtitleLanguage=subtitles.name_from_code(sub_code))}</h2>
                     % endif
                 % endfor
             % endif

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:58-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:30-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Estonian\n"
 "MIME-Version: 1.0\n"
@@ -319,7 +319,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:892
 msgid "Key verification successful"
-msgstr ""
+msgstr "Võtme kinnitus õnnestus"
 
 #: sickbeard/webserve.py:894
 msgid "Unable to verify key"
@@ -411,7 +411,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1095
 msgid "ERROR: {last_error}"
-msgstr ""
+msgstr "VIGA: {last_error}"
 
 #: sickbeard/webserve.py:1102
 msgid "Test NMA notice sent successfully"
@@ -715,7 +715,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2318 gui/slick/views/layouts/main.mako:115
 msgid "Add Shows"
-msgstr ""
+msgstr "Lisa saateid"
 
 #: sickbeard/webserve.py:2383
 msgid "No folders selected."
@@ -731,7 +731,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2520 sickbeard/webserve.py:2643
 msgid "Popular Shows"
-msgstr ""
+msgstr "Populaarsed saated"
 
 #: sickbeard/webserve.py:2522 sickbeard/webserve.py:2536
 msgid "Most Anticipated Shows"
@@ -739,7 +739,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2532 gui/slick/views/addShows_trendingShows.mako:47
 msgid "New Shows"
-msgstr ""
+msgstr "Uued saated"
 
 #: sickbeard/webserve.py:2534 gui/slick/views/addShows_trendingShows.mako:48
 msgid "Season Premieres"
@@ -804,7 +804,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3138
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Puuduvad subtiitrid"
 
 #: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
 #: gui/slick/views/layouts/main.mako:141
@@ -1087,7 +1087,7 @@ msgstr ""
 
 #: gui/slick/views/addShows.mako:13 gui/slick/views/addShows_newShow.mako:22
 msgid "Add New Show"
-msgstr ""
+msgstr "Lisa uus saade"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
@@ -1124,7 +1124,7 @@ msgstr ""
 #: gui/slick/views/addShows_addExistingShow.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:18
 msgid "Manage Directories"
-msgstr ""
+msgstr "Halda katalooge"
 
 #: gui/slick/views/addShows_addExistingShow.mako:24
 #: gui/slick/views/addShows_trendingShows.mako:19
@@ -1165,7 +1165,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
 #: gui/slick/views/schedule.mako:88
 msgid "Search"
-msgstr ""
+msgstr "Otsi"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1191,7 +1191,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:74
 #: gui/slick/views/trendingShows.mako:44
 msgid "Add Show"
-msgstr ""
+msgstr "Lisa saateid"
 
 #: gui/slick/views/addShows_newShow.mako:95
 msgid "Skip Show"
@@ -1200,7 +1200,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
 #: gui/slick/views/schedule.mako:27
 msgid "Sort By"
-msgstr ""
+msgstr "Sorteeri"
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:31
@@ -1472,7 +1472,7 @@ msgstr ""
 
 #: gui/slick/views/config_anime.mako:40
 msgid "AniDB Username"
-msgstr ""
+msgstr "AniDB kasutajanimi"
 
 #: gui/slick/views/config_anime.mako:45
 msgid "Username of your AniDB account"
@@ -1480,7 +1480,7 @@ msgstr ""
 
 #: gui/slick/views/config_anime.mako:51
 msgid "AniDB Password"
-msgstr ""
+msgstr "AniDB parool"
 
 #: gui/slick/views/config_anime.mako:56
 msgid "Password of your AniDB account"
@@ -1533,8 +1533,8 @@ msgstr ""
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Salvesta muudatused"
@@ -1763,11 +1763,11 @@ msgstr "Ekraani välimus"
 
 #: gui/slick/views/config_general.mako:255
 msgid "Dark"
-msgstr ""
+msgstr "Tume"
 
 #: gui/slick/views/config_general.mako:256
 msgid "Light"
-msgstr ""
+msgstr "Hele"
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
@@ -1833,6 +1833,25 @@ msgstr "Kasuta süsteemi vaikeseadet"
 msgid "Time style"
 msgstr "Kellaaja laad"
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr "Märkus"
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
 msgstr ""
@@ -1854,25 +1873,6 @@ msgstr "Võrk"
 #: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr ""
-
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
-msgstr "Märkus"
 
 #: gui/slick/views/config_general.mako:377
 msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
@@ -2365,7 +2365,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Parool"
 
@@ -4861,7 +4861,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr "Kasutajanimi"
 
@@ -4899,11 +4899,11 @@ msgid "minutes"
 msgstr "minutit"
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
@@ -5600,6 +5600,7 @@ msgid "500"
 msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr ""
@@ -5730,7 +5731,7 @@ msgid "Search for subtitles."
 msgstr "Otsi subtiitreid."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
+msgid "All of your episodes have {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
@@ -5739,11 +5740,11 @@ msgid "Manage episodes without"
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
+msgid "Episodes without {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60

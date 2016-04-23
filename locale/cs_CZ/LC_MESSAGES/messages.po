@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:58-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:30-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -166,7 +166,7 @@ msgstr "Seřadit podle:"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
-msgstr "Rozložení:"
+msgstr "Zobrazení:"
 
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
@@ -176,7 +176,7 @@ msgstr "Banner"
 #: sickbeard/webserve.py:511 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
-msgstr "Plakát"
+msgstr "Plakáty"
 
 #: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:50
 msgid "List"
@@ -188,7 +188,7 @@ msgstr "Kalendář"
 
 #: sickbeard/webserve.py:517
 msgid "View Paused:"
-msgstr "Zobrazit pozastavené:"
+msgstr "Pozastavené seriály:"
 
 #: sickbeard/webserve.py:519
 msgid "Hide"
@@ -198,12 +198,12 @@ msgstr "Skrýt"
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr "Ukázat"
+msgstr "Seriál"
 
 #: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:128
 msgid "Schedule"
-msgstr "Plánování"
+msgstr "Program"
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
@@ -399,11 +399,11 @@ msgstr "Test oznámení na {nmj2_host} se nezdařil"
 
 #: sickbeard/webserve.py:1027
 msgid "Trakt Authorized"
-msgstr ""
+msgstr "Trakt autorizován"
 
 #: sickbeard/webserve.py:1028
 msgid "Trakt Not Authorized!"
-msgstr ""
+msgstr "Trakt neautorizován!"
 
 #: sickbeard/webserve.py:1093
 msgid "Test email sent successfully! Check inbox."
@@ -522,7 +522,7 @@ msgstr "Aktualizace seriálu v Emby"
 
 #: sickbeard/webserve.py:1309 sickbeard/webserve.py:1933 sickbeard/webserve.py:1934
 msgid "Preview Rename"
-msgstr ""
+msgstr "Náhled přejmenování"
 
 #: sickbeard/webserve.py:1312
 msgid "Download Subtitles"
@@ -542,7 +542,7 @@ msgstr "Nepodařilo se nalézt zadaný seriál"
 
 #: sickbeard/webserve.py:1450
 msgid "Unable to retreive Fansub Groups from AniDB."
-msgstr ""
+msgstr "Nelze načíst Fansub skupiny z AniDB."
 
 #: sickbeard/webserve.py:1459 sickbeard/webserve.py:1461
 msgid "Edit Show"
@@ -574,11 +574,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1623
 msgid "{show_name} has been {paused_resumed}"
-msgstr ""
+msgstr "{show_name} byl {paused_resumed}"
 
 #: sickbeard/webserve.py:1623
 msgid "resumed"
-msgstr ""
+msgstr "obnoven"
 
 #: sickbeard/webserve.py:1623
 msgid "paused"
@@ -586,7 +586,7 @@ msgstr "pozastaveno"
 
 #: sickbeard/webserve.py:1635
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
-msgstr ""
+msgstr "{show_name} byl {deleted_trashed} {was_deleted}"
 
 #: sickbeard/webserve.py:1637
 msgid "deleted"
@@ -594,15 +594,15 @@ msgstr "smazáno"
 
 #: sickbeard/webserve.py:1637
 msgid "trashed"
-msgstr ""
+msgstr "přeunut do koše"
 
 #: sickbeard/webserve.py:1638
 msgid "(media untouched)"
-msgstr ""
+msgstr "(media untouched)"
 
 #: sickbeard/webserve.py:1638
 msgid "(with all related media)"
-msgstr ""
+msgstr "(with all related media)"
 
 #: sickbeard/webserve.py:1659
 msgid "Unable to refresh this show."
@@ -642,11 +642,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1765
 msgid "Invalid status"
-msgstr ""
+msgstr "Neplatný stav"
 
 #: sickbeard/webserve.py:1857
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
-msgstr ""
+msgstr "Backlog byl automaticky spuštěn pro následující sezóny seriálu <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1864 sickbeard/webserve.py:1883
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
@@ -656,19 +656,19 @@ msgstr "Série"
 
 #: sickbeard/webserve.py:1871
 msgid "Backlog started"
-msgstr ""
+msgstr "Backlog spuštěn"
 
 #: sickbeard/webserve.py:1876
 msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
-msgstr ""
+msgstr "Opakovené hledání bylo automaticky spuštěno pro následující sezóny seriálu <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1890
 msgid "Retry Search started"
-msgstr ""
+msgstr "Opakovené hledání spuštěno"
 
 #: sickbeard/webserve.py:1900
 msgid "You must specify a show"
-msgstr ""
+msgstr "Musíte zadat seriál"
 
 #: sickbeard/webserve.py:1910 sickbeard/webserve.py:1948
 msgid "Can't rename episodes when the show dir is missing."
@@ -680,7 +680,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2102
 msgid "No subtitles downloaded"
-msgstr ""
+msgstr "Žádné titulky staženy"
 
 #: sickbeard/webserve.py:2228 gui/slick/views/config_general.mako:70
 #: gui/slick/views/layouts/main.mako:209
@@ -809,7 +809,7 @@ msgstr "Chybějící titulky"
 #: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
 #: gui/slick/views/layouts/main.mako:141
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Přehled backlog"
 
 #: sickbeard/webserve.py:3348
 msgid "Mass Edit"
@@ -817,11 +817,11 @@ msgstr "Hromadně upravit"
 
 #: sickbeard/webserve.py:3495
 msgid "Unable to update show: {excption_format}"
-msgstr ""
+msgstr "Nepodařilo se aktualizovat seriál: {excption_format}"
 
 #: sickbeard/webserve.py:3503
 msgid "Unable to refresh show {show_name}: {excption_format}"
-msgstr ""
+msgstr "Nelze aktualizovat seriál {show_name}: {excption_format}"
 
 #: sickbeard/webserve.py:3514
 msgid "Errors encountered"
@@ -865,7 +865,7 @@ msgstr "Ovládací panel"
 
 #: sickbeard/webserve.py:3561
 msgid "Application Portal"
-msgstr ""
+msgstr "Aplikační portál"
 
 #: sickbeard/webserve.py:3562
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
@@ -913,7 +913,7 @@ msgstr "Odstranit historii"
 
 #: sickbeard/webserve.py:3711
 msgid "Trim History"
-msgstr ""
+msgstr "Zredukovat historii"
 
 #: sickbeard/webserve.py:3715 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:132
@@ -977,7 +977,7 @@ msgstr "Základní nastavení"
 
 #: sickbeard/webserve.py:3944
 msgid "Unable to create directory {directory}, log directory not changed."
-msgstr "Nelze vytvořit adresář {directory}, adresář protokolů nezměněn."
+msgstr "Nelze vytvořit adresář {directory}, adresář logu nezměněn."
 
 #: sickbeard/webserve.py:3952
 msgid "Unable to create directory {directory}, https cert directory not changed."
@@ -1091,7 +1091,7 @@ msgstr "Přidat nový seriál"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
-msgstr ""
+msgstr "Vyberte pokud seriál ještě nemáte stažený, tato možnost vyhledá seriál na theTVDB.com, vytvoří adresáře a přidá jej do SickRage."
 
 #: gui/slick/views/addShows.mako:22
 msgid "Add From Trakt Lists"
@@ -1099,7 +1099,7 @@ msgstr "Přidat ze seznamu Trakt"
 
 #: gui/slick/views/addShows.mako:23
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr ""
+msgstr "Vyberte pokud seriál ještě nemáte stažený. Tato možnost Vám nabídne seriál z Trakt listu a přidáho do Sickrage."
 
 #: gui/slick/views/addShows.mako:32
 msgid "Add From IMDB's Popular Shows"
@@ -1107,7 +1107,7 @@ msgstr "Přidat oblíbené seriály z IMDB"
 
 #: gui/slick/views/addShows.mako:33
 msgid "View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series."
-msgstr ""
+msgstr "Zobrazí seznam nejpopulárnějších seriálu na IMDB. Tato funkce používá IMDB MOVIEMEter algoritmus pro výběr populárních pořadů"
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add Existing Shows"
@@ -1115,7 +1115,7 @@ msgstr "Přidat existující seriál"
 
 #: gui/slick/views/addShows.mako:43
 msgid "Use this option to add shows that already have a folder created on your hard drive. SickRage will scan your existing metadata/episodes and add the show accordingly."
-msgstr ""
+msgstr "Použijte tuto možnost pro přidání seriálu, který už máte na vašem úložišti. SickRage prohledá složku a podle toho seriál zařadí."
 
 #: gui/slick/views/addShows_addExistingShow.mako:15
 msgid "Add Existing Show"
@@ -1200,7 +1200,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
 #: gui/slick/views/schedule.mako:27
 msgid "Sort By"
-msgstr ""
+msgstr "Seřadit podle"
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:31
@@ -1255,7 +1255,7 @@ msgstr "Výjimka"
 
 #: gui/slick/views/addShows_trendingShows.mako:44
 msgid "Select Trakt List"
-msgstr ""
+msgstr "Vyberte Trakt List"
 
 #: gui/slick/views/addShows_trendingShows.mako:46
 msgid "Most Anticipated"
@@ -1353,59 +1353,59 @@ msgstr "Ok"
 #: gui/slick/views/manage_massEdit.mako:222
 #: gui/slick/views/manage_massEdit.mako:237
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: gui/slick/views/apiBuilder.mako:254
 msgid "season"
-msgstr ""
+msgstr "série"
 
 #: gui/slick/views/apiBuilder.mako:260
 msgid "episode"
-msgstr ""
+msgstr "epizoda"
 
 #: gui/slick/views/config.mako:29
 msgid "Python Version"
-msgstr ""
+msgstr "Verze Pythonu"
 
 #: gui/slick/views/config.mako:30
 msgid "SSL Version"
-msgstr ""
+msgstr "Verze SSL"
 
 #: gui/slick/views/config.mako:31
 msgid "OS"
-msgstr ""
+msgstr "OS"
 
 #: gui/slick/views/config.mako:32
 msgid "Locale"
-msgstr ""
+msgstr "Lokalizace"
 
 #: gui/slick/views/config.mako:35
 msgid "User"
-msgstr ""
+msgstr "Uživatel"
 
 #: gui/slick/views/config.mako:36
 msgid "Program Folder"
-msgstr ""
+msgstr "Adresář aplikace"
 
 #: gui/slick/views/config.mako:37
 msgid "Config File"
-msgstr ""
+msgstr "Soubor konfigu"
 
 #: gui/slick/views/config.mako:38
 msgid "Database File"
-msgstr ""
+msgstr "Soubor databáze"
 
 #: gui/slick/views/config.mako:39
 msgid "Cache Folder"
-msgstr ""
+msgstr "Složka mezipaměti"
 
 #: gui/slick/views/config.mako:40
 msgid "Log Folder"
-msgstr ""
+msgstr "Složka logu"
 
 #: gui/slick/views/config.mako:42
 msgid "Arguments"
-msgstr ""
+msgstr "Argumenty"
 
 #: gui/slick/views/config.mako:45
 msgid "Web Root"
@@ -1413,15 +1413,15 @@ msgstr ""
 
 #: gui/slick/views/config.mako:49
 msgid "Website"
-msgstr ""
+msgstr "Webová stránka"
 
 #: gui/slick/views/config.mako:50
 msgid "Wiki"
-msgstr ""
+msgstr "Wiki"
 
 #: gui/slick/views/config.mako:51
 msgid "Source"
-msgstr ""
+msgstr "Zdrojový kód"
 
 #: gui/slick/views/config.mako:52
 msgid "IRC Chat"
@@ -1533,8 +1533,8 @@ msgstr "Chcete přidat kompletně zpracované epizody do MyList?"
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr "Uložit změny"
@@ -1545,11 +1545,11 @@ msgstr "Vzhled a chování"
 
 #: gui/slick/views/config_anime.mako:77
 msgid "How should the anime functions show and behave."
-msgstr ""
+msgstr "Jak by se měla anime funkce zobrazovat a chovat."
 
 #: gui/slick/views/config_anime.mako:83
 msgid "Split show lists"
-msgstr ""
+msgstr "Rozdělit seznamy seriálů"
 
 #: gui/slick/views/config_anime.mako:84
 msgid "Separate anime and normal shows in groups"
@@ -1592,7 +1592,7 @@ msgstr "Pokročilá nastavení"
 
 #: gui/slick/views/config_general.mako:37
 msgid "Startup options. Indexer options. Log and show file locations."
-msgstr "Možnosti spuštění. Možnosti indexování. Umístění souborů protokolu a seriálu."
+msgstr "Možnosti spuštění. Možnosti indexování. Umístění souborů logu a seriálu."
 
 #: gui/slick/views/config_general.mako:38
 msgid "Some options may require a manual restart to take effect."
@@ -1633,145 +1633,147 @@ msgstr "Vyberte hodinu k aktualizaci pořadů"
 
 #: gui/slick/views/config_general.mako:81
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
-msgstr ""
+msgstr "pro informace jako jsou vysílací časy, ukončení seriálů atd. Napište 15 pro 15: 00, 4 pro 04: 00 atd."
 
 #: gui/slick/views/config_general.mako:82
 msgid "Note: minutes are randomized each time SickRage is started"
-msgstr ""
+msgstr "Poznámka: minuta hodiny je vybrána náhodně po každém startu aplikace"
 
 #: gui/slick/views/config_general.mako:88
 msgid "Send to trash for actions"
-msgstr ""
+msgstr "\"Odstranit do koše\" pro akce"
 
 #: gui/slick/views/config_general.mako:92
 msgid "when using show \"Remove\" and delete files"
-msgstr ""
+msgstr "při odstranění seriálů a souborů"
 
 #: gui/slick/views/config_general.mako:96
 msgid "on scheduled deletes of the oldest log files"
-msgstr ""
+msgstr "při plánovaném čištění starých logů"
 
 #: gui/slick/views/config_general.mako:98
 msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
-msgstr ""
+msgstr "vybrané akce použijí koš místo trvalého odstranění"
 
 #: gui/slick/views/config_general.mako:104
 msgid "Log file folder location"
-msgstr ""
+msgstr "Umístění souborů logu"
 
 #: gui/slick/views/config_general.mako:113
 msgid "Number of Log files saved"
-msgstr ""
+msgstr "Počet uložených souborů logu"
 
 #: gui/slick/views/config_general.mako:116
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
-msgstr ""
+msgstr "počet uložených souborů logů (výchozí: 5)(VYŽADUJE RESTART)"
 
 #: gui/slick/views/config_general.mako:123
 msgid "Size of Log files saved"
-msgstr ""
+msgstr "Velikost souboru logu"
 
 #: gui/slick/views/config_general.mako:126
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
-msgstr ""
+msgstr "maximální velikost logu v MB (výchozí: 1MB) (VYŽADUJE RESTART)"
 
 #: gui/slick/views/config_general.mako:133
 msgid "Use initial indexer set to"
-msgstr ""
+msgstr "Výchozí index"
 
 #: gui/slick/views/config_general.mako:141
 msgid "as the default selection when adding new shows"
-msgstr ""
+msgstr "pro získávání informací při přidávání nových seriálů"
 
 #: gui/slick/views/config_general.mako:148
 msgid "Timeout show indexer at"
-msgstr ""
+msgstr "Vypršení času indexování po"
 
 #: gui/slick/views/config_general.mako:151
 msgid "seconds of inactivity when finding new shows (default:20)"
-msgstr ""
+msgstr "sekundách bez odpovědi, při přidávání nového seriálu (výchozí:20)"
 
 #: gui/slick/views/config_general.mako:158
 msgid "Show root directories"
-msgstr ""
+msgstr "Výchozí složky seriálů"
 
 #: gui/slick/views/config_general.mako:160
 msgid "where the files of shows are located"
-msgstr ""
+msgstr "kde soubory seriálů jsou uloženy"
 
 #: gui/slick/views/config_general.mako:173
 msgid "Options for software updates."
-msgstr ""
+msgstr "Nastavení aktualizací softwaru."
 
 #: gui/slick/views/config_general.mako:179
 msgid "Check software updates"
-msgstr ""
+msgstr "Kontrola aktualizací"
 
 #: gui/slick/views/config_general.mako:182
 msgid "and display notifications when updates are available.\n"
 "                                    Checks are run on startup and at the frequency set below*"
-msgstr ""
+msgstr "a zobraz upozornění když dostupná aktualizace.\n"
+"                                    Zkontroluj po startu a v intervalu nastaveném níže"
 
 #: gui/slick/views/config_general.mako:190
 msgid "Automatically update"
-msgstr ""
+msgstr "Automaticky aktualizovat"
 
 #: gui/slick/views/config_general.mako:193
 msgid "fetch and install software updates.\n"
 "                                    Updates are run on startup and in the background at the frequency set below*"
-msgstr ""
+msgstr "stáhnout a nainstalovat aktualizace.\n"
+"                                    Aktualizace se spustí po každém startu a na pozadí v intervalu nastaveném níže"
 
 #: gui/slick/views/config_general.mako:201
 msgid "Check the server every*"
-msgstr ""
+msgstr "Zkontroluj server každých"
 
 #: gui/slick/views/config_general.mako:204
 msgid "hours for software updates (default:1)"
-msgstr ""
+msgstr "hodin pro aktualizace (výchozí:1)"
 
 #: gui/slick/views/config_general.mako:211
 msgid "Notify on software update"
-msgstr ""
+msgstr "Upozornit na aktualizaci softwaru"
 
 #: gui/slick/views/config_general.mako:214
 msgid "send a message to all enabled notifiers when SickRage has been updated"
-msgstr ""
+msgstr "pošle zprávu na všechny povolené příjemce notifikací, když je SickRage aktualizován"
 
 #: gui/slick/views/config_general.mako:230
 msgid "User Interface"
-msgstr ""
+msgstr "Uživatelské rozhraní"
 
 #: gui/slick/views/config_general.mako:231
 msgid "Options for visual appearance."
-msgstr ""
+msgstr "Možnosti vizuálního vzhledu."
 
 #: gui/slick/views/config_general.mako:238
 msgid "Interface Language"
-msgstr ""
+msgstr "Jazyk rozhraní"
 
 #: gui/slick/views/config_general.mako:241
 msgid "System Language"
-msgstr ""
+msgstr "Jazyk systému"
 
 #: gui/slick/views/config_general.mako:246 gui/slick/views/config_general.mako:258
 msgid "for appearance to take effect, save then refresh your browser"
-msgstr ""
+msgstr "změna se projeví po obnovení prohlížeče"
 
 #: gui/slick/views/config_general.mako:252
 msgid "Display theme"
-msgstr ""
+msgstr "Nastavení vzhledu"
 
 #: gui/slick/views/config_general.mako:255
 msgid "Dark"
-msgstr ""
+msgstr "Tmavé"
 
 #: gui/slick/views/config_general.mako:256
 msgid "Light"
-msgstr ""
+msgstr "Světlé"
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
-msgstr ""
+msgstr "Zobrazit fanart na pozadí"
 
 #: gui/slick/views/config_general.mako:268 gui/slick/views/config_general.mako:290
 msgid "on the show summary page"
@@ -1833,6 +1835,25 @@ msgstr ""
 msgid "Time style"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
 msgstr ""
@@ -1853,25 +1874,6 @@ msgstr "TV kanál"
 
 #: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:377
@@ -2365,7 +2367,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr ""
 
@@ -3302,7 +3304,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1737
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: gui/slick/views/config_notifications.mako:1739
 msgid "Allows configuration of email notifications on a per show basis."
@@ -3395,7 +3397,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:22
 #: gui/slick/views/config_postProcessing.mako:28
 msgid "Post-Processing"
-msgstr ""
+msgstr "Finální zpracování"
 
 #: gui/slick/views/config_postProcessing.mako:23
 #: gui/slick/views/config_postProcessing.mako:232
@@ -3586,7 +3588,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:208
 msgid "Don't delete empty folders"
-msgstr ""
+msgstr "Neodstraňovat prázdné složky"
 
 #: gui/slick/views/config_postProcessing.mako:209
 msgid "Leave empty folders when Post Processing?"
@@ -4110,7 +4112,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:495
 msgid "Sorting results by"
-msgstr ""
+msgstr "Řazení výsledků podle"
 
 #: gui/slick/views/config_providers.mako:510
 msgid "Freeleech"
@@ -4177,7 +4179,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:750 gui/slick/views/inc_rootDirs.mako:26
 #: gui/slick/views/manage.mako:58 gui/slick/views/manage_massEdit.mako:71
 msgid "Delete"
-msgstr ""
+msgstr "Odstranit"
 
 #: gui/slick/views/config_providers.mako:697
 msgid "Add and setup or remove custom RSS providers."
@@ -4342,11 +4344,11 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:178
 msgid "Delete Failed"
-msgstr ""
+msgstr "Odstranění se nezdařilo"
 
 #: gui/slick/views/config_search.mako:179
 msgid "Delete files left over from a failed download?"
-msgstr ""
+msgstr "Smazat soubory zbylé z neúspěšného stahování?"
 
 #: gui/slick/views/config_search.mako:183
 msgid "This only works if Use Failed Downloads is enabled."
@@ -4783,11 +4785,11 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:131
 msgid "Delete unwanted subtitles"
-msgstr ""
+msgstr "Odstranit nechtěné titulky"
 
 #: gui/slick/views/config_subtitles.mako:134
 msgid "Enable to delete unwanted subtitle languages bundled with release"
-msgstr ""
+msgstr "Povolit odstranění nechtěných titulků dodných s releasem"
 
 #: gui/slick/views/config_subtitles.mako:135
 msgid "Avoid post-process releases with unwanted language subtitles when feature 'postpone if no subs' is enabled"
@@ -4861,7 +4863,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr ""
 
@@ -4892,18 +4894,18 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:108
 msgid "View Poster for"
-msgstr ""
+msgstr "Zobrazit plakát pro"
 
 #: gui/slick/views/displayShow.mako:123 gui/slick/views/displayShow.mako:134
 msgid "minutes"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
@@ -5264,7 +5266,7 @@ msgstr "Vymazat filtry"
 
 #: gui/slick/views/home.mako:43
 msgid "Poster Size"
-msgstr ""
+msgstr "Velikost plakátu"
 
 #: gui/slick/views/home.mako:48
 msgid "Filter Show Name"
@@ -5272,7 +5274,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:54 gui/slick/views/schedule.mako:317
 msgid "Next Episode"
-msgstr "Díl"
+msgstr "Epizoda"
 
 #: gui/slick/views/home.mako:56
 msgid "Progress"
@@ -5296,11 +5298,11 @@ msgstr "Rozložení"
 
 #: gui/slick/views/home.mako:71
 msgid "Small Poster"
-msgstr ""
+msgstr "Malé plakáty"
 
 #: gui/slick/views/home.mako:73
 msgid "Simple"
-msgstr ""
+msgstr "Jednoduché"
 
 #: gui/slick/views/home.mako:88
 msgid "Anime List"
@@ -5357,47 +5359,47 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:19
 msgid "Enter the folder containing the episode"
-msgstr ""
+msgstr "Zadejte složku, která obsahuje epizody"
 
 #: gui/slick/views/home_postprocess.mako:27
 msgid "Process Method to be used"
-msgstr ""
+msgstr "Vyberte způsob zpracování epizod"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Copy"
-msgstr ""
+msgstr "Kopírovat"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Move"
-msgstr ""
+msgstr "Přesunout"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Hard Link"
-msgstr ""
+msgstr "Pevný odkaz"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Symbolic Link"
-msgstr ""
+msgstr "Symbolický odkaz"
 
 #: gui/slick/views/home_postprocess.mako:40
 msgid "Force already Post Processed Dir/Files"
-msgstr ""
+msgstr "Vynutit zpracování, už zpracovaných souborů"
 
 #: gui/slick/views/home_postprocess.mako:48
 msgid "Mark Dir/Files as priority download"
-msgstr ""
+msgstr "Označ soubory jako prioritní"
 
 #: gui/slick/views/home_postprocess.mako:52
 msgid "(Check it to replace the file even if it exists at higher quality)"
-msgstr ""
+msgstr "(Zaškrtněte, pokud chcete zpracovat i když existuje v lepší kvalitě)"
 
 #: gui/slick/views/home_postprocess.mako:57
 msgid "Delete files and folders"
-msgstr ""
+msgstr "Odstranit soubory po zracování"
 
 #: gui/slick/views/home_postprocess.mako:61
 msgid "(Check it to delete files and folders like auto processing)"
-msgstr ""
+msgstr "(Zaškrtněte, pokud chcete odstranit soubory jako během automatického zpracování)"
 
 #: gui/slick/views/home_postprocess.mako:67
 msgid "Mark download as failed"
@@ -5405,7 +5407,7 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:75
 msgid "Process"
-msgstr ""
+msgstr "Zpracovat"
 
 #: gui/slick/views/inc_addShowOptions.mako:23
 msgid "Download subtitles for this show?"
@@ -5488,7 +5490,7 @@ msgstr ""
 
 #: gui/slick/views/inc_rootDirs.mako:24 gui/slick/views/manage_massEdit.mako:59
 msgid "New"
-msgstr ""
+msgstr "Nový"
 
 #: gui/slick/views/inc_rootDirs.mako:27
 msgid "Set as Default"
@@ -5576,7 +5578,7 @@ msgstr ""
 #: gui/slick/views/manage_episodeStatuses.mako:77
 #: gui/slick/views/manage_subtitleMissed.mako:62
 msgid "Select all"
-msgstr ""
+msgstr "Vybrat vše"
 
 #: gui/slick/views/manage_episodeStatuses.mako:78
 #: gui/slick/views/manage_subtitleMissed.mako:63
@@ -5600,6 +5602,7 @@ msgid "500"
 msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "Vše"
@@ -5730,7 +5733,7 @@ msgid "Search for subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
+msgid "All of your episodes have {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
@@ -5739,11 +5742,11 @@ msgid "Manage episodes without"
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
+msgid "Episodes without {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
@@ -5776,39 +5779,39 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:37
 msgid "View Paused"
-msgstr ""
+msgstr "Zobrazit pozastavené"
 
 #: gui/slick/views/schedule.mako:39
 msgid "Hidden"
-msgstr ""
+msgstr "Skrýt"
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
-msgstr ""
+msgstr "Zobrazit"
 
 #: gui/slick/views/schedule.mako:57
 msgid "Key"
-msgstr ""
+msgstr "Legenda"
 
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:239
 msgid "Missed"
-msgstr ""
+msgstr "Zmeškané"
 
 #: gui/slick/views/schedule.mako:59
 msgid "Today"
-msgstr ""
+msgstr "Dnes"
 
 #: gui/slick/views/schedule.mako:60
 msgid "Soon"
-msgstr ""
+msgstr "Brzy"
 
 #: gui/slick/views/schedule.mako:61 gui/slick/views/schedule.mako:242
 msgid "Later"
-msgstr ""
+msgstr "Později"
 
 #: gui/slick/views/schedule.mako:64
 msgid "Subscribe"
-msgstr ""
+msgstr "Odebírat"
 
 #: gui/slick/views/schedule.mako:80
 msgid "Ends"
@@ -6008,7 +6011,7 @@ msgstr "Ruční finální zpracování"
 
 #: gui/slick/views/layouts/main.mako:143
 msgid "Episode Status Management"
-msgstr ""
+msgstr "Správa stavu epizod"
 
 #: gui/slick/views/layouts/main.mako:145
 msgid "Update PLEX"
@@ -6092,7 +6095,7 @@ msgstr "Využití paměti"
 
 #: gui/slick/views/layouts/main.mako:305
 msgid "Load time"
-msgstr ""
+msgstr "Doba načteční"
 
 #: gui/slick/views/layouts/main.mako:306
 msgid "Branch"

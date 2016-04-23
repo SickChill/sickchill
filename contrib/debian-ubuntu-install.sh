@@ -29,21 +29,24 @@ intip=$(ip r g 8.8.8.8 | awk 'NR==1{print $7};')
 # Installed whiptail for script prerequisite
 apt-get -qq install whiptail -y
 
+# Check to see what SickRage Dependencies are missing
+packages=$(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>1 | grep "no packages" | \
+           awk '{ print $6 }' | tr '\n' ' ')
+if [[ $packages ]]; then
 # Show Whiptail and install required files
-{
-i=1
-while read -r line; do
-    i=$(( $i + 1 ))
-    echo $i
-    done < <(apt-get update && apt-get install unrar-free git-core openssl libssl-dev python2.7 -y)
-} | whiptail --title "Progress" --gauge "
-   Installing unrar-free, git-core, openssl, libssl-dev, and python2.7" 8 80 0
-
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get update && apt-get install $packages -y)
+    } | whiptail --title "Progress" --gauge "Installing $packages" 8 80 0
+fi
 # Check to see if all prior packages were installed sucessfully. if not exit 1 and display whiptail issues
 
 if [[ $(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | \
         awk '{print $6 }') ]]; then
-whiptail --title "Package Installation Failed" --msgbox "               These Packages have failed:
+    whiptail --title "Package Installation Failed" --msgbox "               These Packages have failed:
                $(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | awk '{print $6 }')
 Please resolve these issues and restart the install script" 15 66
 exit 1
@@ -64,9 +67,9 @@ if [[ ! -d /opt/sickrage ]]; then
 else
     whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
     choice=$?
-    if [[ $choice == 1 ]]; then
+    if [[ $choice == 0 ]]; then
         rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
-        su -c "git clone https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+        su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
     else
         echo
         exit 1

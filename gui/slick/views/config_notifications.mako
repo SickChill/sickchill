@@ -1464,7 +1464,69 @@
                         </div><!-- /content_use_telegram //-->
 
                     </fieldset>
-                </div><!-- /telegram component-group //-->
+                </div><!-- /join component-group //-->
+                <div class="component-group">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-join" alt="" title="${_('Join')}"></span>
+                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Join')}</a></h3>
+                        <p>${_('Join all of your devices together!')}</p>
+                    </div>
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label for="use_join">
+                                <span class="component-title">${_('Enable')}</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(sickbeard.USE_JOIN)]}/>
+                                    <p>${_('Send Join notifications?')}</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="content_use_join">
+                            <div class="field-pair">
+                                <label for="join_notify_onsnatch">
+                                    <span class="component-title">${_('Notify on snatch')}</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSNATCH)]}/>
+                                        <p>${_('Send a message when a download starts?')}</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="join_notify_ondownload">
+                                    <span class="component-title">${_('Notify on download')}</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONDOWNLOAD)]}/>
+                                        <p>${_('Send a message when a download finishes?')}</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="join_notify_onsubtitledownload">
+                                    <span class="component-title">${_('Notify on subtitle download')}</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                        <p>${_('Send a message when subtitles are downloaded?')}</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="join_id">
+                                    <span class="component-title">${_('Device ID')}</span>
+                                    <input type="text" name="join_id" id="join_id" value="${sickbeard.JOIN_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">${_('Per device specific id')}</span>
+                                </label>
+                            </div>
+                            <div class="testNotification" id="testJoin-result">${_('Click below to test your settings.')}</div>
+                            <input  class="btn" type="button" value="Test Join" id="testJoin" />
+                            <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                        </div><!-- /content_use_join //-->
+
+                    </fieldset>
+                </div><!-- /join component-group //-->
 
             </div>
 
