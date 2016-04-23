@@ -135,20 +135,22 @@
                                 % if help['data']['optionalParameters'] or help['data']['requiredParameters']:
 									<h4>${_('Parameters')}</h4>
 
-									<table class="tablesorter">
-										<thead>
-											<tr>
-												<th>${_('Name')}</th>
-												<th>${_('Required')}</th>
-												<th>${_('Description')}</th>
-												<th>${_('Type')}</th>
-												<th>${_('Default value')}</th>
-												<th>${_('Allowed values')}</th>
-											</tr>
-										</thead>
-                                        ${display_parameters_doc(help['data']['requiredParameters'], True)}
-                                        ${display_parameters_doc(help['data']['optionalParameters'], False)}
-									</table>
+                                    <div class="horizontal-scroll">
+	                                    <table class="tablesorter">
+		                                    <thead>
+			                                    <tr>
+				                                    <th>${_('Name')}</th>
+				                                    <th>${_('Required')}</th>
+				                                    <th>${_('Description')}</th>
+				                                    <th>${_('Type')}</th>
+				                                    <th>${_('Default value')}</th>
+				                                    <th>${_('Allowed values')}</th>
+			                                    </tr>
+		                                    </thead>
+                                            ${display_parameters_doc(help['data']['requiredParameters'], True)}
+                                            ${display_parameters_doc(help['data']['optionalParameters'], False)}
+	                                    </table>
+                                    </div>
                                 % endif
 
 								<h4>${_('Playground')}</h4>

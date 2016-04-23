@@ -137,15 +137,15 @@
                                     % if not show.imdbid:
                                         <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
                                     % else:
-                                    % if 'country_codes' in show.imdb_info:
-                                        % for country in show.imdb_info['country_codes'].split('|'):
-                                            <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
-                                        % endfor
-                                    % endif
+                                        % if 'country_codes' in show.imdb_info:
+                                            % for country in show.imdb_info['country_codes'].split('|'):
+                                                <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                                            % endfor
+                                        % endif
                                         <span>
-                        % if show.imdb_info.get('year'):
-                            (${show.imdb_info['year']}) -
-                        % endif
+                                            % if show.imdb_info.get('year'):
+                                                (${show.imdb_info['year']}) -
+                                            % endif
                                             ${show.imdb_info['runtimes']} ${_('minutes')}</span>
 
                                         <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
@@ -158,18 +158,18 @@
 
                                 </div>
                                 <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                                                <ul class="tags">
-                                                    % if show.genre and not show.imdb_info.get('genres'):
-                                                        % for genre in show.genre[1:-1].split('|'):
-                                                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular ${genre} shows on trakt.tv.')}"><li>${genre}</li></a>
-                                                        % endfor
-                                                    % elif show.imdb_info.get('genres'):
-                                                        % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                                                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular ${imdbgenre} shows on IMDB.')}"><li>${imdbgenre}</li></a>
-                                                        % endfor
-                                                    % endif
-                                                </ul>
-                                            </div>
+                                    <ul class="tags">
+                                        % if show.genre and not show.imdb_info.get('genres'):
+                                            % for genre in show.genre[1:-1].split('|'):
+                                                <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular ${genre} shows on trakt.tv.')}"><li>${genre}</li></a>
+                                            % endfor
+                                        % elif show.imdb_info.get('genres'):
+                                            % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
+                                                <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular ${imdbgenre} shows on IMDB.')}"><li>${imdbgenre}</li></a>
+                                            % endfor
+                                        % endif
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -478,6 +478,7 @@
                                 </tr>
                             </tbody>
                         % endif
+
                         % if sickbeard.DISPLAY_ALL_SEASONS is False:
                             <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
                         % else:
@@ -597,6 +598,7 @@
         </div>
     </div>
 
+    <!-- Modals -->
     <div id="manualSearchModalFailed" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">

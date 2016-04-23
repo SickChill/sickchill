@@ -265,12 +265,6 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
-                            </div>
-                        </div>
-
                     </fieldset>
                 </div>
             </div>
@@ -309,12 +303,6 @@
 	                                   value="${' '.join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sorted_service_list()])}"/>
                             </div>
                         </div>
-
-				        <div class="row">
-					        <div class="col-md-12">
-						        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
-					        </div>
-				        </div>
 
 			        </fieldset>
                 </div>
