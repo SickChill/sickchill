@@ -2922,15 +2922,15 @@ tablesorter.css
 .tablesorter .tablesorter-header {
 	padding: 4px 18px 4px 18px;
 	cursor: pointer;
-	background: url(data:image/gif;base64,R0lGODlhFQAJAIAAAP///////yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==) no-repeat center right;
+	background: inherit url(data:image/gif;base64,R0lGODlhFQAJAIAAAP///////yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==) no-repeat center right;
 }
 
 .tablesorter thead .tablesorter-headerDesc {
-	background: #555555 url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
+	background: #555555 url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7) no-repeat center right;
 }
 
 .tablesorter thead .tablesorter-headerAsc {
-	background: #555555 url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
+	background: #555555 url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7) no-repeat center right;
 }
 
 .tablesorter thead .sorter-false {
