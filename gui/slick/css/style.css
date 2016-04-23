@@ -3259,70 +3259,16 @@ pnotify.css
 login.css
 ========================================================================== */
 
-.login {
-	display: block;
+div.login {
+	max-width: 500px;
+	margin: 0 auto;
 }
 
 .login h1 {
 	padding: 0 0 10px;
 	font-size: 60px;
-	font-family: Lobster;
+	font-family: Lobster, serif;
 	font-weight: normal;
-}
-
-.login form {
-	padding: 0;
-	height: 300px;
-	width: 400px;
-	position: fixed;
-	left: 50%;
-	top: 50%;
-	margin: -200px 0 0 -200px;
-}
-
-@media all and (max-width: 480px) {
-	.login form {
-		padding: 0;
-		height: 300px;
-		width: 90%;
-		position: absolute;
-		left: 5%;
-		top: 10px;
-		margin: 0;
-	}
-}
-
-.login .ctrlHolder {
-	padding: 0;
-	margin: 0 0 20px;
-}
-
-.login .ctrlHolder:hover {
-	background: none;
-}
-
-.login input[type=text],
-.login input[type=password] {
-	width: 100% !important;
-	font-size: 25px;
-	padding: 14px !important;
-}
-
-.login .remember_me {
-	font-size: 15px;
-	float: left;
-	width: 150px;
-	padding: 20px 0;
-}
-
-.login .remember_me .check {
-	margin: 5px 5px 0 0;
-}
-
-.login .button {
-	font-size: 25px;
-	padding: 20px;
-	float: right;
 }
 
 /* =======================================================================
