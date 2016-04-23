@@ -67,9 +67,9 @@
 
         <div class="col-lg-3 col-md-3 col-sm-${'12' if(sickbeard.HOME_LAYOUT == 'poster') else '4'} col-xs-12">
             % if not header is UNDEFINED:
-                <h1 class="header" style="margin: 0;">${header}</h1>
+                <h1 class="header">${header}</h1>
             % else:
-                <h1 class="title" style="margin: 0;">${title}</h1>
+                <h1 class="title">${title}</h1>
             % endif
         </div>
     </div>
