@@ -58,9 +58,9 @@
                 <div class="col-md-12">
                     <%
                         if int(whichStatus) in [common.IGNORED, common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
-                    row_class = "good"
+                            row_class = "good"
                         else:
-                    row_class = common.Overview.overviewStrings[int(whichStatus)]
+                            row_class = common.Overview.overviewStrings[int(whichStatus)]
                     %>
 	                <input type="hidden" id="row_class" value="${row_class}" />
 
@@ -72,10 +72,10 @@
                             statusList.remove(common.DOWNLOADED)
                             statusList.remove(common.ARCHIVED)
                             if int(whichStatus) in statusList:
-                        statusList.remove(int(whichStatus))
+                                statusList.remove(int(whichStatus))
 
                             if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.ARCHIVED + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
-                        statusList.append(common.FAILED)
+                                statusList.append(common.FAILED)
                         %>
                         % for curStatus in statusList:
 			                <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
