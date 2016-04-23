@@ -93,28 +93,28 @@
                                     <% curSeason = int(cur_ep_obj.season) %>
                                     <tbody>
                 % endif
-                <%
-                    odd = not odd
-                    epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)
-                    epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps])
-                    if len(epList) > 1:
-                        epList = [min(epList), max(epList)]
-                %>
-                <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
-                    <td class="col-checkbox">
-                        % if curLoc != newLoc:
-                            <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}"  title="Episode check"/>
-                        % endif
-                    </td>
-                    <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
-                    <td width="50%" class="col-name">${curLoc}</td>
-                    <td width="50%" class="col-name">${newLoc}</td>
-                </tr>
+                                        <%
+                                            odd = not odd
+                                            epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)
+                                            epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps])
+                                            if len(epList) > 1:
+                                                epList = [min(epList), max(epList)]
+                                        %>
+                                        <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
+                                            <td class="col-checkbox">
+                                                % if curLoc != newLoc:
+                                                    <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}"  title="Episode check"/>
+                                                % endif
+                                            </td>
+                                            <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
+                                            <td width="50%" class="col-name">${curLoc}</td>
+                                            <td width="50%" class="col-name">${newLoc}</td>
+                                        </tr>
             % endfor
-            </tbody>
-            </table>
-            </div>
-            </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
