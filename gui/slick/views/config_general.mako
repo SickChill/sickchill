@@ -33,17 +33,17 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-	                            <span class="component-title">${_('Default Indexer Language')}</span>
+	                            <label class="component-title">${_('Default Indexer Language')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350 bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
                                 <label for="indexerDefaultLang">${_('for adding shows and metadata providers')}</label>
                             </div>
                         </div>
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Launch browser')}</span>
+		                        <label class="component-title">${_('Launch browser')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="launch_browser" id="launch_browser" ${('', 'checked="checked"')[bool(sickbeard.LAUNCH_BROWSER)]}/>
@@ -53,10 +53,10 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Initial page')}</span>
+		                        <label class="component-title">${_('Initial page')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="default_page" name="default_page" class="form-control input-sm">
+		                        <select id="default_page" name="default_page" class="form-control input-sm input350">
 			                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
 			                        <option value="schedule" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
 			                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>${_('History')}</option>
@@ -70,7 +70,7 @@
                         ## Fix
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Choose hour to update shows')}</span>
+		                        <label class="component-title">${_('Choose hour to update shows')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
@@ -89,7 +89,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Send to trash for actions')}</span>
+		                        <label class="component-title">${_('Send to trash for actions')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <div class="row">
@@ -114,7 +114,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Log file folder location')}</span>
+		                        <label class="component-title">${_('Log file folder location')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input350" autocapitalize="off"  title="log_dir"/>
@@ -123,7 +123,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Number of Log files saved')}</span>
+		                        <label class="component-title">${_('Number of Log files saved')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
@@ -133,7 +133,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Size of Log files saved')}</span>
+		                        <label class="component-title">${_('Size of Log files saved')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
@@ -143,10 +143,10 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Use initial indexer set to')}</span>
+		                        <label class="component-title">${_('Use initial indexer set to')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="indexer_default" name="indexer_default" class="form-control input-sm">
+		                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input350">
 			                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
                                     % for indexer in sickbeard.indexerApi().indexers:
 				                        <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
@@ -158,7 +158,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Timeout show indexer at')}</span>
+		                        <label class="component-title">${_('Timeout show indexer at')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
@@ -168,7 +168,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Show root directories')}</span>
+		                        <label class="component-title">${_('Show root directories')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <div class="row">
@@ -211,7 +211,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Check software updates')}</span>
+		                        <label class="component-title">${_('Check software updates')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="version_notify" id="version_notify" ${('', 'checked="checked"')[bool(sickbeard.VERSION_NOTIFY)]}/>
@@ -221,7 +221,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <span class="component-title">${_('Automatically update')}</span>
+                                <label class="component-title">${_('Automatically update')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="auto_update" id="auto_update" ${('', 'checked="checked"')[bool(sickbeard.AUTO_UPDATE)]}/>
@@ -231,7 +231,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Check the server every*')}</span>
+		                        <label class="component-title">${_('Check the server every*')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="number" min="1" step="1" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
@@ -241,7 +241,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Notify on software update')}</span>
+		                        <label class="component-title">${_('Notify on software update')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="notify_on_update" id="notify_on_update" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_UPDATE)]}/>
@@ -275,7 +275,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Interface Language')}</span>
+		                        <label class="component-title">${_('Interface Language')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <select id="gui_language" name="gui_language" class="form-control input-sm">
@@ -290,7 +290,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Display theme')}</span>
+		                        <label class="component-title">${_('Display theme')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <select id="theme_name" name="theme_name" class="form-control input-sm">
@@ -303,7 +303,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Show fanart in the background')}</span>
+		                        <label class="component-title">${_('Show fanart in the background')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(sickbeard.FANART_BACKGROUND)]}>
@@ -315,7 +315,7 @@
 
                             <div class="field-pair row">
 	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                            <span class="component-title">${_('Fanart transparency')}</span>
+		                            <label class="component-title">${_('Fanart transparency')}</label>
 	                            </div>
 	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                            <input type="number" step="0.1" min="0.1" max="1.0" name="fanart_background_opacity" id="fanart_background_opacity" value="${sickbeard.FANART_BACKGROUND_OPACITY}" class="form-control input-sm input75" />
@@ -327,7 +327,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Show all seasons')}</span>
+		                        <label class="component-title">${_('Show all seasons')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
@@ -337,7 +337,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Sort with "The", "A", "An"')}</span>
+		                        <label class="component-title">${_('Sort with "The", "A", "An"')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(sickbeard.SORT_ARTICLE)]}/>
@@ -347,7 +347,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Missed episodes range')}</span>
+		                        <label class="component-title">${_('Missed episodes range')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
@@ -357,7 +357,7 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-	                            <span class="component-title">${_('Display fuzzy dates')}</span>
+	                            <label class="component-title">${_('Display fuzzy dates')}</label>
                             </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" ${('', 'checked="checked"')[bool(sickbeard.FUZZY_DATING)]}/>
@@ -367,7 +367,7 @@
 
                         <div class="field-pair row show_if_fuzzy_dating ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Trim zero padding')}</span>
+		                        <label class="component-title">${_('Trim zero padding')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="trim_zero" id="trim_zero" ${('', 'checked="checked"')[bool(sickbeard.TRIM_ZERO)]}/>
@@ -377,7 +377,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Date style')}</span>
+		                        <label class="component-title">${_('Date style')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <select class="form-control input-sm ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
@@ -396,7 +396,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Time style')}</span>
+		                        <label class="component-title">${_('Time style')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <select id="time_presets" name="time_preset" class="form-control input-sm">
@@ -410,7 +410,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Timezone')}</span>
+		                        <label class="component-title">${_('Timezone')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <label for="local" class="space-right">
@@ -430,7 +430,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Download url')}</span>
+		                        <label class="component-title">${_('Download url')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input class="form-control input350" type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" autocapitalize="off" />
@@ -467,7 +467,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('API key')}</span>
+				                <label class="component-title">${_('API key')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" autocapitalize="off" />
@@ -481,7 +481,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('HTTP logs')}</span>
+				                <label class="component-title">${_('HTTP logs')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
@@ -491,7 +491,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('HTTP username')}</span>
+				                <label class="component-title">${_('HTTP username')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
@@ -501,7 +501,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('HTTP password')}</span>
+				                <label class="component-title">${_('HTTP password')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
@@ -511,7 +511,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('HTTP port')}</span>
+				                <label class="component-title">${_('HTTP port')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
@@ -521,7 +521,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('Notify on login')}</span>
+				                <label class="component-title">${_('Notify on login')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_LOGIN)]}/>
@@ -531,7 +531,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('Listen on IPv6')}</span>
+				                <label class="component-title">${_('Listen on IPv6')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[bool(sickbeard.WEB_IPV6)]}/>
@@ -541,7 +541,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('Enable HTTPS')}</span>
+				                <label class="component-title">${_('Enable HTTPS')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[bool(sickbeard.ENABLE_HTTPS)]}/>
@@ -553,7 +553,7 @@
 
 			                <div class="field-pair row">
 				                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					                <span class="component-title">${_('HTTPS certificate')}</span>
+					                <label class="component-title">${_('HTTPS certificate')}</label>
 				                </div>
 				                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					                <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" autocapitalize="off" />
@@ -563,7 +563,7 @@
 
 			                <div class="field-pair row">
 				                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					                <span class="component-title">${_('HTTPS key')}</span>
+					                <label class="component-title">${_('HTTPS key')}</label>
 				                </div>
 				                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					                <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" autocapitalize="off" />
@@ -575,7 +575,7 @@
 
 		                <div class="field-pair row">
 			                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-				                <span class="component-title">${_('Reverse proxy headers')}</span>
+				                <label class="component-title">${_('Reverse proxy headers')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 				                <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
@@ -609,7 +609,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('CPU throttling')}</span>
+					            <label class="component-title">${_('CPU throttling')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
@@ -623,7 +623,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Anonymous redirect')}</span>
+					            <label class="component-title">${_('Anonymous redirect')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" autocapitalize="off" />
@@ -633,7 +633,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Enable debug')}</span>
+					            <label class="component-title">${_('Enable debug')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[bool(sickbeard.DEBUG)]}/>
@@ -643,7 +643,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Verify SSL Certs')}</span>
+					            <label class="component-title">${_('Verify SSL Certs')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[bool(sickbeard.SSL_VERIFY)]}/>
@@ -653,7 +653,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('No Restart')}</span>
+					            <label class="component-title">${_('No Restart')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(sickbeard.NO_RESTART)]}/>
@@ -663,7 +663,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Encrypt passwords')}</span>
+					            <label class="component-title">${_('Encrypt passwords')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
@@ -676,7 +676,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Unprotected calendar')}</span>
+					            <label class="component-title">${_('Unprotected calendar')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_UNPROTECTED)]}/>
@@ -686,7 +686,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Google Calendar Icons')}</span>
+					            <label class="component-title">${_('Google Calendar Icons')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="calendar_icons" id="calendar_icons" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_ICONS)]}/>
@@ -696,7 +696,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Proxy host')}</span>
+					            <label class="component-title">${_('Proxy host')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" autocapitalize="off" />
@@ -706,7 +706,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Use proxy for indexers')}</span>
+					            <label class="component-title">${_('Use proxy for indexers')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
@@ -716,7 +716,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Skip Remove Detection')}</span>
+					            <label class="component-title">${_('Skip Remove Detection')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 					            <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
@@ -726,7 +726,7 @@
 
 			            <div class="field-pair row">
 				            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-					            <span class="component-title">${_('Default deleted episode status')}</span>
+					            <label class="component-title">${_('Default deleted episode status')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 % if not sickbeard.SKIP_REMOVED_FILES:
@@ -779,7 +779,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Branch version')}</span>
+		                        <label class="component-title">${_('Branch version')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
@@ -811,7 +811,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('GitHub username')}</span>
+		                        <label class="component-title">${_('GitHub username')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
@@ -821,7 +821,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('GitHub password')}</span>
+		                        <label class="component-title">${_('GitHub password')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
@@ -831,7 +831,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('GitHub remote for branch')}</span>
+		                        <label class="component-title">${_('GitHub remote for branch')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
@@ -841,7 +841,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Git executable path')}</span>
+		                        <label class="component-title">${_('Git executable path')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="text" id="git_path" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
@@ -851,7 +851,7 @@
 
                         <div class="field-pair row" hidden>
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Git reset')}</span>
+		                        <label class="component-title">${_('Git reset')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 		                        <input type="checkbox" name="git_reset" id="git_reset" ${('', 'checked="checked"')[bool(sickbeard.GIT_RESET)]}/>

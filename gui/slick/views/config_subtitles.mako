@@ -253,10 +253,14 @@
 		                                        <li>${_('Scripts are called after each episode has searched and downloaded subtitles.')}</li>
 		                                        <li>${_('For any scripted languages, include the interpreter executable before the script. See the following example')}:</li>
                                                 <ul>
-                                                    <li>${_('For Windows: ')}
-                                                        <pre>C:\Python27\pythonw.exe C:\Script\test.py</pre></li>
-                                                    <li>${_('For Linux: ')}
-                                                        <pre>python /Script/test.py</pre></li>
+                                                    <li>
+                                                        ${_('For Windows:')}
+                                                        <pre>C:\Python27\pythonw.exe C:\Script\test.py</pre>
+                                                    </li>
+                                                    <li>
+                                                        ${_('For Linux / OS X:')}
+                                                        <pre>python /Script/test.py</pre>
+                                                    </li>
                                                 </ul>
 	                                        </ul>
                                         </div>

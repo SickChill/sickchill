@@ -28,12 +28,12 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <input type="checkbox" class="enabler" name="use_anidb"
-                                       id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
-                                <label for="use_anidb" class="component-title">${_('Enable')}</label>
+                                <label class="component-title">${_('Enable')}</label>
                             </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
-                                <span class="component-desc">${_('Should SickRage use data from AniDB?')}</span>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+	                            <input type="checkbox" class="enabler" name="use_anidb"
+	                                   id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
+                                <label for="use_anidb">${_('Should SickRage use data from AniDB?')}</label>
                             </div>
                         </div>
 
@@ -83,12 +83,12 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                    <input type="checkbox" name="anidb_use_mylist"
-                                           id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
-                                    <label for="anidb_use_mylist" class="component-title">${_('AniDB MyList')}</label>
+                                    <label class="component-title">${_('AniDB MyList')}</label>
                                 </div>
-                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
-                                    <span class="component-desc">${_('Do you want to add the PostProcessed Episodes to the MyList ?')}</span>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 component-desc">
+	                                <input type="checkbox" name="anidb_use_mylist"
+	                                       id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
+                                    <label for="anidb_use_mylist">${_('Do you want to add the PostProcessed Episodes to the MyList ?')}</label>
                                 </div>
                             </div>
                         </div>
@@ -111,12 +111,12 @@
                     <fieldset class="component-group-list">
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <input type="checkbox" class="enabler" name="split_home"
-                                       id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
-                                <label for="split_home" class="component-title">${_('Split show lists')}</label>
+                                <label class="component-title">${_('Split show lists')}</label>
                             </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
-                                <span class="component-desc">${_('Separate anime and normal shows in groups')}</span>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+	                            <input type="checkbox" class="enabler" name="split_home"
+	                                   id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
+                                <label for="split_home">${_('Separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>

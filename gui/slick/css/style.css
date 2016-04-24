@@ -1576,10 +1576,7 @@ config*.mako
 	float: left;
 }
 
-#config .nocheck, #config div #customQuality, .metadataDiv {
-	padding-left: 20px;
-}
-
+#config label.component-title,
 #config span.component-title {
 	float: left;
 	margin-right: 10px;
@@ -1881,16 +1878,6 @@ config_postProcessing.mako
 /* =======================================================================
 config_notifications.mako
 ========================================================================== */
-
-div.metadata_options_wrapper {
-	float: left;
-	width: 190px;
-}
-
-div.metadata_example_wrapper {
-	float: right;
-	width: 325px;
-}
 
 div.metadata_options {
 	padding: 7px;
@@ -2791,7 +2778,6 @@ input sizing (for config pages)
 
 #config select {
 	min-width: 0;
-	width: auto;
 	display: inline;
 }
 
