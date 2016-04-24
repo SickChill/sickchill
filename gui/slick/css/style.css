@@ -1535,13 +1535,12 @@ config*.mako
 }
 
 .config-group-divider {
-	margin: 10px 0;
+	margin: 20px 0;
 	border-bottom: 1px dotted #CCCCCC;
 }
 
 .component-group {
 	border-bottom: 1px dotted #CCCCCC;
-	min-height: 200px;
 }
 
 .component-item {

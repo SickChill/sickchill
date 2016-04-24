@@ -383,7 +383,6 @@ config*.mako
 .component-group {
 	padding: 25px 0;
 	border-bottom: 1px dotted #555555;
-	min-height: 200px;
 }
 
 .component-group-desc p {
