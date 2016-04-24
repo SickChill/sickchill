@@ -229,23 +229,25 @@ anime_regexes = [
      # [Z-Team][DBSuper.pw] Dragon Ball Super - 028 (VOSTFR)(720p AAC)(MP4)
      # [SnF] Shokugeki no Souma - 24 VOSTFR [720p][41761A60].mkv
      # [Y-F] Ao no Kanata no Four Rhythm - 03 Vostfr HD 8bits
-     # Phantasy Star Online 2 - The Animation 04 vostfr FHD
      # Detective Conan 804 vostfr HD
      # Active Raid 04 vostfr [1080p]
      # Sekko Boys 04 vostfr [720p]
      r'''
-     ^(\[(?P<release_group>.+?)\][ ._-]*)?                                                     # Release Group and separator (Optional)
-     ((\[|\().+?(\]|\))[ ._-]*)?                                                               # Extra info (Optionnal)
-     (?P<series_name>.+?)[ ._-]+                                                               # Show_Name and separator
-     ((épisode|episode|Episode)[ ._-]+)?                                                       # Sentence for special fansub (Optionnal)
-     (?P<ep_ab_num>\d{1,3})[ ._-]+                                                             # Episode number and separator
-     (((\[|\())?(VOSTFR|vostfr|Vostfr|VostFR|vostFR)((\]|\)))?([ ._-])*)+                      # Subtitle Language and separator
-     (par Fansub-Resistance)?                                                                  # Sentence for special fansub (Optionnal)
-     (\[((v|V)(?P<version>[0-9]))\]([ ._-])*)?                                                 # Version and separator (Optional)
-     ((\[(8|10)(Bits|bits|Bit|bit)\])?([ ._-])*)?                                              # Colour resolution and separator (Optional)
-     ((\[|\()((FHD|HD|SD)*([ ._-])*((?P<extra_info>\d{3,4}[xp*]?\d{0,4}[\.\w\s-]*)))(\]|\)))?  # Source_Quality_Etc-
-     ([ ._-]*\[(?P<crc>\w{8})\])?                                                              # CRC (Optional)
-     .*                                                                                        # Separator and EOL
+     ^(\[(?P<release_group>.+?)\][ ._-]*)?                     # Release Group and separator (Optional)
+     ((\[|\().+?(\]|\))[ ._-]*)?                               # Extra info (Optionnal)
+     (?P<series_name>.+?)[ ._-]+                               # Show_Name and separator
+     ((épisode|episode|Episode)[ ._-]+)?                       # Sentence for special fansub (Optionnal)
+     (?P<ep_ab_num>\d{1,3})[\(\)\[\] ._-]+                     # Episode number and separator
+     ((VOSTFR|vostfr|Vostfr|VostFR|vostFR)[\(\)\[\] ._-]*)?    # Subtitle Language and separator (Optional)
+     ((par[ ._-]+Fansub-Resistance)[\(\)\[\] ._-]*)?           # Sentence for special fansub (Optionnal)
+     ((FHD|HD|SD)[\(\)\[\] ._-]*)?                             # Resolution (Optional)
+     ((?P<extra_info>\d{3,4}[xp*]?\d{0,4})[\(\)\[\] ._-]*)?    # Source_Quality_Etc-(Optional)
+     ((VOSTFR|vostfr|Vostfr|VostFR|vostFR)[\(\)\[\] ._-]*)?    # Subtitle Language and separator (Second position)(Optional)
+     ((FHD|HD|SD)[\(\)\[\] ._-]*)?                             # Resolution (Second position)(Optional)
+     (((8|10)(Bits|bits|Bit|bit))[\(\)\[\] ._-]*)?             # Colour resolution and separator (Optional)
+     (((v|V)(?P<version>[0-9]))[\(\)\[\] ._-]*)?               # Version and separator (Optional)
+     ((?P<crc>\w{8})[\(\)\[\] ._-]*)?                          # CRC (Optional)
+     .*                                                        # Separator and EOL
      '''),
     ('anime_standard',
      # [Group Name] Show Name.13-14
