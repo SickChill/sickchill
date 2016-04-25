@@ -81,11 +81,7 @@ class uTorrentAPI(GenericClient):
         Sets a label on an existing torrent in the client
         params: :result: an instance of the searchResult class
         """
-        if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
-        else:
-            label = sickbeard.TORRENT_LABEL
-
+        label = sickbeard.TORRENT_LABEL_ANIME or sickbeard.TORRENT_LABEL if result.show.is_anime else sickbeard.TORRENT_LABEL
         params = {
             'action': 'setprops',
             'hash': result.hash,
