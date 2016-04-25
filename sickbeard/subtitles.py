@@ -211,6 +211,28 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
                     episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
+    # If subliminal didn't found resolution or format for file, we add it based on SR metadata
+    _, quality = Quality.splitCompositeStatus(subtitles_info['status'])
+    if not video.format:
+        if quality & Quality.ANYHDTV:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
+        elif quality & Quality.ANYWEBDL:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYWEBDL)
+        elif quality & Quality.ANYBLURAY:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
+
+    if not video.resolution:
+        if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY ):
+            video.resolution = '720p'
+        elif quality & Quality.RAWHDTV:
+            video.resolution = '1080i'
+        elif quality & (Quality.FULLHDTV | Quality.FULLHDWEBDL | Quality.FULLHDBLURAY ):
+            video.resolution = '1080p'
+        elif quality & (Quality.UHD_4K_TV | Quality.UHD_4K_WEBDL | Quality.UHD_4K_BLURAY):
+            video.resolution = '4K'
+        elif quality & (Quality.UHD_8K_TV | Quality.UHD_8K_WEBDL | Quality.UHD_8K_BLURAY):
+            video.resolution = '8K'
+
     providers = enabled_service_list()
     pool = SubtitleProviderPool()
 
