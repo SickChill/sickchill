@@ -2177,7 +2177,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'gui_name': GUI_NAME,
             'language': GUI_LANG,
             'theme_name': THEME_NAME,
-            'fanart_background': FANART_BACKGROUND,
+            'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
