@@ -222,7 +222,7 @@ anime_regexes = [
     ('anime_french_fansub',
      # [Kaerizaki-Fansub]_One_Piece_727_[VOSTFR][HD_1280x720].mp4
      # [Titania-Fansub]_Fairy_Tail_269_[VOSTFR]_[720p]_[1921E00C].mp4
-     # [ISLAND]One_Piece_726_[VOSTFR]_[V1]_[8bit]_[720p]_[2F7B3FA2].mp4
+     # [ISLAND]One_Piece_726_[VOSTFR]_[V1]_[8bit]_[720p]_[2F7B3FA2].mp4 (partial)
      # Naruto Shippuden 445 VOSTFR par Fansub-Resistance (1280*720) - version MQ
      # Dragon Ball Super 015 VOSTFR par Fansub-Resistance (1280x720) - HQ version
      # [Mystic.Z-Team].Dragon.Ball.Super.-.épisode.36.VOSTFR.720p
@@ -236,8 +236,9 @@ anime_regexes = [
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                     # Release Group and separator (Optional)
      ((\[|\().+?(\]|\))[ ._-]*)?                               # Extra info (Optionnal)
      (?P<series_name>.+?)[ ._-]+                               # Show_Name and separator
-     ((épisode|episode|Episode)[ ._-]+)?                       # Sentence for special fansub (Optionnal)
+     ((épisode|episode|Episode|E)[ ._-]*)?                     # Sentence for special fansub (Optionnal)
      (?P<ep_ab_num>\d{1,3})[\(\)\[\] ._-]+                     # Episode number and separator
+     ((E)?(?P<extra_ab_ep_num>\d{1,3})[\(\)\[\] ._-]+)?        # Multi-Episode number
      ((VOSTFR|vostfr|Vostfr|VostFR|vostFR)[\(\)\[\] ._-]*)?    # Subtitle Language and separator (Optional)
      ((par[ ._-]+Fansub-Resistance)[\(\)\[\] ._-]*)?           # Sentence for special fansub (Optionnal)
      ((FHD|HD|SD)[\(\)\[\] ._-]*)?                             # Resolution (Optional)
