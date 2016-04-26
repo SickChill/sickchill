@@ -2090,18 +2090,17 @@
 	                            </div>
 						    </div>
 
-						    <div class="row">
-							    <div class="col-md-12">
-								    <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
-								    <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
-							    </div>
-						    </div>
-
                             <div class="field-pair row">
 	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
 		                            <label class="component-title">${_('Trakt PIN')}</label>
 	                            </div>
 	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
+				                            <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
+			                            </div>
+		                            </div>
 		                            <div class="row">
 			                            <div class="col-md-12">
 				                            <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" />
@@ -2112,14 +2111,14 @@
 				                            <label for="trakt_pin">${_('PIN code to authorize SickRage to access Trakt on your behalf.')}</label>
 			                            </div>
 		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />
+			                            </div>
+		                            </div>
 	                            </div>
 						    </div>
 
-						    <div class="row">
-                                <div class="col-md-12">
-	                                <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />
-                                </div>
-                            </div>
 
                             <div class="field-pair row">
 	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2268,7 +2267,7 @@
 							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-	                                        <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="${sickbeard.TRAKT_BLACKLIST_NAME}" class="form-control input-sm input150" autocapitalize="off" />
+	                                        <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="${sickbeard.TRAKT_BLACKLIST_NAME}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2320,141 +2319,221 @@
 					    </div>
 
 					    <div id="content_use_email">
-						    <div class="field-pair">
-							    <label for="email_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_host">
-								    <span class="component-title">${_('SMTP host')}</span>
-								    <input type="text" name="email_host" id="email_host" value="${sickbeard.EMAIL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('hostname of your SMTP email server.')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_port">
-								    <span class="component-title">${_('SMTP port')}</span>
-								    <input type="number" min="1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('port number used to connect to your SMTP host.')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_from">
-								    <span class="component-title">${_('SMTP from')}</span>
-								    <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('sender email address, some hosts require a real address.')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_tls">
-								    <span class="component-title">${_('Use TLS')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_TLS)]}/>
-                                <p>${_('check to use TLS encryption.')}</p>
-                            </span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_user">
-								    <span class="component-title">${_('SMTP user')}</span>
-								    <input type="text" name="email_user" id="email_user" value="${sickbeard.EMAIL_USER}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('(optional) your SMTP server username.')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_password">
-								    <span class="component-title">${_('SMTP password')}</span>
-								    <input type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('(optional) your SMTP server password.')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_list">
-								    <span class="component-title">${_('Global email list')}</span>
-								    <input type="text" name="email_list" id="email_list" value="${sickbeard.EMAIL_LIST}" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-                            <span class="component-desc">${_('Email addresses listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.')}<br>
-                                ${_('(This field may be blank except when testing.)')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_subject">
-								    <span class="component-title">${_('Email Subject')}</span>
-								    <input type="text" name="email_subject" id="email_subject" value="${sickbeard.EMAIL_SUBJECT}" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-                            <span class="component-desc">${_('Use a custom subject for some privacy protection?')}<br>
-                                ${_('(Leave blank for the default SickRage subject)')}</span>
-							    </label>
-						    </div>
-						    <div class="field-pair">
-							    <label for="email_show">
-								    <span class="component-title">${_('Show notification list')}</span>
-								    <select name="email_show" id="email_show" class="form-control input-sm">
-									    <option value="-1">${_('-- Select a Show --')}</option>
-								    </select>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <input type="text" name="email_show_list" id="email_show_list" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-                            <span class="component-desc">${_('Configure per-show notifications here by entering email address(es), separated by commas,')}
-                                                         ${_('after selecting a show in the drop-down box.  Be sure to activate the \'Save for this show\'')}
-                                                         ${_('button below after each entry.')}</span>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}" />
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
+								    <label for="email_notify_ondownload">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
 
-						    <div class="testNotification" id="testEmail-result">${_('Click below to test.')}</div>
-						    <input class="btn" type="button" value="Test Email" id="testEmail" />
-						    <input class="btn config_submitter" type="submit" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_email //-->
+                            <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="email_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
+						    </div>
+
+                            <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="email_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
+						    </div>
+
+                            <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('SMTP host')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+	                                        <input type="text" name="email_host" id="email_host" value="${sickbeard.EMAIL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+	                                        <label for="email_host">${_('hostname of your SMTP email server.')}</label>
+                                        </div>
+                                    </div>
+							    </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('SMTP port')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="number" min="1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_port">${_('port number used to connect to your SMTP host.')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('SMTP from')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM}" class="form-control input-sm input250" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_from">${_('sender email address, some hosts require a real address.')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('Use TLS')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_TLS)]}/>
+		                            <label for="email_tls">${_('check to use TLS encryption.')}</label>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('SMTP user')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="text" name="email_user" id="email_user" value="${sickbeard.EMAIL_USER}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_user">${_('(optional) your SMTP server username.')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('SMTP password')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_password">${_('(optional) your SMTP server password.')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('Global email list')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="text" name="email_list" id="email_list" value="${sickbeard.EMAIL_LIST}" class="form-control input-sm input350" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_list">${_('Email addresses listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.')}<br>${_('(This field may be blank except when testing.)')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('Email Subject')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="text" name="email_subject" id="email_subject" value="${sickbeard.EMAIL_SUBJECT}" class="form-control input-sm input350" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_subject">${_('Use a custom subject for some privacy protection?')}<br>${_('(Leave blank for the default SickRage subject)')}</label>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="field-pair row">
+	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+		                            <label class="component-title">${_('Show notification list')}</label>
+	                            </div>
+	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <select name="email_show" id="email_show" class="form-control input-sm input350" title="Email show">
+					                            <option value="-1">${_('-- Select a Show --')}</option>
+				                            </select>
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="text" name="email_show_list" id="email_show_list" class="form-control input-sm input350" autocapitalize="off" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="email_show_list">
+                                                ${_('Configure per-show notifications here by entering email address(es), separated by commas,')}
+                                                ${_('after selecting a show in the drop-down box.  Be sure to activate the \'Save for this show\'')}
+                                                ${_('button below after each entry.')}
+                                            </label>
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}"/>
+			                            </div>
+		                            </div>
+	                            </div>
+						    </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <div class="testNotification" id="testEmail-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <input class="btn" type="button" value="Test Email" id="testEmail" />
+	                                <input class="btn config_submitter" type="submit" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+					    </div>
 				    </fieldset>
 			    </div>
 		    </div>
