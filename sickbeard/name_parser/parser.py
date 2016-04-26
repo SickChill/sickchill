@@ -235,8 +235,7 @@ class NameParser(object):
                     try:
                         lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
 
-                        if bestResult.show.lang:
-                            lINDEXER_API_PARMS['language'] = bestResult.show.lang
+                        lINDEXER_API_PARMS['language'] = bestResult.show.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                         t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
 

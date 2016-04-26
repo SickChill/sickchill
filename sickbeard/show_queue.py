@@ -124,13 +124,13 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def renameShowEpisodes(self, show, force=False):
-        _ = force
+        force_ = force
         queueItemObj = QueueItemRename(show)
         self.add_item(queueItemObj)
         return queueItemObj
 
     def download_subtitles(self, show, force=False):
-        _ = force
+        force_ = force
         queueItemObj = QueueItemSubtitle(show)
         self.add_item(queueItemObj)
         return queueItemObj
@@ -287,8 +287,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         try:
 
             lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-            if self.lang:
-                lINDEXER_API_PARMS[b'language'] = self.lang
+            lINDEXER_API_PARMS['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
             logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(self.indexer).name, lINDEXER_API_PARMS))
 

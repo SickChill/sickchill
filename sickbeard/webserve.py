@@ -2362,7 +2362,7 @@ class HomeAddShows(Home):
         # Query Indexers for each search term and build the list of results
         for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
             lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['language'] = lang
+            lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
@@ -3967,7 +3967,7 @@ class ConfigGeneral(Config):
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
-        sickbeard.FANART_BACKGROUND = fanart_background
+        sickbeard.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
 
         sickbeard.DEFAULT_PAGE = default_page
