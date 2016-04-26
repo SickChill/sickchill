@@ -26,7 +26,10 @@ setup(
     license='GPLv2',
 
     packages=find_packages(),
-    install_requires=[],
+    install_requires=[
+        'pytz',
+        'requests'
+    ],
 
     test_suite="tests",
     tests_require=[
