@@ -52,11 +52,27 @@ def containsAtLeastOneWord(name, words):
     """
     if isinstance(words, basestring):
         words = words.split(',')
+
     items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
     for regexp, word in items:
         if regexp.search(name):
             return word
     return False
+
+
+def containsAllWords(name, words):
+    """
+    Filters out results based on filter_words
+
+    name: name to check
+    words : string of words separated by a ',' or list of words
+
+    Returns: False if the name doesn't contain any word of words list, or the found word from the list.
+    """
+    if isinstance(words, basestring):
+        words = words.split(',')
+
+    return all(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I).search(name) for word in words)
 
 
 def filterBadReleases(name, parse=True, show=None):
@@ -90,7 +106,7 @@ def filterBadReleases(name, parse=True, show=None):
         if show.rls_ignore_words:
             ignore_words.extend(show.rls_ignore_words.split(','))
         if show.rls_require_words:
-            ignore_words = set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip())
+            ignore_words = list(set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip()))
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
@@ -106,7 +122,7 @@ def filterBadReleases(name, parse=True, show=None):
         if show.rls_require_words:
             require_words.extend(show.rls_require_words.split(','))
 
-    if require_words and not containsAtLeastOneWord(name, require_words):
+    if require_words and not containsAllWords(name, require_words):
         logger.log(u"Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
                    ", ignoring it", logger.INFO)
         return False
