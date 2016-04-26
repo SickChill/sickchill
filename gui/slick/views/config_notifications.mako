@@ -137,7 +137,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <span class="component-title">${_('Username')}</span>
+                                    <label class="component-title">${_('Username')}</span>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -155,7 +155,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <span class="component-title">${_('Password')}</span>
+                                    <label class="component-title">${_('Password')}</span>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -1029,72 +1029,97 @@
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_growl">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', 'checked="checked"')[bool(sickbeard.USE_GROWL)]}/>
-                            <p>${_('Send Growl notifications?')}</p>
-                        </span>
-						    </label>
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', 'checked="checked"')[bool(sickbeard.USE_GROWL)]}/>
+							    <label for="use_growl">${_('Send Growl notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_growl">
-						    <div class="field-pair">
-							    <label for="growl_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSNATCH)]}/>
+								    <label for="growl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="growl_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="growl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="growl_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="growl_notify_ondownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="growl_host">
-								    <span class="component-title">${_('Growl IP:Port')}</span>
-								    <input type="text" name="growl_host" id="growl_host" value="${sickbeard.GROWL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('host running Growl (eg. 192.168.1.100:23053)')}</span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Growl IP:Port')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+	                                        <input type="text" name="growl_host" id="growl_host" value="${sickbeard.GROWL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+	                                        <label for="growl_host">${_('host running Growl (eg. 192.168.1.100:23053)')}</label>
+                                        </div>
+                                    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="growl_password">
-								    <span class="component-title">${_('Password')}</span>
-								    <input type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('may leave blank if SickRage is on the same host.')}</span>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('otherwise Growl <b>requires</b> a password to be used.')}</span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Password')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="growl_password">${_('may leave blank if SickRage is on the same host.')}</label>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label>${_('otherwise Growl <b>requires</b> a password to be used.')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testGrowl-result">${_('Click below to register and test Growl, this is required for Growl notifications to work.')}</div>
-						    <input  class="btn" type="button" value="${_('Register Growl')}" id="testGrowl" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_growl //-->
+
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <div class="testNotification" id="testGrowl-result">${_('Click below to register and test Growl, this is required for Growl notifications to work.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <input  class="btn" type="button" value="${_('Register Growl')}" id="testGrowl" />
+	                                <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1112,102 +1137,137 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_prowl">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', 'checked="checked"')[bool(sickbeard.USE_PROWL)]}/>
-                            <p>${_('Send Prowl notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', 'checked="checked"')[bool(sickbeard.USE_PROWL)]}/>
+							    <label for="use_prowl">${_('Send Prowl notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_prowl">
-						    <div class="field-pair">
-							    <label for="prowl_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSNATCH)]}/>
+								    <label for="prowl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="prowl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="prowl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_message_title">
-								    <span class="component-title">${_('Prowl Message Title')}:</span>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Prowl Message Title')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 								    <input type="text" name="prowl_message_title" id="prowl_message_title" value="${sickbeard.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_api">
-								    <span class="component-title">${_('Global Prowl API key(s)')}:</span>
-								    <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-                            <span class="component-desc">${_('''Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows.
-                                                         Your Prowl API key is available at:''')}
-	                            <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                                                         https://www.prowlapp.com/api_settings.php</a><br>
-                                ${_('(This field may be blank except when testing.)')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Global Prowl API key(s)')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+	                                        <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="prowl_api">${_('''Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows. Your Prowl API key is available at:''')}
+	                                            <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                                         https://www.prowlapp.com/api_settings.php
+                                                </a><br>
+                                                ${_('(This field may be blank except when testing.)')}
+                                            </label>
+                                        </div>
+                                    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_show">
-								    <span class="component-title">${_('Show notification list')}</span>
-								    <select name="prowl_show" id="prowl_show" class="form-control input-sm">
-									    <option value="-1">${_('-- Select a Show --')}</option>
-								    </select>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <input type="text" name="prowl_show_list" id="prowl_show_list" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-                            <span class="component-desc">${_('''Configure per-show notifications here by entering Prowl API key(s), separated by commas,
-                                                         after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show'
-                                                         button below after each entry.''')}</span>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <input id="prowl_show_save" class="btn" type="button" value="${_('Save for this show')}" />
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Show notification list')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select name="prowl_show" id="prowl_show" class="form-control input-sm input350">
+											    <option value="-1">${_('-- Select a Show --')}</option>
+										    </select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="prowl_show_list" id="prowl_show_list" class="form-control input-sm input350" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+                                            <label for="prowl_show_list">
+                                                ${_('''Configure per-show notifications here by entering Prowl API key(s), separated by commas, '
+                                                'after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show' '
+                                                'button below after each entry.''')}
+                                            </label>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input id="prowl_show_save" class="btn" type="button" value="${_('Save for this show')}" />
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="prowl_priority">
-								    <span class="component-title">${_('Prowl priority')}:</span>
-								    <select id="prowl_priority" name="prowl_priority" class="form-control input-sm">
-									    <option value="-2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
-									    <option value="-1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
-									    <option value="0" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
-									    <option value="1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '1']}>${_('High')}</option>
-									    <option value="2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
-								    </select>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('priority of Prowl messages from SickRage.')}</span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Prowl priority')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select id="prowl_priority" name="prowl_priority" class="form-control input-sm input250">
+											    <option value="-2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
+											    <option value="-1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
+											    <option value="0" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
+											    <option value="1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '1']}>${_('High')}</option>
+											    <option value="2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
+										    </select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="prowl_priority">${_('priority of Prowl messages from SickRage.')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
 						    <div class="testNotification" id="testProwl-result">${_('Click below to test.')}</div>
 						    <input  class="btn" type="button" value="Test Prowl" id="testProwl" />
@@ -1230,49 +1290,64 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_libnotify">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(sickbeard.USE_LIBNOTIFY)]}/>
-                            <p>${_('Send Libnotify notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(sickbeard.USE_LIBNOTIFY)]}/>
+							    <label for="use_libnotify">${_('Send Libnotify notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_libnotify">
-						    <div class="field-pair">
-							    <label for="libnotify_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
+								    <label for="libnotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="libnotify_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="libnotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="libnotify_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="libnotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testLibnotify-result">${_('Click below to test.')}</div>
-						    <input  class="btn" type="button" value="Test Libnotify" id="testLibnotify" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_libnotify //-->
+
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <div class="testNotification" id="testLibnotify-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+	                                <input  class="btn" type="button" value="Test Libnotify" id="testLibnotify" />
+	                                <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1290,113 +1365,160 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_pushover">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHOVER)]}/>
-                            <p>${_('Send Pushover notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHOVER)]}/>
+							    <label for="use_pushover">${_('Send Pushover notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_pushover">
-						    <div class="field-pair">
-							    <label for="pushover_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSNATCH)]}/>
+								    <label for="pushover_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="pushover_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="pushover_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_userkey">
-								    <span class="component-title">${_('Pushover key')}</span>
-								    <input type="text" name="pushover_userkey" id="pushover_userkey" value="${sickbeard.PUSHOVER_USERKEY}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('user key of your Pushover account')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushover key')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="pushover_userkey" id="pushover_userkey" value="${sickbeard.PUSHOVER_USERKEY}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="pushover_userkey">${_('user key of your Pushover account')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_apikey">
-								    <span class="component-title">${_('Pushover API key')}</span>
-								    <input type="text" name="pushover_apikey" id="pushover_apikey" value="${sickbeard.PUSHOVER_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushover API key')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="pushover_apikey" id="pushover_apikey" value="${sickbeard.PUSHOVER_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_device">
-								    <span class="component-title">${_('Pushover devices')}</span>
-								    <input type="text" name="pushover_device" id="pushover_device" value="${sickbeard.PUSHOVER_DEVICE}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('comma separated list of pushover devices you want to send notifications to')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushover devices')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="pushover_device" id="pushover_device" value="${sickbeard.PUSHOVER_DEVICE}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="pushover_device">${_('comma separated list of pushover devices you want to send notifications to')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushover_sound">
-								    <span class="component-title">${_('Pushover notification sound')}</span>
-								    <select id="pushover_sound" name="pushover_sound" class="form-control input-sm">
-									    <option value="pushover" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
-									    <option value="bike" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
-									    <option value="bugle" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
-									    <option value="cashregister" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
-									    <option value="classical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
-									    <option value="cosmic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
-									    <option value="falling" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
-									    <option value="gamelan" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
-									    <option value="incoming" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
-									    <option value="intermission" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
-									    <option value="magic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
-									    <option value="mechanical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
-									    <option value="pianobar" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
-									    <option value="siren" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
-									    <option value="spacealarm" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
-									    <option value="tugboat" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
-									    <option value="alien" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
-									    <option value="climb" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
-									    <option value="persistent" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
-									    <option value="echo" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
-									    <option value="updown" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
-									    <option value="none" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
-									    <option value="default" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
-								    </select>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('Choose notification sound to use')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushover notification sound')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select id="pushover_sound" name="pushover_sound" class="form-control input-sm input250">
+											    <option value="pushover" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
+											    <option value="bike" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
+											    <option value="bugle" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
+											    <option value="cashregister" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
+											    <option value="classical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
+											    <option value="cosmic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
+											    <option value="falling" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
+											    <option value="gamelan" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
+											    <option value="incoming" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
+											    <option value="intermission" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
+											    <option value="magic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
+											    <option value="mechanical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
+											    <option value="pianobar" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
+											    <option value="siren" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
+											    <option value="spacealarm" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
+											    <option value="tugboat" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
+											    <option value="alien" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
+											    <option value="climb" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
+											    <option value="persistent" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
+											    <option value="echo" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
+											    <option value="updown" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
+											    <option value="none" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
+											    <option value="default" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
+										    </select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label class="component-desc">${_('Choose notification sound to use')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testPushover-result">${_('Click below to test.')}</div>
-						    <input  class="btn" type="button" value="Test Pushover" id="testPushover" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_pushover //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testPushover-result">${_('Click below to test.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test Pushover" id="testPushover" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1414,58 +1536,81 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_boxcar2">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(sickbeard.USE_BOXCAR2)]}/>
-                            <p>${_('Send Boxcar notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(sickbeard.USE_BOXCAR2)]}/>
+							    <label for="use_boxcar2">${_('Send Boxcar notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_boxcar2">
-						    <div class="field-pair">
-							    <label for="boxcar2_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSNATCH)]}/>
+								    <label for="boxcar2_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="boxcar2_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="boxcar2_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="boxcar2_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="boxcar2_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="boxcar2_accesstoken">
-								    <span class="component-title">${_('Boxcar2 access token')}</span>
-								    <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="${sickbeard.BOXCAR2_ACCESSTOKEN}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('access token for your Boxcar account.')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Boxcar2 access token')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="${sickbeard.BOXCAR2_ACCESSTOKEN}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="boxcar2_accesstoken">${_('access token for your Boxcar account.')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testBoxcar2-result">${_('Click below to test.')}</div>
-						    <input  class="btn" type="button" value="Test Boxcar" id="testBoxcar2" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testBoxcar2-result">${_('Click below to test.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test Boxcar" id="testBoxcar2" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
 					    </div>
 
 				    </fieldset>
@@ -1484,75 +1629,105 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_nma">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_nma" id="use_nma" ${('', 'checked="checked"')[bool(sickbeard.USE_NMA)]}/>
-                            <p>${_('Send NMA notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_nma" id="use_nma" ${('', 'checked="checked"')[bool(sickbeard.USE_NMA)]}/>
+							    <label for="use_nma">${_('Send NMA notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_nma">
-						    <div class="field-pair">
-							    <label for="nma_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="nma_notify_onsnatch" id="nma_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="nma_notify_onsnatch" id="nma_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSNATCH)]}/>
+								    <label for="nma_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="nma_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="nma_notify_ondownload" id="nma_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="nma_notify_ondownload" id="nma_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="nma_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="nma_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="nma_notify_onsubtitledownload" id="nma_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="nma_notify_onsubtitledownload" id="nma_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="nma_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="nma_api">
-								    <span class="component-title">${_('NMA API key')}:</span>
-								    <input type="text" name="nma_api" id="nma_api" value="${sickbeard.NMA_API}" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('(multiple keys must be separated by commas, up to a maximum of 5)')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('NMA API key')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="nma_api" id="nma_api" value="${sickbeard.NMA_API}" class="form-control input-sm input350" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="nma_api">${_('(multiple keys must be separated by commas, up to a maximum of 5)')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="nma_priority">
-								    <span class="component-title">${_('NMA priority')}:</span>
-								    <select id="nma_priority" name="nma_priority" class="form-control input-sm">
-									    <option value="-2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-2']}>${_('Very Low')}</option>
-									    <option value="-1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-1']}>${_('Moderate')}</option>
-									    <option value="0" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '0']}>${_('Normal')}</option>
-									    <option value="1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '1']}>${_('High')}</option>
-									    <option value="2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>${_('Emergency')}</option>
-								    </select>
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('priority of NMA messages from SickRage.')}</span>
-							    </label>
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('NMA priority')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select id="nma_priority" name="nma_priority" class="form-control input-sm input350">
+											    <option value="-2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-2']}>${_('Very Low')}</option>
+											    <option value="-1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-1']}>${_('Moderate')}</option>
+											    <option value="0" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '0']}>${_('Normal')}</option>
+											    <option value="1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '1']}>${_('High')}</option>
+											    <option value="2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>${_('Emergency')}</option>
+										    </select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="nma_priority">${_('priority of NMA messages from SickRage.')}</label>
+									    </div>
+								    </div>
+                                </div>
 						    </div>
-						    <div class="testNotification" id="testNMA-result">${_('Click below to test.')}</div>
-						    <input  class="btn" type="button" value="Test NMA" id="testNMA" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_nma //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testNMA-result">${_('Click below to test.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test NMA" id="testNMA" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1570,59 +1745,82 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_pushalot">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHALOT)]}/>
-                            <p>${_('Send Pushalot notifications ?')}
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHALOT)]}/>
+							    <label for="use_pushalot">${_('Send Pushalot notifications ?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_pushalot">
-						    <div class="field-pair">
-							    <label for="pushalot_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSNATCH)]}/>
+								    <label for="pushalot_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushalot_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="pushalot_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushalot_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="pushalot_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushalot_authorizationtoken">
-								    <span class="component-title">${_('Pushalot authorization token')}</span>
-								    <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="${sickbeard.PUSHALOT_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('authorization token of your Pushalot account.')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushalot authorization token')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="${sickbeard.PUSHALOT_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="pushalot_authorizationtoken">${_('authorization token of your Pushalot account.')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testPushalot-result">${_('Click below to test.')}</div>
-						    <input type="button" class="btn" value="Test Pushalot" id="testPushalot" />
-						    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_pushalot //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testPushalot-result">${_('Click below to test.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input type="button" class="btn" value="Test Pushalot" id="testPushalot" />
+								    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1640,78 +1838,123 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_pushbullet">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHBULLET)]}/>
-                            <p>${_('Send Pushbullet notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHBULLET)]}/>
+							    <label for="use_pushbullet">${_('Send Pushbullet notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_pushbullet">
-						    <div class="field-pair">
-							    <label for="pushbullet_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a notification when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
+								    <label for="pushbullet_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushbullet_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a notification when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="pushbullet_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushbullet_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a notification when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="pushbullet_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushbullet_api">
-								    <span class="component-title">${_('Pushbullet API key')}</span>
-								    <input type="text" name="pushbullet_api" id="pushbullet_api" value="${sickbeard.PUSHBULLET_API}" class="form-control input-sm input350" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('API key of your Pushbullet account')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushbullet API key')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="pushbullet_api" id="pushbullet_api" value="${sickbeard.PUSHBULLET_API}" class="form-control input-sm input350" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="pushbullet_api">${_('API key of your Pushbullet account')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushbullet_device_list">
-								    <span class="component-title">${_('Pushbullet devices')}</span>
-								    <select name="pushbullet_device_list" id="pushbullet_device_list" class="form-control input-sm"></select>
-								    <input type="hidden" id="pushbullet_device" value="${sickbeard.PUSHBULLET_DEVICE}">
-								    <input type="button" class="btn btn-inline" value="${_('Update device list')}" id="getPushbulletDevices" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('select device you wish to push to.')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushbullet devices')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select name="pushbullet_device_list" id="pushbullet_device_list" class="form-control input-sm input250" title="Pushbullet device list"></select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="hidden" id="pushbullet_device" value="${sickbeard.PUSHBULLET_DEVICE}">
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="button" class="btn btn-inline" value="${_('Update device list')}" id="getPushbulletDevices" />
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="pushbullet_channel_list">
-								    <span class="component-title">${_('Pushbullet channels')}</span>
-								    <select name="pushbullet_channel_list" id="pushbullet_channel_list" class="form-control input-sm"></select>
-								    <input type="hidden" id="pushbullet_channel" value="${sickbeard.PUSHBULLET_CHANNEL}">
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Pushbullet channels')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <select name="pushbullet_channel_list" id="pushbullet_channel_list" class="form-control input-sm input250" title="Pushbullet channel list"></select>
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="hidden" id="pushbullet_channel" value="${sickbeard.PUSHBULLET_CHANNEL}">
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testPushbullet-result">${_('Click below to test.')}</div>
-						    <input type="button" class="btn" value="Test Pushbullet" id="testPushbullet" />
-						    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_pushbullet //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testPushbullet-result">${_('Click below to test.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input type="button" class="btn" value="Test Pushbullet" id="testPushbullet" />
+								    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1729,69 +1972,100 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_freemobile">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[bool(sickbeard.USE_FREEMOBILE)]}/>
-                            <p>${_('Send SMS notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[bool(sickbeard.USE_FREEMOBILE)]}/>
+							    <label for="use_freemobile">${_('Send SMS notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_freemobile">
-						    <div class="field-pair">
-							    <label for="freemobile_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('send a SMS when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
+								    <label for="freemobile_notify_onsnatch">${_('send a SMS when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="freemobile_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('send a SMS when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="freemobile_notify_ondownload">${_('send a SMS when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="freemobile_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('send a SMS when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="freemobile_notify_onsubtitledownload">${_('send a SMS when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="freemobile_id">
-								    <span class="component-title">${_('Free Mobile customer ID')}</span>
-								    <input type="text" name="freemobile_id" id="freemobile_id" value="${sickbeard.FREEMOBILE_ID}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('It\'s your Free Mobile customer ID (8 digits)')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Free Mobile customer ID')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="freemobile_id" id="freemobile_id" value="${sickbeard.FREEMOBILE_ID}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <span class="component-desc">${_('It\'s your Free Mobile customer ID (8 digits)')}</span>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="freemobile_password">
-								    <span class="component-title">${_('Free Mobile API Key')}</span>
-								    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="${sickbeard.FREEMOBILE_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('Find your API Key in your customer portal.')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Free Mobile API Key')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="${sickbeard.FREEMOBILE_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="freemobile_apikey">${_('Find your API Key in your customer portal.')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testFreeMobile-result">${_('Click below to test your settings.')}</div>
-						    <input  class="btn" type="button" value="Test SMS" id="testFreeMobile" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_freemobile //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testFreeMobile-result">${_('Click below to test your settings.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test SMS" id="testFreeMobile" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1809,69 +2083,100 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_telegram">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(sickbeard.USE_TELEGRAM)]}/>
-                            <p>${_('Send Telegram notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(sickbeard.USE_TELEGRAM)]}/>
+							    <label for="use_telegram">${_('Send Telegram notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_telegram">
-						    <div class="field-pair">
-							    <label for="telegram_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('Send a message when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
+								    <label for="telegram_notify_onsnatch">${_('Send a message when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="telegram_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('Send a message when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="telegram_notify_ondownload">${_('Send a message when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="telegram_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('Send a message when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="telegram_notify_onsubtitledownload">${_('Send a message when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="telegram_id">
-								    <span class="component-title">${_('User/group ID')}</span>
-								    <input type="text" name="telegram_id" id="telegram_id" value="${sickbeard.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('Contact @myidbot on Telegram to get an ID')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('User/group ID')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="telegram_id" id="telegram_id" value="${sickbeard.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="telegram_id">${_('Contact @myidbot on Telegram to get an ID')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="telegram_password">
-								    <span class="component-title">${_('Bot API token')}</span>
-								    <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('Contact @BotFather on Telegram to set up one')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Bot API token')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="telegram_apikey">${_('Contact @BotFather on Telegram to set up one')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testTelegram-result">${_('Click below to test your settings.')}</div>
-						    <input  class="btn" type="button" value="Test Telegram" id="testTelegram" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_telegram //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+								    <div class="testNotification" id="testTelegram-result">${_('Click below to test your settings.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test Telegram" id="testTelegram" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1889,59 +2194,83 @@
 				    </div>
 			    </div>
 			    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
 				    <fieldset class="component-group-list">
-					    <div class="field-pair">
-						    <label for="use_join">
-							    <span class="component-title">${_('Enable')}</span>
-                        <span class="component-desc">
-                            <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(sickbeard.USE_JOIN)]}/>
-                            <p>${_('Send Join notifications?')}</p>
-                        </span>
-						    </label>
+
+					    <div class="field-pair row">
+						    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+							    <label class="component-title">${_('Enable')}</label>
+						    </div>
+						    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+							    <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(sickbeard.USE_JOIN)]}/>
+							    <label for="use_join">${_('Send Join notifications?')}</label>
+						    </div>
 					    </div>
 
 					    <div id="content_use_join">
-						    <div class="field-pair">
-							    <label for="join_notify_onsnatch">
-								    <span class="component-title">${_('Notify on snatch')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSNATCH)]}/>
-                                <p>${_('Send a message when a download starts?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on snatch')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSNATCH)]}/>
+								    <label for="join_notify_onsnatch">${_('Send a message when a download starts?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="join_notify_ondownload">
-								    <span class="component-title">${_('Notify on download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONDOWNLOAD)]}/>
-                                <p>${_('Send a message when a download finishes?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONDOWNLOAD)]}/>
+								    <label for="join_notify_ondownload">${_('Send a message when a download finishes?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="join_notify_onsubtitledownload">
-								    <span class="component-title">${_('Notify on subtitle download')}</span>
-                            <span class="component-desc">
-                                <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                <p>${_('Send a message when subtitles are downloaded?')}</p>
-                            </span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Notify on subtitle download')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+								    <label for="join_notify_onsubtitledownload">${_('Send a message when subtitles are downloaded?')}</label>
+							    </div>
 						    </div>
-						    <div class="field-pair">
-							    <label for="join_id">
-								    <span class="component-title">${_('Device ID')}</span>
-								    <input type="text" name="join_id" id="join_id" value="${sickbeard.JOIN_ID}" class="form-control input-sm input250" autocapitalize="off" />
-							    </label>
-							    <label>
-								    <span class="component-title">&nbsp;</span>
-								    <span class="component-desc">${_('Per device specific id')}</span>
-							    </label>
+
+						    <div class="field-pair row">
+							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+								    <label class="component-title">${_('Device ID')}</label>
+							    </div>
+							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+								    <div class="row">
+									    <div class="col-md-12">
+										    <input type="text" name="join_id" id="join_id" value="${sickbeard.JOIN_ID}" class="form-control input-sm input250" autocapitalize="off" />
+									    </div>
+								    </div>
+								    <div class="row">
+									    <div class="col-md-12">
+										    <label for="join_id">${_('Per device specific id')}</label>
+									    </div>
+								    </div>
+							    </div>
 						    </div>
-						    <div class="testNotification" id="testJoin-result">${_('Click below to test your settings.')}</div>
-						    <input  class="btn" type="button" value="Test Join" id="testJoin" />
-						    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-					    </div><!-- /content_use_join //-->
+
+						    <div class="row">
+							    <div class="col-md-12">
+
+								    <div class="testNotification" id="testJoin-result">${_('Click below to test your settings.')}</div>
+							    </div>
+						    </div>
+						    <div class="row">
+							    <div class="col-md-12">
+								    <input  class="btn" type="button" value="Test Join" id="testJoin" />
+								    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+							    </div>
+						    </div>
+
+					    </div>
 
 				    </fieldset>
 			    </div>
@@ -1997,7 +2326,7 @@
 
 						    <div class="field-pair row">
 							    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-								    <span class="component-title">${_('Notify on download')}</span>
+								    <label class="component-title">${_('Notify on download')}</label>
 							    </div>
 							    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 								    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONDOWNLOAD)]}/>
