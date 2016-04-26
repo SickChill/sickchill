@@ -1644,8 +1644,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-                    indexer_api_params['language'] = self.lang
+                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                 indexer_api_params['actors'] = False
                 indexer_api_params['custom_ui'] = classes.AllShowsListUI
@@ -1670,8 +1669,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-                    indexer_api_params['language'] = self.lang
+                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                 indexer_api_params['actors'] = False
 
