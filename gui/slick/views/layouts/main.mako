@@ -86,10 +86,7 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
 
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/light.css?${sbPID}" />
-        % if sickbeard.THEME_NAME != 'light':
-	        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
-        % endif
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
 
         % if srLogin:
             <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
