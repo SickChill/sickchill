@@ -1552,7 +1552,7 @@ def disk_usage(path):
         raise Exception("Unable to determine free space on your OS")
 
 
-def verify_freespace(src, dest, oldfile=None):
+def verify_freespace(src, dest, oldfile=None, method="copy"):
     """
     Checks if the target system has enough free space to copy or move a file.
 
@@ -1566,6 +1566,11 @@ def verify_freespace(src, dest, oldfile=None):
         oldfile = [oldfile]
 
     logger.log("Trying to determine free space on destination drive", logger.DEBUG)
+
+    # shortcut: if we are moving the file and the destination == src dir,
+    # then by definition there is enough space
+    if method == "move" and os.stat(src).st_dev == os.stat(dest).st_dev:
+        return True
 
     if not ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
