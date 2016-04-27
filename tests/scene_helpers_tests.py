@@ -5,16 +5,13 @@ Test scene helpers
 
 # pylint: disable=line-too-long
 
-import os.path
 import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import tests.test_lib as test
 
 from sickbeard import show_name_helpers, scene_exceptions, common, name_cache, db
 from sickbeard.tv import TVShow as Show
-import tests.test_lib as test
 
 
 class SceneTests(test.SickbeardTestDBCase):
@@ -45,7 +42,7 @@ class SceneTests(test.SickbeardTestDBCase):
         :param expected:
         :return:
         """
-        result = show_name_helpers.filterBadReleases(name)
+        result = show_name_helpers.filter_bad_releases(name)
         self.assertEqual(result, expected)
 
     def test_all_possible_show_names(self):

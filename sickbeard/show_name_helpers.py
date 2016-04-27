@@ -52,6 +52,7 @@ def containsAtLeastOneWord(name, words):
     """
     if isinstance(words, basestring):
         words = words.split(',')
+
     items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
     for regexp, word in items:
         if regexp.search(name):
@@ -59,7 +60,7 @@ def containsAtLeastOneWord(name, words):
     return False
 
 
-def filterBadReleases(name, parse=True, show=None):
+def filter_bad_releases(name, parse=True, show=None):
     """
     Filters out non-english and just all-around stupid releases by comparing them
     to the resultFilters contents.
@@ -83,14 +84,16 @@ def filterBadReleases(name, parse=True, show=None):
 
     # if any of the bad strings are in the name then say no
     ignore_words = list(resultFilters)
-    if sickbeard.IGNORE_WORDS:
+
+    if show and show.rls_ignore_words:
+        ignore_words.extend(show.rls_ignore_words.split(','))
+    elif sickbeard.IGNORE_WORDS:
         ignore_words.extend(sickbeard.IGNORE_WORDS.split(','))
 
-    if show:
-        if show.rls_ignore_words:
-            ignore_words.extend(show.rls_ignore_words.split(','))
-        if show.rls_require_words:
-            ignore_words = set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip())
+    if show and show.rls_require_words:
+        ignore_words = list(set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip()))
+    elif sickbeard.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+        ignore_words = list(set(ignore_words).difference(x.strip() for x in sickbeard.REQUIRE_WORDS.split(',') if x.strip()))
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
@@ -99,12 +102,16 @@ def filterBadReleases(name, parse=True, show=None):
 
     # if any of the good strings aren't in the name then say no
 
-    require_words = sickbeard.REQUIRE_WORDS.split(',') if sickbeard.REQUIRE_WORDS else []
-    if show:
-        if show.rls_ignore_words:
-            require_words = list(set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip()))
-        if show.rls_require_words:
-            require_words.extend(show.rls_require_words.split(','))
+    require_words = []
+    if show and show.rls_require_words:
+        require_words.extend(show.rls_require_words.split(','))
+    elif sickbeard.REQUIRE_WORDS:
+        require_words.extend(sickbeard.REQUIRE_WORDS.split(','))
+
+    if show and show.rls_ignore_words:
+        require_words = list(set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip()))
+    elif sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
+        require_words = list(set(require_words).difference(x.strip() for x in sickbeard.IGNORE_WORDS.split(',') if x.strip()))
 
     if require_words and not containsAtLeastOneWord(name, require_words):
         logger.log(u"Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
@@ -180,13 +187,13 @@ def determineReleaseName(dir_name=None, nzb_name=None):
         if len(results) == 1:
             found_file = ek(os.path.basename, results[0])
             found_file = found_file.rpartition('.')[0]
-            if filterBadReleases(found_file):
+            if filter_bad_releases(found_file):
                 logger.log(u"Release name (" + found_file + ") found from file (" + results[0] + ")")
                 return found_file.rpartition('.')[0]
 
     # If that fails, we try the folder
     folder = ek(os.path.basename, dir_name)
-    if filterBadReleases(folder):
+    if filter_bad_releases(folder):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)
         # Should we handle that?
