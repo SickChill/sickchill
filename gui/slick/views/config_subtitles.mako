@@ -222,7 +222,11 @@ $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory'
                                 'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}
                             }
                         %>
-                        % for curService in providerLoginDict:
+                        % for curService in sickbeard.subtitles.sorted_service_list():
+                            <%
+                                if curService['name'] not in providerLoginDict.keys():
+                                    continue
+                            %>
                             ##<div class="field-pair${(' hidden', '')[curService['enabled']]}"> ## Need js to show/hide on save
                             <div class="field-pair">
                                 <label class="nocheck" for="${curService['name']}_user">

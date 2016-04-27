@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:58-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:31-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -642,7 +642,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1765
 msgid "Invalid status"
-msgstr ""
+msgstr "Érvénytelen állapot"
 
 #: sickbeard/webserve.py:1857
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
@@ -685,7 +685,7 @@ msgstr ""
 #: sickbeard/webserve.py:2228 gui/slick/views/config_general.mako:70
 #: gui/slick/views/layouts/main.mako:209
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2241
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -939,7 +939,7 @@ msgstr ""
 #: sickbeard/webserve.py:3743 sickbeard/webserve.py:4051
 #: gui/slick/views/layouts/main.mako:174
 msgid "Search Settings"
-msgstr ""
+msgstr "Keresési beállítások"
 
 #: sickbeard/webserve.py:3744 sickbeard/webserve.py:4390
 #: gui/slick/views/layouts/main.mako:175
@@ -1533,11 +1533,11 @@ msgstr ""
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
-msgstr ""
+msgstr "Változtatások mentése"
 
 #: gui/slick/views/config_anime.mako:76
 msgid "Look and Feel"
@@ -1723,7 +1723,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:201
 msgid "Check the server every*"
-msgstr ""
+msgstr "Ellenőrizze a kiszolgálót minden *"
 
 #: gui/slick/views/config_general.mako:204
 msgid "hours for software updates (default:1)"
@@ -1833,6 +1833,25 @@ msgstr ""
 msgid "Time style"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
 msgstr ""
@@ -1853,25 +1872,6 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:377
@@ -2365,7 +2365,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr "Jelszó"
 
@@ -4861,7 +4861,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr ""
 
@@ -4899,11 +4899,11 @@ msgid "minutes"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
@@ -5264,7 +5264,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:43
 msgid "Poster Size"
-msgstr ""
+msgstr "Poszter méret"
 
 #: gui/slick/views/home.mako:48
 msgid "Filter Show Name"
@@ -5296,11 +5296,11 @@ msgstr ""
 
 #: gui/slick/views/home.mako:71
 msgid "Small Poster"
-msgstr ""
+msgstr "Kis Poszter"
 
 #: gui/slick/views/home.mako:73
 msgid "Simple"
-msgstr ""
+msgstr "Egyszerű"
 
 #: gui/slick/views/home.mako:88
 msgid "Anime List"
@@ -5492,7 +5492,7 @@ msgstr ""
 
 #: gui/slick/views/inc_rootDirs.mako:27
 msgid "Set as Default"
-msgstr ""
+msgstr "Beállítás alapértelmezettként"
 
 #: gui/slick/views/login.mako:9
 msgid "Remember me"
@@ -5600,6 +5600,7 @@ msgid "500"
 msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr "Összes"
@@ -5730,7 +5731,7 @@ msgid "Search for subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
+msgid "All of your episodes have {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
@@ -5739,11 +5740,11 @@ msgid "Manage episodes without"
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
+msgid "Episodes without {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
@@ -5784,7 +5785,7 @@ msgstr "Rejtett"
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
-msgstr ""
+msgstr "Látható"
 
 #: gui/slick/views/schedule.mako:57
 msgid "Key"

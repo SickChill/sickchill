@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-04-17 23:48-0700\n"
-"PO-Revision-Date: 2016-04-18 02:57-0400\n"
+"POT-Creation-Date: 2016-04-20 06:29-0700\n"
+"PO-Revision-Date: 2016-04-20 09:30-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Afrikaans\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "SickRage het opgedateer"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
-msgstr "SickRage het opgedateer na weergawe#: "
+msgstr "SickRage het opgedateer na Commit#: "
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
@@ -95,7 +95,7 @@ msgstr "Subtiteleerd"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:34
 msgid "Failed"
-msgstr "Gebreek"
+msgstr "Onsuksesvol"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
@@ -103,30 +103,30 @@ msgstr "Gegryp (Beste)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
-msgstr "Nuwe update gevind vir SickRage, begin outomaties Updater"
+msgstr "Nuwe weergawe gevind vir SickRage, outomatiese opdatering begin"
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr "Werk was suksesvol"
+msgstr "Opdatering was suksesvol"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
-msgstr "Werk misluk!"
+msgstr "Opdatering het gefaal!"
 
 #: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr "Ondersteuning"
+msgstr "Rugsteun"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr "Config Friends aan die gang..."
+msgstr "Besig met konfigurasie rugsteun proses..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr "Config Friends suksesvolle, opdatering..."
+msgstr "Konfigurasie rugsteun proses was suksesvol, besig met opdatering..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
@@ -134,7 +134,7 @@ msgstr "Config Friends misluk, gaan staak update"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
-msgstr "Geen werk nodig"
+msgstr "Geen opdatering benodig"
 
 #: sickbeard/webserve.py:178
 msgid "Mako Error"
@@ -271,15 +271,15 @@ msgstr "SMS suksesvol gestuur"
 
 #: sickbeard/webserve.py:830
 msgid "Problem sending SMS: {message}"
-msgstr "Probleem stuur van SMS: {boodskap}"
+msgstr "SMS versending probleem: {message}"
 
 #: sickbeard/webserve.py:837
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr "Telegram kennisgewing opgevolg. Gaan jou Telegram kliënte om seker te maak dit werk"
+msgstr "Telegram kennisgewing was suksesvol. Gaan jou Telegram kliënte na om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:839
 msgid "Error sending Telegram notification: {message}"
-msgstr "Fout stuur Telegram kennisgewing: {boodskap}"
+msgstr "Fout met Telegram kennisgewing versending: {message}"
 
 #: sickbeard/webserve.py:849
 msgid " with password"
@@ -287,35 +287,35 @@ msgstr " met 'n wagwoord"
 
 #: sickbeard/webserve.py:851
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr "Geregistreer en getoets grom suksesvol {growl_host}"
+msgstr "growl suksesvol getoets en geregistreer {growl_host}"
 
 #: sickbeard/webserve.py:853
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr "Registrasie en toetsing van grom misluk {growl_host}"
+msgstr "growl toets en registrasie het gefaal {growl_host}"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice sent successfully"
-msgstr "Toets roof kennisgewing gestuur suksesvol"
+msgstr "Toets kennisgewing na prowl was suksesvol"
 
 #: sickbeard/webserve.py:862
 msgid "Test prowl notice failed"
-msgstr "Toets roof kennisgewing misluk"
+msgstr "Toets kennisgewing na prowl het gefaal"
 
 #: sickbeard/webserve.py:869
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr "Boxcar 2 kennisgewing slaag. Gaan jou Boxcar 2 kliënte om seker te maak dit werk"
+msgstr "Boxcar 2 kennisgewing was suksesvol. Gaan jou Boxcar 2 kliënte na om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:871
 msgid "Error sending Boxcar2 notification"
-msgstr "Fout stuur Boxcar2 kennisgewing"
+msgstr "Fout met Boxcar2 kennisgewing versending"
 
 #: sickbeard/webserve.py:878
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr "Plak kennisgewing opgevolg. Gaan jou Push Over kliënte om seker te maak dit werk"
+msgstr "Pushover kennisgewing was suksesvol. Gaan jou Pushover kliënte na om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:880
 msgid "Error sending Pushover notification"
-msgstr "Fout stuur Push Over kennisgewing"
+msgstr "Fout met Pushover kennisgewing versending"
 
 #: sickbeard/webserve.py:892
 msgid "Key verification successful"
@@ -327,15 +327,15 @@ msgstr "Nie in staat om die sleutel te verifieer nie"
 
 #: sickbeard/webserve.py:901
 msgid "Tweet successful, check your twitter to make sure it worked"
-msgstr "Twitter suksesvolle, maak seker jou Twitter om seker te maak dit werk"
+msgstr "Tweet was suksesvol, gaan jou Twitter na om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:903
 msgid "Error sending tweet"
-msgstr "Fout stuur tweet"
+msgstr "Fout met Tweet versending"
 
 #: sickbeard/webserve.py:913
 msgid "Test KODI notice sent successfully to {kodi_host}"
-msgstr "Toets Kodi kennisgewing suksesvol gestuur na {kodi_host}"
+msgstr "Kodi toets-kennisgewing suksesvol gestuur na {kodi_host}"
 
 #: sickbeard/webserve.py:915
 msgid "Test KODI notice failed to {kodi_host}"
@@ -343,55 +343,55 @@ msgstr "Toets Kodi kennisgewing versuim het om {kodi_host}"
 
 #: sickbeard/webserve.py:930
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "'n Suksesvolle toets boodskap was gestuur na Plex Home Theater ... {plex_clients}"
 
 #: sickbeard/webserve.py:932
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "Onsuksesvolle toets vir Plex Home Theater ... {plex_clients}"
 
 #: sickbeard/webserve.py:935
 msgid "Tested Plex Home Theater(s)"
-msgstr ""
+msgstr "Plex Home Theater(s) getoets"
 
 #: sickbeard/webserve.py:949
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
-msgstr ""
+msgstr "Suksesvolle toets van Plex Media Server(s) ... {plex_servers}"
 
 #: sickbeard/webserve.py:951
 msgid "Test failed, No Plex Media Server host specified"
-msgstr ""
+msgstr "Toets was onsuksesvol, geen Plex Media Server Host gespesifiseer"
 
 #: sickbeard/webserve.py:953
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
-msgstr ""
+msgstr "Onsuksesvolle toets vir Plex Media Server(s) ... {plex_servers}"
 
 #: sickbeard/webserve.py:956
 msgid "Tested Plex Media Server host(s)"
-msgstr ""
+msgstr "Plex Media Server gasheer(e) getoets"
 
 #: sickbeard/webserve.py:964
 msgid "Tried sending desktop notification via libnotify"
-msgstr ""
+msgstr "Het probeer om desktop kennisgewing te stuur via libnotify"
 
 #: sickbeard/webserve.py:974
 msgid "Test notice sent successfully to {emby_host}"
-msgstr ""
+msgstr "Toets kennisgewing was suksesvol na {emby_host} gestuur"
 
 #: sickbeard/webserve.py:976
 msgid "Test notice failed to {emby_host}"
-msgstr ""
+msgstr "Toets kennisgewing het gefaal na {emby_host}"
 
 #: sickbeard/webserve.py:984
 msgid "Successfully started the scan update"
-msgstr ""
+msgstr "Scan opdatering suksesvol begin"
 
 #: sickbeard/webserve.py:986
 msgid "Test failed to start the scan update"
-msgstr ""
+msgstr "Toets het gefaal om die scan opdatering te begin"
 
 #: sickbeard/webserve.py:1005
 msgid "Test notice sent successfully to {nmj2_host}"
-msgstr ""
+msgstr "Toets kennisgewing was suksesvol na {nmj2_host} gestuur"
 
 #: sickbeard/webserve.py:1007
 msgid "Test notice failed to {nmj2_host}"
@@ -449,7 +449,7 @@ msgstr "SickRage aan die herlaai"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
-msgstr "Update is misluk"
+msgstr "Updatering het gefaal"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
@@ -582,7 +582,7 @@ msgstr "hervat"
 
 #: sickbeard/webserve.py:1623
 msgid "paused"
-msgstr "onderbreek"
+msgstr "veronderbreek"
 
 #: sickbeard/webserve.py:1635
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
@@ -1533,8 +1533,8 @@ msgstr ""
 #: gui/slick/views/config_search.mako:679 gui/slick/views/config_search.mako:687
 #: gui/slick/views/config_subtitles.mako:179
 #: gui/slick/views/config_subtitles.mako:207
-#: gui/slick/views/config_subtitles.mako:242
-#: gui/slick/views/config_subtitles.mako:245 gui/slick/views/editShow.mako:236
+#: gui/slick/views/config_subtitles.mako:246
+#: gui/slick/views/config_subtitles.mako:249 gui/slick/views/editShow.mako:236
 #: gui/slick/views/manage_massEdit.mako:250
 msgid "Save Changes"
 msgstr ""
@@ -1735,7 +1735,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:214
 msgid "send a message to all enabled notifiers when SickRage has been updated"
-msgstr "stuur 'n boodskap aan almal in staat gestel subskripsie wanneer SickRage is opgedateer"
+msgstr "stuur 'n boodskap aan alle aankondigers wanneer SickRage opgedateer was"
 
 #: gui/slick/views/config_general.mako:230
 msgid "User Interface"
@@ -1833,6 +1833,25 @@ msgstr ""
 msgid "Time style"
 msgstr ""
 
+#: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
+#: gui/slick/views/config_notifications.mako:548
+#: gui/slick/views/config_notifications.mako:578
+#: gui/slick/views/config_notifications.mako:632
+#: gui/slick/views/config_notifications.mako:1489
+#: gui/slick/views/config_postProcessing.mako:40
+#: gui/slick/views/config_postProcessing.mako:54
+#: gui/slick/views/config_postProcessing.mako:112
+#: gui/slick/views/config_postProcessing.mako:168
+#: gui/slick/views/config_postProcessing.mako:195
+#: gui/slick/views/config_postProcessing.mako:213
+#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
+#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
+#: gui/slick/views/config_subtitles.mako:76
+#: gui/slick/views/config_subtitles.mako:115
+msgid "Note"
+msgstr ""
+
 #: gui/slick/views/config_general.mako:359
 msgid "seconds are only shown on the History page"
 msgstr ""
@@ -1853,25 +1872,6 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
-msgstr ""
-
-#: gui/slick/views/config_general.mako:377 gui/slick/views/config_general.mako:658
-#: gui/slick/views/config_general.mako:682
-#: gui/slick/views/config_notifications.mako:548
-#: gui/slick/views/config_notifications.mako:578
-#: gui/slick/views/config_notifications.mako:632
-#: gui/slick/views/config_notifications.mako:1489
-#: gui/slick/views/config_postProcessing.mako:40
-#: gui/slick/views/config_postProcessing.mako:54
-#: gui/slick/views/config_postProcessing.mako:112
-#: gui/slick/views/config_postProcessing.mako:168
-#: gui/slick/views/config_postProcessing.mako:195
-#: gui/slick/views/config_postProcessing.mako:213
-#: gui/slick/views/config_search.mako:183 gui/slick/views/config_search.mako:263
-#: gui/slick/views/config_search.mako:381 gui/slick/views/config_search.mako:643
-#: gui/slick/views/config_subtitles.mako:76
-#: gui/slick/views/config_subtitles.mako:115
-msgid "Note"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:377
@@ -2365,7 +2365,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:313
 #: gui/slick/views/config_notifications.mako:734
 #: gui/slick/views/config_providers.mako:375
-#: gui/slick/views/config_subtitles.mako:235 gui/slick/views/login.mako:7
+#: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
 msgstr ""
 
@@ -2661,7 +2661,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:664
 msgid "(Messages &amp; Settings > Account &amp; System Information > System Information > DVR name)"
-msgstr "Stuur 'n Boodskap aan Almal in staat Gestel subskripsie Wanneer SickRage is opgedateer"
+msgstr "(Boodskappe &amp; Settings > Rekening &amp; Stelsel Informasie > Stelsel Informasie > DVR naam)"
 
 #: gui/slick/views/config_notifications.mako:679
 msgid "Growl"
@@ -2713,7 +2713,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:802
 msgid "Prowl Message Title"
-msgstr "Roof Boodskap Titel"
+msgstr "Prowl Boodskap Titel"
 
 #: gui/slick/views/config_notifications.mako:808
 msgid "Global Prowl API key(s)"
@@ -2783,7 +2783,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:855
 msgid "priority of Prowl messages from SickRage."
-msgstr "prioriteit van inwag boodskappe van SickRage."
+msgstr "prioriteit van Prowl boodskappe vanaf SickRage."
 
 #: gui/slick/views/config_notifications.mako:869
 msgid "Libnotify"
@@ -2976,7 +2976,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1169
 msgid "priority of NMA messages from SickRage."
-msgstr "prioriteit van NMA boodskappe van SickRage."
+msgstr "prioriteit van NMA boodskappe vanaf SickRage."
 
 #: gui/slick/views/config_notifications.mako:1182
 msgid "Pushalot"
@@ -3094,15 +3094,15 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1419
 msgid "Send a message when a download starts?"
-msgstr "Stuur 'n boodskap wanneer 'n aflaai begin?"
+msgstr "Stuur 'n boodskap wanneer 'n aflaai taak begin?"
 
 #: gui/slick/views/config_notifications.mako:1428
 msgid "Send a message when a download finishes?"
-msgstr "Stuur 'n boodskap wanneer 'n aflaai afwerkings?"
+msgstr "Stuur 'n boodskap wanneer 'n aflaai taak klaar is?"
 
 #: gui/slick/views/config_notifications.mako:1437
 msgid "Send a message when subtitles are downloaded?"
-msgstr "Stuur 'n boodskap wanneer onderskrifte afgelaai?"
+msgstr "Stuur 'n boodskap wanneer onderskrifte afgelaai word?"
 
 #: gui/slick/views/config_notifications.mako:1443
 msgid "User/group ID"
@@ -3126,7 +3126,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1476
 msgid "A social networking and microblogging service, enabling its users to send and read other users' messages called tweets."
-msgstr "'N sosiale netwerk en microblogging diens, sodat die gebruikers op boodskappe van ander gebruikers genoem tweets stuur en lees."
+msgstr "'n Sosiale netwerk en microblogging diens, wat hul gebruikers in staat stel om ander gebruikers se boodskappe, genoem tweets, te lees en stuur."
 
 #: gui/slick/views/config_notifications.mako:1484
 msgid "Should SickRage post tweets on Twitter?"
@@ -3142,7 +3142,7 @@ msgstr "Stuur direkte boodskap"
 
 #: gui/slick/views/config_notifications.mako:1526
 msgid "send a notification via Direct Message, not via status update"
-msgstr "stuur 'n kennisgewing via Direkte boodskap, nie via status update"
+msgstr "stuur 'n kennisgewing via Direkte boodskap, nie via status opdatering nie"
 
 #: gui/slick/views/config_notifications.mako:1532
 msgid "Send DM to"
@@ -3150,7 +3150,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1536
 msgid "Twitter account to send Direct Messages to (must follow you)"
-msgstr "Twitter rekening te direkte boodskappe te stuur na (moet jy volg)"
+msgstr "Twitter rekening aan wie direkte boodskappe gestuur moet word (moet jou volg)"
 
 #: gui/slick/views/config_notifications.mako:1541
 msgid "Step One"
@@ -4861,7 +4861,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: gui/slick/views/config_subtitles.mako:229
+#: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
 msgstr ""
 
@@ -4899,11 +4899,11 @@ msgid "minutes"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:149
-msgid "View other popular ${genre} shows on trakt.tv."
+msgid "View other popular {genre} shows on trakt.tv."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:153
-msgid "View other popular ${imdbgenre} shows on IMDB."
+msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
@@ -5600,6 +5600,7 @@ msgid "500"
 msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:18
+#: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
 msgstr ""
@@ -5730,7 +5731,7 @@ msgid "Search for subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
-msgid "All of your episodes have ${subsLanguage} subtitles."
+msgid "All of your episodes have {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
@@ -5739,11 +5740,11 @@ msgid "Manage episodes without"
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
-msgid "Episodes without ${subsLanguage} subtitles."
+msgid "Episodes without {subsLanguage} subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
-msgid "Episodes without ${subtitles.name_from_code(sub_code)} (undefined) subtitles."
+msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
@@ -5832,175 +5833,175 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:333 gui/slick/views/schedule.mako:336
 msgid "Plot"
-msgstr ""
+msgstr "Opsomming"
 
 #: gui/slick/views/schedule.mako:404
 msgid "No shows for this day"
-msgstr ""
+msgstr "Geen programme vir hierdie dag"
 
 #: gui/slick/views/status.mako:19
 msgid "Show Update"
-msgstr ""
+msgstr "Program Opdatering"
 
 #: gui/slick/views/status.mako:20
 msgid "Version Check"
-msgstr ""
+msgstr "Weergawe Soeker"
 
 #: gui/slick/views/status.mako:21 gui/slick/views/status.mako:109
 msgid "Show Queue"
-msgstr ""
+msgstr "Program Pyplyn"
 
 #: gui/slick/views/status.mako:23
 msgid "Proper Finder"
-msgstr ""
+msgstr "Proper Soeker"
 
 #: gui/slick/views/status.mako:24
 msgid "Post Process"
-msgstr ""
+msgstr "Post Prosesering"
 
 #: gui/slick/views/status.mako:25
 msgid "Subtitles Finder"
-msgstr ""
+msgstr "Subtitel Soeker"
 
 #: gui/slick/views/status.mako:26
 msgid "Trakt Checker"
-msgstr ""
+msgstr "Trakt Soeker"
 
 #: gui/slick/views/status.mako:30 gui/slick/views/status.mako:34
 msgid "Scheduler"
-msgstr ""
+msgstr "Skeduleerder"
 
 #: gui/slick/views/status.mako:35
 msgid "Alive"
-msgstr ""
+msgstr "Lewendig"
 
 #: gui/slick/views/status.mako:38
 msgid "Start Time"
-msgstr ""
+msgstr "Begin Tyd"
 
 #: gui/slick/views/status.mako:39
 msgid "Cycle Time"
-msgstr ""
+msgstr "Siklus Tyd"
 
 #: gui/slick/views/status.mako:40
 msgid "Next Run"
-msgstr ""
+msgstr "Volgende Iterasie"
 
 #: gui/slick/views/status.mako:41
 msgid "Last Run"
-msgstr ""
+msgstr "Laaste Iterasie"
 
 #: gui/slick/views/status.mako:42
 msgid "Silent"
-msgstr ""
+msgstr "Stil"
 
 #: gui/slick/views/status.mako:72
 msgid "True"
-msgstr ""
+msgstr "Waar"
 
 #: gui/slick/views/status.mako:78 gui/slick/views/status.mako:86
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: gui/slick/views/status.mako:113
 msgid "Show id"
-msgstr ""
+msgstr "Program id"
 
 #: gui/slick/views/status.mako:114
 msgid "Show name"
-msgstr ""
+msgstr "Program naam"
 
 #: gui/slick/views/status.mako:116
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteit"
 
 #: gui/slick/views/status.mako:117
 msgid "Added"
-msgstr ""
+msgstr "Bygevoeg"
 
 #: gui/slick/views/status.mako:118
 msgid "Queue type"
-msgstr ""
+msgstr "Pyplyn tipe"
 
 #: gui/slick/views/status.mako:142 gui/slick/views/status.mako:174
 msgid "LOW"
-msgstr ""
+msgstr "LAAG"
 
 #: gui/slick/views/status.mako:144 gui/slick/views/status.mako:176
 msgid "NORMAL"
-msgstr ""
+msgstr "NORMAAL"
 
 #: gui/slick/views/status.mako:146 gui/slick/views/status.mako:178
 msgid "HIGH"
-msgstr ""
+msgstr "HOOG"
 
 #: gui/slick/views/status.mako:188
 msgid "Disk Space"
-msgstr ""
+msgstr "Skyf Spasie"
 
 #: gui/slick/views/status.mako:194
 msgid "Free space"
-msgstr ""
+msgstr "Vrye Spasie"
 
 #: gui/slick/views/status.mako:200
 msgid "TV Download Directory"
-msgstr ""
+msgstr "TV Aflaai Bestemming"
 
 #: gui/slick/views/status.mako:210
 msgid "Media Root Directories"
-msgstr ""
+msgstr "Media Bestemmings"
 
 #: gui/slick/views/testRename.mako:17
 msgid "Preview of the proposed name changes"
-msgstr ""
+msgstr "Voorskou van die voorgestelde naam veranderings"
 
 #: gui/slick/views/testRename.mako:37
 msgid "All Seasons"
-msgstr ""
+msgstr "Alle Seisoene"
 
 #: gui/slick/views/testRename.mako:41
 msgid "SelectAll"
-msgstr ""
+msgstr "Selekteer Alles"
 
 #: gui/slick/views/testRename.mako:42
 msgid "Select All"
-msgstr ""
+msgstr "Selekteer alles"
 
 #: gui/slick/views/testRename.mako:49 gui/slick/views/testRename.mako:98
 msgid "Cancel Rename"
-msgstr ""
+msgstr "Kanselleer Herbenoeming"
 
 #: gui/slick/views/testRename.mako:70
 msgid "Old Location"
-msgstr ""
+msgstr "Ou Bestemming"
 
 #: gui/slick/views/testRename.mako:71
 msgid "New Location"
-msgstr ""
+msgstr "Nuwe Bestemming"
 
 #: gui/slick/views/testRename.mako:98
 msgid "Rename Selected"
-msgstr ""
+msgstr "Herbenoem die seleksie"
 
 #: gui/slick/views/trendingShows.mako:16
 msgid "Trakt API did not return any results, please check your config."
-msgstr ""
+msgstr "Trakt API het nie enige resultate terug gebring nie, verifieer jou konfigurasie."
 
 #: gui/slick/views/trendingShows.mako:42
 msgid "votes"
-msgstr ""
+msgstr "stemme"
 
 #: gui/slick/views/trendingShows.mako:46
 msgid "Remove Show"
-msgstr ""
+msgstr "Verwyder Program"
 
 #: gui/slick/views/viewlogs.mako:22
 msgid "Minimum logging level to display"
-msgstr ""
+msgstr "Minimum log vlak om te vertoon"
 
 #: gui/slick/views/viewlogs.mako:41
 msgid "Search log by"
-msgstr ""
+msgstr "Soek deur log per"
 
 #: gui/slick/views/layouts/main.mako:116
 msgid "Manual Post-Processing"
@@ -6008,97 +6009,97 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:143
 msgid "Episode Status Management"
-msgstr ""
+msgstr "Episode Status Beheer"
 
 #: gui/slick/views/layouts/main.mako:145
 msgid "Update PLEX"
-msgstr ""
+msgstr "Dateer PLEX op"
 
 #: gui/slick/views/layouts/main.mako:148
 msgid "Update KODI"
-msgstr ""
+msgstr "Dateer KODI op"
 
 #: gui/slick/views/layouts/main.mako:151
 msgid "Update Emby"
-msgstr ""
+msgstr "Dateer Emby op"
 
 #: gui/slick/views/layouts/main.mako:160
 msgid "Missed Subtitle Management"
-msgstr ""
+msgstr "Vermisde Subtitel Beheer"
 
 #: gui/slick/views/layouts/main.mako:171
 msgid "Help &amp; Info"
-msgstr ""
+msgstr "Help &amp; Info"
 
 #: gui/slick/views/layouts/main.mako:173
 msgid "Backup &amp; Restore"
-msgstr ""
+msgstr "Rugsteun &amp; Restoreer"
 
 #: gui/slick/views/layouts/main.mako:204
 msgid "Tools"
-msgstr ""
+msgstr "Gereedskap"
 
 #: gui/slick/views/layouts/main.mako:211
 msgid "Support SickRage"
-msgstr ""
+msgstr "Ondersteun SickRage"
 
 #: gui/slick/views/layouts/main.mako:214
 msgid "View Errors"
-msgstr ""
+msgstr "Besigtig Foute"
 
 #: gui/slick/views/layouts/main.mako:217
 msgid "View Warnings"
-msgstr ""
+msgstr "Besigtig Waarskuwings"
 
 #: gui/slick/views/layouts/main.mako:219
 msgid "View Log"
-msgstr ""
+msgstr "Besigtig Log"
 
 #: gui/slick/views/layouts/main.mako:221
 msgid "Check For Updates"
-msgstr ""
+msgstr "Soek vir opdaterings"
 
 #: gui/slick/views/layouts/main.mako:222
 msgid "Restart"
-msgstr ""
+msgstr "Herlaai"
 
 #: gui/slick/views/layouts/main.mako:223
 msgid "Shutdown"
-msgstr ""
+msgstr "Sit af"
 
 #: gui/slick/views/layouts/main.mako:225
 msgid "Logout"
-msgstr ""
+msgstr "Teken af"
 
 #: gui/slick/views/layouts/main.mako:228
 msgid "Server Status"
-msgstr ""
+msgstr "Bediener Status"
 
 #: gui/slick/views/layouts/main.mako:265
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
-msgstr ""
+msgstr "Jy gebruik die {branch} tak. Gebruik asseblief 'master' tensy anders gevra word"
 
 #: gui/slick/views/layouts/main.mako:294
 msgid "View overview of snatched episodes"
-msgstr ""
+msgstr "Besigtig opsomming van gegrypte episodes"
 
 #: gui/slick/views/layouts/main.mako:297
 msgid "Episodes Downloaded"
-msgstr ""
+msgstr "Episodes Afgelaai"
 
 #: gui/slick/views/layouts/main.mako:303
 msgid "Memory used"
-msgstr ""
+msgstr "Geheue gebruik"
 
 #: gui/slick/views/layouts/main.mako:305
 msgid "Load time"
-msgstr ""
+msgstr "Laai tyd"
 
 #: gui/slick/views/layouts/main.mako:306
 msgid "Branch"
-msgstr ""
+msgstr "Tak"
 
 #: gui/slick/views/layouts/main.mako:307
 msgid "Now"
-msgstr ""
+msgstr "Nou"
 

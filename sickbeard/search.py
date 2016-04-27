@@ -228,7 +228,7 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
             continue
 
-        if not show_name_helpers.filterBadReleases(cur_result.name, parse=False, show=show):
+        if not show_name_helpers.filter_bad_releases(cur_result.name, parse=False, show=show):
             continue
 
         if hasattr(cur_result, 'size'):
