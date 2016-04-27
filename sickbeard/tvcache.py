@@ -319,7 +319,7 @@ class TVCache(object):
                 continue
 
             # ignored/required words, and non-tv junk
-            if not show_name_helpers.filterBadReleases(curResult["name"], show=showObj):
+            if not show_name_helpers.filter_bad_releases(curResult["name"], show=showObj):
                 continue
 
             # skip if provider is anime only and show is not anime
