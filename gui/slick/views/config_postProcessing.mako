@@ -101,11 +101,19 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-		                        <label class="component-title">${_('Auto Post-Processing Frequency')}</span>
+		                        <label class="component-title">${_('Auto Post-Processing Frequency')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="number" min="10" step="1" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocesser_frequency"/>
-                                <label for="autopostprocesser_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="number" min="10" step="1" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocesser_frequency"/>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="autopostprocesser_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
 				        </div>
 
@@ -245,12 +253,20 @@
 		                        <label class="component-title">${_('Timezone for File Date')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-		                        <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm input350">
-                                    % for curTimezone in (_('local'), _('network')):
-				                        <option value="${curTimezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
-                                    % endfor
-		                        </select>
-		                        <label for="file_timestamp_timezone">${_('What timezone should be used to change File Date?')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm input350">
+                                            % for curTimezone in (_('local'), _('network')):
+						                        <option value="${curTimezone}" ${('', 'selected="selected"')[sickbeard.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
+                                            % endfor
+				                        </select>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="file_timestamp_timezone">${_('What timezone should be used to change File Date?')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
 				        </div>
 

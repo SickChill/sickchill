@@ -2914,6 +2914,7 @@ div.formpaginate .prev, div.formpaginate .next {
 	margin-left: 182px;
 }
 
+div.field-pair select,
 div.field-pair input {
 	margin: 6px 6px 6px 0;
 	float: left;

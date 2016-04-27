@@ -36,8 +36,16 @@
 	                            <label class="component-title">${_('Default Indexer Language')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350 bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
-                                <label for="indexerDefaultLang">${_('for adding shows and metadata providers')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350 bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label for="indexerDefaultLang">${_('for adding shows and metadata providers')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -56,14 +64,22 @@
 		                        <label class="component-title">${_('Initial page')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="default_page" name="default_page" class="form-control input-sm input350">
-			                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
-			                        <option value="schedule" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
-			                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>${_('History')}</option>
-			                        <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>${_('News')}</option>
-			                        <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>${_('IRC')}</option>
-		                        </select>
-		                        <label for="default_page">${_('when launching SickRage interface')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <select id="default_page" name="default_page" class="form-control input-sm input200">
+					                        <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
+					                        <option value="schedule" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
+					                        <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>${_('History')}</option>
+					                        <option value="news" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'news']}>${_('News')}</option>
+					                        <option value="IRC" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'IRC']}>${_('IRC')}</option>
+				                        </select>
+                                    </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="default_page">${_('when launching SickRage interface')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -76,12 +92,16 @@
                                 <div class="row">
                                     <div class="col-md-12">
 	                                    <input type="number" min="0" max="23" step="1" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" autocapitalize="off" />
-	                                    <label for="showupdate_hour">${_('with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc.')}</label>
                                     </div>
                                 </div>
 		                        <div class="row">
 			                        <div class="col-md-12">
-                                        <span>${_('Note: minutes are randomized each time SickRage is started')}</span>
+				                        <label for="showupdate_hour">${_('with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc.')}</label>
+                                    </div>
+                                </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+                                        <label>${_('Note: minutes are randomized each time SickRage is started')}</label>
                                     </div>
                                 </div>
 	                        </div>
@@ -126,8 +146,16 @@
 		                        <label class="component-title">${_('Number of Log files saved')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
-                                <label for="log_nr">${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="log_nr">${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -136,8 +164,16 @@
 		                        <label class="component-title">${_('Size of Log files saved')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-		                        <label for="log_size">${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="log_size">${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -146,13 +182,21 @@
 		                        <label class="component-title">${_('Use initial indexer set to')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input350">
-			                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
-                                    % for indexer in sickbeard.indexerApi().indexers:
-				                        <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
-                                    % endfor
-		                        </select>
-		                        <label for="indexer_default">${_('as the default selection when adding new shows')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input350">
+					                        <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
+                                            % for indexer in sickbeard.indexerApi().indexers:
+						                        <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                            % endfor
+				                        </select>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="indexer_default">${_('as the default selection when adding new shows')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -161,8 +205,16 @@
 		                        <label class="component-title">${_('Timeout show indexer at')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
-                                <label for="indexer_timeout">${_('seconds of inactivity when finding new shows (default:20)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="indexer_timeout">${_('seconds of inactivity when finding new shows (default:20)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -177,7 +229,7 @@
                                     </div>
                                 </div>
 		                        <div class="row">
-			                        <div class="col-md-12">
+			                        <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
                                         <%include file="/inc_rootDirs.mako"/>
                                     </div>
                                 </div>
@@ -192,12 +244,10 @@
                     </fieldset>
                 </div>
             </div>
+
             <!-- Divider -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="config-group-divider"></div>
-                </div>
-            </div>
+            <div class="config-group-divider"></div>
+
             <!-- Updates -->
             <div class="row">
 	            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -234,8 +284,16 @@
 		                        <label class="component-title">${_('Check the server every*')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="number" min="1" step="1" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
-		                        <label for="update_frequency">${_('hours for software updates (default:1)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="number" min="1" step="1" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="update_frequency">${_('hours for software updates (default:1)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -278,13 +336,21 @@
 		                        <label class="component-title">${_('Interface Language')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="gui_language" name="gui_language" class="form-control input-sm">
-			                        <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
-                                    % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
-				                        <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
-                                    % endfor
-		                        </select>
-		                        <label for="gui_language" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <select id="gui_language" name="gui_language" class="form-control input-sm input250">
+					                        <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
+                                            % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
+						                        <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
+                                            % endfor
+				                        </select>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="gui_language" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -293,11 +359,19 @@
 		                        <label class="component-title">${_('Display theme')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="theme_name" name="theme_name" class="form-control input-sm">
-			                        <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>${_('Dark')}</option>
-			                        <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>${_('Light')}</option>
-		                        </select>
-		                        <label for="theme_name" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <select id="theme_name" name="theme_name" class="form-control input-sm input250">
+		                                    <option value="dark" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'dark']}>${_('Dark')}</option>
+		                                    <option value="light" ${('', 'selected="selected"')[sickbeard.THEME_NAME == 'light']}>${_('Light')}</option>
+	                                    </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label for="theme_name" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+                                    </div>
+                                </div>
 	                        </div>
                         </div>
 
@@ -318,8 +392,16 @@
 		                            <label class="component-title">${_('Fanart transparency')}</label>
 	                            </div>
 	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                            <input type="number" step="0.1" min="0.1" max="1.0" name="fanart_background_opacity" id="fanart_background_opacity" value="${sickbeard.FANART_BACKGROUND_OPACITY}" class="form-control input-sm input75" />
-		                            <label for="fanart_background_opacity" class="component-desc">${_('Transparency of the fanart in the background')}</label>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <input type="number" step="0.1" min="0.1" max="1.0" name="fanart_background_opacity" id="fanart_background_opacity" value="${sickbeard.FANART_BACKGROUND_OPACITY}" class="form-control input-sm input75" />
+			                            </div>
+		                            </div>
+		                            <div class="row">
+			                            <div class="col-md-12">
+				                            <label for="fanart_background_opacity" class="component-desc">${_('Transparency of the fanart in the background')}</label>
+			                            </div>
+		                            </div>
 	                            </div>
                             </div>
 
@@ -380,12 +462,12 @@
 		                        <label class="component-title">${_('Date style')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select class="form-control input-sm ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
+		                        <select class="form-control input-sm input250 ${(' metadataDiv', '')[bool(sickbeard.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(sickbeard.FUZZY_DATING)]}">
                                     % for cur_preset in date_presets:
 				                        <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset or ("%x" == sickbeard.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                     % endfor
 		                        </select>
-		                        <select class="form-control input-sm ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
+		                        <select class="form-control input-sm input250 ${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(sickbeard.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(sickbeard.FUZZY_DATING)]}">
 			                        <option value="%x" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == '%x']}>${_('Use System Default')}</option>
                                     % for cur_preset in date_presets:
 				                        <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
@@ -399,12 +481,20 @@
 		                        <label class="component-title">${_('Time style')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="time_presets" name="time_preset" class="form-control input-sm">
-                                    % for cur_preset in time_presets:
-				                        <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
-                                    % endfor
-		                        </select>
-		                        <label for="time_presets"><b>${_('Note')}:</b> ${_('seconds are only shown on the History page')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <select id="time_presets" name="time_preset" class="form-control input-sm input250">
+                                            % for cur_preset in time_presets:
+						                        <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
+                                            % endfor
+				                        </select>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="time_presets"><b>${_('Note')}:</b> ${_('seconds are only shown on the History page')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -433,8 +523,16 @@
 		                        <label class="component-title">${_('Download url')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input class="form-control input350" type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" autocapitalize="off" />
-		                        <label for="download_url" class="component-desc">${_('URL where the shows can be downloaded.')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input class="form-control input350" type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="download_url" class="component-desc">${_('URL where the shows can be downloaded.')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -447,12 +545,10 @@
                     </fieldset>
                 </div>
             </div>
+
 	        <!-- Divider -->
-	        <div class="row">
-		        <div class="col-md-12">
-			        <div class="config-group-divider"></div>
-		        </div>
-	        </div>
+            <div class="config-group-divider"></div>
+
 	        <!-- Web Interface -->
 	        <div class="row">
 		        <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -470,12 +566,22 @@
 				                <label class="component-title">${_('API key')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-				                <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" autocapitalize="off" />
-				                <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
-				                <div class="clear-left">
-					                <p>${_('used to give 3rd party programs limited access to SickRage')}</p>
-					                <p>${_('you can try all the features of the API')} <a href="${srRoot}/apibuilder/">${_('here')}</a></p>
-				                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" autocapitalize="off" />
+	                                    <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label for="api_key">${_('used to give 3rd party programs limited access to SickRage')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label>${_('you can try all the features of the API')} <a href="${srRoot}/apibuilder/">${_('here')}</a></label>
+                                    </div>
+                                </div>
 			                </div>
 		                </div>
 
@@ -494,8 +600,16 @@
 				                <label class="component-title">${_('HTTP username')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-				                <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-				                <label>${_('set blank for no login')}</label>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+					                </div>
+				                </div>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <label>${_('set blank for no login')}</label>
+					                </div>
+				                </div>
 			                </div>
 		                </div>
 
@@ -504,8 +618,16 @@
 				                <label class="component-title">${_('HTTP password')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-				                <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
-				                <label for="web_password">${_('blank = no authentication')}</label>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+					                </div>
+				                </div>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <label for="web_password">${_('blank = no authentication')}</label>
+					                </div>
+				                </div>
 			                </div>
 		                </div>
 
@@ -514,8 +636,16 @@
 				                <label class="component-title">${_('HTTP port')}</label>
 			                </div>
 			                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-				                <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
-				                <label for="web_port">${_('web port to browse and access SickRage (default:8081)')}</label>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <input type="number" min="1" step="1" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" autocapitalize="off" />
+					                </div>
+				                </div>
+				                <div class="row">
+					                <div class="col-md-12">
+						                <label for="web_port">${_('web port to browse and access SickRage (default:8081)')}</label>
+					                </div>
+				                </div>
 			                </div>
 		                </div>
 
@@ -612,12 +742,20 @@
 					            <label class="component-title">${_('CPU throttling')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-					            <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
-                                    % for cur_preset in cpu_presets:
-							            <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
-                                    % endfor
-					            </select>
-					            <label for="cpu_presets">${_('Normal (default). High is lower and Low is higher CPU use')}</label>
+					            <div class="row">
+						            <div class="col-md-12">
+							            <select id="cpu_presets" name="cpu_preset" class="form-control input-sm input250">
+                                            % for cur_preset in cpu_presets:
+									            <option value="${cur_preset}" ${('', 'selected="selected"')[sickbeard.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
+                                            % endfor
+							            </select>
+						            </div>
+					            </div>
+					            <div class="row">
+						            <div class="col-md-12">
+							            <label for="cpu_presets">${_('Normal (default). High is lower and Low is higher CPU use')}</label>
+						            </div>
+					            </div>
 				            </div>
 			            </div>
 
@@ -626,8 +764,16 @@
 					            <label class="component-title">${_('Anonymous redirect')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-					            <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" autocapitalize="off" />
-					            <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?"')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" autocapitalize="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?"')}</label>
+                                    </div>
+                                </div>
 				            </div>
 			            </div>
 
@@ -699,8 +845,16 @@
 					            <label class="component-title">${_('Proxy host')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-					            <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" autocapitalize="off" />
-					            <label for="proxy_setting">${_('blank to disable or proxy to use when connecting to providers')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" autocapitalize="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <label for="proxy_setting">${_('blank to disable or proxy to use when connecting to providers')}</label>
+                                    </div>
+                                </div>
 				            </div>
 			            </div>
 
@@ -729,24 +883,38 @@
 					            <label class="component-title">${_('Default deleted episode status')}</label>
 				            </div>
 				            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                % if not sickbeard.SKIP_REMOVED_FILES:
-						            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" title="Default delete status">
-                                        % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
-								            <option value="${defStatus}" ${('', 'selected="selected"')[int(sickbeard.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
-                                        % endfor
-						            </select>
-                                % else:
-						            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" disabled="disabled" title="Default delete status">
-                                        % for defStatus in [SKIPPED, IGNORED]:
-								            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
-                                        % endfor
-						            </select>
-						            <input type="hidden" name="ep_default_deleted_status" value="${sickbeard.EP_DEFAULT_DELETED_STATUS}" />
-                                % endif
-					            <span>${_('Define the status to be set for media file that has been deleted.')}</span>
-					            <div class="clear-left">
-						            <p> <b>${_('Note')}:</b> ${_('Archived option will keep previous downloaded quality')}</p>
-						            <p>${_('Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</p>
+					            <div class="row">
+						            <div class="col-md-12">
+                                        % if not sickbeard.SKIP_REMOVED_FILES:
+								            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" title="Default delete status">
+                                                % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
+										            <option value="${defStatus}" ${('', 'selected="selected"')[int(sickbeard.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
+                                                % endfor
+								            </select>
+                                        % else:
+								            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" disabled="disabled" title="Default delete status">
+                                                % for defStatus in [SKIPPED, IGNORED]:
+										            <option value="${defStatus}" ${('', 'selected="selected"')[sickbeard.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
+                                                % endfor
+								            </select>
+								            <input type="hidden" name="ep_default_deleted_status" value="${sickbeard.EP_DEFAULT_DELETED_STATUS}" />
+                                        % endif
+						            </div>
+					            </div>
+					            <div class="row">
+						            <div class="col-md-12">
+							            <label for="ep_default_deleted_status">${_('Define the status to be set for media file that has been deleted.')}</label>
+						            </div>
+					            </div>
+					            <div class="row">
+						            <div class="col-md-12">
+							            <label><b>${_('Note')}:</b> ${_('Archived option will keep previous downloaded quality')}</label>
+						            </div>
+					            </div>
+					            <div class="row">
+						            <div class="col-md-12">
+							            <label>${_('Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</label>
+						            </div>
 					            </div>
 				            </div>
                         </div>
@@ -759,12 +927,10 @@
 		            </fieldset>
                 </div>
             </div>
+
 	        <!-- Divider -->
-	        <div class="row">
-		        <div class="col-md-12">
-			        <div class="config-group-divider"></div>
-		        </div>
-	        </div>
+            <div class="config-group-divider"></div>
+
             <!-- Github -->
             <div class="row">
 	            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -782,30 +948,38 @@
 		                        <label class="component-title">${_('Branch version')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
-                                    <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
-                                    % if gh_branch:
-                                        % for cur_branch in gh_branch:
-                                            % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1:
-						                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                            % elif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']:
-						                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                            % elif cur_branch == 'master':
-						                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                <div class="row">
+                                    <div class="col-md-12">
+	                                    <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
+                                            <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
+                                            % if gh_branch:
+                                                % for cur_branch in gh_branch:
+                                                    % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1:
+					                                    <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                                    % elif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']:
+					                                    <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                                    % elif cur_branch == 'master':
+					                                    <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
+                                                    % endif
+                                                % endfor
                                             % endif
-                                        % endfor
-                                    % endif
-		                        </select>
-                                % if not gh_branch:
-			                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                % else:
-			                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-                                % endif
-                                % if not gh_branch:
-			                        <div class="clear-left" style="color:#FF0000"><p>${_('Error: No branches found.')}</p></div>
-                                % else:
-			                        <div class="clear-left"><p>${_('select branch to use (restart required)')}</p></div>
-                                % endif
+	                                    </select>
+                                        % if not gh_branch:
+		                                    <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
+                                        % else:
+		                                    <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+                                        % endif
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        % if not gh_branch:
+		                                    <div class="clear-left" style="color:#FF0000"><p>${_('Error: No branches found.')}</p></div>
+                                        % else:
+		                                    <div class="clear-left"><p>${_('select branch to use (restart required)')}</p></div>
+                                        % endif
+                                    </div>
+                                </div>
 	                        </div>
                         </div>
 
@@ -814,8 +988,16 @@
 		                        <label class="component-title">${_('GitHub username')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-		                        <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -824,8 +1006,16 @@
 		                        <label class="component-title">${_('GitHub password')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-		                        <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -834,8 +1024,16 @@
 		                        <label class="component-title">${_('GitHub remote for branch')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
-		                        <label for="git_remote">${_('default:origin. Access repo configured remotes (save then refresh browser)')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="git_remote">${_('default:origin. Access repo configured remotes (save then refresh browser)')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
@@ -844,8 +1042,16 @@
 		                        <label class="component-title">${_('Git executable path')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                        <input type="text" id="git_path" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
-		                        <label for="git_path">${_('only needed if OS is unable to locate git from env')}</label>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <input type="text" id="git_path" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
+			                        </div>
+		                        </div>
+		                        <div class="row">
+			                        <div class="col-md-12">
+				                        <label for="git_path">${_('only needed if OS is unable to locate git from env')}</label>
+			                        </div>
+		                        </div>
 	                        </div>
                         </div>
 
