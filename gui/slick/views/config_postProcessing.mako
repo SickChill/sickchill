@@ -101,7 +101,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-		                        <span class="component-title">${_('Auto Post-Processing Frequency')}</span>
+		                        <label class="component-title">${_('Auto Post-Processing Frequency')}</span>
 	                        </div>
 	                        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="number" min="10" step="1" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocesser_frequency"/>
@@ -1286,7 +1286,7 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                        <span class="component-title">${_('Select Metadata')}</span>
+		                        <label class="component-title">${_('Select Metadata')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 % for (cur_name, cur_generator) in sickbeard.metadata_provider_dict.iteritems():
