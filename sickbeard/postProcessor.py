@@ -1024,7 +1024,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # try to find out if we have enough space to perform the copy or move action.
         if not helpers.isFileLocked(self.file_path, False):
-            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps):  # pylint: disable=protected-access
+            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
                 self._log("Not enough space to continue PP, exiting", logger.WARNING)
                 return False
         else:
