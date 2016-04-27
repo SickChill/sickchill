@@ -284,7 +284,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
         # Query Indexers for each search term and build the list of results
         lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
         if ui is not None:
-            lINDEXER_API_PARMS[b'custom_ui'] = ui
+            lINDEXER_API_PARMS['custom_ui'] = ui
         t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
 
         for name in showNames:
@@ -1111,11 +1111,10 @@ def validateShow(show, season=None, episode=None):
     try:
         lINDEXER_API_PARMS = sickbeard.indexerApi(show.indexer).api_params.copy()
 
-        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-            lINDEXER_API_PARMS[b'language'] = indexer_lang
+        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        if show.dvdorder != 0:
-            lINDEXER_API_PARMS[b'dvdorder'] = True
+        if show.dvdorder:
+            lINDEXER_API_PARMS['dvdorder'] = True
 
         t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)
         if season is None and episode is None:
@@ -1289,7 +1288,7 @@ def mapIndexersToShow(showObj):
                 continue
 
             lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS[b'custom_ui'] = classes.ShowListUI
+            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
             try:
@@ -1716,8 +1715,7 @@ def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statem
 
 def get_showname_from_indexer(indexer, indexer_id, lang='en'):
     lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-    if lang:
-        lINDEXER_API_PARMS[b'language'] = lang
+    lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
     logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
 

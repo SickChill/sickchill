@@ -201,7 +201,7 @@ inc_top.mako
 }
 
 [class^="menu-icon-"], [class*=" menu-icon-"] {
-    background: url("../images/menu/16x_sprite_colored_menu_icons.png");
+    background: url("../images/menu/16px_sprite_colored_menu_icons.png");
     height: 16px;
     width: 16px;
     display: inline-block;
@@ -738,7 +738,7 @@ div.buttontext p {
 }
 
 [class^="add-list-icon-"], [class*=" add-list-icon-"] {
-    background: url("../images/32x_sprite_colored_add_lists.png");
+    background: url("../images/32px_sprite_colored_add_lists.png");
     height: 32px;
     width: 32px;
     display: inline-block;
@@ -1250,6 +1250,112 @@ td.col-search {
     margin-left: auto;
 }
 
+[class^="displayshow-icon-"], [class*=" displayshow-icon-"] {
+    background: url("../images/menu/16px_sprite_colored_show.png");
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    float: left;
+}
+
+.displayshow-icon-left {
+    background-position: 0px 0px;
+}
+
+.displayshow-icon-right {
+    background-position: -18px 0px;
+}
+
+.displayshow-icon-imbd {
+    background-position: -37px 0px;
+}
+
+.displayshow-icon-tvdb {
+    background-position: -56px 0px;
+}
+
+.displayshow-icon-fanart {
+    background-position: -95px 0px;
+}
+
+.displayshow-icon-sportdb {
+    background-position: -113px 0px;
+}
+
+.displayshow-icon-tmdb {
+    background-position: -129px 0px;
+}
+
+.displayshow-icon-anime {
+    background-position: -150px 0px;
+}
+
+.displayshow-icon-xem {
+    background-position: -170px 0px;
+}
+
+.displayshow-icon-disable {
+    background-position: -190px 0px;
+}
+
+.displayshow-icon-enable {
+    background-position: -206px 0px;
+}
+
+.displayshow-icon-sub {
+    background-position: -224px 0px;
+}
+
+.displayshow-icon-search {
+    background-position: -243px 0px;
+}
+
+.displayshow-icon-info {
+    background-position: -261px 0px;
+}
+
+.displayshow-icon-heart {
+    background-position: -278px 0px;
+}
+
+.displayshow-icon-legend {
+    background-position: -297px 0px;
+}
+
+.displayshow-icon-warning {
+    background-position: -316px 0px;
+}
+
+.displayshow-icon-tag {
+    background-position: -333px 0px;
+}
+
+.displayshow-icon-clock {
+    background-position: -350px 0px;
+}
+
+.displayshow-icon-minus {
+    background-position: -369px 0px;
+}
+
+.displayshow-icon-plus {
+    background-position: -387px 0px;
+}
+
+.displayshow-icon-good {
+    background-position: -403px 0px;
+}
+
+.displayshow-icon-bad {
+    background-position: -421px 0px;
+}
+
+.displayshow-icon-fanart2 {
+    background-position: -439px 0px;
+}
+
 /* =======================================================================
 schedule.mako
 ========================================================================== */
@@ -1599,7 +1705,7 @@ select .selected {
 }
 
 [class^="icon16-config-"], [class*=" icon16-config-"] {
-    background-image: url("../images/16x_sprite_colored_help-info.png");
+    background-image: url("../images/16px_sprite_colored_help-info.png");
     background-position: -40px 0;
     background-repeat: no-repeat;
     display: inline-block;
@@ -1662,7 +1768,7 @@ select .selected {
 }
 
 [class^="add-client-icon-"], [class*=" add-client-icon-"] {
-    background: url("../images/32x_sprite_colored_clients.png");
+    background: url("../images/32px_sprite_colored_clients.png");
     height: 32px;
     width: 32px;
     display: inline-block;
@@ -1733,6 +1839,10 @@ select .selected {
 
 .add-client-icon-irc {
     background-position: -488px 0px;
+}
+
+.add-client-icon-putio {
+    background-position: -517px 0px;
 }
 
 /* =======================================================================
@@ -1838,7 +1948,7 @@ div.metadataDiv .disabled {
 }
 
 [class^="icon-notifiers-"], [class*=" icon-notifiers-"] {
-    background: url("../images/32x_sprite_colored_notifiers.png");
+    background: url("../images/32px_sprite_colored_notifiers.png");
     height: 32px;
     width: 32px;
     display: inline-block;
@@ -1917,6 +2027,10 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-telegram {
     background-position: -587px 0px;
+}
+
+.icon-notifiers-join {
+    background-position: -802px 0px;
 }
 
 .icon-notifiers-twitter {
