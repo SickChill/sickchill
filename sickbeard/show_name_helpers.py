@@ -92,7 +92,7 @@ def filter_bad_releases(name, parse=True, show=None):
 
     if show and show.rls_require_words:
         ignore_words = list(set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip()))
-    elif sickbeard.REQUIRE_WORDS and not (show and show.rls.ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+    elif sickbeard.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
         ignore_words = list(set(ignore_words).difference(x.strip() for x in sickbeard.REQUIRE_WORDS.split(',') if x.strip()))
 
     word = containsAtLeastOneWord(name, ignore_words)

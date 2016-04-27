@@ -25,6 +25,7 @@ class ReleaseWordFilterTests(unittest.TestCase):
     def test_global_only(self):
         self.assertFalse(filter_bad_releases('Release name that is IGNORED', False))
         self.assertTrue(filter_bad_releases('Release name that is REQUIRED', False))
+
         self.assertFalse(filter_bad_releases('Release name that is REQUIRED but contains IGNORED', False))
 
     def test_show_required_ignored_words(self):
@@ -32,6 +33,15 @@ class ReleaseWordFilterTests(unittest.TestCase):
         self.assertTrue(filter_bad_releases('Release name that is not IGNORED', False, show=self.show))
 
         self.assertFalse(filter_bad_releases('Release name that is not REQUIRED but contains IGNORED', False, show=self.show))
+
+    def test_no_show_required_ignored_words(self):
+        self.show.rls_ignore_words = ''
+        self.show.rls_require_words = ''
+
+        self.assertFalse(filter_bad_releases('Release name that is IGNORED', False, show=self.show))
+        self.assertTrue(filter_bad_releases('Release name that is REQUIRED', False, show=self.show))
+
+        self.assertFalse(filter_bad_releases('Release name that is REQUIRED but contains IGNORED', False, show=self.show))
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ReleaseWordFilterTests)
