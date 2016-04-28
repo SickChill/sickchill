@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Estonian\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "Takerdunud (parim)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
-msgstr ""
+msgstr "Sickrage tarkvarauuendus on saadaval, käivitan automaatuuendaja"
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
@@ -122,15 +122,15 @@ msgstr "Varunda"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr ""
+msgstr "Sätete varundamine on pooleli..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr ""
+msgstr "Sätete varundamine oli edukas, uuendan..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr ""
+msgstr "Sätete varundamine ebaõnnestus, katkestan uuenduse"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
@@ -445,7 +445,7 @@ msgstr "Staatus"
 
 #: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "SickRage käivitub"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
@@ -570,11 +570,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1612 sickbeard/webserve.py:3449
 msgid "{num_errors:d} error{plural} while saving changes:"
-msgstr ""
+msgstr "{num_errors:d} viga {plural} salvestamisel:"
 
 #: sickbeard/webserve.py:1623
 msgid "{show_name} has been {paused_resumed}"
-msgstr ""
+msgstr "{show_name} on {paused_resumed}"
 
 #: sickbeard/webserve.py:1623
 msgid "resumed"

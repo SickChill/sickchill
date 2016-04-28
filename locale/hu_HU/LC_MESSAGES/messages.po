@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:31-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "Elkapva (legjobb változat)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
-msgstr ""
+msgstr "Új frissítés érhető el, auto-frissítő indítása"
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
@@ -122,19 +122,19 @@ msgstr "Biztonsági mentés"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr ""
+msgstr "Beállítások mentése folyamatban..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr ""
+msgstr "Biztonsági mentés sikerült, frissítés..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr ""
+msgstr "Biztonsági mentés sikertelen, frissítés megszakítva"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
-msgstr ""
+msgstr "Nem szükséges frissíteni"
 
 #: sickbeard/webserve.py:178
 msgid "Mako Error"
@@ -207,19 +207,19 @@ msgstr "Ütemezés"
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
-msgstr ""
+msgstr "Teszt 1"
 
 #: sickbeard/webserve.py:632
 msgid "This is test number 1"
-msgstr ""
+msgstr "Ez az 1-es tesztszám"
 
 #: sickbeard/webserve.py:633
 msgid "Test 2"
-msgstr ""
+msgstr "Teszt 2"
 
 #: sickbeard/webserve.py:633
 msgid "This is test number 2"
-msgstr ""
+msgstr "Ez a 2-es tesztszám"
 
 #: sickbeard/webserve.py:685
 msgid "Invalid show parameters"
@@ -271,171 +271,171 @@ msgstr "SMS sikeresen elküldve"
 
 #: sickbeard/webserve.py:830
 msgid "Problem sending SMS: {message}"
-msgstr ""
+msgstr "Probléma merült fel az SMS küldése közben: {message}"
 
 #: sickbeard/webserve.py:837
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr ""
+msgstr "Telegram értesítés elküldve. Lépj be a Telegram kliensbe, hogy ellenőrizd, minden jól működött-e"
 
 #: sickbeard/webserve.py:839
 msgid "Error sending Telegram notification: {message}"
-msgstr ""
+msgstr "Hiba a Telegram értesítés elküldése közben: {message}"
 
 #: sickbeard/webserve.py:849
 msgid " with password"
-msgstr ""
+msgstr " jelszóval"
 
 #: sickbeard/webserve.py:851
 msgid "Registered and Tested growl successfully {growl_host}"
-msgstr ""
+msgstr "Growl sikeresen regisztrálva és tesztelve {growl_host}"
 
 #: sickbeard/webserve.py:853
 msgid "Registration and Testing of growl failed {growl_host}"
-msgstr ""
+msgstr "Growl regisztrálása és tesztelése sikertelen {growl_host}"
 
 #: sickbeard/webserve.py:860
 msgid "Test prowl notice sent successfully"
-msgstr ""
+msgstr "Prowl teszértesítés elküldve"
 
 #: sickbeard/webserve.py:862
 msgid "Test prowl notice failed"
-msgstr ""
+msgstr "Prowl tesztértesítés elküldése sikertelen"
 
 #: sickbeard/webserve.py:869
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr ""
+msgstr "Boxcar2 értesítés elküldve. Lépj be a Boxcar2 kliensbe, hogy ellenőrizd, minden jól működött-e"
 
 #: sickbeard/webserve.py:871
 msgid "Error sending Boxcar2 notification"
-msgstr ""
+msgstr "Hiba a Boxcar2 értesítés elküldése közben"
 
 #: sickbeard/webserve.py:878
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr ""
+msgstr "Pushover értesítés elküldve. Lépj be a Pushover kliensbe, hogy ellenőrizd, minden jól működött-e"
 
 #: sickbeard/webserve.py:880
 msgid "Error sending Pushover notification"
-msgstr ""
+msgstr "Hiba a Pushover értesítés elküldése közben"
 
 #: sickbeard/webserve.py:892
 msgid "Key verification successful"
-msgstr ""
+msgstr "A kulcs igazolása sikerrel járt"
 
 #: sickbeard/webserve.py:894
 msgid "Unable to verify key"
-msgstr ""
+msgstr "Nem sikerült a kulcs igazolása"
 
 #: sickbeard/webserve.py:901
 msgid "Tweet successful, check your twitter to make sure it worked"
-msgstr ""
+msgstr "Tweet elküldve, ellenőrizd a Twittered, hogy minden jól működött-e"
 
 #: sickbeard/webserve.py:903
 msgid "Error sending tweet"
-msgstr ""
+msgstr "Hiba a tweet küldése közben"
 
 #: sickbeard/webserve.py:913
 msgid "Test KODI notice sent successfully to {kodi_host}"
-msgstr ""
+msgstr "KODI tesztértesítés sikeresen elküldve a(z) {kodi_host} helyre"
 
 #: sickbeard/webserve.py:915
 msgid "Test KODI notice failed to {kodi_host}"
-msgstr ""
+msgstr "KODI tesztértesítés {kodi_host} helyre küldése sikertelen"
 
 #: sickbeard/webserve.py:930
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "Tesztértesítés elküldve a Plex Home Theater számára ... {plex_clients}"
 
 #: sickbeard/webserve.py:932
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
-msgstr ""
+msgstr "A teszt elküldése a Plex Home Theater számára sikertelen ... {plex_clients}"
 
 #: sickbeard/webserve.py:935
 msgid "Tested Plex Home Theater(s)"
-msgstr ""
+msgstr "Tesztelt Plex Home Theater kliens(ek)"
 
 #: sickbeard/webserve.py:949
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
-msgstr ""
+msgstr "Tesztértesítés elküldve a Plex Media Server(ek) számára ... {plex_servers}"
 
 #: sickbeard/webserve.py:951
 msgid "Test failed, No Plex Media Server host specified"
-msgstr ""
+msgstr "A teszt sikertelen, nincs megadva Plex Media Server hoszt"
 
 #: sickbeard/webserve.py:953
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
-msgstr ""
+msgstr "A teszt elküldése a Plex Media Server(ek) számára sikertelen ... {plex_servers}"
 
 #: sickbeard/webserve.py:956
 msgid "Tested Plex Media Server host(s)"
-msgstr ""
+msgstr "Tesztelt Plex Media Server hoszt(ok)"
 
 #: sickbeard/webserve.py:964
 msgid "Tried sending desktop notification via libnotify"
-msgstr ""
+msgstr "Asztali értesítés küldése libnotify által"
 
 #: sickbeard/webserve.py:974
 msgid "Test notice sent successfully to {emby_host}"
-msgstr ""
+msgstr "Tesztértesítés sikeresen elküldve ide: {emby_host}"
 
 #: sickbeard/webserve.py:976
 msgid "Test notice failed to {emby_host}"
-msgstr ""
+msgstr "Tesztértesítés {emby_host} helyre küldése sikertelen"
 
 #: sickbeard/webserve.py:984
 msgid "Successfully started the scan update"
-msgstr ""
+msgstr "Frissítés-ellenőrzés sikeresen elindítva"
 
 #: sickbeard/webserve.py:986
 msgid "Test failed to start the scan update"
-msgstr ""
+msgstr "Frissítés-ellenőrzés elindítása sikertelen"
 
 #: sickbeard/webserve.py:1005
 msgid "Test notice sent successfully to {nmj2_host}"
-msgstr ""
+msgstr "Tesztértesítés sikeresen elküldve ide: {nmj2_host}"
 
 #: sickbeard/webserve.py:1007
 msgid "Test notice failed to {nmj2_host}"
-msgstr ""
+msgstr "Tesztértesítés {nmj2_host} helyre küldése sikertelen"
 
 #: sickbeard/webserve.py:1027
 msgid "Trakt Authorized"
-msgstr ""
+msgstr "Trakt engedélyezve"
 
 #: sickbeard/webserve.py:1028
 msgid "Trakt Not Authorized!"
-msgstr ""
+msgstr "Trakt nincs engedélyezve!"
 
 #: sickbeard/webserve.py:1093
 msgid "Test email sent successfully! Check inbox."
-msgstr ""
+msgstr "Teszt e-mail sikeresen elküldve. Ellenőrizd a bejövő levelidet."
 
 #: sickbeard/webserve.py:1095
 msgid "ERROR: {last_error}"
-msgstr ""
+msgstr "HIBA: {last_error}"
 
 #: sickbeard/webserve.py:1102
 msgid "Test NMA notice sent successfully"
-msgstr ""
+msgstr "NMA tesztértesítés elküldve"
 
 #: sickbeard/webserve.py:1104
 msgid "Test NMA notice failed"
-msgstr ""
+msgstr "NMA tesztértesítés elküldése sikertelen"
 
 #: sickbeard/webserve.py:1111
 msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
-msgstr ""
+msgstr "Pushalot értesítés elküldve. Lépj be a Pushalot kliensbe, hogy ellenőrizd, minden jól működött-e"
 
 #: sickbeard/webserve.py:1113
 msgid "Error sending Pushalot notification"
-msgstr ""
+msgstr "Hiba a Pushalot értesítés elküldése közben"
 
 #: sickbeard/webserve.py:1120
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
-msgstr ""
+msgstr "Pushbullet értesítés elküldve. Ellenőrizd a készüléked, hogy minden jól működött-e"
 
 #: sickbeard/webserve.py:1122 sickbeard/webserve.py:1132 sickbeard/webserve.py:1141
 msgid "Error sending Pushbullet notification"
-msgstr ""
+msgstr "Hiba a Pushbullet értesítés elküldése közben"
 
 #: sickbeard/webserve.py:1158 gui/slick/views/displayShow.mako:334
 #: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
@@ -445,7 +445,7 @@ msgstr "Állapot"
 
 #: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "SickRage újraindítás"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
@@ -453,7 +453,7 @@ msgstr "Frissítés sikertelen"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
-msgstr ""
+msgstr "A frissítés nem sikerült, így nincs újraindítás. Tekintsd meg a naplófájlt a részletekért."
 
 #: sickbeard/webserve.py:1217
 msgid "Checking out branch"
@@ -476,12 +476,12 @@ msgstr "Hiba"
 
 #: sickbeard/webserve.py:1248
 msgid "Invalid show ID: {show}"
-msgstr ""
+msgstr "Érvénytelen műsor azonosító: {show}"
 
 #: sickbeard/webserve.py:1251 sickbeard/webserve.py:1775 sickbeard/webserve.py:1905
 #: sickbeard/webserve.py:1943
 msgid "Show not in show list"
-msgstr ""
+msgstr "A műsor nincs a listán"
 
 #: sickbeard/webserve.py:1267 sickbeard/webserve.py:1930
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
@@ -506,7 +506,7 @@ msgstr "Törlés"
 
 #: sickbeard/webserve.py:1305
 msgid "Re-scan files"
-msgstr ""
+msgstr "Fájlok újraolvasása"
 
 #: sickbeard/webserve.py:1306
 msgid "Force Full Update"
@@ -526,7 +526,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1312
 msgid "Download Subtitles"
-msgstr ""
+msgstr "Felirat letöltése"
 
 #: sickbeard/webserve.py:1398
 msgid "No scene exceptions"
@@ -534,11 +534,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1416 sickbeard/webserve.py:1668 sickbeard/webserve.py:1689
 msgid "Invalid show ID"
-msgstr ""
+msgstr "Érvénytelen műsor azonosító"
 
 #: sickbeard/webserve.py:1425 sickbeard/webserve.py:1673 sickbeard/webserve.py:1694
 msgid "Unable to find the specified show"
-msgstr ""
+msgstr "Nem sikerült megtalálni a műsort"
 
 #: sickbeard/webserve.py:1450
 msgid "Unable to retreive Fansub Groups from AniDB."
@@ -590,7 +590,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1637
 msgid "deleted"
-msgstr ""
+msgstr "törölve"
 
 #: sickbeard/webserve.py:1637
 msgid "trashed"
@@ -702,92 +702,92 @@ msgstr "Hírek"
 
 #: sickbeard/webserve.py:2263
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
-msgstr ""
+msgstr "Nem tölthetők be a változások a repóból. [Kattints ide a CHANGES.md fájl megtekintéséhez]({changes_url})"
 
 #: sickbeard/webserve.py:2268 gui/slick/views/layouts/main.mako:210
 msgid "Changelog"
-msgstr ""
+msgstr "Újdonságok"
 
 #: sickbeard/webserve.py:2278 sickbeard/webserve.py:3746 sickbeard/webserve.py:4186
 #: gui/slick/views/layouts/main.mako:177
 msgid "Post Processing"
-msgstr ""
+msgstr "Utófeldolgozás"
 
 #: sickbeard/webserve.py:2318 gui/slick/views/layouts/main.mako:115
 msgid "Add Shows"
-msgstr ""
+msgstr "Műsorok hozzáadása"
 
 #: sickbeard/webserve.py:2383
 msgid "No folders selected."
-msgstr ""
+msgstr "Nincsenek kiválasztott mappák."
 
 #: sickbeard/webserve.py:2503
 msgid "New Show"
-msgstr ""
+msgstr "Új műsor"
 
 #: sickbeard/webserve.py:2518
 msgid "Trending Shows"
-msgstr ""
+msgstr "Felkapott műsorok"
 
 #: sickbeard/webserve.py:2520 sickbeard/webserve.py:2643
 msgid "Popular Shows"
-msgstr ""
+msgstr "Népszerű műsorok"
 
 #: sickbeard/webserve.py:2522 sickbeard/webserve.py:2536
 msgid "Most Anticipated Shows"
-msgstr ""
+msgstr "Leginkább várt műsorok"
 
 #: sickbeard/webserve.py:2532 gui/slick/views/addShows_trendingShows.mako:47
 msgid "New Shows"
-msgstr ""
+msgstr "Új műsorok"
 
 #: sickbeard/webserve.py:2534 gui/slick/views/addShows_trendingShows.mako:48
 msgid "Season Premieres"
-msgstr ""
+msgstr "Évad-premierek"
 
 #: sickbeard/webserve.py:2663 sickbeard/webserve.py:2664
 msgid "Existing Show"
-msgstr ""
+msgstr "Meglévő műsor"
 
 #: sickbeard/webserve.py:2744
 msgid "No root directories setup, please go back and add one."
-msgstr ""
+msgstr "Nincs megadva gyökérmappa, kérlek lépj vissza és adj meg egyet."
 
 #: sickbeard/webserve.py:2754 sickbeard/webserve.py:2870
 msgid "Show added"
-msgstr ""
+msgstr "Műsor hozzáadva"
 
 #: sickbeard/webserve.py:2754
 msgid "Adding the specified show {show_name}"
-msgstr ""
+msgstr "{show_name} hozzáadása"
 
 #: sickbeard/webserve.py:2795
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
-msgstr ""
+msgstr "Hiányzó paraméterek, nincs Indexer ID vagy mappa: {show_to_add} és {root_dir}/{show_path}"
 
 #: sickbeard/webserve.py:2804
 msgid "Unknown error. Unable to add show due to problem with show selection."
-msgstr ""
+msgstr "Ismeretlen hiba történt. Sikertelen a műsor hozzáadása egy műsorválasztási hiba miatt."
 
 #: sickbeard/webserve.py:2828 sickbeard/webserve.py:2838
 msgid "Unable to add show"
-msgstr ""
+msgstr "Nem sikerült a műsort hozzáadni"
 
 #: sickbeard/webserve.py:2828
 msgid "Folder {show_dir} exists already"
-msgstr ""
+msgstr "A(z) {show_dir} mappa már létezik"
 
 #: sickbeard/webserve.py:2839
 msgid "Unable to create the folder {show_dir}, can't add the show"
-msgstr ""
+msgstr "Nem sikerült létrehozni a(z) {show_dir} mappát, ezért a műsor hozzáadása sem lehetséges"
 
 #: sickbeard/webserve.py:2870
 msgid "Adding the specified show into {show_dir}"
-msgstr ""
+msgstr "Egy megadott műsor hozzáadása a(z) {show_dir} mappába"
 
 #: sickbeard/webserve.py:2947
 msgid "Shows Added"
-msgstr ""
+msgstr "Műsorok hozzáadva"
 
 #: sickbeard/webserve.py:2948
 msgid "Automatically added {num_shows} from their existing metadata files"
@@ -795,37 +795,37 @@ msgstr ""
 
 #: sickbeard/webserve.py:2965 gui/slick/views/layouts/main.mako:140
 msgid "Mass Update"
-msgstr ""
+msgstr "Tömeges frissítés"
 
 #: sickbeard/webserve.py:3003 sickbeard/webserve.py:3030 sickbeard/webserve.py:3105
 #: sickbeard/webserve.py:3106
 msgid "Episode Overview"
-msgstr ""
+msgstr "Epizód áttekintés"
 
 #: sickbeard/webserve.py:3138
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Hiányzó feliratok"
 
 #: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
 #: gui/slick/views/layouts/main.mako:141
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Elmaradások áttekintése"
 
 #: sickbeard/webserve.py:3348
 msgid "Mass Edit"
-msgstr ""
+msgstr "Tömeges szerkesztés"
 
 #: sickbeard/webserve.py:3495
 msgid "Unable to update show: {excption_format}"
-msgstr ""
+msgstr "A műsor frissítése sikertelen: {excption_format}"
 
 #: sickbeard/webserve.py:3503
 msgid "Unable to refresh show {show_name}: {excption_format}"
-msgstr ""
+msgstr "A(z) {show_name} frissítése sikertelen: {excption_format}"
 
 #: sickbeard/webserve.py:3514
 msgid "Errors encountered"
-msgstr ""
+msgstr "Hiba történt"
 
 #: sickbeard/webserve.py:3520 gui/slick/views/config_general.mako:172
 msgid "Updates"
@@ -833,7 +833,7 @@ msgstr "Frissítések"
 
 #: sickbeard/webserve.py:3525
 msgid "Refreshes"
-msgstr ""
+msgstr "Frissít"
 
 #: sickbeard/webserve.py:3530
 msgid "Renames"
@@ -849,15 +849,15 @@ msgstr "Feliratok"
 
 #: sickbeard/webserve.py:3540
 msgid "The following actions were queued"
-msgstr ""
+msgstr "A következő műveletek lettek sorba állítva"
 
 #: sickbeard/webserve.py:3560
 msgid "For best results please set the Download Station alias as"
-msgstr ""
+msgstr "A legjobb eredmény érdekében állítsa be a Download Station aliasnevét a következőre:"
 
 #: sickbeard/webserve.py:3561
 msgid "You can check this setting in the Synology DSM"
-msgstr ""
+msgstr "Ellenőrizheted ezt a beállítást a Synology DSM-ben"
 
 #: sickbeard/webserve.py:3561 sickbeard/webserve.py:3563
 msgid "Control Panel"
@@ -865,15 +865,15 @@ msgstr "Vezérlőpult"
 
 #: sickbeard/webserve.py:3561
 msgid "Application Portal"
-msgstr ""
+msgstr "Applikáció-portál"
 
 #: sickbeard/webserve.py:3562
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
-msgstr ""
+msgstr "Ne felejtsd el engedélyezni a DSM-et, hogy iFrame-be is be lehessen ágyazni"
 
 #: sickbeard/webserve.py:3563
 msgid "DSM Settings"
-msgstr ""
+msgstr "DSM beállítások"
 
 #: sickbeard/webserve.py:3563
 msgid "Security"
@@ -881,23 +881,23 @@ msgstr "Biztonság"
 
 #: sickbeard/webserve.py:3571 gui/slick/views/layouts/main.mako:154
 msgid "Manage Torrents"
-msgstr ""
+msgstr "Torrentek kezelése"
 
 #: sickbeard/webserve.py:3592 gui/slick/views/layouts/main.mako:157
 msgid "Failed Downloads"
-msgstr ""
+msgstr "Sikertelen letöltések"
 
 #: sickbeard/webserve.py:3610 gui/slick/views/layouts/main.mako:142
 msgid "Manage Searches"
-msgstr ""
+msgstr "Keresések kezelése"
 
 #: sickbeard/webserve.py:3618
 msgid "Backlog search started"
-msgstr ""
+msgstr "Elmaradások keresése elindult"
 
 #: sickbeard/webserve.py:3628
 msgid "Daily search started"
-msgstr ""
+msgstr "Napi keresés elindult"
 
 #: sickbeard/webserve.py:3637
 msgid "Find propers search started"
@@ -905,7 +905,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3646
 msgid "Subtitle search started"
-msgstr ""
+msgstr "Feliratok keresése elindult"
 
 #: sickbeard/webserve.py:3710
 msgid "Clear History"
@@ -926,15 +926,15 @@ msgstr "Előzmények törölve"
 
 #: sickbeard/webserve.py:3728
 msgid "Removed history entries older than 30 days"
-msgstr ""
+msgstr "30 napnál régebbi bejegyzések eltávolítva"
 
 #: sickbeard/webserve.py:3741 gui/slick/views/layouts/main.mako:172
 msgid "General"
-msgstr ""
+msgstr "Általános"
 
 #: sickbeard/webserve.py:3742 sickbeard/webserve.py:3988
 msgid "Backup/Restore"
-msgstr ""
+msgstr "Mentés/Visszaállítás"
 
 #: sickbeard/webserve.py:3743 sickbeard/webserve.py:4051
 #: gui/slick/views/layouts/main.mako:174
@@ -944,7 +944,7 @@ msgstr "Keresési beállítások"
 #: sickbeard/webserve.py:3744 sickbeard/webserve.py:4390
 #: gui/slick/views/layouts/main.mako:175
 msgid "Search Providers"
-msgstr ""
+msgstr "Keresőmotorok"
 
 #: sickbeard/webserve.py:3745 gui/slick/views/layouts/main.mako:176
 msgid "Subtitles Settings"
@@ -1155,11 +1155,11 @@ msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:36
 msgid "Show retrieved from existing metadata"
-msgstr ""
+msgstr "A műsor lekérve a meglévő metadatából"
 
 #: gui/slick/views/addShows_newShow.mako:48 gui/slick/views/config_general.mako:136
 msgid "All Indexers"
-msgstr ""
+msgstr "Összes indexerek"
 
 #: gui/slick/views/addShows_newShow.mako:56 gui/slick/views/displayShow.mako:335
 #: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
@@ -1169,19 +1169,19 @@ msgstr "Keresés"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
-msgstr ""
+msgstr "Ez csak a lekért metadata fájl és az epizódok fájlainak nyelvét érinti."
 
 #: gui/slick/views/addShows_newShow.mako:60
 msgid "This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!"
-msgstr ""
+msgstr "Ez <b>NEM</b> hatalmazza fel a SickRage-et, hogy más nyelvű epizódokat töltsön le!"
 
 #: gui/slick/views/addShows_newShow.mako:67
 msgid "Pick the parent folder"
-msgstr ""
+msgstr "Szülő mappa kiválasztása"
 
 #: gui/slick/views/addShows_newShow.mako:70
 msgid "Pre-chosen Destination Folder"
-msgstr ""
+msgstr "Előre kiválasztott célmappa"
 
 #: gui/slick/views/addShows_newShow.mako:79
 msgid "Customize options"
@@ -1191,16 +1191,16 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:74
 #: gui/slick/views/trendingShows.mako:44
 msgid "Add Show"
-msgstr ""
+msgstr "Műsor hozzáadása"
 
 #: gui/slick/views/addShows_newShow.mako:95
 msgid "Skip Show"
-msgstr ""
+msgstr "Műsor átugrása"
 
 #: gui/slick/views/addShows_popularShows.mako:17 gui/slick/views/home.mako:51
 #: gui/slick/views/schedule.mako:27
 msgid "Sort By"
-msgstr ""
+msgstr "Rendezés"
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:31
@@ -1218,7 +1218,7 @@ msgstr "Eredeti"
 #: gui/slick/views/addShows_popularShows.mako:21
 #: gui/slick/views/addShows_trendingShows.mako:33
 msgid "Votes"
-msgstr ""
+msgstr "Szavazatok"
 
 #: gui/slick/views/addShows_popularShows.mako:22
 #: gui/slick/views/addShows_trendingShows.mako:34
@@ -1228,66 +1228,66 @@ msgstr "Értékelés"
 #: gui/slick/views/addShows_popularShows.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:35
 msgid "Rating > Votes"
-msgstr ""
+msgstr "Értékelés > Szavazatok"
 
 #: gui/slick/views/addShows_popularShows.mako:26
 #: gui/slick/views/addShows_trendingShows.mako:38
 msgid "Sort Order"
-msgstr ""
+msgstr "Rendezési sorrend"
 
 #: gui/slick/views/addShows_popularShows.mako:28
 #: gui/slick/views/addShows_trendingShows.mako:40
 msgid "Asc"
-msgstr ""
+msgstr "Növ"
 
 #: gui/slick/views/addShows_popularShows.mako:29
 #: gui/slick/views/addShows_trendingShows.mako:41
 msgid "Desc"
-msgstr ""
+msgstr "Csök"
 
 #: gui/slick/views/addShows_popularShows.mako:40
 msgid "Fetching of IMDB Data failed. Are you online?"
-msgstr ""
+msgstr "IMDB adatok beillesztése sikertelen. Online vagy?"
 
 #: gui/slick/views/addShows_popularShows.mako:41
 msgid "Exception"
-msgstr ""
+msgstr "Kivétel"
 
 #: gui/slick/views/addShows_trendingShows.mako:44
 msgid "Select Trakt List"
-msgstr ""
+msgstr "Trakt lista kijelölése"
 
 #: gui/slick/views/addShows_trendingShows.mako:46
 msgid "Most Anticipated"
-msgstr ""
+msgstr "Leginkább várt"
 
 #: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Trending"
-msgstr ""
+msgstr "Felkapott"
 
 #: gui/slick/views/addShows_trendingShows.mako:50
 msgid "Popular"
-msgstr ""
+msgstr "Népszerű"
 
 #: gui/slick/views/addShows_trendingShows.mako:51
 msgid "Most Watched"
-msgstr ""
+msgstr "Legnézettebb"
 
 #: gui/slick/views/addShows_trendingShows.mako:52
 msgid "Most Played"
-msgstr ""
+msgstr "Legtöbbet játszott"
 
 #: gui/slick/views/addShows_trendingShows.mako:53
 msgid "Most Collected"
-msgstr ""
+msgstr "Legtöbbet begyűjtott"
 
 #: gui/slick/views/addShows_trendingShows.mako:55
 msgid "Recommended"
-msgstr ""
+msgstr "Ajánlott"
 
 #: gui/slick/views/apiBuilder.mako:74
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Navigáció váltása"
 
 #: gui/slick/views/apiBuilder.mako:88
 msgid "Profile"
@@ -1295,23 +1295,23 @@ msgstr "Profil"
 
 #: gui/slick/views/apiBuilder.mako:91
 msgid "JSONP"
-msgstr ""
+msgstr "JSONP"
 
 #: gui/slick/views/apiBuilder.mako:96
 msgid "Back to SickRage"
-msgstr ""
+msgstr "Visszatérés a SickRage-hez"
 
 #: gui/slick/views/apiBuilder.mako:131
 msgid "Parameters"
-msgstr ""
+msgstr "Paraméterek"
 
 #: gui/slick/views/apiBuilder.mako:137
 msgid "Required"
-msgstr ""
+msgstr "Kitöltendő"
 
 #: gui/slick/views/apiBuilder.mako:138
 msgid "Description"
-msgstr ""
+msgstr "Leírás"
 
 #: gui/slick/views/apiBuilder.mako:139 gui/slick/views/status.mako:192
 msgid "Type"
@@ -1323,15 +1323,15 @@ msgstr "Alapértelmezett érték"
 
 #: gui/slick/views/apiBuilder.mako:141
 msgid "Allowed values"
-msgstr ""
+msgstr "Megengedett értékek"
 
 #: gui/slick/views/apiBuilder.mako:149
 msgid "Playground"
-msgstr ""
+msgstr "Játszótér"
 
 #: gui/slick/views/apiBuilder.mako:170
 msgid "Clear"
-msgstr ""
+msgstr "Mező törlése"
 
 #: gui/slick/views/apiBuilder.mako:207 gui/slick/views/apiBuilder.mako:236
 #: gui/slick/views/manage_massEdit.mako:135
@@ -1373,7 +1373,7 @@ msgstr "SSL-verzió"
 
 #: gui/slick/views/config.mako:31
 msgid "OS"
-msgstr ""
+msgstr "Operációs Rendszer"
 
 #: gui/slick/views/config.mako:32
 msgid "Locale"
@@ -1385,7 +1385,7 @@ msgstr "Felhasználó"
 
 #: gui/slick/views/config.mako:36
 msgid "Program Folder"
-msgstr ""
+msgstr "Program mappa"
 
 #: gui/slick/views/config.mako:37
 msgid "Config File"
@@ -1397,7 +1397,7 @@ msgstr "Adatbázis fájl"
 
 #: gui/slick/views/config.mako:39
 msgid "Cache Folder"
-msgstr ""
+msgstr "Gyorsítótár-mappa"
 
 #: gui/slick/views/config.mako:40
 msgid "Log Folder"
@@ -1405,19 +1405,19 @@ msgstr "Napló mappa"
 
 #: gui/slick/views/config.mako:42
 msgid "Arguments"
-msgstr ""
+msgstr "Argumentumok"
 
 #: gui/slick/views/config.mako:45
 msgid "Web Root"
-msgstr ""
+msgstr "Web gyökérkönyvtára"
 
 #: gui/slick/views/config.mako:49
 msgid "Website"
-msgstr ""
+msgstr "Honlap"
 
 #: gui/slick/views/config.mako:50
 msgid "Wiki"
-msgstr ""
+msgstr "Wiki"
 
 #: gui/slick/views/config.mako:51
 msgid "Source"
@@ -1429,15 +1429,15 @@ msgstr "IRC Chat"
 
 #: gui/slick/views/config_anime.mako:17
 msgid "AnimeDB Settings"
-msgstr ""
+msgstr "AnimeDB beállítások"
 
 #: gui/slick/views/config_anime.mako:18
 msgid "Look &amp; Feel"
-msgstr ""
+msgstr "Megjelenés és hangulat"
 
 #: gui/slick/views/config_anime.mako:25
 msgid "AniDB is non-profit database of anime information that is freely open to the public"
-msgstr ""
+msgstr "Az AniDB egy non-profit adatbázis, amely animékkel kapcsolatos információkat oszt meg nyilvánosan"
 
 #: gui/slick/views/config_anime.mako:32
 #: gui/slick/views/config_notifications.mako:35
@@ -1464,27 +1464,27 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:1744
 #: gui/slick/views/config_postProcessing.mako:35 gui/slick/views/status.mako:36
 msgid "Enable"
-msgstr ""
+msgstr "Engedélyez"
 
 #: gui/slick/views/config_anime.mako:33
 msgid "Should SickRage use data from AniDB?"
-msgstr ""
+msgstr "Használja-e a SickRage az AniDB adatait?"
 
 #: gui/slick/views/config_anime.mako:40
 msgid "AniDB Username"
-msgstr ""
+msgstr "AniDB felhasználónév"
 
 #: gui/slick/views/config_anime.mako:45
 msgid "Username of your AniDB account"
-msgstr ""
+msgstr "Az AniDB-n regisztrált felhasználóneved"
 
 #: gui/slick/views/config_anime.mako:51
 msgid "AniDB Password"
-msgstr ""
+msgstr "AniDB jelszó"
 
 #: gui/slick/views/config_anime.mako:56
 msgid "Password of your AniDB account"
-msgstr ""
+msgstr "Az AniDB-n megadott jelszavad"
 
 #: gui/slick/views/config_anime.mako:62
 msgid "AniDB MyList"
@@ -1763,7 +1763,7 @@ msgstr "Megjelenítési téma"
 
 #: gui/slick/views/config_general.mako:255
 msgid "Dark"
-msgstr ""
+msgstr "Sötét"
 
 #: gui/slick/views/config_general.mako:256
 msgid "Light"
@@ -1771,31 +1771,31 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
-msgstr ""
+msgstr "Fan-art megjelenítése a háttérben"
 
 #: gui/slick/views/config_general.mako:268 gui/slick/views/config_general.mako:290
 msgid "on the show summary page"
-msgstr ""
+msgstr "a műsor összefoglaló lapján"
 
 #: gui/slick/views/config_general.mako:275
 msgid "Fanart transparency"
-msgstr ""
+msgstr "Fan-art átlátszósága"
 
 #: gui/slick/views/config_general.mako:280
 msgid "Transparency of the fanart in the background"
-msgstr ""
+msgstr "A háttérben lévő fan-art áttetszősége"
 
 #: gui/slick/views/config_general.mako:287
 msgid "Show all seasons"
-msgstr ""
+msgstr "Összes évad megtekintése"
 
 #: gui/slick/views/config_general.mako:296
 msgid "Sort with \"The\", \"A\", \"An\""
-msgstr ""
+msgstr "Rendezés \"The\", \"A\" és \"An\" előtagokkal"
 
 #: gui/slick/views/config_general.mako:299
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
-msgstr ""
+msgstr "előtagok (\"The\", \"A\", \"An\") engedélyezése a műsorok rendezésekor"
 
 #: gui/slick/views/config_general.mako:305
 msgid "Missed episodes range"
@@ -3395,7 +3395,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:22
 #: gui/slick/views/config_postProcessing.mako:28
 msgid "Post-Processing"
-msgstr ""
+msgstr "Utófeldolgozás"
 
 #: gui/slick/views/config_postProcessing.mako:23
 #: gui/slick/views/config_postProcessing.mako:232
@@ -3812,17 +3812,17 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:602
 #: gui/slick/views/config_postProcessing.mako:779
 msgid "Year"
-msgstr ""
+msgstr "Év"
 
 #: gui/slick/views/config_postProcessing.mako:607
 #: gui/slick/views/config_postProcessing.mako:784
 msgid "Month"
-msgstr ""
+msgstr "Hónap"
 
 #: gui/slick/views/config_postProcessing.mako:617
 #: gui/slick/views/config_postProcessing.mako:794
 msgid "Day"
-msgstr ""
+msgstr "Nap"
 
 #: gui/slick/views/config_postProcessing.mako:627
 #: gui/slick/views/config_postProcessing.mako:804
@@ -3974,7 +3974,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:143
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: gui/slick/views/config_providers.mako:162
 #: gui/slick/views/config_providers.mako:249
@@ -4122,7 +4122,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:581
 msgid "Category"
-msgstr ""
+msgstr "Kategória"
 
 #: gui/slick/views/config_providers.mako:599
 msgid "select torrent with Italian subtitle"
@@ -4185,7 +4185,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:722
 msgid "RSS URL"
-msgstr ""
+msgstr "RSS URL"
 
 #: gui/slick/views/config_providers.mako:728
 msgid "Cookies"
@@ -4237,23 +4237,23 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:53
 msgid "24 hours"
-msgstr ""
+msgstr "24 óra"
 
 #: gui/slick/views/config_search.mako:53
 msgid "4 hours"
-msgstr ""
+msgstr "4 óra"
 
 #: gui/slick/views/config_search.mako:53
 msgid "90 mins"
-msgstr ""
+msgstr "90 perc"
 
 #: gui/slick/views/config_search.mako:53
 msgid "45 mins"
-msgstr ""
+msgstr "45 perc"
 
 #: gui/slick/views/config_search.mako:53
 msgid "15 mins"
-msgstr ""
+msgstr "15 perc"
 
 #: gui/slick/views/config_search.mako:65
 msgid "Backlog search day(s)"
@@ -5014,12 +5014,12 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:322 gui/slick/views/displayShow.mako:351
 #: gui/slick/views/displayShow.mako:381
 msgid "NFO"
-msgstr ""
+msgstr "NFO"
 
 #: gui/slick/views/displayShow.mako:323 gui/slick/views/displayShow.mako:352
 #: gui/slick/views/displayShow.mako:382
 msgid "TBN"
-msgstr ""
+msgstr "TBN"
 
 #: gui/slick/views/displayShow.mako:324 gui/slick/views/displayShow.mako:353
 #: gui/slick/views/displayShow.mako:383 gui/slick/views/history.mako:50
@@ -6033,7 +6033,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:173
 msgid "Backup &amp; Restore"
-msgstr ""
+msgstr "Mentés &amp; visszaállítás"
 
 #: gui/slick/views/layouts/main.mako:204
 msgid "Tools"
@@ -6061,7 +6061,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:222
 msgid "Restart"
-msgstr ""
+msgstr "Újraindítás"
 
 #: gui/slick/views/layouts/main.mako:223
 msgid "Shutdown"
