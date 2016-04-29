@@ -16,7 +16,7 @@ selected = None
 
 <div class="row">
     <div class="col-md-12">
-	    <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm" title="qualityPreset">
+	    <select id="qualityPreset" name="quality_preset" class="form-control input-sm input100" title="qualityPreset">
 		    <option value="0">Custom</option>
             % for curPreset in qualityPresets:
 			    <option value="${curPreset}" ${('', 'selected="selected"')[curPreset == overall_quality]} ${('', 'style="padding-left: 15px;"')[qualityPresetStrings[curPreset].endswith("0p")]}>${qualityPresetStrings[curPreset]}</option>

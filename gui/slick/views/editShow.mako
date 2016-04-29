@@ -57,7 +57,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="hidden" name="show" value="${show.indexerid}"/>
                                         <input type="text" name="location" id="location" value="${show._location}"
-                                               class="form-control form-control-inline input-sm input350"
+                                               class="form-control input-sm input350"
                                                autocapitalize="off" title="Location"/>
                                     </div>
                                 </div>
@@ -77,12 +77,20 @@
 		                                <span class="component-title">${_('Default Episode Status')}</span>
 	                                </div>
 	                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                                <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm" title="defaultEpStatus">
-                                            % for curStatus in [WANTED, SKIPPED, IGNORED]:
-				                                <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
-                                            % endfor
-		                                </select>
-		                                <label for="defaultEpStatus">${_('This will set the status for future episodes.')}</label>
+                                        <div class="row">
+                                            <div class="col-md-12">
+	                                            <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control input-sm input100" title="defaultEpStatus">
+                                                    % for curStatus in [WANTED, SKIPPED, IGNORED]:
+			                                            <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
+                                                    % endfor
+	                                            </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+	                                            <label for="defaultEpStatus">${_('This will set the status for future episodes.')}</label>
+                                            </div>
+                                        </div>
 	                                </div>
                                 </div>
 
@@ -91,12 +99,20 @@
 		                                <span class="component-title">${_('Info Language')}</span>
 	                                </div>
 	                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                                <select name="indexerLang" id="indexerLangSelect"
-		                                        class="form-control form-control-inline input-sm bfh-languages"
-		                                        data-language="${show.lang}"
-		                                        data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}" title="indexerLang">
-                                        </select>
-                                        <label for="indexerLang">${_('This only applies to episode filenames and the contents of metadata files.')}</label>
+		                                <div class="row">
+			                                <div class="col-md-12">
+				                                <select name="indexerLang" id="indexerLangSelect"
+				                                        class="form-control input-sm input150 bfh-languages"
+				                                        data-language="${show.lang}"
+				                                        data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}" title="indexerLang">
+				                                </select>
+			                                </div>
+		                                </div>
+		                                <div class="row">
+			                                <div class="col-md-12">
+				                                <label for="indexerLang">${_('This only applies to episode filenames and the contents of metadata files.')}</label>
+			                                </div>
+		                                </div>
 	                                </div>
                                 </div>
 
@@ -250,11 +266,14 @@
 	                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-	                                            <input type="text" id="rls_ignore_words" name="rls_ignore_words"
-	                                                   id="rls_ignore_words" value="${show.rls_ignore_words}"
-	                                                   class="form-control form-control-inline input-sm input350"
-	                                                   autocapitalize="off"/><br>
-	                                            <label for="rls_ignore_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
+	                                            <input type="text" id="rls_ignore_words"
+                                                       name="rls_ignore_words" value="${show.rls_ignore_words}"
+                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                            </div>
+                                        </div>
+		                                <div class="row">
+			                                <div class="col-md-12">
+				                                <label for="rls_ignore_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
                                             </div>
                                         </div>
 		                                <div class="row">
@@ -273,13 +292,16 @@
                                         <div class="row">
                                             <div class="col-md-12">
 	                                            <input type="text" id="rls_require_words" name="rls_require_words"
-	                                                   id="rls_require_words" value="${show.rls_require_words}"
-	                                                   class="form-control form-control-inline input-sm input350"
-	                                                   autocapitalize="off"/>
+                                                       value="${show.rls_require_words}" autocapitalize="off"
+                                                       class="form-control input-sm input350"/>
                                                 <br/>
-	                                            <label for="rls_require_words">comma-separated&nbsp;<i>${_('e.g. "word1,word2,word3"')}</i></label>
                                             </div>
                                         </div>
+		                                <div class="row">
+			                                <div class="col-md-12">
+				                                <label for="rls_require_words">comma-separated&nbsp;<i>${_('e.g. "word1,word2,word3"')}</i></label>
+			                                </div>
+		                                </div>
 		                                <div class="row">
 			                                <div class="col-md-12">
 				                                <label>${_('Search results with no words from this list will be ignored.')}</label>
@@ -296,14 +318,14 @@
                                         <div class="row">
                                             <div class="col-md-12">
 	                                            <input type="text" id="SceneName"
-	                                                   class="form-control form-control-inline input-sm input200" autocapitalize="off"/>
+	                                                   class="form-control input-sm input200" autocapitalize="off"/>
 	                                            <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName"/>
                                             </div>
                                         </div>
 		                                <div class="row">
 			                                <div class="col-md-12">
 				                                <select id="exceptions_list" name="exceptions_list" multiple="multiple"
-				                                        style="min-width:200px;height:99px;" title="exceptions_list">
+				                                        style="height:99px;width:200px;" title="exceptions_list">
                                                     % for cur_exception in show.exceptions:
 						                                <option value="${cur_exception}">${cur_exception}</option>
                                                     % endfor
