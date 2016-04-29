@@ -103,12 +103,12 @@ NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
 MULTI_EP_STRINGS = NumDict({
-    NAMING_REPEAT: "Repeat",
-    NAMING_SEPARATED_REPEAT: "Repeat (Separated)",
-    NAMING_DUPLICATE: "Duplicate",
-    NAMING_EXTEND: "Extend",
-    NAMING_LIMITED_EXTEND: "Extend (Limited)",
-    NAMING_LIMITED_EXTEND_E_PREFIXED: "Extend (Limited, E-prefixed)"
+    NAMING_REPEAT: _("Repeat"),
+    NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
+    NAMING_DUPLICATE: ("Duplicate"),
+    NAMING_EXTEND: _("Extend"),
+    NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
+    NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)")
 })
 
 
@@ -212,12 +212,12 @@ class Quality(object):
     })
 
     statusPrefixes = NumDict({
-        DOWNLOADED: "Downloaded",
-        SNATCHED: "Snatched",
-        SNATCHED_PROPER: "Snatched (Proper)",
-        FAILED: "Failed",
-        SNATCHED_BEST: "Snatched (Best)",
-        ARCHIVED: "Archived"
+        DOWNLOADED: _("Downloaded"),
+        SNATCHED: _("Snatched"),
+        SNATCHED_PROPER: _("Snatched (Proper)"),
+        FAILED: _("Failed"),
+        SNATCHED_BEST: _("Snatched (Best)"),
+        ARCHIVED: _("Archived")
     })
 
     @staticmethod
@@ -300,8 +300,8 @@ class Quality(object):
 
         if not name:
             return Quality.UNKNOWN
-        else:
-            name = ek(path.basename, name)
+
+        name = ek(path.basename, name)
 
         result = None
         ep = EpisodeTags(name)

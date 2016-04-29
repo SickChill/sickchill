@@ -64,6 +64,18 @@ import requests
 
 gettext.install('messages', unicode=1, codeset='UTF-8')
 
+# Some strings come from metadata or libraries or 3rd party sites,
+# So we need to pre-define them to get translations for them
+dynamic_strings = (
+    _('Drama'), _('Mystery'), _('Science-Fiction'), _('Crime'), _('Action'),
+    _('Comedy'), _('Thriller'), _('Animation'), _('Family'), _('Fantasy'),
+    _('Adventure'), _('Horror'), _('Film-Noir'), _('Sci-Fi'), _('Romance'),
+    _('Sport'), _('War'), _('Biography'), _('History'), _('Music'), _('Western'),
+    _('News'), _('Sitcom'), _('Reality-TV'), _('Documentary'), _('Game-Show'), _('Musical'),
+    _('Talk-Show'), _('Science-Fiction')
+)
+
+
 shutil.copyfile = shutil_custom.copyfile_custom
 requests.packages.urllib3.disable_warnings()
 indexerApi = indexer_api.indexerApi
