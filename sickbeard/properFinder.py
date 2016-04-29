@@ -24,16 +24,15 @@ import datetime
 import operator
 import threading
 import traceback
-import sickbeard
 
-from sickbeard import db
-from sickbeard import helpers, logger
-from sickbeard.search import snatchEpisode
-from sickbeard.search import pickBestResult
+import sickbeard
+from sickbeard import db, helpers, logger
+from sickbeard.search import snatchEpisode, pickBestResult
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.History import History
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class ProperFinder(object):  # pylint: disable=too-few-public-methods
@@ -63,7 +62,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             run_at = u", next check in approx. " + (
-                "{0:d}h, {1:d}m".format(hours, minutes) if 0 < hours else "{0:d}m, {1:d}s".format(minutes, seconds))
+                "{0:d}h, {1:d}m".format(hours, minutes) if hours > 0 else "{0:d}m, {1:d}s".format(minutes, seconds))
 
         logger.log(u"Completed the search for new propers{0}".format(run_at))
 
@@ -97,7 +96,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
-                if not re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', x.name, re.I):
+                if not re.search(r'\b(proper|repack|real)\b', x.name, re.I):
                     logger.log(u'find_propers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
                     continue
 

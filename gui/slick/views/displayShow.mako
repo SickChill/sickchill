@@ -63,7 +63,7 @@
         <span class="h2footer displayspecials pull-right">
             % if season_special:
             ${_('Display Specials')}:
-                <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
+                <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">${(_('Show'), _('Hide'))[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}</a>
             % endif
         </span>
 
@@ -114,7 +114,7 @@
 
             <div id="showinfo">
 % if 'rating' in show.imdb_info:
-    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
+    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) + _('Votes') %>
     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
 % endif
 
@@ -146,11 +146,11 @@
                 <ul class="tags">
                     % if show.genre and not show.imdb_info.get('genres'):
                         % for genre in show.genre[1:-1].split('|'):
-                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=genre)}"><li>${genre}</li></a>
+                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=genre)}"><li>${_(genre)}</li></a>
                         % endfor
                     % elif show.imdb_info.get('genres'):
                         % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${imdbgenre}</li></a>
+                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${_(imdbgenre)}</li></a>
                         % endfor
                     % endif
                 </ul>
