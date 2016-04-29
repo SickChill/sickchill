@@ -4184,7 +4184,7 @@ class ConfigPostProcessing(Config):
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None, unpack=None,
                            move_associated_files=None, sync_files=None,
-                           postpone_if_sync_files=None, postpone_if_no_subs=None,
+                           postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
                            extra_scripts=None, nfo_rename=None,
@@ -4224,11 +4224,6 @@ class ConfigPostProcessing(Config):
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.SYNC_FILES = sync_files
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
-        sickbeard.POSTPONE_IF_NO_SUBS = config.checkbox_to_value(postpone_if_no_subs)
-
-        # If 'postpone if no subs' is enabled, we must have SRT in allowed extensions list
-        if sickbeard.POSTPONE_IF_NO_SUBS:
-            allowed_extensions = ','.join((allowed_extensions, 'srt'))
 
         sickbeard.ALLOWED_EXTENSIONS = ','.join({x.strip() for x in allowed_extensions.split(',') if x.strip()})
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
