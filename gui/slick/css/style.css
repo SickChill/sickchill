@@ -2867,7 +2867,7 @@ div.stepsguide .step .smalltext {
 }
 
 div.formpaginate {
-	width: 800px;
+	padding: 0 20px;
 	margin-top: 1em;
 	overflow: auto;
 	font-weight: bold;
