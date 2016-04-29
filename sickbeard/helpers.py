@@ -1565,6 +1565,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
 
     logger.log("Trying to determine free space on destination drive", logger.DEBUG)
 
+    # shortcut: if we are moving the file and the destination == src dir,
+    # then by definition there is enough space
+    if method == "move" and os.stat(src).st_dev == os.stat(dest).st_dev:
+        return True
+
     if not ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
