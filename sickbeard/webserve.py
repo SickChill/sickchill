@@ -28,29 +28,27 @@ import traceback
 import gettext
 import ast
 
-from requests.compat import urljoin
-import markdown2
-
 try:
     import json
 except ImportError:
     import simplejson as json
 
+from requests.compat import urljoin
+import markdown2
+
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
 from mako.exceptions import RichTraceback
+from mako.runtime import UNDEFINED
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-
-from concurrent.futures import ThreadPoolExecutor
 from tornado.process import cpu_count
-
 from tornado.concurrent import run_on_executor
 
-from mako.runtime import UNDEFINED
+from concurrent.futures import ThreadPoolExecutor
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -59,27 +57,23 @@ from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 
 import sickbeard
-from sickbeard import config, sab
-from sickbeard import clients
-from sickbeard import notifiers, processTV
-from sickbeard import ui
-from sickbeard import logger, helpers, classes, db
-from sickbeard import search_queue
-from sickbeard import naming
-from sickbeard import subtitles as subtitle_module
-from sickbeard import network_timezones
+from sickbeard import config, sab, clients, notifiers, processTV, ui, logger, \
+    helpers, classes, db, search_queue, naming, subtitles as subtitle_module, \
+    network_timezones
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+from sickbeard.common import Quality, Overview, statusStrings, cpu_presets, \
+    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
-from sickbeard.webapi import function_mapper
 
+from sickbeard.webapi import function_mapper
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.helpers import get_showname_from_indexer
+from sickbeard.versionChecker import CheckVersion
 
 from sickrage.helper import setup_github, episode_num, try_int, sanitize_filename
 from sickrage.helper.encoding import ek, ss
@@ -96,30 +90,17 @@ from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
-from sickbeard.versionChecker import CheckVersion
-
-mako_lookup = None
-mako_cache = None
-mako_path = None
-
+mako_lookup = {}
 
 def get_lookup():
-    global mako_lookup  # pylint: disable=global-statement
-    global mako_cache  # pylint: disable=global-statement
-    global mako_path  # pylint: disable=global-statement
-
-    if not mako_path:
-        mako_path = ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
-    if not mako_cache:
-        mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
-    if not mako_lookup:
-        use_strict = sickbeard.BRANCH and sickbeard.BRANCH != 'master'
-        mako_lookup = TemplateLookup(directories=[mako_path],
-                                     module_directory=mako_cache,
-                                     #  format_exceptions=True,
-                                     strict_undefined=use_strict,
-                                     filesystem_checks=True)
-    return mako_lookup
+    mako_lookup['mako'] = mako_lookup.get('mako') or TemplateLookup(
+        directories=[ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")],
+        module_directory=ek(os.path.join, sickbeard.CACHE_DIR, 'mako'),
+        strict_undefined=sickbeard.BRANCH and sickbeard.BRANCH != 'master',
+        #  format_exceptions=True,
+        filesystem_checks=True
+    )
+    return mako_lookup.get('mako')
 
 
 class PageTemplate(MakoTemplate):
@@ -4244,11 +4225,11 @@ class ConfigPostProcessing(Config):
         sickbeard.SYNC_FILES = sync_files
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
         sickbeard.POSTPONE_IF_NO_SUBS = config.checkbox_to_value(postpone_if_no_subs)
+
         # If 'postpone if no subs' is enabled, we must have SRT in allowed extensions list
         if sickbeard.POSTPONE_IF_NO_SUBS:
-            allowed_extensions += ',srt'
-            # Auto PP must be disabled because FINDSUBTITLE thread that calls manual PP (like nzbtomedia)
-            sickbeard.PROCESS_AUTOMATICALLY = 0
+            allowed_extensions = ','.join((allowed_extensions, 'srt'))
+
         sickbeard.ALLOWED_EXTENSIONS = ','.join({x.strip() for x in allowed_extensions.split(',') if x.strip()})
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
