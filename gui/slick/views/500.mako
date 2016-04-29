@@ -9,7 +9,7 @@ Mako errors that happen during updates may be a one time error if there were sig
 <br>
 </p>
 <hr>
-<a href="#mako-error" class="btn btn-default" data-toggle="collapse">Show/Hide Error</a>
+<a href="#mako-error" class="btn btn-default" data-toggle="collapse">_('Show/Hide Error')</a>
 <div id="mako-error" class="collapse">
 <br>
 <div class="align-center">
