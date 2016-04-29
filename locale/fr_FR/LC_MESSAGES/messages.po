@@ -27,7 +27,7 @@ msgstr "Téléchargement terminé"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr "Téléchargement de sous-titres terminé"
+msgstr "Téléchargement des sous-titres terminé"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
@@ -107,7 +107,7 @@ msgstr "Nouvelle mise à jour trouvée pour SickRage, démarrage de la mise à j
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr "La mise à jour a réussi"
+msgstr "Mise à jour réussie"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
@@ -130,7 +130,7 @@ msgstr "Sauvegarde de la configuration réussie, mise à jour..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr "Sauvegarde de la configuration échouée, mise à jour abandonnée "
+msgstr "Sauvegarde de la configuration échouée, mise à jour abandonnée"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
@@ -162,11 +162,11 @@ msgstr "Constructeur d'API"
 
 #: sickbeard/webserve.py:500
 msgid "Sort by:"
-msgstr "Trier par:"
+msgstr "Trier par :"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
-msgstr "Disposition:"
+msgstr "Disposition :"
 
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
@@ -247,7 +247,7 @@ msgstr "Liste des séries"
 
 #: sickbeard/webserve.py:759
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
-msgstr "Erreur : Demande non prise en charge. Envoyer requête jsonp avec la variable « callback » dans la chaîne de requête."
+msgstr "Erreur : Demande non prise en charge. Envoyer la requête jsonp avec la variable « callback » dans la chaîne de requête."
 
 #: sickbeard/webserve.py:803
 msgid "Success. Connected and authenticated"
@@ -347,7 +347,7 @@ msgstr "Test de notification a été envoyé avec succès à Plex Home Theater .
 
 #: sickbeard/webserve.py:932
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
-msgstr "Le teste de Plex Home Theater a échoué ... {plex_clients}"
+msgstr "Le test de Plex Home Theater a échoué ... {plex_clients}"
 
 #: sickbeard/webserve.py:935
 msgid "Tested Plex Home Theater(s)"
@@ -355,7 +355,7 @@ msgstr "Plex Home Theater(s) testé"
 
 #: sickbeard/webserve.py:949
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
-msgstr "Test de Plex Media serveur (s) réussi ... {plex_servers}"
+msgstr "Test de Plex Media Server(s) réussi ... {plex_servers}"
 
 #: sickbeard/webserve.py:951
 msgid "Test failed, No Plex Media Server host specified"
@@ -363,7 +363,7 @@ msgstr "Test échoué, aucun hôte spécifié pour Plex Media serveur"
 
 #: sickbeard/webserve.py:953
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
-msgstr "Test échoué pour Plex Media serveur(s)... {plex_servers}"
+msgstr "Test échoué pour Plex Media Server(s)... {plex_servers}"
 
 #: sickbeard/webserve.py:956
 msgid "Tested Plex Media Server host(s)"
@@ -453,7 +453,7 @@ msgstr "La mise à jour a échoué"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
-msgstr "La mise à jour n'a pas été appliquée, il n'y a pas eu de redémarrage. Consultez votre journal des événements pour plus d'informations."
+msgstr "La mise à jour a échoué, il n'y a pas eu de redémarrage. Consultez votre journal des événements pour plus d'informations."
 
 #: sickbeard/webserve.py:1217
 msgid "Checking out branch"
@@ -598,7 +598,7 @@ msgstr "dans la corbeille"
 
 #: sickbeard/webserve.py:1638
 msgid "(media untouched)"
-msgstr "(médias intactes)"
+msgstr "(médias intacts)"
 
 #: sickbeard/webserve.py:1638
 msgid "(with all related media)"
@@ -829,15 +829,15 @@ msgstr "Des erreurs sont survenues"
 
 #: sickbeard/webserve.py:3520 gui/slick/views/config_general.mako:172
 msgid "Updates"
-msgstr "Mises à jour"
+msgstr "Mets à jour"
 
 #: sickbeard/webserve.py:3525
 msgid "Refreshes"
-msgstr "Actualiser "
+msgstr "Actualise"
 
 #: sickbeard/webserve.py:3530
 msgid "Renames"
-msgstr "Renommer"
+msgstr "Renomme"
 
 #: sickbeard/webserve.py:3535 sickbeard/webserve.py:5127
 #: gui/slick/views/displayShow.mako:217 gui/slick/views/displayShow.mako:333
@@ -1017,11 +1017,11 @@ msgstr "Décompression non supportée, désactivation du réglage de décompress
 
 #: sickbeard/webserve.py:4273 sickbeard/webserve.py:4284
 msgid "You tried saving an invalid anime naming config, not saving your naming settings"
-msgstr "Vous essayez de sauvegarder une configuration non valide de nommage d'un Animé, vos réglages de nommage ne seront pas sauvegardés"
+msgstr "Vous essayez de sauvegarder une configuration de nommage invalide d'un Animé, vos réglages de nommage ne seront pas sauvegardés"
 
 #: sickbeard/webserve.py:4275 sickbeard/webserve.py:4286
 msgid "You tried saving an invalid naming config, not saving your naming settings"
-msgstr "Vous essayez de sauvegarder une configuration de nommage non valide, vos réglages de nommage ne seront pas sauvegardés"
+msgstr "Vous essayez de sauvegarder une configuration de nommage invalide, vos réglages de nommage ne seront pas sauvegardés"
 
 #: sickbeard/webserve.py:4389
 msgid "Config - Providers"
@@ -1049,7 +1049,7 @@ msgstr "Config - Sous-titres"
 
 #: sickbeard/webserve.py:5198
 msgid "Config - Anime"
-msgstr "Config - Anime"
+msgstr "Config - Animé"
 
 #: sickbeard/webserve.py:5234
 msgid "Clear Errors"
@@ -1077,14 +1077,14 @@ msgstr "Journaux"
 
 #: gui/slick/views/404.mako:5
 msgid "You have reached this page by accident, please check the url."
-msgstr "Vous avez atteint cette page par hasard, vérifiez l'url."
+msgstr "Vous avez accédé à cette page par hasard, vérifiez l'url."
 
 #: gui/slick/views/500.mako:6
 msgid "A mako error has occured.<br>\n"
 "If this happened during an update a simple page refresh may be the solution.<br>\n"
 "Mako errors that happen during updates may be a one time error if there were significant ui changes."
 msgstr "Une erreur mako est survenue. <br>\n"
-"Si cela s'est passé pendant une mise à jour un simple rafraîchissement de la page devrait corriger le problème. <br>\n"
+"Si cela s'est passé pendant une mise à jour, un simple rafraîchissement de la page devrait corriger le problème. <br>\n"
 "Les erreurs mako qui se produisent pendant les mises à jour peuvent être ponctuelles s'il y a eu un changement significatif dans l'interface utilisateur."
 
 #: gui/slick/views/addShows.mako:13 gui/slick/views/addShows_newShow.mako:22
@@ -1093,7 +1093,7 @@ msgstr "Ajouter une nouvelle série"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
-msgstr "Pour les séries que vous n'avez pas encore téléchargé, cette option trouve une série sur theTVDB.com, crée un répertoire pour ses épisodes et l'ajoute à SickRage."
+msgstr "Pour les séries que vous n'avez pas encore téléchargées, cette option trouve une série sur theTVDB.com, crée un répertoire pour ses épisodes et l'ajoute à SickRage."
 
 #: gui/slick/views/addShows.mako:22
 msgid "Add From Trakt Lists"
@@ -1101,7 +1101,7 @@ msgstr "Ajouter depuis les listes Trakt"
 
 #: gui/slick/views/addShows.mako:23
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr "Pour les séries que vous n'avez pas encore téléchargé, cette option vous laisse choisir une série dans une de vos listes Trakt pour l'ajouter à SickRage."
+msgstr "Pour les séries que vous n'avez pas encore téléchargées, cette option vous laisse choisir une série dans une de vos listes Trakt pour l'ajouter à SickRage."
 
 #: gui/slick/views/addShows.mako:32
 msgid "Add From IMDB's Popular Shows"
@@ -1145,7 +1145,7 @@ msgstr "M'inviter à définir des paramètres pour chaque série"
 
 #: gui/slick/views/addShows_addExistingShow.mako:42
 msgid "Displaying folders within these directories which aren't already added to SickRage"
-msgstr "Affiche les sous répertoires de ces répertoires qui n'ont pas encore été ajouté à SickRage"
+msgstr "Affiche les sous-répertoires de ces répertoires qui n'ont pas encore été ajoutés à SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:49 gui/slick/views/manage.mako:25
 #: gui/slick/views/manage.mako:65 gui/slick/views/manage_failedDownloads.mako:35
@@ -1172,7 +1172,7 @@ msgstr "Chercher"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
-msgstr "Ceci affectera seulement la langue du contenu du fichier de métadonnées récupérées et les noms de fichiers des épisodes."
+msgstr "Ceci affectera seulement la langue du contenu du fichier de métadonnées récupéré et les noms de fichiers des épisodes."
 
 #: gui/slick/views/addShows_newShow.mako:60
 msgid "This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!"
@@ -1184,7 +1184,7 @@ msgstr "Sélectionner le dossier de base"
 
 #: gui/slick/views/addShows_newShow.mako:70
 msgid "Pre-chosen Destination Folder"
-msgstr "Dossier de destination pré-établie"
+msgstr "Dossier de destination pré-établi"
 
 #: gui/slick/views/addShows_newShow.mako:79
 msgid "Customize options"
@@ -6008,7 +6008,7 @@ msgstr "Renommer la sélection"
 
 #: gui/slick/views/trendingShows.mako:16
 msgid "Trakt API did not return any results, please check your config."
-msgstr "Trakt API n'a pas renvoyé aucun résultat, veuillez vérifier votre config s'il vous plaît."
+msgstr "L'API de Trakt n'a renvoyé aucun résultat, merci de vérifier votre config."
 
 #: gui/slick/views/trendingShows.mako:42
 msgid "votes"
