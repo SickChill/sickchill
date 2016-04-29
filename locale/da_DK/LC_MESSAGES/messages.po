@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -3248,7 +3248,7 @@ msgstr "synkroniser din SickRage serie overvågningsliste med din trakt serie ov
 
 #: gui/slick/views/config_notifications.mako:1662
 msgid "Episode will be added on watch list when wanted or snatched and will be removed when downloaded "
-msgstr ""
+msgstr "Episoden vil blive tilføjet til din overvågningsliste når det er 'ønsket' eller 'hentet' og vil blive fjernet når det er downloadet "
 
 #: gui/slick/views/config_notifications.mako:1669
 msgid "Watchlist add method"
@@ -3500,7 +3500,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:118
 msgid "Rename Episodes"
-msgstr ""
+msgstr "Omdøb episoder"
 
 #: gui/slick/views/config_postProcessing.mako:119
 msgid "Rename episode using the Episode Naming settings?"
@@ -3540,7 +3540,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:156
 msgid "Rename .nfo file"
-msgstr ""
+msgstr "Omdøb .nfo-fil"
 
 #: gui/slick/views/config_postProcessing.mako:157
 msgid "Rename the original .nfo file to .nfo-orig to avoid conflicts?"
@@ -3548,7 +3548,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:163
 msgid "Change File Date"
-msgstr ""
+msgstr "Skift fildato"
 
 #: gui/slick/views/config_postProcessing.mako:164
 msgid "Set last modified filedate to the date that the episode aired?"
@@ -3560,19 +3560,19 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:173
 msgid "Timezone for File Date"
-msgstr ""
+msgstr "Tidszone for fildato"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "local"
-msgstr ""
+msgstr "lokal"
 
 #: gui/slick/views/config_postProcessing.mako:176
 msgid "network"
-msgstr ""
+msgstr "netværk"
 
 #: gui/slick/views/config_postProcessing.mako:184
 msgid "What timezone should be used to change File Date?"
-msgstr ""
+msgstr "Hvilken tidszone skal bruges til at ændre fil dato?"
 
 #: gui/slick/views/config_postProcessing.mako:190
 msgid "Unpack"
@@ -3584,11 +3584,11 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:195
 msgid "Only working with RAR archive"
-msgstr ""
+msgstr "Virker kun med RAR filer"
 
 #: gui/slick/views/config_postProcessing.mako:201
 msgid "Delete RAR contents"
-msgstr ""
+msgstr "Slet RAR indhold"
 
 #: gui/slick/views/config_postProcessing.mako:202
 msgid "Delete content of RAR files, even if Process Method not set to move?"
@@ -3614,7 +3614,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:223
 #: gui/slick/views/config_subtitles.mako:166
 msgid "See"
-msgstr ""
+msgstr "Se"
 
 #: gui/slick/views/config_postProcessing.mako:223
 msgid "for script arguments description and usage."
@@ -3629,7 +3629,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:668
 #: gui/slick/views/config_postProcessing.mako:846
 msgid "Name Pattern"
-msgstr ""
+msgstr "Navnemønster"
 
 #: gui/slick/views/config_postProcessing.mako:269
 msgid "Don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality"
@@ -3640,13 +3640,13 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:702
 #: gui/slick/views/config_postProcessing.mako:880
 msgid "Meaning"
-msgstr ""
+msgstr "Betydning"
 
 #: gui/slick/views/config_postProcessing.mako:278
 #: gui/slick/views/config_postProcessing.mako:526
 #: gui/slick/views/config_postProcessing.mako:703
 msgid "Pattern"
-msgstr ""
+msgstr "Mønster"
 
 #: gui/slick/views/config_postProcessing.mako:279
 #: gui/slick/views/config_postProcessing.mako:527
@@ -3702,7 +3702,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:324
 #: gui/slick/views/config_postProcessing.mako:927
 msgid "Episode Number"
-msgstr ""
+msgstr "Episode nummer"
 
 #: gui/slick/views/config_postProcessing.mako:334
 #: gui/slick/views/config_postProcessing.mako:937
@@ -3984,13 +3984,13 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:143
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: gui/slick/views/config_providers.mako:162
 #: gui/slick/views/config_providers.mako:249
 #: gui/slick/views/config_providers.mako:522
 msgid "Enable daily searches"
-msgstr ""
+msgstr "Aktiver daglige søgninger"
 
 #: gui/slick/views/config_providers.mako:165
 #: gui/slick/views/config_providers.mako:252
@@ -4064,15 +4064,15 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:386
 msgid "Passkey"
-msgstr ""
+msgstr "Passkey"
 
 #: gui/slick/views/config_providers.mako:397
 msgid "Pin"
-msgstr ""
+msgstr "PIN"
 
 #: gui/slick/views/config_providers.mako:408
 msgid "Seed ratio"
-msgstr ""
+msgstr "Seed forhold"
 
 #: gui/slick/views/config_providers.mako:416
 msgid "stop transfer when ratio is reached<br>(-1 SickRage default to seed forever, or leave blank for downloader default)"
@@ -4080,31 +4080,31 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:425
 msgid "Minimum seeders"
-msgstr ""
+msgstr "Minimum seeders"
 
 #: gui/slick/views/config_providers.mako:436
 msgid "Minimum leechers"
-msgstr ""
+msgstr "Minimum leechers"
 
 #: gui/slick/views/config_providers.mako:447
 msgid "Confirmed download"
-msgstr ""
+msgstr "Bekræftet download"
 
 #: gui/slick/views/config_providers.mako:450
 msgid "only download torrents from trusted or verified uploaders ?"
-msgstr ""
+msgstr "kun download torrents fra betroede eller verificerede uploaders?"
 
 #: gui/slick/views/config_providers.mako:459
 msgid "Ranked torrents"
-msgstr ""
+msgstr "Rangerede torrents"
 
 #: gui/slick/views/config_providers.mako:462
 msgid "only download ranked torrents (trusted releases)"
-msgstr ""
+msgstr "kun download rangerede torrent (betroede udgivelser)"
 
 #: gui/slick/views/config_providers.mako:471
 msgid "English torrents"
-msgstr ""
+msgstr "Engelske torrents"
 
 #: gui/slick/views/config_providers.mako:474
 msgid "only download english torrents, or torrents containing english subtitles"
@@ -4112,7 +4112,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:483
 msgid "For Spanish torrents"
-msgstr ""
+msgstr "For Spanske torrents"
 
 #: gui/slick/views/config_providers.mako:486
 msgid "ONLY search on this provider if show info is defined as \"Spanish\" (avoid provider's use for VOS shows)"
@@ -4120,23 +4120,23 @@ msgstr "Søg KUN hos denne udbyder hvis seriens info er defineret som \"Spansk\"
 
 #: gui/slick/views/config_providers.mako:495
 msgid "Sorting results by"
-msgstr ""
+msgstr "Sorterer resultater på"
 
 #: gui/slick/views/config_providers.mako:510
 msgid "Freeleech"
-msgstr ""
+msgstr "Freeleech"
 
 #: gui/slick/views/config_providers.mako:513
 msgid "only download <b>\"FreeLeech\"</b> torrents."
-msgstr ""
+msgstr "kun download <b>\"Freeleeck\"</b> torrents."
 
 #: gui/slick/views/config_providers.mako:581
 msgid "Category"
-msgstr ""
+msgstr "Kategori"
 
 #: gui/slick/views/config_providers.mako:599
 msgid "select torrent with Italian subtitle"
-msgstr ""
+msgstr "vælg torrent med italiensk undertekst"
 
 #: gui/slick/views/config_providers.mako:620
 msgid "Configure Custom<br>Newznab Providers"

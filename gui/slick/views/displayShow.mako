@@ -71,7 +71,7 @@
                             % if season_special:
                                 ${_('Display Specials')}:
                                 <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">
-                                    ${('Show', 'Hide')[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}
+                                    ${(_('Show'), _('Hide'))[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}
                                 </a>
                             % endif
                         </span>
@@ -119,7 +119,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
-                         class="pull-md-left pull-lg-left tvshowImg img-responsive" alt="Show Image"
+                         class="pull-md-left pull-lg-left tvshowImg img-responsive" alt="${_('Poster for')} ${show.name}"
                          onclick="location.href='${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster'"/>
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
@@ -131,7 +131,7 @@
                                 </div>
                                 <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
                                     % if 'rating' in show.imdb_info:
-                                    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " ${_('Votes')}" %>
+                                    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
                                         <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                     % endif
 
@@ -163,7 +163,7 @@
                                     <ul class="tags">
                                         % if show.genre and not show.imdb_info.get('genres'):
                                             % for genre in show.genre[1:-1].split('|'):
-                                                <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular ${genre} shows on trakt.tv.').format(genre=genre)}"><li>${genre}</li></a>
+                                                <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=genre)}"><li>${_('genre')}</li></a>
                                             % endfor
                                         % elif show.imdb_info.get('genres'):
                                             % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):

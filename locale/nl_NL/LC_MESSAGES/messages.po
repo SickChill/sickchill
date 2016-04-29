@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -122,15 +122,15 @@ msgstr "Backup"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
-msgstr "Bezig met reservekopie van configuratie..."
+msgstr "Bezig met maken van een backup..."
 
 #: sickbeard/versionChecker.py:101
 msgid "Config backup successful, updating..."
-msgstr "Configuratie reservekopie klaar, bijwerken..."
+msgstr "Instellingen backup gelukt, start bijwerken..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr "Configuratie reservekopie mislukt, bijwerken wordt afgebroken"
+msgstr "Instellingen backup mislukt, bijwerken wordt afgebroken"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
@@ -1101,7 +1101,7 @@ msgstr "Toevoegen van Trakt Series"
 
 #: gui/slick/views/addShows.mako:23
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr "Deze optie geeft je de mogelijkheid series te kiezen uit Trakt lijsten die je nog niet hebt toegevoegd aan SickRage."
+msgstr "Deze optie geeft je de mogelijkheid series te kiezen uit <b>Trakt lijsten</b> die je nog niet hebt toegevoegd aan SickRage."
 
 #: gui/slick/views/addShows.mako:32
 msgid "Add From IMDB's Popular Shows"
@@ -1607,7 +1607,7 @@ msgstr "Indexeer Taal"
 
 #: gui/slick/views/config_general.mako:48
 msgid "for adding shows and metadata providers"
-msgstr "voor het toevoegen van series en metadata aanbieders"
+msgstr "Taal voor de metadata die moet worden gedownload"
 
 #: gui/slick/views/config_general.mako:54
 msgid "Launch browser"
@@ -1628,7 +1628,7 @@ msgstr "Series"
 
 #: gui/slick/views/config_general.mako:72
 msgid "when launching SickRage interface"
-msgstr "bij het laden van de SickRage hoofdpagina"
+msgstr "Kies de SickRage startpagina"
 
 #: gui/slick/views/config_general.mako:78
 msgid "Choose hour to update shows"
@@ -1636,11 +1636,11 @@ msgstr "Wanneer Series updaten"
 
 #: gui/slick/views/config_general.mako:81
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
-msgstr "met informatie zoals volgende datum van uitzending, serie beëindigd, etc. Gebruik 15 voor 3 uur 's middags, 4 voor 4 uur 's ochtends, etc."
+msgstr "Update de Series met nieuwe informatie als uitzend datums etc. Kies tijd tussen 0-24 uur."
 
 #: gui/slick/views/config_general.mako:82
 msgid "Note: minutes are randomized each time SickRage is started"
-msgstr "Opmerking: minuten worden willekeurig ingesteld elke keer als SickRage gestart word"
+msgstr "Opmerking: De minuten worden telkens willekeurig gekozen."
 
 #: gui/slick/views/config_general.mako:88
 msgid "Send to trash for actions"
@@ -1648,19 +1648,19 @@ msgstr "Naar Prullenbak verplaatsen"
 
 #: gui/slick/views/config_general.mako:92
 msgid "when using show \"Remove\" and delete files"
-msgstr "bij gebruik van Serie \"Verwijder\" en verwijder bestanden"
+msgstr "Verwijderde bestanden worden naar de prullenbak verplaatst."
 
 #: gui/slick/views/config_general.mako:96
 msgid "on scheduled deletes of the oldest log files"
-msgstr "op geplande tijd verwijder de oudste log bestanden"
+msgstr "Verwijder oudste bestanden"
 
 #: gui/slick/views/config_general.mako:98
 msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
-msgstr "geselecteerde acties gebruik afval (prullenbak) in plaats van de standaard permanent verwijderen"
+msgstr "Selecteer de functies voor de prullenbak i.p.v. standaard verwijderen."
 
 #: gui/slick/views/config_general.mako:104
 msgid "Log file folder location"
-msgstr "Log bestands-locatie"
+msgstr "Log bestand locatie"
 
 #: gui/slick/views/config_general.mako:113
 msgid "Number of Log files saved"
@@ -1668,7 +1668,7 @@ msgstr "Aantal log bestanden"
 
 #: gui/slick/views/config_general.mako:116
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
-msgstr "aantal log bestanden dat bewaard blijft als logs geroteerd worden (standaard: 5) (VEREIST HERSTART)"
+msgstr "Aantal log bestanden dat bewaard blijft als logs worden geroteerd  (standaard = 5, en herstart is vereist)"
 
 #: gui/slick/views/config_general.mako:123
 msgid "Size of Log files saved"
@@ -1684,7 +1684,7 @@ msgstr "Standaard indexeerder"
 
 #: gui/slick/views/config_general.mako:141
 msgid "as the default selection when adding new shows"
-msgstr "als standaard selectie bij toevoegen nieuw series"
+msgstr "Standaard indexeerder bij toevoegen Series"
 
 #: gui/slick/views/config_general.mako:148
 msgid "Timeout show indexer at"
@@ -1692,7 +1692,7 @@ msgstr "Timeout van indexeerder"
 
 #: gui/slick/views/config_general.mako:151
 msgid "seconds of inactivity when finding new shows (default:20)"
-msgstr "seconden van inactiviteit bij het zoeken naar nieuwe shows (standaard: 20)"
+msgstr "Time-out bij toevoegen van nieuwe Series (standaard: 20)"
 
 #: gui/slick/views/config_general.mako:158
 msgid "Show root directories"
@@ -1700,7 +1700,7 @@ msgstr "Toon hoofdmappen"
 
 #: gui/slick/views/config_general.mako:160
 msgid "where the files of shows are located"
-msgstr "Waar zich de mappen van de series zich bevinden"
+msgstr "Locatie van de Serie(s)"
 
 #: gui/slick/views/config_general.mako:173
 msgid "Options for software updates."
@@ -1713,7 +1713,7 @@ msgstr "Controleer op updates"
 #: gui/slick/views/config_general.mako:182
 msgid "and display notifications when updates are available.\n"
 "                                    Checks are run on startup and at the frequency set below*"
-msgstr "Geeft meldingen weer er updates beschikbaar zijn.\n"
+msgstr "Geeft een melding wanneer er updates beschikbaar zijn.\n"
 "\n"
 "Controles worden uitgevoerd bij het opstarten en op de ingestelde tijd."
 
@@ -1724,8 +1724,8 @@ msgstr "Automatische updates"
 #: gui/slick/views/config_general.mako:193
 msgid "fetch and install software updates.\n"
 "                                    Updates are run on startup and in the background at the frequency set below*"
-msgstr "Downloaden en installeren van software updates.\n"
-"                                    Updates worden uitgevoerd bij het opstarten en in de achtergrond."
+msgstr "Automatisch downloaden en installeren van software updates.\n"
+"                                    Updates worden uitgevoerd bij het opstarten en op de achtergrond."
 
 #: gui/slick/views/config_general.mako:201
 msgid "Check the server every*"
@@ -1761,7 +1761,7 @@ msgstr "Systeemtaal"
 
 #: gui/slick/views/config_general.mako:246 gui/slick/views/config_general.mako:258
 msgid "for appearance to take effect, save then refresh your browser"
-msgstr "om het uiterlijk te wijzigen, sla je veranderingen op en vernieuw je browser"
+msgstr "Sla de verandering op en ververs de pagina"
 
 #: gui/slick/views/config_general.mako:252
 msgid "Display theme"
@@ -1801,7 +1801,7 @@ msgstr "Sorteer met \"The\", \"A\", \"An\""
 
 #: gui/slick/views/config_general.mako:299
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
-msgstr "houdt rekening met de voorzetsels (\"The\", \"A\", \"An\") bij het sorteren van de lijst met shows"
+msgstr "Houdt rekening met de voorzetsels (\"The\", \"A\", \"An\") bij het sorteren van de Serie lijst"
 
 #: gui/slick/views/config_general.mako:305
 msgid "Missed episodes range"
@@ -1837,7 +1837,7 @@ msgstr "Gebruik standaard van apparaat "
 
 #: gui/slick/views/config_general.mako:352
 msgid "Time style"
-msgstr "Tijd notatie"
+msgstr "Tijd stijl"
 
 #: gui/slick/views/config_general.mako:359 gui/slick/views/config_general.mako:377
 #: gui/slick/views/config_general.mako:658 gui/slick/views/config_general.mako:682
@@ -1913,11 +1913,11 @@ msgstr "API sleutel"
 
 #: gui/slick/views/config_general.mako:417
 msgid "used to give 3rd party programs limited access to SickRage"
-msgstr "gebruikt om externe programma's beperkte toegang te geven aan SickRage"
+msgstr "Benodigd om andere programma's toegang te geven tot SickRage"
 
 #: gui/slick/views/config_general.mako:418
 msgid "you can try all the features of the API"
-msgstr "u kunt alle functies van de API proberen"
+msgstr "Probeer en bekijk alle API functies"
 
 #: gui/slick/views/config_general.mako:418
 msgid "here"
@@ -1937,7 +1937,7 @@ msgstr "HTTP gebruiker"
 
 #: gui/slick/views/config_general.mako:439
 msgid "set blank for no login"
-msgstr "laat leeg om geen login in te stellen"
+msgstr "laat leeg voor geen login"
 
 #: gui/slick/views/config_general.mako:446
 msgid "HTTP password"
@@ -1949,7 +1949,7 @@ msgstr "HTTP wachtwoord"
 #: gui/slick/views/config_notifications.mako:307
 #: gui/slick/views/config_notifications.mako:316
 msgid "blank = no authentication"
-msgstr "blanco = geen authenticatie"
+msgstr "laat leeg voor geen login"
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
@@ -1957,7 +1957,7 @@ msgstr "HTTP poort"
 
 #: gui/slick/views/config_general.mako:458
 msgid "web port to browse and access SickRage (default:8081)"
-msgstr "webpoort om SickRage te doorbladeren en toegang te krijgen (standaard: 8081)"
+msgstr "Poort waarop SickRage kan worden geopend (standaard: 8081)"
 
 #: gui/slick/views/config_general.mako:465
 msgid "Notify on login"
@@ -1973,7 +1973,7 @@ msgstr "Luister naar IPv6"
 
 #: gui/slick/views/config_general.mako:478
 msgid "attempt binding to any available IPv6 address"
-msgstr "probeer om te binden aan een beschikbaar IPv6-adres"
+msgstr "probeer een IPv6-adres te verkrijgen"
 
 #: gui/slick/views/config_general.mako:485
 msgid "Enable HTTPS"
@@ -1981,7 +1981,7 @@ msgstr "Activeer HTTPS"
 
 #: gui/slick/views/config_general.mako:488
 msgid "enable access to the web interface using a HTTPS address"
-msgstr "activeer toegang tot de webinterface m.b.v. een HTTPS-adres"
+msgstr "activeer HTTPS toegang tot de webinterface van Sickrage"
 
 #: gui/slick/views/config_general.mako:495
 msgid "HTTPS certificate"
@@ -1989,7 +1989,7 @@ msgstr "HTTPS certificaat"
 
 #: gui/slick/views/config_general.mako:498
 msgid "file name or path to HTTPS certificate"
-msgstr "bestandsnaam of pad naar HTTPS certificaat"
+msgstr "bestandsnaam en pad naar HTTPS certificaat"
 
 #: gui/slick/views/config_general.mako:504
 msgid "HTTPS key"
@@ -1997,7 +1997,7 @@ msgstr "HTTPS sleutel"
 
 #: gui/slick/views/config_general.mako:507
 msgid "file name or path to HTTPS key"
-msgstr "bestandsnaam of pad naar de HTTPS sleutel"
+msgstr "bestandsnaam en pad naar de HTTPS sleutel"
 
 #: gui/slick/views/config_general.mako:515
 msgid "Reverse proxy headers"
@@ -2021,7 +2021,7 @@ msgstr "Anoniem doorsturen"
 
 #: gui/slick/views/config_general.mako:560
 msgid "backlink protection via anonymizer service, must end in \"?\""
-msgstr "backlink bescherming via anonimiserings dienst, moet eindigen op \"?\""
+msgstr "doorlink bescherming via anonimiserings dienst, moet eindigen op \"?\""
 
 #: gui/slick/views/config_general.mako:567
 msgid "Enable debug"
@@ -2046,7 +2046,7 @@ msgstr "Geen Herstart"
 #: gui/slick/views/config_general.mako:590
 msgid "Only shutdown when restarting SR.\n"
 "                                    Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
-msgstr "Sluit enkel af wanneer je SR herstart.\n"
+msgstr "Sickrage niet herstarten.\n"
 "                                    Selecteer deze optie enkel als je externe software hebt die SR automatisch heropstart als het stopt (zoals FireDaemon)"
 
 #: gui/slick/views/config_general.mako:599
@@ -2064,7 +2064,7 @@ msgstr "Waarschuwing"
 
 #: gui/slick/views/config_general.mako:603
 msgid "Passwords must only contain"
-msgstr "Wachtwoorden moeten alleen bevatten"
+msgstr "Wachtwoorden mogen alleen bevatten"
 
 #: gui/slick/views/config_general.mako:603
 msgid "ASCII characters"
@@ -2094,7 +2094,7 @@ msgstr "Proxy host"
 
 #: gui/slick/views/config_general.mako:636
 msgid "blank to disable or proxy to use when connecting to providers"
-msgstr "laat leeg om uit te schakelen of om een proxy te gebruiken om met aanbieders te verbinden"
+msgstr "Vul evt. een proxy in voor verbindingen met de zoekmachines"
 
 #: gui/slick/views/config_general.mako:642
 msgid "Use proxy for indexers"
@@ -2106,11 +2106,11 @@ msgstr "gebruik een proxy host om met indexeerders te verbinden (thetvdb)"
 
 #: gui/slick/views/config_general.mako:652
 msgid "Skip Remove Detection"
-msgstr "Deactiveer verwijderings detectie"
+msgstr "Verwijderings-detectie"
 
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
-msgstr "Deactiveer detectie van verwijderde afleveringen. De afleverings status wordt nier veranderd"
+msgstr "Deactiveert de detectie van verwijderde afleveringen. De afleverings-status wordt niet veranderd"
 
 #: gui/slick/views/config_general.mako:658
 msgid "This may mean SickRage misses renames as well"
@@ -2122,11 +2122,11 @@ msgstr "Standaard status van verwijderde aflevering"
 
 #: gui/slick/views/config_general.mako:680
 msgid "Define the status to be set for media file that has been deleted."
-msgstr "Definieer de in te stellen status van een media bestand dat is verwijderd."
+msgstr "Selecteer status voor verwijderde afleveringen"
 
 #: gui/slick/views/config_general.mako:682
 msgid "Archived option will keep previous downloaded quality"
-msgstr "Gearchiveerd optie zal eerder gedownloade kwaliteitseigenschap behouden"
+msgstr "Gearchiveerd zal eerder gedownloade kwaliteitstype behouden"
 
 #: gui/slick/views/config_general.mako:683
 msgid "Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
@@ -2162,7 +2162,7 @@ msgstr "GitHub wachtwoord"
 
 #: gui/slick/views/config_general.mako:755
 msgid "GitHub remote for branch"
-msgstr "GitHub remote voor gebruikte branch"
+msgstr "GitHub remote"
 
 #: gui/slick/views/config_general.mako:758
 msgid "default:origin. Access repo configured remotes (save then refresh browser)"
@@ -2187,7 +2187,7 @@ msgstr "verwijder untracked bestanden en voer een harde reset uit op de git bran
 #: gui/slick/views/config_general.mako:790
 #: gui/slick/views/config_postProcessing.mako:1136
 msgid "All non-absolute folder locations are relative to "
-msgstr "Alle non-absolute map locaties refereren naar "
+msgstr "Alle ingekorte map locaties verwijzen naar "
 
 #: gui/slick/views/config_notifications.mako:19
 msgid "Home Theater / NAS"
@@ -3249,7 +3249,7 @@ msgstr "synchroniseer uw SickRage show volglijst met jouw trakt show volglijst (
 
 #: gui/slick/views/config_notifications.mako:1662
 msgid "Episode will be added on watch list when wanted or snatched and will be removed when downloaded "
-msgstr "Aflevering zal worden toegevoegd aan de volglijst als hij gezocht of geplukt is en zal worden verwijderd als de download voltooid is "
+msgstr "Aflevering zal worden toegevoegd aan de volglijst als hij gezocht of gevonden is en zal worden verwijderd als de download voltooid is "
 
 #: gui/slick/views/config_notifications.mako:1669
 msgid "Watchlist add method"
@@ -3424,7 +3424,7 @@ msgstr "Instellingen die bepalen hoe SickRage voltooide downloads verwerkt."
 
 #: gui/slick/views/config_postProcessing.mako:36
 msgid "Enable the automatic post processor to scan and process any files in your <i>Post Processing Dir"
-msgstr "Schakel de automatische post processor in om alle bestanden te scannen en verwerken in uw <i>Nabewerkings Map"
+msgstr "Schakel de automatische nabewerking in om alle bestanden te scannen en verwerken in uw <i>Nabewerkings Map"
 
 #: gui/slick/views/config_postProcessing.mako:40
 msgid "Do not use if you use an external Post Processing script"
@@ -3440,7 +3440,7 @@ msgstr "De map waar uw download client de voltooide TV downloads zet."
 
 #: gui/slick/views/config_postProcessing.mako:54
 msgid "Please use seperate downloading and completed folders in your download client if possible."
-msgstr "Gebruik aparte download en voltooid mappen in je download client indien mogelijk."
+msgstr "Gebruik bij voorkeur aparte mappen voor complete en incomplete downloads."
 
 #: gui/slick/views/config_postProcessing.mako:59
 msgid "Processing Method"
@@ -3457,19 +3457,19 @@ msgstr "OPMERKING"
 
 #: gui/slick/views/config_postProcessing.mako:75
 msgid "If you keep seeding torrents after they finish, please avoid the 'move' processing method to prevent errors."
-msgstr "Als je torrents blijft seeden nadat ze binnen zijn, voorkom kan dat het 'verplaats' proces fouten veroorzaakt."
+msgstr "Als je torrents blijft seeden nadat ze klaar zijn, gebruik dan niet de Move functie om fouten te voorkomen."
 
 #: gui/slick/views/config_postProcessing.mako:80
 msgid "Auto Post-Processing Frequency"
-msgstr "Automatische Na-Verwerkings Frequentie"
+msgstr "Nabewerking cyclus"
 
 #: gui/slick/views/config_postProcessing.mako:85
 msgid "Time in minutes to check for new files to auto post-process (min 10)"
-msgstr "Hoeveelheid tijd in minuten om op nieuwe bestanden te controleren voor het auto post-proces (min 10)"
+msgstr "Om de hoeveel minuten moet worden gecontroleerd op nieuwe bestanden voor het nabewerkings-proces (min 10)"
 
 #: gui/slick/views/config_postProcessing.mako:91
 msgid "Postpone post processing"
-msgstr "Stel post processing uit"
+msgstr "Stel nabewerking uit"
 
 #: gui/slick/views/config_postProcessing.mako:92
 msgid "Wait to process a folder if sync files are present."
@@ -3481,15 +3481,15 @@ msgstr "Sync bestandsextensies"
 
 #: gui/slick/views/config_postProcessing.mako:102
 msgid "comma seperated list of extensions or filename globs SickRage ignores when Post Processing"
-msgstr "komma gescheiden lijst van extensies of bestandsnamen die Sickrage moet negeren wanneer het Post Proces loopt"
+msgstr "gebruik een komma tussen meerdere namen en extensies die Sickrage moet negeren tijdens de nabewerking"
 
 #: gui/slick/views/config_postProcessing.mako:108
 msgid "Postpone if no subtitle"
-msgstr "Sla over als er geen ondertiteling is"
+msgstr "Wacht op ondertiteling"
 
 #: gui/slick/views/config_postProcessing.mako:109
 msgid "Wait to process a file until subtitles are present"
-msgstr "Wacht met het verwerken van een bestand tot ondertiteling aanwezig is"
+msgstr "Wacht met het verwerken van een download tot de ondertiteling aanwezig is"
 
 #: gui/slick/views/config_postProcessing.mako:110
 msgid "Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)"
@@ -3509,15 +3509,15 @@ msgstr "Hernoem aflevering met de Aflevering Naam instellingen?"
 
 #: gui/slick/views/config_postProcessing.mako:125
 msgid "Create missing show directories"
-msgstr "Maak ontbrekende show mappen"
+msgstr "Maak ontbrekende Serie mappen"
 
 #: gui/slick/views/config_postProcessing.mako:126
 msgid "Create missing show directories when they get deleted"
-msgstr "Maak ontbrekende show mappen wanneer ze worden verwijderd"
+msgstr "Bij ontbreken, maak de Serie mappen opnieuw aan"
 
 #: gui/slick/views/config_postProcessing.mako:132
 msgid "Add shows without directory"
-msgstr "Voeg series toe die nog geen map hebben"
+msgstr "Toevoegen series zonder map"
 
 #: gui/slick/views/config_postProcessing.mako:133
 msgid "Add shows without creating a directory (not recommended)"
@@ -3541,7 +3541,7 @@ msgstr "Komma gescheiden lijst met toegekende bestandsextensies die SickRage moe
 
 #: gui/slick/views/config_postProcessing.mako:156
 msgid "Rename .nfo file"
-msgstr "Hernoem het .nfo bestand"
+msgstr "Hernoem .nfo bestanden"
 
 #: gui/slick/views/config_postProcessing.mako:157
 msgid "Rename the original .nfo file to .nfo-orig to avoid conflicts?"
@@ -3549,15 +3549,15 @@ msgstr "Hernoem het originele .nfo bestand om naar .nfo-orig om conflicten te ve
 
 #: gui/slick/views/config_postProcessing.mako:163
 msgid "Change File Date"
-msgstr "Pas de bestands datum aan"
+msgstr "Bestands-datum aanpassen"
 
 #: gui/slick/views/config_postProcessing.mako:164
 msgid "Set last modified filedate to the date that the episode aired?"
-msgstr "Stel de bestandsdatum vast op de datum waarop de aflevering uitgezonden?"
+msgstr "Verander de bestandsdatum naar de datum waarop de aflevering is uitgezonden?"
 
 #: gui/slick/views/config_postProcessing.mako:168
 msgid "Some systems may ignore this feature."
-msgstr "Dit werkt niet op alle soorten systemen."
+msgstr "Dit werkt niet op alle systemen."
 
 #: gui/slick/views/config_postProcessing.mako:173
 msgid "Timezone for File Date"
@@ -3581,11 +3581,11 @@ msgstr "Uitpakken"
 
 #: gui/slick/views/config_postProcessing.mako:191
 msgid "Unpack any TV releases in your <i>TV Download Dir</i>?"
-msgstr "Alle bestanden in uw <i>TV downloaden Dir</i> uitpakken?"
+msgstr "Alle bestanden in uw <i>Nabewerkings-map</i> uitpakken?"
 
 #: gui/slick/views/config_postProcessing.mako:195
 msgid "Only working with RAR archive"
-msgstr "Werkt enkel met RAR bestanden"
+msgstr "Werkt enkel voor RAR bestanden"
 
 #: gui/slick/views/config_postProcessing.mako:201
 msgid "Delete RAR contents"
@@ -3593,7 +3593,7 @@ msgstr "Verwijder inhoud RAR archief"
 
 #: gui/slick/views/config_postProcessing.mako:202
 msgid "Delete content of RAR files, even if Process Method not set to move?"
-msgstr "Verwijder inhoud RAR archief, zelfs als de nabewerkings methode ingesteld staat op 'verplaatsen'?"
+msgstr "Verwijder het RAR archief, zelfs als de nabewerkings methode ingesteld staat op 'Move'?"
 
 #: gui/slick/views/config_postProcessing.mako:208
 msgid "Don't delete empty folders"
@@ -3918,7 +3918,7 @@ msgstr "Voeg het absolute nummer niet toe"
 
 #: gui/slick/views/config_postProcessing.mako:1071
 msgid "The data associated to the data. These are files associated to a TV show in the form of images and text that, when supported, will enhance the viewing experience."
-msgstr "Gegevensbestanden gekoppeld aan de series. Dit zijn bestanden gekoppeld aan een TV serie in de vorm van afbeeldingen en text die, wanneer ondersteund, de kijkervaring ten goede komen."
+msgstr "Gegevensbestanden die zijn gekoppeld aan de series in de vorm van afbeeldingen en informatie bestanden die de kijkervaring ten goede komen."
 
 #: gui/slick/views/config_postProcessing.mako:1077
 msgid "Metadata Type"
@@ -3953,7 +3953,7 @@ msgstr "Vink en sleep de zoekmachines in de volgorde waarin ze aangesproken moet
 
 #: gui/slick/views/config_providers.mako:54
 msgid "At least one provider is required but two are recommended."
-msgstr "Er is minimaal 1 zoekmachine noodzakelijk maar minimaal 2 is aanbevolen."
+msgstr "Er is minimaal 1 zoekmachine noodzakelijk maar 2 is aanbevolen."
 
 #: gui/slick/views/config_providers.mako:57
 msgid "Torrent providers can be toggled in "
@@ -3973,11 +3973,11 @@ msgstr "Configureer hier de individuele Zoekmachines."
 
 #: gui/slick/views/config_providers.mako:106
 msgid "Check with provider's website on how to obtain an API key if needed."
-msgstr "Controleer op de website van de Zoekmachine hoe aan een API sleutel te komen indien nodig."
+msgstr "Kijk op de website van de Zoekmachine hoe je een API sleutel kunt bemachtigen."
 
 #: gui/slick/views/config_providers.mako:112
 msgid "Configure provider"
-msgstr "Configureer Zoekmachine"
+msgstr "Selecteer Zoekmachine"
 
 #: gui/slick/views/config_providers.mako:130
 msgid "No providers available to configure."
@@ -4145,7 +4145,7 @@ msgstr "Configureer de <br>Newznab Provider"
 
 #: gui/slick/views/config_providers.mako:621
 msgid "Add and setup or remove custom Newznab providers."
-msgstr "Toevoegen en instellen of verwijderen van aangepaste Newznab leveranciers."
+msgstr "Toevoegen, instellen en verwijderen van eigen Newznab zoekmachines."
 
 #: gui/slick/views/config_providers.mako:627
 #: gui/slick/views/config_providers.mako:703
@@ -4172,7 +4172,7 @@ msgstr "Newznab zoek categorieën"
 
 #: gui/slick/views/config_providers.mako:669
 msgid "(select your Newznab categories on the left, and click the \"update categories\" button to use them for searching.) <b>don't forget to to save the form!"
-msgstr "(selecteer jouw Newznab categorieën links en klik de \"update categories\" knop om ze te gebruiken voor het zoeken.) <b>vergeet niet het formulier op te slaan!"
+msgstr "(selecteer de Newznab categorieën links en klik de \"update categorieën\" knop om ze te gebruiken voor het zoeken.) <b>vergeet niet de veranderingen op te slaan!"
 
 #: gui/slick/views/config_providers.mako:673
 msgid "Update Categories"
@@ -4228,7 +4228,7 @@ msgstr "Hoe om te gaan met zoeken met"
 
 #: gui/slick/views/config_search.mako:31
 msgid "Randomize Providers"
-msgstr "Willekeurige volgorde zoekmachines"
+msgstr "Willekeurige zoekmachines"
 
 #: gui/slick/views/config_search.mako:34
 msgid "randomize the provider search order instead of going in order of placement"
@@ -4292,7 +4292,7 @@ msgstr "Usenet retentie"
 
 #: gui/slick/views/config_search.mako:98
 msgid "age limit in days for usenet articles to be used (e.g. 500)"
-msgstr "leeftijdslimiet in dagen voor usenet artikelen om te gebruiken (bijv 500)"
+msgstr "dagen. Bestaands limiet voor Usenet bestanden  (bv 500)"
 
 #: gui/slick/views/config_search.mako:105
 msgid "Ignore words"
@@ -4301,7 +4301,7 @@ msgstr "Negeer woorden"
 #: gui/slick/views/config_search.mako:108
 msgid "results with one or more word from this list will be ignored<br>\n"
 "                                    separate words with a comma, e.g. \"word1,word2,word3\""
-msgstr "resultaten met een of meer woorden uit deze lijst zullen worden genegeerd<br>\n"
+msgstr "Alle resultaten met minimaal een woord uit de lijst zullen worden genegeerd<br>\n"
 "                                     scheid woorden met een komma, bijvoorbeeld \"woord1,woord2,woord3\""
 
 #: gui/slick/views/config_search.mako:117
@@ -4311,7 +4311,7 @@ msgstr "Vereiste woorden"
 #: gui/slick/views/config_search.mako:120
 msgid "results with no word from this list will be ignored<br>\n"
 "                                    separate words with a comma, e.g. \"word1,word2,word3\""
-msgstr "resultaten zonder worden uit deze lijst zullen worden genegeerd<br>\n"
+msgstr "Resultaten zonder alle woorden uit deze lijst zullen worden genegeerd<br>\n"
 "                                    scheid woorden met een komma, bijvoorbeeld \"woord1,woord2,woord3\""
 
 #: gui/slick/views/config_search.mako:129
@@ -4321,12 +4321,12 @@ msgstr "Tracker lijst"
 #: gui/slick/views/config_search.mako:132
 msgid "Trackers that will be added to magnets without trackers<br>\n"
 "                                    separate trackers with a comma, e.g. \"tracker1,tracker2,tracker3\""
-msgstr "Trackers die aan magnets worden toegevoegd zonder trackers<br>\n"
+msgstr "Trackers die aan lege Magnets worden toegevoegd <br>\n"
 "                                    scheid woorden met een komma, bijvoorbeeld \"tracker1,tracker2,tracker3\""
 
 #: gui/slick/views/config_search.mako:141
 msgid "Ignore language names in subbed results"
-msgstr "Negeer taal namen in ondertitel resultaten"
+msgstr "Negeer ondertitels"
 
 #: gui/slick/views/config_search.mako:144
 msgid "Ignore subbed releases based on language names <br>\n"
@@ -4338,15 +4338,15 @@ msgstr "Negeer ondertitel resultaten met deze woorden <br>\n"
 
 #: gui/slick/views/config_search.mako:154
 msgid "Allow high priority"
-msgstr "Hoge prioriteit toestaan"
+msgstr "Hoge prioriteit"
 
 #: gui/slick/views/config_search.mako:157
 msgid "set downloads of recently aired episodes to high priority"
-msgstr "stel downloads van recent geäirde afleveringen in op hoge prioriteit"
+msgstr "Recent uitgezonden afleveringen worden met hoge prioriteit gedownload"
 
 #: gui/slick/views/config_search.mako:165
 msgid "Use Failed Downloads"
-msgstr "Gebruik Gefaalde Downloads"
+msgstr "Gebruik Mislukte Downloads"
 
 #: gui/slick/views/config_search.mako:166
 msgid "Use Failed Download Handling?"
@@ -4358,7 +4358,7 @@ msgstr "Wanner ingeschakeld kunnen downloads handmatig of via NZBtoMedia als mis
 
 #: gui/slick/views/config_search.mako:178
 msgid "Delete Failed"
-msgstr "Verwijderen is mislukt"
+msgstr "Mislukte verwijderen"
 
 #: gui/slick/views/config_search.mako:179
 msgid "Delete files left over from a failed download?"
@@ -4702,7 +4702,7 @@ msgstr "Test verbinding"
 
 #: gui/slick/views/config_search.mako:686
 msgid "All non-absolute folder locations are relative to"
-msgstr "Alle niet-absolute map locaties refereren naar "
+msgstr "Alle ingekorte map locaties verwijzen naar"
 
 #: gui/slick/views/config_subtitles.mako:37
 #: gui/slick/views/config_subtitles.mako:45
@@ -4711,11 +4711,11 @@ msgstr "Ondertitels Zoeken"
 
 #: gui/slick/views/config_subtitles.mako:38
 msgid "Subtitles Plugin"
-msgstr "Plugin voor ondertitels"
+msgstr "Ondertitel zoekmachines"
 
 #: gui/slick/views/config_subtitles.mako:39
 msgid "Plugin Settings"
-msgstr "Plugin instellingen"
+msgstr "Zoekmachine instellingen"
 
 #: gui/slick/views/config_subtitles.mako:46
 msgid "Settings that dictate how SickRage handles subtitles search results."
@@ -4735,7 +4735,7 @@ msgstr "Ondertitel Directory"
 
 #: gui/slick/views/config_subtitles.mako:72
 msgid "The directory where SickRage should store your <i>Subtitles</i> files."
-msgstr "De map waar SickRage de <i>ondertitel</i> bestanden opslaat."
+msgstr "Opslaan van ondertitels in aparte map.?"
 
 #: gui/slick/views/config_subtitles.mako:76
 msgid "Leave empty if you want store subtitle in episode path."
@@ -4759,7 +4759,7 @@ msgstr "Alleen ondertiteling downloaden die matchen met: release groep, video co
 
 #: gui/slick/views/config_subtitles.mako:92
 msgid "If disabled you may get out of sync subtitles"
-msgstr "Je kunt ongesynchroniseerde ondertiteling krijgen als je uitschakelt"
+msgstr "Je kunt ongesynchroniseerde ondertiteling krijgen als je dit uitschakelt"
 
 #: gui/slick/views/config_subtitles.mako:98
 msgid "Subtitles History"
@@ -4767,7 +4767,7 @@ msgstr "Ondertiteling geschiedenis"
 
 #: gui/slick/views/config_subtitles.mako:101
 msgid "Log downloaded Subtitle on History page?"
-msgstr "Log gedownloade Ondertiteling op Geschiedenis pagina?"
+msgstr "Toon gedownloade Ondertitels op Geschiedenis pagina?"
 
 #: gui/slick/views/config_subtitles.mako:107
 msgid "Subtitles Multi-Language"
@@ -4783,11 +4783,11 @@ msgstr "Deze optie is vereist als u meerdere Ondertitelings-Talen gebruikt."
 
 #: gui/slick/views/config_subtitles.mako:120
 msgid "Subtitles in Post-Process folder"
-msgstr "Ondertitels in Na-Verwerk map"
+msgstr "Ondertitels Nabewerking"
 
 #: gui/slick/views/config_subtitles.mako:123
 msgid "Download subtitles in post-process folder"
-msgstr "Download ondertiteling in na-verwerk map"
+msgstr "Download ondertiteling in nabewerk map"
 
 #: gui/slick/views/config_subtitles.mako:124
 msgid "Useful if you only want the episode to be post-processed when it has subtitles associated"
@@ -4799,7 +4799,7 @@ msgstr "Het is aan te raden om de nabewerking optie 'Uitstellen indien geen onde
 
 #: gui/slick/views/config_subtitles.mako:131
 msgid "Delete unwanted subtitles"
-msgstr "Ongewenste ondertitelingen verwijderen"
+msgstr "Verwijder ondertitels"
 
 #: gui/slick/views/config_subtitles.mako:134
 msgid "Enable to delete unwanted subtitle languages bundled with release"
@@ -4811,7 +4811,7 @@ msgstr "Vermijd zoekresultaten met daarin ongewenste ondertitels wanneer 'Stel u
 
 #: gui/slick/views/config_subtitles.mako:141
 msgid "Embedded Subtitles"
-msgstr "Ingebrande ondertitelingen"
+msgstr "Ingevoegde ondertitelingen"
 
 #: gui/slick/views/config_subtitles.mako:144
 msgid "Ignore subtitles embedded inside video file?"
@@ -4831,11 +4831,11 @@ msgstr "Download ondertiteling voor doven en slechthorenden?"
 
 #: gui/slick/views/config_subtitles.mako:166
 msgid "for a script arguments description."
-msgstr "voor een beschrijving van script arguments."
+msgstr "voor een beschrijving van script commando's."
 
 #: gui/slick/views/config_subtitles.mako:167
 msgid "Additional scripts separated by <b>|</b>."
-msgstr "Extra scripts gescheiden door een <b>|</b>."
+msgstr "Extra scripts scheiden met een <b>|</b>."
 
 #: gui/slick/views/config_subtitles.mako:168
 msgid "Scripts are called after each episode has searched and downloaded subtitles."
@@ -4859,11 +4859,11 @@ msgstr "Ondertiteling Zoekmachines"
 
 #: gui/slick/views/config_subtitles.mako:187
 msgid "Check off and drag the plugins into the order you want them to be used."
-msgstr "Vink en sleep de plugins in de volgorde waarin ze aangesproken moeten worden."
+msgstr "Selecteer en sleep de Zoekmachines in de volgorde waarin ze doorzocht moeten worden."
 
 #: gui/slick/views/config_subtitles.mako:188
 msgid "At least one plugin is required."
-msgstr "Ten minste één plugin is vereist."
+msgstr "Ten minste één zoekmachine is vereist."
 
 #: gui/slick/views/config_subtitles.mako:189
 msgid " Web-scraping plugin"
@@ -4875,7 +4875,7 @@ msgstr "Zoekmachine Instellingen"
 
 #: gui/slick/views/config_subtitles.mako:213
 msgid "Set user and password for each provider"
-msgstr "Stel gebruikersnaam en wachtwoord in voor elke Zoekmachine"
+msgstr "Stel evt. de gebruikersnaam en wachtwoord in voor Zoekmachines"
 
 #: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
@@ -4916,11 +4916,11 @@ msgstr "minuten"
 
 #: gui/slick/views/displayShow.mako:149
 msgid "View other popular {genre} shows on trakt.tv."
-msgstr ""
+msgstr "Toon andere populaire {genre} series op trakt.tv."
 
 #: gui/slick/views/displayShow.mako:153
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "Toon andere populaire {imdbgenre} series op IMDB."
 
 #: gui/slick/views/displayShow.mako:167 gui/slick/views/displayShow.mako:257
 #: gui/slick/views/inc_qualityChooser.mako:29
@@ -4939,7 +4939,7 @@ msgstr "Voorkeur"
 #: gui/slick/views/displayShow.mako:175 gui/slick/views/displayShow.mako:177
 #: gui/slick/views/displayShow.mako:179
 msgid "Originally Airs"
-msgstr "Oorspronkelijke uitzending"
+msgstr "Uitzend tijd"
 
 #: gui/slick/views/displayShow.mako:181
 msgid "Show Status"
@@ -4989,7 +4989,7 @@ msgstr "Seizoen mappen"
 #: gui/slick/views/manage.mako:47 gui/slick/views/manage_manageSearches.mako:16
 #: gui/slick/views/manage_massEdit.mako:145 gui/slick/views/status.mako:60
 msgid "Paused"
-msgstr "Gepauzeerd"
+msgstr "Pauzeren"
 
 #: gui/slick/views/displayShow.mako:221
 msgid "Air-by-Date"
@@ -5105,7 +5105,7 @@ msgstr "Wilt u de huidige kwaliteit van de aflevering in de zoekopdracht opnemen
 
 #: gui/slick/views/displayShow.mako:545
 msgid "Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched."
-msgstr "\"Nee\" kiezen, negeert alle versies met dezelfde aflevering kwaliteit als degene die momenteel is gedownload/geselecteerd."
+msgstr "\"Nee\" kiezen, negeert alle versies met dezelfde aflevering kwaliteit als degene die momenteel is gedownload/gevonden."
 
 #: gui/slick/views/editShow.mako:35 gui/slick/views/manage_massEdit.mako:30
 msgid "Main"
@@ -5113,11 +5113,11 @@ msgstr "Algemeen"
 
 #: gui/slick/views/editShow.mako:36
 msgid "Format"
-msgstr "Indeling"
+msgstr "Nummering"
 
 #: gui/slick/views/editShow.mako:37
 msgid "Advanced"
-msgstr "Geadvanceerd"
+msgstr "Geavanceerd"
 
 #: gui/slick/views/editShow.mako:42 gui/slick/views/manage_massEdit.mako:35
 msgid "Main Settings"
@@ -5154,29 +5154,29 @@ msgstr "Pauzeer deze serie (SickRage zal afleveringen niet downloaden)"
 
 #: gui/slick/views/editShow.mako:113
 msgid "Format Settings"
-msgstr "Indelingsinstellingen"
+msgstr "Nummering van afleveringen"
 
 #: gui/slick/views/editShow.mako:118 gui/slick/views/manage_massEdit.mako:217
 msgid "Air by date"
-msgstr "Uitzending-Datum"
+msgstr "Op Datum"
 
 #: gui/slick/views/editShow.mako:120
 msgid "check if the show is released as Show.03.02.2010 rather than Show.S02E03."
-msgstr "controleer of de show is uitgebracht als Show.03.02.2010 in plaats van Show.S02E03."
+msgstr "Afleveringen worden genummerd met datum <b>Serie.03.02.2010</b> ipv <b>Serie.S02E03</b>."
 
 #: gui/slick/views/editShow.mako:121 gui/slick/views/editShow.mako:143
 #: gui/slick/views/manage_massEdit.mako:210
 #: gui/slick/views/manage_massEdit.mako:225
 msgid "In case of an air date conflict between regular and special episodes, the later will be ignored."
-msgstr "Bij een uitzending datumconflict tussen reguliere en speciale afleveringen, worden de laatste genegeerd."
+msgstr "Wanner beide nummeringen bestaan dan zal de standaard S02E01 benaming worden gekozen."
 
 #: gui/slick/views/editShow.mako:130
 msgid "check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "controleren of de show Anime is en afleveringen worden uitgebracht als Show.265 in plaats van Show.S02E03"
+msgstr "De Serie wordt uitgezonden als Anime. Afleveringen worden genummerd als <b>Serie.265</b> ipv <b>Serie.S02E03</b>"
 
 #: gui/slick/views/editShow.mako:142
 msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
-msgstr "controleer of de show is een sportieve of MMA evenement uitgebracht als Show.03.02.2010 in plaats van Show.S02E03"
+msgstr "De Serie wordt uitgezonden als Sport. Afleveringen worden genummerd als <b>Serie.03.02.2010</b> ipv <b>Serie.S02E03</b>"
 
 #: gui/slick/views/editShow.mako:150 gui/slick/views/manage.mako:46
 msgid "Season folders"
@@ -5184,11 +5184,11 @@ msgstr "Seizoen mappen"
 
 #: gui/slick/views/editShow.mako:152
 msgid "group episodes by season folder (uncheck to store in a single folder)"
-msgstr "afleveringen van seizoen map groeperen (uitvinken om op te slaan in één map)"
+msgstr "Afleveringen in seizoen mappen plaatsen (uitvinken om alles in één map op te slaan)"
 
 #: gui/slick/views/editShow.mako:161
 msgid "search by scene numbering (uncheck to search by indexer numbering)"
-msgstr "zoeken op scène nummering (uitvinken om te zoeken met index nummering)"
+msgstr "Zoeken met alternatieve afleverings-nummers (maakt gebruik van thexem.de)"
 
 #: gui/slick/views/editShow.mako:170
 msgid "use the DVD order instead of the air order"
@@ -5753,7 +5753,7 @@ msgstr "Zoeken naar ondertitels."
 
 #: gui/slick/views/manage_subtitleMissed.mako:19
 msgid "All of your episodes have {subsLanguage} subtitles."
-msgstr ""
+msgstr "Al uw afleveringen hebben {subsLanguage} ondertitels."
 
 #: gui/slick/views/manage_subtitleMissed.mako:25
 #: gui/slick/views/manage_subtitleMissed.mako:31
@@ -5762,11 +5762,11 @@ msgstr "Beheer afleveringen zonder"
 
 #: gui/slick/views/manage_subtitleMissed.mako:51
 msgid "Episodes without {subsLanguage} subtitles."
-msgstr ""
+msgstr "Afleveringen zonder {subsLanguage} ondertitels."
 
 #: gui/slick/views/manage_subtitleMissed.mako:55
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
-msgstr ""
+msgstr "Afleveringen zonder {subtitleLanguage} (onbepaald) ondertitels."
 
 #: gui/slick/views/manage_subtitleMissed.mako:60
 msgid "Download missed subtitles for selected episodes"
@@ -5802,11 +5802,11 @@ msgstr "Toon gepauzeerde"
 
 #: gui/slick/views/schedule.mako:39
 msgid "Hidden"
-msgstr "Verborgen"
+msgstr "Verberg"
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
-msgstr "Getoond"
+msgstr "Toon"
 
 #: gui/slick/views/schedule.mako:57
 msgid "Key"

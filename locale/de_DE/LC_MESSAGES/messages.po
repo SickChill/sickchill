@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -188,7 +188,7 @@ msgstr "Kalendar"
 
 #: sickbeard/webserve.py:517
 msgid "View Paused:"
-msgstr "Pausierte anzeigen:"
+msgstr "Pausierte Serien:"
 
 #: sickbeard/webserve.py:519
 msgid "Hide"
@@ -502,7 +502,7 @@ msgstr "Pausieren"
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr "Löschen"
+msgstr "Entfernen"
 
 #: sickbeard/webserve.py:1305
 msgid "Re-scan files"
@@ -1137,7 +1137,7 @@ msgstr "Einstellungen anpassen"
 msgid "SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction.\n"
 "    If you would rather have SickRage prompt you to customize each show, then use the checkbox below."
 msgstr "SickRage kann vorhandene Serien mit gegebenen Einstellungen mithilfe von lokal gespeicherten NFO/XML-Metadaten ohne weitere Benutzerinteraktion hinzufügen. \n"
-"  um jede Serie individuell anzupassen bitte das folgende Kontrollkästchen aktivieren."
+"  um jede Serie individuell anzupassen, bitte das folgende Kontrollkästchen aktivieren."
 
 #: gui/slick/views/addShows_addExistingShow.mako:38
 msgid "Prompt me to set settings for each show"
@@ -1176,7 +1176,7 @@ msgstr "Dies wirkt sich nur auf die Sprache der abgerufenen Metadateninhalte und
 
 #: gui/slick/views/addShows_newShow.mako:60
 msgid "This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!"
-msgstr "<b>Nicht</b> zulassen, dass SickRage nicht englischsprachige TV-Episoden herunterlädt!"
+msgstr "<b>Nicht</b> zulassen, dass SickRage nicht englischsprachige TV-Folgen herunterlädt!"
 
 #: gui/slick/views/addShows_newShow.mako:67
 msgid "Pick the parent folder"
@@ -1570,7 +1570,7 @@ msgstr "Sicherung der Hauptdatenbank und Konfiguration."
 
 #: gui/slick/views/config_backuprestore.mako:34
 msgid "Select the folder you wish to save your backup file to"
-msgstr "Wähle das Verzeichnis, in dem Du die Sicherungsdatei speichern möchtest"
+msgstr "Verzeichnis für Sicherungsdatei wählen"
 
 #: gui/slick/views/config_backuprestore.mako:52
 msgid "Restore your main database file and config."
@@ -1578,7 +1578,7 @@ msgstr "Wiederherstellung der Hauptdatenbank und Konfiguration."
 
 #: gui/slick/views/config_backuprestore.mako:57
 msgid "Select the backup file you wish to restore"
-msgstr "Wähle die Sicherungsdatei, die Du wiederherstellen möchtest"
+msgstr "Sicherungsdatei für Wiederherstellung wählen"
 
 #: gui/slick/views/config_general.mako:27 gui/slick/views/config_general.mako:36
 msgid "Misc"
@@ -1603,7 +1603,7 @@ msgstr "Einige Einstellungen werden erst nach einem manuellen Neustart wirksam."
 
 #: gui/slick/views/config_general.mako:45
 msgid "Default Indexer Language"
-msgstr "Indexer-Standardsprache"
+msgstr "Indexer Standardsprache"
 
 #: gui/slick/views/config_general.mako:48
 msgid "for adding shows and metadata providers"
@@ -1684,11 +1684,11 @@ msgstr "Setze ersten Indexer auf"
 
 #: gui/slick/views/config_general.mako:141
 msgid "as the default selection when adding new shows"
-msgstr "standardauswahl beim Hinzufügen neuer Serien"
+msgstr "Standardauswahl beim Hinzufügen neuer Serien"
 
 #: gui/slick/views/config_general.mako:148
 msgid "Timeout show indexer at"
-msgstr "Timeout des Serien-Indexers bei"
+msgstr "Timeout des Serienindexers bei"
 
 #: gui/slick/views/config_general.mako:151
 msgid "seconds of inactivity when finding new shows (default:20)"
@@ -2101,7 +2101,7 @@ msgstr "Proxy für Indexer verwenden"
 
 #: gui/slick/views/config_general.mako:645
 msgid "use proxy host for connecting to indexers (thetvdb)"
-msgstr "Proxy-Host für die Verbindung zu Indexern verwenden (thetvdb)"
+msgstr "Proxy Host für die Verbindung zu Indexern verwenden (thetvdb)"
 
 #: gui/slick/views/config_general.mako:652
 msgid "Skip Remove Detection"
@@ -2121,7 +2121,7 @@ msgstr "Standardstatus gelöschter Folgen"
 
 #: gui/slick/views/config_general.mako:680
 msgid "Define the status to be set for media file that has been deleted."
-msgstr "Status für gelöschte Medien-Dateien festlegen."
+msgstr "Status für gelöschte Mediendateien festlegen."
 
 #: gui/slick/views/config_general.mako:682
 msgid "Archived option will keep previous downloaded quality"
@@ -2202,7 +2202,7 @@ msgstr "Sozial"
 
 #: gui/slick/views/config_notifications.mako:30
 msgid "A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV."
-msgstr "Gratis sowie plattformübergreifendes Open Source Medien-Center und Home-Entertainment-System-Software mit einer 3-Meter-Benutzeroberfläche für das Wohnzimmer-TV entwickelt."
+msgstr "Kostenloses, plattformübergreifendes Open Source Medien-Center und Home Entertainment System Software mit einer 3 Meter Benutzeroberfläche für das Wohnzimmer-TV entwickelt."
 
 #: gui/slick/views/config_notifications.mako:38
 msgid "Send KODI commands?"
@@ -3192,7 +3192,7 @@ msgstr "Trakt dokumentiert Ihre TV-Serien und Filme. Basierend auf Ihren Favorit
 
 #: gui/slick/views/config_notifications.mako:1586
 msgid "Send Trakt.tv notifications?"
-msgstr "Trakt.tv-Benachrichtigungen senden?"
+msgstr "Trakt.tv Benachrichtigungen senden?"
 
 #: gui/slick/views/config_notifications.mako:1598
 msgid "username of your Trakt account."
@@ -3431,7 +3431,7 @@ msgstr "Nicht verwenden, wenn ein externes Nachbearbeitungs-Skript im Einsatz is
 
 #: gui/slick/views/config_postProcessing.mako:45
 msgid "Post Processing Dir"
-msgstr "Nachbearbeitungs-Verzeichnis"
+msgstr "Nachbearbeitungsverzeichnis"
 
 #: gui/slick/views/config_postProcessing.mako:50
 msgid "The folder where your download client puts the completed TV downloads."
@@ -3493,7 +3493,7 @@ msgstr "Warten Sie mit dem Verarbeiten einer Datei, sofern keine Untertitel vorl
 
 #: gui/slick/views/config_postProcessing.mako:110
 msgid "Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)"
-msgstr "Erlaube Sprachcodes in Untertitel-Dateinamen (en.srt, pt-br.srt, ita.srt usw.)."
+msgstr "Erlaube Sprachcodes in Untertiteldateinamen (en.srt, pt-br.srt, ita.srt usw.)"
 
 #: gui/slick/views/config_postProcessing.mako:112
 msgid "Automatic post processor must be disabled"
@@ -3953,7 +3953,7 @@ msgstr "Anbieter abhaken und in die Reihenfolge ziehen, in der sie benutzt werde
 
 #: gui/slick/views/config_providers.mako:54
 msgid "At least one provider is required but two are recommended."
-msgstr "Mindestens ein Anbieter ist erforderlich, aber zwei sind zu empfehlen."
+msgstr "Mindestens ein Anbieter ist erforderlich, jedoch zwei werden empfohlen."
 
 #: gui/slick/views/config_providers.mako:57
 msgid "Torrent providers can be toggled in "
@@ -4021,7 +4021,7 @@ msgstr "Staffel-Suchmodus"
 #: gui/slick/views/config_providers.mako:275
 #: gui/slick/views/config_providers.mako:548
 msgid "when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes."
-msgstr "für die Suche nach kompletten Staffeln können Sie ausschließlich nach sogenannten Staffel-Packs suchen lassen oder festlegen eine komplette Staffel aus einzelnen Folgen zusammenzustellen."
+msgstr "Bei der Suche nach kompletten Staffeln können Sie ausschließlich nach sogenannten Staffel-Packs suchen lassen oder festlegen eine komplette Staffel aus einzelnen Folgen zusammenzustellen."
 
 #: gui/slick/views/config_providers.mako:194
 msgid "season packs only."
@@ -4326,19 +4326,19 @@ msgstr "Tracker, die Magneten ohne Tracker hinzugefügt werden<br>\n"
 
 #: gui/slick/views/config_search.mako:141
 msgid "Ignore language names in subbed results"
-msgstr "Sprach-Codes in Ergebnissen mit Untertiteln ignorieren"
+msgstr "Sprachcodes in Ergebnissen mit Untertiteln ignorieren"
 
 #: gui/slick/views/config_search.mako:144
 msgid "Ignore subbed releases based on language names <br>\n"
 "                                    Example: \"dk\" will ignore words: dksub, dksubs, dksubbed, dksubed <br>\n"
 "                                    separate languages with a comma, e.g. \"lang1,lang2,lang3"
-msgstr "Releases mit Untertiteln nach Sprach-Codes ignorieren <br>\n"
+msgstr "Releases mit Untertiteln nach Sprachcodes ignorieren <br>\n"
 " Beispiel: \"dk\" ignoriert folgende Wörter: dksub, dksubs, dksubbed, dksubed <br>\n"
-" Bitte Sprach-Codes mit einem Komma trennen, z.B. \"lang1, lang2, lang3"
+" Bitte Sprachcodes mit einem Komma trennen, z.B. \"lang1, lang2, lang3"
 
 #: gui/slick/views/config_search.mako:154
 msgid "Allow high priority"
-msgstr "erlaube hohe Priorität"
+msgstr "Erlaube hohe Priorität"
 
 #: gui/slick/views/config_search.mako:157
 msgid "set downloads of recently aired episodes to high priority"
@@ -4593,7 +4593,7 @@ msgstr "Test: unten klicken"
 
 #: gui/slick/views/config_search.mako:492
 msgid "How to handle Torrent search results."
-msgstr "Umgang mit Torrent Suchergebnissen."
+msgstr "Umgang mit Torrent-Suchergebnissen."
 
 #: gui/slick/views/config_search.mako:499
 msgid "Search torrents"
@@ -4605,7 +4605,7 @@ msgstr "Torrent-Suchanbieter aktivieren"
 
 #: gui/slick/views/config_search.mako:510
 msgid "Send .torrent files to"
-msgstr ".Torrent-Dateien senden zu"
+msgstr ".torrent Dateien senden zu"
 
 #: gui/slick/views/config_search.mako:526
 msgid "<b>.torrent</b> files are stored at this location for external software to find and use"
@@ -4727,7 +4727,7 @@ msgstr "Untertitel suchen"
 
 #: gui/slick/views/config_subtitles.mako:61
 msgid "Subtitle Languages"
-msgstr "Untertitel-Sprachen"
+msgstr "Untertitelsprachen"
 
 #: gui/slick/views/config_subtitles.mako:67
 msgid "Subtitle Directory"
@@ -4743,7 +4743,7 @@ msgstr "Freilassen, wenn Untertitel im Pfad der entsprechenden Folge gespeichert
 
 #: gui/slick/views/config_subtitles.mako:81
 msgid "Subtitle Find Frequency"
-msgstr "Untertitel-Such-Takt"
+msgstr "Untertitel-Suchtakt"
 
 #: gui/slick/views/config_subtitles.mako:83
 msgid "time in hours between scans (default: 1)"
@@ -4775,7 +4775,7 @@ msgstr "Mehrsprachige Untertitel"
 
 #: gui/slick/views/config_subtitles.mako:110
 msgid "Append language codes to subtitle filenames?"
-msgstr "Sprachcodes an Untertitel-Dateinamen anhängen?"
+msgstr "Sprachcodes an Untertiteldateinamen anhängen?"
 
 #: gui/slick/views/config_subtitles.mako:115
 msgid "This option is required if you use multiple subtitle languages."
@@ -4795,7 +4795,7 @@ msgstr "Nützlich, wenn Sie nur Episoden nachbearbeitet haben wollen, die Untert
 
 #: gui/slick/views/config_subtitles.mako:125
 msgid "You might also want to enable the post-process setting 'Postpone if no subtitle'"
-msgstr "Gegebenenfalls möchten Sie auch die Nachbearbeitungs-Einstellung 'Zurückstellen, sofern keine Untertitel' aktivieren"
+msgstr "Ggf. möchten Sie auch die Nachbearbeitungseinstellung \"Zurückstellen, sofern keine Untertitel\" aktivieren"
 
 #: gui/slick/views/config_subtitles.mako:131
 msgid "Delete unwanted subtitles"
@@ -4803,11 +4803,11 @@ msgstr "Unerwünschte Untertitel löschen"
 
 #: gui/slick/views/config_subtitles.mako:134
 msgid "Enable to delete unwanted subtitle languages bundled with release"
-msgstr "Aktivieren, um unerwünschte Untertitel-Sprachen aus einem Release-Bundle zu löschen"
+msgstr "Aktivieren, um unerwünschte Untertitelsprachen aus einem Release-Bundle zu löschen"
 
 #: gui/slick/views/config_subtitles.mako:135
 msgid "Avoid post-process releases with unwanted language subtitles when feature 'postpone if no subs' is enabled"
-msgstr "Vermeide Nachbearbeitung von Versionen mit unerwünschten Untertitel-Sprachen, wenn die Funktion 'Zurückstellen, sofern keine Subs' aktiviert ist"
+msgstr "Vermeide Nachbearbeitung von Versionen mit unerwünschten Untertitelsprachen, wenn die Funktion 'Zurückstellen, sofern keine Subs' aktiviert ist"
 
 #: gui/slick/views/config_subtitles.mako:141
 msgid "Embedded Subtitles"
@@ -4843,7 +4843,7 @@ msgstr "Skripte werden aufgerufen, nachdem jede Folge gesucht und Untertitel her
 
 #: gui/slick/views/config_subtitles.mako:169
 msgid "For any scripted languages, include the interpreter executable before the script. See the following example"
-msgstr "Bitte geben Sie für jede Skriptsprache den dazugehörigen interpreter vor dem Skript an. Im folgenden Beispiel zu sehen"
+msgstr "Bitte geben Sie für jede Skriptsprache den dazugehörigen Interpreter vor dem Skript an. Im folgenden Beispiel zu sehen"
 
 #: gui/slick/views/config_subtitles.mako:171
 msgid "For Windows: "
@@ -4928,7 +4928,7 @@ msgstr "Andere beliebte {imdbgenre} Serien auf trakt. tv anzeigen."
 #: gui/slick/views/manage_backlogOverview.mako:75
 #: gui/slick/views/manage_massEdit.mako:106
 msgid "Allowed"
-msgstr "Erlaubt"
+msgstr "Vorhanden"
 
 #: gui/slick/views/displayShow.mako:170 gui/slick/views/displayShow.mako:258
 #: gui/slick/views/inc_qualityChooser.mako:39
@@ -4983,7 +4983,7 @@ msgstr "Info-Sprache"
 
 #: gui/slick/views/displayShow.mako:219
 msgid "Season Folders"
-msgstr "Staffelorder"
+msgstr "Staffelordner"
 
 #: gui/slick/views/displayShow.mako:220 gui/slick/views/editShow.mako:100
 #: gui/slick/views/manage.mako:47 gui/slick/views/manage_manageSearches.mako:16
@@ -5085,7 +5085,7 @@ msgstr "Ändern Sie diesen Wert, wenn sich Szene-Nummerierung und Indexer-Folgen
 
 #: gui/slick/views/displayShow.mako:438
 msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
-msgstr "Ändern Sie diesen Wert, wenn sich absolute Szene-Nummerierung und absolute Indexer-Folgen-Nummerierung unterscheiden"
+msgstr "Ändern Sie diesen Wert, wenn sich absolute Szene-Nummerierung und absolute Indexer-Folgennummerierung unterscheiden"
 
 #: gui/slick/views/displayShow.mako:522 gui/slick/views/displayShow.mako:541
 msgid "Manual Search"
@@ -5180,7 +5180,7 @@ msgstr "Überprüfen, ob die Serie ein Sport- oder MMA-Event ist und als \"Serie
 
 #: gui/slick/views/editShow.mako:150 gui/slick/views/manage.mako:46
 msgid "Season folders"
-msgstr "Staffelorder"
+msgstr "Staffelordner"
 
 #: gui/slick/views/editShow.mako:152
 msgid "group episodes by season folder (uncheck to store in a single folder)"
@@ -5441,7 +5441,7 @@ msgstr "Ordnerstruktur flachhalten"
 
 #: gui/slick/views/inc_addShowOptions.mako:58
 msgid "Disregard sub-folders?"
-msgstr "Unterverzeichnisse verwerfen?"
+msgstr "Unterverzeichnisse ignorieren?"
 
 #: gui/slick/views/inc_addShowOptions.mako:69
 msgid "Is this show an Anime?"
@@ -5453,7 +5453,7 @@ msgstr "Ist diese Serie durchnummeriert?"
 
 #: gui/slick/views/inc_addShowOptions.mako:88
 msgid "Save Defaults"
-msgstr "Standardeinstellungen speichern"
+msgstr "Vorgaben speichern"
 
 #: gui/slick/views/inc_addShowOptions.mako:90
 msgid "Use current values as the defaults"
@@ -5537,7 +5537,7 @@ msgstr "Aktualisieren"
 
 #: gui/slick/views/manage.mako:52
 msgid "Rescan"
-msgstr "Neu einlesen"
+msgstr "Refresh"
 
 #: gui/slick/views/manage.mako:53
 msgid "Rename"
@@ -5802,11 +5802,11 @@ msgstr "Pausierte anzeigen"
 
 #: gui/slick/views/schedule.mako:39
 msgid "Hidden"
-msgstr "Verborgene"
+msgstr "Ausblenden"
 
 #: gui/slick/views/schedule.mako:40
 msgid "Shown"
-msgstr "Angezeigt"
+msgstr "Anzeigen"
 
 #: gui/slick/views/schedule.mako:57
 msgid "Key"
@@ -5814,7 +5814,7 @@ msgstr "Schlüssel"
 
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:239
 msgid "Missed"
-msgstr "Verpasste"
+msgstr "Entgangen"
 
 #: gui/slick/views/schedule.mako:59
 msgid "Today"

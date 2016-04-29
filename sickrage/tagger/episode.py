@@ -28,6 +28,7 @@ class EpisodeTags(object):
             u'avc': tags.avc,
             u'mpeg': tags.mpeg,
             u'xvid': tags.xvid,
+            u'netflix': tags.netflix,
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
@@ -119,6 +120,8 @@ class EpisodeTags(object):
         """
         if 'dlmux' in self.name.lower():
             return 'dlmux'
+        if self.netflix: 
+            return self.netflix
         else:
             attr = 'web'
             match = self._get_match_obj(attr)
@@ -257,4 +260,14 @@ class EpisodeTags(object):
         if self.res and self.tv == 'hd':
             regex = re.compile(ur'({0}.hdtv)'.format(self.res), re.I)
             match = self._get_match_obj(attr, regex)
+        return '' if not match else match.group()
+
+    @property
+    def netflix(self):
+        """
+        Netflix tage found in name
+        :return: an empty string if not found
+        """
+        attr = 'netflix'
+        match = self._get_match_obj(attr)
         return '' if not match else match.group()

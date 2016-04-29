@@ -157,31 +157,6 @@
 
                             <div class="field-pair row">
 	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-		                            <span class="component-title">${_('Subtitles in Post-Process folder')}</span>
-	                            </div>
-	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-		                            <div class="row">
-			                            <div class="col-md-12">
-				                            <input type="checkbox" name="subtitles_download_in_pp"
-				                                   id="subtitles_download_in_pp" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DOWNLOAD_IN_PP)]}/>
-				                            <label for="subtitles_download_in_pp">${_('Download subtitles in post-process folder')}</label>
-			                            </div>
-		                            </div>
-		                            <div class="row">
-			                            <div class="col-md-12">
-				                            <label>${_('Useful if you only want the episode to be post-processed when it has subtitles associated')}</label>
-			                            </div>
-		                            </div>
-		                            <div class="row">
-			                            <div class="col-md-12">
-				                            <label>${_('You might also want to enable the post-process setting \'Postpone if no subtitle\'')}</label>
-			                            </div>
-		                            </div>
-	                            </div>
-                            </div>
-
-                            <div class="field-pair row">
-	                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
 		                            <span class="component-title">${_('Delete unwanted subtitles')}</span>
 	                            </div>
 	                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -190,11 +165,6 @@
 				                            <input type="checkbox" name="subtitles_keep_only_wanted"
 				                                   id="subtitles_keep_only_wanted" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_KEEP_ONLY_WANTED)]}/>
 				                            <label for="subtitles_keep_only_wanted">${_('Enable to delete unwanted subtitle languages bundled with release')}</label>
-			                            </div>
-		                            </div>
-		                            <div class="row">
-			                            <div class="col-md-12">
-				                            <label>${_('Avoid post-process releases with unwanted language subtitles when feature \'postpone if no subs\' is enabled')}</label>
 			                            </div>
 		                            </div>
 	                            </div>

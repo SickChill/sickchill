@@ -21,6 +21,7 @@
 import os
 import stat
 # from functools import wraps
+import shutil
 
 import sickbeard
 from sickbeard import postProcessor
@@ -40,7 +41,6 @@ from unrar2.rar_exceptions import InvalidRARArchive
 from unrar2.rar_exceptions import InvalidRARArchiveUsage
 from unrar2.rar_exceptions import IncorrectRARPassword
 
-import shutil
 import shutil_custom
 
 shutil.copyfile = shutil_custom.copyfile_custom
@@ -212,13 +212,14 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
         videoFiles = [x for x in files if helpers.isMediaFile(x)]
         rarFiles = [x for x in files if helpers.isRarFile(x)]
-        rarContent = ""
+        rarContent = []
         if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
             # Unpack only if video file was not already extracted by 'postpone if no subs' feature
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
             videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
-        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
+
+        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
 
         result.output += logHelper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
         result.output += logHelper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
@@ -255,7 +256,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     for curDir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
         result.result = True
 
-        for processPath, _, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
+        for processPath, dirlist_, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
 
             if not validateDir(path, processPath, nzbNameOriginal, failed, result):
                 continue
@@ -268,14 +269,14 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             if not postpone:
                 videoFiles = [x for x in fileList if helpers.isMediaFile(x)]
                 rarFiles = [x for x in fileList if helpers.isRarFile(x)]
-                rarContent = ""
+                rarContent = []
                 if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
                     # Unpack only if video file was not already extracted by 'postpone if no subs' feature
                     rarContent = unRAR(processPath, rarFiles, force, result)
                     fileList = set(fileList + rarContent)
                     videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
-                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
+                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
                     result.output += logHelper(u"Found unwanted files: {0}".format(notwantedFiles), logger.DEBUG)
@@ -385,7 +386,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
     # Get the videofile list for the next checks
     allFiles = []
     allDirs = []
-    for _, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
+    for root_, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
         allDirs += processdir
         allFiles += fileList
 

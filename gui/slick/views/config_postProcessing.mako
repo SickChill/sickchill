@@ -147,30 +147,6 @@
 
                         <div class="field-pair row">
 	                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-		                        <label class="component-title">${_('Postpone if no subtitle')}</label>
-	                        </div>
-	                        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-		                        <div class="row">
-			                        <div class="col-md-12">
-				                        <input type="checkbox" name="postpone_if_no_subs" id="postpone_if_no_subs" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_NO_SUBS)]}/>
-				                        <label for="postpone_if_no_subs">${_('Wait to process a file until subtitles are present')}</label>
-			                        </div>
-		                        </div>
-		                        <div class="row">
-			                        <div class="col-md-12">
-				                        <span>${_('Language names are allowed in subtitle filename (en.srt, pt-br.srt, ita.srt, etc.)')}</span>
-			                        </div>
-		                        </div>
-		                        <div class="row">
-			                        <div class="col-md-12">
-				                        <span><b>${_('Note')}:</b> ${_('Automatic post processor must be disabled')}</span>
-			                        </div>
-		                        </div>
-	                        </div>
-				        </div>
-
-                        <div class="field-pair row">
-	                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
 		                        <label class="component-title">${_('Rename Episodes')}</label>
 	                        </div>
 	                        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
