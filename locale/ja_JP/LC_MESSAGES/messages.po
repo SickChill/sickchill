@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:31-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -19,19 +19,19 @@ msgstr ""
 
 #: sickbeard/common.py:75
 msgid "Started Download"
-msgstr ""
+msgstr "ダウンロード開始"
 
 #: sickbeard/common.py:76
 msgid "Download Finished"
-msgstr ""
+msgstr "ダウンロード終了"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "字幕ダウンロード終了"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
-msgstr ""
+msgstr "SickRage更新終了"
 
 #: sickbeard/common.py:79
 msgid "SickRage Updated To Commit#: "
@@ -39,7 +39,7 @@ msgstr ""
 
 #: sickbeard/common.py:80
 msgid "SickRage new login"
-msgstr ""
+msgstr "SickRage 新しいログイン"
 
 #: sickbeard/common.py:81
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
@@ -48,12 +48,12 @@ msgstr ""
 #: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
 
 #: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
 msgid "Unaired"
-msgstr ""
+msgstr "未放送"
 
 #: sickbeard/common.py:599 gui/slick/views/displayShow.mako:260
 #: gui/slick/views/history.mako:114 gui/slick/views/home.mako:145
@@ -64,11 +64,11 @@ msgstr ""
 #: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "ダウンロード済み"
 
 #: sickbeard/common.py:601 gui/slick/views/displayShow.mako:259
 msgid "Skipped"
-msgstr ""
+msgstr "スキップされた"
 
 #: sickbeard/common.py:602
 msgid "Snatched (Proper)"
@@ -82,20 +82,20 @@ msgstr ""
 
 #: sickbeard/common.py:604
 msgid "Archived"
-msgstr ""
+msgstr "アーカイブ"
 
 #: sickbeard/common.py:605
 msgid "Ignored"
-msgstr ""
+msgstr "無視"
 
 #: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
 msgid "Subtitled"
-msgstr ""
+msgstr "字幕付き"
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:34
 msgid "Failed"
-msgstr ""
+msgstr "失敗"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
@@ -107,7 +107,7 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr ""
+msgstr "正常に更新されました"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
@@ -118,7 +118,7 @@ msgstr ""
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr ""
+msgstr "バックアップ"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
@@ -142,7 +142,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:203
 msgid "Oops"
-msgstr ""
+msgstr "おっと！"
 
 #: sickbeard/webserve.py:205
 msgid "Wrong API key used"
@@ -150,7 +150,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:306 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "ログイン"
 
 #: sickbeard/webserve.py:396
 msgid "API Key not generated"
@@ -162,29 +162,29 @@ msgstr ""
 
 #: sickbeard/webserve.py:500
 msgid "Sort by:"
-msgstr ""
+msgstr "並べ替え:"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
-msgstr ""
+msgstr "レイアウト:"
 
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
-msgstr ""
+msgstr "バナー"
 
 #: sickbeard/webserve.py:511 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
 msgid "Poster"
-msgstr ""
+msgstr "ポスター"
 
 #: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:50
 msgid "List"
-msgstr ""
+msgstr "リスト"
 
 #: sickbeard/webserve.py:513 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "カレンダー"
 
 #: sickbeard/webserve.py:517
 msgid "View Paused:"
@@ -192,22 +192,22 @@ msgstr ""
 
 #: sickbeard/webserve.py:519
 msgid "Hide"
-msgstr ""
+msgstr "非表示"
 
 #: sickbeard/webserve.py:521 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "表示"
 
 #: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:128
 msgid "Schedule"
-msgstr ""
+msgstr "スケジュール"
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
-msgstr ""
+msgstr "テスト 1"
 
 #: sickbeard/webserve.py:632
 msgid "This is test number 1"
@@ -215,7 +215,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:633
 msgid "Test 2"
-msgstr ""
+msgstr "テスト 2"
 
 #: sickbeard/webserve.py:633
 msgid "This is test number 2"
@@ -239,7 +239,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:719 sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Home"
-msgstr ""
+msgstr "トップ"
 
 #: sickbeard/webserve.py:719 gui/slick/views/layouts/main.mako:114
 msgid "Show List"

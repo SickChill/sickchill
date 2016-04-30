@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:31-0400\n"
+"PO-Revision-Date: 2016-04-28 10:57-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -1403,7 +1403,7 @@ msgstr "Pasta de cache"
 
 #: gui/slick/views/config.mako:40
 msgid "Log Folder"
-msgstr "Pasta do \"log\""
+msgstr "Pasta do registo verboso"
 
 #: gui/slick/views/config.mako:42
 msgid "Arguments"
@@ -5235,7 +5235,7 @@ msgstr "Detalhado"
 
 #: gui/slick/views/history.mako:49 gui/slick/views/history.mako:112
 msgid "Time"
-msgstr "Tempo"
+msgstr "Data"
 
 #: gui/slick/views/history.mako:51
 msgid "Action"

@@ -30,7 +30,7 @@ from os import path
 import platform
 import re
 import uuid
-
+import gettext
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
@@ -39,6 +39,7 @@ from sickrage.helper import video_screen_size
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
+gettext.install('messages', unicode=1, codeset='UTF-8')
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
@@ -103,12 +104,12 @@ NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
 MULTI_EP_STRINGS = NumDict({
-    NAMING_REPEAT: "Repeat",
-    NAMING_SEPARATED_REPEAT: "Repeat (Separated)",
-    NAMING_DUPLICATE: "Duplicate",
-    NAMING_EXTEND: "Extend",
-    NAMING_LIMITED_EXTEND: "Extend (Limited)",
-    NAMING_LIMITED_EXTEND_E_PREFIXED: "Extend (Limited, E-prefixed)"
+    NAMING_REPEAT: _("Repeat"),
+    NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
+    NAMING_DUPLICATE: ("Duplicate"),
+    NAMING_EXTEND: _("Extend"),
+    NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
+    NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)")
 })
 
 
@@ -212,12 +213,12 @@ class Quality(object):
     })
 
     statusPrefixes = NumDict({
-        DOWNLOADED: "Downloaded",
-        SNATCHED: "Snatched",
-        SNATCHED_PROPER: "Snatched (Proper)",
-        FAILED: "Failed",
-        SNATCHED_BEST: "Snatched (Best)",
-        ARCHIVED: "Archived"
+        DOWNLOADED: _("Downloaded"),
+        SNATCHED: _("Snatched"),
+        SNATCHED_PROPER: _("Snatched (Proper)"),
+        FAILED: _("Failed"),
+        SNATCHED_BEST: _("Snatched (Best)"),
+        ARCHIVED: _("Archived")
     })
 
     @staticmethod
@@ -300,8 +301,8 @@ class Quality(object):
 
         if not name:
             return Quality.UNKNOWN
-        else:
-            name = ek(path.basename, name)
+
+        name = ek(path.basename, name)
 
         result = None
         ep = EpisodeTags(name)

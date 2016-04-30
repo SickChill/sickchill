@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:31-0400\n"
+"PO-Revision-Date: 2016-04-28 10:57-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -809,7 +809,7 @@ msgstr "Subtítulos faltantes"
 #: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
 #: gui/slick/views/layouts/main.mako:141
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Resumen de Tareas Pendientes"
 
 #: sickbeard/webserve.py:3348
 msgid "Mass Edit"
@@ -853,7 +853,7 @@ msgstr "Las siguientes acciones fueron puestas en cola"
 
 #: sickbeard/webserve.py:3560
 msgid "For best results please set the Download Station alias as"
-msgstr ""
+msgstr "Para obtener mejores resultados por favor configurar el alias de la Estación de Descarga como"
 
 #: sickbeard/webserve.py:3561
 msgid "You can check this setting in the Synology DSM"
@@ -869,7 +869,7 @@ msgstr "Portal de aplicaciones"
 
 #: sickbeard/webserve.py:3562
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
-msgstr ""
+msgstr "Asegúrese de permitir que DSM esté integrado en iFrames"
 
 #: sickbeard/webserve.py:3563
 msgid "DSM Settings"
@@ -926,7 +926,7 @@ msgstr "Historial eliminado"
 
 #: sickbeard/webserve.py:3728
 msgid "Removed history entries older than 30 days"
-msgstr ""
+msgstr "Eliminar elementos de la historia más antiguos de 30 días"
 
 #: sickbeard/webserve.py:3741 gui/slick/views/layouts/main.mako:172
 msgid "General"
@@ -1017,11 +1017,11 @@ msgstr "Desempaquetado no soportado, deshabilitando configuracion de desempaquet
 
 #: sickbeard/webserve.py:4273 sickbeard/webserve.py:4284
 msgid "You tried saving an invalid anime naming config, not saving your naming settings"
-msgstr ""
+msgstr "Ha tratado de guardar una configuración de nombrado de anime no válida, no se guardarán sus opciones de nombrado"
 
 #: sickbeard/webserve.py:4275 sickbeard/webserve.py:4286
 msgid "You tried saving an invalid naming config, not saving your naming settings"
-msgstr ""
+msgstr "Ha tratado de guardar una configuración de nombrado no válida, no se guardarán sus opciones de nombrado"
 
 #: sickbeard/webserve.py:4389
 msgid "Config - Providers"
@@ -1231,7 +1231,7 @@ msgstr "Valoración"
 #: gui/slick/views/addShows_popularShows.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:35
 msgid "Rating > Votes"
-msgstr ""
+msgstr "Puntuación > Votos"
 
 #: gui/slick/views/addShows_popularShows.mako:26
 #: gui/slick/views/addShows_trendingShows.mako:38
@@ -1548,7 +1548,7 @@ msgstr "Apariencia"
 
 #: gui/slick/views/config_anime.mako:77
 msgid "How should the anime functions show and behave."
-msgstr ""
+msgstr "Cómo deben mostrarse y comportarse las funciones de anime."
 
 #: gui/slick/views/config_anime.mako:83
 msgid "Split show lists"
@@ -1595,7 +1595,7 @@ msgstr "Configuración avanzada"
 
 #: gui/slick/views/config_general.mako:37
 msgid "Startup options. Indexer options. Log and show file locations."
-msgstr ""
+msgstr "Opciones de inicio. Opciones de indizado. Ubicación de archivos de registro y de programas."
 
 #: gui/slick/views/config_general.mako:38
 msgid "Some options may require a manual restart to take effect."
@@ -1636,7 +1636,7 @@ msgstr "Elija hora para actualizar las series"
 
 #: gui/slick/views/config_general.mako:81
 msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
-msgstr ""
+msgstr "con información como siguiente fecha de emisión, programa concluido, etc. Use 15 para 3pm, 4 para 4am, etc."
 
 #: gui/slick/views/config_general.mako:82
 msgid "Note: minutes are randomized each time SickRage is started"
@@ -1644,7 +1644,7 @@ msgstr "Nota: cada vez que SickRage se inicia el valor de los minutos es elegido
 
 #: gui/slick/views/config_general.mako:88
 msgid "Send to trash for actions"
-msgstr ""
+msgstr "Enviar a la papelera para acciones"
 
 #: gui/slick/views/config_general.mako:92
 msgid "when using show \"Remove\" and delete files"
@@ -1652,7 +1652,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:96
 msgid "on scheduled deletes of the oldest log files"
-msgstr ""
+msgstr "en eliminación programada de los archivos de registro mas antiguos"
 
 #: gui/slick/views/config_general.mako:98
 msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
@@ -1776,7 +1776,7 @@ msgstr "Claro"
 
 #: gui/slick/views/config_general.mako:265
 msgid "Show fanart in the background"
-msgstr ""
+msgstr "Fanart del programa en el fondo"
 
 #: gui/slick/views/config_general.mako:268 gui/slick/views/config_general.mako:290
 msgid "on the show summary page"
@@ -1784,11 +1784,11 @@ msgstr "en la página resumen de la serie"
 
 #: gui/slick/views/config_general.mako:275
 msgid "Fanart transparency"
-msgstr ""
+msgstr "Transparencia de fanart"
 
 #: gui/slick/views/config_general.mako:280
 msgid "Transparency of the fanart in the background"
-msgstr ""
+msgstr "Transparencia de fanart en el fondo"
 
 #: gui/slick/views/config_general.mako:287
 msgid "Show all seasons"
@@ -1812,7 +1812,7 @@ msgstr "Fije el rango de días para los episodios no encontrados en la página d
 
 #: gui/slick/views/config_general.mako:314
 msgid "Display fuzzy dates"
-msgstr ""
+msgstr "Mostrar fechas imprecisas"
 
 #: gui/slick/views/config_general.mako:317
 msgid "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On Tue\""
@@ -1948,7 +1948,7 @@ msgstr "Contraseña HTTP"
 #: gui/slick/views/config_notifications.mako:307
 #: gui/slick/views/config_notifications.mako:316
 msgid "blank = no authentication"
-msgstr ""
+msgstr "en blanco = sin autenticación"
 
 #: gui/slick/views/config_general.mako:455
 msgid "HTTP port"
@@ -1956,7 +1956,7 @@ msgstr "Puerto HTTP"
 
 #: gui/slick/views/config_general.mako:458
 msgid "web port to browse and access SickRage (default:8081)"
-msgstr ""
+msgstr "puerto web para navegar y acceder a SickRage (por defecto: 8081)"
 
 #: gui/slick/views/config_general.mako:465
 msgid "Notify on login"
@@ -1988,7 +1988,7 @@ msgstr "Certificado HTTPS"
 
 #: gui/slick/views/config_general.mako:498
 msgid "file name or path to HTTPS certificate"
-msgstr ""
+msgstr "nombre de archivo o ruta del certificado HTTPS"
 
 #: gui/slick/views/config_general.mako:504
 msgid "HTTPS key"
@@ -1996,7 +1996,7 @@ msgstr "Clave HTTPS"
 
 #: gui/slick/views/config_general.mako:507
 msgid "file name or path to HTTPS key"
-msgstr ""
+msgstr "nombre de archivo o ruta de la clave HTTPS"
 
 #: gui/slick/views/config_general.mako:515
 msgid "Reverse proxy headers"
@@ -2004,7 +2004,7 @@ msgstr "Cabeceras de proxy reverso"
 
 #: gui/slick/views/config_general.mako:518
 msgid "accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
-msgstr ""
+msgstr "aceptar los siguientes encabezados de proxy inverso (avanzado)... <br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 
 #: gui/slick/views/config_general.mako:543
 msgid "CPU throttling"
@@ -2053,7 +2053,7 @@ msgstr "Cifrar contraseñas"
 
 #: gui/slick/views/config_general.mako:602
 msgid "in the <code>config.ini</code> file."
-msgstr ""
+msgstr "en el archivo <code>config.ini</code>."
 
 #: gui/slick/views/config_general.mako:603
 #: gui/slick/views/config_subtitles.mako:145
@@ -2083,39 +2083,39 @@ msgstr "Iconos de Google Calendar"
 
 #: gui/slick/views/config_general.mako:625
 msgid "show an icon next to exported calendar events in Google Calendar."
-msgstr ""
+msgstr "mostrar un icono junto al calendario de eventos exportados en Google Calendar."
 
 #: gui/slick/views/config_general.mako:633
 msgid "Proxy host"
-msgstr ""
+msgstr "Host del proxy"
 
 #: gui/slick/views/config_general.mako:636
 msgid "blank to disable or proxy to use when connecting to providers"
-msgstr ""
+msgstr "en blanco para desactivar o el proxy a utilizar para conectar a los proveedores"
 
 #: gui/slick/views/config_general.mako:642
 msgid "Use proxy for indexers"
-msgstr ""
+msgstr "Usar a proxy para los indizadores"
 
 #: gui/slick/views/config_general.mako:645
 msgid "use proxy host for connecting to indexers (thetvdb)"
-msgstr ""
+msgstr "usar host proxy para conectar a indizadores (thetvdb)"
 
 #: gui/slick/views/config_general.mako:652
 msgid "Skip Remove Detection"
-msgstr ""
+msgstr "Omitir Detección de Eliminación"
 
 #: gui/slick/views/config_general.mako:655
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
-msgstr ""
+msgstr "Evitar la detección de archivos eliminados. Si se desactiva, el estado del episodio cambiará al estado de borrado por defecto"
 
 #: gui/slick/views/config_general.mako:658
 msgid "This may mean SickRage misses renames as well"
-msgstr ""
+msgstr "Esto puede significar que SickRage también falle al renombrar"
 
 #: gui/slick/views/config_general.mako:664
 msgid "Default deleted episode status"
-msgstr ""
+msgstr "Estado de episodio eliminado por defecto"
 
 #: gui/slick/views/config_general.mako:680
 msgid "Define the status to be set for media file that has been deleted."
@@ -2123,11 +2123,11 @@ msgstr "Definir el estado que se fijará para el archivo multimedia eliminado."
 
 #: gui/slick/views/config_general.mako:682
 msgid "Archived option will keep previous downloaded quality"
-msgstr ""
+msgstr "La opción archivado mantendrá la calidad de descarga anterior"
 
 #: gui/slick/views/config_general.mako:683
 msgid "Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
-msgstr ""
+msgstr "Ejemplo: Descargado (1080p WEB-DL) ==> Archivado (1080p WEB-DL)"
 
 #: gui/slick/views/config_general.mako:697
 msgid "Options for github related features."
@@ -4897,7 +4897,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:108
 msgid "View Poster for"
-msgstr ""
+msgstr "Ver póster para"
 
 #: gui/slick/views/displayShow.mako:123 gui/slick/views/displayShow.mako:134
 msgid "minutes"
@@ -5269,7 +5269,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:43
 msgid "Poster Size"
-msgstr ""
+msgstr "Tamaño del póster"
 
 #: gui/slick/views/home.mako:48
 msgid "Filter Show Name"
@@ -5301,7 +5301,7 @@ msgstr "Diseño"
 
 #: gui/slick/views/home.mako:71
 msgid "Small Poster"
-msgstr ""
+msgstr "Póster pequeño"
 
 #: gui/slick/views/home.mako:73
 msgid "Simple"

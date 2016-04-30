@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:31-0400\n"
+"PO-Revision-Date: 2016-04-28 10:57-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -19,15 +19,15 @@ msgstr ""
 
 #: sickbeard/common.py:75
 msgid "Started Download"
-msgstr ""
+msgstr "Začetek Prejemanja"
 
 #: sickbeard/common.py:76
 msgid "Download Finished"
-msgstr ""
+msgstr "Prejemanje Končano"
 
 #: sickbeard/common.py:77
 msgid "Subtitle Download Finished"
-msgstr ""
+msgstr "Prejemanje Podnapisov Končano"
 
 #: sickbeard/common.py:78
 msgid "SickRage Updated"
@@ -48,7 +48,7 @@ msgstr ""
 #: sickbeard/common.py:597 gui/slick/views/history.mako:84
 #: gui/slick/views/history.mako:160
 msgid "Unknown"
-msgstr ""
+msgstr "Neznano"
 
 #: sickbeard/common.py:598 gui/slick/views/home.mako:155
 #: gui/slick/views/home.mako:343
@@ -64,7 +64,7 @@ msgstr ""
 #: sickbeard/common.py:600 gui/slick/views/history.mako:115
 #: gui/slick/views/home.mako:141 gui/slick/views/home.mako:329
 msgid "Downloaded"
-msgstr ""
+msgstr "Prejeto"
 
 #: sickbeard/common.py:601 gui/slick/views/displayShow.mako:259
 msgid "Skipped"
@@ -78,15 +78,15 @@ msgstr ""
 #: gui/slick/views/manage_backlogOverview.mako:36
 #: gui/slick/views/manage_backlogOverview.mako:67
 msgid "Wanted"
-msgstr ""
+msgstr "Željen"
 
 #: sickbeard/common.py:604
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #: sickbeard/common.py:605
 msgid "Ignored"
-msgstr ""
+msgstr "Prezrto"
 
 #: sickbeard/common.py:606 gui/slick/views/config_providers.mako:596
 #: gui/slick/views/history.mako:117
@@ -95,7 +95,7 @@ msgstr ""
 
 #: sickbeard/common.py:607 gui/slick/views/manage_manageSearches.mako:34
 msgid "Failed"
-msgstr ""
+msgstr "Spodletel"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
@@ -107,18 +107,18 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:77
 msgid "Update was successful"
-msgstr ""
+msgstr "Posodobitev uspešna"
 
 #: sickbeard/versionChecker.py:81
 msgid "Update failed!"
-msgstr ""
+msgstr "Neuspešna posodobitev!"
 
 #: sickbeard/versionChecker.py:93 sickbeard/versionChecker.py:101
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 #: gui/slick/views/config_backuprestore.mako:22
 #: gui/slick/views/config_backuprestore.mako:28
 msgid "Backup"
-msgstr ""
+msgstr "Varnostna kopija"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
@@ -134,7 +134,7 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
-msgstr ""
+msgstr "Posodobitev ni potrebna"
 
 #: sickbeard/webserve.py:178
 msgid "Mako Error"
@@ -150,7 +150,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:306 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr ""
+msgstr "Prijava"
 
 #: sickbeard/webserve.py:396
 msgid "API Key not generated"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:500
 msgid "Sort by:"
-msgstr ""
+msgstr "Uredi po:"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
@@ -171,7 +171,7 @@ msgstr ""
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
 msgid "Banner"
-msgstr ""
+msgstr "Pasica"
 
 #: sickbeard/webserve.py:511 gui/slick/views/home.mako:70
 #: gui/slick/views/schedule.mako:47
@@ -180,11 +180,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:512 gui/slick/views/schedule.mako:50
 msgid "List"
-msgstr ""
+msgstr "Seznam"
 
 #: sickbeard/webserve.py:513 gui/slick/views/schedule.mako:48
 msgid "Calendar"
-msgstr ""
+msgstr "Koledar"
 
 #: sickbeard/webserve.py:517
 msgid "View Paused:"
@@ -192,13 +192,13 @@ msgstr ""
 
 #: sickbeard/webserve.py:519
 msgid "Hide"
-msgstr ""
+msgstr "Skrij"
 
 #: sickbeard/webserve.py:521 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:258 gui/slick/views/schedule.mako:31
 #: gui/slick/views/schedule.mako:81
 msgid "Show"
-msgstr ""
+msgstr "Serije"
 
 #: sickbeard/webserve.py:534 gui/slick/views/config_general.mako:67
 #: gui/slick/views/layouts/main.mako:128
@@ -207,19 +207,19 @@ msgstr ""
 
 #: sickbeard/webserve.py:632
 msgid "Test 1"
-msgstr ""
+msgstr "Preizkus 1"
 
 #: sickbeard/webserve.py:632
 msgid "This is test number 1"
-msgstr ""
+msgstr "To je test številka 1"
 
 #: sickbeard/webserve.py:633
 msgid "Test 2"
-msgstr ""
+msgstr "Preizkus 2"
 
 #: sickbeard/webserve.py:633
 msgid "This is test number 2"
-msgstr ""
+msgstr "To je test številka 2"
 
 #: sickbeard/webserve.py:685
 msgid "Invalid show parameters"
@@ -239,11 +239,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:719 sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Home"
-msgstr ""
+msgstr "Domov"
 
 #: sickbeard/webserve.py:719 gui/slick/views/layouts/main.mako:114
 msgid "Show List"
-msgstr ""
+msgstr "Seznam Serij"
 
 #: sickbeard/webserve.py:759
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
@@ -445,7 +445,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1177 sickbeard/webserve.py:1206
 msgid "Restarting SickRage"
-msgstr ""
+msgstr "Ponovni zagon SickRage"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
@@ -472,7 +472,7 @@ msgstr ""
 #: sickbeard/webserve.py:1900 sickbeard/webserve.py:1905 sickbeard/webserve.py:1910
 #: sickbeard/webserve.py:1939 sickbeard/webserve.py:1943 sickbeard/webserve.py:1948
 msgid "Error"
-msgstr ""
+msgstr "Napaka"
 
 #: sickbeard/webserve.py:1248
 msgid "Invalid show ID: {show}"
@@ -487,7 +487,7 @@ msgstr ""
 #: gui/slick/views/inc_rootDirs.mako:25 gui/slick/views/manage.mako:40
 #: gui/slick/views/manage_massEdit.mako:70
 msgid "Edit"
-msgstr ""
+msgstr "Uredi"
 
 #: sickbeard/webserve.py:1300
 msgid "Resume"
@@ -502,7 +502,7 @@ msgstr ""
 #: gui/slick/views/inc_blackwhitelist.mako:48 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:28
 msgid "Remove"
-msgstr ""
+msgstr "Odstrani"
 
 #: sickbeard/webserve.py:1305
 msgid "Re-scan files"
@@ -546,7 +546,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1459 sickbeard/webserve.py:1461
 msgid "Edit Show"
-msgstr ""
+msgstr "Uredi Serijo"
 
 #: sickbeard/webserve.py:1544 sickbeard/webserve.py:1575
 msgid "Unable to refresh this show: {error}"
@@ -652,7 +652,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
 #: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Season"
-msgstr ""
+msgstr "Sezona"
 
 #: sickbeard/webserve.py:1871
 msgid "Backlog started"
@@ -685,7 +685,7 @@ msgstr ""
 #: sickbeard/webserve.py:2228 gui/slick/views/config_general.mako:70
 #: gui/slick/views/layouts/main.mako:209
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2241
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -698,7 +698,7 @@ msgstr ""
 #: sickbeard/webserve.py:2250 gui/slick/views/config_general.mako:69
 #: gui/slick/views/layouts/main.mako:208
 msgid "News"
-msgstr ""
+msgstr "Novice"
 
 #: sickbeard/webserve.py:2263
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
@@ -715,7 +715,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2318 gui/slick/views/layouts/main.mako:115
 msgid "Add Shows"
-msgstr ""
+msgstr "Dodaj Serijo"
 
 #: sickbeard/webserve.py:2383
 msgid "No folders selected."
@@ -723,7 +723,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2503
 msgid "New Show"
-msgstr ""
+msgstr "Nova Serija"
 
 #: sickbeard/webserve.py:2518
 msgid "Trending Shows"
@@ -731,7 +731,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2520 sickbeard/webserve.py:2643
 msgid "Popular Shows"
-msgstr ""
+msgstr "Priljubljene Serije"
 
 #: sickbeard/webserve.py:2522 sickbeard/webserve.py:2536
 msgid "Most Anticipated Shows"
@@ -829,7 +829,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3520 gui/slick/views/config_general.mako:172
 msgid "Updates"
-msgstr ""
+msgstr "Posodobitve"
 
 #: sickbeard/webserve.py:3525
 msgid "Refreshes"
@@ -837,7 +837,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3530
 msgid "Renames"
-msgstr ""
+msgstr "Preimenuj"
 
 #: sickbeard/webserve.py:3535 sickbeard/webserve.py:5127
 #: gui/slick/views/displayShow.mako:217 gui/slick/views/displayShow.mako:333
@@ -845,7 +845,7 @@ msgstr ""
 #: gui/slick/views/editShow.mako:91 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:232
 msgid "Subtitles"
-msgstr ""
+msgstr "Podnapisi"
 
 #: sickbeard/webserve.py:3540
 msgid "The following actions were queued"
@@ -861,7 +861,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3561 sickbeard/webserve.py:3563
 msgid "Control Panel"
-msgstr ""
+msgstr "Nadzorna Plošča"
 
 #: sickbeard/webserve.py:3561
 msgid "Application Portal"
@@ -877,7 +877,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3563
 msgid "Security"
-msgstr ""
+msgstr "Varnost"
 
 #: sickbeard/webserve.py:3571 gui/slick/views/layouts/main.mako:154
 msgid "Manage Torrents"
@@ -909,7 +909,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3710
 msgid "Clear History"
-msgstr ""
+msgstr "Počisti zgodovino"
 
 #: sickbeard/webserve.py:3711
 msgid "Trim History"
@@ -918,7 +918,7 @@ msgstr ""
 #: sickbeard/webserve.py:3715 gui/slick/views/config_general.mako:68
 #: gui/slick/views/layouts/main.mako:132
 msgid "History"
-msgstr ""
+msgstr "Zgodovina"
 
 #: sickbeard/webserve.py:3721
 msgid "History cleared"
@@ -930,7 +930,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3741 gui/slick/views/layouts/main.mako:172
 msgid "General"
-msgstr ""
+msgstr "Splošno"
 
 #: sickbeard/webserve.py:3742 sickbeard/webserve.py:3988
 msgid "Backup/Restore"
@@ -948,12 +948,12 @@ msgstr ""
 
 #: sickbeard/webserve.py:3745 gui/slick/views/layouts/main.mako:176
 msgid "Subtitles Settings"
-msgstr ""
+msgstr "Nastavitve podnapisov"
 
 #: sickbeard/webserve.py:3747 sickbeard/webserve.py:4883
 #: gui/slick/views/layouts/main.mako:178
 msgid "Notifications"
-msgstr ""
+msgstr "Obvestila"
 
 #: sickbeard/webserve.py:3748 sickbeard/webserve.py:5199
 #: gui/slick/views/displayShow.mako:223 gui/slick/views/editShow.mako:128
@@ -1053,7 +1053,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:5234
 msgid "Clear Errors"
-msgstr ""
+msgstr "Počisti Napake"
 
 #: sickbeard/webserve.py:5240
 msgid "Clear Warnings"
@@ -1087,7 +1087,7 @@ msgstr ""
 
 #: gui/slick/views/addShows.mako:13 gui/slick/views/addShows_newShow.mako:22
 msgid "Add New Show"
-msgstr ""
+msgstr "Dodaj Novo Serijo"
 
 #: gui/slick/views/addShows.mako:14
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
@@ -1165,7 +1165,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:364 gui/slick/views/displayShow.mako:394
 #: gui/slick/views/schedule.mako:88
 msgid "Search"
-msgstr ""
+msgstr "Iskanje"
 
 #: gui/slick/views/addShows_newShow.mako:59
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1191,7 +1191,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:74
 #: gui/slick/views/trendingShows.mako:44
 msgid "Add Show"
-msgstr ""
+msgstr "Dodaj Serijo"
 
 #: gui/slick/views/addShows_newShow.mako:95
 msgid "Skip Show"
@@ -1342,7 +1342,7 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:221
 #: gui/slick/views/manage_massEdit.mako:236
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: gui/slick/views/apiBuilder.mako:209 gui/slick/views/apiBuilder.mako:235
 #: gui/slick/views/manage_massEdit.mako:136
@@ -1353,11 +1353,11 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:222
 #: gui/slick/views/manage_massEdit.mako:237
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: gui/slick/views/apiBuilder.mako:254
 msgid "season"
-msgstr ""
+msgstr "sezona"
 
 #: gui/slick/views/apiBuilder.mako:260
 msgid "episode"
@@ -1381,7 +1381,7 @@ msgstr ""
 
 #: gui/slick/views/config.mako:35
 msgid "User"
-msgstr ""
+msgstr "Uporabnik"
 
 #: gui/slick/views/config.mako:36
 msgid "Program Folder"
@@ -1425,7 +1425,7 @@ msgstr ""
 
 #: gui/slick/views/config.mako:52
 msgid "IRC Chat"
-msgstr ""
+msgstr "IRC klepet"
 
 #: gui/slick/views/config_anime.mako:17
 msgid "AnimeDB Settings"
@@ -1787,7 +1787,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:287
 msgid "Show all seasons"
-msgstr ""
+msgstr "Pokaži vse sezone"
 
 #: gui/slick/views/config_general.mako:296
 msgid "Sort with \"The\", \"A\", \"An\""
@@ -1858,7 +1858,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:365
 msgid "Timezone"
-msgstr ""
+msgstr "Časovni pas"
 
 #: gui/slick/views/config_general.mako:368
 msgid "Local"
@@ -1868,7 +1868,7 @@ msgstr ""
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:30
 #: gui/slick/views/schedule.mako:84
 msgid "Network"
-msgstr ""
+msgstr "Omrežje"
 
 #: gui/slick/views/config_general.mako:374
 msgid "display dates and times in either your timezone or the shows network timezone"
@@ -1915,7 +1915,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:418
 msgid "here"
-msgstr ""
+msgstr "tukaj"
 
 #: gui/slick/views/config_general.mako:426
 msgid "HTTP logs"
@@ -2053,7 +2053,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:603
 #: gui/slick/views/config_subtitles.mako:145
 msgid "Warning"
-msgstr ""
+msgstr "Opozorilo"
 
 #: gui/slick/views/config_general.mako:603
 msgid "Passwords must only contain"
@@ -2142,7 +2142,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:735
 msgid "GitHub username"
-msgstr ""
+msgstr "GitHub uporabniško ime"
 
 #: gui/slick/views/config_general.mako:738 gui/slick/views/config_general.mako:748
 msgid "*** (REQUIRED FOR SUBMITTING ISSUES) ***"
@@ -2150,7 +2150,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:745
 msgid "GitHub password"
-msgstr ""
+msgstr "GitHub geslo"
 
 #: gui/slick/views/config_general.mako:755
 msgid "GitHub remote for branch"
@@ -2354,7 +2354,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:226
 #: gui/slick/views/config_providers.mako:364 gui/slick/views/login.mako:6
 msgid "Username"
-msgstr ""
+msgstr "Uporabniško ime"
 
 #: gui/slick/views/config_notifications.mako:128
 msgid "username for your KODI server (blank for none)"
@@ -2367,7 +2367,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:375
 #: gui/slick/views/config_subtitles.mako:239 gui/slick/views/login.mako:7
 msgid "Password"
-msgstr ""
+msgstr "Geslo"
 
 #: gui/slick/views/config_notifications.mako:138
 msgid "password for your KODI server (blank for none)"
@@ -2589,7 +2589,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:531
 msgid "Synology"
-msgstr ""
+msgstr "Synology"
 
 #: gui/slick/views/config_notifications.mako:533
 msgid "The Synology DiskStation NAS."
@@ -3174,7 +3174,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1576
 msgid "Trakt"
-msgstr ""
+msgstr "Trakt"
 
 #: gui/slick/views/config_notifications.mako:1578
 msgid "trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, trakt recommends additional shows and movies you'll enjoy!"
@@ -3246,7 +3246,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1671
 msgid "Skip All"
-msgstr ""
+msgstr "Preskoči vse"
 
 #: gui/slick/views/config_notifications.mako:1672
 msgid "Download Pilot Only"
@@ -3566,7 +3566,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:190
 msgid "Unpack"
-msgstr ""
+msgstr "Odpakiraj"
 
 #: gui/slick/views/config_postProcessing.mako:191
 msgid "Unpack any TV releases in your <i>TV Download Dir</i>?"
@@ -4237,23 +4237,23 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:53
 msgid "24 hours"
-msgstr ""
+msgstr "24 ur"
 
 #: gui/slick/views/config_search.mako:53
 msgid "4 hours"
-msgstr ""
+msgstr "4 ure"
 
 #: gui/slick/views/config_search.mako:53
 msgid "90 mins"
-msgstr ""
+msgstr "90 minut"
 
 #: gui/slick/views/config_search.mako:53
 msgid "45 mins"
-msgstr ""
+msgstr "45 minut"
 
 #: gui/slick/views/config_search.mako:53
 msgid "15 mins"
-msgstr ""
+msgstr "15 minut"
 
 #: gui/slick/views/config_search.mako:65
 msgid "Backlog search day(s)"
@@ -4896,7 +4896,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:123 gui/slick/views/displayShow.mako:134
 msgid "minutes"
-msgstr ""
+msgstr "minute"
 
 #: gui/slick/views/displayShow.mako:149
 msgid "View other popular {genre} shows on trakt.tv."
@@ -4959,7 +4959,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:359 gui/slick/views/displayShow.mako:389
 #: gui/slick/views/home.mako:250 gui/slick/views/manage_failedDownloads.mako:26
 msgid "Size"
-msgstr ""
+msgstr "Velikost"
 
 #: gui/slick/views/displayShow.mako:215 gui/slick/views/editShow.mako:81
 msgid "Info Language"
@@ -5031,7 +5031,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:325 gui/slick/views/displayShow.mako:354
 #: gui/slick/views/displayShow.mako:384
 msgid "Absolute"
-msgstr ""
+msgstr "Absolutno"
 
 #: gui/slick/views/displayShow.mako:326 gui/slick/views/displayShow.mako:355
 #: gui/slick/views/displayShow.mako:385 gui/slick/views/manage.mako:44
@@ -5046,7 +5046,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:329 gui/slick/views/displayShow.mako:358
 #: gui/slick/views/displayShow.mako:388
 msgid "File Name"
-msgstr ""
+msgstr "Ime datoteke"
 
 #: gui/slick/views/displayShow.mako:331 gui/slick/views/displayShow.mako:360
 #: gui/slick/views/displayShow.mako:390
@@ -5332,7 +5332,7 @@ msgstr ""
 
 #: gui/slick/views/home.mako:249
 msgid "Downloads"
-msgstr ""
+msgstr "Prenosi"
 
 #: gui/slick/views/home.mako:251 gui/slick/views/status.mako:37
 #: gui/slick/views/layouts/main.mako:290
@@ -5345,7 +5345,7 @@ msgstr ""
 
 #: gui/slick/views/home_massAddTable.mako:7
 msgid "Directory"
-msgstr ""
+msgstr "Mapa"
 
 #: gui/slick/views/home_massAddTable.mako:7
 msgid "Show Name (tvshow.nfo)"
@@ -5365,11 +5365,11 @@ msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Copy"
-msgstr ""
+msgstr "Kopiraj"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Move"
-msgstr ""
+msgstr "Premakni"
 
 #: gui/slick/views/home_postprocess.mako:31
 msgid "Hard Link"
@@ -5589,21 +5589,21 @@ msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:15
 msgid "100"
-msgstr ""
+msgstr "100"
 
 #: gui/slick/views/manage_failedDownloads.mako:16
 msgid "250"
-msgstr ""
+msgstr "250"
 
 #: gui/slick/views/manage_failedDownloads.mako:17
 msgid "500"
-msgstr ""
+msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:18
 #: gui/slick/views/manage_subtitleMissed.mako:26
 #: gui/slick/views/manage_subtitleMissed.mako:33
 msgid "All"
-msgstr ""
+msgstr "Vse"
 
 #: gui/slick/views/manage_failedDownloads.mako:25
 msgid "Release"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:56-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "Échouée"
 
 #: sickbeard/common.py:608
 msgid "Snatched (Best)"
-msgstr "Trouvé (Meilleure qualité)"
+msgstr "Récupéré (Meilleure qualité)"
 
 #: sickbeard/versionChecker.py:73
 msgid "New update found for SickRage, starting auto-updater"
@@ -166,7 +166,7 @@ msgstr "Trier par:"
 
 #: sickbeard/webserve.py:508
 msgid "Layout:"
-msgstr "Mise en page:"
+msgstr "Disposition:"
 
 #: sickbeard/webserve.py:510 gui/slick/views/home.mako:72
 #: gui/slick/views/schedule.mako:49
@@ -5884,7 +5884,7 @@ msgstr "Post-traitement"
 
 #: gui/slick/views/status.mako:25
 msgid "Subtitles Finder"
-msgstr "Chercheurs de sous-titres"
+msgstr "Recherche de sous-titres"
 
 #: gui/slick/views/status.mako:26
 msgid "Trakt Checker"
@@ -5892,7 +5892,7 @@ msgstr "Vérificateur Trakt"
 
 #: gui/slick/views/status.mako:30 gui/slick/views/status.mako:34
 msgid "Scheduler"
-msgstr "Planificateur"
+msgstr "Programmes"
 
 #: gui/slick/views/status.mako:35
 msgid "Alive"
@@ -5996,11 +5996,11 @@ msgstr "Annuler Renommer"
 
 #: gui/slick/views/testRename.mako:70
 msgid "Old Location"
-msgstr "Ancien Emplacement"
+msgstr "Ancien emplacement"
 
 #: gui/slick/views/testRename.mako:71
 msgid "New Location"
-msgstr "Nouvel Emplacement"
+msgstr "Nouvel emplacement"
 
 #: gui/slick/views/testRename.mako:98
 msgid "Rename Selected"

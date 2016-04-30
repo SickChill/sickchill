@@ -21,6 +21,7 @@
 import os
 import stat
 # from functools import wraps
+import shutil
 
 import sickbeard
 from sickbeard import postProcessor
@@ -29,7 +30,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, SUBTITLE_EXTENSIONS
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
@@ -40,7 +41,6 @@ from unrar2.rar_exceptions import InvalidRARArchive
 from unrar2.rar_exceptions import InvalidRARArchiveUsage
 from unrar2.rar_exceptions import IncorrectRARPassword
 
-import shutil
 import shutil_custom
 
 shutil.copyfile = shutil_custom.copyfile_custom
@@ -202,23 +202,19 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     # Don't post process if files are still being synced and option is activated
     postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
-    # Warn user if 'postpone if no subs' is enabled. Will debug possible user issues with PP
-    if sickbeard.POSTPONE_IF_NO_SUBS:
-        result.output += logHelper(u"Feature 'postpone postprocessing if no subtitle available' is enabled", logger.INFO)
-
     if not postpone:
         result.output += logHelper(u"PostProcessing Path: {0}".format(path), logger.INFO)
         result.output += logHelper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
 
         videoFiles = [x for x in files if helpers.isMediaFile(x)]
         rarFiles = [x for x in files if helpers.isRarFile(x)]
-        rarContent = ""
-        if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
-            # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+        rarContent = []
+        if rarFiles:
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
             videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
-        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
+
+        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
 
         result.output += logHelper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
         result.output += logHelper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
@@ -255,7 +251,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     for curDir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
         result.result = True
 
-        for processPath, _, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
+        for processPath, dirlist_, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
 
             if not validateDir(path, processPath, nzbNameOriginal, failed, result):
                 continue
@@ -268,14 +264,13 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             if not postpone:
                 videoFiles = [x for x in fileList if helpers.isMediaFile(x)]
                 rarFiles = [x for x in fileList if helpers.isRarFile(x)]
-                rarContent = ""
-                if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
-                    # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+                rarContent = []
+                if rarFiles:
                     rarContent = unRAR(processPath, rarFiles, force, result)
                     fileList = set(fileList + rarContent)
                     videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
-                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
+                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
                     result.output += logHelper(u"Found unwanted files: {0}".format(notwantedFiles), logger.DEBUG)
@@ -385,7 +380,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
     # Get the videofile list for the next checks
     allFiles = []
     allDirs = []
-    for _, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
+    for root_, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
         allDirs += processdir
         allFiles += fileList
 
@@ -519,7 +514,7 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(dirName, tryIndexers=True).parse(dirName)
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-        parse_result = False
+        parse_result = False  # pylint: disable=redefined-variable-type
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
@@ -562,16 +557,6 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
-
-            # This feature prevents PP for files that do not have subtitle associated with the video file
-            if sickbeard.POSTPONE_IF_NO_SUBS and subtitles_enabled(cur_video_file):
-                associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
-                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in SUBTITLE_EXTENSIONS]:
-                    result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: {0}".format(cur_video_file), logger.DEBUG)
-                    continue
-                else:
-                    result.output += logHelper(u"Found subtitles associated. Continuing the post-process of this file: {0}".format(cur_video_file))
-
             result.result = processor.process()
             process_fail_message = u""
         except EpisodePostProcessingFailedException as e:

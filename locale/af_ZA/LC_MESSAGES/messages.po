@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-04-20 06:29-0700\n"
-"PO-Revision-Date: 2016-04-20 09:30-0400\n"
+"PO-Revision-Date: 2016-04-28 10:55-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Afrikaans\n"
 "MIME-Version: 1.0\n"
@@ -130,7 +130,7 @@ msgstr "Konfigurasie rugsteun proses was suksesvol, besig met opdatering..."
 
 #: sickbeard/versionChecker.py:105 sickbeard/versionChecker.py:109
 msgid "Config backup failed, aborting update"
-msgstr "Config Friends misluk, gaan staak update"
+msgstr "Konfigurasie rugsteun taak het misluk, opdatering word gestaak"
 
 #: sickbeard/versionChecker.py:273
 msgid "No update needed"
@@ -150,7 +150,7 @@ msgstr "Verkeerde API sleutel gebruik"
 
 #: sickbeard/webserve.py:306 gui/slick/views/login.mako:10
 msgid "Login"
-msgstr "Aanteken"
+msgstr "Teken aan"
 
 #: sickbeard/webserve.py:396
 msgid "API Key not generated"
@@ -227,7 +227,7 @@ msgstr "Ontoelaatbare vertoning parameters"
 
 #: sickbeard/webserve.py:690
 msgid "Invalid show paramaters"
-msgstr "Ontoelaatbare vertoning parameters"
+msgstr "Ontoelaatbare program parameters"
 
 #: sickbeard/webserve.py:697
 msgid "Invalid paramaters"
@@ -243,7 +243,7 @@ msgstr "Tuis"
 
 #: sickbeard/webserve.py:719 gui/slick/views/layouts/main.mako:114
 msgid "Show List"
-msgstr "Vertonings Lys"
+msgstr "Program Lys"
 
 #: sickbeard/webserve.py:759
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
@@ -339,7 +339,7 @@ msgstr "Kodi toets-kennisgewing suksesvol gestuur na {kodi_host}"
 
 #: sickbeard/webserve.py:915
 msgid "Test KODI notice failed to {kodi_host}"
-msgstr "Toets Kodi kennisgewing versuim het om {kodi_host}"
+msgstr "Kodi toets kennisgewing het misluk na {kodi_host}"
 
 #: sickbeard/webserve.py:930
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
@@ -359,7 +359,7 @@ msgstr "Suksesvolle toets van Plex Media Server(s) ... {plex_servers}"
 
 #: sickbeard/webserve.py:951
 msgid "Test failed, No Plex Media Server host specified"
-msgstr "Toets was onsuksesvol, geen Plex Media Server Host gespesifiseer"
+msgstr "Toets was onsuksesvol, geen Plex Media Server gasheer gespesifiseer"
 
 #: sickbeard/webserve.py:953
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
@@ -395,47 +395,47 @@ msgstr "Toets kennisgewing was suksesvol na {nmj2_host} gestuur"
 
 #: sickbeard/webserve.py:1007
 msgid "Test notice failed to {nmj2_host}"
-msgstr ""
+msgstr "Toets boodskap na {nmj2_host} het misluk"
 
 #: sickbeard/webserve.py:1027
 msgid "Trakt Authorized"
-msgstr ""
+msgstr "Trakt was gemagtig"
 
 #: sickbeard/webserve.py:1028
 msgid "Trakt Not Authorized!"
-msgstr ""
+msgstr "Trakt is nie gemagtig nie!"
 
 #: sickbeard/webserve.py:1093
 msgid "Test email sent successfully! Check inbox."
-msgstr ""
+msgstr "Toets e-pos suksesvol gestuur! Kontroleer jou inboks."
 
 #: sickbeard/webserve.py:1095
 msgid "ERROR: {last_error}"
-msgstr ""
+msgstr "FOUT: {last_error}"
 
 #: sickbeard/webserve.py:1102
 msgid "Test NMA notice sent successfully"
-msgstr ""
+msgstr "NMA toets boodskap met sukses gestuur"
 
 #: sickbeard/webserve.py:1104
 msgid "Test NMA notice failed"
-msgstr ""
+msgstr "NMA toets boodskap het misluk"
 
 #: sickbeard/webserve.py:1111
 msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
-msgstr ""
+msgstr "Pushalot kennisgewing was suksesvol. Kontroleer jou Pushalot kliënte om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:1113
 msgid "Error sending Pushalot notification"
-msgstr ""
+msgstr "Fout met die versending van Pushalot kennisgewing"
 
 #: sickbeard/webserve.py:1120
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
-msgstr ""
+msgstr "Pushbullet kennisgewing was suksesvol. Kontroleer jou toestel om seker te maak dit het gewerk"
 
 #: sickbeard/webserve.py:1122 sickbeard/webserve.py:1132 sickbeard/webserve.py:1141
 msgid "Error sending Pushbullet notification"
-msgstr ""
+msgstr "Fout met versending van Pushbullet kennisgewing"
 
 #: sickbeard/webserve.py:1158 gui/slick/views/displayShow.mako:334
 #: gui/slick/views/displayShow.mako:363 gui/slick/views/displayShow.mako:393
@@ -449,19 +449,19 @@ msgstr "SickRage aan die herlaai"
 
 #: sickbeard/webserve.py:1209
 msgid "Update Failed"
-msgstr "Updatering het gefaal"
+msgstr "Opdatering het gefaal"
 
 #: sickbeard/webserve.py:1210
 msgid "Update wasn't successful, not restarting. Check your log for more information."
-msgstr ""
+msgstr "Opdatering was nie suksesvol nie, gaan nie herlaai nie. Kontroleer jou log vir meer inligting."
 
 #: sickbeard/webserve.py:1217
 msgid "Checking out branch"
-msgstr ""
+msgstr "Besig om tak uit te teken"
 
 #: sickbeard/webserve.py:1220
 msgid "Already on branch"
-msgstr ""
+msgstr "Reeds op tak"
 
 #: sickbeard/webserve.py:1248 sickbeard/webserve.py:1251 sickbeard/webserve.py:1420
 #: sickbeard/webserve.py:1429 sickbeard/webserve.py:1621 sickbeard/webserve.py:1632
@@ -558,7 +558,7 @@ msgstr "Nuwe plek <tt>{location}</tt> bestaan nie"
 
 #: sickbeard/webserve.py:1592
 msgid "Unable to update show: {error}"
-msgstr ""
+msgstr "Kan nie die program opdateer nie: {error}"
 
 #: sickbeard/webserve.py:1599
 msgid "Unable to force an update on scene exceptions of the show."
@@ -598,19 +598,19 @@ msgstr "verskuif na asblik"
 
 #: sickbeard/webserve.py:1638
 msgid "(media untouched)"
-msgstr ""
+msgstr "(media onaangeraak)"
 
 #: sickbeard/webserve.py:1638
 msgid "(with all related media)"
-msgstr ""
+msgstr "(met alle verwante media)"
 
 #: sickbeard/webserve.py:1659
 msgid "Unable to refresh this show."
-msgstr ""
+msgstr "Kan nie hierdie program verfris nie."
 
 #: sickbeard/webserve.py:1679
 msgid "Unable to update this show."
-msgstr ""
+msgstr "Kan nie hierdie program opdateer nie."
 
 #: sickbeard/webserve.py:1718
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
@@ -642,29 +642,29 @@ msgstr ""
 
 #: sickbeard/webserve.py:1765
 msgid "Invalid status"
-msgstr ""
+msgstr "Ongeldige status"
 
 #: sickbeard/webserve.py:1857
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
-msgstr ""
+msgstr "Agterstand soektog het automaties begin vir die volgende seisoene van <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1864 sickbeard/webserve.py:1883
 #: gui/slick/views/displayShow.mako:76 gui/slick/views/displayShow.mako:80
 #: gui/slick/views/displayShow.mako:341 gui/slick/views/displayShow.mako:371
 msgid "Season"
-msgstr ""
+msgstr "Seisoen"
 
 #: sickbeard/webserve.py:1871
 msgid "Backlog started"
-msgstr ""
+msgstr "Agterstand soektog het begin"
 
 #: sickbeard/webserve.py:1876
 msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
-msgstr ""
+msgstr "Probeer-weer Soektog is outomaties weer begin vir die volgende seisoen van <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:1890
 msgid "Retry Search started"
-msgstr ""
+msgstr "Probeer-weer Soektog het begin"
 
 #: sickbeard/webserve.py:1900
 msgid "You must specify a show"
@@ -672,7 +672,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1910 sickbeard/webserve.py:1948
 msgid "Can't rename episodes when the show dir is missing."
-msgstr ""
+msgstr "Kan nie die episodes hernoem wanneer die program leêr vermis word nie."
 
 #: sickbeard/webserve.py:2100
 msgid "New subtitles downloaded: {new_subtitle_languages}"
@@ -763,7 +763,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:2795
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
-msgstr ""
+msgstr "Afwesige parameters, geen Indekser ID of leêr: {show_to_add} and {root_dir}/{show_path}"
 
 #: sickbeard/webserve.py:2804
 msgid "Unknown error. Unable to add show due to problem with show selection."
@@ -804,12 +804,12 @@ msgstr ""
 
 #: sickbeard/webserve.py:3138
 msgid "Missing Subtitles"
-msgstr ""
+msgstr "Afwesige Subtitels"
 
 #: sickbeard/webserve.py:3223 sickbeard/webserve.py:3224
 #: gui/slick/views/layouts/main.mako:141
 msgid "Backlog Overview"
-msgstr ""
+msgstr "Agterstand Opsommig"
 
 #: sickbeard/webserve.py:3348
 msgid "Mass Edit"
@@ -893,7 +893,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3618
 msgid "Backlog search started"
-msgstr ""
+msgstr "Agterstand Soektog het begin"
 
 #: sickbeard/webserve.py:3628
 msgid "Daily search started"
@@ -944,7 +944,7 @@ msgstr ""
 #: sickbeard/webserve.py:3744 sickbeard/webserve.py:4390
 #: gui/slick/views/layouts/main.mako:175
 msgid "Search Providers"
-msgstr ""
+msgstr "Soektog Voorsieners"
 
 #: sickbeard/webserve.py:3745 gui/slick/views/layouts/main.mako:176
 msgid "Subtitles Settings"
@@ -1025,19 +1025,19 @@ msgstr ""
 
 #: sickbeard/webserve.py:4389
 msgid "Config - Providers"
-msgstr ""
+msgstr "Konfigurasie - Voorsieners"
 
 #: sickbeard/webserve.py:4446
 msgid "No Provider Name specified"
-msgstr ""
+msgstr "Geen Voorsiener Naam gespesifiseer"
 
 #: sickbeard/webserve.py:4448
 msgid "No Provider Url specified"
-msgstr ""
+msgstr "Geen Voorsiener Url gespesifiseer"
 
 #: sickbeard/webserve.py:4450
 msgid "No Provider Api key specified"
-msgstr ""
+msgstr "Geen Voorsiener Api sleutel gespesifiseer"
 
 #: sickbeard/webserve.py:4882
 msgid "Config - Notifications"
@@ -1464,7 +1464,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:1744
 #: gui/slick/views/config_postProcessing.mako:35 gui/slick/views/status.mako:36
 msgid "Enable"
-msgstr ""
+msgstr "Aktiveer"
 
 #: gui/slick/views/config_anime.mako:33
 msgid "Should SickRage use data from AniDB?"
@@ -1604,7 +1604,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:48
 msgid "for adding shows and metadata providers"
-msgstr ""
+msgstr "om programme en metadata voersieners by te voeg"
 
 #: gui/slick/views/config_general.mako:54
 msgid "Launch browser"
@@ -1735,7 +1735,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:214
 msgid "send a message to all enabled notifiers when SickRage has been updated"
-msgstr "stuur 'n boodskap aan alle aankondigers wanneer SickRage opgedateer was"
+msgstr "stuur 'n boodskap aan alle aktiveerde aankondigers wanneer SickRage opgedateer was"
 
 #: gui/slick/views/config_general.mako:230
 msgid "User Interface"
@@ -2086,7 +2086,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:636
 msgid "blank to disable or proxy to use when connecting to providers"
-msgstr ""
+msgstr "blanko om te deaktiveer of proxy om te gbruik wanneer aan voorsieners konnekteer word"
 
 #: gui/slick/views/config_general.mako:642
 msgid "Use proxy for indexers"
@@ -3040,7 +3040,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1328
 msgid "Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API."
-msgstr ""
+msgstr "Free Mobile is 'n bekende Franse sellulêre netwerk voorsiener.<br> Dit voorsien 'n gratis SMS API aan hul gebruikers."
 
 #: gui/slick/views/config_notifications.mako:1336
 msgid "Send SMS notifications?"
@@ -3498,11 +3498,11 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:125
 msgid "Create missing show directories"
-msgstr ""
+msgstr "Maak afwesige program leêrs"
 
 #: gui/slick/views/config_postProcessing.mako:126
 msgid "Create missing show directories when they get deleted"
-msgstr ""
+msgstr "Maak nuwe program leêrs wanner hulle verwyder word"
 
 #: gui/slick/views/config_postProcessing.mako:132
 msgid "Add shows without directory"
@@ -3920,57 +3920,57 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:39
 #: gui/slick/views/config_providers.mako:52
 msgid "Provider Priorities"
-msgstr ""
+msgstr "Voorsiener Prioriteite"
 
 #: gui/slick/views/config_providers.mako:40
 #: gui/slick/views/config_providers.mako:104
 msgid "Provider Options"
-msgstr ""
+msgstr "Voorsiener Stellings"
 
 #: gui/slick/views/config_providers.mako:42
 msgid "Configure Custom Newznab Providers"
-msgstr ""
+msgstr "Konfigureer persoonlike Newsnab Voorsieners"
 
 #: gui/slick/views/config_providers.mako:45
 #: gui/slick/views/config_providers.mako:696
 msgid "Configure Custom Torrent Providers"
-msgstr ""
+msgstr "Konfigureer persoonlike Torrent Voorsieners"
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Check off and drag the providers into the order you want them to be used."
-msgstr ""
+msgstr "Merk en sleep die voorsieners in die orde wat jy wil hê hulle gebruik moet word."
 
 #: gui/slick/views/config_providers.mako:54
 msgid "At least one provider is required but two are recommended."
-msgstr ""
+msgstr "Ten minste een voorsiener word vereis maar twee word aanbeveel."
 
 #: gui/slick/views/config_providers.mako:57
 msgid "Torrent providers can be toggled in "
-msgstr ""
+msgstr "Torrent voorsieners kan aan en af gesit word in "
 
 #: gui/slick/views/config_providers.mako:63
 msgid "Provider does not support backlog searches at this time."
-msgstr ""
+msgstr "Voorsiener ondersteun nie tans agterstand soektogte nie."
 
 #: gui/slick/views/config_providers.mako:64
 msgid "Provider is <b>NOT WORKING</b>."
-msgstr ""
+msgstr "Voorsiener is <b>BUITE WERKING</b>."
 
 #: gui/slick/views/config_providers.mako:105
 msgid "Configure individual provider settings here."
-msgstr ""
+msgstr "Konfigureer individuele voorsiener stellings hier."
 
 #: gui/slick/views/config_providers.mako:106
 msgid "Check with provider's website on how to obtain an API key if needed."
-msgstr ""
+msgstr "Gebruik voorsiener se web tuiste om te sien hoe om 'n API sleutel te kry indien nodig."
 
 #: gui/slick/views/config_providers.mako:112
 msgid "Configure provider"
-msgstr ""
+msgstr "Konfigureer voorsiener"
 
 #: gui/slick/views/config_providers.mako:130
 msgid "No providers available to configure."
-msgstr ""
+msgstr "Geen voorsieners beskikbaar om te konfigureer."
 
 #: gui/slick/views/config_providers.mako:143
 msgid "URL"
@@ -3986,19 +3986,19 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:252
 #: gui/slick/views/config_providers.mako:525
 msgid "enable provider to perform daily searches."
-msgstr ""
+msgstr "aktiveer voorsiener om daaglikse soektogte te doen."
 
 #: gui/slick/views/config_providers.mako:174
 #: gui/slick/views/config_providers.mako:261
 #: gui/slick/views/config_providers.mako:534
 msgid "Enable backlog searches"
-msgstr ""
+msgstr "Aktiveer agterstand soektogte"
 
 #: gui/slick/views/config_providers.mako:177
 #: gui/slick/views/config_providers.mako:264
 #: gui/slick/views/config_providers.mako:537
 msgid "enable provider to perform backlog searches."
-msgstr ""
+msgstr "aktiveer voorsiener om agterstand soektogte te doen."
 
 #: gui/slick/views/config_providers.mako:186
 #: gui/slick/views/config_providers.mako:273
@@ -4106,7 +4106,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:486
 msgid "ONLY search on this provider if show info is defined as \"Spanish\" (avoid provider's use for VOS shows)"
-msgstr ""
+msgstr "Soek SLEGS op hierdie voorsiener as die program informasie gedefinieer is as \"Spanish\" (vermy voorsiener se gebruik vir VOS programme)"
 
 #: gui/slick/views/config_providers.mako:495
 msgid "Sorting results by"
@@ -4130,26 +4130,26 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:620
 msgid "Configure Custom<br>Newznab Providers"
-msgstr ""
+msgstr "Konfigureer Persoonlike<br>Newsnab Voorsieners"
 
 #: gui/slick/views/config_providers.mako:621
 msgid "Add and setup or remove custom Newznab providers."
-msgstr ""
+msgstr "Voeg by, stel op of verwyder persoonlike Newsnab voorsieners."
 
 #: gui/slick/views/config_providers.mako:627
 #: gui/slick/views/config_providers.mako:703
 msgid "Select provider"
-msgstr ""
+msgstr "Selekteer voorsiener"
 
 #: gui/slick/views/config_providers.mako:631
 #: gui/slick/views/config_providers.mako:707
 msgid "-- add new provider --"
-msgstr ""
+msgstr "-- voeg nuwe voorsiener by --"
 
 #: gui/slick/views/config_providers.mako:640
 #: gui/slick/views/config_providers.mako:716
 msgid "Provider name"
-msgstr ""
+msgstr "Voorsiener naam"
 
 #: gui/slick/views/config_providers.mako:646
 msgid "Site URL"
@@ -4181,7 +4181,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:697
 msgid "Add and setup or remove custom RSS providers."
-msgstr ""
+msgstr "Voeg by, stel op of verwyder persoonlike RSS voorsieners."
 
 #: gui/slick/views/config_providers.mako:722
 msgid "RSS URL"
@@ -4217,11 +4217,11 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:31
 msgid "Randomize Providers"
-msgstr ""
+msgstr "Kies Voorsiener Ewekansig"
 
 #: gui/slick/views/config_search.mako:34
 msgid "randomize the provider search order instead of going in order of placement"
-msgstr ""
+msgstr "kies voorsiener soektog orde ewekansig in plaas van van posisie in die lys"
 
 #: gui/slick/views/config_search.mako:40
 msgid "Download propers"
@@ -4257,15 +4257,15 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:65
 msgid "Backlog search day(s)"
-msgstr ""
+msgstr "Agterstand soektog dae"
 
 #: gui/slick/views/config_search.mako:68
 msgid "number of day(s) that the \"Forced Backlog Search\" will cover (e.g. 7 Days)"
-msgstr ""
+msgstr "aantal dae waaroor die \"Forseer Agterstand Soektog\" sal strek (vb. 7 Dae)"
 
 #: gui/slick/views/config_search.mako:75
 msgid "Backlog search frequency"
-msgstr ""
+msgstr "Agterstand soektog frekwensie"
 
 #: gui/slick/views/config_search.mako:78 gui/slick/views/config_search.mako:88
 msgid "time in minutes between searches (min."
@@ -4362,7 +4362,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:208
 msgid "enable NZB search providers</p>"
-msgstr ""
+msgstr "aktiveer NZB soektog voorsieners</p>"
 
 #: gui/slick/views/config_search.mako:215
 msgid "Send .nzb files to"
@@ -4444,7 +4444,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:334
 msgid "Use SABnzbd category (backlog episodes)"
-msgstr ""
+msgstr "Gebruik SABnzbd kategorie (agterstand episodes)"
 
 #: gui/slick/views/config_search.mako:337
 msgid "add downloads of old episodes to this category (e.g. TV)"
@@ -4460,7 +4460,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:355
 msgid "Use SABnzbd category for anime (backlog episodes)"
-msgstr ""
+msgstr "Gebruik SABnzbd kategorie vir anime (agterstand episodes)"
 
 #: gui/slick/views/config_search.mako:358
 msgid "add anime downloads of old episodes to this category (e.g. anime)"
@@ -4520,7 +4520,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:430
 msgid "Use NZBget category (backlog episodes)"
-msgstr ""
+msgstr "Gebruik NZBget kategorie (agterstand episodes)"
 
 #: gui/slick/views/config_search.mako:433
 msgid "send downloads of old episodes marked this category (e.g. TV)"
@@ -4536,7 +4536,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:450
 msgid "Use NZBget category for anime (backlog episodes)"
-msgstr ""
+msgstr "Gebruik NZBget kategorie vir anime (agterstand episodes)"
 
 #: gui/slick/views/config_search.mako:453
 msgid "send anime downloads of old episodes marked this category (e.g. anime)"
@@ -4568,7 +4568,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:470
 msgid "priority for daily snatches (no backlog)"
-msgstr ""
+msgstr "prioriteit vir daaglikse gryp-aksies (geen agterstand)"
 
 #: gui/slick/views/config_search.mako:476 gui/slick/views/config_search.mako:479
 #: gui/slick/views/config_search.mako:677
@@ -4585,7 +4585,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:502
 msgid "enable torrent search providers"
-msgstr ""
+msgstr "aktiveer torrent soektog voorsieners"
 
 #: gui/slick/views/config_search.mako:510
 msgid "Send .torrent files to"
@@ -4839,7 +4839,7 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:186
 msgid "Subtitle Providers"
-msgstr ""
+msgstr "Subtitel Voorsieners"
 
 #: gui/slick/views/config_subtitles.mako:187
 msgid "Check off and drag the plugins into the order you want them to be used."
@@ -4855,11 +4855,11 @@ msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:212
 msgid "Provider Settings"
-msgstr ""
+msgstr "Voorsiener Stellings"
 
 #: gui/slick/views/config_subtitles.mako:213
 msgid "Set user and password for each provider"
-msgstr ""
+msgstr "Voorsien gebruiker en wagwoord vir elke voorsiener"
 
 #: gui/slick/views/config_subtitles.mako:233
 msgid "User Name"
@@ -4941,7 +4941,7 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:186 gui/slick/views/status.mako:205
 #: gui/slick/views/status.mako:216
 msgid "Missing"
-msgstr ""
+msgstr "Afwesig"
 
 #: gui/slick/views/displayShow.mako:188
 msgid "Scene Name"
@@ -5204,7 +5204,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:224
 msgid "This will affect episode search on NZB and torrent providers. This list appends to the original show name."
-msgstr ""
+msgstr "Hierdie sal episode soektogte op NZB en torrent voorsieners aktiveer. Die lys voeg by die oorspronklike program naam by."
 
 #: gui/slick/views/errorlogs.mako:18
 msgid "WARNING logs"
@@ -5240,15 +5240,15 @@ msgstr ""
 
 #: gui/slick/views/history.mako:52 gui/slick/views/manage_failedDownloads.mako:27
 msgid "Provider"
-msgstr ""
+msgstr "Voorsiener"
 
 #: gui/slick/views/history.mako:93
 msgid "Missing Provider"
-msgstr ""
+msgstr "Afwesige Voorsiener"
 
 #: gui/slick/views/history.mako:148
 msgid "missing provider"
-msgstr ""
+msgstr "afwesige voorsiener"
 
 #: gui/slick/views/home.mako:11
 msgid "Continuing"
@@ -5541,7 +5541,7 @@ msgstr ""
 
 #: gui/slick/views/manage_backlogOverview.mako:78
 msgid "Force Backlog"
-msgstr ""
+msgstr "Forseer Agterstand Soektog"
 
 #: gui/slick/views/manage_episodeStatuses.mako:22
 msgid "None of your episodes have status"
@@ -5612,50 +5612,50 @@ msgstr ""
 #: gui/slick/views/manage_manageSearches.mako:13
 #: gui/slick/views/layouts/main.mako:299
 msgid "Backlog Search"
-msgstr ""
+msgstr "Agterstand Soektog"
 
 #: gui/slick/views/manage_manageSearches.mako:16
 #: gui/slick/views/manage_manageSearches.mako:20
 #: gui/slick/views/manage_manageSearches.mako:24
 #: gui/slick/views/manage_manageSearches.mako:28
 msgid "Not in progress"
-msgstr ""
+msgstr "Nie besig nie"
 
 #: gui/slick/views/manage_manageSearches.mako:16
 #: gui/slick/views/manage_manageSearches.mako:20
 #: gui/slick/views/manage_manageSearches.mako:24
 #: gui/slick/views/manage_manageSearches.mako:28 gui/slick/views/status.mako:115
 msgid "In Progress"
-msgstr ""
+msgstr "Besig"
 
 #: gui/slick/views/manage_manageSearches.mako:18 gui/slick/views/status.mako:17
 #: gui/slick/views/layouts/main.mako:298
 msgid "Daily Search"
-msgstr ""
+msgstr "Daaglikse Soektog"
 
 #: gui/slick/views/manage_manageSearches.mako:22
 msgid "Find Propers Search"
-msgstr ""
+msgstr "Vind \"Propers\" Soektog"
 
 #: gui/slick/views/manage_manageSearches.mako:24
 msgid "Propers search disabled"
-msgstr ""
+msgstr "\"Propers\" soektog gedeaktiveer"
 
 #: gui/slick/views/manage_manageSearches.mako:26
 msgid "Subtitle Search"
-msgstr ""
+msgstr "Subtitel Soektog"
 
 #: gui/slick/views/manage_manageSearches.mako:28
 msgid "Subtitle search disabled"
-msgstr ""
+msgstr "Subtitel soektog gedeaktiveer"
 
 #: gui/slick/views/manage_manageSearches.mako:30 gui/slick/views/status.mako:22
 msgid "Search Queue"
-msgstr ""
+msgstr "Pyplyn Soektog"
 
 #: gui/slick/views/manage_manageSearches.mako:31 gui/slick/views/status.mako:18
 msgid "Backlog"
-msgstr ""
+msgstr "Agterstand"
 
 #: gui/slick/views/manage_manageSearches.mako:31
 #: gui/slick/views/manage_manageSearches.mako:32
@@ -5845,7 +5845,7 @@ msgstr "Program Opdatering"
 
 #: gui/slick/views/status.mako:20
 msgid "Version Check"
-msgstr "Weergawe Soeker"
+msgstr "Weergawe Kontroleerder"
 
 #: gui/slick/views/status.mako:21 gui/slick/views/status.mako:109
 msgid "Show Queue"
@@ -5865,7 +5865,7 @@ msgstr "Subtitel Soeker"
 
 #: gui/slick/views/status.mako:26
 msgid "Trakt Checker"
-msgstr "Trakt Soeker"
+msgstr "Trakt Kontroleerder"
 
 #: gui/slick/views/status.mako:30 gui/slick/views/status.mako:34
 msgid "Scheduler"
@@ -5945,11 +5945,11 @@ msgstr "Vrye Spasie"
 
 #: gui/slick/views/status.mako:200
 msgid "TV Download Directory"
-msgstr "TV Aflaai Bestemming"
+msgstr "TV Aflaai Leêr"
 
 #: gui/slick/views/status.mako:210
 msgid "Media Root Directories"
-msgstr "Media Bestemmings"
+msgstr "Media Wortel Leêrs"
 
 #: gui/slick/views/testRename.mako:17
 msgid "Preview of the proposed name changes"
