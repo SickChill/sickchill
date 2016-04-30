@@ -22,7 +22,7 @@
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 <input type="hidden" id="srRoot" value="${srRoot}" />
-    <div class="pull-left form-inline">
+    <div class="pull-left form-inline" style="margin-top:-40px">
         ${_('Change Show')}:
         <div class="navShow"><img id="prevShow" src="${srRoot}/images/prev.png" alt="&lt;&lt;" title="${_('Prev Show')}" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
@@ -230,8 +230,7 @@
 
     <div class="clearfix"></div>
 
-    <div class="pull-left" >
-        ${_('Change selected episodes to')}:<br>
+    <div class="pull-left" style="margin-top:-8px;padding-left:225px">
         <select id="statusSelect" class="form-control form-control-inline input-sm">
         <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
         % if not sickbeard.USE_FAILED_DOWNLOADS:
@@ -245,13 +244,12 @@
         </select>
         <input type="hidden" id="showID" value="${show.indexerid}" />
         <input type="hidden" id="indexer" value="${show.indexer}" />
-        <input class="btn btn-inline" type="button" id="changeStatus" value="Go" />
+        <input class="btn btn-inline" type="button" id="changeStatus" value="Go" /><br>
+        &nbsp;<span style="font-size:8pt;">${_('Will change selected episodes.')}</span>
     </div>
-
-    <br>
-
-    <div class="pull-right clearfix" id="checkboxControls">
-        <div style="padding-bottom: 5px;">
+    
+    <div class="pull-right clearfix" id="checkboxControls" style="margin-top:-10px">
+        <div style="">
             <% total_snatched = epCounts[Overview.SNATCHED] + epCounts[Overview.SNATCHED_PROPER] + epCounts[Overview.SNATCHED_BEST] %>
             <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${epCounts[Overview.WANTED]}</b></span></label>
             <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${epCounts[Overview.QUAL]}</b></span></label>
@@ -259,15 +257,15 @@
             <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
             <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> ${_('Snatched')}: <b>${total_snatched}</b></span></label>
         </div>
-
+		<div style="margin-top:5px">
         <button id="popover" type="button" class="btn btn-xs">${_('Select Columns')} <b class="caret"></b></button>
-        <div class="pull-right" >
-            <button class="btn btn-xs seriesCheck">${_('Select Filtered Episodes')}</button>
-            <button class="btn btn-xs clearAll">${_('Clear All')}</button>
-        </div>
+			<div class="pull-right" >
+				<button class="btn btn-xs seriesCheck">${_('Select Filtered Episodes')}</button>
+				<button class="btn btn-xs clearAll">${_('Clear All')}</button>
+			</div>
+		</div>
     </div>
-<br>
-<br>
+
 <br>
 
 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
