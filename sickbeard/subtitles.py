@@ -41,9 +41,6 @@ from sickrage.helper.common import episode_num, dateTimeFormat
 from sickrage.show.Show import Show
 from sickrage.helper.exceptions import ex
 
-from pkg_resources import require
-require('pytz')
-
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 if 'legendastv' not in provider_manager.names():

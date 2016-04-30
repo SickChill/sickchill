@@ -60,21 +60,6 @@ def containsAtLeastOneWord(name, words):
     return False
 
 
-def containsAllWords(name, words):
-    """
-    Filters out results based on filter_words
-
-    name: name to check
-    words : string of words separated by a ',' or list of words
-
-    Returns: False if the name doesn't contain any word of words list, or the found word from the list.
-    """
-    if isinstance(words, basestring):
-        words = words.split(',')
-
-    return all(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I).search(name) for word in words)
-
-
 def filter_bad_releases(name, parse=True, show=None):
     """
     Filters out non-english and just all-around stupid releases by comparing them
@@ -128,7 +113,7 @@ def filter_bad_releases(name, parse=True, show=None):
     elif sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
         require_words = list(set(require_words).difference(x.strip() for x in sickbeard.IGNORE_WORDS.split(',') if x.strip()))
 
-    if require_words and not containsAllWords(name, require_words):
+    if require_words and not containsAtLeastOneWord(name, require_words):
         logger.log(u"Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
                    ", ignoring it", logger.INFO)
         return False
