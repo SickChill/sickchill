@@ -504,7 +504,7 @@ span.show-option {
 }
 
 .info-container {
-    width: auto;
+    width: 100%;
     display: table-cell;
 }
 
