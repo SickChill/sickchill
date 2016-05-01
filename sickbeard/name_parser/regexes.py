@@ -234,24 +234,23 @@ anime_regexes = [
      # Active Raid 04 vostfr [1080p]
      # Sekko Boys 04 vostfr [720p]
      r'''
-     ^(\[(?P<release_group>.+?)\][ ._-]*)?                                       # Release Group and separator (Optional)
-     ((\[|\().+?(\]|\))[ ._-]*)?                                                 # Extra info (Optionnal)
-     (?P<series_name>.+?)[ ._-]+                                                 # Show_Name and separator
-     ((épisode|episode|E)[ ._-]*)?                                               # Sentence for special fansub (Optionnal)
-     (?P<ep_ab_num>\d{1,3})[\(\)\[\] ._-]+                                       # Episode number and separator
-     ((E)?(?P<extra_ab_ep_num>\d{1,3})[\(\)\[\] ._-]+)?                          # Multi-Episode number
-     (VOSTFR[\(\)\[\] ._-]*)?                                                    # Subtitle Language and separator (Optional)
-     ((par[ ._-]+Fansub-Resistance)[\(\)\[\] ._-]*)?                             # Sentence for special fansub (Optionnal)
-     ((FHD|HD|SD)[\(\)\[\] ._-]*)?                                               # Resolution (Optional)
-     (((v|V)([0-9]))[\(\)\[\] ._-]*)?                                            # Version and separator (Optional, not catched)
-     (((8|10)(Bits|Bit))[\(\)\[\] ._-]*)?                                        # Colour resolution and separator (Optional)
-     ((?P<extra_info>((\d{3,4}[xp*]+\d{0,4})|(WEB-DL)|(.+?)))[\(\)\[\] ._-]*)?   # Source_Quality_Etc-(Optional)
-     (VOSTFR[\(\)\[\] ._-]*)?                                                    # Subtitle Language and separator (Second position)(Optional)
-     ((FHD|HD|SD)[\(\)\[\] ._-]*)?                                               # Resolution (Second position)(Optional)
-     (((8|10)(Bits|Bit))[\(\)\[\] ._-]*)?                                        # Colour resolution and separator (Second position)(Optional)
-     (((v|V)(?P<version>[0-9]))[\(\)\[\] ._-]*)?                                 # Version and separator (Second position)(Optional)
-     ((?P<crc>\w{8})[\(\)\[\] ._-]*)?                                            # CRC (Optional)
-     .*                                                                          # Separator and EOL
+     ^(\[(?P<release_group>.+?)\][ ._-]*)?                                                    # Release Group and separator (Optional)
+     ((\[|\().+?(\]|\))[ ._-]*)?                                                              # Extra info (Optionnal)
+     (?P<series_name>.+?)[ ._-]+                                                              # Show_Name and separator
+     ((épisode|episode|part)[ ._-]*)?                                                         # Sentence for special fansub (Optionnal)
+     ((E)?(?P<ep_ab_num>\d{1,3}))[\(\)\[\] ._-]+                                              # Episode number and separator
+     ((and.Part.|E)?(?P<extra_ab_ep_num>\d{1,3})[\(\)\[\] ._-]+)?                             # Multi-Episode number
+     (VOSTFR[\(\)\[\] ._-]*)?                                                                 # Subtitle Language and separator (Optional)
+     ((par[ ._-]+Fansub-Resistance)[\(\)\[\] ._-]*)?                                          # Sentence for special fansub (Optionnal)
+     (((v|V)([0-9]))[\(\)\[\] ._-]*)?                                                         # Version and separator (Optional, not catched)
+     (((8|10)(Bits|Bit))[\(\)\[\] ._-]*)?                                                     # Color resolution and separator (Optional)
+     ((?P<extra_info>((((FHD|HD|SD)[ ._-])?(\d{3,4}[xip*]+\d{0,4}))|(.*)))[\(\)\[\] ._-]*)?   # Source_Quality_Etc-(Optional)
+     (VOSTFR[\(\)\[\] ._-]*)?                                                                 # Subtitle Language and separator (Second position)(Optional)
+     ((FHD|HD|SD)[\(\)\[\] ._-]*)?                                                            # Resolution (Second position)(Optional)
+     (((8|10)(Bits|Bit))[\(\)\[\] ._-]*)?                                                     # Colour resolution and separator (Second position)(Optional)
+     (((v|V)(?P<version>[0-9]))[\(\)\[\] ._-]*)?                                              # Version and separator (Second position)(Optional)
+     ((?P<crc>\w{8})[\(\)\[\] ._-]*)?                                                         # CRC (Optional)
+     .*                                                                                       # Separator and EOL
      '''),
     ('anime_standard',
      # [Group Name] Show Name.13-14
