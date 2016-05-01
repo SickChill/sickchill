@@ -14,15 +14,15 @@
     <div class="row">
         <div class="col-md-12">
             % if not header is UNDEFINED:
-		        <h1 class="header">${header}</h1>
+                <h1 class="header">${header}</h1>
             % else:
-		        <h1 class="title">${title}</h1>
+                <h1 class="title">${title}</h1>
             % endif
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-	        <form action="${srRoot}/manage/episodeStatuses" method="get">
+            <form action="${srRoot}/manage/episodeStatuses" method="get">
                 <label for="whichStatus">${_('Manage episodes with status')}</label>
                 <select name="whichStatus" class="form-control form-control-inline input-sm" title="whichStatus">
                     % for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
@@ -30,9 +30,9 @@
                             <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
                         %endif
                     % endfor
-	            </select>
-		        <input class="btn btn-inline" type="submit" value="${_('Manage')}" />
-	        </form>
+                </select>
+                <input class="btn btn-inline" type="submit" value="${_('Manage')}" />
+            </form>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
             <br/>
             <div class="row">
                 <div class="col-md-12">
-	                <h2>${_('Shows containing')} ${common.statusStrings[whichStatus]} ${_('episodes')}</h2>
+                    <h2>${_('Shows containing')} ${common.statusStrings[whichStatus]} ${_('episodes')}</h2>
                 </div>
             </div>
             <div class="row">
@@ -62,10 +62,10 @@
                         else:
                             row_class = common.Overview.overviewStrings[int(whichStatus)]
                     %>
-	                <input type="hidden" id="row_class" value="${row_class}" />
+                    <input type="hidden" id="row_class" value="${row_class}" />
 
-	                <label for="newStatus">${_('Set checked shows/episodes to')}</label>
-	                <select name="newStatus" class="form-control form-control-inline input-sm" title="newStatus">
+                    <label for="newStatus">${_('Set checked shows/episodes to')}</label>
+                    <select name="newStatus" class="form-control form-control-inline input-sm" title="newStatus">
                         <%
                             statusList = [common.SKIPPED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED
                             # Do not allow setting to bare downloaded or archived!
@@ -78,11 +78,11 @@
                                 statusList.append(common.FAILED)
                         %>
                         % for curStatus in statusList:
-			                <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
+                            <option value="${curStatus}">${common.statusStrings[curStatus]}</option>
                         % endfor
-	                </select>
+                    </select>
 
-	                <input class="btn btn-inline" type="submit" value="${_('Go')}" />
+                    <input class="btn btn-inline" type="submit" value="${_('Go')}" />
                 </div>
             </div>
             <div class="row">
@@ -95,24 +95,24 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="horizontal-scroll">
-	                    <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
+                        <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
                             % for cur_indexer_id in sorted_show_ids:
-			                    <tr id="${cur_indexer_id}">
-				                    <th>
-					                    <input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all" checked="checked"  title="allCheck"/>
-				                    </th>
-				                    <th colspan="2" style="width: 100%; text-align: left;">
-					                    <a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a>
-					                    (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand"/>
-				                    </th>
-			                    </tr>
+                                <tr id="${cur_indexer_id}">
+                                    <th>
+                                        <input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all" checked="checked"  title="allCheck"/>
+                                    </th>
+                                    <th colspan="2" style="width: 100%; text-align: left;">
+                                        <a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a>
+                                        (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand"/>
+                                    </th>
+                                </tr>
                             % endfor
-		                    <tr>
-			                    <td style="padding:0;"></td>
-			                    <td style="padding:0;"></td>
-			                    <td style="padding:0;"></td>
-		                    </tr>
-	                    </table>
+                            <tr>
+                                <td style="padding:0;"></td>
+                                <td style="padding:0;"></td>
+                                <td style="padding:0;"></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-05-01 00:32-0700\n"
-"PO-Revision-Date: 2016-05-01 03:52-0400\n"
+"PO-Revision-Date: 2016-05-01 08:46-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -1300,7 +1300,9 @@ msgstr "Vous avez atteint cette page par hasard, vérifiez l'url."
 msgid "A mako error has occured.<br>\n"
 "            If this happened during an update a simple page refresh may be the solution.<br>\n"
 "            Mako errors that happen during updates may be a one time error if there were significant ui changes."
-msgstr ""
+msgstr "Une erreur mako est survenue. <br>\n"
+" Si cela s'est passé pendant une mise à jour un simple rafraîchissement de la page devrait corriger le problème. <br>\n"
+" Les erreurs mako qui se produisent pendant les mises à jour peuvent être ponctuelles s'il y a eu un changement significatif dans l'interface utilisateur."
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -2918,7 +2920,7 @@ msgstr "Clé API Prowl"
 
 #: gui/slick/views/config_notifications.mako:1206
 msgid "Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows. Your Prowl API key is available at:"
-msgstr ""
+msgstr "Les clés API Prowl listées ici, séparées par des virgules, <br> recevront des notifications pour<b> toutes</b> les séries. Votre clé API Prowl est disponible à :"
 
 #: gui/slick/views/config_notifications.mako:1210
 #: gui/slick/views/config_notifications.mako:2838
@@ -4129,7 +4131,7 @@ msgstr "Activer/désactiver les options de métadonnées que vous souhaitez cré
 
 #: gui/slick/views/config_postProcessing.mako:1281
 msgid "Select Metadata"
-msgstr "Sélectionner les Metadata"
+msgstr "Sélectionner les métadonnées"
 
 #: gui/slick/views/config_providers.mako:29
 #: gui/slick/views/config_providers.mako:48
@@ -4519,7 +4521,7 @@ msgstr "Liste de trackers"
 
 #: gui/slick/views/config_search.mako:201
 msgid "Trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. \"tracker1,tracker2,tracker3\""
-msgstr ""
+msgstr "Les trackers qui seront ajoutés aux magnets sans trackers, <br>séparer les trackers par une virgule, ex. « tracker1, tracker2, tracker3 »"
 
 #: gui/slick/views/config_search.mako:209
 msgid "Ignore language names in subbed results"
@@ -5101,7 +5103,7 @@ msgstr "genre"
 
 #: gui/slick/views/displayShow.mako:170
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "Découvrir les autres séries populaires de type {imdbgenre} sur IMDB."
 
 #: gui/slick/views/displayShow.mako:189 gui/slick/views/displayShow.mako:319
 #: gui/slick/views/inc_qualityChooser.mako:34
@@ -5377,7 +5379,7 @@ msgstr "\"Forcer la mise à jour\" est nécessaire, et si vous avez déjà des �
 
 #: gui/slick/views/editShow.mako:276
 msgid "comma-separated <i>e.g. \"word1,word2,word3</i>\""
-msgstr "utilisez la virgule comme séparateur <i>par ex. \"mot1,mot2,mot3</i>\""
+msgstr "Utilisez la virgule comme séparateur <i>par ex. \"mot1,mot2,mot3</i>\""
 
 #: gui/slick/views/editShow.mako:281
 msgid "Search results with one or more words from this list will be ignored."
