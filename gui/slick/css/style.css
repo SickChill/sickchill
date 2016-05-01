@@ -498,6 +498,16 @@ span.show-option {
     display: none;
 }
 
+.poster-container {
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.info-container {
+    width: auto;
+    display: table-cell;
+}
+
 #container, #container-anime {
     margin: 0 auto;
 }
@@ -3405,6 +3415,22 @@ input.tablesorter-filter.disabled {
     .tvshowImg {
         margin-bottom: 10px;
     }
+
+    .poster-container {
+        float:left;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .poster-container img {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .info-container {
+        display: block;
+        width: 100%;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -3422,6 +3448,22 @@ input.tablesorter-filter.disabled {
 
     .tvshowImg {
         max-height: 245px;
+    }
+
+    .poster-container {
+        float:left;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .poster-container img {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .info-container {
+        display: block;
+        width: 100%;
     }
 }
 
