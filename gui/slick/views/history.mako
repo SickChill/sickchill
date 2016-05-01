@@ -17,7 +17,7 @@
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
-	        <div class="pull-right"><b>Limit:</b>
+	        <div class="pull-right"><b>${_('Limit:')}</b>
 		        <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
 			        <option value="10" ${('', 'selected="selected"')[limit == 10]}>10</option>
 			        <option value="25" ${('', 'selected="selected"')[limit == 25]}>25</option>
@@ -29,7 +29,7 @@
 			        <option value="1000" ${('', 'selected="selected"')[limit == 1000]}>1000</option>
 			        <option value="0" ${('', 'selected="selected"')[limit == 0  ]}>All</option>
 		        </select>
-                <span> Layout:
+                <span> ${_('Layout:')}
                     <select name="${_('HistoryLayout')}" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
                         <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
                         <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
