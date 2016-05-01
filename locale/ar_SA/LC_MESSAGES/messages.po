@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2016-05-01 00:32-0700\n"
-"PO-Revision-Date: 2016-05-01 03:52-0400\n"
+"PO-Revision-Date: 2016-05-01 08:45-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -5106,7 +5106,7 @@ msgstr "النوع"
 
 #: gui/slick/views/displayShow.mako:170
 msgid "View other popular {imdbgenre} shows on IMDB."
-msgstr ""
+msgstr "عرض مسلسلات شائعه أخرى {imdbgenre} في IMDB."
 
 #: gui/slick/views/displayShow.mako:189 gui/slick/views/displayShow.mako:319
 #: gui/slick/views/inc_qualityChooser.mako:34

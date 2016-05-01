@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-01 00:32-0700\n"
+"POT-Creation-Date: 2016-05-01 05:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5608,6 +5608,15 @@ msgstr ""
 msgid "There are no events to display."
 msgstr ""
 
+#: gui/slick/views/history.mako:20 gui/slick/views/manage_failedDownloads.mako:10
+msgid "Limit"
+msgstr ""
+
+#: gui/slick/views/history.mako:32 gui/slick/views/home.mako:23
+#: gui/slick/views/schedule.mako:65
+msgid "Layout"
+msgstr ""
+
 #: gui/slick/views/history.mako:33
 msgid "HistoryLayout"
 msgstr ""
@@ -5642,10 +5651,6 @@ msgstr ""
 
 #: gui/slick/views/home.mako:12
 msgid "Ended"
-msgstr ""
-
-#: gui/slick/views/home.mako:23 gui/slick/views/schedule.mako:65
-msgid "Layout"
 msgstr ""
 
 #: gui/slick/views/home.mako:26
@@ -5977,10 +5982,6 @@ msgstr ""
 #: gui/slick/views/manage_episodeStatuses.mako:91
 #: gui/slick/views/manage_subtitleMissed.mako:63
 msgid "Clear all"
-msgstr ""
-
-#: gui/slick/views/manage_failedDownloads.mako:10
-msgid "Limit"
 msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:12

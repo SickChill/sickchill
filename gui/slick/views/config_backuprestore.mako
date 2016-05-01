@@ -4,12 +4,12 @@
 %>
 
 <%block name="tabs">
-	<li><a href="#backup">${_('Backup')}</a></li>
-	<li><a href="#restore">${_('Restore')}</a></li>
+    <li><a href="#backup">${_('Backup')}</a></li>
+    <li><a href="#restore">${_('Restore')}</a></li>
 </%block>
 
 <%block name="pages">
-	<form method="post" action="backuprestore">
+    <form method="post" action="backuprestore">
 
         <!-- /component-group1 //-->
         <div id="backup" class="component-group">
@@ -68,7 +68,7 @@
                 </div>
             </div>
         </div>
-	</form>
+    </form>
 </%block>
 
 <!-- Disable save button -->
