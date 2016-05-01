@@ -180,26 +180,27 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-    existing_subtitles = subtitles_info['subtitles']
+def download_subtitles(episode):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    existing_subtitles = episode.subtitles
 
     if not needs_subtitles(existing_subtitles):
         logger.log(u'Episode already has all needed subtitles, skipping {0} {1}'.format
-                   (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
-                    episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
+                   (episode.show.name, episode_num(episode.season, episode.episode) or
+                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
     languages = get_needed_languages(existing_subtitles)
     if not languages:
         logger.log(u'No subtitles needed for {0} {1}'.format
-                   (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
-                    episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
+                   (episode.show.name, episode_num(episode.season, episode.episode) or
+                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    subtitles_path = get_subtitles_path(subtitles_info['location'])
-    video_path = subtitles_info['location']
+    subtitles_path = get_subtitles_path(episode.location)
+    video_path = episode.location
 
-    # Perfect match = hash score - hearing impaired score - resolution score (subtitle for 720p is the same as for 1080p)
+    # Perfect match = hash score - hearing impaired score - resolution score
+    # (subtitle for 720p is the same as for 1080p)
     # Perfect match = 215 - 1 - 1 = 213
     # Non-perfect match = series + year + season + episode
     # Non-perfect match = 108 + 54 + 18 + 18 = 198
@@ -211,8 +212,8 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
     video = get_video(video_path, subtitles_path=subtitles_path)
     if not video:
         logger.log(u'Exception caught in subliminal.scan_video for {0} {1}'.format
-                   (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
-                    episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
+                   (episode.show.name, episode_num(episode.season, episode.episode) or
+                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
     providers = enabled_service_list()
@@ -227,12 +228,13 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
 
         if not subtitles_list:
             logger.log(u'No subtitles found for {0} {1}'.format
-                       (subtitles_info['show_name'], episode_num(subtitles_info['season'], subtitles_info['episode']) or
-                        episode_num(subtitles_info['season'], subtitles_info['episode'], numbering='absolute')), logger.DEBUG)
+                       (episode.show.name, episode_num(episode.season, episode.episode) or
+                        episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            score = subliminal.score.compute_score(subtitle, video, hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
+            score = subliminal.score.compute_score(subtitle, video,
+                                                   hearing_impaired=sickbeard.SUBTITLES_HEARING_IMPAIRED)
             logger.log(u'[{0}] Subtitle score for {1} is: {2} (min={3})'.format
                        (subtitle.provider_name, subtitle.id, score, user_score), logger.DEBUG)
 
@@ -266,11 +268,11 @@ def download_subtitles(subtitles_info):  # pylint: disable=too-many-locals, too-
             logger.log(u'history.logSubtitle {0}, {1}'.format
                        (subtitle.provider_name, subtitle.language.opensubtitles), logger.DEBUG)
 
-            history.logSubtitle(subtitles_info['show_indexerid'], subtitles_info['season'],
-                                subtitles_info['episode'], subtitles_info['status'], subtitle)
+            history.logSubtitle(episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle)
 
         if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
-            run_subs_extra_scripts(subtitles_info, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
+
+            run_subs_extra_scripts(episode, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
     current_subtitles = sorted({subtitle for subtitle in new_subtitles + existing_subtitles}) if existing_subtitles else new_subtitles
@@ -501,7 +503,7 @@ class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
         self.amActive = False
 
 
-def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
+def run_subs_extra_scripts(episode, subtitle, video, single=False):
     for script_name in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = os.path.abspath(script_cmd[0])
@@ -510,9 +512,8 @@ def run_subs_extra_scripts(episode_object, subtitle, video, single=False):
         subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
 
         inner_cmd = script_cmd + [video.name, subtitle_path, subtitle.language.opensubtitles,
-                                  episode_object['show_name'], str(episode_object['season']),
-                                  str(episode_object['episode']), episode_object['name'],
-                                  str(episode_object['show_indexerid'])]
+                                  episode.show.name, str(episode.season), str(episode.episode),
+                                  episode.name, str(episode.show.indexerid)]
 
         # use subprocess to run the command and capture output
         logger.log(u'Executing command: {0}'.format(inner_cmd))
