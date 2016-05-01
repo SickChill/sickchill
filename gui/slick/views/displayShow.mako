@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-	        <!-- Alert -->
+            <!-- Alert -->
             % if show_message:
                 <div class="row">
                     <div class="col-md-12">
@@ -167,7 +167,7 @@
                                             % endfor
                                         % elif show.imdb_info.get('genres'):
                                             % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                                                <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular ${imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${imdbgenre}</li></a>
+                                                <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${imdbgenre}</li></a>
                                             % endfor
                                         % endif
                                     </ul>
