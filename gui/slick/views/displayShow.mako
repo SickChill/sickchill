@@ -117,192 +117,189 @@
 
             <!-- Header -->
             <div class="row">
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
-                         class="pull-md-left pull-lg-left tvshowImg img-responsive" alt="${_('Poster for')} ${show.name}"
-                         onclick="location.href='${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster'"/>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <div class="row">
-                        <div class="col-md-12" id="showinfo">
-                            <div class="row">
-                                <div class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs">
-                                    <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="max-height:50px;border:1px solid black;" class="pull-right">
-                                </div>
-                                <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                                    % if 'rating' in show.imdb_info:
-                                    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
-                                        <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
-                                    % endif
-
-                                    <% _show = show %>
-                                    % if not show.imdbid:
-                                        <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
-                                    % else:
-                                        % if 'country_codes' in show.imdb_info:
-                                            % for country in show.imdb_info['country_codes'].split('|'):
-                                                <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
-                                            % endfor
-                                        % endif
-                                        <span>
-                                            % if show.imdb_info.get('year'):
-                                                (${show.imdb_info['year']}) -
-                                            % endif
-                                            ${show.imdb_info['runtimes']} ${_('minutes')}</span>
-
-                                        <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-                                    % endif
-                                    <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
-                                    % if xem_numbering or xem_absolute_numbering:
-                                        <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-                                    % endif
-                                    <a href="${anon_url('https://fanart.tv/series/', _show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><img alt="[fanart.tv]" height="16" width="16" src="${srRoot}/images/fanart.tv.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-
-                                </div>
-                                <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                                    <ul class="tags">
-                                        % if show.genre and not show.imdb_info.get('genres'):
-                                            % for genre in show.genre[1:-1].split('|'):
-                                                <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=genre)}"><li>${_('genre')}</li></a>
-                                            % endfor
-                                        % elif show.imdb_info.get('genres'):
-                                            % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                                                <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${imdbgenre}</li></a>
-                                            % endfor
-                                        % endif
-                                    </ul>
-                                </div>
+                <div class="col-md-12">
+                    <div class="poster-container">
+                        <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
+                             class="tvshowImg" alt="${_('Poster for')} ${show.name}"
+                             onclick="location.href='${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster'"/>
+                    </div>
+                    <div class="info-container">
+                        <div class="row">
+                            <div class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs">
+                                <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="max-height:50px;border:1px solid black;" class="pull-right">
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div id="summary">
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                    <table class="summaryTable pull-left">
-                                        <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
-                                    <tr>
-                                        <td class="showLegend">${_('Quality')}: </td>
-                                    <td>
-                                        % if show.quality in qualityPresets:
-                                            ${renderQualityPill(show.quality)}
-                                        % else:
-                                            % if anyQualities:
-                                                <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
-                                            % endif
-                                            % if bestQualities:
+                            <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                % if 'rating' in show.imdb_info:
+                                <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
+                                    <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
+                                % endif
+
+                                <% _show = show %>
+                                % if not show.imdbid:
+                                    <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
+                                % else:
+                                % if 'country_codes' in show.imdb_info:
+                                    % for country in show.imdb_info['country_codes'].split('|'):
+                                        <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                                    % endfor
+                                % endif
+                                    <span>
+                                % if show.imdb_info.get('year'):
+                                    (${show.imdb_info['year']}) -
+                                % endif
+                                        ${show.imdb_info['runtimes']} ${_('minutes')}
+                            </span>
+                                    <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                % endif
+                                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${srRoot}/images/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                % if xem_numbering or xem_absolute_numbering:
+                                    <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${srRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                % endif
+                                <a href="${anon_url('https://fanart.tv/series/', _show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><img alt="[fanart.tv]" height="16" width="16" src="${srRoot}/images/fanart.tv.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+                            </div>
+                            <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                <ul class="tags">
+                                    % if show.genre and not show.imdb_info.get('genres'):
+                                        % for genre in show.genre[1:-1].split('|'):
+                                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=genre)}"><li>${_('genre')}</li></a>
+                                        % endfor
+                                    % elif show.imdb_info.get('genres'):
+                                        % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
+                                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=imdbgenre)}"><li>${imdbgenre}</li></a>
+                                        % endfor
+                                    % endif
+                                </ul>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="summary">
+                                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                        <table class="summaryTable pull-left">
+                                            <% anyQualities, bestQualities = Quality.splitQuality(int(show.quality)) %>
+                                        <tr>
+                                            <td class="showLegend">${_('Quality')}: </td>
+                                        <td>
+                                            % if show.quality in qualityPresets:
+                                                ${renderQualityPill(show.quality)}
+                                            % else:
+                                                % if anyQualities:
+                                                    <i>${_('Allowed')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(anyQualities)])}${("", "<br>")[bool(bestQualities)]}
+                                                % endif
+                                                % if bestQualities:
                                                 <i>${_('Preferred')}:</i> ${", ".join([capture(renderQualityPill, x) for x in sorted(bestQualities)])}
+                                                % endif
                                             % endif
-                                        % endif
 
-                                        % if show.network and show.airs:
+                                            % if show.network and show.airs:
+                                                <tr>
+                                                    <td class="showLegend">${_('Originally Airs')}: </td>
+                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font> ", "")[network_timezones.test_timeformat(show.airs)]} on ${show.network}</td>
+                                                </tr>
+                                            % elif show.network:
+                                                <tr><td class="showLegend">${_('Originally Airs')}: </td>
+                                                    <td>${show.network}</td></tr>
+                                            % elif show.airs:
+                                                <tr>
+                                                    <td class="showLegend">${_('Originally Airs')}: </td>
+                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font>", "")[network_timezones.test_timeformat(show.airs)]}</td>
+                                                </tr>
+                                            % endif
                                             <tr>
-                                                <td class="showLegend">${_('Originally Airs')}: </td>
-                                                <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font> ", "")[network_timezones.test_timeformat(show.airs)]} on ${show.network}</td>
+                                                <td class="showLegend">${_('Show Status')}: </td>
+                                                <td>${_(show.status)}</td>
                                             </tr>
-                                        % elif show.network:
-                                            <tr><td class="showLegend">${_('Originally Airs')}: </td>
-                                                <td>${show.network}</td></tr>
-                                        % elif show.airs:
                                             <tr>
-                                                <td class="showLegend">${_('Originally Airs')}: </td>
-                                                <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font>", "")[network_timezones.test_timeformat(show.airs)]}</td>
+                                                <td class="showLegend">${_('Default EP Status')}: </td>
+                                                <td>${statusStrings[show.default_ep_status]}</td>
                                             </tr>
-                                        % endif
-                                        <tr>
-                                            <td class="showLegend">${_('Show Status')}: </td>
-                                            <td>${_(show.status)}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Default EP Status')}: </td>
-                                            <td>${statusStrings[show.default_ep_status]}</td>
-                                        </tr>
-                                        % if showLoc[1]:
+                                            % if showLoc[1]:
+                                                <tr>
+                                                    <td class="showLegend">${_('Location')}: </td>
+                                                    <td>${showLoc[0]}</td>
+                                                </tr>
+                                            % else:
+                                                <tr>
+                                                    <td class="showLegend"><span style="color: red;">${_('Location')}: </span></td>
+                                                    <td><span style="color: red;">${showLoc[0]}</span> (${_('Missing')})</td>
+                                                </tr>
+                                            % endif
                                             <tr>
-                                                <td class="showLegend">${_('Location')}: </td>
-                                                <td>${showLoc[0]}</td>
+                                                <td class="showLegend">${_('Scene Name')}:</td>
+                                                <td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td>
                                             </tr>
-                                        % else:
-                                            <tr>
-                                                <td class="showLegend"><span style="color: red;">${_('Location')}: </span></td>
-                                                <td><span style="color: red;">${showLoc[0]}</span> (${_('Missing')})</td>
-                                            </tr>
-                                        % endif
-                                        <tr>
-                                            <td class="showLegend">${_('Scene Name')}:</td>
-                                            <td>${(show.name, " | ".join(show.exceptions))[show.exceptions != 0]}</td>
-                                        </tr>
 
-                                        % if show.rls_require_words:
+                                            % if show.rls_require_words:
+                                                <tr>
+                                                    <td class="showLegend">${_('Required Words')}: </td>
+                                                    <td>${show.rls_require_words}</td>
+                                                </tr>
+                                            % endif
+                                            % if show.rls_ignore_words:
+                                                <tr>
+                                                    <td class="showLegend">${_('Ignored Words')}: </td>
+                                                    <td>${show.rls_ignore_words}</td>
+                                                </tr>
+                                            % endif
+                                            % if bwl and bwl.whitelist:
+                                                <tr>
+                                                    <td class="showLegend">Wanted Group${("", "s")[len(bwl.whitelist) > 1]}:</td>
+                                                    <td>${', '.join(bwl.whitelist)}</td>
+                                                </tr>
+                                            % endif
+                                            % if bwl and bwl.blacklist:
+                                                <tr>
+                                                    <td class="showLegend">Unwanted Group${("", "s")[len(bwl.blacklist) > 1]}:</td>
+                                                    <td>${', '.join(bwl.blacklist)}</td>
+                                                </tr>
+                                            % endif
                                             <tr>
-                                                <td class="showLegend">${_('Required Words')}: </td>
-                                                <td>${show.rls_require_words}</td>
+                                                <td class="showLegend">${_('Size')}:</td>
+                                                <td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td>
                                             </tr>
-                                        % endif
-                                        % if show.rls_ignore_words:
+                                        </table>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pull-xs-left">
+                                        <table class="pull-xs-left pull-md-right pull-sm-right pull-lg-right">
+                                            <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                                             <tr>
-                                                <td class="showLegend">${_('Ignored Words')}: </td>
-                                                <td>${show.rls_ignore_words}</td>
+                                                <td class="showLegend">${_('Info Language')}:</td>
+                                                <td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td>
                                             </tr>
-                                        % endif
-                                        % if bwl and bwl.whitelist:
+                                            % if sickbeard.USE_SUBTITLES:
+                                                <tr>
+                                                    <td class="showLegend">${_('Subtitles')}: </td>
+                                                    <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td>
+                                                </tr>
+                                            % endif
                                             <tr>
-                                                <td class="showLegend">Wanted Group${("", "s")[len(bwl.whitelist) > 1]}:</td>
-                                                <td>${', '.join(bwl.whitelist)}</td>
+                                                <td class="showLegend">${_('Season Folders')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td>
                                             </tr>
-                                        % endif
-                                        % if bwl and bwl.blacklist:
                                             <tr>
-                                                <td class="showLegend">Unwanted Group${("", "s")[len(bwl.blacklist) > 1]}:</td>
-                                                <td>${', '.join(bwl.blacklist)}</td>
+                                                <td class="showLegend">${_('Paused')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td>
                                             </tr>
-                                        % endif
-                                        <tr>
-                                            <td class="showLegend">${_('Size')}:</td>
-                                            <td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pull-xs-left">
-                                    <table class="pull-xs-left pull-md-right pull-sm-right pull-lg-right">
-                                        <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
-                                        <tr>
-                                            <td class="showLegend">${_('Info Language')}:</td>
-                                            <td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td>
-                                        </tr>
-                                        % if sickbeard.USE_SUBTITLES:
                                             <tr>
-                                                <td class="showLegend">${_('Subtitles')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td>
+                                                <td class="showLegend">${_('Air-by-Date')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td>
                                             </tr>
-                                        % endif
-                                        <tr>
-                                            <td class="showLegend">${_('Season Folders')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Paused')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Air-by-Date')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Sports')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Anime')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('DVD Order')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="showLegend">${_('Scene Numbering')}: </td>
-                                            <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td>
-                                        </tr>
-                                    </table>
+                                            <tr>
+                                                <td class="showLegend">${_('Sports')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="showLegend">${_('Anime')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="showLegend">${_('DVD Order')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="showLegend">${_('Scene Numbering')}: </td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
