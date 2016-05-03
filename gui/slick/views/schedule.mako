@@ -8,16 +8,16 @@
     import re
 %>
 <%block name="scripts">
-	<script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-	<script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
 </%block>
 
 <%block name="css">
-	<style type="text/css">
-		#SubMenu {
-			display: none;
-		}
-	</style>
+    <style type="text/css">
+        #SubMenu {
+            display: none;
+        }
+    </style>
 </%block>
 
 <%block name="content">
@@ -26,29 +26,29 @@
         <div class="col-md-12">
             <div class="pull-right">
                 % if 'calendar' != layout:
-		            <b>${_('Key')}:</b>
-		            <span class="listing-key listing-overdue">${_('Missed')}</span>
-		            <span class="listing-key listing-current">${_('Today')}</span>
-		            <span class="listing-key listing-default">${_('Soon')}</span>
-		            <span class="listing-key listing-toofar">${_('Later')}</span>
+                    <b>${_('Key')}:</b>
+                    <span class="listing-key listing-overdue">${_('Missed')}</span>
+                    <span class="listing-key listing-current">${_('Today')}</span>
+                    <span class="listing-key listing-default">${_('Soon')}</span>
+                    <span class="listing-key listing-toofar">${_('Later')}</span>
                 % endif
-	            <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
-		            <i class="icon-calendar icon-white"></i>
+                <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
+                    <i class="icon-calendar icon-white"></i>
                     ${_('Subscribe')}
-	            </a>
+                </a>
             </div>
         </div>
     </div>
     <br/>
     <div class="row">
-	    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
+        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
             <div class="pull-right">
                 % if layout == 'list':
-		            <button id="popover" type="button" class="btn btn-inline">
+                    <button id="popover" type="button" class="btn btn-inline">
                         ${_('Select Columns')} <b class="caret"></b>
-		            </button>
+                    </button>
                 % else:
-		            <span>${_('Sort By')}:
+                    <span>${_('Sort By')}:
                     <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Sort">
                         <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
                         <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
@@ -71,10 +71,10 @@
                     </select>
                 </span>
             </div>
-	    </div>
-	    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-		    <h1 class="header">${header}</h1>
-	    </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+            <h1 class="header">${header}</h1>
+        </div>
     </div>
     <div class="row">
         % if layout == 'list':

@@ -126,12 +126,12 @@ $(document).ready(function () {
 (function(){
     $.ajaxEpSearch = {
         defaults: {
-            size:				16,
-            colorRow:         	false,
-            loadingImage:		'loading16.gif',
-            queuedImage:		'queued.png',
-            noImage:			'no16.png',
-            yesImage:			'yes16.png'
+            size:                16,
+            colorRow:             false,
+            loadingImage:        'loading16.gif',
+            queuedImage:        'queued.png',
+            noImage:            'no16.png',
+            yesImage:            'yes16.png'
         }
     };
 

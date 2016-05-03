@@ -11,7 +11,7 @@
 </%block>
 
 <%block name="tabs">
-	<li><a href="#core-component-group1">${_('Add New Show')}</a></li>
+    <li><a href="#core-component-group1">${_('Add New Show')}</a></li>
 </%block>
 
 <%block name="saveButton"/>
@@ -20,16 +20,16 @@
     <div id="core-component-group1" class="tab-pane active component-group">
         <div class="row">
             <div class="col-md-12">
-	            <div id="displayText"></div>
+                <div id="displayText"></div>
             </div>
         </div>
         <br/>
         <div class="row">
             <div class="col-md-12">
-	            <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
+                <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
 
-		            <fieldset class="sectionwrap">
-			            <legend class="legendStep">${_('Find a show on theTVDB')}</legend>
+                    <fieldset class="sectionwrap">
+                        <legend class="legendStep">${_('Find a show on theTVDB')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                 <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" />
@@ -67,9 +67,9 @@
                                 % endif
                             </div>
                         </div>
-		            </fieldset>
+                    </fieldset>
 
-		            <fieldset class="sectionwrap">
+                    <fieldset class="sectionwrap">
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                 <legend class="legendStep">${_('Pick the parent folder')}</legend>
@@ -85,10 +85,10 @@
                         </div>
                     </fieldset>
 
-		            <fieldset class="sectionwrap">
+                    <fieldset class="sectionwrap">
                         <div class="row stepDiv">
                             <div class="col-md-12">
-	                            <legend class="legendStep">${_('Customize options')}</legend>
+                                <legend class="legendStep">${_('Customize options')}</legend>
                                 <%include file="/inc_addShowOptions.mako"/>
                             </div>
                         </div>
@@ -98,18 +98,18 @@
                         <input type="hidden" name="other_shows" value="${curNextDir}" />
                     % endfor
                     <input type="hidden" name="skipShow" id="skipShow"/>
-	            </form>
+                </form>
             </div>
         </div>
         <br/>
         <div class="row">
             <div class="col-md-12">
-	            <div style="text-align: center;">
-		            <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled" />
+                <div style="text-align: center;">
+                    <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled" />
                     % if provided_show_dir:
-			            <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}" />
+                        <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}" />
                     % endif
-	            </div>
+                </div>
             </div>
         </div>
     </div>

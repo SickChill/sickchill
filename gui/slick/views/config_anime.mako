@@ -5,8 +5,8 @@
 %>
 
 <%block name="tabs">
-	<li><a href="#animedb-settings">${_('AnimeDB Settings')}</a></li>
-	<li><a href="#anime-look-feel">${_('Look &amp; Feel')}</a></li>
+    <li><a href="#animedb-settings">${_('AnimeDB Settings')}</a></li>
+    <li><a href="#anime-look-feel">${_('Look &amp; Feel')}</a></li>
 </%block>
 
 <%block name="pages">
@@ -31,8 +31,8 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-	                            <input type="checkbox" class="enabler" name="use_anidb"
-	                                   id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
+                                <input type="checkbox" class="enabler" name="use_anidb"
+                                       id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
                                 <label for="use_anidb">${_('Should SickRage use data from AniDB?')}</label>
                             </div>
                         </div>
@@ -86,8 +86,8 @@
                                     <label class="component-title">${_('AniDB MyList')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 component-desc">
-	                                <input type="checkbox" name="anidb_use_mylist"
-	                                       id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
+                                    <input type="checkbox" name="anidb_use_mylist"
+                                           id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
                                     <label for="anidb_use_mylist">${_('Do you want to add the PostProcessed Episodes to the MyList ?')}</label>
                                 </div>
                             </div>
@@ -114,8 +114,8 @@
                                 <label class="component-title">${_('Split show lists')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-	                            <input type="checkbox" class="enabler" name="split_home"
-	                                   id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
+                                <input type="checkbox" class="enabler" name="split_home"
+                                       id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
                                 <label for="split_home">${_('Separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
@@ -124,5 +124,5 @@
             </div>
         </div>
 
-	</form>
+    </form>
 </%block>

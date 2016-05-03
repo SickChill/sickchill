@@ -13,53 +13,53 @@
     <form name="massUpdateForm" method="post" action="massUpdate">
 
         <div class="row">
-	        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 pull-right">
-		        <input class="btn submitMassEdit pull-right" type="button" value="${_('Edit Selected')}" />
-		        <input class="btn submitMassUpdate pull-right" type="button" value="${_('Submit')}" />
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 pull-right">
+                <input class="btn submitMassEdit pull-right" type="button" value="${_('Edit Selected')}" />
+                <input class="btn submitMassUpdate pull-right" type="button" value="${_('Submit')}" />
                 <span class="show-option">
                     <button id="popover" type="button" class="btn pull-right">${_('Select Columns')} <b class="caret"></b></button>
                 </span>
                 <span class="show-option">
                     <button type="button" class="resetsorting btn pull-right">${_('Clear Filter(s)')}</button>
                 </span>
-	        </div>
+            </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                 % if not header is UNDEFINED:
-		            <h1 class="header" style="margin: 0;">${header}</h1>
+                    <h1 class="header" style="margin: 0;">${header}</h1>
                 % else:
-		            <h1 class="title" style="margin: 0;">${title}</h1>
+                    <h1 class="title" style="margin: 0;">${title}</h1>
                 % endif
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="horizontal-scroll">
-	                <table id="massUpdateTable" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
-		                <thead>
-			                <tr>
-				                <th class="col-checkbox">${_('Edit')}<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
-				                <th class="nowrap" style="text-align: left;">${_('Show Name')}</th>
-				                <th class="col-quality">${_('Quality')}</th>
-				                <th class="col-legend">${_('Sports')}</th>
-				                <th class="col-legend">${_('Scene')}</th>
-				                <th class="col-legend">${_('Anime')}</th>
-				                <th class="col-legend">${_('Season folders')}</th>
-				                <th class="col-legend">${_('Paused')}</th>
-				                <th class="col-legend">${_('Subtitle')}</th>
-				                <th class="col-legend">${_('Default Ep Status')}</th>
-				                <th class="col-legend">${_('Status')}</th>
-				                <th width="1%">${_('Update')}<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
-				                <th width="1%">${_('Rescan')}<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
-				                <th width="1%">${_('Rename')}<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
+                    <table id="massUpdateTable" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th class="col-checkbox">${_('Edit')}<br><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
+                                <th class="nowrap" style="text-align: left;">${_('Show Name')}</th>
+                                <th class="col-quality">${_('Quality')}</th>
+                                <th class="col-legend">${_('Sports')}</th>
+                                <th class="col-legend">${_('Scene')}</th>
+                                <th class="col-legend">${_('Anime')}</th>
+                                <th class="col-legend">${_('Season folders')}</th>
+                                <th class="col-legend">${_('Paused')}</th>
+                                <th class="col-legend">${_('Subtitle')}</th>
+                                <th class="col-legend">${_('Default Ep Status')}</th>
+                                <th class="col-legend">${_('Status')}</th>
+                                <th width="1%">${_('Update')}<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
+                                <th width="1%">${_('Rescan')}<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
+                                <th width="1%">${_('Rename')}<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
                                 % if sickbeard.USE_SUBTITLES:
-					                <th width="1%">${_('Search Subtitle')}<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
+                                    <th width="1%">${_('Search Subtitle')}<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
                                 % endif
-				                <!-- <th>${_('Force Metadata Regen')} <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
-				                <th width="1%">${_('Delete')}<br><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
-				                <th width="1%">${_('Remove')}<br><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
-			                </tr>
-		                </thead>
-		                <tbody>
+                                <!-- <th>${_('Force Metadata Regen')} <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
+                                <th width="1%">${_('Delete')}<br><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
+                                <th width="1%">${_('Remove')}<br><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <%
                                 myShowList = sickbeard.showList
                                 myShowList.sort(lambda x, y: cmp(x.name, y.name))
@@ -86,36 +86,36 @@
                                 disabled = sickbeard.showQueueScheduler.action.isBeingRenamed(curShow) or sickbeard.showQueueScheduler.action.isInRenameQueue(curShow) or sickbeard.showQueueScheduler.action.isInRefreshQueue(curShow)
                                 curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
                             %>
-				                <tr>
-					                <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
-					                <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
-					                <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
-					                <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
-					                <td align="center">${statusStrings[curShow.default_ep_status]}</td>
-					                <td align="center">${_(curShow.status)}</td>
-					                <td align="center">${curUpdate}</td>
-					                <td align="center">${curRefresh}</td>
-					                <td align="center">${curRename}</td>
+                                <tr>
+                                    <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
+                                    <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
+                                    <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_sports) == 1]} width="16" height="16" /></td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_scene) == 1]} width="16" height="16" /></td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.is_anime) == 1]} width="16" height="16" /></td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[not int(curShow.flatten_folders) == 1]} width="16" height="16" /></td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.paused) == 1]} width="16" height="16" /></td>
+                                    <td align="center"><img src="${srRoot}/images/${('no16.png" alt="N"', 'yes16.png" alt="Y"')[int(curShow.subtitles) == 1]} width="16" height="16" /></td>
+                                    <td align="center">${statusStrings[curShow.default_ep_status]}</td>
+                                    <td align="center">${_(curShow.status)}</td>
+                                    <td align="center">${curUpdate}</td>
+                                    <td align="center">${curRefresh}</td>
+                                    <td align="center">${curRename}</td>
                                     % if sickbeard.USE_SUBTITLES:
-						                <td align="center">${curSubtitle}</td>
+                                        <td align="center">${curSubtitle}</td>
                                     % endif
-					                <td align="center">${curDelete}</td>
-					                <td align="center">${curRemove}</td>
-				                </tr>
+                                    <td align="center">${curDelete}</td>
+                                    <td align="center">${curRemove}</td>
+                                </tr>
                             % endfor
-		                </tbody>
-		                <tfoot>
-			                <tr>
-				                <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
-				                <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
-			                </tr>
-		                </tfoot>
-	                </table>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
+                                <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

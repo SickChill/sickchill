@@ -3,25 +3,25 @@
     import sickbeard
 %>
 <%block name="scripts">
-	<script type="text/javascript" src="${srRoot}/js/testRename.js" xmlns="http://www.w3.org/1999/html"></script>
+    <script type="text/javascript" src="${srRoot}/js/testRename.js" xmlns="http://www.w3.org/1999/html"></script>
 </%block>
 
 <%block name="content">
     <div class="row">
         <div class="col-md-12">
             % if not header is UNDEFINED:
-		        <h1 class="header">${header}</h1>
+                <h1 class="header">${header}</h1>
             % else:
-		        <h1 class="title">${title}</h1>
+                <h1 class="title">${title}</h1>
             % endif
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-	        <input type="hidden" id="showID" value="${show.indexerid}" />
+            <input type="hidden" id="showID" value="${show.indexerid}" />
 
-	        <h3>${_('Preview of the proposed name changes')}</h3>
-	        <blockquote>
+            <h3>${_('Preview of the proposed name changes')}</h3>
+            <blockquote>
                 % if show.air_by_date and sickbeard.NAMING_CUSTOM_ABD:
                     ${sickbeard.NAMING_ABD_PATTERN}
                 % elif show.is_sports and sickbeard.NAMING_CUSTOM_SPORTS:
@@ -31,7 +31,7 @@
                 %else:
                     ${sickbeard.NAMING_PATTERN}
                 % endif
-	        </blockquote>
+            </blockquote>
 
             <% curSeason = -1 %>
             <% odd = False%>
@@ -40,22 +40,22 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-	        <h2>${_('All Seasons')}</h2>
+            <h2>${_('All Seasons')}</h2>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-	        <input type="checkbox" class="seriesCheck" id="${_('SelectAll')}" title="Check"/>
+            <input type="checkbox" class="seriesCheck" id="${_('SelectAll')}" title="Check"/>
             <label for="Check">${_('Select All')}</label>
         </div>
     </div>
     <div class="row">
-	    <div class="col-md-12">
-		    <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
-		    <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
+        <div class="col-md-12">
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
-		    </a>
-	    </div>
+            </a>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -75,7 +75,7 @@
                     % endif
                     <div class="row">
                         <div class="col-md-12">
-	                        <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
+                            <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
                         </div>
                     </div>
                     <div class="row">
@@ -121,10 +121,10 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-	        <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
-	        <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
-	        </a>
+            </a>
         </div>
     </div>
 </%block>

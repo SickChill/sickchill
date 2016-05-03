@@ -4,7 +4,7 @@
     import sickbeard
 %>
 <%block name="metas">
-	<meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+    <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="content">
     <div class="col-md-12">
