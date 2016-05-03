@@ -3417,7 +3417,6 @@ input.tablesorter-filter.disabled {
     }
 
     .poster-container {
-        float:left;
         display: inline-block;
         width: 100%;
     }
@@ -3493,6 +3492,10 @@ input.tablesorter-filter.disabled {
     .tvshowImg {
         max-height: 245px;
     }
+}
+
+.poster-container {
+    float:left;
 }
 
 .horizontal-scroll {
