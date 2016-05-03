@@ -3,53 +3,53 @@ home.mako
 ========================================================================== */
 
 .progress-100 {
-	background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: -moz-linear-gradient(#A6CF41, #5B990D) !important;
+    background-image: linear-gradient(#A6CF41, #5B990D) !important;
+    background-image: -webkit-linear-gradient(#A6CF41, #5B990D) !important;
+    background-image: -o-linear-gradient(#A6CF41, #5B990D) !important;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .progress-80 {
-	background-image: -moz-linear-gradient(#e1ff97, #9db269) !important;
-	background-image: linear-gradient(#e1ff97, #9db269) !important;
-	background-image: -webkit-linear-gradient(#e1ff97, #9db269) !important;
-	background-image: -o-linear-gradient(#e1ff97, #9db269) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: -moz-linear-gradient(#E1FF97, #9DB269) !important;
+    background-image: linear-gradient(#E1FF97, #9DB269) !important;
+    background-image: -webkit-linear-gradient(#E1FF97, #9DB269) !important;
+    background-image: -o-linear-gradient(#E1FF97, #9DB269) !important;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .progress-60 {
-	background-image: -moz-linear-gradient(#fad440, #f2a70d) !important;
-	background-image: linear-gradient(#fad440, #f2a70d) !important;
-	background-image: -webkit-linear-gradient(#fad440, #f2a70d) !important;
-	background-image: -o-linear-gradient(#fad440, #f2a70d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: -moz-linear-gradient(#FAD440, #F2A70D) !important;
+    background-image: linear-gradient(#FAD440, #F2A70D) !important;
+    background-image: -webkit-linear-gradient(#FAD440, #F2A70D) !important;
+    background-image: -o-linear-gradient(#FAD440, #F2A70D) !important;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .progress-40 {
-	background-image: -moz-linear-gradient(#fab543, #f2700d) !important;
-	background-image: linear-gradient(#fab543, #f2700d) !important;
-	background-image: -webkit-linear-gradient(#fab543, #f2700d) !important;
-	background-image: -o-linear-gradient(#fab543, #f2700d) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: -moz-linear-gradient(#FAB543, #F2700D) !important;
+    background-image: linear-gradient(#FAB543, #F2700D) !important;
+    background-image: -webkit-linear-gradient(#FAB543, #F2700D) !important;
+    background-image: -o-linear-gradient(#FAB543, #F2700D) !important;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .progress-20 {
-	background-image: -moz-linear-gradient(#da5945, #b11a10) !important;
-	background-image: linear-gradient(#da5945, #b11a10) !important;
-	background-image: -webkit-linear-gradient(#da5945, #b11a10) !important;
-	background-image: -o-linear-gradient(#da5945, #b11a10) !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    background-image: -moz-linear-gradient(#DA5945, #B11A10) !important;
+    background-image: linear-gradient(#DA5945, #B11A10) !important;
+    background-image: -webkit-linear-gradient(#DA5945, #B11A10) !important;
+    background-image: -o-linear-gradient(#DA5945, #B11A10) !important;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 /* =======================================================================
@@ -57,11 +57,11 @@ displayShow.mako
 ========================================================================== */
 
 .displayShowTable th.row-seasonheader {
-	border: none !important;
-	background-color: #fff !important;
-	color: #000 !important;
-	padding-top: 15px !important;
-	text-align: left !important;
+    border: none !important;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    padding-top: 15px !important;
+    text-align: left !important;
 }
 
 /* =======================================================================
@@ -69,7 +69,7 @@ testRename.mako
 ========================================================================== */
 
 tr.seasonheader {
-	color: #000 !important;
+    color: #000000 !important;
 }
 
 /* =======================================================================
@@ -77,19 +77,19 @@ schedule.mako
 ========================================================================== */
 
 table.cal-odd {
-    background-color: #ddd;
+    background-color: #DDDDDD;
 }
 
 table.cal-even {
-    background-color: #d2d2d2;
+    background-color: #D2D2D2;
 }
 
 .calendarShow .text .airtime {
-    color:#000
+    color: #000000
 }
 
 .calendarShow .text .episode-title {
-    color:#888
+    color: #888888
 }
 
 /* =======================================================================
@@ -100,31 +100,31 @@ bootstrap Overrides
 .navbar-default {
     background-color: #333333;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#333333');
-    background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
-    background: -moz-linear-gradient(top,  #555,  #333);
-    border-color: #3e3f3a;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#333333));
+    background: -moz-linear-gradient(top, #555555, #333333);
+    border-color: #3E3F3A;
 }
 
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-    border-color: #3e3f3a;
+    border-color: #3E3F3A;
 }
 
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-    background-color: #333;
+    background-color: #333333;
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-    color: #fff;
+    color: #FFFFFF;
     text-decoration: none;
-    background-color: #333;
+    background-color: #333333;
 }
 
 pre {
-    color: #000;
+    color: #000000;
     background-color: #F5F5F5;
-    border-color: #ccc;
+    border-color: #CCCCCC;
 }
 
 /* =======================================================================
@@ -135,9 +135,9 @@ tablesorter.css
     width: 100%;
     margin-right: auto;
     margin-left: auto;
-    color: #000;
+    color: #000000;
     text-align: left;
-    background-color: #ddd;
+    background-color: #DDDDDD;
     border-spacing: 0;
 }
 
@@ -169,11 +169,11 @@ token-input.css
 ========================================================================== */
 
 div.token-input-dropdown {
-    background-color: #fff;
-    color: #000;
-    border-left-color: #ccc;
-    border-right-color: #ccc;
-    border-bottom-color: #ccc;
+    background-color: #FFFFFF;
+    color: #000000;
+    border-left-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-bottom-color: #CCCCCC;
 }
 
 /* =======================================================================
@@ -181,13 +181,13 @@ bootstarp modal
 ========================================================================== */
 
 .modal-header {
-    padding:9px 15px;
-    border-bottom:1px solid #eee;
+    padding: 9px 15px;
+    border-bottom: 1px solid #EEEEEE;
     background-color: #F5F1E4;
     -webkit-border-top-left-radius: 5px;
     -webkit-border-top-right-radius: 5px;
     -moz-border-radius-topleft: 5px;
     -moz-border-radius-topright: 5px;
-     border-top-left-radius: 5px;
-     border-top-right-radius: 5px;
- }
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
