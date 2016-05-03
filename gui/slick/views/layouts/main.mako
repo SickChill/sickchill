@@ -241,7 +241,7 @@
                 % if submenu:
                     <div id="SubMenu" class="hidden-print">
                         <% first = True %>
-                        % for menuItem in submenu:
+                        % for menuItem in reversed(submenu):
                             % if 'requires' not in menuItem or menuItem['requires']:
                                 <% icon_class = '' if 'icon' not in menuItem else ' ' + menuItem['icon'] %>
                                 % if type(menuItem['path']) == dict:
