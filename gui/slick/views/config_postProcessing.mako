@@ -371,7 +371,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off"  title="naming_pattern"/>
-                                            <img src="${srRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" />
+                                            <img class="displayshow-icon-legend" id="show_naming_key" title="Toggle Naming Legend" class="legend" />
                                         </div>
                                     </div>
                                     <div class="row">

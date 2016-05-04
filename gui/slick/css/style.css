@@ -1236,13 +1236,13 @@ td.col-search {
 }
 
 [class^="displayshow-icon-"], [class*=" displayshow-icon-"] {
-    background: url("../images/menu/16px_sprite_colored_menu_icons.png");
+    background: url("../images/16px_sprite_colored_show.png");
     height: 16px;
     width: 16px;
     display: inline-block;
     position: relative;
-    top: 2px;
-    float: left;
+    top: ;
+    float: ;
 }
 
 .displayshow-icon-left {
@@ -1253,7 +1253,7 @@ td.col-search {
     background-position: -18px 0;
 }
 
-.displayshow-icon-imbd {
+.displayshow-icon-imdb {
     background-position: -37px 0;
 }
 
@@ -1261,7 +1261,11 @@ td.col-search {
     background-position: -56px 0;
 }
 
-.displayshow-icon-fanart {
+.displayshow-icon-tvrage {
+    background-position: -76px 0;
+}
+
+.displayshow-icon-tvmaze {
     background-position: -95px 0;
 }
 
@@ -1337,7 +1341,7 @@ td.col-search {
     background-position: -421px 0;
 }
 
-.displayshow-icon-fanart2 {
+.displayshow-icon-fanart {
     background-position: -439px 0;
 }
 
