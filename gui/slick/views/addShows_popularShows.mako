@@ -74,7 +74,7 @@
                                     </div>
 
                                     <div class="clearfix">
-                                        <p>${int(float(cur_rating)*10)}% <img class="displayshow-icon-heart"></p>
+                                        <p>${int(float(cur_rating)*10)}% <span class="displayshow-icon-heart"></p>
                                         <i>${cur_votes}</i>
                                         <div class="traktShowTitleIcons">
                                             <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB"
