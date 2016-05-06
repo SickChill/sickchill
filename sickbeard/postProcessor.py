@@ -36,6 +36,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard.helpers import verify_freespace
 
 from sickrage.helper import glob
 from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
@@ -45,7 +46,6 @@ from sickrage.helper.exceptions import ShowDirectoryNotFoundException
 from sickrage.show.Show import Show
 
 import adba
-from sickbeard.helpers import verify_freespace
 
 
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
@@ -1074,7 +1074,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     self._log("Using original release name " + self.file_name, logger.DEBUG)
                     cur_ep.release_name = self.file_name
                 else:
-                    cur_ep.release_name = ""
+                    cur_ep.release_name = u""
 
                 cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
