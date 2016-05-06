@@ -2,18 +2,14 @@
 from datetime import datetime, timedelta
 from functools import wraps
 import logging
-import re
 
 import requests
 
 from .. import __short_version__
 from ..cache import REFINER_EXPIRATION_TIME, region
-from ..utils import sanitize
 from ..video import Episode
 
 logger = logging.getLogger(__name__)
-
-series_year_re = re.compile(r'^(?P<series>.*?)(?: (?P<parenthesis>\()?(?P<year>\d{4})(?(parenthesis)\)))?$')
 
 
 def requires_auth(func):
@@ -42,7 +38,7 @@ class TVDBClient(object):
 
     """
     #: Base URL of the API
-    base_url = 'https://api.thetvdb.com'
+    base_url = 'https://api-beta.thetvdb.com'
 
     #: Token lifespan
     token_lifespan = timedelta(hours=1)
@@ -196,14 +192,29 @@ tvdb_client = TVDBClient('5EC930FB90DA1ADA', headers={'User-Agent': 'Subliminal/
 
 @region.cache_on_arguments(expiration_time=REFINER_EXPIRATION_TIME)
 def search_series(name):
-    """Search series.
+    """Search series and sort the results by likelihood.
+
+     Prefer series with the same name and with continuing status.
 
     :param str name: name of the series.
     :return: the search results.
     :rtype: list
 
     """
-    return tvdb_client.search_series(name)
+    results = tvdb_client.search_series(name)
+    if not results:
+        return None
+
+    def match(series):
+        key = 0
+        if series['status'] != 'Continuing':
+            key += 1
+        if series['seriesName'] != name:
+            key += 2
+
+        return key
+
+    return sorted(results, key=match)
 
 
 @region.cache_on_arguments(expiration_time=REFINER_EXPIRATION_TIME)
@@ -270,76 +281,41 @@ def refine(video, **kwargs):
         return
     logger.debug('Found %d results', len(results))
 
-    # search for exact matches
-    matching_results = []
+    # process the results
+    found = False
     for result in results:
-        matching_result = {}
+        if video.original_series and video.year is None:
+            logger.debug('Found result for original series without year')
+            found = True
+            break
+        if video.year == datetime.strptime(result['firstAired'], '%Y-%m-%d').year:
+            logger.debug('Found result with matching year')
+            found = True
+            break
 
-        # use seriesName and aliases
-        series_names = [result['seriesName']]
-        series_names.extend(result['aliases'])
-
-        # parse series year
-        series_year = None
-        if result['firstAired']:
-            series_year = datetime.strptime(result['firstAired'], '%Y-%m-%d').year
-
-        # discard mismatches on year
-        if video.year and series_year and video.year != series_year:
-            logger.debug('Discarding series %r mismatch on year %d', result['seriesName'], series_year)
-            continue
-
-        # iterate over series names
-        for series_name in series_names:
-            # parse as series and year
-            series, _, year = series_year_re.match(series_name).groups()
-            if year:
-                year = int(year)
-
-            # discard mismatches on year
-            if year and (video.original_series or video.year != year):
-                logger.debug('Discarding series name %r mismatch on year %d', series, year)
-                continue
-
-            # match on sanitized series name
-            if sanitize(series) == sanitize(video.series):
-                logger.debug('Found exact match on series %r (%s)', series_name, series_year or year or 'no year')
-                matching_result['match'] = {'series': series, 'year': series_year or year}
-                break
-
-        # add the result on match
-        if matching_result:
-            matching_result['data'] = result
-            matching_results.append(matching_result)
-
-    # exit if we don't have exactly 1 matching result
-    if not matching_results:
-        logger.error('No matching series found')
-        return
-    if len(matching_results) > 1:
-        logger.error('Multiple matches found')
+    if not found:
+        logger.warning('No matching series found')
         return
 
     # get the series
-    matching_result = matching_results[0]
-    series = get_series(matching_result['data']['id'])
+    result = get_series(result['id'])
 
     # add series information
-    logger.debug('Found series %r', series)
-    video.series = matching_result['match']['series']
-    video.year = matching_result['match']['year']
-    video.series_tvdb_id = series['id']
-    video.series_imdb_id = series['imdbId'] or None
+    logger.debug('Found series %r', result)
+    video.series = result['seriesName']
+    video.year = datetime.strptime(result['firstAired'], '%Y-%m-%d').year
+    video.series_imdb_id = result['imdbId']
+    video.series_tvdb_id = result['id']
 
     # get the episode
     logger.info('Getting series episode %dx%d', video.season, video.episode)
-    episode = get_series_episode(video.series_tvdb_id, video.season, video.episode)
-    if not episode:
+    result = get_series_episode(video.series_tvdb_id, video.season, video.episode)
+    if not result:
         logger.warning('No results for episode')
         return
 
     # add episode information
-    logger.debug('Found episode %r', episode)
-    video.tvdb_id = episode['id']
-    video.title = episode['episodeName'] or None
-    video.imdb_id = episode['imdbId'] or None
+    logger.debug('Found episode %r', result)
+    video.title = result['episodeName']
+    video.imdb_id = result['imdbId']
+    video.tvdb_id = result['id']
