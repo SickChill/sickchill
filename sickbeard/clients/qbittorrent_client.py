@@ -85,7 +85,7 @@ class qbittorrentAPI(GenericClient):
             self.url = self.host + 'command/setLabel'
             data = {'hashes': result.hash.lower(), 'label': label.replace(' ', '_')}
             return self._request(method='post', data=data, cookies=self.session.cookies)
-        return None
+        return True
 
     def _set_torrent_priority(self, result):
 
