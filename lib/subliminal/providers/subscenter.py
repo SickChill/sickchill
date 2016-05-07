@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import bisect
-from collections import defaultdict
 import io
 import json
 import logging
@@ -119,51 +118,54 @@ class SubsCenterProvider(Provider):
         self.session.close()
 
     @region.cache_on_arguments(expiration_time=SHOW_EXPIRATION_TIME)
-    def _search_url_titles(self, title):
-        """Search the URL titles by kind for the given `title`.
+    def _search_url_title(self, title, kind):
+        """Search the URL title for the given `title`.
 
         :param str title: title to search for.
-        :return: the URL titles by kind.
-        :rtype: collections.defaultdict
+        :param str kind: kind of the title, ``movie`` or ``series``.
+        :return: the URL version of the title.
+        :rtype: str
 
         """
         # make the search
         logger.info('Searching title name for %r', title)
-        r = self.session.get(self.server_url + 'subtitle/search/', params={'q': title}, timeout=10)
+        r = self.session.get(self.server_url + 'subtitle/search/', params={'q': title}, allow_redirects=False,
+                             timeout=10)
         r.raise_for_status()
 
-        # get the suggestions
+        # if redirected, get the url title from the Location header
+        if r.is_redirect:
+            parts = r.headers['Location'].split('/')
+
+            # check kind
+            if parts[-3] == kind:
+                return parts[-2]
+
+            return None
+
+        # otherwise, get the first valid suggestion
         soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
-        links = soup.select('#processes div.generalWindowTop a')
-        logger.debug('Found %d suggestions', len(links))
-        url_titles = defaultdict(list)
-        for link in links:
-            parts = link.attrs['href'].split('/')
-            url_titles[parts[-3]].append(parts[-2])
+        suggestions = soup.select('#processes div.generalWindowTop a')
+        logger.debug('Found %d suggestions', len(suggestions))
+        for suggestion in suggestions:
+            parts = suggestion.attrs['href'].split('/')
 
-        return url_titles
+            # check kind
+            if parts[-3] == kind:
+                return parts[-2]
 
-    def query(self, title, season=None, episode=None):
-        # search for the url title
-        url_titles = self._search_url_titles(title)
-
-        # episode
-        if season and episode:
-            if 'series' not in url_titles:
-                logger.error('No URL title found for series %r', title)
-                return []
-            url_title = url_titles['series'][0]
-            logger.debug('Using series title %r', url_title)
-            url = self.server_url + 'cinemast/data/series/sb/{}/{}/{}/'.format(url_title, season, episode)
-            page_link = self.server_url + 'subtitle/series/{}/{}/{}/'.format(url_title, season, episode)
-        else:
-            if 'movie' not in url_titles:
-                logger.error('No URL title found for movie %r', title)
-                return []
-            url_title = url_titles['movie'][0]
-            logger.debug('Using movie title %r', url_title)
+    def query(self, series=None, season=None, episode=None, title=None):
+        # set the correct parameters depending on the kind
+        if series and season and episode:
+            url_series = self._search_url_title(series, 'series')
+            url = self.server_url + 'cinemast/data/series/sb/{}/{}/{}/'.format(url_series, season, episode)
+            page_link = self.server_url + 'subtitle/series/{}/{}/{}/'.format(url_series, season, episode)
+        elif title:
+            url_title = self._search_url_title(title, 'movie')
             url = self.server_url + 'cinemast/data/movie/sb/{}/'.format(url_title)
             page_link = self.server_url + 'subtitle/movie/{}/'.format(url_title)
+        else:
+            raise ValueError('One or more parameters are missing')
 
         # get the list of subtitles
         logger.debug('Getting the list of subtitles')
@@ -193,7 +195,7 @@ class SubsCenterProvider(Provider):
                             continue
 
                         # otherwise create it
-                        subtitle = SubsCenterSubtitle(language, hearing_impaired, page_link, title, season, episode,
+                        subtitle = SubsCenterSubtitle(language, hearing_impaired, page_link, series, season, episode,
                                                       title, subtitle_id, subtitle_key, downloaded, [release])
                         logger.debug('Found subtitle %r', subtitle)
                         subtitles[subtitle_id] = subtitle
@@ -201,15 +203,17 @@ class SubsCenterProvider(Provider):
         return subtitles.values()
 
     def list_subtitles(self, video, languages):
-        season = episode = None
+        series = None
+        season = None
+        episode = None
         title = video.title
 
         if isinstance(video, Episode):
-            title = video.series
+            series = video.series
             season = video.season
             episode = video.episode
 
-        return [s for s in self.query(title, season, episode) if s.language in languages]
+        return [s for s in self.query(series, season, episode, title) if s.language in languages]
 
     def download_subtitle(self, subtitle):
         # download
