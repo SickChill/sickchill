@@ -32,6 +32,8 @@ class PutioAPI(GenericClient):
         self.url = 'https://api.put.io/login'
 
     def _get_auth(self):
+        self.url = 'https://api.put.io/login'
+        self.session.headers['Accept'] = 'application/json'
         next_params = {
             'client_id': self.client_id,
             'response_type': 'token',
@@ -65,36 +67,27 @@ class PutioAPI(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result):
-
+        self.url = 'https://api.put.io/v2/transfers/add'
         post_data = {
             'url': result.url,
             'save_parent_id': 0,
             'extract': True,
             'oauth_token': self.auth
         }
-
-        try:
-            self.response = self.session.post('https://api.put.io/v2/transfers/add',
-                                              data=post_data)
-        except Exception as error:
-            helpers.handle_requests_exception(error)
+        if not self._request('POST', data=post_data):
             return False
 
         j = self.response.json()
         return j.get("transfer", {}).get('save_parent_id', None) == 0
 
     def _add_torrent_file(self, result):
+        self.url = 'https://upload.put.io/v2/files/upload'
         post_data = {
-            'name': 'putio_torrent',
-            'parent': 0,
+            'parent_id': 0,
             'oauth_token': self.auth
         }
-
-        try:
-            self.response = self.session.post('https://api.put.io/v2/files/upload',
-                                              data=post_data, files=('putio_torrent', result.content))
-        except Exception as error:
-            helpers.handle_requests_exception(error)
+        files = {'file': (result.name + '.torrent', result.content)}
+        if not self._request('POST', data=post_data, files=files):
             return False
 
         return self.response.json()['status'] == "OK"
