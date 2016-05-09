@@ -153,8 +153,8 @@ class HoundDawgsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
                                 if torrent_size:
                                     size = convert_size(torrent_size) or -1
-                                seeders = try_int((result('td')[6]).text)
-                                leechers = try_int((result('td')[7]).text)
+                                seeders = try_int((result('td')[6]).text.replace(',', ''))
+                                leechers = try_int((result('td')[7]).text.replace(',', ''))
 
                             except (AttributeError, TypeError):
                                 continue
