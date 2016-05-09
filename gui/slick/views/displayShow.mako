@@ -22,6 +22,10 @@
 </%block>
 
 <%block name="content">
+
+	<% seasonSize = 0; %>
+	<% seasonEpCount = 0 %>
+
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="show-header row">
         <div class="col-md-12">
@@ -399,7 +403,22 @@
                     % if epResult["season"] != sql_results[0]["season"]:
                                     </tbody>
                                 </table>
-                            </div>
+
+								% if seasonSize > 0:
+                                <table class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
+                                    <thead>
+                                        <tr class="seasoncols">
+                                            <td style="background-color:#15528F;border-bottom:1px solid black;border-top:1px solid black;padding:4px;padding-left:10px;color:#fff;text-align:left">
+												Season contains ${seasonEpCount} episodes with total filesize: ${pretty_file_size(seasonSize)}
+											</td>
+										</tr>
+									</thead>
+								</table>
+								% endif
+								<% seasonSize = 0 %>
+								<% seasonEpCount = 0 %>
+
+							</div>
                         </div>
                     </div>
                     % endif
@@ -538,7 +557,9 @@
                                         <td class="col-name">${epLoc}</td>
                                         <td class="col-ep">
                                             % if epResult["file_size"]:
-                                            ${pretty_file_size(epResult["file_size"])}
+												<% seasonSize = seasonSize + epResult["file_size"] %>
+												<% seasonEpCount = seasonEpCount + 1 %>
+											${pretty_file_size(epResult["file_size"])}
                                             % endif
                                         </td>
                                         <td class="col-airdate">
