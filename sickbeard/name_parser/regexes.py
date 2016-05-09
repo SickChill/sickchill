@@ -175,6 +175,7 @@ normal_regexes = [
      r'''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
      (?P<season_num>\d{1,2})                     # 1
+     (e?)                                        # Optional episode separator
      (?P<ep_num>\d{2})                           # 02 and separator
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
      (-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$                # Group
