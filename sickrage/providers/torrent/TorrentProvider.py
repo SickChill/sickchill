@@ -51,10 +51,10 @@ class TorrentProvider(GenericProvider):
         )
 
         for result in sql_results or []:
-            show = Show.find(sickbeard.showList, int(result['showid']))
+            show = Show.find(sickbeard.showList, int(result[b'showid']))
 
             if show:
-                episode = show.getEpisode(result['season'], result['episode'])
+                episode = show.getEpisode(result[b'season'], result[b'episode'])
 
                 for term in self.proper_strings:
                     search_strings = self._get_episode_search_strings(episode, add_string=term)
