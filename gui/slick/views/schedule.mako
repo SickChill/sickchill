@@ -166,21 +166,21 @@
                                             <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false"
                                                title="http://www.imdb.com/title/${cur_result['imdb_id']}">
-                                                <img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png"/>
+                                                <span class="displayshow-icon-imdb" alt="[imdb]" />
                                             </a>
                                         % endif
                                         <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                            title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}">
                                             <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${srRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                 src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
                                         </a>
                                     </td>
                                     <td align="center">
                                         <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                            title="Manual Search" class="forceUpdate epSearch"
                                            id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
-                                            <img alt="[search]" height="16" width="16" src="${srRoot}/images/search16.png"
+                                            <span class="displayshow-icon-search" alt="[search]"
                                                  id="forceUpdateImage-${cur_result['showid']}"/>
                                         </a>
                                     </td>
@@ -399,20 +399,20 @@
                                         % if cur_result['imdb_id']:
                                             <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
-                                                <img alt="[imdb]" height="16" width="16" src="${srRoot}/images/imdb.png"/>
+                                                <span alt="[imdb]" class="displayshow-icon-imdb"/>
                                             </a>
                                         % endif
                                         <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                            title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
                                                 alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                src="${srRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
                                         </a>
                                         <span>
                                             <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                                title="Manual Search" id="forceUpdate-${cur_result['showid']}"
                                                class="epSearch forceUpdate">
-                                                <img alt="[search]" height="16" width="16" src="${srRoot}/images/search16.png"
+                                                <span alt="[Search]" class="displayshow-icon-search"
                                                      id="forceUpdateImage-${cur_result['showid']}"/>
                                             </a>
                                         </span>
