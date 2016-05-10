@@ -82,7 +82,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
+                    logger.log("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one", logger.DEBUG)
                     continue
 
                 if not data.startswith("<?xml"):

@@ -1450,7 +1450,11 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(traceback.format_exc(), logger.DEBUG)
 
     except requests.exceptions.HTTPError as error:
-        logger.log(default.format(error))
+        if error.response.status_code == 404 and \
+            error.response.headers.get('X-Content-Type-Options') == 'nosniff':
+            pass
+        else:
+            logger.log(default.format(error))
     except requests.exceptions.TooManyRedirects as error:
         logger.log(default.format(error))
     except requests.exceptions.ConnectTimeout as error:
