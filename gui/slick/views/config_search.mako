@@ -902,9 +902,9 @@
 
                                 </div>
 
-                                <div id="options_torrent_clients" id="torrent_host_option">
+                                <div id="options_torrent_clients">
 
-                                    <div class="field-pair row">
+                                    <div class="field-pair row" id="torrent_host_option">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="host_title">${_('Torrent host:port')}</label>
                                         </div>
