@@ -343,13 +343,13 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
 
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
-    if folder_name.startswith(u'_FAILED_'):
+    if folder_name.upper().startswith(u'_FAILED_') or folder_name.upper().endswith(u'_FAILED_'):
         result.output += logHelper(u"The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif folder_name.startswith(u'_UNDERSIZED_'):
+    elif folder_name.upper().startswith(u'_UNDERSIZED_') or folder_name.upper().endswith(u'_UNDERSIZED_'):
         result.output += logHelper(u"The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
         failed = True
-    elif folder_name.upper().startswith(u'_UNPACK'):
+    elif folder_name.upper().startswith(u'_UNPACK') or folder_name.upper().endswith(u'_UNPACK'):
         result.output += logHelper(u"The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
         result.missedfiles.append(u"{0} : Being unpacked".format(dirName))
         return False
