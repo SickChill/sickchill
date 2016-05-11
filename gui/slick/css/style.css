@@ -1242,7 +1242,6 @@ td.col-search {
     display: inline-block;
     position: relative;
     top: 3px;
-    float: ;
 }
 
 .displayshow-icon-left {
@@ -3482,6 +3481,10 @@ input.tablesorter-filter.disabled {
     .tvshowImg {
         max-height: 245px;
     }
+
+    .show-info-container {
+        display: table;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -3495,6 +3498,10 @@ input.tablesorter-filter.disabled {
 
     .tvshowImg {
         max-height: 245px;
+    }
+
+    .show-info-container {
+        display: table;
     }
 }
 
