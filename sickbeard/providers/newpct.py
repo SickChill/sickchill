@@ -115,10 +115,8 @@ class newpctProvider(TorrentProvider):
                                 # Provider does not provide seeders/leechers
                                 seeders = 1
                                 leechers = 0
-                                tamanoIdx = 2
-                                if 'Tamaño' in labels:
-                                    tamanoIdx = labels.index('Tamaño')
-                                torrent_size = cells[tamanoIdx].get_text(strip=True)
+                                #cells[2] is the 'Tamaño' column
+                                torrent_size = cells[2].get_text(strip=True)
 
                                 size = convert_size(torrent_size) or -1
                                 item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
