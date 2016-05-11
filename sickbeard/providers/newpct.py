@@ -47,12 +47,10 @@ class newpctProvider(TorrentProvider):
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
-
         q => Show name
         category_ = Category 'Shows' (767)
         idioma_ = Language Spanish (1)
-        bus_de_ = Date from (All, hoy)
-
+        bus_de_ = Date from (All, ayer, hoy)
         """
         results = []
 
@@ -75,57 +73,60 @@ class newpctProvider(TorrentProvider):
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                 continue
+                
+            search_date_strings = ['All'] if mode != 'RSS' else ['ayer', 'hoy']
+                
+            for search_date_string in search_date_strings:
+                search_params['bus_de_'] = search_date_string
 
-            search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
+                for search_string in search_strings[mode]:
+                    if mode != 'RSS':
+                        logger.log('Search string: {0}'.format
+                                   (search_string.decode('utf-8')), logger.DEBUG)
 
-            for search_string in search_strings[mode]:
-                if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    search_params['q'] = search_string
 
-                search_params['q'] = search_string
-
-                data = self.get_url(self.urls['search'], params=search_params, returns='text')
-                if not data:
-                    continue
-
-                with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find('table', id='categoryTable')
-                    torrent_rows = torrent_table('tr') if torrent_table else []
-
-                    # Continue only if at least one Release is found
-                    if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
-                        logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                    data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                    if not data:
                         continue
 
-                    # 'Fecha', 'Título', 'Tamaño', ''
-                    # Date, Title, Size
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('th')]
-                    for row in torrent_rows[1:-1]:
-                        try:
-                            cells = row('td')
+                    with BS4Parser(data, 'html5lib') as html:
+                        torrent_table = html.find('table', id='categoryTable')
+                        torrent_rows = torrent_table('tr') if torrent_table else []
 
-                            torrent_row = row.find('a')
-                            title = self._processTitle(torrent_row.get('title', ''))
-                            download_url = torrent_row.get('href', '')
-                            if not all([title, download_url]):
-                                continue
-
-                            # Provider does not provide seeders/leechers
-                            seeders = 1
-                            leechers = 0
-                            torrent_size = cells[labels.index('Tamaño')].get_text(strip=True)
-
-                            size = convert_size(torrent_size) or -1
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
-                            if mode != 'RSS':
-                                logger.log('Found result: {0}'.format(title), logger.DEBUG)
-
-                            items.append(item)
-                        except (AttributeError, TypeError):
+                        # Continue only if at least one Release is found
+                        if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
+                            logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                             continue
 
-            results += items
+                        # 'Fecha', 'Título', 'Tamaño', ''
+                        # Date, Title, Size
+                        labels = [label.get_text(strip=True) for label in torrent_rows[0]('th')]
+                        for row in torrent_rows[1:-1]:
+                            try:
+                                cells = row('td')
+
+                                torrent_row = row.find('a')
+                                title = self._processTitle(torrent_row.get('title', ''))
+                                download_url = torrent_row.get('href', '')
+                                if not all([title, download_url]):
+                                    continue
+
+                                # Provider does not provide seeders/leechers
+                                seeders = 1
+                                leechers = 0
+                                torrent_size = cells[labels.index('Tamaño')].get_text(strip=True)
+
+                                size = convert_size(torrent_size) or -1
+                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                                if mode != 'RSS':
+                                    logger.log('Found result: {0}'.format(title), logger.DEBUG)
+
+                                items.append(item)
+                            except (AttributeError, TypeError):
+                                continue
+
+                results += items
 
         return results
 
