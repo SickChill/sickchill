@@ -102,7 +102,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             for search_string in search_strings[mode]:
 
                 if mode == 'Season':
-                    search_string = re.sub(ur'(.*)Season', ur'\1Series', search_string)
+                    search_string = re.sub(ur'(.*)S0?', ur'\1Series ', search_string)
 
                 if mode != 'RSS':
                     logger.log('Search string: {0}'.format
@@ -129,7 +129,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                             if self.freeleech and not torrent.find('img', alt=re.compile('Free Torrent')):
                                 continue
 
-                            title = torrent.find(class_='tooltip-content').div.get_text(strip=True).replace('mp4', 'x264')
+                            title = torrent.find(class_='tooltip-content').div.get_text(strip=True)
                             download_url = torrent.find(title='Click to Download this Torrent!').parent['href']
                             if not all([title, download_url]):
                                 continue
@@ -166,7 +166,7 @@ class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                 logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
                                            (title, seeders, leechers), logger.DEBUG)
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                            item = {'title': title + '.hdtv.x264', 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                             items.append(item)
                         except StandardError:
                             continue
