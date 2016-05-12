@@ -116,7 +116,7 @@ normal_regexes = [
     ('stupid',
      # tpz-abc102
      r'''
-     (?P<release_group>.+?)-\w+?[\. ]?           # tpz-abc
+     (?P<release_group>.+?)(?<!WEB)-\w+?[\. ]?   # tpz-abc
      (?!264)                                     # don't count x264
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})$                          # 02
@@ -125,7 +125,7 @@ normal_regexes = [
      # Show Name Season 1 Episode 2 Ep Name
      r'''
      ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
-     season[. _-]+                               # season and separator
+     (season|series)[. _-]+                      # season and separator
      (?P<season_num>\d+)[. _-]+                  # 1
      episode[. _-]+                              # episode and separator
      (?P<ep_num>\d+)[. _-]+                      # 02 and separator
