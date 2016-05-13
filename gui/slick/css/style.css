@@ -1410,7 +1410,7 @@ span.listing-toofar {
 }
 
 h2.day, h2.network {
-    margin: 10px 0;
+    margin: 0 0 10px 0;
     font-size: 24px;
     line-height: 36px;
     font-weight: bold;
