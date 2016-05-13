@@ -1,3 +1,8 @@
+@font-face {
+    font-family: roboto;
+    src: url('../fonts/roboto.regular.ttf');
+}
+
 /* =======================================================================
 inc_top.mako
 ========================================================================== */
@@ -2242,7 +2247,7 @@ bootstrap Overrides
 body {
     padding-top: 60px;
     overflow-y: scroll;
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: roboto, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #000000;
 }
 
@@ -3080,7 +3085,6 @@ ul.token-input-list {
     border: 1px solid #CCCCCC;
     cursor: text;
     font-size: 10px;
-    font-family: Verdana;
     z-index: 999;
     margin: 0;
     padding: 0 0 1px 0;
@@ -3158,7 +3162,6 @@ div.token-input-dropdown {
     border-bottom: 1px solid;
     cursor: default;
     font-size: 11px;
-    font-family: Verdana;
     z-index: 1;
 }
 
@@ -3339,7 +3342,6 @@ div.login {
 .login h1 {
     padding: 0 0 10px;
     font-size: 60px;
-    font-family: Lobster, serif;
     font-weight: normal;
 }
 
