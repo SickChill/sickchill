@@ -405,7 +405,8 @@
                                             </a>
                                         </span>
                                     </span>
-
+                                        <br/>
+                                        <br/>
                                         <span class="title">${_('Next Episode')}:</span>
                                     <span>
                                         ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
