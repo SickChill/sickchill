@@ -119,7 +119,7 @@
 
             <!-- Header -->
             <div class="row">
-                <div class="col-md-12 show-info-container">
+                <div class="col-md-12">
                     <div class="poster-container">
                         <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
                              class="tvshowImg" alt="${_('Poster for')} ${show.name}"

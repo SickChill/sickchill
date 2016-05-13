@@ -504,13 +504,11 @@ span.show-option {
 }
 
 .poster-container {
-    display: table-cell;
     padding-right: 10px;
 }
 
 .info-container {
-    width: 100%;
-    display: table-cell;
+    overflow: hidden;
 }
 
 #container, #container-anime {
@@ -3485,10 +3483,6 @@ input.tablesorter-filter.disabled {
     .tvshowImg {
         max-height: 245px;
     }
-
-    .show-info-container {
-        display: table;
-    }
 }
 
 @media (min-width: 1200px) {
@@ -3502,10 +3496,6 @@ input.tablesorter-filter.disabled {
 
     .tvshowImg {
         max-height: 245px;
-    }
-
-    .show-info-container {
-        display: table;
     }
 }
 
