@@ -30,25 +30,27 @@
                 <div class="col-md-12" style="margin: 5px 0;">
                     <input type="hidden" id="srRoot" value="${srRoot}" />
                     <div class="form-inline">
-                        ${_('Change Show')}:
-                        <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
-                        <select id="pickShow" class="form-control input-sm input350" title="Change Show">
-                            % for curShowList in sortedShowLists:
-                                <% curShowType = curShowList[0] %>
-                                <% curShowList = curShowList[1] %>
+                        <label for="pickShow">${_('Change Show')}:</label>
+                        <div>
+                            <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
+                            <select id="pickShow" class="form-control input-sm input350" title="Change Show">
+                                % for curShowList in sortedShowLists:
+                                    <% curShowType = curShowList[0] %>
+                                    <% curShowList = curShowList[1] %>
 
-                                % if len(sortedShowLists) > 1:
-                                    <optgroup label="${curShowType}">
-                                % endif
-                                % for curShow in curShowList:
-                                    <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                                    % if len(sortedShowLists) > 1:
+                                        <optgroup label="${curShowType}">
+                                    % endif
+                                    % for curShow in curShowList:
+                                        <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                                    % endfor
+                                    % if len(sortedShowLists) > 1:
+                                        </optgroup>
+                                    % endif
                                 % endfor
-                                % if len(sortedShowLists) > 1:
-                                    </optgroup>
-                                % endif
-                            % endfor
-                        </select>
-                        <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                            </select>
+                            <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                        </div>
                     </div>
                 </div>
             </div>

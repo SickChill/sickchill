@@ -874,6 +874,15 @@ home_trendingShows.mako
 displayShow.mako
 ========================================================================== */
 
+#pickShow {
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.poster-container {
+    float:left;
+}
+
 #posterCol {
     float: left;
     margin-right: 10px;
@@ -3505,10 +3514,6 @@ input.tablesorter-filter.disabled {
     .show-info-container {
         display: table;
     }
-}
-
-.poster-container {
-    float:left;
 }
 
 .horizontal-scroll {
