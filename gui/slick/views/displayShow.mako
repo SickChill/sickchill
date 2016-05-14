@@ -408,7 +408,6 @@
                     <div class="row">
                         <div class="col-md-12">
                             <br/>
-                            <br/>
                             <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                             % if sickbeard.DISPLAY_ALL_SEASONS is False:
                                 <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">${_('Show Episodes')}</button>

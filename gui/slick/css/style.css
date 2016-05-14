@@ -203,7 +203,7 @@ inc_top.mako
     display: inline-block;
     position: relative;
     right: 3px;
-    top: 0px;
+    top: 0;
     float: left;
 }
 
@@ -445,50 +445,50 @@ home.mako
 }
 
 .progress-100 {
-    background-image: -moz-linear-gradient(#395F07, #2A4705) !important;
-    background-image: linear-gradient(#395F07, #2A4705) !important;
-    background-image: -webkit-linear-gradient(#395F07, #2A4705) !important;
-    background-image: -o-linear-gradient(#395F07, #2A4705) !important;
+    background-image: -moz-linear-gradient(#A6CF41, #5B990D);
+    background-image: linear-gradient(#A6CF41, #5B990D);
+    background-image: -webkit-linear-gradient(#A6CF41, #5B990D);
+    background-image: -o-linear-gradient(#A6CF41, #5B990D);
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-80 {
-    background-image: -moz-linear-gradient(#A6CF41, #5B990D) !important;
-    background-image: linear-gradient(#A6CF41, #5B990D) !important;
-    background-image: -webkit-linear-gradient(#A6CF41, #5B990D) !important;
-    background-image: -o-linear-gradient(#A6CF41, #5B990D) !important;
+    background-image: -moz-linear-gradient(#E1FF97, #9DB269);
+    background-image: linear-gradient(#E1FF97, #9DB269);
+    background-image: -webkit-linear-gradient(#E1FF97, #9DB269);
+    background-image: -o-linear-gradient(#E1FF97, #9DB269);
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-60 {
-    background-image: -moz-linear-gradient(#FAD440, #F2A70D) !important;
-    background-image: linear-gradient(#FAD440, #F2A70D) !important;
-    background-image: -webkit-linear-gradient(#FAD440, #F2A70D) !important;
-    background-image: -o-linear-gradient(#FAD440, #F2A70D) !important;
+    background-image: -moz-linear-gradient(#FAD440, #F2A70D);
+    background-image: linear-gradient(#FAD440, #F2A70D);
+    background-image: -webkit-linear-gradient(#FAD440, #F2A70D);
+    background-image: -o-linear-gradient(#FAD440, #F2A70D);
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-40 {
-    background-image: -moz-linear-gradient(#FAB543, #F2700D) !important;
-    background-image: linear-gradient(#FAB543, #F2700D) !important;
-    background-image: -webkit-linear-gradient(#FAB543, #F2700D) !important;
-    background-image: -o-linear-gradient(#FAB543, #F2700D) !important;
+    background-image: -moz-linear-gradient(#FAB543, #F2700D);
+    background-image: linear-gradient(#FAB543, #F2700D);
+    background-image: -webkit-linear-gradient(#FAB543, #F2700D);
+    background-image: -o-linear-gradient(#FAB543, #F2700D);
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
 .progress-20 {
-    background-image: -moz-linear-gradient(#DA5945, #B11A10) !important;
-    background-image: linear-gradient(#DA5945, #B11A10) !important;
-    background-image: -webkit-linear-gradient(#DA5945, #B11A10) !important;
-    background-image: -o-linear-gradient(#DA5945, #B11A10) !important;
+    background-image: -moz-linear-gradient(#DA5945, #B11A10);
+    background-image: linear-gradient(#DA5945, #B11A10);
+    background-image: -webkit-linear-gradient(#DA5945, #B11A10);
+    background-image: -o-linear-gradient(#DA5945, #B11A10);
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
@@ -848,7 +848,6 @@ home_trendingShows.mako
     white-space: nowrap;
     font-size: 12px;
     overflow: hidden;
-    /*    text-shadow: 1px 1px 0 #000;*/
     padding-left: 4px;
     margin: 0;
 }
@@ -897,8 +896,6 @@ displayShow.mako
 #nextShow,
 #topcontrol {
     -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-    filter: gray;
     filter: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' height='0'><filter id='greyscale'><feColorMatrix type='matrix' values='0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0' /></filter></svg>#greyscale");
 }
 
@@ -960,7 +957,7 @@ ul.tags li {
     border-radius: 3px;
     border: 1px solid #111111;
     color: #FFFFFF;
-    font: 14px/18px "Open Sans", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+    font: 14px/18px roboto, "Open Sans", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
     text-shadow: 0 1px rgba(0, 0, 0, 0.8);
     float: left;
 }
@@ -1110,7 +1107,7 @@ span.snatched b {
 
 .displayShowTable th.row-seasonheader {
     border: none !important;
-    background-color: transparent;
+    background-color: #FFFFFF;
     color: #FFFFFF !important;
     padding-top: 15px !important;
     text-align: left !important;
@@ -1547,6 +1544,22 @@ h2.day, h2.network {
     text-align: center
 }
 
+table.cal-odd {
+    background-color: #DDDDDD;
+}
+
+table.cal-even {
+    background-color: #D2D2D2;
+}
+
+.calendarShow .text .airtime {
+    color: #000000
+}
+
+.calendarShow .text .episode-title {
+    color: #888888
+}
+
 /* =======================================================================
 config*.mako
 ========================================================================== */
@@ -1566,6 +1579,7 @@ config*.mako
 }
 
 .component-group {
+    padding: 25px 0;
     border-bottom: 1px dotted #CCCCCC;
 }
 
@@ -2279,11 +2293,41 @@ input, textarea, select, .uneditable-input {
     color: #000000;
 }
 
+pre {
+    color: #000000;
+    background-color: #F5F5F5;
+    border-color: #CCCCCC;
+}
+
 .navbar-brand {
     padding: 0;
 }
 
 /* navbar styling */
+.navbar-default {
+    background-color: #333333;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#333333');
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#333333));
+    background: -moz-linear-gradient(top, #555555, #333333);
+    border-color: #3E3F3A;
+}
+
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+    border-color: #3E3F3A;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    background-color: #333333;
+}
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    color: #FFFFFF;
+    text-decoration: none;
+    background-color: #333333;
+}
+
 .navbar-default .navbar-brand {
     color: #FFFFFF;
 }
@@ -2472,6 +2516,18 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.modal-header {
+    padding: 9px 15px;
+    border-bottom: 1px solid #EEEEEE;
+    background-color: #F5F1E4;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 .btn:hover,
@@ -2978,7 +3034,7 @@ tablesorter.css
     margin-left: auto;
     color: #000000;
     text-align: left;
-    background-color: #FFFFFF;
+    background-color: #DDDDDD;
     border-spacing: 0;
 }
 
@@ -3057,6 +3113,29 @@ thead.tablesorter-stickyHeader {
     text-align: center;
     background: #EEEEEE;
     border-bottom: 1px solid #DDDDDD;
+}
+
+/* hidden filter row */
+.tablesorter-filter-row.hideme td {
+    /*** *********************************************** ***/
+    /*** change this padding to modify the thickness     ***/
+    /*** of the closed filter row (height = padding x 2) ***/
+    padding: 2px;
+    /*** *********************************************** ***/
+    margin: 0;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.tablesorter-filter-row.hideme * {
+    height: 1px;
+    min-height: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    /* don't use visibility: hidden because it disables tabbing */
+    opacity: 0;
+    filter: alpha(opacity=0);
 }
 
 /* optional disabled input styling */
@@ -3166,12 +3245,14 @@ div.token-input-dropdown {
     position: absolute;
     width: 273px;
     overflow: hidden;
-    border-left: 1px solid;
-    border-right: 1px solid;
-    border-bottom: 1px solid;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
     cursor: default;
     font-size: 11px;
     z-index: 1;
+    background-color: #FFFFFF;
+    color: #000000;
 }
 
 div.token-input-dropdown p {
