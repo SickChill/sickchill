@@ -47,12 +47,10 @@ class newpctProvider(TorrentProvider):
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
-
         q => Show name
         category_ = Category 'Shows' (767)
         idioma_ = Language Spanish (1)
-        bus_de_ = Date from (All, hoy)
-
+        bus_de_ = Date from (All, mes, semana, ayer, hoy)
         """
         results = []
 
@@ -76,7 +74,7 @@ class newpctProvider(TorrentProvider):
                 logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                 continue
 
-            search_params['bus_de_'] = 'All' if mode != 'RSS' else 'hoy'
+            search_params['bus_de_'] = 'All' if mode != 'RSS' else 'semana'
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
@@ -114,7 +112,8 @@ class newpctProvider(TorrentProvider):
                             # Provider does not provide seeders/leechers
                             seeders = 1
                             leechers = 0
-                            torrent_size = cells[labels.index('Tamaño')].get_text(strip=True)
+                            #2 is the 'Tamaño' column.
+                            torrent_size = cells[2].get_text(strip=True)
 
                             size = convert_size(torrent_size) or -1
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
