@@ -2142,6 +2142,11 @@ span.path {
     background-color: #F5F1E4;
 }
 
+span.config-path-title {
+    padding: 3px 0;
+    display: inline-block;
+}
+
 .align-left {
     text-align: left;
 }
