@@ -1320,6 +1320,7 @@ td.col-search {
 
 .displayshow-icon-legend {
     background-position: -297px 0;
+    margin-top: 10px;
 }
 
 .displayshow-icon-warning {
@@ -3564,7 +3565,7 @@ input.tablesorter-filter.disabled {
     }
 
     .tvshowImg {
-        max-height: 245px;
+        max-height: 248px;
     }
 }
 
@@ -3578,7 +3579,7 @@ input.tablesorter-filter.disabled {
     }
 
     .tvshowImg {
-        max-height: 245px;
+        max-height: 248px;
     }
 }
 
