@@ -45,6 +45,8 @@ from sickrage.helper.exceptions import ex
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
+if 'itasa' not in provider_manager.names():
+    provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
