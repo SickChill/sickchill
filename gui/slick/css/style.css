@@ -2303,6 +2303,7 @@ pre {
     color: #000000;
     background-color: #F5F5F5;
     border-color: #CCCCCC;
+    white-space: pre-line;
 }
 
 .navbar-brand {
