@@ -561,7 +561,7 @@
                                                 for rootDir in sickbeard.ROOT_DIRS.split('|'):
                                                     if rootDir.startswith('/'):
                                                         filename = filename.replace(rootDir, "")
-                                                    filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename.encode('utf8'))
+                                                filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename.encode('utf8'))
                                             %>
                                                 <center><a href="${filename}">${_('Download')}</a></center>
                                             % endif
