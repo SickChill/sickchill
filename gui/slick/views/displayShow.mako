@@ -30,25 +30,27 @@
                 <div class="col-md-12" style="margin: 5px 0;">
                     <input type="hidden" id="srRoot" value="${srRoot}" />
                     <div class="form-inline">
-                        ${_('Change Show')}:
-                        <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
-                        <select id="pickShow" class="form-control input-sm input350" title="Change Show">
-                            % for curShowList in sortedShowLists:
-                                <% curShowType = curShowList[0] %>
-                                <% curShowList = curShowList[1] %>
+                        <label for="pickShow">${_('Change Show')}:</label>
+                        <div>
+                            <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
+                            <select id="pickShow" class="form-control input-sm input350" title="Change Show">
+                                % for curShowList in sortedShowLists:
+                                    <% curShowType = curShowList[0] %>
+                                    <% curShowList = curShowList[1] %>
 
-                                % if len(sortedShowLists) > 1:
-                                    <optgroup label="${curShowType}">
-                                % endif
-                                % for curShow in curShowList:
-                                    <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                                    % if len(sortedShowLists) > 1:
+                                        <optgroup label="${curShowType}">
+                                    % endif
+                                    % for curShow in curShowList:
+                                        <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
+                                    % endfor
+                                    % if len(sortedShowLists) > 1:
+                                        </optgroup>
+                                    % endif
                                 % endfor
-                                % if len(sortedShowLists) > 1:
-                                    </optgroup>
-                                % endif
-                            % endfor
-                        </select>
-                        <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                            </select>
+                            <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,7 +119,7 @@
 
             <!-- Header -->
             <div class="row">
-                <div class="col-md-12 show-info-container">
+                <div class="col-md-12">
                     <div class="poster-container">
                         <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
                              class="tvshowImg" alt="${_('Poster for')} ${show.name}"
@@ -405,7 +407,6 @@
                     % endif
                     <div class="row">
                         <div class="col-md-12">
-                            <br/>
                             <br/>
                             <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                             % if sickbeard.DISPLAY_ALL_SEASONS is False:

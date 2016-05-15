@@ -66,7 +66,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <select id="default_page" name="default_page" class="form-control input-sm input200">
+                                        <select id="default_page" name="default_page" class="form-control input-sm input150">
                                             <option value="home" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
                                             <option value="schedule" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
                                             <option value="history" ${('', 'selected="selected"')[sickbeard.DEFAULT_PAGE == 'history']}>${_('History')}</option>
@@ -137,7 +137,7 @@
                                 <label class="component-title">${_('Log file folder location')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input350" autocapitalize="off"  title="log_dir"/>
+                                <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input250" autocapitalize="off"  title="log_dir"/>
                             </div>
                         </div>
 
@@ -184,7 +184,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input350">
+                                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
                                             <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
                                             % for indexer in sickbeard.indexerApi().indexers:
                                                 <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
@@ -432,8 +432,16 @@
                                 <label class="component-title">${_('Missed episodes range')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
-                                <label for="coming_eps_missed_range">${_('Set the range in days of the missed episodes in the Schedule page')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="coming_eps_missed_range">${_('Set the range in days of the missed episodes in the Schedule page')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
