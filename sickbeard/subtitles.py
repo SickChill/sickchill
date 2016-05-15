@@ -25,10 +25,13 @@ import datetime
 import traceback
 import subprocess
 import threading
+
 from babelfish import Language, language_converters
 
+from guessit import guessit
+
 import subliminal
-from subliminal import ProviderPool, provider_manager
+from subliminal import Episode, ProviderPool, provider_manager
 
 import sickbeard
 from sickbeard import logger
@@ -211,7 +214,7 @@ def download_subtitles(episode):  # pylint: disable=too-many-locals, too-many-br
     #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
     user_score = 213 if sickbeard.SUBTITLES_PERFECT_MATCH else 198
 
-    video = get_video(video_path, subtitles_path=subtitles_path)
+    video = get_video(video_path, subtitles_path=subtitles_path, episode=episode)
     if not video:
         logger.log(u'Exception caught in subliminal.scan_video for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
@@ -287,22 +290,22 @@ def download_subtitles(episode):  # pylint: disable=too-many-locals, too-many-br
     return current_subtitles, new_subtitles
 
 
-def refresh_subtitles(episode_info, existing_subtitles):
-    video = get_video(episode_info['location'])
+def refresh_subtitles(episode):
+    video = get_video(episode.location)
     if not video:
         logger.log(u"Exception caught in subliminal.scan_video, subtitles couldn't be refreshed", logger.DEBUG)
-        return existing_subtitles, None
+        return episode.subtitles, None
     current_subtitles = get_subtitles(video)
-    if existing_subtitles == current_subtitles:
+    if episode.subtitles == current_subtitles:
         logger.log(u'No changed subtitles for {0} {1}'.format
-                   (episode_info['show_name'], episode_num(episode_info['season'], episode_info['episode']) or
-                    episode_num(episode_info['season'], episode_info['episode'], numbering='absolute')), logger.DEBUG)
-        return existing_subtitles, None
+                   (episode.show.name, episode_num(episode.season, episode.episode) or
+                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+        return episode.subtitles, None
     else:
         return current_subtitles, True
 
 
-def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitles=None):
+def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitles=None, episode=None):
     if not subtitles_path:
         subtitles_path = get_subtitles_path(video_path)
 
@@ -325,6 +328,10 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
 
         if embedded_subtitles is None:
             embedded_subtitles = bool(not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'))
+
+        # Let sickrage addd more information to video file, based on the metadata.
+        if episode:
+            refine_video(video, episode)
 
         subliminal.refine(video, embedded_subtitles=embedded_subtitles)
     except Exception as error:
@@ -528,3 +535,59 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
 
         except Exception as error:
             logger.log(u'Unable to run subs_extra_script: {0}'.format(ex(error)))
+
+
+def refine_video(video, episode):
+    # try to enrich video object using information in original filename
+    guess_ep = Episode.fromguess(None, guessit(episode.release_name))
+    for name in vars(guess_ep):
+        if getattr(guess_ep, name) and not getattr(video, name):
+            setattr(video, name, getattr(guess_ep, name))
+
+    # Use sickbeard metadata
+    metadata_mapping = {
+        'episode': 'episode',
+        'release_group': 'release_group',
+        'season': 'season',
+        'series': 'show.name',
+        'series_imdb_id': 'show.imdbid',
+        'size': 'file_size',
+        'title': 'name',
+        'year': 'show.startyear'
+    }
+
+    def get_attr_value(obj, name):
+        value = None
+        for attr in name.split('.'):
+            if not value:
+                value = getattr(obj, attr, None)
+            else:
+                value = getattr(value, attr, None)
+
+        return value
+
+    for name in metadata_mapping:
+        if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
+            setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+
+    # Set quality form metadata
+    _, quality = Quality.splitCompositeStatus(episode.status)
+    if not video.format:
+        if quality & Quality.ANYHDTV:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
+        elif quality & Quality.ANYWEBDL:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYWEBDL)
+        elif quality & Quality.ANYBLURAY:
+            video.format = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
+
+    if not video.resolution:
+        if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):
+            video.resolution = '720p'
+        elif quality & Quality.RAWHDTV:
+            video.resolution = '1080i'
+        elif quality & (Quality.FULLHDTV | Quality.FULLHDWEBDL | Quality.FULLHDBLURAY):
+            video.resolution = '1080p'
+        elif quality & (Quality.UHD_4K_TV | Quality.UHD_4K_WEBDL | Quality.UHD_4K_BLURAY):
+            video.resolution = '4K'
+        elif quality & (Quality.UHD_8K_TV | Quality.UHD_8K_WEBDL | Quality.UHD_8K_BLURAY):
+            video.resolution = '8K'

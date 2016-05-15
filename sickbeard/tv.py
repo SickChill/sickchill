@@ -1387,9 +1387,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        episode_info = {'show_name': self.show.name, 'location': self.location,
-                        'season': self.season, 'episode': self.episode}
-        self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
+        self.subtitles, save_subtitles = subtitles.refresh_subtitles(self)
         if save_subtitles:
             self.saveToDB()
 
