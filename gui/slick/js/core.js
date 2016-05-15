@@ -3032,7 +3032,10 @@ var SICKRAGE = {
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
-                        votes: '[data-votes] parseInt',
+                        votes: function(itemElem) {
+                            var votes = $(itemElem).attr('data-votes') || '0';
+                            return parseInt(votes.replace(/[^\d]/g, ''));
+                        }
                     }
                 });
             };
