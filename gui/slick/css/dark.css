@@ -618,6 +618,7 @@ tablesorter.css
 
 .tablesorter {
     color: #FFFFFF;
+    background-color: transparent;
 }
 
 .tablesorter th,
