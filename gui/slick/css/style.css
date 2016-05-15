@@ -1574,6 +1574,10 @@ config*.mako
     text-align: left;
 }
 
+#config input[type=checkbox] ~ label {
+    padding-top: 3px;
+}
+
 .config-group-divider {
     margin: 20px 0;
     border-bottom: 1px dotted #CCCCCC;
