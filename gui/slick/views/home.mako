@@ -86,6 +86,8 @@
                         <% curListType = curShowlist[0] %>
                         <% myShowList = list(curShowlist[1]) %>
                         % if curListType == "Anime":
+                            <br/>
+                            <br/>
                             <div class="row">
                                 <div class="col-md-12">
                                     <h1 class="header">${_('Anime List')}</h1>
