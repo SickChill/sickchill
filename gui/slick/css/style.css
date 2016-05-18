@@ -7,6 +7,11 @@
 inc_top.mako
 ========================================================================== */
 
+.fa {
+    margin-left: -2px;
+    margin-right: 4px;
+}
+
 .navbaricon {
     margin-top: -15px;
     margin-bottom: -15px;
@@ -174,17 +179,17 @@ inc_top.mako
     border-top-right-radius: 5px;
 }
 
-#SubMenuContainer {
+#sub-menu-container {
     margin: 0;
 }
 
-#SubMenu {
+#sub-menu {
     clear: both;
     font-size: 12px;
     align-content: flex-end;
 }
 
-#SubMenu a {
+#sub-menu a {
     clear-after: top;
     margin: 2px;
     float: right;
@@ -205,6 +210,10 @@ inc_top.mako
     right: 3px;
     top: 0;
     float: left;
+}
+
+.navbar [class^="menu-icon-"], .navbar [class*=" menu-icon-"] {
+    top: 1px;
 }
 
 .menu-icon-addshow {
