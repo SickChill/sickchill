@@ -1,5 +1,5 @@
 # coding=utf-8
-# Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
+# Author: Dustyn Gibson <miigotu@gmail.com>
 #
 # URL: https://sickrage.github.io
 #
