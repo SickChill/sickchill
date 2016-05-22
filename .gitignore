@@ -79,3 +79,6 @@ contrib/nzbToMedia
 # setup.py #
 ######################
 /*.egg-info
+
+# virtualenv #
+venv
