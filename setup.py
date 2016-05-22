@@ -28,7 +28,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pytz',
-        'requests'
+        'requests',
+        'mako'
     ],
 
     test_suite="tests",
@@ -37,7 +38,8 @@ setup(
         'nose',
         'rednose',
         'mock',
-        'vcrpy-unittest'
+        'vcrpy-unittest',
+        'babel'
     ],
 
     classifiers=[
