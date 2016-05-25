@@ -73,8 +73,10 @@ class XThorProvider(TorrentProvider):
 
                 error_code = jdata.pop('error')
                 if error_code['code']:
-                    logger.log(u'{0}'.format(error_code['descr']), logger.WARNING)
-                    return results
+                    if error_code['code'] != 2:
+                        logger.log(u'{0}'.format(error_code['descr']), logger.WARNING)
+                        return results
+                    continue
 
                 account_ok = jdata.pop('user')['can_leech']
                 if not account_ok:
