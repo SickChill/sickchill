@@ -315,7 +315,7 @@ $(document).ready(function(){
     };
 
     $.fn.refreshEditAProvider = function() {
-        $('#provider-list').empty();
+        $('#editAProvider').empty();
 
         var idArr = $("#provider_order_list").sortable('toArray');
         var finalArr = [];
