@@ -49,7 +49,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         # URLs
         self.url = 'https://speed.cd'
         self.urls = {
-            'login': urljoin(self.url, 'take.login.php'),
+            'login': urljoin(self.url, 'takelogin.php'),
             'search': urljoin(self.url, 'browse.php'),
         }
 
