@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -636,7 +636,7 @@ msgstr "Rediger"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "Denne serie er ved at blive hentet - informationerne nedenunder er ikke komplette."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
@@ -652,7 +652,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Denne er serie er i kø til at blive opdateret."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Viser mapper inden for disse mapper, som ikke er allerede føjet til SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Bekræft"
 
@@ -5736,7 +5736,7 @@ msgstr "Sæt som standard"
 msgid "Remember me"
 msgstr "Husk mig"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Rediger markeret"
 

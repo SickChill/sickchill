@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:02-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:42-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -648,7 +648,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Titulky pre tento seriál sú sťahované"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
@@ -1060,7 +1060,7 @@ msgstr "Správa vyhľadávania"
 
 #: sickbeard/webserve.py:3608
 msgid "Backlog search started"
-msgstr ""
+msgstr "Vyhľadávanie chýbajúcich začalo"
 
 #: sickbeard/webserve.py:3618
 msgid "Daily search started"
@@ -1223,24 +1223,24 @@ msgstr ""
 
 #: sickbeard/webserve.py:5239
 msgid "Submit Errors"
-msgstr ""
+msgstr "Odoslať chyby"
 
 #: sickbeard/webserve.py:5254
 msgid "Logs &amp; Errors"
-msgstr ""
+msgstr "Denník &amp; chybové hlásenia"
 
 #: sickbeard/webserve.py:5325
 msgid "&lt;No Filter&gt;"
-msgstr ""
+msgstr "&lt;Bez filtra&gt;"
 
 #: sickbeard/webserve.py:5326
 msgid "Daily Searcher"
-msgstr ""
+msgstr "Denný vyhľadávač"
 
 #: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:12
 #: sickbeard/webserve.py:5327
 msgid "Backlog"
-msgstr ""
+msgstr "Chýbajúce"
 
 #: sickbeard/webserve.py:5328
 msgid "Show Updater"
@@ -1248,7 +1248,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:5329
 msgid "Check Version"
-msgstr ""
+msgstr "Skontrolovať verziu"
 
 #: gui/slick/views/status.mako:15 gui/slick/views/status.mako:122
 #: sickbeard/webserve.py:5330
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr ""
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Potvrdiť"
 
@@ -5731,7 +5731,7 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr ""
 
