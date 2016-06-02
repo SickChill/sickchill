@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:02-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:42-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -636,31 +636,31 @@ msgstr "Endre"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "Serien lastes ned - informasjon under er ufullstendig."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
-msgstr ""
+msgstr "Informasjonen på denne siden er i ferd med å bli oppdatert."
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "Episodene nedenfor oppdateres fra disk"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Laster ned undertekster for denne serien"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Denne serien er satt i kø for å bli oppdatert."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
-msgstr ""
+msgstr "Denne serien er satt i kø og venter på en oppdatering."
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "Denne serien er satt i kø og venter på nedlasting av undertekster."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "Det oppstod en feil i mako.<br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Vis/Skjul feil"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1395,7 +1395,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Viser mappene i disse katalogene som ikke allerede er lagt til SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Send inn"
 
@@ -3856,7 +3856,7 @@ msgstr "Navngivning"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Toggle Naming Legend"
-msgstr ""
+msgstr "Aktiver navngivingsoversikt"
 
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
@@ -4060,7 +4060,7 @@ msgstr "Navngi serier med sendingsdato annerledes enn vanlige serier?"
 
 #: gui/slick/views/config_postProcessing.mako:645
 msgid "Toggle ABD Naming Legend"
-msgstr ""
+msgstr "Aktiver ADB navngivingsoversikt"
 
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
@@ -4097,7 +4097,7 @@ msgstr "Navngi sports-serier annerledes enn vanlige serier?"
 
 #: gui/slick/views/config_postProcessing.mako:829
 msgid "Toggle Sports Naming Legend"
-msgstr ""
+msgstr "Aktiver sport navngivingsoversikt"
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -5744,7 +5744,7 @@ msgstr "Angi som Standard"
 msgid "Remember me"
 msgstr "Husk meg"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Rediger Valgte"
 

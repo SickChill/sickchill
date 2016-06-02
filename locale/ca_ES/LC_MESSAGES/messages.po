@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
@@ -19,51 +19,51 @@ msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Drama"
-msgstr ""
+msgstr "Drama"
 
 #: sickbeard/__init__.py:70
 msgid "Mystery"
-msgstr ""
+msgstr "Misteri"
 
 #: sickbeard/__init__.py:70 sickbeard/__init__.py:75
 msgid "Science-Fiction"
-msgstr ""
+msgstr "Ciència-ficció"
 
 #: sickbeard/__init__.py:70
 msgid "Crime"
-msgstr ""
+msgstr "Crim"
 
 #: gui/slick/views/history.mako:57 sickbeard/__init__.py:70
 msgid "Action"
-msgstr ""
+msgstr "Acció"
 
 #: sickbeard/__init__.py:71
 msgid "Comedy"
-msgstr ""
+msgstr "Comèdia"
 
 #: sickbeard/__init__.py:71
 msgid "Thriller"
-msgstr ""
+msgstr "Suspens"
 
 #: sickbeard/__init__.py:71
 msgid "Animation"
-msgstr ""
+msgstr "Animació"
 
 #: sickbeard/__init__.py:71
 msgid "Family"
-msgstr ""
+msgstr "Família"
 
 #: sickbeard/__init__.py:71
 msgid "Fantasy"
-msgstr ""
+msgstr "Fantasia"
 
 #: sickbeard/__init__.py:72
 msgid "Adventure"
-msgstr ""
+msgstr "Aventura"
 
 #: sickbeard/__init__.py:72
 msgid "Horror"
-msgstr ""
+msgstr "Terror"
 
 #: sickbeard/__init__.py:72
 msgid "Film-Noir"
@@ -71,7 +71,7 @@ msgstr ""
 
 #: sickbeard/__init__.py:72
 msgid "Sci-Fi"
-msgstr ""
+msgstr "Ciència-ficció"
 
 #: sickbeard/__init__.py:72
 msgid "Romance"
@@ -79,15 +79,15 @@ msgstr ""
 
 #: sickbeard/__init__.py:73
 msgid "Sport"
-msgstr ""
+msgstr "Esport"
 
 #: sickbeard/__init__.py:73
 msgid "War"
-msgstr ""
+msgstr "Guerra"
 
 #: sickbeard/__init__.py:73
 msgid "Biography"
-msgstr ""
+msgstr "Biografia"
 
 #: gui/slick/views/config_general.mako:72 gui/slick/views/layouts/main.mako:137
 #: sickbeard/__init__.py:73 sickbeard/webserve.py:3705
@@ -96,7 +96,7 @@ msgstr "Històric"
 
 #: sickbeard/__init__.py:73
 msgid "Music"
-msgstr ""
+msgstr "Música"
 
 #: sickbeard/__init__.py:73
 msgid "Western"
@@ -105,7 +105,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:73 gui/slick/views/layouts/main.mako:213
 #: sickbeard/__init__.py:74 sickbeard/webserve.py:2240
 msgid "News"
-msgstr ""
+msgstr "Notícies"
 
 #: sickbeard/__init__.py:74
 msgid "Sitcom"
@@ -117,7 +117,7 @@ msgstr ""
 
 #: sickbeard/__init__.py:74
 msgid "Documentary"
-msgstr ""
+msgstr "Documental"
 
 #: sickbeard/__init__.py:74
 msgid "Game-Show"
@@ -125,7 +125,7 @@ msgstr ""
 
 #: sickbeard/__init__.py:74
 msgid "Musical"
-msgstr ""
+msgstr "Musical"
 
 #: sickbeard/__init__.py:75
 msgid "Talk-Show"
@@ -161,7 +161,7 @@ msgstr ""
 
 #: sickbeard/common.py:107
 msgid "Repeat"
-msgstr ""
+msgstr "Repeteix"
 
 #: sickbeard/common.py:108
 msgid "Repeat (Separated)"
@@ -254,7 +254,7 @@ msgstr ""
 #: sickbeard/versionChecker.py:101 sickbeard/versionChecker.py:105
 #: sickbeard/versionChecker.py:109
 msgid "Backup"
-msgstr ""
+msgstr "Còpia de seguretat"
 
 #: sickbeard/versionChecker.py:93
 msgid "Config backup in progress..."
@@ -427,7 +427,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:839
 msgid " with password"
-msgstr ""
+msgstr " amb contrasenya"
 
 #: sickbeard/webserve.py:841
 msgid "Registered and Tested growl successfully {growl_host}"
@@ -674,7 +674,7 @@ msgstr "Pausar"
 #: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:59
 #: gui/slick/views/manage_failedDownloads.mako:36 sickbeard/webserve.py:1294
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Elimina"
 
 #: sickbeard/webserve.py:1295
 msgid "Re-scan files"
@@ -857,7 +857,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:74 gui/slick/views/layouts/main.mako:214
 #: sickbeard/webserve.py:2218
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #: sickbeard/webserve.py:2231
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -873,7 +873,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:215 sickbeard/webserve.py:2258
 msgid "Changelog"
-msgstr ""
+msgstr "Registre de canvis"
 
 #: gui/slick/views/layouts/main.mako:182 sickbeard/webserve.py:2268
 #: sickbeard/webserve.py:3736 sickbeard/webserve.py:4176
@@ -1012,7 +1012,7 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:264 sickbeard/webserve.py:3525
 #: sickbeard/webserve.py:5120
 msgid "Subtitles"
-msgstr ""
+msgstr "Subtítols"
 
 #: sickbeard/webserve.py:3530
 msgid "The following actions were queued"
@@ -1044,7 +1044,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3553
 msgid "Security"
-msgstr ""
+msgstr "Seguretat"
 
 #: gui/slick/views/layouts/main.mako:159 sickbeard/webserve.py:3561
 msgid "Manage Torrents"
@@ -1076,7 +1076,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3700
 msgid "Clear History"
-msgstr ""
+msgstr "Esborra l'historial"
 
 #: sickbeard/webserve.py:3701
 msgid "Trim History"
@@ -1106,7 +1106,7 @@ msgstr ""
 #: gui/slick/views/layouts/main.mako:180 sickbeard/webserve.py:3734
 #: sickbeard/webserve.py:4375
 msgid "Search Providers"
-msgstr ""
+msgstr "Proveïdors de cerca"
 
 #: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3735
 msgid "Subtitles Settings"
@@ -1305,12 +1305,12 @@ msgstr ""
 
 #: sickbeard/webserve.py:5344
 msgid "Thread"
-msgstr ""
+msgstr "Fil"
 
 #: gui/slick/views/editShow.mako:39 gui/slick/views/manage_massEdit.mako:21
 #: sickbeard/webserve.py:5345
 msgid "Main"
-msgstr ""
+msgstr "Principal"
 
 #: sickbeard/webserve.py:5365
 msgid "Log File"
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr ""
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr ""
 
@@ -1413,7 +1413,7 @@ msgstr "Tots els Indexers"
 #: gui/slick/views/displayShow.mako:458 gui/slick/views/displayShow.mako:478
 #: gui/slick/views/schedule.mako:99
 msgid "Search"
-msgstr ""
+msgstr "Cerca"
 
 #: gui/slick/views/addShows_newShow.mako:62
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1448,7 +1448,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:14 gui/slick/views/home.mako:49
 #: gui/slick/views/schedule.mako:51
 msgid "Sort By"
-msgstr ""
+msgstr "Ordena per"
 
 #: gui/slick/views/addShows_popularShows.mako:16
 #: gui/slick/views/addShows_trendingShows.mako:41
@@ -1456,12 +1456,12 @@ msgstr ""
 #: gui/slick/views/displayShow.mako:451 gui/slick/views/displayShow.mako:471
 #: gui/slick/views/home.mako:51 gui/slick/views/manage_backlogOverview.mako:92
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: gui/slick/views/addShows_popularShows.mako:17
 #: gui/slick/views/addShows_trendingShows.mako:42
 msgid "Original"
-msgstr ""
+msgstr "Original"
 
 #: gui/slick/views/addShows_popularShows.mako:18
 #: gui/slick/views/addShows_trendingShows.mako:43
@@ -1482,7 +1482,7 @@ msgstr ""
 #: gui/slick/views/addShows_popularShows.mako:23
 #: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Sort Order"
-msgstr ""
+msgstr "Criteri d'ordenació"
 
 #: gui/slick/views/addShows_popularShows.mako:25
 #: gui/slick/views/addShows_trendingShows.mako:51
@@ -1500,7 +1500,7 @@ msgstr ""
 
 #: gui/slick/views/addShows_popularShows.mako:45
 msgid "Exception"
-msgstr ""
+msgstr "Excepció"
 
 #: gui/slick/views/addShows_trendingShows.mako:56
 msgid "Select Trakt List"
@@ -1512,15 +1512,15 @@ msgstr ""
 
 #: gui/slick/views/addShows_trendingShows.mako:61
 msgid "Trending"
-msgstr ""
+msgstr "Tendències"
 
 #: gui/slick/views/addShows_trendingShows.mako:62
 msgid "Popular"
-msgstr ""
+msgstr "Popular"
 
 #: gui/slick/views/addShows_trendingShows.mako:63
 msgid "Most Watched"
-msgstr ""
+msgstr "Més vistos"
 
 #: gui/slick/views/addShows_trendingShows.mako:64
 msgid "Most Played"
@@ -1532,7 +1532,7 @@ msgstr ""
 
 #: gui/slick/views/addShows_trendingShows.mako:67
 msgid "Recommended"
-msgstr ""
+msgstr "Recomanat"
 
 #: gui/slick/views/apiBuilder.mako:86
 msgid "Toggle navigation"
@@ -1544,7 +1544,7 @@ msgstr "Perfil"
 
 #: gui/slick/views/apiBuilder.mako:103
 msgid "JSONP"
-msgstr ""
+msgstr "JSONP"
 
 #: gui/slick/views/apiBuilder.mako:108
 msgid "Back to SickRage"
@@ -1552,7 +1552,7 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:144
 msgid "Parameters"
-msgstr ""
+msgstr "Paràmetres"
 
 #: gui/slick/views/apiBuilder.mako:151
 msgid "Required"
@@ -1568,7 +1568,7 @@ msgstr "Tipus"
 
 #: gui/slick/views/apiBuilder.mako:154
 msgid "Default value"
-msgstr ""
+msgstr "Valor predeterminat"
 
 #: gui/slick/views/apiBuilder.mako:155
 msgid "Allowed values"
@@ -1580,7 +1580,7 @@ msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:208
 msgid "Clear"
-msgstr ""
+msgstr "Neteja"
 
 #: gui/slick/views/apiBuilder.mako:244 gui/slick/views/apiBuilder.mako:273
 #: gui/slick/views/manage_massEdit.mako:152
@@ -1591,7 +1591,7 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:248
 #: gui/slick/views/manage_massEdit.mako:269
 msgid "Yes"
-msgstr ""
+msgstr "Sí­"
 
 #: gui/slick/views/apiBuilder.mako:246 gui/slick/views/apiBuilder.mako:272
 #: gui/slick/views/manage_massEdit.mako:153
@@ -1602,23 +1602,23 @@ msgstr ""
 #: gui/slick/views/manage_massEdit.mako:249
 #: gui/slick/views/manage_massEdit.mako:270
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: gui/slick/views/apiBuilder.mako:291
 msgid "season"
-msgstr ""
+msgstr "temporada"
 
 #: gui/slick/views/apiBuilder.mako:297
 msgid "episode"
-msgstr ""
+msgstr "episodi"
 
 #: gui/slick/views/config.mako:63
 msgid "Python Version"
-msgstr ""
+msgstr "Versió de Python"
 
 #: gui/slick/views/config.mako:72
 msgid "SSL Version"
-msgstr ""
+msgstr "Versió de SSL"
 
 #: gui/slick/views/config.mako:81
 msgid "OS"
@@ -1630,7 +1630,7 @@ msgstr ""
 
 #: gui/slick/views/config.mako:101
 msgid "User"
-msgstr ""
+msgstr "Usuari"
 
 #: gui/slick/views/config.mako:110
 msgid "Program Folder"
@@ -1784,7 +1784,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:12 gui/slick/views/config_general.mako:26
 msgid "Misc"
-msgstr ""
+msgstr "Miscel·lània"
 
 #: gui/slick/views/config_general.mako:13
 msgid "Interface"
@@ -1998,7 +1998,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:365
 msgid "Dark"
-msgstr ""
+msgstr "Fosc"
 
 #: gui/slick/views/config_general.mako:366
 msgid "Light"
@@ -2086,7 +2086,7 @@ msgstr ""
 #: gui/slick/views/config_subtitles.mako:88
 #: gui/slick/views/config_subtitles.mako:152
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #: gui/slick/views/config_general.mako:503
 msgid "seconds are only shown on the History page"
@@ -2094,17 +2094,17 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:511
 msgid "Timezone"
-msgstr ""
+msgstr "Fus horari"
 
 #: gui/slick/views/config_general.mako:515
 msgid "Local"
-msgstr ""
+msgstr "Local"
 
 #: gui/slick/views/config_general.mako:518 gui/slick/views/home.mako:53
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:54
 #: gui/slick/views/schedule.mako:95
 msgid "Network"
-msgstr ""
+msgstr "Xarxa"
 
 #: gui/slick/views/config_general.mako:521
 msgid "display dates and times in either your timezone or the shows network timezone"
@@ -2163,7 +2163,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:608
 msgid "HTTP username"
-msgstr ""
+msgstr "Nom d'usuari HTTP"
 
 #: gui/slick/views/config_general.mako:618
 msgid "set blank for no login"
@@ -2171,7 +2171,7 @@ msgstr ""
 
 #: gui/slick/views/config_general.mako:626
 msgid "HTTP password"
-msgstr ""
+msgstr "Contrasenya d'HTTP"
 
 #: gui/slick/views/config_general.mako:636
 #: gui/slick/views/config_notifications.mako:253
@@ -2179,7 +2179,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:420
 #: gui/slick/views/config_notifications.mako:438
 msgid "blank = no authentication"
-msgstr ""
+msgstr "en blanc = sense autenticació"
 
 #: gui/slick/views/config_general.mako:644
 msgid "HTTP port"
@@ -2413,11 +2413,11 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:10
 msgid "Devices"
-msgstr ""
+msgstr "Dispositius"
 
 #: gui/slick/views/config_notifications.mako:11
 msgid "Social"
-msgstr ""
+msgstr "Social"
 
 #: gui/slick/views/config_notifications.mako:26
 msgid "A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV."
@@ -2429,7 +2429,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:47
 msgid "Always on"
-msgstr ""
+msgstr "Sempre actiu"
 
 #: gui/slick/views/config_notifications.mako:51
 msgid "log errors when unreachable?"
@@ -2583,7 +2583,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:255
 #: gui/slick/views/config_providers.mako:414 gui/slick/views/login.mako:16
 msgid "Username"
-msgstr ""
+msgstr "Nom d’usuari"
 
 #: gui/slick/views/config_notifications.mako:150
 msgid "username for your KODI server (blank for none)"
@@ -2596,7 +2596,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:428
 #: gui/slick/views/config_subtitles.mako:328 gui/slick/views/login.mako:24
 msgid "Password"
-msgstr ""
+msgstr "Contrasenya"
 
 #: gui/slick/views/config_notifications.mako:168
 msgid "password for your KODI server (blank for none)"
@@ -2656,7 +2656,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:309
 msgid "HTTPS"
-msgstr ""
+msgstr "HTTPS"
 
 #: gui/slick/views/config_notifications.mako:313
 msgid "use https for plex media server requests?"
@@ -5163,7 +5163,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:209
 msgid "Show Status"
-msgstr ""
+msgstr "Mostra l'estat"
 
 #: gui/slick/views/displayShow.mako:213
 msgid "Default EP Status"
@@ -5341,7 +5341,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:55
 msgid "Show Location"
-msgstr ""
+msgstr "Mostra la ubicació"
 
 #: gui/slick/views/editShow.mako:67 gui/slick/views/inc_addShowOptions.mako:8
 #: gui/slick/views/manage_massEdit.mako:92
@@ -5731,7 +5731,7 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr ""
 

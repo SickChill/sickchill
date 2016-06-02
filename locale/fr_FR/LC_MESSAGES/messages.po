@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -636,31 +636,31 @@ msgstr "Éditer"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "Cette série est en cours de téléchargement - l’info ci-dessous est incomplète."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
-msgstr ""
+msgstr "Les informations sur cette page sont en cours d’actualisation."
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "Les épisodes ci-dessous sont en cours d'actualisation depuis le disque"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Les sous-titres sont en cours de téléchargement pour cette série"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Cette série est en attente d'être rafraîchie."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
-msgstr ""
+msgstr "Cette série est mise en attente car elle attend une mise à jour."
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "Cette série est mise en attente car elle attend le téléchargement des sous-titres."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "Une erreur mako est survenue. <br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Afficher/Masquer les erreurs"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1395,7 +1395,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Affiche les sous répertoires de ces répertoires qui n'ont pas encore été ajouté à SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Valider"
 
@@ -3858,7 +3858,7 @@ msgstr "Modèle du nom"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Toggle Naming Legend"
-msgstr ""
+msgstr "Activer/Désactiver la légende de nommage"
 
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
@@ -4062,7 +4062,7 @@ msgstr "Nommer les épisode par date différemment des autres ?"
 
 #: gui/slick/views/config_postProcessing.mako:645
 msgid "Toggle ABD Naming Legend"
-msgstr ""
+msgstr "Activer/Désactiver la légende de nommage pour les ABD"
 
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
@@ -4099,7 +4099,7 @@ msgstr "Nommer les événements sportifs différemment des séries ?"
 
 #: gui/slick/views/config_postProcessing.mako:829
 msgid "Toggle Sports Naming Legend"
-msgstr ""
+msgstr "Activer/Désactiver la légende de nommage pour les événements sportifs"
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -4115,7 +4115,7 @@ msgstr "Nommer les séries animées différemment des autres séries ?"
 
 #: gui/slick/views/config_postProcessing.mako:1014
 msgid "Toggle Anime Naming Legend"
-msgstr "Activer/désactiver la légende de nommage pour les animés"
+msgstr "Activer/Désactiver la légende de nommage pour les animés"
 
 #: gui/slick/views/config_postProcessing.mako:1060
 msgid ">XEM Season Number"
@@ -4172,7 +4172,7 @@ msgstr "Type de métadonnées"
 
 #: gui/slick/views/config_postProcessing.mako:1273
 msgid "Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b>"
-msgstr "Activer/désactiver les options de métadonnées que vous souhaitez créer. <b>Des cibles multiples peuvent être utilisées.</b>"
+msgstr "Activer/Désactiver les options de métadonnées que vous souhaitez créer. <b>Des cibles multiples peuvent être utilisées.</b>"
 
 #: gui/slick/views/config_postProcessing.mako:1281
 msgid "Select Metadata"
@@ -4207,7 +4207,7 @@ msgstr "Au moins un fournisseur est requis mais deux sont recommandés."
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Torrent providers can be toggled in "
-msgstr "Fournisseurs de torrent peuvent être affiché/masqués "
+msgstr "Les fournisseurs de torrent peuvent être activés/désactivés"
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog searches at this time."
@@ -5745,7 +5745,7 @@ msgstr "Définir par défaut"
 msgid "Remember me"
 msgstr "Se souvenir de moi"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Éditer la sélection"
 

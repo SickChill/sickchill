@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -1110,7 +1110,7 @@ msgstr "Keresőmotorok"
 
 #: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3735
 msgid "Subtitles Settings"
-msgstr ""
+msgstr "Feliratok Beállításai"
 
 #: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3737
 #: sickbeard/webserve.py:4868
@@ -1127,15 +1127,15 @@ msgstr "Anime"
 
 #: sickbeard/webserve.py:3776 sickbeard/webserve.py:3777
 msgid "SickRage Configuration"
-msgstr "SickRage konfiguráció"
+msgstr "SickRage beállítás"
 
 #: sickbeard/webserve.py:3791
 msgid "Config - General"
-msgstr ""
+msgstr "Beállítások - Általános"
 
 #: sickbeard/webserve.py:3791
 msgid "General Configuration"
-msgstr ""
+msgstr "Általános Beállítások"
 
 #: sickbeard/webserve.py:3934
 msgid "Unable to create directory {directory}, log directory not changed."
@@ -1159,19 +1159,19 @@ msgstr ""
 #: sickbeard/webserve.py:4854 sickbeard/webserve.py:5106 sickbeard/webserve.py:5177
 #: sickbeard/webserve.py:5214
 msgid "Configuration Saved"
-msgstr "Konfiguráció mentve"
+msgstr "Beállítás mentve"
 
 #: sickbeard/webserve.py:3977
 msgid "Config - Backup/Restore"
-msgstr ""
+msgstr "Beállítások - biztonsági mentés és visszaállítás"
 
 #: sickbeard/webserve.py:4040
 msgid "Config - Episode Search"
-msgstr ""
+msgstr "Beállítások - Epizód Keresés"
 
 #: sickbeard/webserve.py:4175
 msgid "Config - Post Processing"
-msgstr ""
+msgstr "Beállítások - Utófeldolgozás"
 
 #: sickbeard/webserve.py:4211
 msgid "Unpacking Not Supported, disabling unpack setting"
@@ -1203,15 +1203,15 @@ msgstr ""
 
 #: sickbeard/webserve.py:4867
 msgid "Config - Notifications"
-msgstr ""
+msgstr "Beállítások - Értesítések"
 
 #: sickbeard/webserve.py:5119
 msgid "Config - Subtitles"
-msgstr ""
+msgstr "Beállítások - Feliratok"
 
 #: sickbeard/webserve.py:5191
 msgid "Config - Anime"
-msgstr ""
+msgstr "Beállítások - Anime"
 
 #: sickbeard/webserve.py:5227
 msgid "Clear Errors"
@@ -1231,7 +1231,7 @@ msgstr "Naplók &amp; Hibák"
 
 #: sickbeard/webserve.py:5325
 msgid "&lt;No Filter&gt;"
-msgstr ""
+msgstr "&lt; Nincs Szűrő &gt;"
 
 #: sickbeard/webserve.py:5326
 msgid "Daily Searcher"
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr ""
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr ""
 
@@ -1638,7 +1638,7 @@ msgstr "Program mappa"
 
 #: gui/slick/views/config.mako:119
 msgid "Config File"
-msgstr "Konfigurációs fájl"
+msgstr "Beállítási Fájl"
 
 #: gui/slick/views/config.mako:128
 msgid "Database File"
@@ -2104,7 +2104,7 @@ msgstr "Helyi"
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:54
 #: gui/slick/views/schedule.mako:95
 msgid "Network"
-msgstr ""
+msgstr "Tv csatorna"
 
 #: gui/slick/views/config_general.mako:521
 msgid "display dates and times in either your timezone or the shows network timezone"
@@ -3563,7 +3563,7 @@ msgstr "Küldjön e-mail értesítéseket?"
 
 #: gui/slick/views/config_notifications.mako:2728
 msgid "SMTP host"
-msgstr ""
+msgstr "SMTP hoszt"
 
 #: gui/slick/views/config_notifications.mako:2738
 msgid "hostname of your SMTP email server."
@@ -4708,7 +4708,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:551
 msgid "NZBget host:port"
-msgstr ""
+msgstr "NZBget hoszt: port"
 
 #: gui/slick/views/config_search.mako:563
 msgid "(e.g. localhost:6789)"
@@ -4796,7 +4796,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:726 gui/slick/views/config_search.mako:909
 msgid "Torrent host:port"
-msgstr ""
+msgstr "Torrent hoszt:port"
 
 #: gui/slick/views/config_search.mako:738
 msgid "URL to your Synology DS (e.g. http://localhost:5000/)"
@@ -5731,7 +5731,7 @@ msgstr "Beállítás alapértelmezettként"
 msgid "Remember me"
 msgstr "Emlékezz rám"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr ""
 
@@ -6087,7 +6087,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:35 gui/slick/views/status.mako:40
 msgid "Scheduler"
-msgstr ""
+msgstr "Ütemező"
 
 #: gui/slick/views/status.mako:41
 msgid "Alive"
@@ -6099,7 +6099,7 @@ msgstr ""
 
 #: gui/slick/views/status.mako:45
 msgid "Cycle Time"
-msgstr ""
+msgstr "Ciklusidő"
 
 #: gui/slick/views/status.mako:46
 msgid "Next Run"
