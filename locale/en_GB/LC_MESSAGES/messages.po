@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: English, United Kingdom\n"
 "MIME-Version: 1.0\n"
@@ -636,31 +636,31 @@ msgstr "Edit"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "This show is in the process of being downloaded - the info below is incomplete."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
-msgstr ""
+msgstr "The information on this page is in the process of being updated."
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "The episodes below are currently being refreshed from disk"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Currently downloading subtitles for this show"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "This show is queued to be refreshed."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
-msgstr ""
+msgstr "This show is queued and awaiting an update."
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "This show is queued and awaiting subtitles download."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "A mako error has occured. <br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Show/Hide Error"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1395,7 +1395,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Displaying folders within these directories which aren't already added to SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Submit"
 
@@ -3856,7 +3856,7 @@ msgstr "Name Pattern"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Toggle Naming Legend"
-msgstr ""
+msgstr "Toggle Naming Legend"
 
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
@@ -4060,7 +4060,7 @@ msgstr "Name Air-By-Date shows differently than regular shows?"
 
 #: gui/slick/views/config_postProcessing.mako:645
 msgid "Toggle ABD Naming Legend"
-msgstr ""
+msgstr "Toggle ABD Naming Legend"
 
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
@@ -4097,7 +4097,7 @@ msgstr "Name Sports shows differently than regular shows?"
 
 #: gui/slick/views/config_postProcessing.mako:829
 msgid "Toggle Sports Naming Legend"
-msgstr ""
+msgstr "Toggle Sports Naming Legend"
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -5742,7 +5742,7 @@ msgstr "Set as Default"
 msgid "Remember me"
 msgstr "Remember me"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Edit Selected"
 

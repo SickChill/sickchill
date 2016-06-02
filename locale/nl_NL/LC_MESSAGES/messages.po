@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -307,7 +307,7 @@ msgstr "Weergave:"
 #: gui/slick/views/home.mako:27 gui/slick/views/schedule.mako:69
 #: sickbeard/webserve.py:491
 msgid "Banner"
-msgstr "Banner"
+msgstr "Spandoek"
 
 #: gui/slick/views/home.mako:25 gui/slick/views/schedule.mako:67
 #: sickbeard/webserve.py:492
@@ -636,31 +636,31 @@ msgstr "Bewerk"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "Deze serie wordt op dit moment gedownload - de informatie hieronder is incompleet."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
-msgstr ""
+msgstr "De informatie op deze pagina wordt op dit moment bijgewerkt."
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "De afleveringen hieronder worden op dit moment ververst vanaf schijf"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Ondertiteling voor deze serie nu aan het downloaden"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Deze serie staat in de rij om bijgewerkt te worden."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
-msgstr ""
+msgstr "Deze serie staat in de rij en wacht op een update."
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "Deze serie staat in de rij en wacht op het downloaden van ondertiteling."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "Een mako-error is opgetreden.<br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Toon/Verberg Foutmelding"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1396,7 +1396,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Tonen van mappen die niet al zijn toegevoegd aan SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Verzend"
 
@@ -1853,7 +1853,7 @@ msgstr "Naar Prullenbak verplaatsen"
 
 #: gui/slick/views/config_general.mako:118
 msgid "when using show \"Remove\" and delete files"
-msgstr "Verwijderde bestanden worden naar de prullenbak verplaatst."
+msgstr "verwijderde bestanden worden naar de prullenbak verplaatst"
 
 #: gui/slick/views/config_general.mako:124
 msgid "on scheduled deletes of the oldest log files"
@@ -1949,7 +1949,7 @@ msgstr "Controleer op updates"
 
 #: gui/slick/views/config_general.mako:268
 msgid "and display notifications when updates are available. Checks are run on startup and at the frequency set below*"
-msgstr "en toon meldingen wanneer er updates beschikbaar zijn. Dit wordt gecontroleerd bij het opstarten en op met onderstaande frequentie*"
+msgstr "en toon meldingen wanneer er updates beschikbaar zijn. Dit wordt gecontroleerd bij het opstarten en met onderstaande frequentie*"
 
 #: gui/slick/views/config_general.mako:274
 msgid "Automatically update"
@@ -1965,7 +1965,7 @@ msgstr "Controleer op Updates iedere"
 
 #: gui/slick/views/config_general.mako:294
 msgid "hours for software updates (default:1)"
-msgstr "Uur op software-updates voor Sickrage (standaard: 1 uur)"
+msgstr "uur op software-updates voor Sickrage (standaard: 1 uur)"
 
 #: gui/slick/views/config_general.mako:302
 msgid "Notify on software update"
@@ -3654,7 +3654,7 @@ msgstr "Nabewerking"
 #: gui/slick/views/config_postProcessing.mako:13
 #: gui/slick/views/config_postProcessing.mako:339
 msgid "Episode Naming"
-msgstr "Aflevering naamgeving"
+msgstr "Aflevering benaming"
 
 #: gui/slick/views/config_postProcessing.mako:14
 #: gui/slick/views/config_postProcessing.mako:1249
@@ -3671,7 +3671,7 @@ msgstr "Schakel de automatische nabewerking in om alle bestanden te scannen en t
 
 #: gui/slick/views/config_postProcessing.mako:45
 msgid "Do not use if you use an external Post Processing script"
-msgstr "Niet gebruiken als u een extern Nabewerkingsscript gebruikt"
+msgstr "Niet gebruiken als je een extern Nabewerkingsscript gebruikt"
 
 #: gui/slick/views/config_postProcessing.mako:53
 msgid "Post Processing Dir"
@@ -3679,7 +3679,7 @@ msgstr "Nabewerkingsmap"
 
 #: gui/slick/views/config_postProcessing.mako:63
 msgid "The folder where your download client puts the completed TV downloads."
-msgstr "De map waar uw download client de voltooide TV downloads zet."
+msgstr "De map waar de download client de voltooide TV downloads zet."
 
 #: gui/slick/views/config_postProcessing.mako:68
 msgid "Please use seperate downloading and completed folders in your download client if possible."
@@ -3727,7 +3727,7 @@ msgstr "Hernoem Afleveringen"
 
 #: gui/slick/views/config_postProcessing.mako:154
 msgid "Rename episode using the Episode Naming settings?"
-msgstr "Hernoem aflevering met de \"Aflevering naamgeving\" instellingen?"
+msgstr "Hernoem aflevering met de \"Aflevering benaming\" instellingen?"
 
 #: gui/slick/views/config_postProcessing.mako:160
 msgid "Create missing show directories"
@@ -3857,7 +3857,7 @@ msgstr "Naam Patroon"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Toggle Naming Legend"
-msgstr ""
+msgstr "Toon/verberg Legenda Benaming"
 
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
@@ -4061,7 +4061,7 @@ msgstr "Noem Uitzenddatumseries anders dan reguliere series?"
 
 #: gui/slick/views/config_postProcessing.mako:645
 msgid "Toggle ABD Naming Legend"
-msgstr ""
+msgstr "Toon/verberg Legenda ABD benaming"
 
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
@@ -4098,7 +4098,7 @@ msgstr "Noem Sportseries anders dan reguliere series?"
 
 #: gui/slick/views/config_postProcessing.mako:829
 msgid "Toggle Sports Naming Legend"
-msgstr ""
+msgstr "Toon/verberg Legenda Sport benaming"
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -4114,7 +4114,7 @@ msgstr "Noem Anime series anders dan reguliere series?"
 
 #: gui/slick/views/config_postProcessing.mako:1014
 msgid "Toggle Anime Naming Legend"
-msgstr "Toon/verberg anime benaming legenda"
+msgstr "Toon/verberg Anime Legenda benaming"
 
 #: gui/slick/views/config_postProcessing.mako:1060
 msgid ">XEM Season Number"
@@ -4210,7 +4210,7 @@ msgstr "Torrent zoekmachines kunnen geselecteerd worden in "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog searches at this time."
-msgstr "Zoekmachine bied geen ondersteuning voor backlog zoekopdrachten."
+msgstr "Zoekmachine biedt geen ondersteuning voor backlog zoekopdrachten."
 
 #: gui/slick/views/config_providers.mako:61
 msgid "Provider is <b>NOT WORKING</b>."
@@ -5629,7 +5629,7 @@ msgstr "Markeer Item als prioriteit download"
 
 #: gui/slick/views/home_postprocess.mako:49
 msgid "(Check it to replace the file even if it exists at higher quality)"
-msgstr "(Vervangt het bestand zelfs als het reeds bestaat in hogere kwaliteit)"
+msgstr "(Vervangt het bestand zelfs als het al bestaat in hogere kwaliteit)"
 
 #: gui/slick/views/home_postprocess.mako:54
 msgid "Delete files and folders"
@@ -5637,7 +5637,7 @@ msgstr "Bestanden en mappen verwijderen"
 
 #: gui/slick/views/home_postprocess.mako:58
 msgid "(Check it to delete files and folders like auto processing)"
-msgstr "(Verwijderd de bestanden en mappen na de verwerking)"
+msgstr "(Verwijdert de bestanden en mappen na de verwerking)"
 
 #: gui/slick/views/home_postprocess.mako:64
 msgid "Mark download as failed"
@@ -5743,7 +5743,7 @@ msgstr "Als standaard instellen"
 msgid "Remember me"
 msgstr "Onthoud mijn gegevens"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Selectie bewerken"
 

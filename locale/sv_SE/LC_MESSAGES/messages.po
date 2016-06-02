@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:02-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:42-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -644,7 +644,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "Avsnitten nedan uppdateras på disken"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
@@ -1248,7 +1248,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:5329
 msgid "Check Version"
-msgstr ""
+msgstr "Kontrollera Version"
 
 #: gui/slick/views/status.mako:15 gui/slick/views/status.mako:122
 #: sickbeard/webserve.py:5330
@@ -1332,7 +1332,7 @@ msgstr ""
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Visa/Dölj fel"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Visar mappar i katalogerna som inte är tillagda i SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Spara"
 
@@ -5736,7 +5736,7 @@ msgstr "Ange som standard"
 msgid "Remember me"
 msgstr "Kom ihåg mig"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Redigera markerade"
 

@@ -18,7 +18,7 @@ from zipfile import ZipFile, is_zipfile
 
 from subliminal.providers import Provider
 from subliminal import __version__
-from subliminal.cache import SHOW_EXPIRATION_TIME, region
+from subliminal.cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
 from subliminal.exceptions import AuthenticationError, ConfigurationError, TooManyRequests
 from subliminal.subtitle import (Subtitle, fix_line_ending, guess_matches, sanitize)
 from subliminal.video import Episode
@@ -240,6 +240,7 @@ class ItaSAProvider(Provider):
 
         return show_id
 
+    @region.cache_on_arguments(expiration_time=EPISODE_EXPIRATION_TIME)
     def _download_zip(self, sub_id):
         # download the subtitle
         logger.info('Downloading subtitle %r', sub_id)
