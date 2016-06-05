@@ -1264,25 +1264,25 @@ class Home(WebRoot):
         show_message = ''
 
         if sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
-            show_message = 'This show is in the process of being downloaded - the info below is incomplete.'
+            show_message = _('This show is in the process of being downloaded - the info below is incomplete.')
 
         elif sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):
-            show_message = 'The information on this page is in the process of being updated.'
+            show_message = _('The information on this page is in the process of being updated.')
 
         elif sickbeard.showQueueScheduler.action.isBeingRefreshed(show_obj):
-            show_message = 'The episodes below are currently being refreshed from disk'
+            show_message = _('The episodes below are currently being refreshed from disk')
 
         elif sickbeard.showQueueScheduler.action.isBeingSubtitled(show_obj):
-            show_message = 'Currently downloading subtitles for this show'
+            show_message = _('Currently downloading subtitles for this show')
 
         elif sickbeard.showQueueScheduler.action.isInRefreshQueue(show_obj):
-            show_message = 'This show is queued to be refreshed.'
+            show_message = _('This show is queued to be refreshed.')
 
         elif sickbeard.showQueueScheduler.action.isInUpdateQueue(show_obj):
-            show_message = 'This show is queued and awaiting an update.'
+            show_message = _('This show is queued and awaiting an update.')
 
         elif sickbeard.showQueueScheduler.action.isInSubtitleQueue(show_obj):
-            show_message = 'This show is queued and awaiting subtitles download.'
+            show_message = _('This show is queued and awaiting subtitles download.')
 
         if not sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):

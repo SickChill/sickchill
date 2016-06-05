@@ -1575,12 +1575,12 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
 
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
-    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest).st_dev:  # pylint: disable=no-member
-        logger.log("Process method is 'move' and src and destination are on the same device, skipping freepace check", logger.INFO)
+    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
+        logger.log("Process method is 'move' and src and destination are on the same device, skipping free space check", logger.INFO)
         return True
 
     try:
-        diskfree = disk_usage(dest)
+        diskfree = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)
