@@ -570,10 +570,12 @@ def refine_video(video, episode):
     for name in metadata_mapping:
         if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
             setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+        elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
+            setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
 
     # Set quality form metadata
     _, quality = Quality.splitCompositeStatus(episode.status)
-    if not video.format:
+    if not video.format or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
         elif quality & Quality.ANYWEBDL:
@@ -581,7 +583,7 @@ def refine_video(video, episode):
         elif quality & Quality.ANYBLURAY:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
 
-    if not video.resolution:
+    if not video.resolution or episode.show.subtitles_sr_metadata:
         if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):
             video.resolution = '720p'
         elif quality & Quality.RAWHDTV:

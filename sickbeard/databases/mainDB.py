@@ -1161,3 +1161,18 @@ class MatchFailedForkVersion(AddMinorVersion):
             self.inc_minor_version()
 
         logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+
+
+class UseSickRageMetadataForSubtitle(MatchFailedForkVersion):
+    """
+    Add a minor version for adding a show setting to use SR metadata for subtitles
+    """
+    def test(self):
+        return self.connection.version >= (43, 2)
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+        self.inc_minor_version()
+        self.addColumn('tv_shows', 'sub_use_sr_metadata')
+
+        logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
