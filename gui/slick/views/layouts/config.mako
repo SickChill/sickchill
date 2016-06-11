@@ -47,10 +47,8 @@
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 pull-right">
                     <h6 class="pull-right">
                         <b>
-                            <span>
-                                ${_('All non-absolute folder locations are relative to ')}&nbsp;
-                                <span class="path pull-right">${sickbeard.DATA_DIR}</span>
-                            </span>
+                            <span class="config-path-title">${_('All non-absolute folder locations are relative to ')}&nbsp;</span>
+                            <span class="path pull-right">${sickbeard.DATA_DIR}</span>
                         </b>
                     </h6>
                 </div>

@@ -7,21 +7,23 @@
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-        <!-- These values come from css/dark.css and css/light.css -->
-        % if sbThemeName == "dark":
-            <meta name="theme-color" content="#15528F">
-        % elif sbThemeName == "light":
-            <meta name="theme-color" content="#333333">
-        % endif
+        <% themeColors = { "dark": "#15528F", "light": "#333333" } %>
+        <!-- Android -->
+        <meta name="theme-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <!-- Windows Phone -->
+        <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <!-- iOS -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
 
-        <title>SickRage - BRANCH:[${sickbeard.BRANCH}] - ${title}</title>
+        <title>SickRage - ${title}</title>
 
         <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
+
         <meta name="msapplication-TileColor" content="#FFFFFF">
         <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
         <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
@@ -43,6 +45,9 @@
         <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
         <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
         <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
+        <meta data-var="sickbeard.FANART_BACKGROUND" data-content="${sickbeard.FANART_BACKGROUND}">
+        <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
+        <%block name="metas" />
 
         <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
         <link rel="icon" sizes="16x16 32x32 64x64" href="${srRoot}/images/ico/favicon.ico">
@@ -61,10 +66,16 @@
         <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
 
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sbThemeName}.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
+
+        %if sickbeard.THEME_NAME != "light":
+            <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        %endif
+        <%block name="css" />
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
@@ -78,8 +89,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="${srRoot}/apibuilder/" title="SickRage">
-                        <img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;"
-                             class="img-responsive pull-left"/>
+                        <img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
                         <p class="navbar-text hidden-xs">${title}</p>
                     </a>
                 </div>
@@ -96,12 +106,6 @@
 
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="${srRoot}/home/">${_('Back to SickRage')}</a></li>
-                        <li class="hidden-xs">
-                            <a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer"
-                               onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;">
-                                <img src="${srRoot}/images/donate.jpg" alt="[donate]" class="navbaricon"/>
-                            </a>
-                        </li>
                     </ul>
 
                     <form class="navbar-form navbar-right">
@@ -113,14 +117,13 @@
                 </div>
             </div>
         </nav>
-
-        <div id="content">
+        <div id="content" class="container-fluid">
             <div class="panel-group" id="commands_list">
                 % for command in sorted(commands):
-                <%
-                    command_id = command.replace('.', '-')
-                    help = commands[command]((), {'help': 1}).run()
-                %>
+                    <%
+                        command_id = command.replace('.', '-')
+                        help = commands[command]((), {'help': 1}).run()
+                    %>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
@@ -130,65 +133,81 @@
                         </div>
                         <div class="panel-collapse collapse" id="command-${command_id}">
                             <div class="panel-body">
-                                <blockquote>${help['message']}</blockquote>
-
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <blockquote>${help['message']}</blockquote>
+                                    </div>
+                                </div>
                                 % if help['data']['optionalParameters'] or help['data']['requiredParameters']:
-                                    <h4>${_('Parameters')}</h4>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h4>${_('Parameters')}</h4>
 
-                                    <div class="horizontal-scroll">
-                                        <table class="tablesorter">
-                                            <thead>
-                                                <tr>
-                                                    <th>${_('Name')}</th>
-                                                    <th>${_('Required')}</th>
-                                                    <th>${_('Description')}</th>
-                                                    <th>${_('Type')}</th>
-                                                    <th>${_('Default value')}</th>
-                                                    <th>${_('Allowed values')}</th>
-                                                </tr>
-                                            </thead>
-                                            ${display_parameters_doc(help['data']['requiredParameters'], True)}
-                                            ${display_parameters_doc(help['data']['optionalParameters'], False)}
-                                        </table>
+                                            <div class="horizontal-scroll">
+                                                <table class="tablesorter">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>${_('Name')}</th>
+                                                            <th>${_('Required')}</th>
+                                                            <th>${_('Description')}</th>
+                                                            <th>${_('Type')}</th>
+                                                            <th>${_('Default value')}</th>
+                                                            <th>${_('Allowed values')}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    ${display_parameters_doc(help['data']['requiredParameters'], True)}
+                                                    ${display_parameters_doc(help['data']['optionalParameters'], False)}
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 % endif
-
-                                <h4>${_('Playground')}</h4>
-
-                                URL: <kbd id="command-${command_id}-base-url">/api/${apikey}/?cmd=${command}</kbd><br>
-
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4>${_('Playground')}</h4>
+                                        <span>URL:&nbsp;<kbd id="command-${command_id}-base-url">/api/${apikey}/?cmd=${command}</kbd></span>
+                                    </div>
+                                </div>
                                 % if help['data']['requiredParameters']:
-                                    Required
-                                    parameters: ${display_parameters_playground(help['data']['requiredParameters'], True, command_id)}
-                                    <br>
+                                    <br/>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Required parameters</label>
+                                            ${display_parameters_playground(help['data']['requiredParameters'], True, command_id)}
+                                        </div>
+                                    </div>
                                 % endif
-
                                 % if help['data']['optionalParameters']:
-                                    Optional
-                                    parameters: ${display_parameters_playground(help['data']['optionalParameters'], False, command_id)}
-                                    <br>
+                                    <br/>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Optional parameters</label>
+                                            ${display_parameters_playground(help['data']['optionalParameters'], False, command_id)}
+                                        </div>
+                                    </div>
                                 % endif
-
-                                <button class="btn btn-primary" data-action="api-call" data-command-name="${command_id}"
-                                        data-base-url="command-${command_id}-base-url"
-                                        data-target="#command-${command_id}-response"
-                                        data-time="#command-${command_id}-time" data-url="#command-${command_id}-url">
-                                    Call API
-                                </button>
-                                <br>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary" data-action="api-call" data-command-name="${command_id}"
+                                                data-base-url="command-${command_id}-base-url"
+                                                data-target="#command-${command_id}-response"
+                                                data-time="#command-${command_id}-time" data-url="#command-${command_id}-url">
+                                            Call API
+                                        </button>
+                                    </div>
+                                </div>
 
                                 <div class="result-wrapper hidden">
                                     <div class="clearfix">
-                            <span class="pull-left">
-                                Response: <strong id="command-${command_id}-time"></strong><br>
-                                URL: <kbd id="command-${command_id}-url"></kbd>
-                            </span>
-                            <span class="pull-right">
-                                <button class="btn btn-default" data-action="clear-result"
-                                        data-target="#command-${command_id}-response">${_('Clear')}</button>
-                            </span>
+                                        <span class="pull-left">
+                                            Response: <strong id="command-${command_id}-time"></strong><br>
+                                            URL: <kbd id="command-${command_id}-url"></kbd>
+                                        </span>
+                                        <span class="pull-right">
+                                            <button class="btn btn-default" data-action="clear-result" data-target="#command-${command_id}-response">${_('Clear')}</button>
+                                        </span>
                                     </div>
-
                                     <pre><code id="command-${command_id}-response"></code></pre>
                                 </div>
                             </div>
@@ -211,7 +230,7 @@
 <%def name="display_parameters_doc(parameters, required)">
     <tbody>
         % for parameter in parameters:
-        <% parameter_help = parameters[parameter] %>
+            <% parameter_help = parameters[parameter] %>
             <tr>
                 <td>
                     % if required:
@@ -246,8 +265,7 @@
             %>
 
             % if isinstance(allowed_values, list):
-                <select class="form-control"${('', ' multiple="multiple"')[type == 'list']} name="${parameter}"
-                        data-command="${command}">
+                <select class="form-control"${('', ' multiple="multiple"')[type == 'list']} name="${parameter}" data-command="${command}">
                     <option>${parameter}</option>
 
                     % if allowed_values == [0, 1]:
@@ -269,8 +287,7 @@
                 </select>
 
                 % if 'season' in parameters:
-                    <select class="form-control hidden" name="season" data-action="update-episodes"
-                            data-command="${command}">
+                    <select class="form-control hidden" name="season" data-action="update-episodes" data-command="${command}">
                         <option>${_('season')}</option>
                     </select>
                 % endif
@@ -281,16 +298,13 @@
                     </select>
                 % endif
             % elif parameter == 'tvdbid':
-                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number"
-                       data-command="${command}"/>
+                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}"/>
             % elif type == 'int':
                 % if parameter not in ('episode', 'season'):
-                    <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number"
-                           data-command="${command}"/>
+                    <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}"/>
                 % endif
             % elif type == 'string':
-                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text"
-                       data-command="${command}"/>
+                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text" data-command="${command}"/>
             % endif
         % endfor
     </div>

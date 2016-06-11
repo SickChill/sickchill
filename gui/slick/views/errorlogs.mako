@@ -2,15 +2,6 @@
 <%!
     import sickbeard
 %>
-<%block name="css">
-    <style>
-        pre {
-          overflow: auto;
-          word-wrap: normal;
-          white-space: pre;
-        }
-    </style>
-</%block>
 <%block name="content">
     <%
         if logLevel == sickbeard.logger.WARNING:
@@ -30,7 +21,7 @@
             <pre>
                 % if errors:
                     % for curError in sorted(errors, key=lambda error: error.time, reverse=True)[:500]:
-${curError.time} ${curError.message}
+                        ${curError.time} ${curError.message}
                     % endfor
                 % else:
                     ${_('There are no events to display.')}

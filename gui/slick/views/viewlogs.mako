@@ -3,15 +3,6 @@
     import sickbeard
     from sickbeard.logger import LOGGING_LEVELS
 %>
-<%block name="css">
-<style>
-pre {
-  overflow: auto;
-  word-wrap: normal;
-  white-space: pre;
-}
-</style>
-</%block>
 <%block name="content">
     <div class="row">
         <div class="pull-right col-lg-10 col-md-10 col-sm-12 col-xs-12">
