@@ -9,7 +9,7 @@
         <br>
     </p>
     <hr>
-    <a href="#mako-error" class="btn btn-default" data-toggle="collapse">_('Show/Hide Error')</a>
+    <a href="#mako-error" class="btn btn-default" data-toggle="collapse">${_('Show/Hide Error')}</a>
     <div id="mako-error" class="collapse">
         <br>
         <div class="align-center">

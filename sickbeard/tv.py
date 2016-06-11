@@ -1387,9 +1387,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
-        episode_info = {'show_name': self.show.name, 'location': self.location,
-                        'season': self.season, 'episode': self.episode}
-        self.subtitles, save_subtitles = subtitles.refresh_subtitles(episode_info, self.subtitles)
+        self.subtitles, save_subtitles = subtitles.refresh_subtitles(self)
         if save_subtitles:
             self.saveToDB()
 
@@ -1410,11 +1408,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                    (show=self.show.name, ep=episode_num(self.season, self.episode),
                     location=os.path.basename(self.location)), logger.DEBUG)
 
-        subtitles_info = {'location': self.location, 'subtitles': self.subtitles, 'season': self.season,
-                          'episode': self.episode, 'name': self.name, 'show_name': self.show.name,
-                          'show_indexerid': self.show.indexerid, 'status': self.status}
-
-        self.subtitles, new_subtitles = subtitles.download_subtitles(subtitles_info)
+        self.subtitles, new_subtitles = subtitles.download_subtitles(self)
 
         self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)

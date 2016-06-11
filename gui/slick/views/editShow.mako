@@ -351,7 +351,7 @@
                     <br/>
                     <div class="row">
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                            <input type="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
+                            <input type="submit" id="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
                         </div>
                     </div>
 

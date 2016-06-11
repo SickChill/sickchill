@@ -430,7 +430,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="password" name="${curTorrentProvider.get_id()}_password"
                                                    id="${curTorrentProvider.get_id()}_password"
-                                                   value="${curTorrentProvider.password}" class="form-control input-sm input350"
+                                                   value="${curTorrentProvider.password | h}" class="form-control input-sm input350"
                                                    autocomplete="no" autocapitalize="off"/>
                                         </div>
                                     </div>
