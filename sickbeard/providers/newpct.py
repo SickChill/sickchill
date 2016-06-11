@@ -49,7 +49,7 @@ class newpctProvider(TorrentProvider):
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
         q => Show name
         category_ = Category 'Shows' (767)
-        idioma_ = Language Spanish (1)
+        idioma_ = Language Spanish (1), All
         bus_de_ = Date from (All, mes, semana, ayer, hoy)
         """
         results = []
@@ -68,12 +68,17 @@ class newpctProvider(TorrentProvider):
         for mode in search_strings:
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            
+            if self.onlyspasearch:
+                search_params['idioma_'] = 1
+            else:
+                search_params['idioma_'] = 'All'
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                 continue
-
+                
             search_params['bus_de_'] = 'All' if mode != 'RSS' else 'semana'
 
             for search_string in search_strings[mode]:
@@ -202,7 +207,10 @@ class newpctProvider(TorrentProvider):
         title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
         title = re.sub(ur'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
 
-        title += '-NEWPCT'
+        if re.search(r'\[V.O.[^\[]*]', title, flags=re.I):
+            title += '-NEWPCTVO'
+        else:
+            title += '-NEWPCT'
 
         return title.strip()
 
