@@ -100,6 +100,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._paused = 0
         self._air_by_date = 0
         self._subtitles = int(sickbeard.SUBTITLES_DEFAULT)
+        self._subtitles_sr_metadata = 0
         self._dvdorder = 0
         self._lang = lang
         self._last_update_indexer = 1
@@ -150,6 +151,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
     rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
     default_ep_status = property(lambda self: self._default_ep_status, dirty_setter("_default_ep_status"))
+    subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
 
     @property
     def is_anime(self):
@@ -812,6 +814,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if self.is_anime:
                 self.release_groups = BlackAndWhiteList(self.indexerid)
 
+            self.subtitles_sr_metadata = int(sql_results[0][b"sub_use_sr_metadata"] or 0)
+
         # Get IMDb_info from database
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
@@ -1148,7 +1152,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "last_update_indexer": self.last_update_indexer,
                         "rls_ignore_words": self.rls_ignore_words,
                         "rls_require_words": self.rls_require_words,
-                        "default_ep_status": self.default_ep_status}
+                        "default_ep_status": self.default_ep_status,
+                        "sub_use_sr_metadata": self.subtitles_sr_metadata}
 
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", newValueDict, controlValueDict)
