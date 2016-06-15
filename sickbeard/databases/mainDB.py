@@ -1159,7 +1159,17 @@ class UseSickRageMetadataForSubtitle(AlterTVShowsFieldTypes):
 
 class ResetDBVersion(UseSickRageMetadataForSubtitle):
     def test(self):
-        return False
+        return self.connection.version >= (44, 0)
 
     def execute(self):
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 2])
+        self.inc_major_version()
+
+
+class IncreaseMinor(ResetDBVersion):
+    def test(self):
+        return self.connection.version >= (44, 2)
+    def execute(self):
+        while self.connection.version < (44, 0):
+            self.inc_major_version()
+        while self.connection.version < (44, 2):
+            self.inc_minor_version()
