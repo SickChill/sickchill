@@ -1169,6 +1169,7 @@ class IncreaseMinor(ResetDBVersion):
     def test(self):
         return self.connection.version >= (44, 2)
     def execute(self):
+        # make sure that we are at least at v44.0 to prevent infinite loop when upgrading minor version
         while self.connection.version < (44, 0):
             self.inc_major_version()
         while self.connection.version < (44, 2):
