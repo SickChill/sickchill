@@ -34,7 +34,7 @@ from sickrage.helper.encoding import ek
 from sickbeard import subtitles
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 43
+MAX_DB_VERSION = 44
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -1145,34 +1145,21 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
         logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
 
 
-class MatchFailedForkVersion(AddMinorVersion):
-    """
-    Moves DB major version up to 43 since bonehead bumped his to break our updater.
-    """
-    def test(self):
-        return self.connection.version >= (43, 1)
-
-    def execute(self):
-        backupDatabase(self.checkDBVersion())
-
-        minor_version = self.connection.version[1]
-        self.inc_major_version()
-        while self.connection.version[1] < minor_version:
-            self.inc_minor_version()
-
-        logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
-
-
-class UseSickRageMetadataForSubtitle(MatchFailedForkVersion):
+class UseSickRageMetadataForSubtitle(AlterTVShowsFieldTypes):
     """
     Add a minor version for adding a show setting to use SR metadata for subtitles
     """
     def test(self):
-        return self.connection.version >= (43, 2)
+        return self.hasColumn('tv_shows', 'sub_use_sr_metadata')
 
     def execute(self):
         backupDatabase(self.checkDBVersion())
-        self.inc_minor_version()
-        self.addColumn('tv_shows', 'sub_use_sr_metadata')
+        self.addColumn('tv_shows', 'sub_use_sr_metadata', "NUMERIC", "0")
 
-        logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+
+class ResetDBVersion(UseSickRageMetadataForSubtitle):
+    def test(self):
+        return False
+
+    def execute(self):
+        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 0])
