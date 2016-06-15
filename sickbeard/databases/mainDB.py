@@ -1162,4 +1162,4 @@ class ResetDBVersion(UseSickRageMetadataForSubtitle):
         return False
 
     def execute(self):
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 0])
+        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 2])
