@@ -54,6 +54,8 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'download': urljoin(self.url, '/download.php/')
         }
 
+        self.custom_url = None
+
         self.categories = {
             'Season': {'c14': 1},
             'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
@@ -73,8 +75,14 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             'submit.x': 0,
             'submit.y': 0
         }
+        login_url = self.urls['login']
+        if self.custom_url:
+            if not validators.url(self.custom_url):
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                    return results
+            login_url = urljoin(self.custom_url, login_url.split(self.url)[1])
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        response = self.get_url(login_url, post_data=login_params, returns='text')
         if not response:
             logger.log('Unable to connect to provider', logger.WARNING)
             return False
@@ -105,11 +113,20 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 post_data = {'/browse.php?': None, 'cata': 'yes', 'jxt': 8, 'jxw': 'b', 'search': search_string}
                 post_data.update(self.categories[mode])
+                
+                search_url = self.urls["search"]
+                download_url = self.urls['download']
+                if self.custom_url:
+                    if not validators.url(self.custom_url):
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        return results
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                    download_url = urljoin(self.custom_url, download_url.split(self.url)[1])
 
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, returns='json')
+                parsedJSON = self.get_url(search_url, post_data=post_data, returns='json')
                 if not parsedJSON:
                     logger.log('No data returned from provider', logger.DEBUG)
                     continue
@@ -123,7 +140,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 for torrent in torrents:
 
                     title = re.sub(r'\[.*\=.*\].*\[/.*\]', '', torrent['name']) if torrent['name'] else None
-                    download_url = urljoin(self.urls['download'], '{0}/{1}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else None
+                    download_url = urljoin(download_url, '{0}/{1}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else None
                     if not all([title, download_url]):
                         continue
 
