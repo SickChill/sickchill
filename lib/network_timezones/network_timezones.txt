@@ -2283,3 +2283,4 @@ ZUUS Latino (US):US/Eastern
 ערוץ הילדים‎:Asia/Jerusalem
 קשת:Asia/Jerusalem
 רשת:Asia/Jerusalem
+Belgische Radio en Televisie (BRTN):Europe/Brussels
