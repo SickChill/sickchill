@@ -124,6 +124,15 @@
                                         <input type="checkbox" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/>
                                         <label for="subtitles">${_('search for subtitles')}</label>
                                     </div>
+                                    % if show.subtitles:
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <span class="component-title">${_('Use SR Metdata')}</span>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata" ${('', 'checked="checked"')[show.subtitles_sr_metadata == 1 ]} />
+                                        <label for="subtitles_sr_metadata">${_('use SickRage metadata when searching for subtitle, this will override the autodiscovered metadata')}</label>
+                                    </div>
+                                    % endif
                                 </div>
 
                                 <div class="field-pair row">

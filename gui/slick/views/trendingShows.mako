@@ -26,7 +26,7 @@
                 % endif
 
                 <div class="trakt_show" data-name="${cur_show['show']['title']}"
-                     data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes'].replace(',', '')}">
+                     data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes']}">
                     <div class="traktContainer">
                         <div class="trakt-image">
                             <a class="trakt-image" href="${anon_url(show_url)}" target="_blank">

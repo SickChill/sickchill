@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:01-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -636,31 +636,31 @@ msgstr "Bearbeiten"
 
 #: sickbeard/webserve.py:1267
 msgid "This show is in the process of being downloaded - the info below is incomplete."
-msgstr ""
+msgstr "Diese Serie wird gerade heruntergeladen - die Info unterhalb ist demnach unvollständig."
 
 #: sickbeard/webserve.py:1270
 msgid "The information on this page is in the process of being updated."
-msgstr ""
+msgstr "Die Informationen auf dieser Seite werden gerade aktualisiert."
 
 #: sickbeard/webserve.py:1273
 msgid "The episodes below are currently being refreshed from disk"
-msgstr ""
+msgstr "Die Folgen unterhalb werden gerade von der Festplatte neu eingelesen"
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Untertitel werden gerade für diese Serie heruntergeladen"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Diese Serie wurde der Warteschlange hinzugefügt, um neu eingelesen zu werden."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
-msgstr ""
+msgstr "Diese Serie wurde der Warteschlange hinzugefügt und ist im Begriff aktualisiert zu werden."
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "Diese Serie wurde der Warteschlange hinzugefügt und Untertitel werden in Kürze heruntergeladen."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "Ein Mako-Fehler ist aufgetreten.<br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Fehler ein-/ausblenden"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1396,7 +1396,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Anzeigen von Ordnern innerhalb dieser Verzeichnisse, die SickRage nicht bereits hinzugefügt wurden"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Absenden"
 
@@ -3861,7 +3861,7 @@ msgstr "Namenskonventionen"
 
 #: gui/slick/views/config_postProcessing.mako:374
 msgid "Toggle Naming Legend"
-msgstr ""
+msgstr "Namenslegende umschalten"
 
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
@@ -4065,7 +4065,7 @@ msgstr "Air-by-Date-Serien anders als reguläre Serien benennen?"
 
 #: gui/slick/views/config_postProcessing.mako:645
 msgid "Toggle ABD Naming Legend"
-msgstr ""
+msgstr "ABD Namenslegende umschalten"
 
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
@@ -4102,7 +4102,7 @@ msgstr "Sport-Serien anders als reguläre Serien benennen?"
 
 #: gui/slick/views/config_postProcessing.mako:829
 msgid "Toggle Sports Naming Legend"
-msgstr ""
+msgstr "Sport Namenslegende umschalten"
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -4118,7 +4118,7 @@ msgstr "Anime-Serien anders als reguläre Serien benennen?"
 
 #: gui/slick/views/config_postProcessing.mako:1014
 msgid "Toggle Anime Naming Legend"
-msgstr "Anime Namens-Legende umschalten"
+msgstr "Anime Namenslegende umschalten"
 
 #: gui/slick/views/config_postProcessing.mako:1060
 msgid ">XEM Season Number"
@@ -5749,7 +5749,7 @@ msgstr "Als Standard festlegen"
 msgid "Remember me"
 msgstr "Merken"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Auswahl bearbeiten"
 

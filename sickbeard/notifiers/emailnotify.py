@@ -320,7 +320,7 @@ class Notifier(object):
                 srv.ehlo()
             if user and pwd:
                 logger.log('Sending LOGIN command!', logger.DEBUG)
-                srv.login(user, pwd)
+                srv.login(user.encode('utf-8'), pwd.encode('utf-8'))
 
             srv.sendmail(smtp_from, to, msg.as_string())
             srv.quit()

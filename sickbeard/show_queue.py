@@ -137,14 +137,15 @@ class ShowQueue(generic_queue.GenericQueue):
 
     def addShow(self,  # pylint: disable=too-many-arguments, too-many-locals
                 indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None,
-                default_status_after=None, root_dir=None):
+                lang=None, subtitles=None, subtitles_sr_metadata=None, anime=None, scene=None, paused=None,
+                blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after, root_dir)
+                                    subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
+                                    default_status_after, root_dir)
 
         self.add_item(queueItemObj)
         return queueItemObj
@@ -227,7 +228,8 @@ class ShowQueueItem(generic_queue.QueueItem):
 class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attributes
     def __init__(self,  # pylint: disable=too-many-arguments, too-many-locals
                  indexer, indexer_id, showDir, default_status, quality, flatten_folders,
-                 lang, subtitles, anime, scene, paused, blacklist, whitelist, default_status_after, root_dir):
+                 lang, subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
+                 default_status_after, root_dir):
 
         if isinstance(showDir, str):
             self.showDir = showDir.decode('utf-8')
@@ -241,6 +243,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         self.flatten_folders = flatten_folders
         self.lang = lang
         self.subtitles = subtitles
+        self.subtitles_sr_metadata = subtitles_sr_metadata
         self.anime = anime
         self.scene = scene
         self.paused = paused
@@ -381,6 +384,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # set up initial values
             self.show.location = self.showDir
             self.show.subtitles = self.subtitles if self.subtitles is not None else sickbeard.SUBTITLES_DEFAULT
+            self.show.subtitles_sr_metadata = self.subtitles_sr_metadata
             self.show.quality = self.quality if self.quality else sickbeard.QUALITY_DEFAULT
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders is not None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime is not None else sickbeard.ANIME_DEFAULT
