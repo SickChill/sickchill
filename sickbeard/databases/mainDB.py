@@ -103,7 +103,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 continue
 
             logger.log(u'Checking if there is already a show with id:%i in the show list')
-            duplicate = self.connection.select("SELECT show_name, indexer_id, location, FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(mapping[0]['mindexer_id'], INDEXER_TVDB))
+            duplicate = self.connection.select("SELECT show_name, indexer_id, location FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(mapping[0]['mindexer_id'], INDEXER_TVDB))
             if duplicate:
                 logger.log(u'Found {0} which has the same id as {1}, cannot convert automatically so I am pausing {2}'.format(duplicate[0]['show_name'], tvrage_show['show_name'], duplicate[0]['show_name']), logger.WARNING)
                 self.connection.action("UPDATE tv_shows SET paused=1 WHERE indexer={0:d} AND indexer_id={1:d}".format(INDEXER_TVDB, duplicate[0]['indexer_id']))
