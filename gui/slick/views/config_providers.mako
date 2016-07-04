@@ -275,7 +275,6 @@
                                     </div>
                                 % endif
 
-
                                 % if hasattr(curNzbProvider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -446,6 +445,20 @@
                                                    id="${curTorrentProvider.get_id()}_passkey"
                                                    value="${curTorrentProvider.passkey}" class="form-control input-sm input350"
                                                    autocapitalize="off"/>
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if curTorrentProvider.enable_cookies:
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Cookies')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="text" name="${curTorrentProvider.get_id()}_cookies"
+                                                   id="${curTorrentProvider.get_id()}_cookies"
+                                                   value="${curTorrentProvider.cookies}" class="form-control input-sm input350"
+                                                   autocapitalize="off" autocomplete="no"/>
                                         </div>
                                     </div>
                                 % endif
