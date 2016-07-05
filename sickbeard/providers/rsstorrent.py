@@ -51,6 +51,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.search_fallback = search_fallback
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
+        self.enable_cookies = True
         self.cookies = cookies
         self.titleTAG = titleTAG
 
