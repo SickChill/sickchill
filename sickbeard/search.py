@@ -535,7 +535,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
         # see if every episode is wanted
         if bestSeasonResult:
-            searchedSeasons = [str(x.season) for x in episodes]
+            searchedSeasons = {str(x.season) for x in episodes}
 
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
