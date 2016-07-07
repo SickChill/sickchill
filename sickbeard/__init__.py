@@ -1386,7 +1386,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                 curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
                                                                      curTorrentProvider.get_id() + '_subtitle', 0))
             if hasattr(curTorrentProvider, 'cookies'):
-                curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                curTorrentProvider.cookies = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
                                                                curTorrentProvider.get_id() + '_cookies', '', censor_log=True)
 
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
