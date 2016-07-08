@@ -21,47 +21,47 @@
 
 from __future__ import unicode_literals
 
-import os
 import io
-import ctypes
+import os
 import re
-import socket
+import ast
+import ssl
 import stat
 import time
+import ctypes
+import shutil
+import socket
 import traceback
 import urllib
-from requests.utils import urlparse
 import uuid
 import base64
 import zipfile
 import datetime
-import ast
 import operator
 import platform
-import sickbeard
-import adba
-import requests
-import certifi
 import hashlib
 import random
 from contextlib import closing
-import ssl
+from itertools import izip, cycle
+import xml.etree.ElementTree as ET
 
-from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT
-from sickbeard import db
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, pretty_file_size, episode_num
-from sickrage.helper.encoding import ek
-from sickrage.show.Show import Show
+import adba
+import certifi
+import requests
+from requests.utils import urlparse
 from cachecontrol import CacheControl
 # from httpcache import CachingHTTPAdapter
 
-from itertools import izip, cycle
+import sickbeard
+from sickbeard import logger, classes, db
+from sickbeard.common import USER_AGENT
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, pretty_file_size, episode_num
+from sickrage.helper.encoding import ek
+from sickrage.show.Show import Show
 
-import shutil
+
 import shutil_custom
 
-import xml.etree.ElementTree as ET
 
 shutil.copyfile = shutil_custom.copyfile_custom
 
@@ -1450,7 +1450,11 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(traceback.format_exc(), logger.DEBUG)
 
     except requests.exceptions.HTTPError as error:
-        logger.log(default.format(error))
+        if error.response.status_code == 404 and \
+            error.response.headers.get('X-Content-Type-Options') == 'nosniff':
+            pass
+        else:
+            logger.log(default.format(error))
     except requests.exceptions.TooManyRedirects as error:
         logger.log(default.format(error))
     except requests.exceptions.ConnectTimeout as error:
@@ -1473,8 +1477,6 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
     except requests.exceptions.MissingSchema as error:
         logger.log(default.format(error))
     except requests.exceptions.RetryError as error:
-        logger.log(default.format(error))
-    except requests.exceptions.StreamConsumedError as error:
         logger.log(default.format(error))
     except requests.exceptions.StreamConsumedError as error:
         logger.log(default.format(error))
@@ -1552,7 +1554,7 @@ def disk_usage(path):
         raise Exception("Unable to determine free space on your OS")
 
 
-def verify_freespace(src, dest, oldfile=None):
+def verify_freespace(src, dest, oldfile=None, method="copy"):
     """
     Checks if the target system has enough free space to copy or move a file.
 
@@ -1563,7 +1565,7 @@ def verify_freespace(src, dest, oldfile=None):
     """
 
     if not isinstance(oldfile, list):
-        oldfile = [oldfile]
+        oldfile = [oldfile] if oldfile else []
 
     logger.log("Trying to determine free space on destination drive", logger.DEBUG)
 
@@ -1571,12 +1573,22 @@ def verify_freespace(src, dest, oldfile=None):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
+    # shortcut: if we are moving the file and the destination == src dir,
+    # then by definition there is enough space
+    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
+        logger.log("Process method is 'move' and src and destination are on the same device, skipping free space check", logger.INFO)
+        return True
+
     try:
-        diskfree = disk_usage(dest)
+        diskfree = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
+        return True
+
+    # Lets also do this for symlink and hardlink
+    if method.endswith('link') and diskfree > 1024**2:
         return True
 
     neededspace = ek(os.path.getsize, src)

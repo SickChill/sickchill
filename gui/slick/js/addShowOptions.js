@@ -17,7 +17,7 @@ $(document).ready(function () {
             subtitles: $('#subtitles').prop('checked'),
             anime: $('#anime').prop('checked'),
             scene: $('#scene').prop('checked'),
-            defaultStatusAfter: $('#statusSelectAfter').val(),
+            defaultStatusAfter: $('#statusSelectAfter').val()
         });
 
         $(this).attr('disabled', true);

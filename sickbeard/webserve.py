@@ -28,29 +28,27 @@ import traceback
 import gettext
 import ast
 
-from requests.compat import urljoin
-import markdown2
-
 try:
     import json
 except ImportError:
     import simplejson as json
 
+from requests.compat import urljoin
+import markdown2
+
 from mako.template import Template as MakoTemplate
 from mako.lookup import TemplateLookup
 from mako.exceptions import RichTraceback
+from mako.runtime import UNDEFINED
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-
-from concurrent.futures import ThreadPoolExecutor
 from tornado.process import cpu_count
-
 from tornado.concurrent import run_on_executor
 
-from mako.runtime import UNDEFINED
+from concurrent.futures import ThreadPoolExecutor
 
 from dateutil import tz
 from unrar2 import RarFile
@@ -59,27 +57,23 @@ from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 
 import sickbeard
-from sickbeard import config, sab
-from sickbeard import clients
-from sickbeard import notifiers, processTV
-from sickbeard import ui
-from sickbeard import logger, helpers, classes, db
-from sickbeard import search_queue
-from sickbeard import naming
-from sickbeard import subtitles as subtitle_module
-from sickbeard import network_timezones
+from sickbeard import config, sab, clients, notifiers, processTV, ui, logger, \
+    helpers, classes, db, search_queue, naming, subtitles as subtitle_module, \
+    network_timezones
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+from sickbeard.common import Quality, Overview, statusStrings, cpu_presets, \
+    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
-from sickbeard.webapi import function_mapper
 
+from sickbeard.webapi import function_mapper
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.helpers import get_showname_from_indexer
+from sickbeard.versionChecker import CheckVersion
 
 from sickrage.helper import setup_github, episode_num, try_int, sanitize_filename
 from sickrage.helper.encoding import ek, ss
@@ -96,30 +90,17 @@ from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
-from sickbeard.versionChecker import CheckVersion
-
-mako_lookup = None
-mako_cache = None
-mako_path = None
-
+mako_lookup = {}
 
 def get_lookup():
-    global mako_lookup  # pylint: disable=global-statement
-    global mako_cache  # pylint: disable=global-statement
-    global mako_path  # pylint: disable=global-statement
-
-    if not mako_path:
-        mako_path = ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")
-    if not mako_cache:
-        mako_cache = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
-    if not mako_lookup:
-        use_strict = sickbeard.BRANCH and sickbeard.BRANCH != 'master'
-        mako_lookup = TemplateLookup(directories=[mako_path],
-                                     module_directory=mako_cache,
-                                     #  format_exceptions=True,
-                                     strict_undefined=use_strict,
-                                     filesystem_checks=True)
-    return mako_lookup
+    mako_lookup['mako'] = mako_lookup.get('mako') or TemplateLookup(
+        directories=[ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")],
+        module_directory=ek(os.path.join, sickbeard.CACHE_DIR, 'mako'),
+        strict_undefined=sickbeard.BRANCH and sickbeard.BRANCH != 'master',
+        #  format_exceptions=True,
+        filesystem_checks=True
+    )
+    return mako_lookup.get('mako')
 
 
 class PageTemplate(MakoTemplate):
@@ -1283,25 +1264,25 @@ class Home(WebRoot):
         show_message = ''
 
         if sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
-            show_message = 'This show is in the process of being downloaded - the info below is incomplete.'
+            show_message = _('This show is in the process of being downloaded - the info below is incomplete.')
 
         elif sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):
-            show_message = 'The information on this page is in the process of being updated.'
+            show_message = _('The information on this page is in the process of being updated.')
 
         elif sickbeard.showQueueScheduler.action.isBeingRefreshed(show_obj):
-            show_message = 'The episodes below are currently being refreshed from disk'
+            show_message = _('The episodes below are currently being refreshed from disk')
 
         elif sickbeard.showQueueScheduler.action.isBeingSubtitled(show_obj):
-            show_message = 'Currently downloading subtitles for this show'
+            show_message = _('Currently downloading subtitles for this show')
 
         elif sickbeard.showQueueScheduler.action.isInRefreshQueue(show_obj):
-            show_message = 'This show is queued to be refreshed.'
+            show_message = _('This show is queued to be refreshed.')
 
         elif sickbeard.showQueueScheduler.action.isInUpdateQueue(show_obj):
-            show_message = 'This show is queued and awaiting an update.'
+            show_message = _('This show is queued and awaiting an update.')
 
         elif sickbeard.showQueueScheduler.action.isInSubtitleQueue(show_obj):
-            show_message = 'This show is queued and awaiting subtitles download.'
+            show_message = _('This show is queued and awaiting subtitles download.')
 
         if not sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):
@@ -1416,7 +1397,7 @@ class Home(WebRoot):
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
                  exceptions_list=None, flatten_folders=None, paused=None, directCall=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, rls_ignore_words=None, rls_require_words=None,
+                 subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
                  defaultEpStatus=None, quality_preset=None):
 
@@ -1478,6 +1459,7 @@ class Home(WebRoot):
         sports = config.checkbox_to_value(sports)
         anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
+        subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
         if indexerLang and indexerLang in sickbeard.indexerApi(show_obj.indexer).indexer().config['valid_languages']:
             indexer_lang = indexerLang
@@ -1557,6 +1539,7 @@ class Home(WebRoot):
             show_obj.anime = anime
             show_obj.sports = sports
             show_obj.subtitles = subtitles
+            show_obj.subtitles_sr_metadata = subtitles_sr_metadata
             show_obj.air_by_date = air_by_date
             show_obj.default_ep_status = int(defaultEpStatus)
 
@@ -2767,8 +2750,8 @@ class HomeAddShows(Home):
 
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    quality_preset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
+                   subtitles_sr_metadata=None, fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None,
+                   anime=None, scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2856,6 +2839,7 @@ class HomeAddShows(Home):
         anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
+        subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -2874,8 +2858,8 @@ class HomeAddShows(Home):
 
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    flatten_folders, indexerLang, subtitles, anime,
-                                                    scene, None, blacklist, whitelist, int(defaultStatusAfter))
+                                                    flatten_folders, indexerLang, subtitles, subtitles_sr_metadata,
+                                                    anime, scene, None, blacklist, whitelist, int(defaultStatusAfter))
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
         return finishAddShow()
@@ -4203,7 +4187,7 @@ class ConfigPostProcessing(Config):
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None, unpack=None,
                            move_associated_files=None, sync_files=None,
-                           postpone_if_sync_files=None, postpone_if_no_subs=None,
+                           postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
                            create_missing_show_dirs=None, add_shows_wo_dir=None,
                            extra_scripts=None, nfo_rename=None,
@@ -4243,12 +4227,7 @@ class ConfigPostProcessing(Config):
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.SYNC_FILES = sync_files
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
-        sickbeard.POSTPONE_IF_NO_SUBS = config.checkbox_to_value(postpone_if_no_subs)
-        # If 'postpone if no subs' is enabled, we must have SRT in allowed extensions list
-        if sickbeard.POSTPONE_IF_NO_SUBS:
-            allowed_extensions += ',srt'
-            # Auto PP must be disabled because FINDSUBTITLE thread that calls manual PP (like nzbtomedia)
-            sickbeard.PROCESS_AUTOMATICALLY = 0
+
         sickbeard.ALLOWED_EXTENSIONS = ','.join({x.strip() for x in allowed_extensions.split(',') if x.strip()})
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
@@ -4822,6 +4801,12 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.subtitle = 0
 
+            if curTorrentProvider.enable_cookies:
+                try:
+                    curTorrentProvider.cookies = str(kwargs['{id}_cookies'.format(id=curTorrentProvider.get_id())]).strip()
+                except Exception:
+                    pass  # I don't want to configure a default value here, as it can also be configured intially as a custom rss torrent provider
+
         for curNzbProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
                                prov.provider_type == GenericProvider.NZB]:
 
@@ -5346,27 +5331,27 @@ class ErrorLogs(WebRoot):
         t = PageTemplate(rh=self, filename="viewlogs.mako")
 
         logNameFilters = {
-            '<NONE>': u'&lt;No Filter&gt;',
-            'DAILYSEARCHER': u'Daily Searcher',
-            'BACKLOG': u'Backlog',
-            'SHOWUPDATER': u'Show Updater',
-            'CHECKVERSION': u'Check Version',
-            'SHOWQUEUE': u'Show Queue',
-            'SEARCHQUEUE': u'Search Queue (All)',
-            'SEARCHQUEUE-DAILY-SEARCH': u'Search Queue (Daily Searcher)',
-            'SEARCHQUEUE-BACKLOG': u'Search Queue (Backlog)',
-            'SEARCHQUEUE-MANUAL': u'Search Queue (Manual)',
-            'SEARCHQUEUE-RETRY': u'Search Queue (Retry/Failed)',
-            'SEARCHQUEUE-RSS': u'Search Queue (RSS)',
-            'FINDPROPERS': u'Find Propers',
-            'POSTPROCESSER': u'Postprocesser',
-            'FINDSUBTITLES': u'Find Subtitles',
-            'TRAKTCHECKER': u'Trakt Checker',
-            'EVENT': u'Event',
-            'ERROR': u'Error',
-            'TORNADO': u'Tornado',
-            'Thread': u'Thread',
-            'MAIN': u'Main',
+            '<NONE>': _(u'&lt;No Filter&gt;'),
+            'DAILYSEARCHER': _(u'Daily Searcher'),
+            'BACKLOG': _(u'Backlog'),
+            'SHOWUPDATER': _(u'Show Updater'),
+            'CHECKVERSION': _(u'Check Version'),
+            'SHOWQUEUE': _(u'Show Queue'),
+            'SEARCHQUEUE': _(u'Search Queue (All)'),
+            'SEARCHQUEUE-DAILY-SEARCH': _(u'Search Queue (Daily Searcher)'),
+            'SEARCHQUEUE-BACKLOG': _(u'Search Queue (Backlog)'),
+            'SEARCHQUEUE-MANUAL': _(u'Search Queue (Manual)'),
+            'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
+            'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
+            'FINDPROPERS': _(u'Find Propers'),
+            'POSTPROCESSER': _(u'Postprocesser'),
+            'FINDSUBTITLES': _(u'Find Subtitles'),
+            'TRAKTCHECKER': _(u'Trakt Checker'),
+            'EVENT': _(u'Event'),
+            'ERROR': _(u'Error'),
+            'TORNADO': _(u'Tornado'),
+            'Thread': _(u'Thread'),
+            'MAIN': _(u'Main'),
         }
 
         if logFilter not in logNameFilters:
