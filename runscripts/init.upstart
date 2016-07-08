@@ -30,7 +30,5 @@ script
         echo "/etc/default/sickrage not found using default settings.";
     fi
 
-    [ -z $SR_HOME ] && echo "I can't start SickRage if I don't know where it is"
-
-    exec ${SR_HOME}/SickBeard.py -q --nolaunch --datadir=${SR_DATA-SR_HOME} ${SR_OPTS-}
+    exec ${SR_HOME-/opt/sickrage}/SickBeard.py -q --nolaunch --datadir=${SR_DATA-/opt/sickrage} ${SR_OPTS-}
 end script
