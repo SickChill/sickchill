@@ -64,6 +64,7 @@ fi
 # if they do, remove the whole directory and recreate
 if [[ ! -d /opt/sickrage ]]; then
     mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
+    su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
 else
     whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
     choice=$?
