@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover
         import xml.etree.cElementTree as etree
     except ImportError:
         import xml.etree.ElementTree as etree
+import re
 from requests import Session
 from zipfile import ZipFile, is_zipfile
 
@@ -260,7 +261,7 @@ class ItaSAProvider(Provider):
         params = {
             'apikey': self.apikey,
             'show_id': show_id,
-            'q': 'Stagione %d' % season,
+            'q': 'Stagione %%%d' % season,
             'version': sub_format
         }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
@@ -268,13 +269,21 @@ class ItaSAProvider(Provider):
         root = etree.fromstring(r.content)
 
         if int(root.find('data/count').text) == 0:
-            logger.warning('Subtitles for season not found')
-            return []
+            logger.warning('Subtitles for season not found, try with rip suffix')
+
+            params['version'] = sub_format + 'rip'
+            r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
+            r.raise_for_status()
+            root = etree.fromstring(r.content)
+            if int(root.find('data/count').text) == 0:
+                logger.warning('Subtitles for season not found')
+                return []
 
         subs = []
         # Looking for subtitles in first page
+        season_re = re.compile('.*?stagione 0*?%d.*' % season)
         for subtitle in root.findall('data/subtitles/subtitle'):
-            if 'stagione %d' % season in subtitle.find('name').text.lower():
+            if season_re.match(subtitle.find('name').text.lower()):
                 logger.debug('Found season zip id %d - %r - %r',
                              int(subtitle.find('id').text),
                              subtitle.find('name').text,
@@ -360,18 +369,26 @@ class ItaSAProvider(Provider):
         root = etree.fromstring(r.content)
 
         if int(root.find('data/count').text) == 0:
-            logger.warning('Subtitles not found')
-            # If no subtitle are found for single episode try to download all season zip
-            subs = self._get_season_subtitles(show_id, season, sub_format)
-            if subs:
-                for subtitle in subs:
-                    subtitle.format = video_format
-                    subtitle.year = year
-                    subtitle.tvdb_id = tvdb_id
+            logger.warning('Subtitles not found,  try with rip suffix')
 
-                return subs
-            else:
-                return []
+            params['version'] = sub_format + 'rip'
+            r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
+            r.raise_for_status()
+            root = etree.fromstring(r.content)
+            if int(root.find('data/count').text) == 0:
+                logger.warning('Subtitles not found, go season mode')
+
+                # If no subtitle are found for single episode try to download all season zip
+                subs = self._get_season_subtitles(show_id, season, sub_format)
+                if subs:
+                    for subtitle in subs:
+                        subtitle.format = video_format
+                        subtitle.year = year
+                        subtitle.tvdb_id = tvdb_id
+
+                    return subs
+                else:
+                    return []
 
         # Looking for subtitles in first page
         for subtitle in root.findall('data/subtitles/subtitle'):

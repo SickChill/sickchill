@@ -4807,6 +4807,12 @@ class ConfigProviders(Config):
                 except Exception:
                     curTorrentProvider.subtitle = 0
 
+            if curTorrentProvider.enable_cookies:
+                try:
+                    curTorrentProvider.cookies = str(kwargs['{id}_cookies'.format(id=curTorrentProvider.get_id())]).strip()
+                except Exception:
+                    pass  # I don't want to configure a default value here, as it can also be configured intially as a custom rss torrent provider
+
         for curNzbProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
                                prov.provider_type == GenericProvider.NZB]:
 
