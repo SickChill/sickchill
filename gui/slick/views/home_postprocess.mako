@@ -4,7 +4,7 @@
 %>
 <%block name="content">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             % if not header is UNDEFINED:
                 <h1 class="header">${header}</h1>
             % else:
@@ -14,7 +14,7 @@
             <form name="processForm" method="post" action="processEpisode" style="line-height: 40px;">
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right">${_('Enter the folder containing the episode')}</b>
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Enter the folder containing the episode')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <input type="text" name="proc_dir" id="episodeDir" class="form-control form-control-inline input-sm" autocapitalize="off" title="directory"/>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right">${_('Process Method to be used')}</b>
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Process Method to be used')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" title="process method">
@@ -35,7 +35,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right">${_('Force already Post Processed Dir/Files')}</b>
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Force already Post Processed Dir/Files')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <input id="force" name="force" type="checkbox">
@@ -43,7 +43,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right">${_('Mark Dir/Files as priority download')}</b>
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Mark Dir/Files as priority download')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <input id="is_priority" name="is_priority" type="checkbox">
@@ -52,7 +52,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right">${_('Delete files and folders')}</b>
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Delete files and folders')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <input id="delete_on" name="delete_on" type="checkbox">
