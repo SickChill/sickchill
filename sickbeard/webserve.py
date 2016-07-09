@@ -459,12 +459,8 @@ class WebRoot(WebHandler):
         return self.redirect("/schedule/")
 
     def setScheduleSort(self, sort):
-        if sort not in ('date', 'network', 'show'):
+        if sort not in ('date', 'network', 'show') or sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
-
-        if sickbeard.COMING_EPS_LAYOUT == 'calendar':
-            sort \
-                = 'date'
 
         sickbeard.COMING_EPS_SORT = sort
 
@@ -476,34 +472,6 @@ class WebRoot(WebHandler):
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
         today = datetime.datetime.now().replace(tzinfo=network_timezones.sb_timezone)
 
-        submenu = [
-            {
-                'title': _('Sort by:'),
-                'path': {
-                    'Date': 'setScheduleSort/?sort=date',
-                    'Show': 'setScheduleSort/?sort=show',
-                    'Network': 'setScheduleSort/?sort=network',
-                }
-            },
-            {
-                'title': _('Layout:'),
-                'path': {
-                    _('Banner'): 'setScheduleLayout/?layout=banner',
-                    _('Poster'): 'setScheduleLayout/?layout=poster',
-                    _('List'): 'setScheduleLayout/?layout=list',
-                    _('Calendar'): 'setScheduleLayout/?layout=calendar',
-                }
-            },
-            {
-                'title': _('View Paused:'),
-                'path': {
-                    _('Hide'): 'toggleScheduleDisplayPaused'
-                } if sickbeard.COMING_EPS_DISPLAY_PAUSED else {
-                    _('Show'): 'toggleScheduleDisplayPaused'
-                }
-            },
-        ]
-
         # Allow local overriding of layout parameter
         if layout and layout in ('poster', 'banner', 'list', 'calendar'):
             layout = layout
@@ -511,7 +479,7 @@ class WebRoot(WebHandler):
             layout = sickbeard.COMING_EPS_LAYOUT
 
         t = PageTemplate(rh=self, filename='schedule.mako')
-        return t.render(submenu=submenu, next_week=next_week1, today=today, results=results, layout=layout,
+        return t.render(next_week=next_week1, today=today, results=results, layout=layout,
                         title=_('Schedule'), header=_('Schedule'), topmenu='schedule',
                         controller="schedule", action="index")
 

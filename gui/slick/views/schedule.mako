@@ -287,9 +287,9 @@
                     cur_ep_airdate = cur_result['localtime'].date()
 
                     if run_time:
-                                cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
+                        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
                     else:
-                                cur_ep_enddate = cur_result['localtime']
+                        cur_ep_enddate = cur_result['localtime']
                 %>
                 % if sickbeard.COMING_EPS_SORT == 'network':
                     <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
