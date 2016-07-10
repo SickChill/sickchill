@@ -715,7 +715,7 @@ td.tvShow a:hover {
 }
 
 #popover-target input {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .popover {
@@ -1017,10 +1017,6 @@ ul.tags li a {
     white-space: nowrap;
     display: inline-block;
     margin: 7px 2px;
-}
-
-#checkboxControls input[type="checkbox"] {
-    vertical-align: -2px;
 }
 
 .unaired {
@@ -1588,7 +1584,7 @@ config*.mako
 }
 
 #config input[type=checkbox] ~ label {
-    padding-top: 3px;
+    padding-top: 4px;
 }
 
 .config-group-divider {
