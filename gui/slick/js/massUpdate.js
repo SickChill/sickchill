@@ -8,7 +8,7 @@ $(document).ready(function(){
 
         if(editArr.length === 0) { return; }
 
-        var form = $(
+        $(
             "<form method='post' action='/manage/massEdit'>" +
                 "<input type='hidden' name='toEdit' value='" + editArr.join('|') + "'/>" +
             "</form>"
