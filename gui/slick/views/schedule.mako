@@ -333,7 +333,6 @@
                     % endif
 
                     % if cur_ep_airdate == today.date() and not today_header:
-                    <div>
                         <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
                             <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
                     <% today_header = True %>
@@ -449,7 +448,6 @@
                     </div>
                     <!-- end ${cur_result['show_name']} //-->
                 % endfor
-            </div>
                 <!-- end non list view //-->
             </div>
         % endif
