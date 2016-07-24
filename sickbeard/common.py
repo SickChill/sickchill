@@ -353,10 +353,10 @@ class Quality(object):
                     result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
                 # HDTV
                 elif ep.avc and ep.tv == 'hd':
-                    if not all([ep.vres == 1080, ep.raw, ep.avc_non_free]):
-                        result = Quality.FULLHDTV if full_res else Quality.HDTV
-                    else:
-                        result = Quality.RAWHDTV
+                    result = Quality.FULLHDTV if full_res else Quality.HDTV #1080 HDTV h264
+                # MPEG2 encoded
+                elif all([ep.vres == 1080, ep.tv == 'hd', ep.mpeg]):
+                    result = Quality.RAWHDTV
                 elif all([ep.vres == 720, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
             elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
