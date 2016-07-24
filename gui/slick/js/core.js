@@ -2220,6 +2220,7 @@ var SICKRAGE = {
             $('#srRoot').ajaxEpSearch({'colorRow': true});
 
             $('#srRoot').ajaxEpSubtitlesSearch();
+            $('#srRoot').ajaxRetrySubtitlesSearch();
 
             $('#seasonJump').on('change', function(){
                 var id = $('#seasonJump option:selected').val();
