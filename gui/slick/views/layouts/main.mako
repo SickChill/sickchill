@@ -82,6 +82,7 @@
 
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${srRoot}/css/font-awesome.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
@@ -116,13 +117,13 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/home/"><i class="menu-icon-home"></i>&nbsp;${_('Show List')}</a></li>
-                                    <li><a href="${srRoot}/addShows/"><i class="menu-icon-addshow"></i>&nbsp;${_('Add Shows')}</a></li>
-                                    <li><a href="${srRoot}/home/postprocess/"><i class="menu-icon-postprocess"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
+                                    <li><a href="${srRoot}/home/"><i class="fa fa-home"></i>&nbsp;${_('Show List')}</a></li>
+                                    <li><a href="${srRoot}/addShows/"><i class="fa fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
+                                    <li><a href="${srRoot}/home/postprocess/"><i class="fa fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
                                     % if sickbeard.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
                                         % for recentShow in sickbeard.SHOWS_RECENT:
-                                            <li><a href="${srRoot}/home/displayShow?show=${recentShow['indexerid']}"><i class="menu-icon-addshow"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                            <li><a href="${srRoot}/home/displayShow?show=${recentShow['indexerid']}"><i class="fa fa-television"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
                                         % endfor
                                     % endif
                                 </ul>
@@ -142,10 +143,10 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/manage/"><i class="menu-icon-manage"></i>&nbsp;${_('Mass Update')}</a></li>
-                                    <li><a href="${srRoot}/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;${_('Backlog Overview')}</a></li>
-                                    <li><a href="${srRoot}/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;${_('Manage Searches')}</a></li>
-                                    <li><a href="${srRoot}/manage/episodeStatuses/"><i class="menu-icon-manage2"></i>&nbsp;${_('Episode Status Management')}</a></li>
+                                    <li><a href="${srRoot}/manage/"><i class="fa fa-pencil"></i>&nbsp;${_('Mass Update')}</a></li>
+                                    <li><a href="${srRoot}/manage/backlogOverview/"><i class="fa fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
+                                    <li><a href="${srRoot}/manage/manageSearches/"><i class="fa fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
+                                    <li><a href="${srRoot}/manage/episodeStatuses/"><i class="fa fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
                                     % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
                                         <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
                                     % endif
@@ -156,13 +157,13 @@
                                         <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                                     % endif
                                     % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-                                        <li><a href="${srRoot}/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;${_('Manage Torrents')}</a></li>
+                                        <li><a href="${srRoot}/manage/manageTorrents/"><i class="fa fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
                                     % endif
                                     % if sickbeard.USE_FAILED_DOWNLOADS:
-                                        <li><a href="${srRoot}/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;${_('Failed Downloads')}</a></li>
+                                        <li><a href="${srRoot}/manage/failedDownloads/"><i class="fa fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
                                     % endif
                                     % if sickbeard.USE_SUBTITLES:
-                                        <li><a href="${srRoot}/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
+                                        <li><a href="${srRoot}/manage/subtitleMissed/"><i class="fa fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                                     % endif
                                 </ul>
                                 <div style="clear:both;"></div>
@@ -173,15 +174,15 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/config/"><i class="menu-icon-help"></i>&nbsp;${_('Help &amp; Info')}</a></li>
-                                    <li><a href="${srRoot}/config/general/"><i class="menu-icon-config"></i>&nbsp;${_('General')}</a></li>
-                                    <li><a href="${srRoot}/config/backuprestore/"><i class="menu-icon-backup"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
-                                    <li><a href="${srRoot}/config/search/"><i class="menu-icon-manage-searches"></i>&nbsp;${_('Search Settings')}</a></li>
-                                    <li><a href="${srRoot}/config/providers/"><i class="menu-icon-provider"></i>&nbsp;${_('Search Providers')}</a></li>
-                                    <li><a href="${srRoot}/config/subtitles/"><i class="menu-icon-backlog"></i>&nbsp;${_('Subtitles Settings')}</a></li>
-                                    <li><a href="${srRoot}/config/postProcessing/"><i class="menu-icon-postprocess"></i>&nbsp;${_('Post Processing')}</a></li>
-                                    <li><a href="${srRoot}/config/notifications/"><i class="menu-icon-notification"></i>&nbsp;${_('Notifications')}</a></li>
-                                    <li><a href="${srRoot}/config/anime/"><i class="menu-icon-anime"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li><a href="${srRoot}/config/"><i class="fa fa-question"></i>&nbsp;${_('Help &amp; Info')}</a></li>
+                                    <li><a href="${srRoot}/config/general/"><i class="fa fa-cog"></i>&nbsp;${_('General')}</a></li>
+                                    <li><a href="${srRoot}/config/backuprestore/"><i class="fa fa-floppy-o"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
+                                    <li><a href="${srRoot}/config/search/"><i class="fa fa-search"></i>&nbsp;${_('Search Settings')}</a></li>
+                                    <li><a href="${srRoot}/config/providers/"><i class="fa fa-plug"></i>&nbsp;${_('Search Providers')}</a></li>
+                                    <li><a href="${srRoot}/config/subtitles/"><i class="fa fa-language"></i>&nbsp;${_('Subtitles Settings')}</a></li>
+                                    <li><a href="${srRoot}/config/postProcessing/"><i class="fa fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
+                                    <li><a href="${srRoot}/config/notifications/"><i class="fa fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
+                                    <li><a href="${srRoot}/config/anime/"><i class="fa fa-eye"></i>&nbsp;${_('Anime')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -210,27 +211,27 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/news/"><i class="menu-icon-news"></i>&nbsp;${_('News')}${newsBadge}</a></li>
-                                    <li><a href="${srRoot}/IRC/"><i class="menu-icon-irc"></i>&nbsp;${_('IRC')}</a></li>
-                                    <li><a href="${srRoot}/changes/"><i class="menu-icon-changelog"></i>&nbsp;${_('Changelog')}</a></li>
-                                    <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="menu-icon-support"></i>&nbsp;${_('Support SickRage')}</a></li>
+                                    <li><a href="${srRoot}/news/"><i class="fa fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
+                                    <li><a href="${srRoot}/IRC/"><i class="fa fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
+                                    <li><a href="${srRoot}/changes/"><i class="fa fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
+                                    <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
-                                        <li><a href="${srRoot}/errorlogs/"><i class="menu-icon-error"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
+                                        <li><a href="${srRoot}/errorlogs/"><i class="fa fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                     %endif
                                     %if numWarnings:
-                                        <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="menu-icon-viewlog-errors"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
+                                        <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="fa fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
                                     %endif
-                                    <li><a href="${srRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;${_('View Log')}</a></li>
+                                    <li><a href="${srRoot}/errorlogs/viewlog/"><i class="fa fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="menu-icon-update"></i>&nbsp;${_('Check For Updates')}</a></li>
-                                    <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;${_('Shutdown')}</a></li>
+                                    <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="fa fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="fa fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
+                                    <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="fa fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin is not True:
-                                        <li><a href="${srRoot}/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;${_('Logout')}</a></li>
+                                        <li><a href="${srRoot}/logout" class="confirm logout"><i class="fa fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${srRoot}/home/status/"><i class="menu-icon-info"></i>&nbsp;${_('Server Status')}</a></li>
+                                    <li><a href="${srRoot}/home/status/"><i class="fa fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -240,25 +241,27 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div id="SubMenuContainer" class="row">
+            <div id="sub-menu-container" class="row">
                 % if submenu:
-                    <div id="SubMenu" class="hidden-print">
+                    <div id="sub-menu" class="hidden-print">
                         <% first = True %>
                         % for menuItem in reversed(submenu):
                             % if 'requires' not in menuItem or menuItem['requires']:
-                                <% icon_class = '' if 'icon' not in menuItem else ' ' + menuItem['icon'] %>
+                                <% icon_class = '' if 'icon' not in menuItem else menuItem['icon'] %>
                                 % if type(menuItem['path']) == dict:
-                                ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
-                                <%
-                                    first = False
-                                    inner_first = True
-                                %>
-                                % for cur_link in menuItem['path']:
-                                ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
-                                <% inner_first = False %>
-                                % endfor
+                                    ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
+                                    <%
+                                        first = False
+                                        inner_first = True
+                                    %>
+                                    % for cur_link in menuItem['path']:
+                                        ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                                        <% inner_first = False %>
+                                    % endfor
                                 % else:
-                                    <a href="${srRoot}/${menuItem['path']}" class="btn${('', ' confirm ' + menuItem.get('class', ''))['confirm' in menuItem]}">${('', '<span class="pull-left ' + icon_class + '"></span> ')[bool(icon_class)]}${menuItem['title']}</a>
+                                    <a href="${srRoot}/${menuItem['path']}" class="btn${('', ' confirm ' + menuItem.get('class', ''))['confirm' in menuItem]}">
+                                        ${('', '<span class="pull-left"><i class="' + icon_class + '"></i>' + menuItem['title'] + '</span> ')[bool(icon_class)]}
+                                    </a>
                                 <% first = False %>
                                 % endif
                             % endif
@@ -293,24 +296,29 @@
                             ep_total = stats['episodes']['total']
                             ep_percentage = '' if ep_total == 0 else '(<span class="footerhighlight">%s%%</span>)' % re.sub(r'(\d+)(\.\d)\d+', r'\1\2', str((float(ep_downloaded)/float(ep_total))*100))
                         %>
-                        <span class="footerhighlight">${stats['shows']['total']}</span> ${_('Shows')} (<span class="footerhighlight">${stats['shows']['active']}</span> ${_('Active')})
-                        | <span class="footerhighlight">${ep_downloaded}</span>
-
-                        % if ep_snatched:
-                            <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="${_('View overview of snatched episodes')}">+${ep_snatched}</a></span> ${_('Snatched')}
-                        % endif
-
-                        &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> ${_('Episodes Downloaded')} ${ep_percentage}
-                        | ${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
-                        | ${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
+                        <div>
+                            <span class="footer-item">
+                                <span class="footerhighlight">${stats['shows']['total']}</span> ${_('Shows')} (<span class="footerhighlight">${stats['shows']['active']}</span> ${_('Active')})
+                            </span>&nbsp;|
+                            <span class="footer-item">
+                                <span class="footerhighlight">${ep_downloaded}</span>
+                                % if ep_snatched:
+                                    <span class="footerhighlight"><a href="${srRoot}/manage/episodeStatuses?whichStatus=2" title="${_('View overview of snatched episodes')}">+${ep_snatched}</a></span> ${_('Snatched')}
+                                % endif
+                                /&nbsp;<span class="footerhighlight">${ep_total}</span>&nbsp;${_('Episodes Downloaded')}&nbsp;${ep_percentage}
+                            </span>&nbsp;|
+                             <span class="footer-item">${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span></span>&nbsp;|
+                             <span class="footer-item">${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span></span>
+                        </div>
 
                         <div>
                             % if has_resource_module:
-                            ${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span> |
+                                <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span></span> |
                             % endif
-                            ${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span> / Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span> |
-                            ${_('Branch')}: <span class="footerhighlight">${sickbeard.BRANCH}</span> |
-                            ${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span>
+                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span></span> |
+                            <span class="footer-item">Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span></span> |
+                            <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${sickbeard.BRANCH}</span></span> |
+                            <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span></span>
                         </div>
                     </div>
                 </div>
