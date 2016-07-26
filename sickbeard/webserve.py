@@ -1692,26 +1692,6 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
 
-    def retrySearchSubtitles(self, show, season, episode, lang):
-        # retrieve the episode object and fail if we can't get one
-        # ep_obj, error_msg = self._getEpisode(show, season, episode)
-        # if error_msg or not ep_obj:
-        #     return json.dumps({'result': 'failure', 'errorMessage': error_msg})
-        #
-        # # make a queue item for it and put it on the queue
-        # ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj], bool(int(downCurQuality)))
-        # sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)
-        #
-        # if not ep_queue_item.started and ep_queue_item.success is None:
-        #     return json.dumps(
-        #         {'result': 'success'})  # I Actually want to call it queued, because the search hasnt been started yet!
-        # if ep_queue_item.started and ep_queue_item.success is None:
-        #     return json.dumps({'result': 'success'})
-        # else:
-        #     return json.dumps({'result': 'failure'})
-
-        return json.dumps({'result': 'success'})
-
     def updateKODI(self, show=None):
         showName = None
         show_obj = None
@@ -2109,12 +2089,35 @@ class Home(WebRoot):
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _('New subtitles downloaded: {new_subtitle_languages}').format(new_subtitle_languages=', '.join(new_languages))
+            status = _('New subtitles downloaded: {new_subtitle_languages}').format(
+                new_subtitle_languages=', '.join(new_languages))
         else:
             status = _('No subtitles downloaded')
 
         ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
         return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
+
+    def retrySearchSubtitles(self, show, season, episode, lang):
+        # retrieve the episode object and fail if we can't get one
+        ep_obj, error_msg = self._getEpisode(show, season, episode)
+        if error_msg or not ep_obj:
+            return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+
+        try:
+            new_subtitles = ep_obj.download_subtitles(force_lang=lang)
+        except Exception as ex:
+            return json.dumps({'result': 'failure', 'errorMessage': ex.message})
+
+        if new_subtitles:
+            new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
+            status = _('New subtitles downloaded: {new_subtitle_languages}').format(
+                new_subtitle_languages=', '.join(new_languages))
+        else:
+            status = _('No subtitles downloaded')
+
+        ui.notifications.message(ep_obj.show.name, status)
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):

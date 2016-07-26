@@ -1396,7 +1396,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if save_subtitles:
             self.saveToDB()
 
-    def download_subtitles(self, force=False):
+    def download_subtitles(self, force=False, force_lang=None):
         force_ = force
         if not ek(os.path.isfile, self.location):
             logger.log("{id}: Episode file doesn't exist, can't download subtitles for {ep}".format
@@ -1404,7 +1404,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        logger.DEBUG)
             return
 
-        if not subtitles.needs_subtitles(self.subtitles):
+        if not subtitles.needs_subtitles(self.subtitles, force_lang):
             logger.log('Episode already has all needed subtitles, skipping episode {ep} of show {show}'.format
                        (ep=episode_num(self.season, self.episode), show=self.show.name), logger.DEBUG)
             return
@@ -1413,7 +1413,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                    (show=self.show.name, ep=episode_num(self.season, self.episode),
                     location=os.path.basename(self.location)), logger.DEBUG)
 
-        self.subtitles, new_subtitles = subtitles.download_subtitles(self)
+        self.subtitles, new_subtitles = subtitles.download_subtitles(self, force_lang)
 
         self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
