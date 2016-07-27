@@ -13,11 +13,7 @@
                     subtitlesTd.empty();
                     $.each(subtitles,function(index, language){
                         if (language !== "") {
-                            if (index !== subtitles.length - 1) {
-                                subtitlesTd.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
-                            } else {
-                                subtitlesTd.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
-                            }
+                            subtitlesTd.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
                         }
                     });
                     // don't allow other searches

@@ -21,7 +21,7 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-sickrage"></i>&nbsp;SickRage Info:
+                    <i class="icon16-config-sickrage"></i>&nbsp;&nbsp;SickRage Info:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <div class="row">
@@ -60,7 +60,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-python"></i>&nbsp;${_('Python Version')}:
+                    <i class="icon16-config-python"></i>&nbsp;&nbsp;${_('Python Version')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sys.version[:120]}
@@ -69,7 +69,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-ssl"></i>&nbsp;${_('SSL Version')}:
+                    <i class="icon16-config-ssl"></i>&nbsp;&nbsp;${_('SSL Version')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${ssl_version}
@@ -78,7 +78,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-os"></i>&nbsp;${_('OS')}:
+                    <i class="icon16-config-os"></i>&nbsp;&nbsp;${_('OS')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${platform.platform()}
@@ -87,7 +87,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-locale"></i>&nbsp;${_('Locale')}:
+                    <i class="icon16-config-locale"></i>&nbsp;&nbsp;${_('Locale')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${'.'.join([str(loc) for loc in sr_locale])}
@@ -98,7 +98,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-user"></i>&nbsp;${_('User')}:
+                    <i class="icon16-config-user"></i>&nbsp;&nbsp;${_('User')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sr_user}
@@ -107,7 +107,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-dir"></i>&nbsp;${_('Program Folder')}:
+                    <i class="icon16-config-dir"></i>&nbsp;&nbsp;${_('Program Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sickbeard.PROG_DIR}
@@ -116,7 +116,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-config"></i>&nbsp;${_('Config File')}:
+                    <i class="icon16-config-config"></i>&nbsp;&nbsp;${_('Config File')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sickbeard.CONFIG_FILE}
@@ -125,7 +125,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-db"></i>&nbsp;${_('Database File')}:
+                    <i class="icon16-config-db"></i>&nbsp;&nbsp;${_('Database File')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${db.dbFilename()}
@@ -134,7 +134,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-cache"></i>&nbsp;${_('Cache Folder')}:
+                    <i class="icon16-config-cache"></i>&nbsp;&nbsp;${_('Cache Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sickbeard.CACHE_DIR}
@@ -143,7 +143,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-log"></i>&nbsp;${_('Log Folder')}:
+                    <i class="icon16-config-log"></i>&nbsp;&nbsp;${_('Log Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     ${sickbeard.LOG_DIR}
@@ -153,7 +153,7 @@
             % if sickbeard.MY_ARGS:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                        <i class="icon16-config-arguments"></i>&nbsp;${_('Arguments')}:
+                        <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Arguments')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                         ${sickbeard.MY_ARGS}
@@ -164,7 +164,7 @@
             % if sickbeard.WEB_ROOT:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                        <i class="icon16-config-folder"></i>&nbsp;${_('Web Root')}:
+                        <i class="icon16-config-folder"></i>&nbsp;&nbsp;${_('Web Root')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                         ${sickbeard.WEB_ROOT}
@@ -176,7 +176,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-web"></i>&nbsp;${_('Website')}:
+                    <i class="icon16-config-web"></i>&nbsp;&nbsp;${_('Website')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <a href="${anon_url('http://sickrage.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
@@ -187,7 +187,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-wiki"></i>&nbsp;${_('Wiki')}:
+                    <i class="icon16-config-wiki"></i>&nbsp;&nbsp;${_('Wiki')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <a href="${anon_url('https://github.com/SickRage/SickRage/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
@@ -198,7 +198,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-github"></i>&nbsp;${_('Source')}:
+                    <i class="icon16-config-github"></i>&nbsp;&nbsp;${_('Source')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <a href="${anon_url('https://github.com/SickRage/SickRage/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
@@ -209,7 +209,7 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-mirc"></i>&nbsp;${_('IRC Chat')}:
+                    <i class="icon16-config-mirc"></i>&nbsp;&nbsp;${_('IRC Chat')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <a href="irc://irc.freenode.net/#sickrage-issues" rel="noreferrer">

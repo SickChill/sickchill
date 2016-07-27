@@ -60,27 +60,14 @@
                     <h1 class="title" id="scene_exception_${show.indexerid}">${show.name}</h1>
                     % if seasonResults:
                         ##There is a special/season_0?##
-                        % if int(seasonResults[-1]["season"]) == 0:
-                            <% season_special = 1 %>
-                        % else:
-                            <% season_special = 0 %>
-                        % endif
+                        <% season_special = (int(seasonResults[-1]["season"]) == 0) %>
                         % if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
                             <% lastSeason = seasonResults.pop(-1) %>
                         % endif
 
-                        <span class="h2footer displayspecials pull-right">
-                            % if season_special:
-                                ${_('Display Specials')}:
-                                <a class="inner" href="${srRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">
-                                    ${(_('Show'), _('Hide'))[bool(sickbeard.DISPLAY_SHOW_SPECIALS)]}
-                                </a>
-                            % endif
-                        </span>
-
                         <div class="h2footer pull-right">
                             <span>
-                                % if (len(seasonResults) > 14):
+                                % if (len(seasonResults) > 5):
                                     <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;" title="Season">
                                         <option value="jump">${_('Jump to Season')}</option>
                                         % for seasonNum in seasonResults:
