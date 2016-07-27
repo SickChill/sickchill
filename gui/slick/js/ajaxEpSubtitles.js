@@ -54,10 +54,22 @@
     $.fn.ajaxRetrySubtitlesSearch = function(options){
         options = $.extend({}, $.ajaxRetrySubtitlesSearch.defaults, options);
 
-        function downloadSubtitles(){
-            var imageName, imageResult, htmlContent;
+	var selectedEpisode;
 
-            var parent = selectedEpisode.parent();
+	function enableLink(el) {
+	    el.on('click.disabled', false);
+	    el.prop('enableClick', '1');
+	    el.fadeTo("fast", 1);
+	}
+	
+	function disableLink(el) {
+	    el.off('click.disabled');
+	    el.prop('enableClick', '0');
+	    el.fadeTo("fast", 0.5);
+	}
+
+        function downloadSubtitles(){
+            var imageName, imageResult;
 
             // Create var for anchor
             var link = selectedEpisode;
