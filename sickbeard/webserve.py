@@ -2063,12 +2063,35 @@ class Home(WebRoot):
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _('New subtitles downloaded: {new_subtitle_languages}').format(new_subtitle_languages=', '.join(new_languages))
+            status = _('New subtitles downloaded: {new_subtitle_languages}').format(
+                new_subtitle_languages=', '.join(new_languages))
         else:
             status = _('No subtitles downloaded')
 
         ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
         return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
+
+    def retrySearchSubtitles(self, show, season, episode, lang):
+        # retrieve the episode object and fail if we can't get one
+        ep_obj, error_msg = self._getEpisode(show, season, episode)
+        if error_msg or not ep_obj:
+            return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+
+        try:
+            new_subtitles = ep_obj.download_subtitles(force_lang=lang)
+        except Exception as ex:
+            return json.dumps({'result': 'failure', 'errorMessage': ex.message})
+
+        if new_subtitles:
+            new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
+            status = _('New subtitles downloaded: {new_subtitle_languages}').format(
+                new_subtitle_languages=', '.join(new_languages))
+        else:
+            status = _('No subtitles downloaded')
+
+        ui.notifications.message(ep_obj.show.name, status)
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
