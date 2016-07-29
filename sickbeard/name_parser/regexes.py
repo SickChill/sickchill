@@ -118,8 +118,8 @@ normal_regexes = [
      r'''
      (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # aaf-sn
      (?!264)                                                            # don't count x264
-     (?P<season_num>s\d{1,2})                                           # s03
-     (?P<ep_num>e\d{2})(?:-(1080p|720p))?$                              # e09
+     s(?P<season_num>\d{1,2})                                           # s03
+     e(?P<ep_num>\d{2})(?:-(1080p|720p))?$                              # e09
      '''),
     ('stupid',
      # tpz-abc102
