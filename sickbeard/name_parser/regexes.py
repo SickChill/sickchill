@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -113,13 +112,22 @@ normal_regexes = [
      ((?P<extra_info>.+?)((?<![. _-])
      (?<!WEB)-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$
      '''),
+    ('stupid_with_denotative',
+     # aaf-sns03e09
+     # flhd-supernaturals07e02-1080p
+     r'''
+     (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # aaf-sn
+     (?!264)                                                            # don't count x264
+     (?P<season_num>s\d{1,2})                                           # s03
+     (?P<ep_num>e\d{2})(?:-(1080p|720p))$                               # e09
+     '''),
     ('stupid',
      # tpz-abc102
      r'''
-     (?P<release_group>.+?)(?<!WEB)-\w+?[\. ]?   # tpz-abc
-     (?!264)                                     # don't count x264
-     (?P<season_num>\d{1,2})                     # 1
-     (?P<ep_num>\d{2})$                          # 02
+     (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # tpz-abc
+     (?!264)                                                            # don't count x264
+     (?P<season_num>\d{1,2})                                            # 1
+     (?P<ep_num>\d{2})$                                                 # 02
      '''),
     ('verbose',
      # Show Name Season 1 Episode 2 Ep Name
