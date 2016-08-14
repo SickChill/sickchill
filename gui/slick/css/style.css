@@ -3605,3 +3605,7 @@ input.tablesorter-filter.disabled {
 .horizontal-scroll {
     overflow-x: auto;
 }
+
+#episodeDir {
+    width: 100%;
+}
