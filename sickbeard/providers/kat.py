@@ -42,7 +42,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.url = "https://kat.cr"
+        self.url = "https://kickass.cd"
         self.urls = {"search": urljoin(self.url, "%s/")}
 
         self.custom_url = None
