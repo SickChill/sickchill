@@ -9,7 +9,7 @@ $(document).ready(function(){
         if(editArr.length === 0) { return; }
 
         $(
-            "<form method='post' action='/manage/massEdit'>" +
+            "<form method='post' action='" + srRoot + "/manage/massEdit'>" +
                 "<input type='hidden' name='toEdit' value='" + editArr.join('|') + "'/>" +
             "</form>"
         ).submit();
