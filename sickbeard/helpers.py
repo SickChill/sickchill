@@ -446,9 +446,8 @@ def moveAndSymlinkFile(srcFile, destFile):
     """
 
     try:
-        ek(shutil.move, srcFile, destFile)
-        fixSetGroupID(destFile)
-        ek(symlink, destFile, srcFile)
+        moveFile(srcFile, destFile)
+        symlink(destFile, srcFile)
     except Exception as error:
         logger.log("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead".format
                    (srcFile, destFile, error), logger.WARNING)
