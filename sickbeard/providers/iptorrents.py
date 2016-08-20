@@ -119,7 +119,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrent_table = html.find('table', class_='torrents')
+                        torrent_table = html.find('table', id='torrents')
                         torrents = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
