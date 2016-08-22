@@ -101,7 +101,7 @@ elif [[ $distro = debian ]]; then
         systemctl -q enable sickrage && systemctl -q start sickrage
     else
         cp /opt/sickrage/runscripts/init.debian /etc/init.d/sickrage
-        chown root:root /etc/init.d/sickrage && chmod 644 /etc/init.d/sickrage
+        chown root:root /etc/init.d/sickrage && chmod 644 /etc/init.d/sickrage && chmod +x /etc/init.d/sickrage
         update-rc.d sickrage defaults && service sickrage start
     fi
 fi
