@@ -44,6 +44,7 @@ class imdbPopular(object):
             if image_div:
                 image = image_div.find("img")
                 show['image_url_large'] = self.change_size(image['loadlate'], 3)
+                show['imdb_tt'] = image['data-tconst']
                 show['image_path'] = ek(posixpath.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
                 self.cache_image(show['image_url_large'])
 
@@ -55,7 +56,6 @@ class imdbPopular(object):
                     if a_tag:
                         show['name'] = a_tag.get_text(strip=True)
                         show['imdb_url'] = "http://www.imdb.com" + a_tag["href"]
-                        show['imdb_tt'] = show['imdb_url'][-10:][0:9]
                         show['year'] = header.find("span", {"class": "lister-item-year"}).contents[0].split(" ")[0][1:].strip("-")
 
                 imdb_rating = row.find("div", {"class": "ratings-imdb-rating"})
