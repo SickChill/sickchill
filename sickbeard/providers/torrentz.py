@@ -45,9 +45,9 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.minleech = None
 
         # URLs
-        self.url = 'https://torrentz.eu/'
+        self.url = 'https://torrentz2.eu/'
         self.urls = {
-            'verified': 'https://torrentz.eu/feed_verified',
+            'verified': 'https://torrentz2.eu/feed_verified',
             'feed': 'https://torrentz.eu/feed',
             'base': self.url,
         }
