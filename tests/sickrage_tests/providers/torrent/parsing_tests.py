@@ -58,6 +58,7 @@ test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
     'NyaaTorrents': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+    'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
 }
 
 magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
