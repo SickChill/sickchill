@@ -559,6 +559,12 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testSlack').on('click', function() {
+                $.get(srRoot + '/home/testSlack', function(data) {
+                    $('#testSlack-result').html(data);
+                });
+            });
+
             $('#settingsNMJ').on('click', function() {
                 var nmj = {};
                 if (!$('#nmj_host').val()) {
