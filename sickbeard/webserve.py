@@ -861,6 +861,14 @@ class Home(WebRoot):
             return _("Error sending tweet")
 
     @staticmethod
+    def testSlack():
+        result = notifiers.slack_notifier.test_notify()
+        if result:
+            return _("Slack message successful")
+        else:
+            return _("Slack message failed")
+
+    @staticmethod
     def testKODI(host=None, username=None, password=None):
 
         host = config.clean_hosts(host)
@@ -4925,7 +4933,7 @@ class ConfigNotifications(Config):
             use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
-            email_show=None):
+            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_webhook=None):
 
         results = []
 
@@ -5004,6 +5012,11 @@ class ConfigNotifications(Config):
         sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
         sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
         sickbeard.TWITTER_DMTO = twitter_dmto
+
+        sickbeard.USE_SLACK = config.checkbox_to_value(use_slack)
+        sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
+        sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
+        sickbeard.SLACK_WEBHOOK = slack_webhook
 
         sickbeard.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
         sickbeard.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)

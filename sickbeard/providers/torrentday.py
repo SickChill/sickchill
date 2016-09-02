@@ -56,8 +56,8 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.categories = {
             'Season': {'c14': 1},
-            'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
-            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}
+            'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1},
+            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1, 'c14': 1}
         }
 
         self.enable_cookies = True
