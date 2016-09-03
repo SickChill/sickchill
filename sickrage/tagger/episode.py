@@ -25,7 +25,6 @@ class EpisodeTags(object):
             u'dvd': tags.dvd,
             u'sat': tags.sat,
             u'tv': tags.tv,
-            u'pre_custom_hdtv': tags.pre_custom_hdtv,
             u'avc': tags.avc,
             u'mpeg': tags.mpeg,
             u'xvid': tags.xvid,
@@ -166,12 +165,6 @@ class EpisodeTags(object):
         attr = 'tv'
         match = self._get_match_obj(attr)
         return '' if not match else (match.group(1) or match.group(2)).lower()
-
-    @property
-    def pre_custom_hdtv(self):
-        attr = 'pre_custom_hdtv'
-        match = self._get_match_obj(attr)
-        return '' if not match else match.group()
 
     # CODECS
     @property
