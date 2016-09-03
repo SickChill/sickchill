@@ -99,6 +99,10 @@ inc_top.mako
     background: #FEF1EC url("../css/lib/images/ui-bg_glass_95_fef1ec_1x400.png") 50% 50% repeat-x;
 }
 
+.ui-icon {
+    float: left;
+}
+
 .ui-icon,
 .ui-widget-content .ui-icon {
     background-image: url("../css/lib/images/ui-icons_222222_256x240.png");
