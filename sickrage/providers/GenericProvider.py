@@ -36,6 +36,7 @@ from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickrage.helper.common import replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
+from requests.utils import add_dict_to_cookiejar
 
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
@@ -47,7 +48,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         self.anime_only = False
         self.bt_cache_urls = [
-            'http://torcache.net/torrent/{torrent_hash}.torrent',
+            #'http://torcache.net/torrent/{torrent_hash}.torrent',
+            'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
             'http://btdig.com/torrent/{torrent_hash}.torrent',
             # 'http://torrage.com/torrent/{torrent_hash}.torrent',
@@ -69,6 +71,11 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.supports_backlog = True
         self.url = ''
         self.urls = {}
+
+        # Use and configure the attribute enable_cookies to show or hide the cookies input field per provider
+        self.enable_cookies = False
+        self.cookies = ''
+        self.rss_cookies = ''
 
         shuffle(self.bt_cache_urls)
 
@@ -486,3 +493,19 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     def _verify_download(self, file_name=None):  # pylint: disable=unused-argument,no-self-use
         return True
+
+    def add_cookies_from_ui(self):
+        """
+        Adds the cookies configured from UI to the providers requests session
+        :return: A tuple with the the (success result, and a descriptive message in str)
+        """
+
+        # This is the generic attribute used to manually add cookies for provider authentication
+        if self.enable_cookies and self.cookies:
+            cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
+            if not cookie_validator.match(self.cookies):
+                return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
+            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+            return True, 'torrent cookie'
+
+        return False, 'No Cookies added from ui for provider: {0}'.format(self.name)

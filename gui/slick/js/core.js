@@ -559,6 +559,12 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testSlack').on('click', function() {
+                $.get(srRoot + '/home/testSlack', function(data) {
+                    $('#testSlack-result').html(data);
+                });
+            });
+
             $('#settingsNMJ').on('click', function() {
                 var nmj = {};
                 if (!$('#nmj_host').val()) {
@@ -2220,6 +2226,7 @@ var SICKRAGE = {
             $('#srRoot').ajaxEpSearch({'colorRow': true});
 
             $('#srRoot').ajaxEpSubtitlesSearch();
+            $('#srRoot').ajaxRetrySubtitlesSearch();
 
             $('#seasonJump').on('change', function(){
                 var id = $('#seasonJump option:selected').val();

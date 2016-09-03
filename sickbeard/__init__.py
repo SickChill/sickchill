@@ -468,6 +468,11 @@ SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
 SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
+USE_SLACK = False
+SLACK_NOTIFY_SNATCH = None
+SLACK_NOTIFY_DOWNLOAD = None
+SLACK_WEBHOOK = None
+
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -663,7 +668,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -690,6 +695,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
+        CheckSection(CFG, 'Slack')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -1141,6 +1147,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'SynologyNotifier', 'synologynotifier_notify_onsubtitledownload', 0))
 
+        USE_SLACK = bool(check_setting_int(CFG, 'Slack', 'use_slack', 0 ))
+        SLACK_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Slack', 'slack_notify_snatch', 0))
+        SLACK_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Slack', 'slack_notify_download', 0))
+        SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook', '')
+
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
         TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
         TRAKT_ACCESS_TOKEN = check_setting_str(CFG, 'Trakt', 'trakt_access_token', '', censor_log=True)
@@ -1385,6 +1396,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if hasattr(curTorrentProvider, 'subtitle'):
                 curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
                                                                      curTorrentProvider.get_id() + '_subtitle', 0))
+            if hasattr(curTorrentProvider, 'cookies'):
+                curTorrentProvider.cookies = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_cookies', '', censor_log=True)
 
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                                curProvider.provider_type == GenericProvider.NZB]:
@@ -1734,6 +1748,9 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
         if hasattr(curTorrentProvider, 'subtitle'):
             new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_subtitle'] = int(
                 curTorrentProvider.subtitle)
+        if hasattr(curTorrentProvider, 'cookies'):
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_cookies'] = curTorrentProvider.cookies
 
     for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                            curProvider.provider_type == GenericProvider.NZB]:
@@ -2096,6 +2113,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'synologynotifier_notify_onsnatch': int(SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH),
             'synologynotifier_notify_ondownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD),
             'synologynotifier_notify_onsubtitledownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)
+        },
+
+        'Slack': {
+            'use_slack': int(USE_SLACK),
+            'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
+            'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
+            'slack_webhook': SLACK_WEBHOOK
         },
 
         'Trakt': {

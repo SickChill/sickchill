@@ -22,7 +22,8 @@ import sickbeard
 
 from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
     synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
-    nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, join
+    nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, \
+    slack, join
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -50,6 +51,7 @@ join_notifier = join.Notifier()
 twitter_notifier = tweet.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
+slack_notifier = slack.Notifier()
 
 notifiers = [
     libnotify_notifier,  # Libnotify notifier goes first because it doesn't involve blocking on network activity.
@@ -72,6 +74,7 @@ notifiers = [
     twitter_notifier,
     trakt_notifier,
     email_notifier,
+    slack_notifier,
     join_notifier,
 ]
 
