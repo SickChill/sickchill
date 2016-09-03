@@ -211,6 +211,8 @@ class newpctProvider(TorrentProvider):
             title += '-NEWPCTVO'
         else:
             title += '-NEWPCT'
+            
+        title = title.encode('cp1252', errors='replace');
 
         return title.strip()
 
