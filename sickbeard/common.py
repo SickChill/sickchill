@@ -342,6 +342,8 @@ class Quality(object):
                 result = Quality.UHD_4K_TV if not full_res else Quality.UHD_8K_TV
 
         # Is it HD?
+        elif ep.pre_custom_hdtv:
+            result = Quality.HDTV
         elif ep.vres in [1080, 720]:
             if ep.scan == 'p':
                 # BluRay
