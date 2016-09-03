@@ -66,8 +66,6 @@
                             %>
                             % for curShow in myShowList:
                             <%
-                                curEp = curShow.nextaired
-
                                 disabled = sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow)
                                 curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 

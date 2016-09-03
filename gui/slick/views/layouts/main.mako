@@ -24,12 +24,13 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-        <!-- These values come from css/dark.css and css/light.css -->
-        % if sickbeard.THEME_NAME == "dark":
-            <meta name="theme-color" content="#15528F">
-        % else:
-            <meta name="theme-color" content="#333333">
-        % endif
+        <% themeColors = { "dark": "#15528F", "light": "#333333" } %>
+        <!-- Android -->
+        <meta name="theme-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <!-- Windows Phone -->
+        <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <!-- iOS -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
 
         <title>SickRage - ${title}</title>
 
@@ -86,7 +87,9 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
 
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        %if sickbeard.THEME_NAME != "light":
+            <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+        %endif
 
         % if srLogin:
             <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>

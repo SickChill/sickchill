@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-09 00:24-0700\n"
-"PO-Revision-Date: 2016-05-09 03:25-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:40-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -89,7 +89,7 @@ msgstr "Военен"
 msgid "Biography"
 msgstr "Биографичен"
 
-#: gui/slick/views/config_general.mako:72 gui/slick/views/layouts/main.mako:134
+#: gui/slick/views/config_general.mako:72 gui/slick/views/layouts/main.mako:137
 #: sickbeard/__init__.py:73 sickbeard/webserve.py:3705
 msgid "History"
 msgstr "История"
@@ -102,7 +102,7 @@ msgstr "Музикален"
 msgid "Western"
 msgstr "Уестърн"
 
-#: gui/slick/views/config_general.mako:73 gui/slick/views/layouts/main.mako:210
+#: gui/slick/views/config_general.mako:73 gui/slick/views/layouts/main.mako:213
 #: sickbeard/__init__.py:74 sickbeard/webserve.py:2240
 msgid "News"
 msgstr "Новини"
@@ -184,9 +184,9 @@ msgstr "Extend (Limited, E-prefixed)"
 msgid "Downloaded"
 msgstr "Изтеглен(и)"
 
-#: gui/slick/views/displayShow.mako:319 gui/slick/views/history.mako:117
+#: gui/slick/views/displayShow.mako:321 gui/slick/views/history.mako:117
 #: gui/slick/views/home.mako:149 gui/slick/views/home.mako:327
-#: gui/slick/views/layouts/main.mako:297 sickbeard/common.py:217
+#: gui/slick/views/layouts/main.mako:300 sickbeard/common.py:217
 #: sickbeard/common.py:600
 msgid "Snatched"
 msgstr "Намерен"
@@ -218,11 +218,11 @@ msgstr "Неизвестно"
 msgid "Unaired"
 msgstr "Неизлъчен"
 
-#: gui/slick/views/displayShow.mako:318 sickbeard/common.py:602
+#: gui/slick/views/displayShow.mako:320 sickbeard/common.py:602
 msgid "Skipped"
 msgstr "Пропуснат"
 
-#: gui/slick/views/displayShow.mako:315
+#: gui/slick/views/displayShow.mako:317
 #: gui/slick/views/manage_backlogOverview.mako:26
 #: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:604
 msgid "Wanted"
@@ -284,7 +284,7 @@ msgstr "Опа"
 msgid "Wrong API key used"
 msgstr "Използван е грешен API ключ"
 
-#: gui/slick/views/login.mako:30 sickbeard/webserve.py:287
+#: gui/slick/views/login.mako:34 sickbeard/webserve.py:287
 msgid "Login"
 msgstr "Вход"
 
@@ -326,17 +326,17 @@ msgstr "Календар"
 msgid "View Paused:"
 msgstr "Преглед на изчакващите:"
 
-#: gui/slick/views/displayShow.mako:74 sickbeard/webserve.py:500
+#: gui/slick/views/displayShow.mako:76 sickbeard/webserve.py:500
 msgid "Hide"
 msgstr "Скрий"
 
-#: gui/slick/views/displayShow.mako:74 gui/slick/views/home.mako:246
+#: gui/slick/views/displayShow.mako:76 gui/slick/views/home.mako:246
 #: gui/slick/views/home.mako:257 gui/slick/views/schedule.mako:55
 #: gui/slick/views/schedule.mako:92 sickbeard/webserve.py:502
 msgid "Show"
 msgstr "Предаване"
 
-#: gui/slick/views/config_general.mako:71 gui/slick/views/layouts/main.mako:130
+#: gui/slick/views/config_general.mako:71 gui/slick/views/layouts/main.mako:133
 #: sickbeard/webserve.py:515
 msgid "Schedule"
 msgstr "График"
@@ -377,7 +377,7 @@ msgstr "Епизодът не може да бъде открит"
 msgid "Home"
 msgstr "Начало"
 
-#: gui/slick/views/layouts/main.mako:116 sickbeard/webserve.py:700
+#: gui/slick/views/layouts/main.mako:119 sickbeard/webserve.py:700
 msgid "Show List"
 msgstr "Списък с предавания"
 
@@ -581,8 +581,8 @@ msgstr "Успешно испращане на уведомление към Pus
 msgid "Error sending Pushbullet notification"
 msgstr "Грешка при изпращане на Pushover уведомяване"
 
-#: gui/slick/views/displayShow.mako:435 gui/slick/views/displayShow.mako:456
-#: gui/slick/views/displayShow.mako:476 gui/slick/views/home.mako:252
+#: gui/slick/views/displayShow.mako:436 gui/slick/views/displayShow.mako:457
+#: gui/slick/views/displayShow.mako:477 gui/slick/views/home.mako:252
 #: gui/slick/views/manage.mako:50 sickbeard/webserve.py:1148
 msgid "Status"
 msgstr "Статус"
@@ -633,6 +633,34 @@ msgstr "Сериалът не е в списъка със сериали"
 #: sickbeard/webserve.py:1920
 msgid "Edit"
 msgstr "Редактирай"
+
+#: sickbeard/webserve.py:1267
+msgid "This show is in the process of being downloaded - the info below is incomplete."
+msgstr ""
+
+#: sickbeard/webserve.py:1270
+msgid "The information on this page is in the process of being updated."
+msgstr ""
+
+#: sickbeard/webserve.py:1273
+msgid "The episodes below are currently being refreshed from disk"
+msgstr ""
+
+#: sickbeard/webserve.py:1276
+msgid "Currently downloading subtitles for this show"
+msgstr ""
+
+#: sickbeard/webserve.py:1279
+msgid "This show is queued to be refreshed."
+msgstr ""
+
+#: sickbeard/webserve.py:1282
+msgid "This show is queued and awaiting an update."
+msgstr ""
+
+#: sickbeard/webserve.py:1285
+msgid "This show is queued and awaiting subtitles download."
+msgstr ""
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -792,8 +820,8 @@ msgstr "Невалиден статус"
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
 msgstr "Backlog беше стартиран автоматично за следните сезони на <b>{show_name}</b>"
 
-#: gui/slick/views/displayShow.mako:85 gui/slick/views/displayShow.mako:89
-#: gui/slick/views/displayShow.mako:410 sickbeard/webserve.py:1854
+#: gui/slick/views/displayShow.mako:87 gui/slick/views/displayShow.mako:91
+#: gui/slick/views/displayShow.mako:411 sickbeard/webserve.py:1854
 #: sickbeard/webserve.py:1873
 msgid "Season"
 msgstr "Сезон"
@@ -826,7 +854,7 @@ msgstr "Изтеглени са нови субтитри: {new_subtitle_languag
 msgid "No subtitles downloaded"
 msgstr "Няма свалени субтитри"
 
-#: gui/slick/views/config_general.mako:74 gui/slick/views/layouts/main.mako:211
+#: gui/slick/views/config_general.mako:74 gui/slick/views/layouts/main.mako:214
 #: sickbeard/webserve.py:2218
 msgid "IRC"
 msgstr "IRC"
@@ -843,16 +871,16 @@ msgstr "Възникна проблем в свързването към github,
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
 msgstr "Не може да зареди файла с промени от източника (repo). [Кликнете тук за CHANGES.md] ({changes_url})"
 
-#: gui/slick/views/layouts/main.mako:212 sickbeard/webserve.py:2258
+#: gui/slick/views/layouts/main.mako:215 sickbeard/webserve.py:2258
 msgid "Changelog"
 msgstr "Списък с промени"
 
-#: gui/slick/views/layouts/main.mako:179 sickbeard/webserve.py:2268
+#: gui/slick/views/layouts/main.mako:182 sickbeard/webserve.py:2268
 #: sickbeard/webserve.py:3736 sickbeard/webserve.py:4176
 msgid "Post Processing"
 msgstr "Обработка"
 
-#: gui/slick/views/layouts/main.mako:117 sickbeard/webserve.py:2308
+#: gui/slick/views/layouts/main.mako:120 sickbeard/webserve.py:2308
 msgid "Add Shows"
 msgstr "Добави предаване"
 
@@ -876,11 +904,11 @@ msgstr "Популярни сериали"
 msgid "Most Anticipated Shows"
 msgstr "Най-очакваните сериали"
 
-#: gui/slick/views/addShows_trendingShows.mako:63 sickbeard/webserve.py:2522
+#: gui/slick/views/addShows_trendingShows.mako:59 sickbeard/webserve.py:2522
 msgid "New Shows"
 msgstr "Нови сериали"
 
-#: gui/slick/views/addShows_trendingShows.mako:64 sickbeard/webserve.py:2524
+#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2524
 msgid "Season Premieres"
 msgstr "Премиери на сезони"
 
@@ -932,7 +960,7 @@ msgstr "Довабени сериали"
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr "Автоматично бяха добавени {num_shows} от налични файлове с мета-информация"
 
-#: gui/slick/views/layouts/main.mako:142 sickbeard/webserve.py:2955
+#: gui/slick/views/layouts/main.mako:145 sickbeard/webserve.py:2955
 msgid "Mass Update"
 msgstr "Цялостна актуализация"
 
@@ -945,7 +973,7 @@ msgstr "Преглед на епизодите"
 msgid "Missing Subtitles"
 msgstr "Липсващи субтитри"
 
-#: gui/slick/views/layouts/main.mako:143 sickbeard/webserve.py:3213
+#: gui/slick/views/layouts/main.mako:146 sickbeard/webserve.py:3213
 #: sickbeard/webserve.py:3214
 msgid "Backlog Overview"
 msgstr "Преглед на Backlog"
@@ -978,8 +1006,8 @@ msgstr "Опреснявания"
 msgid "Renames"
 msgstr "Преименувания"
 
-#: gui/slick/views/displayShow.mako:269 gui/slick/views/displayShow.mako:434
-#: gui/slick/views/displayShow.mako:455 gui/slick/views/displayShow.mako:475
+#: gui/slick/views/displayShow.mako:271 gui/slick/views/displayShow.mako:435
+#: gui/slick/views/displayShow.mako:456 gui/slick/views/displayShow.mako:476
 #: gui/slick/views/editShow.mako:121 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:264 sickbeard/webserve.py:3525
 #: sickbeard/webserve.py:5120
@@ -1018,15 +1046,15 @@ msgstr "DSM настройки"
 msgid "Security"
 msgstr "Сигурност"
 
-#: gui/slick/views/layouts/main.mako:156 sickbeard/webserve.py:3561
+#: gui/slick/views/layouts/main.mako:159 sickbeard/webserve.py:3561
 msgid "Manage Torrents"
 msgstr "Управление на торенти"
 
-#: gui/slick/views/layouts/main.mako:159 sickbeard/webserve.py:3582
+#: gui/slick/views/layouts/main.mako:162 sickbeard/webserve.py:3582
 msgid "Failed Downloads"
 msgstr "Неуспешни изтегляния"
 
-#: gui/slick/views/layouts/main.mako:144 sickbeard/webserve.py:3600
+#: gui/slick/views/layouts/main.mako:147 sickbeard/webserve.py:3600
 msgid "Manage Searches"
 msgstr "Управление на търсенията"
 
@@ -1062,7 +1090,7 @@ msgstr "Историята е изчистена"
 msgid "Removed history entries older than 30 days"
 msgstr "Премахни записи в историята, които са по-стари от 30 дни"
 
-#: gui/slick/views/layouts/main.mako:174 sickbeard/webserve.py:3731
+#: gui/slick/views/layouts/main.mako:177 sickbeard/webserve.py:3731
 msgid "General"
 msgstr "Общи"
 
@@ -1070,28 +1098,28 @@ msgstr "Общи"
 msgid "Backup/Restore"
 msgstr "Архивиране/Възстановяване"
 
-#: gui/slick/views/layouts/main.mako:176 sickbeard/webserve.py:3733
+#: gui/slick/views/layouts/main.mako:179 sickbeard/webserve.py:3733
 #: sickbeard/webserve.py:4041
 msgid "Search Settings"
 msgstr "Настройки на търсенето"
 
-#: gui/slick/views/layouts/main.mako:177 sickbeard/webserve.py:3734
+#: gui/slick/views/layouts/main.mako:180 sickbeard/webserve.py:3734
 #: sickbeard/webserve.py:4375
 msgid "Search Providers"
 msgstr "Доставчици на търсене"
 
-#: gui/slick/views/layouts/main.mako:178 sickbeard/webserve.py:3735
+#: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3735
 msgid "Subtitles Settings"
 msgstr "Настройки на субтитри"
 
-#: gui/slick/views/layouts/main.mako:180 sickbeard/webserve.py:3737
+#: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3737
 #: sickbeard/webserve.py:4868
 msgid "Notifications"
 msgstr "Известия"
 
-#: gui/slick/views/displayShow.mako:290 gui/slick/views/editShow.mako:172
+#: gui/slick/views/displayShow.mako:292 gui/slick/views/editShow.mako:172
 #: gui/slick/views/home.mako:257 gui/slick/views/inc_addShowOptions.mako:72
-#: gui/slick/views/layouts/main.mako:181 gui/slick/views/manage.mako:45
+#: gui/slick/views/layouts/main.mako:184 gui/slick/views/manage.mako:45
 #: gui/slick/views/manage_massEdit.mako:204 sickbeard/webserve.py:3738
 #: sickbeard/webserve.py:5192
 msgid "Anime"
@@ -1302,6 +1330,10 @@ msgid "A mako error has occured.<br>\n"
 "            Mako errors that happen during updates may be a one time error if there were significant ui changes."
 msgstr ""
 
+#: gui/slick/views/500.mako:12
+msgid "Show/Hide Error"
+msgstr ""
+
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
 msgstr "Добавяне на нов сериал"
@@ -1361,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Показване на папки в рамките на тези директории, които не са добавени вече към SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Изпрати"
 
@@ -1377,8 +1409,8 @@ msgstr "Сериал извлечен от съществуващите мета
 msgid "All Indexers"
 msgstr "Всички източници"
 
-#: gui/slick/views/addShows_newShow.mako:59 gui/slick/views/displayShow.mako:436
-#: gui/slick/views/displayShow.mako:457 gui/slick/views/displayShow.mako:477
+#: gui/slick/views/addShows_newShow.mako:59 gui/slick/views/displayShow.mako:437
+#: gui/slick/views/displayShow.mako:458 gui/slick/views/displayShow.mako:478
 #: gui/slick/views/schedule.mako:99
 msgid "Search"
 msgstr "Търси"
@@ -1419,46 +1451,46 @@ msgid "Sort By"
 msgstr "Сортирай по"
 
 #: gui/slick/views/addShows_popularShows.mako:16
-#: gui/slick/views/addShows_trendingShows.mako:45
-#: gui/slick/views/apiBuilder.mako:142 gui/slick/views/displayShow.mako:429
-#: gui/slick/views/displayShow.mako:450 gui/slick/views/displayShow.mako:470
+#: gui/slick/views/addShows_trendingShows.mako:41
+#: gui/slick/views/apiBuilder.mako:150 gui/slick/views/displayShow.mako:430
+#: gui/slick/views/displayShow.mako:451 gui/slick/views/displayShow.mako:471
 #: gui/slick/views/home.mako:51 gui/slick/views/manage_backlogOverview.mako:92
 msgid "Name"
 msgstr "Име"
 
 #: gui/slick/views/addShows_popularShows.mako:17
-#: gui/slick/views/addShows_trendingShows.mako:46
+#: gui/slick/views/addShows_trendingShows.mako:42
 msgid "Original"
 msgstr "Произход"
 
 #: gui/slick/views/addShows_popularShows.mako:18
-#: gui/slick/views/addShows_trendingShows.mako:47
-#: gui/slick/views/displayShow.mako:133
+#: gui/slick/views/addShows_trendingShows.mako:43
+#: gui/slick/views/displayShow.mako:135
 msgid "Votes"
 msgstr "Гласове"
 
 #: gui/slick/views/addShows_popularShows.mako:19
-#: gui/slick/views/addShows_trendingShows.mako:48
+#: gui/slick/views/addShows_trendingShows.mako:44
 msgid "Rating"
 msgstr "Рейтинг"
 
 #: gui/slick/views/addShows_popularShows.mako:20
-#: gui/slick/views/addShows_trendingShows.mako:49
+#: gui/slick/views/addShows_trendingShows.mako:45
 msgid "Rating > Votes"
 msgstr "Рейтинг > Гласове"
 
 #: gui/slick/views/addShows_popularShows.mako:23
-#: gui/slick/views/addShows_trendingShows.mako:53
+#: gui/slick/views/addShows_trendingShows.mako:49
 msgid "Sort Order"
 msgstr "Ред на сортиране"
 
 #: gui/slick/views/addShows_popularShows.mako:25
-#: gui/slick/views/addShows_trendingShows.mako:55
+#: gui/slick/views/addShows_trendingShows.mako:51
 msgid "Asc"
 msgstr "Възходящо"
 
 #: gui/slick/views/addShows_popularShows.mako:26
-#: gui/slick/views/addShows_trendingShows.mako:56
+#: gui/slick/views/addShows_trendingShows.mako:52
 msgid "Desc"
 msgstr "Низходящо"
 
@@ -1470,87 +1502,87 @@ msgstr "Извличане на IMDB данни неуспешно. Дали с�
 msgid "Exception"
 msgstr "Изключение"
 
-#: gui/slick/views/addShows_trendingShows.mako:60
+#: gui/slick/views/addShows_trendingShows.mako:56
 msgid "Select Trakt List"
 msgstr "Изберете Trakt списък"
 
-#: gui/slick/views/addShows_trendingShows.mako:62
+#: gui/slick/views/addShows_trendingShows.mako:58
 msgid "Most Anticipated"
 msgstr "Най-очакваните"
 
-#: gui/slick/views/addShows_trendingShows.mako:65
+#: gui/slick/views/addShows_trendingShows.mako:61
 msgid "Trending"
 msgstr "Тенденции"
 
-#: gui/slick/views/addShows_trendingShows.mako:66
+#: gui/slick/views/addShows_trendingShows.mako:62
 msgid "Popular"
 msgstr "Полулярни"
 
-#: gui/slick/views/addShows_trendingShows.mako:67
+#: gui/slick/views/addShows_trendingShows.mako:63
 msgid "Most Watched"
 msgstr "Най-гледани"
 
-#: gui/slick/views/addShows_trendingShows.mako:68
+#: gui/slick/views/addShows_trendingShows.mako:64
 msgid "Most Played"
 msgstr "Най-пускани"
 
-#: gui/slick/views/addShows_trendingShows.mako:69
+#: gui/slick/views/addShows_trendingShows.mako:65
 msgid "Most Collected"
 msgstr "Най-много събирани"
 
-#: gui/slick/views/addShows_trendingShows.mako:71
+#: gui/slick/views/addShows_trendingShows.mako:67
 msgid "Recommended"
 msgstr "Препоръчани"
 
-#: gui/slick/views/apiBuilder.mako:75
+#: gui/slick/views/apiBuilder.mako:86
 msgid "Toggle navigation"
 msgstr "Превключи навигация"
 
-#: gui/slick/views/apiBuilder.mako:90
+#: gui/slick/views/apiBuilder.mako:100
 msgid "Profile"
 msgstr "Профил"
 
-#: gui/slick/views/apiBuilder.mako:93
+#: gui/slick/views/apiBuilder.mako:103
 msgid "JSONP"
 msgstr "JSONP"
 
-#: gui/slick/views/apiBuilder.mako:98
+#: gui/slick/views/apiBuilder.mako:108
 msgid "Back to SickRage"
 msgstr "Обратно към SickRage"
 
-#: gui/slick/views/apiBuilder.mako:136
+#: gui/slick/views/apiBuilder.mako:144
 msgid "Parameters"
 msgstr "Параметри"
 
-#: gui/slick/views/apiBuilder.mako:143
+#: gui/slick/views/apiBuilder.mako:151
 msgid "Required"
 msgstr "Задължително"
 
-#: gui/slick/views/apiBuilder.mako:144
+#: gui/slick/views/apiBuilder.mako:152
 msgid "Description"
 msgstr "Описание"
 
-#: gui/slick/views/apiBuilder.mako:145 gui/slick/views/status.mako:212
+#: gui/slick/views/apiBuilder.mako:153 gui/slick/views/status.mako:212
 msgid "Type"
 msgstr "Тип"
 
-#: gui/slick/views/apiBuilder.mako:146
+#: gui/slick/views/apiBuilder.mako:154
 msgid "Default value"
 msgstr "Стойност по подразбиране"
 
-#: gui/slick/views/apiBuilder.mako:147
+#: gui/slick/views/apiBuilder.mako:155
 msgid "Allowed values"
 msgstr "Позволени стойности"
 
-#: gui/slick/views/apiBuilder.mako:156
+#: gui/slick/views/apiBuilder.mako:167
 msgid "Playground"
 msgstr "Playground"
 
-#: gui/slick/views/apiBuilder.mako:188
+#: gui/slick/views/apiBuilder.mako:208
 msgid "Clear"
 msgstr "Изчисти"
 
-#: gui/slick/views/apiBuilder.mako:225 gui/slick/views/apiBuilder.mako:255
+#: gui/slick/views/apiBuilder.mako:244 gui/slick/views/apiBuilder.mako:273
 #: gui/slick/views/manage_massEdit.mako:152
 #: gui/slick/views/manage_massEdit.mako:166
 #: gui/slick/views/manage_massEdit.mako:195
@@ -1561,7 +1593,7 @@ msgstr "Изчисти"
 msgid "Yes"
 msgstr "да"
 
-#: gui/slick/views/apiBuilder.mako:227 gui/slick/views/apiBuilder.mako:254
+#: gui/slick/views/apiBuilder.mako:246 gui/slick/views/apiBuilder.mako:272
 #: gui/slick/views/manage_massEdit.mako:153
 #: gui/slick/views/manage_massEdit.mako:167
 #: gui/slick/views/manage_massEdit.mako:196
@@ -1572,11 +1604,11 @@ msgstr "да"
 msgid "No"
 msgstr "Не"
 
-#: gui/slick/views/apiBuilder.mako:274
+#: gui/slick/views/apiBuilder.mako:291
 msgid "season"
 msgstr "сезон"
 
-#: gui/slick/views/apiBuilder.mako:280
+#: gui/slick/views/apiBuilder.mako:297
 msgid "episode"
 msgstr "епизод"
 
@@ -1758,7 +1790,7 @@ msgstr "Разни"
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: gui/slick/views/config_general.mako:14 gui/slick/views/config_general.mako:734
+#: gui/slick/views/config_general.mako:14 gui/slick/views/config_general.mako:742
 #: gui/slick/views/editShow.mako:256
 msgid "Advanced Settings"
 msgstr "Разширени настройки"
@@ -1791,8 +1823,8 @@ msgstr "отвори началната страница на SickRage при с
 msgid "Initial page"
 msgstr "Начална страница"
 
-#: gui/slick/views/config_general.mako:70 gui/slick/views/layouts/main.mako:112
-#: gui/slick/views/layouts/main.mako:293
+#: gui/slick/views/config_general.mako:70 gui/slick/views/layouts/main.mako:115
+#: gui/slick/views/layouts/main.mako:296
 msgid "Shows"
 msgstr "Предавания"
 
@@ -1873,8 +1905,8 @@ msgid "where the files of shows are located"
 msgstr "където се намират файловете на предавания"
 
 #: gui/slick/views/config_general.mako:241 gui/slick/views/config_general.mako:312
-#: gui/slick/views/config_general.mako:541 gui/slick/views/config_general.mako:718
-#: gui/slick/views/config_general.mako:924 gui/slick/views/config_general.mako:1070
+#: gui/slick/views/config_general.mako:549 gui/slick/views/config_general.mako:726
+#: gui/slick/views/config_general.mako:932 gui/slick/views/config_general.mako:1078
 #: gui/slick/views/config_notifications.mako:182
 #: gui/slick/views/config_notifications.mako:325
 #: gui/slick/views/config_notifications.mako:452
@@ -2004,40 +2036,40 @@ msgstr "включва и (\"The\", \"A\", \"An\") при сортиране н�
 msgid "Missed episodes range"
 msgstr "Диапазон на пропуснати епизоди"
 
-#: gui/slick/views/config_general.mako:436
+#: gui/slick/views/config_general.mako:442
 msgid "Set the range in days of the missed episodes in the Schedule page"
 msgstr "Задайте диапазона в дни на пропуснати епизоди в страницата с графика"
 
-#: gui/slick/views/config_general.mako:442
+#: gui/slick/views/config_general.mako:450
 msgid "Display fuzzy dates"
 msgstr "Показване на неясни дати"
 
-#: gui/slick/views/config_general.mako:446
+#: gui/slick/views/config_general.mako:454
 msgid "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On Tue\""
 msgstr "премести абсолютна дати в пояснения и покажете например \"посл. Четв.\", \"в Четв.\""
 
-#: gui/slick/views/config_general.mako:452
+#: gui/slick/views/config_general.mako:460
 msgid "Trim zero padding"
 msgstr "Премахни нулата"
 
-#: gui/slick/views/config_general.mako:456
+#: gui/slick/views/config_general.mako:464
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr "премахни \"0\" от показваните час от деня, и ден от месеца"
 
-#: gui/slick/views/config_general.mako:462
+#: gui/slick/views/config_general.mako:470
 msgid "Date style"
 msgstr "Стил на дата"
 
-#: gui/slick/views/config_general.mako:471
+#: gui/slick/views/config_general.mako:479
 msgid "Use System Default"
 msgstr "Настройка по подразбиране"
 
-#: gui/slick/views/config_general.mako:481
+#: gui/slick/views/config_general.mako:489
 msgid "Time style"
 msgstr "Стил на час"
 
-#: gui/slick/views/config_general.mako:495 gui/slick/views/config_general.mako:516
-#: gui/slick/views/config_general.mako:911
+#: gui/slick/views/config_general.mako:503 gui/slick/views/config_general.mako:524
+#: gui/slick/views/config_general.mako:919
 #: gui/slick/views/config_notifications.mako:823
 #: gui/slick/views/config_notifications.mako:868
 #: gui/slick/views/config_notifications.mako:943
@@ -2056,92 +2088,92 @@ msgstr "Стил на час"
 msgid "Note"
 msgstr "Забележка"
 
-#: gui/slick/views/config_general.mako:495
+#: gui/slick/views/config_general.mako:503
 msgid "seconds are only shown on the History page"
 msgstr "секундите са показват само на страницата с история"
 
-#: gui/slick/views/config_general.mako:503
+#: gui/slick/views/config_general.mako:511
 msgid "Timezone"
 msgstr "Часовата зона"
 
-#: gui/slick/views/config_general.mako:507
+#: gui/slick/views/config_general.mako:515
 msgid "Local"
 msgstr "Локално"
 
-#: gui/slick/views/config_general.mako:510 gui/slick/views/home.mako:53
+#: gui/slick/views/config_general.mako:518 gui/slick/views/home.mako:53
 #: gui/slick/views/home.mako:247 gui/slick/views/schedule.mako:54
 #: gui/slick/views/schedule.mako:95
 msgid "Network"
 msgstr "ТВ Мрежа"
 
-#: gui/slick/views/config_general.mako:513
+#: gui/slick/views/config_general.mako:521
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr "показвай на дати и часове във вашата часовата зона или оригиналната часовата зона на излъчване"
 
-#: gui/slick/views/config_general.mako:516
+#: gui/slick/views/config_general.mako:524
 msgid "Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:523
+#: gui/slick/views/config_general.mako:531
 msgid "Download url"
 msgstr "Изтегляне url"
 
-#: gui/slick/views/config_general.mako:533
+#: gui/slick/views/config_general.mako:541
 msgid "URL where the shows can be downloaded."
 msgstr "URL адрес, от където предаванията могат да бъдат изтеглени."
 
-#: gui/slick/views/config_general.mako:556
+#: gui/slick/views/config_general.mako:564
 msgid "Web Interface"
 msgstr "Уеб интерфейс"
 
-#: gui/slick/views/config_general.mako:557
+#: gui/slick/views/config_general.mako:565
 msgid "It is recommended that you enable a username and password to secure SickRage from being tampered with remotely."
 msgstr "Препоръчително е да зададете потребителско име и парола, за да се защитите SickRage от дистанционно посегателство."
 
-#: gui/slick/views/config_general.mako:558
+#: gui/slick/views/config_general.mako:566
 msgid "These options require a manual restart to take effect."
 msgstr "Тези настройки изискват ръчно рестартиране, за да влязат в сила."
 
-#: gui/slick/views/config_general.mako:566
+#: gui/slick/views/config_general.mako:574
 #: gui/slick/views/config_providers.mako:168
 #: gui/slick/views/config_providers.mako:268
 #: gui/slick/views/config_providers.mako:751
 msgid "API key"
 msgstr "API ключ"
 
-#: gui/slick/views/config_general.mako:577
+#: gui/slick/views/config_general.mako:585
 msgid "used to give 3rd party programs limited access to SickRage"
 msgstr "използван за даване на ограничен достъп до SickRage на външни програми"
 
-#: gui/slick/views/config_general.mako:582
+#: gui/slick/views/config_general.mako:590
 msgid "you can try all the features of the API"
 msgstr "Можете да тествате всички функции на API"
 
-#: gui/slick/views/config_general.mako:582
+#: gui/slick/views/config_general.mako:590
 msgid "here"
 msgstr "тук"
 
-#: gui/slick/views/config_general.mako:590
+#: gui/slick/views/config_general.mako:598
 msgid "HTTP logs"
 msgstr "HTTP logs"
 
-#: gui/slick/views/config_general.mako:594
+#: gui/slick/views/config_general.mako:602
 msgid "enable logs from the internal Tornado web server"
 msgstr "разреши log от вградения Tornado уеб сървър"
 
-#: gui/slick/views/config_general.mako:600
+#: gui/slick/views/config_general.mako:608
 msgid "HTTP username"
 msgstr "HTTP потребителско име"
 
-#: gui/slick/views/config_general.mako:610
+#: gui/slick/views/config_general.mako:618
 msgid "set blank for no login"
 msgstr "задайте празно за ограничение на влизането"
 
-#: gui/slick/views/config_general.mako:618
+#: gui/slick/views/config_general.mako:626
 msgid "HTTP password"
 msgstr "HTTP парола"
 
-#: gui/slick/views/config_general.mako:628
+#: gui/slick/views/config_general.mako:636
 #: gui/slick/views/config_notifications.mako:253
 #: gui/slick/views/config_notifications.mako:271
 #: gui/slick/views/config_notifications.mako:420
@@ -2149,228 +2181,229 @@ msgstr "HTTP парола"
 msgid "blank = no authentication"
 msgstr "празен = няма удостоверяване"
 
-#: gui/slick/views/config_general.mako:636
+#: gui/slick/views/config_general.mako:644
 msgid "HTTP port"
 msgstr "HTTP порт"
 
-#: gui/slick/views/config_general.mako:646
+#: gui/slick/views/config_general.mako:654
 msgid "web port to browse and access SickRage (default:8081)"
 msgstr "уеб порт за разглеждате и достъп до SickRage (по подразбиране:8081)"
 
-#: gui/slick/views/config_general.mako:654
+#: gui/slick/views/config_general.mako:662
 msgid "Notify on login"
 msgstr "Уведоми при вход"
 
-#: gui/slick/views/config_general.mako:658
+#: gui/slick/views/config_general.mako:666
 msgid "enable to be notified when a new login happens in webserver"
 msgstr "активирайте за да бъдете уведомявани, когато се осъществи нов вход в уеб сървъра"
 
-#: gui/slick/views/config_general.mako:664
+#: gui/slick/views/config_general.mako:672
 msgid "Listen on IPv6"
 msgstr "Слушайте на IPv6"
 
-#: gui/slick/views/config_general.mako:668
+#: gui/slick/views/config_general.mako:676
 msgid "attempt binding to any available IPv6 address"
 msgstr "опит за свързване с всеки наличен IPv6 адрес"
 
-#: gui/slick/views/config_general.mako:674
+#: gui/slick/views/config_general.mako:682
 msgid "Enable HTTPS"
 msgstr "Активирате на HTTPS"
 
-#: gui/slick/views/config_general.mako:678
+#: gui/slick/views/config_general.mako:686
 msgid "enable access to the web interface using a HTTPS address"
 msgstr "разрешаване на достъп до уеб интерфейсът с помощта на HTTPS адрес"
 
-#: gui/slick/views/config_general.mako:686
+#: gui/slick/views/config_general.mako:694
 msgid "HTTPS certificate"
 msgstr "HTTPS сертификат"
 
-#: gui/slick/views/config_general.mako:690
+#: gui/slick/views/config_general.mako:698
 msgid "file name or path to HTTPS certificate"
 msgstr "името на файла или път към HTTPS сертификат"
 
-#: gui/slick/views/config_general.mako:696
+#: gui/slick/views/config_general.mako:704
 msgid "HTTPS key"
 msgstr "HTTPS ключ"
 
-#: gui/slick/views/config_general.mako:700
+#: gui/slick/views/config_general.mako:708
 msgid "file name or path to HTTPS key"
 msgstr "името на файла или път към HTTPS ключ"
 
-#: gui/slick/views/config_general.mako:708
+#: gui/slick/views/config_general.mako:716
 msgid "Reverse proxy headers"
 msgstr "Reverse proxy headers"
 
-#: gui/slick/views/config_general.mako:712
+#: gui/slick/views/config_general.mako:720
 msgid "accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:742
+#: gui/slick/views/config_general.mako:750
 msgid "CPU throttling"
 msgstr "CPU ограничение"
 
-#: gui/slick/views/config_general.mako:756
+#: gui/slick/views/config_general.mako:764
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr "Нормален (по подразбиране). Висок е по-ниско и Нисък е по-високо натоварване на CPU"
 
-#: gui/slick/views/config_general.mako:764
+#: gui/slick/views/config_general.mako:772
 msgid "Anonymous redirect"
 msgstr "Анонимно пренасочване"
 
-#: gui/slick/views/config_general.mako:774
+#: gui/slick/views/config_general.mako:782
 msgid "backlink protection via anonymizer service, must end in \"?\""
 msgstr "backlink защита чрез услуга за анонимност, трябва да завършва с \"?\""
 
-#: gui/slick/views/config_general.mako:782
+#: gui/slick/views/config_general.mako:790
 msgid "Enable debug"
 msgstr "Активирай debug режим"
 
-#: gui/slick/views/config_general.mako:786
+#: gui/slick/views/config_general.mako:794
 msgid "Enable debug logs"
 msgstr "Разрешаване debug logs"
 
-#: gui/slick/views/config_general.mako:792
+#: gui/slick/views/config_general.mako:800
 msgid "Verify SSL Certs"
 msgstr "Проверка на SSL сертификати"
 
-#: gui/slick/views/config_general.mako:796
+#: gui/slick/views/config_general.mako:804
 msgid "Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
 msgstr "Проверка на SSL сертификати (забрани при счупена SSL инсталация (като QNAP))"
 
-#: gui/slick/views/config_general.mako:802
+#: gui/slick/views/config_general.mako:810
 msgid "No Restart"
 msgstr "Без рестартиране"
 
-#: gui/slick/views/config_general.mako:806
+#: gui/slick/views/config_general.mako:814
 msgid "Only shutdown when restarting SR. Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:812
+#: gui/slick/views/config_general.mako:820
 msgid "Encrypt passwords"
 msgstr "Шифроване на паролите"
 
-#: gui/slick/views/config_general.mako:816
+#: gui/slick/views/config_general.mako:824
 msgid "in the <code>config.ini</code> file."
 msgstr "в файла <code>config.ini</code>."
 
-#: gui/slick/views/config_general.mako:817
+#: gui/slick/views/config_general.mako:825
 #: gui/slick/views/config_subtitles.mako:187
 msgid "Warning"
 msgstr "Предупреждение"
 
-#: gui/slick/views/config_general.mako:817
+#: gui/slick/views/config_general.mako:825
 msgid "Passwords must only contain"
 msgstr "Паролите трябва да съдържат само"
 
-#: gui/slick/views/config_general.mako:818
+#: gui/slick/views/config_general.mako:826
 msgid "ASCII characters"
 msgstr "ASCII знаци"
 
-#: gui/slick/views/config_general.mako:825
+#: gui/slick/views/config_general.mako:833
 msgid "Unprotected calendar"
 msgstr "Незащитен календар"
 
-#: gui/slick/views/config_general.mako:829
+#: gui/slick/views/config_general.mako:837
 msgid "allow subscribing to the calendar without user and password. Some services like Google Calendar only work this way"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:835
+#: gui/slick/views/config_general.mako:843
 msgid "Google Calendar Icons"
 msgstr "Google Календар икони"
 
-#: gui/slick/views/config_general.mako:839
+#: gui/slick/views/config_general.mako:847
 msgid "show an icon next to exported calendar events in Google Calendar."
 msgstr "покажи икона до експортираните календарни събития в Google Календар."
 
-#: gui/slick/views/config_general.mako:845
+#: gui/slick/views/config_general.mako:853
 msgid "Proxy host"
 msgstr "Прокси хост"
 
-#: gui/slick/views/config_general.mako:855
+#: gui/slick/views/config_general.mako:863
 msgid "blank to disable or proxy to use when connecting to providers"
 msgstr "празно за деактивиране, или прокси сървър, който да се използва при свързване към доставчици"
 
-#: gui/slick/views/config_general.mako:863
+#: gui/slick/views/config_general.mako:871
 msgid "Use proxy for indexers"
 msgstr "Използвайте прокси сървър за индексиране"
 
-#: gui/slick/views/config_general.mako:867
+#: gui/slick/views/config_general.mako:875
 msgid "use proxy host for connecting to indexers (thetvdb)"
 msgstr "използвай прокси сървър за свързване към индексатор (thetvdb)"
 
-#: gui/slick/views/config_general.mako:873
+#: gui/slick/views/config_general.mako:881
 msgid "Skip Remove Detection"
 msgstr "Пропусни откриването на премахнати"
 
-#: gui/slick/views/config_general.mako:877
+#: gui/slick/views/config_general.mako:885
 msgid "Skip detection of removed files. If disabled the episode will be set to the default deleted status"
 msgstr "Пропуснете откриване на премахнатите файлове. Ако е изключено, епизода ще бъде настроен със статуса за истрит, който е по подразбиране"
 
-#: gui/slick/views/config_general.mako:883
+#: gui/slick/views/config_general.mako:891
 msgid "Default deleted episode status"
 msgstr "Статус по подразбиране на изтрити епизоди"
 
-#: gui/slick/views/config_general.mako:906
+#: gui/slick/views/config_general.mako:914
 msgid "Define the status to be set for media file that has been deleted."
 msgstr "Задаване на статус, който да бъде зададен, за вече изтрити медийни файлове."
 
-#: gui/slick/views/config_general.mako:911
+#: gui/slick/views/config_general.mako:919
 msgid "Archived option will keep previous downloaded quality"
 msgstr "Избира за архивиране ще запази прешното изтеглено качество"
 
-#: gui/slick/views/config_general.mako:916
+#: gui/slick/views/config_general.mako:924
 msgid "Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
 msgstr "Пример: Изтеглен (1080p WEB-DL) ==> Архивиран (1080p WEB-DL)"
 
-#: gui/slick/views/config_general.mako:939
+#: gui/slick/views/config_general.mako:947
 msgid "Options for github related features."
 msgstr "Опции за github свързани функции."
 
-#: gui/slick/views/config_general.mako:948
+#: gui/slick/views/config_general.mako:956
 msgid "Branch version"
 msgstr "Версия на branch"
 
-#: gui/slick/views/config_general.mako:977
+#: gui/slick/views/config_general.mako:985
 msgid "Error: No branches found."
 msgstr "Грешка: Няма намерени branch."
 
-#: gui/slick/views/config_general.mako:979
+#: gui/slick/views/config_general.mako:987
 msgid "select branch to use (restart required)"
 msgstr "избор на използван клон (branch) (изисква се рестартиране)"
 
-#: gui/slick/views/config_general.mako:988
+#: gui/slick/views/config_general.mako:996
 msgid "GitHub username"
 msgstr "GitHub потребителско име"
 
-#: gui/slick/views/config_general.mako:998 gui/slick/views/config_general.mako:1016
+#: gui/slick/views/config_general.mako:1006
+#: gui/slick/views/config_general.mako:1024
 msgid "*** (REQUIRED FOR SUBMITTING ISSUES) ***"
 msgstr "*** (ИЗИСКВА СЕ ЗА ПОДАВАНЕ НА СИГНАЛИ ЗА ПРОБЛЕМИ) ***"
 
-#: gui/slick/views/config_general.mako:1006
+#: gui/slick/views/config_general.mako:1014
 msgid "GitHub password"
 msgstr "GitHub парола"
 
-#: gui/slick/views/config_general.mako:1024
+#: gui/slick/views/config_general.mako:1032
 msgid "GitHub remote for branch"
 msgstr "GitHub дистанционен достъп до клон"
 
-#: gui/slick/views/config_general.mako:1034
+#: gui/slick/views/config_general.mako:1042
 msgid "default:origin. Access repo configured remotes (save then refresh browser)"
 msgstr "по подразбиране:origin. Настроен дистанционен достъп на repo (запазете и презаредете броузъра)"
 
-#: gui/slick/views/config_general.mako:1042
+#: gui/slick/views/config_general.mako:1050
 msgid "Git executable path"
 msgstr "Git път до изпълнимия файл"
 
-#: gui/slick/views/config_general.mako:1052
+#: gui/slick/views/config_general.mako:1060
 msgid "only needed if OS is unable to locate git from env"
 msgstr "необходим е само ако OС не може да локализира git в системата"
 
-#: gui/slick/views/config_general.mako:1060
+#: gui/slick/views/config_general.mako:1068
 msgid "Git reset"
 msgstr "Git нулиране"
 
-#: gui/slick/views/config_general.mako:1064
+#: gui/slick/views/config_general.mako:1072
 msgid "removes untracked files and performs a hard reset on git branch automatically to help resolve update issues"
 msgstr ""
 
@@ -2548,7 +2581,7 @@ msgstr "(множество адреси трябва да бъдат разде
 #: gui/slick/views/config_notifications.mako:410
 #: gui/slick/views/config_notifications.mako:2450
 #: gui/slick/views/config_providers.mako:255
-#: gui/slick/views/config_providers.mako:414 gui/slick/views/login.mako:14
+#: gui/slick/views/config_providers.mako:414 gui/slick/views/login.mako:16
 msgid "Username"
 msgstr "Потребител"
 
@@ -2561,7 +2594,7 @@ msgstr "потребителско име за вашия KODI сървър (п�
 #: gui/slick/views/config_notifications.mako:428
 #: gui/slick/views/config_notifications.mako:1089
 #: gui/slick/views/config_providers.mako:428
-#: gui/slick/views/config_subtitles.mako:328 gui/slick/views/login.mako:22
+#: gui/slick/views/config_subtitles.mako:328 gui/slick/views/login.mako:24
 msgid "Password"
 msgstr "Парола"
 
@@ -3817,6 +3850,10 @@ msgstr ""
 msgid "Name Pattern"
 msgstr "Структура на имената"
 
+#: gui/slick/views/config_postProcessing.mako:374
+msgid "Toggle Naming Legend"
+msgstr ""
+
 #: gui/slick/views/config_postProcessing.mako:379
 msgid "NOTE"
 msgstr "ЗАБЕЛЕЖКА"
@@ -3938,10 +3975,10 @@ msgstr "Дата на обработка"
 #: gui/slick/views/config_postProcessing.mako:716
 #: gui/slick/views/config_postProcessing.mako:900
 #: gui/slick/views/config_postProcessing.mako:1105
-#: gui/slick/views/displayShow.mako:179 gui/slick/views/history.mako:59
+#: gui/slick/views/displayShow.mako:181 gui/slick/views/history.mako:59
 #: gui/slick/views/history.mako:122 gui/slick/views/home.mako:248
 #: gui/slick/views/manage.mako:42 gui/slick/views/schedule.mako:97
-#: gui/slick/views/schedule.mako:437
+#: gui/slick/views/schedule.mako:426
 msgid "Quality"
 msgstr "Качество"
 
@@ -4017,6 +4054,10 @@ msgstr "Потребителски По-дата-на-излъчване"
 msgid "Name Air-By-Date shows differently than regular shows?"
 msgstr "Именувай предаванията По-дата-на-излъчване по различен начин от редовните предавания?"
 
+#: gui/slick/views/config_postProcessing.mako:645
+msgid "Toggle ABD Naming Legend"
+msgstr ""
+
 #: gui/slick/views/config_postProcessing.mako:681
 msgid "Regular Air Date"
 msgstr "Редовна дата на излъчване"
@@ -4049,6 +4090,10 @@ msgstr "Персонализиран спорт"
 #: gui/slick/views/config_postProcessing.mako:798
 msgid "Name Sports shows differently than regular shows?"
 msgstr "Именувай спортните предавания по различен начин от редовните предавания?"
+
+#: gui/slick/views/config_postProcessing.mako:829
+msgid "Toggle Sports Naming Legend"
+msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:865
 msgid "Sports Air Date"
@@ -5052,52 +5097,52 @@ msgstr "Потребителско име"
 msgid "Change Show"
 msgstr "Избор на предаване"
 
-#: gui/slick/views/displayShow.mako:34
+#: gui/slick/views/displayShow.mako:35
 msgid "Prev Show"
 msgstr "Предишен сериал"
 
-#: gui/slick/views/displayShow.mako:51
+#: gui/slick/views/displayShow.mako:52
 msgid "Next Show"
 msgstr "Следващ сериал"
 
-#: gui/slick/views/displayShow.mako:72
+#: gui/slick/views/displayShow.mako:74
 msgid "Display Specials"
 msgstr "Показване на специални"
 
-#: gui/slick/views/displayShow.mako:83
+#: gui/slick/views/displayShow.mako:85
 msgid "Jump to Season"
 msgstr "Направо към сезон"
 
-#: gui/slick/views/displayShow.mako:85 gui/slick/views/displayShow.mako:92
-#: gui/slick/views/displayShow.mako:410
+#: gui/slick/views/displayShow.mako:87 gui/slick/views/displayShow.mako:94
+#: gui/slick/views/displayShow.mako:411
 msgid "Specials"
 msgstr "Специални"
 
-#: gui/slick/views/displayShow.mako:123
+#: gui/slick/views/displayShow.mako:125
 msgid "Poster for"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:133
+#: gui/slick/views/displayShow.mako:135
 msgid "Stars"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:139 gui/slick/views/displayShow.mako:150
+#: gui/slick/views/displayShow.mako:141 gui/slick/views/displayShow.mako:152
 msgid "minutes"
 msgstr "минути"
 
-#: gui/slick/views/displayShow.mako:164
+#: gui/slick/views/displayShow.mako:166
 msgid "View other popular {genre} shows on trakt.tv."
 msgstr "Разгледай други популярни {genre} предавания в trakt.tv."
 
-#: gui/slick/views/displayShow.mako:164
+#: gui/slick/views/displayShow.mako:166
 msgid "genre"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:168
+#: gui/slick/views/displayShow.mako:170
 msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:185 gui/slick/views/displayShow.mako:316
+#: gui/slick/views/displayShow.mako:187 gui/slick/views/displayShow.mako:318
 #: gui/slick/views/inc_qualityChooser.mako:34
 #: gui/slick/views/manage_backlogOverview.mako:34
 #: gui/slick/views/manage_backlogOverview.mako:74
@@ -5105,180 +5150,180 @@ msgstr ""
 msgid "Allowed"
 msgstr "Разрешено"
 
-#: gui/slick/views/displayShow.mako:188 gui/slick/views/displayShow.mako:317
+#: gui/slick/views/displayShow.mako:190 gui/slick/views/displayShow.mako:319
 #: gui/slick/views/inc_qualityChooser.mako:44
 #: gui/slick/views/manage_massEdit.mako:129
 msgid "Preferred"
 msgstr "Предпочитан"
 
-#: gui/slick/views/displayShow.mako:194 gui/slick/views/displayShow.mako:198
-#: gui/slick/views/displayShow.mako:202
+#: gui/slick/views/displayShow.mako:196 gui/slick/views/displayShow.mako:200
+#: gui/slick/views/displayShow.mako:204
 msgid "Originally Airs"
 msgstr "Първоначално излъчен"
 
-#: gui/slick/views/displayShow.mako:207
+#: gui/slick/views/displayShow.mako:209
 msgid "Show Status"
 msgstr "Статус на предаване"
 
-#: gui/slick/views/displayShow.mako:211
+#: gui/slick/views/displayShow.mako:213
 msgid "Default EP Status"
 msgstr "Статус на сериал по подразбиране"
 
-#: gui/slick/views/displayShow.mako:216 gui/slick/views/displayShow.mako:221
+#: gui/slick/views/displayShow.mako:218 gui/slick/views/displayShow.mako:223
 #: gui/slick/views/status.mako:213
 msgid "Location"
 msgstr "Местоположение"
 
-#: gui/slick/views/displayShow.mako:222 gui/slick/views/status.mako:225
+#: gui/slick/views/displayShow.mako:224 gui/slick/views/status.mako:225
 #: gui/slick/views/status.mako:236
 msgid "Missing"
 msgstr "Липсващ"
 
-#: gui/slick/views/displayShow.mako:226
+#: gui/slick/views/displayShow.mako:228
 msgid "Scene Name"
 msgstr "Име на сцена"
 
-#: gui/slick/views/displayShow.mako:232 gui/slick/views/editShow.mako:289
+#: gui/slick/views/displayShow.mako:234 gui/slick/views/editShow.mako:289
 msgid "Required Words"
 msgstr "Задължителни думи"
 
-#: gui/slick/views/displayShow.mako:238 gui/slick/views/editShow.mako:264
+#: gui/slick/views/displayShow.mako:240 gui/slick/views/editShow.mako:264
 msgid "Ignored Words"
 msgstr "Игнорирани думи"
 
-#: gui/slick/views/displayShow.mako:255 gui/slick/views/displayShow.mako:431
-#: gui/slick/views/displayShow.mako:452 gui/slick/views/displayShow.mako:472
+#: gui/slick/views/displayShow.mako:257 gui/slick/views/displayShow.mako:432
+#: gui/slick/views/displayShow.mako:453 gui/slick/views/displayShow.mako:473
 #: gui/slick/views/home.mako:250 gui/slick/views/manage_failedDownloads.mako:34
 msgid "Size"
 msgstr "Размер"
 
-#: gui/slick/views/displayShow.mako:264 gui/slick/views/editShow.mako:99
+#: gui/slick/views/displayShow.mako:266 gui/slick/views/editShow.mako:99
 msgid "Info Language"
 msgstr "Език на информация"
 
-#: gui/slick/views/displayShow.mako:274
+#: gui/slick/views/displayShow.mako:276
 msgid "Season Folders"
 msgstr "Папки по сезони"
 
-#: gui/slick/views/displayShow.mako:278 gui/slick/views/editShow.mako:131
+#: gui/slick/views/displayShow.mako:280 gui/slick/views/editShow.mako:131
 #: gui/slick/views/manage.mako:47 gui/slick/views/manage_manageSearches.mako:19
 #: gui/slick/views/manage_massEdit.mako:161 gui/slick/views/status.mako:66
 msgid "Paused"
 msgstr "В пауза"
 
-#: gui/slick/views/displayShow.mako:282
+#: gui/slick/views/displayShow.mako:284
 msgid "Air-by-Date"
 msgstr "По дата на излъчване"
 
-#: gui/slick/views/displayShow.mako:286 gui/slick/views/editShow.mako:194
+#: gui/slick/views/displayShow.mako:288 gui/slick/views/editShow.mako:194
 #: gui/slick/views/manage.mako:43 gui/slick/views/manage_massEdit.mako:218
 msgid "Sports"
 msgstr "Спорт"
 
-#: gui/slick/views/displayShow.mako:294 gui/slick/views/editShow.mako:232
+#: gui/slick/views/displayShow.mako:296 gui/slick/views/editShow.mako:232
 msgid "DVD Order"
 msgstr "DVD ред"
 
-#: gui/slick/views/displayShow.mako:298 gui/slick/views/editShow.mako:222
+#: gui/slick/views/displayShow.mako:300 gui/slick/views/editShow.mako:222
 #: gui/slick/views/inc_addShowOptions.mako:84
 #: gui/slick/views/manage_massEdit.mako:190
 msgid "Scene Numbering"
 msgstr "Номериране по сцена"
 
-#: gui/slick/views/displayShow.mako:324
+#: gui/slick/views/displayShow.mako:326
 msgid "Select Filtered Episodes"
 msgstr "Изберете филтрирани епизоди"
 
-#: gui/slick/views/displayShow.mako:325
+#: gui/slick/views/displayShow.mako:327
 msgid "Clear All"
 msgstr "Изчисти всички"
 
-#: gui/slick/views/displayShow.mako:333
+#: gui/slick/views/displayShow.mako:335
 msgid "Change selected episodes to"
 msgstr "Промяна на избраните епизоди на"
 
-#: gui/slick/views/displayShow.mako:348 gui/slick/views/home.mako:37
+#: gui/slick/views/displayShow.mako:350 gui/slick/views/home.mako:37
 #: gui/slick/views/manage.mako:20 gui/slick/views/schedule.mako:48
 msgid "Select Columns"
 msgstr "Избор на колони"
 
-#: gui/slick/views/displayShow.mako:412
+#: gui/slick/views/displayShow.mako:413
 msgid "Show Episodes"
 msgstr "Епизоди на сериал"
 
-#: gui/slick/views/displayShow.mako:423 gui/slick/views/displayShow.mako:444
-#: gui/slick/views/displayShow.mako:464
+#: gui/slick/views/displayShow.mako:424 gui/slick/views/displayShow.mako:445
+#: gui/slick/views/displayShow.mako:465
 msgid "NFO"
 msgstr "NFO"
 
-#: gui/slick/views/displayShow.mako:424 gui/slick/views/displayShow.mako:445
-#: gui/slick/views/displayShow.mako:465
+#: gui/slick/views/displayShow.mako:425 gui/slick/views/displayShow.mako:446
+#: gui/slick/views/displayShow.mako:466
 msgid "TBN"
 msgstr "TBN"
 
-#: gui/slick/views/displayShow.mako:425 gui/slick/views/displayShow.mako:446
-#: gui/slick/views/displayShow.mako:466 gui/slick/views/history.mako:56
+#: gui/slick/views/displayShow.mako:426 gui/slick/views/displayShow.mako:447
+#: gui/slick/views/displayShow.mako:467 gui/slick/views/history.mako:56
 #: gui/slick/views/history.mako:116 gui/slick/views/manage_backlogOverview.mako:92
 #: gui/slick/views/testRename.mako:88
 msgid "Episode"
 msgstr "Епизод"
 
-#: gui/slick/views/displayShow.mako:426 gui/slick/views/displayShow.mako:447
-#: gui/slick/views/displayShow.mako:467
+#: gui/slick/views/displayShow.mako:427 gui/slick/views/displayShow.mako:448
+#: gui/slick/views/displayShow.mako:468
 msgid "Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:427 gui/slick/views/displayShow.mako:448
-#: gui/slick/views/displayShow.mako:468 gui/slick/views/manage.mako:44
+#: gui/slick/views/displayShow.mako:428 gui/slick/views/displayShow.mako:449
+#: gui/slick/views/displayShow.mako:469 gui/slick/views/manage.mako:44
 msgid "Scene"
 msgstr "Сцена"
 
-#: gui/slick/views/displayShow.mako:428 gui/slick/views/displayShow.mako:449
-#: gui/slick/views/displayShow.mako:469
+#: gui/slick/views/displayShow.mako:429 gui/slick/views/displayShow.mako:450
+#: gui/slick/views/displayShow.mako:470
 msgid "Scene Absolute"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:430 gui/slick/views/displayShow.mako:451
-#: gui/slick/views/displayShow.mako:471
+#: gui/slick/views/displayShow.mako:431 gui/slick/views/displayShow.mako:452
+#: gui/slick/views/displayShow.mako:472
 msgid "File Name"
 msgstr "Име на файл"
 
-#: gui/slick/views/displayShow.mako:432 gui/slick/views/displayShow.mako:453
-#: gui/slick/views/displayShow.mako:473
+#: gui/slick/views/displayShow.mako:433 gui/slick/views/displayShow.mako:454
+#: gui/slick/views/displayShow.mako:474
 #: gui/slick/views/manage_backlogOverview.mako:92 gui/slick/views/schedule.mako:90
 msgid "Airdate"
 msgstr "Излъчен на"
 
-#: gui/slick/views/displayShow.mako:433 gui/slick/views/displayShow.mako:454
-#: gui/slick/views/displayShow.mako:474 gui/slick/views/displayShow.mako:566
+#: gui/slick/views/displayShow.mako:434 gui/slick/views/displayShow.mako:455
+#: gui/slick/views/displayShow.mako:475 gui/slick/views/displayShow.mako:567
 msgid "Download"
 msgstr "Свали"
 
-#: gui/slick/views/displayShow.mako:510
+#: gui/slick/views/displayShow.mako:511
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:522
+#: gui/slick/views/displayShow.mako:523
 msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:608 gui/slick/views/displayShow.mako:627
+#: gui/slick/views/displayShow.mako:609 gui/slick/views/displayShow.mako:628
 msgid "Manual Search"
 msgstr "Ръчно търсене"
 
-#: gui/slick/views/displayShow.mako:611
+#: gui/slick/views/displayShow.mako:612
 msgid "Do you want to mark this episode as failed?"
 msgstr "Искате ли да отбележите този епизод като неуспешен?"
 
-#: gui/slick/views/displayShow.mako:612
+#: gui/slick/views/displayShow.mako:613
 msgid "The episode release name will be added to the failed history, preventing it to be downloaded again."
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:630
+#: gui/slick/views/displayShow.mako:631
 msgid "Do you want to include the current episode quality in the search?"
 msgstr "Искате ли да включите текущото качество на епизода в търсенето?"
 
-#: gui/slick/views/displayShow.mako:631
+#: gui/slick/views/displayShow.mako:632
 msgid "Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched."
 msgstr "Ако изберете Не, ще игнорира всички издания със същото качество на епизода като това на вече изтегления/намерен."
 
@@ -5393,15 +5438,15 @@ msgstr "Алтернативно име"
 msgid "This will affect episode search on NZB and torrent providers. This list appends to the original show name."
 msgstr "Това ще засегне търсенето на епизоди от NZB и торент доставчиците. Този списък се добавя към първоначалното име на предаването."
 
-#: gui/slick/views/errorlogs.mako:18
+#: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"
 msgstr "Логове с ПРЕДУПРЕЖДЕНИЯ"
 
-#: gui/slick/views/errorlogs.mako:21
+#: gui/slick/views/errorlogs.mako:12
 msgid "ERROR logs"
 msgstr "Логове с ГРЕШКИ"
 
-#: gui/slick/views/errorlogs.mako:36
+#: gui/slick/views/errorlogs.mako:27
 msgid "There are no events to display."
 msgstr "Няма събития за показване."
 
@@ -5474,7 +5519,7 @@ msgstr "Възходящ"
 msgid "Descending"
 msgstr "Низходящ"
 
-#: gui/slick/views/home.mako:52 gui/slick/views/schedule.mako:421
+#: gui/slick/views/home.mako:52 gui/slick/views/schedule.mako:410
 msgid "Next Episode"
 msgstr "Следващ епизод"
 
@@ -5522,7 +5567,7 @@ msgstr "Предишен"
 msgid "Downloads"
 msgstr "Изтеглени"
 
-#: gui/slick/views/home.mako:251 gui/slick/views/layouts/main.mako:293
+#: gui/slick/views/home.mako:251 gui/slick/views/layouts/main.mako:296
 #: gui/slick/views/status.mako:43
 msgid "Active"
 msgstr "Активен"
@@ -5682,11 +5727,11 @@ msgstr "Нов"
 msgid "Set as Default"
 msgstr "Задай по подразбиране"
 
-#: gui/slick/views/login.mako:29
+#: gui/slick/views/login.mako:32
 msgid "Remember me"
 msgstr "Запомни ме"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Редактиране на избрани"
 
@@ -5735,7 +5780,7 @@ msgstr "Стартирай принудително Backlog"
 msgid "Manage episodes with status"
 msgstr "Управление на епизоди със статус"
 
-#: gui/slick/views/layouts/main.mako:138
+#: gui/slick/views/layouts/main.mako:141
 #: gui/slick/views/manage_episodeStatuses.mako:34
 #: gui/slick/views/manage_subtitleMissed.mako:43
 msgid "Manage"
@@ -5793,7 +5838,7 @@ msgstr "Всички"
 msgid "Release"
 msgstr "Издание"
 
-#: gui/slick/views/layouts/main.mako:302
+#: gui/slick/views/layouts/main.mako:305
 #: gui/slick/views/manage_manageSearches.mako:16
 msgid "Backlog Search"
 msgstr "Backlog търсене"
@@ -5812,7 +5857,7 @@ msgstr "не е в ход"
 msgid "In Progress"
 msgstr "в ход"
 
-#: gui/slick/views/layouts/main.mako:301
+#: gui/slick/views/layouts/main.mako:304
 #: gui/slick/views/manage_manageSearches.mako:25 gui/slick/views/status.mako:11
 msgid "Daily Search"
 msgstr "Дневно търсене"
@@ -5938,7 +5983,7 @@ msgstr "Извършва се рестартиране"
 
 #: gui/slick/views/restart.mako:33
 msgid "Waiting for SickRage to shut down"
-msgstr "Изчаква SickRage да се изключите"
+msgstr "Изчаква SickRage да се изключи"
 
 #: gui/slick/views/restart.mako:41
 msgid "Waiting for SickRage to start again"
@@ -5956,7 +6001,7 @@ msgstr "Грешка: Времето за рестартиране изтече,
 msgid "Key"
 msgstr "Легенда"
 
-#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:325
+#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:317
 msgid "Missed"
 msgstr "Пропуснат"
 
@@ -5968,7 +6013,7 @@ msgstr "Днес"
 msgid "Soon"
 msgstr "Скоро"
 
-#: gui/slick/views/schedule.mako:33 gui/slick/views/schedule.mako:329
+#: gui/slick/views/schedule.mako:33 gui/slick/views/schedule.mako:320
 msgid "Later"
 msgstr "По-късно"
 
@@ -6008,15 +6053,15 @@ msgstr "Време за изпълнение"
 msgid "Indexers"
 msgstr "Индексатори"
 
-#: gui/slick/views/schedule.mako:261
+#: gui/slick/views/schedule.mako:259
 msgid "No shows for this day"
 msgstr "Няма предавания за този ден"
 
-#: gui/slick/views/schedule.mako:428
+#: gui/slick/views/schedule.mako:417
 msgid "Airs"
 msgstr "Дата на излъчване"
 
-#: gui/slick/views/schedule.mako:446 gui/slick/views/schedule.mako:451
+#: gui/slick/views/schedule.mako:435 gui/slick/views/schedule.mako:440
 msgid "Plot"
 msgstr "Описание"
 
@@ -6168,119 +6213,119 @@ msgstr "гласа"
 msgid "Remove Show"
 msgstr "Премахни предаването"
 
-#: gui/slick/views/viewlogs.mako:19
+#: gui/slick/views/viewlogs.mako:10
 msgid "Minimum logging level to display"
 msgstr "Минимално ниво за показване на събитията (log)"
 
-#: gui/slick/views/viewlogs.mako:35
+#: gui/slick/views/viewlogs.mako:26
 msgid "Filter log by"
 msgstr ""
 
-#: gui/slick/views/viewlogs.mako:43
+#: gui/slick/views/viewlogs.mako:34
 msgid "Search log by"
 msgstr "Търси в събитията (log) по"
 
-#: gui/slick/views/layouts/config.mako:51
+#: gui/slick/views/layouts/config.mako:50
 msgid "All non-absolute folder locations are relative to "
 msgstr "Всички не-абсолютни местоположенията са релативни спрямо "
 
-#: gui/slick/views/layouts/main.mako:118
+#: gui/slick/views/layouts/main.mako:121
 msgid "Manual Post-Processing"
 msgstr "Ръчна обработка"
 
-#: gui/slick/views/layouts/main.mako:145
+#: gui/slick/views/layouts/main.mako:148
 msgid "Episode Status Management"
 msgstr "Управление статусът на епизодите"
 
-#: gui/slick/views/layouts/main.mako:147
+#: gui/slick/views/layouts/main.mako:150
 msgid "Update PLEX"
 msgstr "Обнови PLEX"
 
-#: gui/slick/views/layouts/main.mako:150
+#: gui/slick/views/layouts/main.mako:153
 msgid "Update KODI"
 msgstr "Обнови KODI"
 
-#: gui/slick/views/layouts/main.mako:153
+#: gui/slick/views/layouts/main.mako:156
 msgid "Update Emby"
 msgstr "Обнови Emby"
 
-#: gui/slick/views/layouts/main.mako:162
+#: gui/slick/views/layouts/main.mako:165
 msgid "Missed Subtitle Management"
 msgstr "Управление на липсващите субтитри"
 
-#: gui/slick/views/layouts/main.mako:173
+#: gui/slick/views/layouts/main.mako:176
 msgid "Help &amp; Info"
 msgstr "Помощ &amp; Информация"
 
-#: gui/slick/views/layouts/main.mako:175
+#: gui/slick/views/layouts/main.mako:178
 msgid "Backup &amp; Restore"
 msgstr "Архивиране &amp; Възстановяване"
 
-#: gui/slick/views/layouts/main.mako:206
+#: gui/slick/views/layouts/main.mako:209
 msgid "Tools"
 msgstr "Инструменти"
 
-#: gui/slick/views/layouts/main.mako:213
+#: gui/slick/views/layouts/main.mako:216
 msgid "Support SickRage"
 msgstr "Подкрепи SickRage"
 
-#: gui/slick/views/layouts/main.mako:216
+#: gui/slick/views/layouts/main.mako:219
 msgid "View Errors"
 msgstr "Виж грешките"
 
-#: gui/slick/views/layouts/main.mako:219
+#: gui/slick/views/layouts/main.mako:222
 msgid "View Warnings"
 msgstr "Виж предупрежденията"
 
-#: gui/slick/views/layouts/main.mako:221
+#: gui/slick/views/layouts/main.mako:224
 msgid "View Log"
 msgstr "Вижте лог-а"
 
-#: gui/slick/views/layouts/main.mako:223
+#: gui/slick/views/layouts/main.mako:226
 msgid "Check For Updates"
 msgstr "Провери за актуализации"
 
-#: gui/slick/views/layouts/main.mako:224
+#: gui/slick/views/layouts/main.mako:227
 msgid "Restart"
 msgstr "Рестартиране"
 
-#: gui/slick/views/layouts/main.mako:225
+#: gui/slick/views/layouts/main.mako:228
 msgid "Shutdown"
 msgstr "Изключване"
 
-#: gui/slick/views/layouts/main.mako:227
+#: gui/slick/views/layouts/main.mako:230
 msgid "Logout"
 msgstr "Отписване"
 
-#: gui/slick/views/layouts/main.mako:230
+#: gui/slick/views/layouts/main.mako:233
 msgid "Server Status"
 msgstr "Състояние на сървъра"
 
-#: gui/slick/views/layouts/main.mako:268
+#: gui/slick/views/layouts/main.mako:271
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
 msgstr "В момента използвате клон {branch}. Моля използвайте \"master\", освен ако специално не е изискано друго"
 
-#: gui/slick/views/layouts/main.mako:297
+#: gui/slick/views/layouts/main.mako:300
 msgid "View overview of snatched episodes"
 msgstr "Обобщен преглед на намерените епизоди"
 
-#: gui/slick/views/layouts/main.mako:300
+#: gui/slick/views/layouts/main.mako:303
 msgid "Episodes Downloaded"
 msgstr "Изтеглени епизоди"
 
-#: gui/slick/views/layouts/main.mako:306
+#: gui/slick/views/layouts/main.mako:309
 msgid "Memory used"
 msgstr "Памет в употреба"
 
-#: gui/slick/views/layouts/main.mako:308
+#: gui/slick/views/layouts/main.mako:311
 msgid "Load time"
 msgstr "Load time"
 
-#: gui/slick/views/layouts/main.mako:309
+#: gui/slick/views/layouts/main.mako:312
 msgid "Branch"
 msgstr "Branch"
 
-#: gui/slick/views/layouts/main.mako:310
+#: gui/slick/views/layouts/main.mako:313
 msgid "Now"
 msgstr "Сега"
 

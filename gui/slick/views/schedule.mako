@@ -201,8 +201,6 @@
                 <div class="horizontal-scroll">
                     <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
                     <% tbl_day = 0 %>
-                    <br>
-                    <br>
                     <div class="calendarWrapper">
                         <input type="hidden" id="srRoot" value="${srRoot}"/>
                         % for day in dates:
@@ -277,17 +275,13 @@
                     today_header = False
                     show_div = 'ep_listing listing-default'
                 %>
-                % if sickbeard.COMING_EPS_SORT == 'show':
-                    <br>
-                    <br>
-                % endif
 
                 % for cur_result in results:
                 <%
                     cur_indexer = int(cur_result['indexer'])
 
                     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
-                                continue
+                        continue
 
                     run_time = cur_result['runtime']
                     cur_ep_airdate = cur_result['localtime'].date()
@@ -301,7 +295,6 @@
                     <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
                     % if cur_segment != show_network:
                         <div>
-                            <br>
                             <h2 class="network">${show_network}</h2>
                             <% cur_segment = cur_result['network'] %>
                         </div>
@@ -321,22 +314,18 @@
                 % elif sickbeard.COMING_EPS_SORT == 'date':
                     % if cur_segment != cur_ep_airdate:
                         % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                            <br>
                             <h2 class="day">${_('Missed')}</h2>
                         <% missed_header = True %>
                         % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                            <br>
                             <h2 class="day">${_('Later')}</h2>
                         <% too_late_header = True %>
                         % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                             % if cur_ep_airdate == today.date():
-                                <br>
                                 <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
                                     <span style="font-size: 14px; vertical-align: top;">[Today]</span>
                                 </h2>
                             <% today_header = True %>
                             % else:
-                                <br>
                                 <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                             % endif
                         % endif
@@ -345,7 +334,6 @@
 
                     % if cur_ep_airdate == today.date() and not today_header:
                     <div>
-                        <br>
                         <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
                             <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
                     <% today_header = True %>
@@ -417,7 +405,8 @@
                                             </a>
                                         </span>
                                     </span>
-
+                                        <br/>
+                                        <br/>
                                         <span class="title">${_('Next Episode')}:</span>
                                     <span>
                                         ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
