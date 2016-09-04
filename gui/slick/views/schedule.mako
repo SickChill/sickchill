@@ -67,7 +67,6 @@
                         <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
                     </select>
-                    &nbsp;
                 </label>
             </div>
         </div>
