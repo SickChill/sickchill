@@ -3547,6 +3547,10 @@ input.tablesorter-filter.disabled {
         display: block;
         width: 100%;
     }
+
+    .col-md-12 > .horizontal-scroll {
+        margin: 0 -13px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
