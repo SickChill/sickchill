@@ -2687,7 +2687,7 @@ var SICKRAGE = {
         failedDownloads: function() {
             $("#failedTable:has(tbody tr)").tablesorter({
                 widgets: ['zebra'],
-                sortList: [[0,0]],
+                sortList: [[1,0]],
                 headers: { 3: { sorter: false } }
             });
             $('#limit').on('change', function(){
