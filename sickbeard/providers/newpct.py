@@ -214,6 +214,7 @@ class newpctProvider(TorrentProvider):
         
         #Web encoding is 1252. So use web enconding to correct errors first
         title = title.encode('cp1252', errors='replace');
+        #Result as unicode will be more friendly
         title = title.encode('utf-8', errors='replace');
 
         return title.strip()
