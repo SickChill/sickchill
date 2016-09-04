@@ -890,8 +890,8 @@ displayShow.mako
 ========================================================================== */
 
 #pickShow {
-    margin-top: 5px;
     display: inline-block;
+    width: calc(100% - 40px);
 }
 
 .poster-container {
@@ -3555,6 +3555,11 @@ input.tablesorter-filter.disabled {
     .col-md-12 > .horizontal-scroll {
         margin: 0 -13px;
     }
+
+    .pick-show-group {
+        width: 100%;
+        margin: 0 auto;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -3588,6 +3593,11 @@ input.tablesorter-filter.disabled {
     .info-container {
         display: block;
         width: 100%;
+    }
+
+    .pick-show-group {
+        width: 100%;
+        margin: 0 auto;
     }
 }
 
