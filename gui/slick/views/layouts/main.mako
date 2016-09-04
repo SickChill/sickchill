@@ -12,8 +12,7 @@
         import resource
     except ImportError:
         has_resource_module = False
-%>
-<%
+
     srRoot = sickbeard.WEB_ROOT
 %>
 <!DOCTYPE html>
