@@ -33,38 +33,45 @@
     </div>
     <br/>
     <div class="row">
-        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
             <div class="pull-right">
                 % if layout == 'list':
                     <button id="popover" type="button" class="btn btn-inline">
                         ${_('Select Columns')} <b class="caret"></b>
                     </button>
                 % else:
-                    <span>${_('Sort By')}:
-                    <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Sort">
-                        <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-                        <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-                        <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
-                    </select>
-                </span>
-                    % endif
-                    <span>${_('View Paused')}:
+                    <label>
+                        <span>${_('Sort By')}:</span>
+                        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Sort">
+                            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+                            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+                            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+                        </select>
+                        &nbsp;
+                    </label>
+                % endif
+                <label>
+                    <span>${_('View Paused')}:</span>
                     <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View paused">
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
-                </span>
-                <span>${_('Layout')}:
+                    &nbsp;
+                </label>
+
+                <label>
+                    <span>${_('Layout')}:</span>
                     <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Layout">
                         <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
                     </select>
-                </span>
+                    &nbsp;
+                </label>
             </div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
             <h1 class="header">${header}</h1>
         </div>
     </div>

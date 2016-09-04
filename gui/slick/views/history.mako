@@ -17,24 +17,30 @@
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
-            <div class="pull-right"><b>${_('Limit')}:</b>
-                <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
-                    <option value="10" ${('', 'selected="selected"')[limit == 10]}>10</option>
-                    <option value="25" ${('', 'selected="selected"')[limit == 25]}>25</option>
-                    <option value="50" ${('', 'selected="selected"')[limit == 50]}>50</option>
-                    <option value="100" ${('', 'selected="selected"')[limit == 100]}>100</option>
-                    <option value="250" ${('', 'selected="selected"')[limit == 250]}>250</option>
-                    <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
-                    <option value="750" ${('', 'selected="selected"')[limit == 750]}>750</option>
-                    <option value="1000" ${('', 'selected="selected"')[limit == 1000]}>1000</option>
-                    <option value="0" ${('', 'selected="selected"')[limit == 0  ]}>All</option>
-                </select>
-                <span> ${_('Layout')}:
+            <div class="pull-right">
+                <label>
+                    <span>${_('Limit')}:</span>
+                    <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
+                        <option value="10" ${('', 'selected="selected"')[limit == 10]}>10</option>
+                        <option value="25" ${('', 'selected="selected"')[limit == 25]}>25</option>
+                        <option value="50" ${('', 'selected="selected"')[limit == 50]}>50</option>
+                        <option value="100" ${('', 'selected="selected"')[limit == 100]}>100</option>
+                        <option value="250" ${('', 'selected="selected"')[limit == 250]}>250</option>
+                        <option value="500" ${('', 'selected="selected"')[limit == 500]}>500</option>
+                        <option value="750" ${('', 'selected="selected"')[limit == 750]}>750</option>
+                        <option value="1000" ${('', 'selected="selected"')[limit == 1000]}>1000</option>
+                        <option value="0" ${('', 'selected="selected"')[limit == 0  ]}>All</option>
+                    </select>
+                    &nbsp;
+                </label>
+                <label>
+                    <span> ${_('Layout')}:</span>
                     <select name="${_('HistoryLayout')}" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
                         <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
                         <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
-                </span>
+                    &nbsp;
+                </label>
             </div>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
