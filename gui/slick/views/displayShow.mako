@@ -31,9 +31,11 @@
                     <input type="hidden" id="srRoot" value="${srRoot}" />
                     <div class="form-inline">
                         <label for="pickShow">${_('Change Show')}:</label>
-                        <div>
-                            <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
-                            <select id="pickShow" class="form-control input-sm input350" title="Change Show">
+                        <div class="pick-show-group input350">
+                            <div class="navShow">
+                                <span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}"></span>
+                            </div>
+                            <select id="pickShow" class="form-control input-sm" title="Change Show">
                                 % for curShowList in sortedShowLists:
                                     <% curShowType = curShowList[0] %>
                                     <% curShowList = curShowList[1] %>
@@ -49,7 +51,9 @@
                                     % endif
                                 % endfor
                             </select>
-                            <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                            <div class="navShow">
+                                <span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,17 +79,19 @@
                                         % endfor
                                     </select>
                                 % else:
-                                    ${_('Season')}:
-                                    % for seasonNum in seasonResults:
-                                        % if int(seasonNum["season"]) == 0:
-                                            <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
-                                        % else:
-                                            <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
-                                        % endif
-                                        % if seasonNum != seasonResults[-1]:
-                                            <span class="separator">|</span>
-                                        % endif
-                                    % endfor
+                                    <label>
+                                        <span>${_('Season')}:</span>
+                                        % for seasonNum in seasonResults:
+                                            % if int(seasonNum["season"]) == 0:
+                                                <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
+                                            % else:
+                                                <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
+                                            % endif
+                                            % if seasonNum != seasonResults[-1]:
+                                                <span class="separator">|</span>
+                                            % endif
+                                        % endfor
+                                    </label>
                                 % endif
                             </span>
                         </div>
