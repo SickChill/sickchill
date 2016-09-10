@@ -222,7 +222,7 @@
             var episodes = ${episodes};
         </script>
         <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/apibuilder.js?${sbPID}"></script>
     </body>
 </html>

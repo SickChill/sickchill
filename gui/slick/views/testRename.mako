@@ -2,9 +2,6 @@
 <%!
     import sickbeard
 %>
-<%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/testRename.js" xmlns="http://www.w3.org/1999/html"></script>
-</%block>
 
 <%block name="content">
     <div class="row">

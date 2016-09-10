@@ -1,4 +1,5 @@
-$(document).ready(function(){
+$(document).ready(function() {
+
     $('.seriesCheck').click(function(){
         var serCheck = this;
 
