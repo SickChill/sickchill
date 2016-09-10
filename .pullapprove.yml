@@ -1,1 +1,17 @@
+approve_by_comment: true
+approve_regex: ^Approved.*
+author_approval: ignored
 extends: default
+reject_regex: ^Rejected.*
+reset_on_push: true
+reviewers:
+  members:
+  - duramato
+  - MGaetan89
+  - miigotu
+  - OmgImAlexis
+  - VinceVal
+  - beshoenen
+  - neoatomic
+  name: default
+  required: 1

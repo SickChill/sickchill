@@ -127,9 +127,10 @@ class BaseParser(type):
             """Check that the provider parses rss search results"""
             results = self.provider.search(self.search_strings('RSS'))
 
-            self.assertTrue(self.cassette.requests)
-            self.assertTrue(results, self.cassette.requests[-1].url)
-            self.assertTrue(len(self.cassette))
+            if self.provider.enable_daily:
+                self.assertTrue(self.cassette.requests)
+                self.assertTrue(results, self.cassette.requests[-1].url)
+                self.assertTrue(len(self.cassette))
 
         @magic_skip
         def test_episode_search(self):

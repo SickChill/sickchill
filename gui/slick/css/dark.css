@@ -212,6 +212,7 @@ home_addExistingShow.mako
 
 ul#rootDirStaticList li {
     background: #3D3D3D;
+    color: white;
 }
 
 /* =======================================================================
