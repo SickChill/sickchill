@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     $('#saveDefaultsButton').click(function () {
         var anyQualArray = [];
         var bestQualArray = [];

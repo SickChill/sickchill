@@ -1,4 +1,21 @@
-$(document).ready(function(){
+$(document).ready(function () {
+
+    $('#trendingShows').loadRemoteShows(
+        '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
+        'Loading trending shows...',
+        'Trakt timed out, refresh page to try again'
+    );
+
+    $('#traktlistselection').on('change', function (e) {
+        var traktList = e.target.value;
+        window.history.replaceState({}, document.title, '?traktList=' + traktList);
+        $('#trendingShows').loadRemoteShows(
+            '/addShows/getTrendingShows/?traktList=' + traktList,
+            'Loading trending shows...',
+            'Trakt timed out, refresh page to try again'
+        );
+    });
+
     // initialise combos for dirty page refreshes
     $('#showsort').val('original');
     $('#showsortdirection').val('asc');
@@ -51,4 +68,5 @@ $(document).ready(function(){
             sortAscending: ('asc' === this.value)
         });
     });
+
 });

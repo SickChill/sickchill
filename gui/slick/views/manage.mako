@@ -3,9 +3,6 @@
     import sickbeard
     from sickbeard.common import statusStrings
 %>
-<%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/massUpdate.js?${sbPID}"></script>
-</%block>
 
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
