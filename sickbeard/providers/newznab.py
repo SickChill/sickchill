@@ -193,6 +193,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
     def _get_default_providers():
         # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
         return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
+            'NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!' + \
             'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
             'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
             'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
