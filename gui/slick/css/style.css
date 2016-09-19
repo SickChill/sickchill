@@ -7,6 +7,11 @@
 inc_top.mako
 ========================================================================== */
 
+.fa {
+    margin-left: -2px;
+    margin-right: 4px;
+}
+
 .navbaricon {
     margin-top: -15px;
     margin-bottom: -15px;
@@ -94,6 +99,10 @@ inc_top.mako
     background: #FEF1EC url("../css/lib/images/ui-bg_glass_95_fef1ec_1x400.png") 50% 50% repeat-x;
 }
 
+.ui-icon {
+    float: left;
+}
+
 .ui-icon,
 .ui-widget-content .ui-icon {
     background-image: url("../css/lib/images/ui-icons_222222_256x240.png");
@@ -174,17 +183,17 @@ inc_top.mako
     border-top-right-radius: 5px;
 }
 
-#SubMenuContainer {
+#sub-menu-container {
     margin: 0;
 }
 
-#SubMenu {
+#sub-menu {
     clear: both;
     font-size: 12px;
     align-content: flex-end;
 }
 
-#SubMenu a {
+#sub-menu a {
     clear-after: top;
     margin: 2px;
     float: right;
@@ -205,6 +214,10 @@ inc_top.mako
     right: 3px;
     top: 0;
     float: left;
+}
+
+.navbar [class^="menu-icon-"], .navbar [class*=" menu-icon-"] {
+    top: 1px;
 }
 
 .menu-icon-addshow {
@@ -373,6 +386,10 @@ inc_bottom.mako
 .footerhighlight {
     color: #111111;
     display: inline;
+}
+
+.footer-item {
+    white-space: nowrap;
 }
 
 /* =======================================================================
@@ -702,11 +719,11 @@ td.tvShow a:hover {
 }
 
 #popover-target input {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .popover {
-    margin-left: -50px;
+    margin-left: -48px;
 }
 
 /* =======================================================================
@@ -812,17 +829,17 @@ ul#rootDirStaticList li {
     padding: 4px 5px 4px 5px;
     margin: 2px;
     list-style: none outside none;
-    cursor: pointer;
     background: url('../css/lib/images/ui-bg_highlight-soft_75_efefef_1x100.png') repeat-x scroll 50% 50% #EFEFEF;
 }
 
 ul#rootDirStaticList li label {
     margin-top: 5px;
     margin-bottom: 5px;
+    cursor: pointer;
 }
 
 ul#rootDirStaticList li input[type="checkbox"] {
-    vertical-align: -2px;
+    vertical-align: -3px;
 }
 
 /* =======================================================================
@@ -873,8 +890,8 @@ displayShow.mako
 ========================================================================== */
 
 #pickShow {
-    margin-top: 5px;
     display: inline-block;
+    width: calc(100% - 40px);
 }
 
 .poster-container {
@@ -1004,10 +1021,6 @@ ul.tags li a {
     white-space: nowrap;
     display: inline-block;
     margin: 7px 2px;
-}
-
-#checkboxControls input[type="checkbox"] {
-    vertical-align: -2px;
 }
 
 .unaired {
@@ -1575,7 +1588,7 @@ config*.mako
 }
 
 #config input[type=checkbox] ~ label {
-    padding-top: 3px;
+    padding-top: 4px;
 }
 
 .config-group-divider {
@@ -1979,6 +1992,11 @@ div.metadataDiv .disabled {
     float: left;
 }
 
+.icon-notifiers-slack {
+    background: url("../images/Slack_Mark_Web.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-kodi {
     background-position: 0 0;
 }
@@ -2130,6 +2148,10 @@ td.tableright {
 
 a.whitelink {
     color: #FFFFFF;
+}
+
+#failedTable tbody span {
+    word-break: break-all;
 }
 
 /* =======================================================================
@@ -3529,6 +3551,15 @@ input.tablesorter-filter.disabled {
         display: block;
         width: 100%;
     }
+
+    .col-md-12 > .horizontal-scroll {
+        margin: 0 -13px;
+    }
+
+    .pick-show-group {
+        width: 100%;
+        margin: 0 auto;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -3563,6 +3594,11 @@ input.tablesorter-filter.disabled {
         display: block;
         width: 100%;
     }
+
+    .pick-show-group {
+        width: 100%;
+        margin: 0 auto;
+    }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -3575,7 +3611,7 @@ input.tablesorter-filter.disabled {
     }
 
     .tvshowImg {
-        max-height: 248px;
+        max-height: 269px;
     }
 }
 
@@ -3589,10 +3625,14 @@ input.tablesorter-filter.disabled {
     }
 
     .tvshowImg {
-        max-height: 248px;
+        max-height: 269px;
     }
 }
 
 .horizontal-scroll {
     overflow-x: auto;
+}
+
+#episodeDir {
+    width: 100%;
 }

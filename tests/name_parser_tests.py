@@ -81,8 +81,8 @@ SIMPLE_TEST_CASES = {
     },
 
     'stupid': {
-        'tpz-abc102': parser.ParseResult(None, None, 1, [2], None, 'tpz'),
-        'tpz-abc.102': parser.ParseResult(None, None, 1, [2], None, 'tpz')
+        'tpz-abc102': parser.ParseResult(None, 'abc', 1, [2], None, 'tpz'),
+        'tpz-abc.102': parser.ParseResult(None, 'abc', 1, [2], None, 'tpz')
     },
 
     'no_season': {

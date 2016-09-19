@@ -9,25 +9,29 @@
 <%block name="content">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 pull-right">
+            <div class="col-lg-8 col-md-7 col-sm-7 col-xs-12 pull-right">
                 <div class="pull-right">
-                    <span>${_('Sort By')}:</span>
-                    <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
-                        <option value="name">${_('Name')}</option>
-                        <option value="original" selected="selected">${_('Original')}</option>
-                        <option value="votes">${_('Votes')}</option>
-                        <option value="rating">% ${_('Rating')}</option>
-                        <option value="rating_votes">% ${_('Rating > Votes')}</option>
-                    </select>
-
-                    <span style="margin-left:12px">${_('Sort Order')}:</span>
-                    <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
-                        <option value="asc" selected="selected">${_('Asc')}</option>
-                        <option value="desc">${_('Desc')}</option>
-                    </select>
+                    <label>
+                        <span>${_('Sort By')}:</span>
+                        <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
+                            <option value="name">${_('Name')}</option>
+                            <option value="original" selected="selected">${_('Original')}</option>
+                            <option value="votes">${_('Votes')}</option>
+                            <option value="rating">% ${_('Rating')}</option>
+                            <option value="rating_votes">% ${_('Rating > Votes')}</option>
+                        </select>
+                        &nbsp;
+                    </label>
+                    <label>
+                        <span>${_('Sort Order')}:</span>
+                        <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
+                            <option value="asc" selected="selected">${_('Asc')}</option>
+                            <option value="desc">${_('Desc')}</option>
+                        </select>
+                    </label>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            <div class="col-lg-4 col-md-5 col-sm-5 col-xs-12">
                 % if not header is UNDEFINED:
                     <h1 class="header">${header}</h1>
                 % else:

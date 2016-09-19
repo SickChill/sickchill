@@ -40,27 +40,24 @@
                         <br>
                         <div class="row">
                             <div class="col-md-12">
-                                <p><b>${_('SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below.')}:</b></p>
+                                <p>${_('SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below.')}</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <p>
-                                    <input type="checkbox" name="promptForSettings" id="promptForSettings" />
-                                    <label for="promptForSettings">${_('Prompt me to set settings for each show')}</label>
-                                </p>
+                                <input type="checkbox" name="promptForSettings" id="promptForSettings" />
+                                <label for="promptForSettings">${_('Prompt me to set settings for each show')}</label>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>${_('Displaying folders within these directories which aren\'t already added to SickRage')}</h5>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <p><b>${_('Displaying folders within these directories which aren\'t already added to SickRage')}:</b></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <ul id="rootDirStaticList">
-                                    <li></li>
-                                </ul>
+                                <ul id="rootDirStaticList"></ul>
                             </div>
                         </div>
                         <div class="row">

@@ -8,12 +8,14 @@ $(document).ready(function(){
 
         if(editArr.length === 0) { return; }
 
-        var url = srRoot + '/manage/massEdit?toEdit='+editArr.join('|');
-        if(url.length < 2083) {
-            window.location.href = url;
-        } else {
-            alert("You've selected too many shows, please uncheck some and try again. [" + url.length + "/2083 characters]");
-        }
+        var submitForm = $(
+            "<form method='post' action='" + srRoot + "/manage/massEdit'>" +
+                "<input type='hidden' name='toEdit' value='" + editArr.join('|') + "'/>" +
+            "</form>"
+        );
+        submitForm.appendTo('body');
+
+        submitForm.submit();
     });
 
     $('.submitMassUpdate').on('click', function(){

@@ -29,6 +29,7 @@
             % endif
         </div>
     </div>
+    <br/>
     <div class="row">
         <div class="col-md-12">
 
@@ -117,6 +118,7 @@
             </div>
         </div>
     </div>
+    <br/>
     <div class="row">
         <div class="col-md-12">
             <h2 class="header">${_('Show Queue')}</h2>
@@ -202,6 +204,7 @@
             </div>
         </div>
     </div>
+    <br/>
     <div class="row">
         <div class="col-md-12">
             <h2 class="header">${_('Disk Space')}</h2>
