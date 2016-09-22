@@ -486,6 +486,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         cachedShow = t[self.indexerid]
         cachedSeasons = {}
 
+        curShowid = None
+        curShowName = None
+
         for curResult in sql_results:
 
             curSeason = int(curResult[b"season"])
@@ -530,8 +533,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                            logger.DEBUG)
                 continue
 
-        logger.log("{id}: Finished loading all episodes for {show} from the DB".format
-                   (show=curShowName, id=curShowid), logger.DEBUG)
+        if curShowName and curShowid:
+            logger.log("{id}: Finished loading all episodes for {show} from the DB".format
+                       (show=curShowName, id=curShowid), logger.DEBUG)
 
         return scannedEps
 
