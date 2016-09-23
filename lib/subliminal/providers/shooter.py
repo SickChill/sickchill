@@ -24,6 +24,7 @@ class ShooterSubtitle(Subtitle):
         self.hash = hash
         self.download_link = download_link
 
+    @property
     def id(self):
         return self.download_link
 
@@ -58,7 +59,7 @@ class ShooterProvider(Provider):
 
         # handle subtitles not found
         if r.content == b'\xff':
-            logger.debug('No subtitle found')
+            logger.debug('No subtitles found')
             return []
 
         # parse the subtitles
