@@ -1426,8 +1426,8 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
                             fp.flush()
 
                 chmodAsParent(filename)
-            except Exception:
-                logger.log("Problem setting permissions or writing file to: {0}".format(filename), logger.WARNING)
+            except Exception as error:
+                logger.log("Problem downloading file, setting permissions or writing file to \"{0}\" - ERROR: {1}".format(filename, error), logger.WARNING)
 
     except Exception as error:
         handle_requests_exception(error)
