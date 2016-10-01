@@ -22,20 +22,20 @@ from os import sys
 from random import shuffle
 
 import sickbeard
-from sickbeard.providers import btn, womble, thepiratebay, torrentleech, kat, iptorrents, torrentz, \
+from sickbeard.providers import btn, womble, thepiratebay, torrentleech, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, bluetigers, xthor, abnormal, torrentbytes, cpasbien,\
     freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, btdigg, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents, \
     norbits, ilovetorrents
 
 __all__ = [
-    'womble', 'btn', 'thepiratebay', 'kat', 'torrentleech', 'scc', 'hdtorrents',
+    'womble', 'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
     'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
     'morethantv', 't411', 'tokyotoshokan', 'alpharatio',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers',
     'xthor', 'abnormal', 'scenetime', 'btdigg', 'transmitthenet', 'tvchaosuk',
-    'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
+    'torrentproject', 'extratorrent', 'bitcannon', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits', 'hd4free', 'limetorrents',
     'norbits', 'ilovetorrents'
 ]

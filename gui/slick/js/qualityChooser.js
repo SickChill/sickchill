@@ -7,30 +7,21 @@ $(document).ready(function() {
             $('#customQuality').hide();
         }
 
-        $('#anyQualities option').each(function() {
+        $('#anyQualities').find('option').each(function() {
             var result = preset & $(this).val(); // jshint ignore:line
-            if (result > 0) {
-                $(this).attr('selected', 'selected');
-            } else {
-                $(this).attr('selected', false);
-            }
+            $(this).attr('selected', result > 0 ? 'selected' : false);
         });
 
-        $('#bestQualities option').each(function() {
+        $('#bestQualities').find('option').each(function() {
             var result = preset & ($(this).val() << 16); // jshint ignore:line
-            if (result > 0) {
-                $(this).attr('selected', 'selected');
-            } else {
-                $(this).attr('selected', false);
-            }
+            $(this).attr('selected', result > 0 ? 'selected' : false);
         });
-
-        return;
     }
 
-    $('#qualityPreset').on('change', function() {
-        setFromPresets($('#qualityPreset :selected').val());
+    var qualityPresets = $('#qualityPreset');
+    qualityPresets.on('change', function() {
+        setFromPresets(qualityPresets.find(':selected').val());
     });
 
-    setFromPresets($('#qualityPreset :selected').val());
+    setFromPresets(qualityPresets.find(':selected').val());
 });

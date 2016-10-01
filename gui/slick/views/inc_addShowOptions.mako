@@ -23,6 +23,13 @@
                 <input type="checkbox" name="subtitles" id="subtitles" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DEFAULT)]} />
                 <label for="subtitles">${_('Download subtitles for this show?')}</label>
             </div>
+            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                <span class="component-title">${_('Use SR Metdata')}</span>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata"  />
+                <label for="subtitles_sr_metadata">${_('use SickRage metadata when searching for subtitle, <br />this will override the autodiscovered metadata')}</label>
+            </div>
         </div>
         <br>
     % endif

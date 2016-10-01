@@ -25,9 +25,9 @@
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                 % if not header is UNDEFINED:
-                    <h1 class="header" style="margin: 0;">${header}</h1>
+                    <h1 class="header">${header}</h1>
                 % else:
-                    <h1 class="title" style="margin: 0;">${title}</h1>
+                    <h1 class="title">${title}</h1>
                 % endif
             </div>
         </div>
@@ -66,8 +66,6 @@
                             %>
                             % for curShow in myShowList:
                             <%
-                                curEp = curShow.nextaired
-
                                 disabled = sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow)
                                 curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 

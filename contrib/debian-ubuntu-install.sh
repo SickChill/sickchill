@@ -64,6 +64,7 @@ fi
 # if they do, remove the whole directory and recreate
 if [[ ! -d /opt/sickrage ]]; then
     mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
+    su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
 else
     whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
     choice=$?
@@ -100,7 +101,7 @@ elif [[ $distro = debian ]]; then
         systemctl -q enable sickrage && systemctl -q start sickrage
     else
         cp /opt/sickrage/runscripts/init.debian /etc/init.d/sickrage
-        chown root:root /etc/init.d/sickrage && chmod 644 /etc/init.d/sickrage
+        chown root:root /etc/init.d/sickrage && chmod 755 /etc/init.d/sickrage
         update-rc.d sickrage defaults && service sickrage start
     fi
 fi

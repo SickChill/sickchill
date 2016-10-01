@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:02-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:42-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -648,11 +648,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:1276
 msgid "Currently downloading subtitles for this show"
-msgstr ""
+msgstr "Obecnie pobieram napisy do tego serialu"
 
 #: sickbeard/webserve.py:1279
 msgid "This show is queued to be refreshed."
-msgstr ""
+msgstr "Ten serial jest w kolejce do odświeżenia."
 
 #: sickbeard/webserve.py:1282
 msgid "This show is queued and awaiting an update."
@@ -660,7 +660,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1285
 msgid "This show is queued and awaiting subtitles download."
-msgstr ""
+msgstr "Ten serial jest w kolejce i oczekuje na pobranie napisów."
 
 #: sickbeard/webserve.py:1290
 msgid "Resume"
@@ -1334,7 +1334,7 @@ msgstr "Wystąpił błąd przy uruchomieniu makra.<br>\n"
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
-msgstr ""
+msgstr "Pokaż/Ukryj błąd"
 
 #: gui/slick/views/addShows.mako:18 gui/slick/views/addShows_newShow.mako:14
 msgid "Add New Show"
@@ -1396,7 +1396,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Wyświetlanie folderów w obrębie tych katalogów, które nie zostały jeszcze dodane do SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Zatwierdź"
 
@@ -5745,7 +5745,7 @@ msgstr "Ustaw jako domyślne"
 msgid "Remember me"
 msgstr "Zapamiętaj mnie"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr "Edytuj zaznaczone"
 

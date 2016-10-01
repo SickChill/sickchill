@@ -212,6 +212,7 @@ home_addExistingShow.mako
 
 ul#rootDirStaticList li {
     background: #3D3D3D;
+    color: white;
 }
 
 /* =======================================================================
@@ -731,20 +732,21 @@ bootstrap panel
 
 /* =======================================================================
 new #confirmBox
-@TODO THIS NEEDS TO BE FIXED!
 ========================================================================== */
 .modal-dialog {
-    width: 460px;
     position: fixed;
-    left: 50%;
-    top: 50%;
-    margin: -130px 0 0 -230px;
-    border: 1px solid #111111;
-    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.175);
-    border-radius: 0;
+    text-align: center;
+    width: 100%;
+    top: 30%;
+    margin: 0 !important;
 }
 
 .modal-content {
+    max-width: 460px;
+    margin: 10px;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.175);
+    border: 1px solid #111111;
+    display: inline-block;
     border-radius: 0;
 }
 

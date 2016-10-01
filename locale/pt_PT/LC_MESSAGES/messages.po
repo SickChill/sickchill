@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2016-05-22 07:56-0700\n"
-"PO-Revision-Date: 2016-05-22 11:02-0400\n"
+"POT-Creation-Date: 2016-06-02 01:40-0700\n"
+"PO-Revision-Date: 2016-06-02 04:42-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -1244,7 +1244,7 @@ msgstr "Backlog"
 
 #: sickbeard/webserve.py:5328
 msgid "Show Updater"
-msgstr "Atualização de Serie"
+msgstr "Atualização do programa"
 
 #: sickbeard/webserve.py:5329
 msgid "Check Version"
@@ -1253,7 +1253,7 @@ msgstr "Verificar versão"
 #: gui/slick/views/status.mako:15 gui/slick/views/status.mako:122
 #: sickbeard/webserve.py:5330
 msgid "Show Queue"
-msgstr "Fila de espera de Series"
+msgstr "Fila de espera de programas"
 
 #: sickbeard/webserve.py:5331
 msgid "Search Queue (All)"
@@ -1393,7 +1393,7 @@ msgid "Displaying folders within these directories which aren't already added to
 msgstr "Exibindo pastas dentro desses diretórios que ainda não estão adicionados ao SickRage"
 
 #: gui/slick/views/addShows_addExistingShow.mako:74 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:115 gui/slick/views/manage_failedDownloads.mako:66
+#: gui/slick/views/manage.mako:113 gui/slick/views/manage_failedDownloads.mako:66
 msgid "Submit"
 msgstr "Submeter"
 
@@ -1902,7 +1902,7 @@ msgstr "Mostrar diretórios de raiz"
 
 #: gui/slick/views/config_general.mako:228
 msgid "where the files of shows are located"
-msgstr "onde se encontram os ficheiros das series"
+msgstr "onde se encontram os ficheiros dos programas"
 
 #: gui/slick/views/config_general.mako:241 gui/slick/views/config_general.mako:312
 #: gui/slick/views/config_general.mako:549 gui/slick/views/config_general.mako:726
@@ -5731,7 +5731,7 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:114
+#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:112
 msgid "Edit Selected"
 msgstr ""
 

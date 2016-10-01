@@ -56,38 +56,44 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.categories = {
             'Season': {'c14': 1},
-            'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
-            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}
+            'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1},
+            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1, 'c14': 1}
         }
+
+        self.enable_cookies = True
 
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        if dict_from_cookiejar(self.session.cookies).get('uid') and dict_from_cookiejar(self.session.cookies).get('pass'):
             return True
 
-        login_params = {
-            'username': self.username,
-            'password': self.password,
-            'submit.x': 0,
-            'submit.y': 0
-        }
+        if self.cookies:
+            if 'uid' in self.cookies and 'pass' in self.cookies:
+                self.add_cookies_from_ui()
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response:
-            logger.log('Unable to connect to provider', logger.WARNING)
-            return False
+            login_params = {
+                'username': self.username,
+                'password': self.password,
+                'submit.x': 0,
+                'submit.y': 0,
+            }
 
-        if re.search('Password not correct', response):
-            logger.log('Your login is incorrect', logger.WARNING)
-            return False
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+            if response.status_code not in [200]:
+                logger.log('Unable to connect to provider', logger.WARNING)
+                return False
 
-        if re.search('You tried too often', response):
-            logger.log('Too many login access attempts', logger.WARNING)
-            return False
+            if re.search('You tried too often', response.text):
+                logger.log('Too many login access attempts', logger.WARNING)
+                return False
 
-        return True
+            if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
+                return True
+            else:
+                logger.log('Failed to login, check your cookies', logger.WARNING)
+                return False
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
@@ -112,6 +118,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 parsedJSON = self.get_url(self.urls['search'], post_data=post_data, returns='json')
                 if not parsedJSON:
                     logger.log('No data returned from provider', logger.DEBUG)
+                    self.session.cookies.clear()
                     continue
 
                 try:

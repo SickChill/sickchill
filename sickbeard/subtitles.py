@@ -156,12 +156,16 @@ def subtitle_code_filter():
     return {code for code in language_converters['opensubtitles'].codes if len(code) == 3}
 
 
-def needs_subtitles(subtitles):
+def needs_subtitles(subtitles, force_lang=None):
     if not wanted_languages():
         return False
 
     if isinstance(subtitles, basestring):
         subtitles = {subtitle.strip() for subtitle in subtitles.split(',') if subtitle.strip()}
+
+    # if force language is set, we remove it from already downloaded subtitles
+    if force_lang in subtitles:
+        subtitles.remove(force_lang)
 
     if sickbeard.SUBTITLES_MULTI:
         return wanted_languages().difference(subtitles)
@@ -185,16 +189,20 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(episode):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     existing_subtitles = episode.subtitles
 
-    if not needs_subtitles(existing_subtitles):
+    if not needs_subtitles(existing_subtitles, force_lang):
         logger.log(u'Episode already has all needed subtitles, skipping {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
                     episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    languages = get_needed_languages(existing_subtitles)
+    if not force_lang:
+        languages = get_needed_languages(existing_subtitles)
+    else:
+        languages = {from_code(force_lang)}
+
     if not languages:
         logger.log(u'No subtitles needed for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
@@ -570,10 +578,12 @@ def refine_video(video, episode):
     for name in metadata_mapping:
         if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
             setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+        elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
+            setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
 
     # Set quality form metadata
     _, quality = Quality.splitCompositeStatus(episode.status)
-    if not video.format:
+    if not video.format or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
         elif quality & Quality.ANYWEBDL:
@@ -581,7 +591,7 @@ def refine_video(video, episode):
         elif quality & Quality.ANYBLURAY:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
 
-    if not video.resolution:
+    if not video.resolution or episode.show.subtitles_sr_metadata:
         if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):
             video.resolution = '720p'
         elif quality & Quality.RAWHDTV:

@@ -446,9 +446,8 @@ def moveAndSymlinkFile(srcFile, destFile):
     """
 
     try:
-        ek(shutil.move, srcFile, destFile)
-        fixSetGroupID(destFile)
-        ek(symlink, destFile, srcFile)
+        moveFile(srcFile, destFile)
+        symlink(destFile, srcFile)
     except Exception as error:
         logger.log("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead".format
                    (srcFile, destFile, error), logger.WARNING)
@@ -1450,7 +1449,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(traceback.format_exc(), logger.DEBUG)
 
     except requests.exceptions.HTTPError as error:
-        if error.response.status_code == 404 and \
+        if error.response and error.response.status_code == 404 and \
             error.response.headers.get('X-Content-Type-Options') == 'nosniff':
             pass
         else:
