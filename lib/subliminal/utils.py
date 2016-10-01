@@ -69,6 +69,27 @@ def hash_napiprojekt(video_path):
     return hashlib.md5(data).hexdigest()
 
 
+def hash_shooter(video_path):
+    """Compute a hash using Shooter's algorithm
+
+    :param string video_path: path of the video
+    :return: the hash
+    :rtype: string
+
+    """
+    filesize = os.path.getsize(video_path)
+    readsize = 4096
+    if os.path.getsize(video_path) < readsize * 2:
+        return None
+    offsets = (readsize, filesize // 3 * 2, filesize // 3, filesize - readsize * 2)
+    filehash = []
+    with open(video_path, 'rb') as f:
+        for offset in offsets:
+            f.seek(offset)
+            filehash.append(hashlib.md5(f.read(readsize)).hexdigest())
+    return ';'.join(filehash)
+
+
 def sanitize(string, ignore_characters=None):
     """Sanitize a string to strip special characters.
 
@@ -87,15 +108,15 @@ def sanitize(string, ignore_characters=None):
     # replace some characters with one space
     characters = {'-', ':', '(', ')', '.'} - ignore_characters
     if characters:
-        string = re.sub('[%s]' % re.escape(''.join(characters)), ' ', string)
+        string = re.sub(r'[%s]' % re.escape(''.join(characters)), ' ', string)
 
     # remove some characters
     characters = {'\''} - ignore_characters
     if characters:
-        string = re.sub('[%s]' % re.escape(''.join(characters)), '', string)
+        string = re.sub(r'[%s]' % re.escape(''.join(characters)), '', string)
 
     # replace multiple spaces with one
-    string = re.sub('\s+', ' ', string)
+    string = re.sub(r'\s+', ' ', string)
 
     # strip and lower case
     return string.strip().lower()
@@ -114,10 +135,10 @@ def sanitize_release_group(string):
         return
 
     # remove content in square brackets
-    string = re.sub('\[\w+\]', '', string)
+    string = re.sub(r'\[\w+\]', '', string)
 
-    # strip and lower case
-    return string.strip().lower()
+    # strip and upper case
+    return string.strip().upper()
 
 
 def timestamp(date):

@@ -457,7 +457,7 @@ class NameParser(object):
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         if not final_result.show:
-            raise InvalidShowException("Unable to match {0} to a show in your database. Parser result: {1}".format(
+            raise InvalidShowException(u"Unable to match {0} to a show in your database. Parser result: {1}".format(
                                          name, file_name_result or dir_name_result))
 
         # if there's no useful info in it then raise an exception

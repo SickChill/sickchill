@@ -67,7 +67,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             "username": self.username.encode("utf-8"),
             "password": self.password.encode("utf-8"),
             "login": "submit",
-            "remember_me": "on",
+            # "remember_me": "on",
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")

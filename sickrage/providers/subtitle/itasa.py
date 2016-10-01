@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover
         import xml.etree.cElementTree as etree
     except ImportError:
         import xml.etree.ElementTree as etree
-import re
+
 from requests import Session
 from zipfile import ZipFile, is_zipfile
 
