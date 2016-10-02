@@ -739,6 +739,29 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testGenericURL').on('click', function () {
+                var genericurl = {};
+                genericurl.id = $.trim($('#genericurl_id').val());
+                if (!genericurl.id) {
+                    $('#testGenericURL-result').html('Please fill out the necessary fields above.');
+                    if (!genericurl.id) {
+                        $('#genericurl_id').addClass('warning');
+                    } else {
+                        $('#genericurl_id').removeClass('warning');
+                    }
+                    return;
+                }
+                $('#genericurl_id').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testGenericURL-result').html(loading);
+                $.get(srRoot + '/home/testGenericURL', {
+                    'genericurl_id': genericurl.id,
+                }).done(function (data) {
+                    $('#testGenericURL-result').html(data);
+                    $('#testGenericURL').prop('disabled', false);
+                });
+            });
+
             $('#testJoin').on('click', function () {
                 var join = {};
                 join.id = $.trim($('#join_id').val());

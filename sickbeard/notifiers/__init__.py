@@ -46,6 +46,7 @@ pushalot_notifier = pushalot.Notifier()
 pushbullet_notifier = pushbullet.Notifier()
 freemobile_notifier = freemobile.Notifier()
 telegram_notifier = telegram.Notifier()
+genericurl_notifier = genericurl.Notifier()
 join_notifier = join.Notifier()
 # social
 twitter_notifier = tweet.Notifier()
@@ -65,6 +66,7 @@ notifiers = [
     growl_notifier,
     freemobile_notifier,
     telegram_notifier,
+    genericurl_notifier,
     prowl_notifier,
     pushover_notifier,
     boxcar2_notifier,

@@ -2184,6 +2184,94 @@
 
             <div class="config-group-divider"></div>
 
+            <!-- /genericurl component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-genericurl" title="${_('Generic URL')}"></span>
+                        <h3>${_('Generic URL')}</h3>
+                        <p>${_('Generic URL let SickRage push notifications to a custom URL.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="use_genericurl" id="use_genericurl" ${('', 'checked="checked"')[bool(sickbeard.USE_GENERICURL)]}/>
+                                <label for="use_genericurl">${_('Send Generic URL notifications?')}</label>
+                            </div>
+                        </div>
+
+                        <div id="content_use_genericurl">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="genericurl_notify_onsnatch" id="genericurl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.GENERICURL_NOTIFY_ONSNATCH)]}/>
+                                    <label for="genericurl_notify_onsnatch">${_('Send a message when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="genericurl_notify_ondownload" id="genericurl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.GENERICURL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="genericurl_notify_ondownload">${_('Send a message when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="genericurl_notify_onsubtitledownload" id="genericurl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="genericurl_notify_onsubtitledownload">${_('Send a message when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Url to Push')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="genericurl_id" id="genericurl_id" value="${sickbeard.GENERICURL_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testGenericURL-result">${_('Click below to test your settings.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Telegram" id="testGenericURL" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
             <!-- /join component-group //-->
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">

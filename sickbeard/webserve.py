@@ -788,6 +788,15 @@ class Home(WebRoot):
             return _("Error sending Telegram notification: {message}").format(message=message)
 
     @staticmethod
+    def testGenericURL(genericurl_id=None):
+
+        result, message = notifiers.genericurl_notifier.test_notify(genericurl_id)
+        if result:
+            return _("Generic URL notification succeeded.")
+        else:
+            return _("Error sending Generic URL notification: {message}").format(message=message)
+
+    @staticmethod
     def testJoin(join_id=None):
 
         result, message = notifiers.join_notifier.test_notify(join_id)
@@ -4899,6 +4908,8 @@ class ConfigNotifications(Config):
             freemobile_notify_onsubtitledownload=None, freemobile_id=None, freemobile_apikey=None,
             use_telegram=None, telegram_notify_onsnatch=None, telegram_notify_ondownload=None,
             telegram_notify_onsubtitledownload=None, telegram_id=None, telegram_apikey=None,
+            use_genericurl=None, genericurl_notify_onsnatch=None, genericurl_notify_ondownload=None,
+            genericurl_notify_onsubtitledownload=None, genericurl_id=None, genericurl_apikey=None,
             use_join=None, join_notify_onsnatch=None, join_notify_ondownload=None,
             join_notify_onsubtitledownload=None, join_id=None,
             use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
@@ -4991,6 +5002,12 @@ class ConfigNotifications(Config):
         sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
         sickbeard.TELEGRAM_ID = telegram_id
         sickbeard.TELEGRAM_APIKEY = telegram_apikey
+
+        sickbeard.USE_GENERICURL = config.checkbox_to_value(use_genericurl)
+        sickbeard.GENERICURL_NOTIFY_ONSNATCH = config.checkbox_to_value(genericurl_notify_onsnatch)
+        sickbeard.GENERICURL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(genericurl_notify_ondownload)
+        sickbeard.GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(genericurl_notify_onsubtitledownload)
+        sickbeard.GENERICURL_ID = genericurl_id
 
         sickbeard.USE_JOIN = config.checkbox_to_value(use_join)
         sickbeard.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
