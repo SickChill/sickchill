@@ -104,7 +104,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
@@ -122,7 +122,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     torrent_rows = html.find_all("div", class_="torrentrow")
 
                     # Continue only if at least one Release is found
-                    if len(torrent_rows) < 1:
+                    if not torrent_rows:
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
@@ -163,7 +163,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.log("Discarding torrent because it doesn't meet the"
-                                               " minimum seeders or leechers: {} (S:{} L:{})".format
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -172,7 +172,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
                             if mode != "RSS":
-                                logger.log("Found result: {} with {} seeders and {} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
