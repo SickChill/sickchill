@@ -36,8 +36,13 @@ class EpisodeTags(object):
         try:
             return getattr(self, match_obj)
         except (KeyError, AttributeError):
-            regex = regex or self.rex[attr]
-            result = regex.search(self.name, flags)
+            regexes = regex or self.rex[attr]
+            if type(regexes) is not list:
+                regexes = [regexes]
+            for regexItem in regexes:
+                result = regexItem.search(self.name, flags)
+                if result:
+                    break
             setattr(self, match_obj, result)
             return result
 
@@ -75,7 +80,7 @@ class EpisodeTags(object):
         """
         attr = 'res'
         match = self._get_match_obj(attr)
-        return '' if not match else match.group('scan').lower()
+        return None if not match or not match.group('scan') else match.group('scan').lower()
 
     # SOURCES
     @property

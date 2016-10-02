@@ -189,8 +189,8 @@ class newpctProvider(TorrentProvider):
         title = title[22:]
 
         # Quality - Use re module to avoid case sensitive problems with replace
-        title = re.sub(r'\[HDTV 1080p[^\[]*]', '1080p HDTV x264', title, flags=re.I)
-        title = re.sub(r'\[HDTV 720p[^\[]*]', '720p HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[HDTV 1080(p)?[^\[]*]', '1080p HDTV x264', title, flags=re.I)
+        title = re.sub(r'\[HDTV 720(p)?[^\[]*]', '720p HDTV x264', title, flags=re.I)
         title = re.sub(r'\[ALTA DEFINICION 720p[^\[]*]', '720p HDTV x264', title, flags=re.I)
         title = re.sub(r'\[HDTV]', 'HDTV x264', title, flags=re.I)
         title = re.sub(r'\[DVD[^\[]*]', 'DVDrip x264', title, flags=re.I)
