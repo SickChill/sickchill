@@ -58,8 +58,8 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
                     search_url = (self.urls['rss'], self.urls['search'] + search_string + '/s/d/1/?fmt=rss')[mode != 'RSS']
@@ -74,7 +74,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         continue
 
                     data = BeautifulSoup(data, 'html5lib')
-                    for item in data.findAll('item'):
+                    for item in data('item'):
                         try:
                             if not item.category.text.endswith(('TV', 'Anime')):
                                 continue
@@ -111,7 +111,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

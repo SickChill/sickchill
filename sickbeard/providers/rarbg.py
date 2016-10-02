@@ -116,8 +116,8 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             for search_string in search_strings[mode]:
                 if mode != "RSS":
                     search_params["search_string"] = search_string
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
@@ -151,18 +151,19 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.log("Discarding torrent because it doesn't meet the"
-                                           " minimum seeders or leechers: {} (S:{} L:{})".format
+                                           " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
                         torrent_size = item.pop("size", -1)
                         size = convert_size(torrent_size) or -1
+                        torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
                             logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                        (title, seeders, leechers), logger.DEBUG)
 
-                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         items.append(result)
                     except StandardError:
                         continue

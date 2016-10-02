@@ -60,21 +60,16 @@ class OmgwtfnzbsProvider(NZBProvider):
         if is_XML:
             # provider doesn't return xml on error
             return True
-        else:
-            if 'notice' in parsed_data:
-                description_text = parsed_data.get('notice')
 
-                if 'information is incorrect' in parsed_data.get('notice'):
-                    logger.log('Invalid api key. Check your settings', logger.WARNING)
+        if 'notice' in parsed_data:
+            description_text = parsed_data.get('notice')
+            if 'information is incorrect' in description_text:
+                logger.log('Invalid api key. Check your settings', logger.WARNING)
+            elif '0 results matched your terms' not in description_text:
+                logger.log('Unknown error: {0}'.format(description_text), logger.DEBUG)
+            return False
 
-                elif '0 results matched your terms' in parsed_data.get('notice'):
-                    return True
-
-                else:
-                    logger.log('Unknown error: {0!s}'.format(description_text), logger.DEBUG)
-                    return False
-
-            return True
+        return True
 
     def _get_title_and_url(self, item):
         return item['release'], item['getnzb']
@@ -101,8 +96,8 @@ class OmgwtfnzbsProvider(NZBProvider):
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')),
-                               logger.DEBUG)
+                    logger.log('Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                 data = self.get_url(self.urls['api'], params=search_params, returns='json')
                 if not data:
@@ -116,7 +111,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.log('Found result: {0}'.format(item.get('title')), logger.DEBUG)
+                    logger.log('Found result: {0}'.format(item.get('release')), logger.DEBUG)
                     items.append(item)
 
             results += items

@@ -15,12 +15,12 @@ $(document).ready(function(){
                     return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
-                votes: '[data-votes] parseInt',
+                votes: '[data-votes] parseInt'
             }
         });
     });
 
-    $('#showsort').on( 'change', function() {
+    $('#showsort').on('change', function() {
         var sortCriteria;
         switch (this.value) {
             case 'original':
@@ -30,7 +30,7 @@ $(document).ready(function(){
                 /* randomise, else the rating_votes can already
                  * have sorted leaving this with nothing to do.
                  */
-                $('#container').isotope({sortBy: 'random'});
+                $('#container').isotope({ sortBy: 'random' });
                 sortCriteria = 'rating';
                 break;
             case 'rating_votes':
@@ -43,10 +43,12 @@ $(document).ready(function(){
                 sortCriteria = 'name';
                 break;
         }
-        $('#container').isotope({sortBy: sortCriteria});
+        $('#container').isotope({ sortBy: sortCriteria });
     });
 
-    $('#showsortdirection').on( 'change', function() {
-        $('#container').isotope({sortAscending: ('asc' === this.value)});
+    $('#showsortdirection').on('change', function() {
+        $('#container').isotope({
+            sortAscending: ('asc' === this.value)
+        });
     });
 });

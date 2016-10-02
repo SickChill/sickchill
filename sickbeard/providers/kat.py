@@ -70,8 +70,8 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                 search_params["field"] = "seeders" if mode != "RSS" else "time_add"
 
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls["search"] % ("usearch" if mode != "RSS" else search_string)
                 if self.custom_url:
@@ -82,7 +82,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
+                    logger.log("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one", logger.DEBUG)
                     continue
 
                 if not data.startswith("<?xml"):
@@ -90,7 +90,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    for item in html.find_all("item"):
+                    for item in html("item"):
                         try:
                             title = item.title.get_text(strip=True)
                             # Use the torcache link kat provides,
@@ -126,7 +126,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                             if mode != "RSS":
-                                logger.log("Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 

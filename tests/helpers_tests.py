@@ -22,7 +22,6 @@
 Test sickbeard.helpers
 
 Public Methods:
-    fixGlob
     indentXML
     remove_non_release_groups
     isMediaFile
@@ -82,7 +81,6 @@ Public Methods:
     getDiskSpaceUsage
 Private Methods:
     _check_against_names
-    _getTempDir
     _setUpSession
 """
 
@@ -95,7 +93,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import helpers
-from sickrage.helper.common import media_extensions, subtitle_extensions
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -235,13 +233,6 @@ class HelpersDirectoryTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_get_temp_dir(self):
-        """
-        Test _getTempDir
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_is_hidden_folder(self):
         """
         Test is_hidden_folder
@@ -275,10 +266,10 @@ class HelpersFileTests(unittest.TestCase):
 
         # Test all valid media extensions
         temp_name = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
-        extension_tests = {'.'.join((temp_name, ext)): True for ext in media_extensions}
+        extension_tests = {'.'.join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
         # ...and some invalid ones
         other_extensions = ['txt', 'sfv', 'srr', 'rar', 'nfo', 'zip']
-        extension_tests.update({'.'.join((temp_name, ext)): False for ext in other_extensions + subtitle_extensions})
+        extension_tests.update({'.'.join((temp_name, ext)): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
 
         # Samples should be ignored
         sample_tests = {  # Samples should be ignored, valid samples will return False
@@ -607,13 +598,6 @@ class HelpersMiscTests(unittest.TestCase):
     Test misc helper methods
     """
     @unittest.skip('Not yet implemented')
-    def test_fix_glob(self):
-        """
-        Test fixGlob
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_indent_xml(self):
         """
         Test indentXML
@@ -682,7 +666,7 @@ if __name__ == '__main__':
     print("==================")
     print("######################################################################")
     for name, test_data in TEST_CASES.items():
-        test_name = 'test_{0!s}'.format(name)
+        test_name = 'test_{0}'.format(name)
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)
 

@@ -167,7 +167,7 @@ class ApiHandler(RequestHandler):
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{{"result": "{0!s}", "message": "error while composing output: {1!s}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
+            out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
@@ -419,11 +419,11 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.log(u'API :: Invalid param type: "{0!s}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
+            logger.log(u'API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(u'param "{0!s}" with given value "{1!s}" could not be parsed into "{2!s}"'.format(str(name), str(value), str(arg_type)))
+            raise ApiError(u'param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
 
         return value
 
@@ -968,7 +968,7 @@ class CMD_SubtitleSearch(ApiCall):
 
         if new_subtitles:
             new_languages = [sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
-            status = 'New subtitles downloaded: {0!s}'.format(', '.join(new_languages))
+            status = 'New subtitles downloaded: {0}'.format(', '.join(new_languages))
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
@@ -1265,7 +1265,7 @@ class CMD_LogsClear(ApiCall):
 
             classes.WarningViewer.clear()
         else:
-            return _responds(RESULT_FAILURE, msg="Unknown log level: {0!s}".format(self.level))
+            return _responds(RESULT_FAILURE, msg="Unknown log level: {0}".format(self.level))
 
         return _responds(RESULT_SUCCESS, msg=msg)
 
@@ -1315,7 +1315,7 @@ class CMD_PostProcess(ApiCall):
         if not self.return_data:
             data = ""
 
-        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0!s}".format(self.path))
+        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0}".format(self.path))
 
 
 class CMD_SickBeard(ApiCall):
@@ -1644,8 +1644,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-                    indexer_api_params['language'] = self.lang
+                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                 indexer_api_params['actors'] = False
                 indexer_api_params['custom_ui'] = classes.AllShowsListUI
@@ -1670,8 +1669,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-                    indexer_api_params['language'] = self.lang
+                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                 indexer_api_params['actors'] = False
 
@@ -2284,7 +2282,7 @@ class CMD_ShowDelete(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0!s} has been queued to be deleted'.format(show.name))
+        return _responds(RESULT_SUCCESS, msg='{0} has been queued to be deleted'.format(show.name))
 
 
 class CMD_ShowGetQuality(ApiCall):
@@ -2449,7 +2447,7 @@ class CMD_ShowPause(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0!s} has been {1!s}'.format(show.name, ('resumed', 'paused')[show.paused]))
+        return _responds(RESULT_SUCCESS, msg='{0} has been {1}'.format(show.name, ('resumed', 'paused')[show.paused]))
 
 
 class CMD_ShowRefresh(ApiCall):
@@ -2477,7 +2475,7 @@ class CMD_ShowRefresh(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0!s} has queued to be refreshed'.format(show.name))
+        return _responds(RESULT_SUCCESS, msg='{0} has queued to be refreshed'.format(show.name))
 
 
 class CMD_ShowSeasonList(ApiCall):

@@ -42,7 +42,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'http://www.t411.ch/',
+        self.urls = {'base_url': 'https://www.t411.ch/',
                      'search': 'https://api.t411.ch/torrents/search/%s*?cid=%s&limit=100',
                      'rss': 'https://api.t411.ch/torrents/top/today',
                      'login_page': 'https://api.t411.ch/auth',
@@ -67,7 +67,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json')
+        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json', verify=False)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -93,12 +93,12 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_urlS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
                 for search_url in search_urlS:
-                    data = self.get_url(search_url, returns='json')
+                    data = self.get_url(search_url, returns='json', verify=False)
                     if not data:
                         continue
 
@@ -140,19 +140,19 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                                     continue
 
                                 size = convert_size(torrent_size) or -1
-                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                                 items.append(item)
 
                             except Exception:
-                                logger.log(u"Invalid torrent data, skipping result: {0!s}".format(torrent), logger.DEBUG)
-                                logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.DEBUG)
+                                logger.log(u"Invalid torrent data, skipping result: {0}".format(torrent), logger.DEBUG)
+                                logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.DEBUG)
                                 continue
 
                     except Exception:
-                        logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
+                        logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

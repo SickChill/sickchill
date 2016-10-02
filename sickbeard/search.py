@@ -20,12 +20,9 @@
 
 import os
 import re
-import errno
 import threading
 import datetime
 import traceback
-import requests
-from socket import timeout as SocketTimeout
 
 import sickbeard
 
@@ -110,8 +107,8 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
         for curEp in result.episodes:
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
-    if re.search(r'(^|[\. _-])(proper|repack)([\. _-]|$)', result.name, re.I) is not None:
-        endStatus = SNATCHED_PROPER
+
+    endStatus = SNATCHED_PROPER if re.search(r'\b(proper|repack|real)\b', result.name, re.I) else endStatus
 
     if result.url.startswith('magnet') or result.url.endswith('torrent'):
         result.resultType = 'torrent'
@@ -125,6 +122,10 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
         elif sickbeard.NZB_METHOD == "nzbget":
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
+        elif sickbeard.NZB_METHOD == "download_station":
+            client = clients.getClientIstance(sickbeard.NZB_METHOD)(
+                sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
+            dlResult = client.sendNZB(result)
         else:
             logger.log(u"Unknown NZB action specified in config: " + sickbeard.NZB_METHOD, logger.ERROR)
             dlResult = False
@@ -227,19 +228,7 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
             continue
 
-        if show.rls_ignore_words and show_name_helpers.containsAtLeastOneWord(cur_result.name, cur_result.show.rls_ignore_words):
-            logger.log(u"Ignoring " + cur_result.name + " based on ignored words filter: " + show.rls_ignore_words,
-                       logger.INFO)
-            continue
-
-        if show.rls_require_words and not show_name_helpers.containsAtLeastOneWord(cur_result.name, cur_result.show.rls_require_words):
-            logger.log(u"Ignoring " + cur_result.name + " based on required words filter: " + show.rls_require_words,
-                       logger.INFO)
-            continue
-
-        if not show_name_helpers.filterBadReleases(cur_result.name, parse=False):
-            logger.log(u"Ignoring " + cur_result.name + " because its not a valid scene release that we want, ignoring it",
-                       logger.INFO)
+        if not show_name_helpers.filter_bad_releases(cur_result.name, parse=False, show=show):
             continue
 
         if hasattr(cur_result, 'size'):
@@ -320,7 +309,7 @@ def isFirstBestMatch(result):
 
     show_obj = result.episodes[0].show
 
-    _, best_qualities = Quality.splitQuality(show_obj.quality)
+    any_qualities_, best_qualities = Quality.splitQuality(show_obj.quality)
 
     return result.quality in best_qualities if best_qualities else False
 
@@ -334,7 +323,7 @@ def wantedEpisodes(show, fromDate):
     """
     wanted = []
     if show.paused:
-        logger.log(u"Not checking for episodes of {0!s} because the show is paused".format(show.name), logger.DEBUG)
+        logger.log(u"Not checking for episodes of {0} because the show is paused".format(show.name), logger.DEBUG)
         return wanted
 
     allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
@@ -419,7 +408,7 @@ def searchForNeededEpisodes():
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
             if not curEp.show or curEp.show.paused:
-                logger.log(u"Skipping {0!s} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
+                logger.log(u"Skipping {0} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
                 continue
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
@@ -498,30 +487,12 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
-            except AuthException as e:
-                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            except AuthException as error:
+                logger.log(u"Authentication error: {0!r}".format(error), logger.ERROR)
                 break
-            except (SocketTimeout, TypeError) as e:
-                logger.log(u"Connection timed out (sockets) while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects) as e:
-                logger.log(u"HTTP error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.ConnectionError as e:
-                logger.log(u"Connection error while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.Timeout as e:
-                logger.log(u"Connection timed out while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except requests.exceptions.ContentDecodingError:
-                logger.log(u"Content-Encoding was gzip, but content was not compressed while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                break
-            except Exception as e:
-                if hasattr(e, 'errno') and e.errno == errno.ECONNRESET:
-                    logger.log(u"Connection reseted by peer while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.DEBUG)
-                else:
-                    logger.log(u"Unknown exception while searching {0!s}. Error: {1!r}".format(curProvider.name, ex(e)), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+            except Exception as error:
+                logger.log(u"Exception while searching {0}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
                 break
 
             didSearch = True
@@ -529,7 +500,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             if len(searchResults):
                 # make a list of all the results for this provider
                 for curEp in searchResults:
-                    if curEp in foundResults:
+                    if curEp in foundResults[curProvider.name]:
                         foundResults[curProvider.name][curEp] += searchResults[curEp]
                     else:
                         foundResults[curProvider.name][curEp] = searchResults[curEp]
@@ -564,7 +535,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
         # see if every episode is wanted
         if bestSeasonResult:
-            searchedSeasons = [str(x.season) for x in episodes]
+            searchedSeasons = {str(x.season) for x in episodes}
 
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
@@ -577,7 +548,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                                   [show.indexerid])]
 
-            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0!s} AND season in  {1!s}]".format(show.indexerid, ','.join(searchedSeasons)))
+            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0} AND season in  {1}]".format(show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
             allWanted = True

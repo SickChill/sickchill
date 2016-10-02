@@ -176,10 +176,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             if just_caps:
                 return True, return_categories, 'Just checking caps!'
 
-            for category in html.find_all('category'):
+            for category in html('category'):
                 if 'TV' in category.get('name', '') and category.get('id', ''):
                     return_categories.append({'id': category['id'], 'name': category['name']})
-                    for subcat in category.find_all('subcat'):
+                    for subcat in category('subcat'):
                         if subcat.get('name', '') and subcat.get('id', ''):
                             return_categories.append({'id': subcat['id'], 'name': subcat['name']})
 
@@ -193,6 +193,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
     def _get_default_providers():
         # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
         return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
+            'NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!' + \
             'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
             'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
             'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
@@ -214,7 +215,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         Checks that the returned data is valid
         Returns: _check_auth if valid otherwise False if there is an error
         """
-        if data.find_all('categories') + data.find_all('item'):
+        if data('categories') + data('item'):
             return self._check_auth()
 
         try:
@@ -309,7 +310,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log('Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                     if search_params['t'] != 'tvsearch':
                         search_params['q'] = search_string
@@ -328,7 +330,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     except AttributeError:
                         torznab = False
 
-                    for item in html.find_all('item'):
+                    for item in html('item'):
                         try:
                             title = item.title.get_text(strip=True)
                             download_url = None
@@ -351,7 +353,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                                 item_size = size_regex.group() if size_regex else -1
                             else:
                                 item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item.find_all('newznab:attr') + item.find_all('torznab:attr'):
+                                for attr in item('newznab:attr') + item('torznab:attr'):
                                     item_size = attr['value'] if attr['name'] == 'size' else item_size
                                     seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                                     leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers

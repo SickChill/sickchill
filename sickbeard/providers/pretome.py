@@ -93,8 +93,8 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls['search'] % (quote(search_string), self.categories)
 
@@ -110,17 +110,17 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
-                        torrent_table = html.find('table', attrs={'style': 'border: none; width: 100%;'})
+                        torrent_table = html.find('table', style='border: none; width: 100%;')
                         if not torrent_table:
                             logger.log(u"Could not find table of torrents", logger.ERROR)
                             continue
 
-                        torrent_rows = torrent_table.find_all('tr', attrs={'class': 'browse'})
+                        torrent_rows = torrent_table('tr', class_='browse')
 
                         for result in torrent_rows:
-                            cells = result.find_all('td')
+                            cells = result('td')
                             size = None
-                            link = cells[1].find('a', attrs={'style': 'font-size: 1.25em; font-weight: bold;'})
+                            link = cells[1].find('a', style='font-size: 1.25em; font-weight: bold;')
 
                             torrent_id = link['href'].replace('details.php?id=', '')
 
@@ -152,14 +152,14 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

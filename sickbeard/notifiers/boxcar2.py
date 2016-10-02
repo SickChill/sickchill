@@ -52,7 +52,7 @@ class Notifier(object):
             'notification[long_message]': msg,
             'notification[sound]': 'notifier-2',
             'notification[source_name]': 'SickRage',
-            'notifications[icon_url]': sickbeard.LOGO_URL
+            'notification[icon_url]': sickbeard.LOGO_URL
         }
 
         response = sickbeard.helpers.getURL(self.url, post_data=post_data, session=self.session, timeout=60, returns='json')

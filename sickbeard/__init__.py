@@ -17,45 +17,42 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
+from threading import Lock
 
 import datetime
 import socket
 import os
+import sys
 import re
 import shutil
-import shutil_custom
 import random
+import gettext
 
-shutil.copyfile = shutil_custom.copyfile_custom
+try:
+    import pytz  # pylint: disable=unused-import
+except ImportError:
+    from pkg_resources import require
+    require('pytz')
 
-from threading import Lock
-import sys
+import shutil_custom
 
-from github import Github
-
-from sickbeard import metadata
-from sickbeard import providers
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, auto_postprocessor, \
-    subtitles, traktChecker
-from sickbeard import db
-from sickbeard import helpers
-from sickbeard import scheduler
-from sickbeard import search_queue
-from sickbeard import show_queue
-from sickbeard import logger
-from sickbeard import naming
-from sickbeard import dailysearcher
 from sickbeard.indexers import indexer_api
-from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, \
-    indexer_error, indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort
-from sickbeard.common import SD
-from sickbeard.common import SKIPPED
-from sickbeard.common import WANTED
-from sickbeard.providers.rsstorrent import TorrentRssProvider
+from sickbeard.common import SD, SKIPPED, WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.providers.newznab import NewznabProvider
+from sickbeard.providers.rsstorrent import TorrentRssProvider
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, \
+    check_setting_float, ConfigMigrator
+from sickbeard import db, helpers, scheduler, search_queue, show_queue, logger, \
+    naming, dailysearcher, metadata, providers
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, \
+    auto_postprocessor, subtitles, traktChecker
+from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, \
+    indexer_showincomplete, indexer_exception, indexer_error, \
+    indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, \
+    indexer_userabort
 
+from sickrage.helper import setup_github
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
@@ -64,8 +61,23 @@ from sickrage.system.Shutdown import Shutdown
 from configobj import ConfigObj
 
 import requests
-requests.packages.urllib3.disable_warnings()
 
+gettext.install('messages', unicode=1, codeset='UTF-8')
+
+# Some strings come from metadata or libraries or 3rd party sites,
+# So we need to pre-define them to get translations for them
+dynamic_strings = (
+    _('Drama'), _('Mystery'), _('Science-Fiction'), _('Crime'), _('Action'),
+    _('Comedy'), _('Thriller'), _('Animation'), _('Family'), _('Fantasy'),
+    _('Adventure'), _('Horror'), _('Film-Noir'), _('Sci-Fi'), _('Romance'),
+    _('Sport'), _('War'), _('Biography'), _('History'), _('Music'), _('Western'),
+    _('News'), _('Sitcom'), _('Reality-TV'), _('Documentary'), _('Game-Show'), _('Musical'),
+    _('Talk-Show'), _('Science-Fiction')
+)
+
+
+shutil.copyfile = shutil_custom.copyfile_custom
+requests.packages.urllib3.disable_warnings()
 indexerApi = indexer_api.indexerApi
 
 PID = None
@@ -82,6 +94,7 @@ ENCRYPTION_SECRET = None
 
 PROG_DIR = '.'
 MY_FULLNAME = None
+LOCALE_DIR = 'locale'
 MY_NAME = None
 MY_ARGS = []
 SYS_ENCODING = ''
@@ -278,7 +291,6 @@ PROCESS_METHOD = None
 DELRARCONTENTS = False
 MOVE_ASSOCIATED_FILES = False
 POSTPONE_IF_SYNC_FILES = True
-POSTPONE_IF_NO_SUBS = False
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
 UNPACK = False
@@ -328,6 +340,11 @@ TORRENT_LABEL_ANIME = ''
 TORRENT_VERIFY_CERT = False
 TORRENT_RPCURL = 'transmission'
 TORRENT_AUTH_TYPE = 'none'
+
+SYNOLOGY_DSM_HOST = None
+SYNOLOGY_DSM_USERNAME = None
+SYNOLOGY_DSM_PASSWORD = None
+SYNOLOGY_DSM_PATH = None
 
 USE_KODI = False
 KODI_ALWAYS_ON = True
@@ -381,6 +398,12 @@ TELEGRAM_NOTIFY_ONDOWNLOAD = False
 TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
 TELEGRAM_ID = ''
 TELEGRAM_APIKEY = ''
+
+USE_JOIN = False
+JOIN_NOTIFY_ONSNATCH = False
+JOIN_NOTIFY_ONDOWNLOAD = False
+JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = False
+JOIN_ID = ''
 
 USE_PROWL = False
 PROWL_NOTIFY_ONSNATCH = False
@@ -445,6 +468,12 @@ SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
 SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
+USE_SLACK = False
+SLACK_NOTIFY_SNATCH = None
+SLACK_NOTIFY_DOWNLOAD = None
+SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
+SLACK_WEBHOOK = None
+
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -490,6 +519,7 @@ PUSHBULLET_NOTIFY_ONDOWNLOAD = False
 PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PUSHBULLET_API = None
 PUSHBULLET_DEVICE = None
+PUSHBULLET_CHANNEL = None
 
 USE_EMAIL = False
 EMAIL_NOTIFY_ONSNATCH = False
@@ -505,6 +535,8 @@ EMAIL_LIST = None
 EMAIL_SUBJECT = None
 
 GUI_NAME = None
+GUI_LANG = None
+
 HOME_LAYOUT = None
 HISTORY_LAYOUT = None
 HISTORY_LIMIT = 0
@@ -522,6 +554,8 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
+FANART_BACKGROUND = None
+FANART_BACKGROUND_OPACITY = None
 
 USE_SUBTITLES = False
 SUBTITLES_LANGUAGES = []
@@ -535,7 +569,6 @@ SUBTITLES_HEARING_IMPAIRED = False
 SUBTITLES_FINDER_FREQUENCY = 1
 SUBTITLES_MULTI = False
 SUBTITLES_EXTRA_SCRIPTS = []
-SUBTITLES_DOWNLOAD_IN_PP = False
 SUBTITLES_KEEP_ONLY_WANTED = False
 
 ADDIC7ED_USER = ADDIC7ED_PASS = None
@@ -605,11 +638,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
+            USE_JOIN, JOIN_ID, JOIN_NOTIFY_ONSNATCH, JOIN_NOTIFY_ONDOWNLOAD, JOIN_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
-            USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
+            USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, PUSHBULLET_CHANNEL,\
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, UNPACK, CPU_PRESET, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
@@ -623,17 +657,19 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
-            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, POSTPONE_IF_NO_SUBS, dailySearchScheduler, NFO_RENAME, \
+            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
-            USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_DOWNLOAD_IN_PP, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
+            USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
-            DEVELOPER, gh, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT
+            DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -660,6 +696,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
+        CheckSection(CFG, 'Slack')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -694,19 +731,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # init logging
         logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=DEBUG, database_logging=DBDEBUG)
 
-        try:
-            if GIT_USERNAME and GIT_PASSWORD:
-                gh = Github(login_or_token=GIT_USERNAME, password=GIT_PASSWORD, user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except Exception as error:
-            logger.log(u'Unable to setup GitHub properly with your github login. Please check your credentials. Error: {0}'.format(error), logger.WARNING)
-            gh = None
-
-        if not gh:
-            try:
-                gh = Github(user_agent="SickRage").get_organization(GIT_ORG).get_repo(GIT_REPO)
-            except Exception as error:
-                logger.log(u'Unable to setup GitHub properly. GitHub will not be available. Error: {0}'.format(error), logger.WARNING)
-                gh = None
+        # Initializes sickbeard.gh
+        setup_github()
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))
@@ -717,7 +743,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # git_remote
         GIT_REMOTE = check_setting_str(CFG, 'General', 'git_remote', 'origin')
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
-                                           'https://github.com/{0!s}/{1!s}.git'.format(GIT_ORG, GIT_REPO))
+                                           'https://github.com/{0}/{1}.git'.format(GIT_ORG, GIT_REPO))
 
         if 'sickragetv' in GIT_REMOTE_URL.lower():
             GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
@@ -780,9 +806,16 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
+        FANART_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'fanart_background', 1))
+        FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4)
+
+        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
+        GUI_LANG = check_setting_str(CFG, 'GUI', 'language', '')
+        if GUI_LANG:
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+        else:
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
@@ -880,11 +913,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))
 
         NZB_METHOD = check_setting_str(CFG, 'General', 'nzb_method', 'blackhole')
-        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget'):
+        if NZB_METHOD not in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
-        if TORRENT_METHOD not in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet'):
+        if TORRENT_METHOD not in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
             TORRENT_METHOD = 'blackhole'
 
         DOWNLOAD_PROPERS = bool(check_setting_int(CFG, 'General', 'download_propers', 1))
@@ -947,7 +980,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         DELRARCONTENTS = bool(check_setting_int(CFG, 'General', 'del_rar_contents', 0))
         MOVE_ASSOCIATED_FILES = bool(check_setting_int(CFG, 'General', 'move_associated_files', 0))
         POSTPONE_IF_SYNC_FILES = bool(check_setting_int(CFG, 'General', 'postpone_if_sync_files', 1))
-        POSTPONE_IF_NO_SUBS = bool(check_setting_int(CFG, 'General', 'postpone_if_no_subs', 0))
         SYNC_FILES = check_setting_str(CFG, 'General', 'sync_files', SYNC_FILES)
         NFO_RENAME = bool(check_setting_int(CFG, 'General', 'nfo_rename', 1))
         CREATE_MISSING_SHOW_DIRS = bool(check_setting_int(CFG, 'General', 'create_missing_show_dirs', 0))
@@ -993,6 +1025,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
         TORRENT_RPCURL = check_setting_str(CFG, 'TORRENT', 'torrent_rpcurl', 'transmission')
         TORRENT_AUTH_TYPE = check_setting_str(CFG, 'TORRENT', 'torrent_auth_type', '')
+
+        SYNOLOGY_DSM_HOST = check_setting_str(CFG, 'Synology', 'host', '')
+        SYNOLOGY_DSM_USERNAME = check_setting_str(CFG, 'Synology', 'username', '', censor_log=True)
+        SYNOLOGY_DSM_PASSWORD = check_setting_str(CFG, 'Synology', 'password', '', censor_log=True)
+        SYNOLOGY_DSM_PATH = check_setting_str(CFG, 'Synology', 'path', '')
 
         USE_KODI = bool(check_setting_int(CFG, 'KODI', 'use_kodi', 0))
         KODI_ALWAYS_ON = bool(check_setting_int(CFG, 'KODI', 'kodi_always_on', 1))
@@ -1045,6 +1082,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsubtitledownload', 0))
         TELEGRAM_ID = check_setting_str(CFG, 'Telegram', 'telegram_id', '')
         TELEGRAM_APIKEY = check_setting_str(CFG, 'Telegram', 'telegram_apikey', '')
+
+        USE_JOIN = bool(check_setting_int(CFG, 'Join', 'use_join', 0))
+        JOIN_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Join', 'join_notify_onsnatch', 0))
+        JOIN_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Join', 'join_notify_ondownload', 0))
+        JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Join', 'join_notify_onsubtitledownload', 0))
+        JOIN_ID = check_setting_str(CFG, 'Join', 'join_id', '')
 
         USE_PROWL = bool(check_setting_int(CFG, 'Prowl', 'use_prowl', 0))
         PROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsnatch', 0))
@@ -1105,6 +1148,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'SynologyNotifier', 'synologynotifier_notify_onsubtitledownload', 0))
 
+        USE_SLACK = bool(check_setting_int(CFG, 'Slack', 'use_slack', 0 ))
+        SLACK_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Slack', 'slack_notify_snatch', 0))
+        SLACK_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Slack', 'slack_notify_download', 0))
+        SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook', '')
+
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
         TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
         TRAKT_ACCESS_TOKEN = check_setting_str(CFG, 'Trakt', 'trakt_access_token', '', censor_log=True)
@@ -1152,6 +1200,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             check_setting_int(CFG, 'Pushbullet', 'pushbullet_notify_onsubtitledownload', 0))
         PUSHBULLET_API = check_setting_str(CFG, 'Pushbullet', 'pushbullet_api', '', censor_log=True)
         PUSHBULLET_DEVICE = check_setting_str(CFG, 'Pushbullet', 'pushbullet_device', '')
+        PUSHBULLET_CHANNEL = check_setting_str(CFG, 'Pushbullet', 'pushbullet_channel', '')
 
         USE_EMAIL = bool(check_setting_int(CFG, 'Email', 'use_email', 0))
         EMAIL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Email', 'email_notify_onsnatch', 0))
@@ -1182,7 +1231,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SUBTITLES_HEARING_IMPAIRED = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_hearing_impaired', 0))
         SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1)
         SUBTITLES_MULTI = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_multi', 1))
-        SUBTITLES_DOWNLOAD_IN_PP = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_download_in_pp', 0))
         SUBTITLES_KEEP_ONLY_WANTED = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_keep_only_wanted', 0))
         SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in check_setting_str(CFG, 'Subtitles', 'subtitles_extra_scripts', '').split('|') if x.strip()]
 
@@ -1349,6 +1397,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if hasattr(curTorrentProvider, 'subtitle'):
                 curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.get_id().upper(),
                                                                      curTorrentProvider.get_id() + '_subtitle', 0))
+            if hasattr(curTorrentProvider, 'cookies'):
+                curTorrentProvider.cookies = check_setting_str(CFG, curTorrentProvider.get_id().upper(),
+                                                               curTorrentProvider.get_id() + '_cookies', '', censor_log=True)
 
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                                curProvider.provider_type == GenericProvider.NZB]:
@@ -1582,7 +1633,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.log(u"Waiting for the {0!s} thread to exit".format(t.name))
+                logger.log(u"Waiting for the {0} thread to exit".format(t.name))
                 try:
                     t.join(10)
                 except Exception:
@@ -1601,7 +1652,7 @@ def halt():
 
 
 def sig_handler(signum=None, frame=None):
-    _ = frame
+    frame_ = frame
     if not isinstance(signum, type(None)):
         logger.log(u"Signal {0:d} caught, saving and exiting...".format(int(signum)))
         Shutdown.stop(PID)
@@ -1619,8 +1670,7 @@ def saveAll():
 
 
 def save_config():  # pylint: disable=too-many-statements, too-many-branches
-    new_config = ConfigObj()
-    new_config.filename = CONFIG_FILE
+    new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8')
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
@@ -1699,6 +1749,9 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
         if hasattr(curTorrentProvider, 'subtitle'):
             new_config[curTorrentProvider.get_id().upper()][curTorrentProvider.get_id() + '_subtitle'] = int(
                 curTorrentProvider.subtitle)
+        if hasattr(curTorrentProvider, 'cookies'):
+            new_config[curTorrentProvider.get_id().upper()][
+                curTorrentProvider.get_id() + '_cookies'] = curTorrentProvider.cookies
 
     for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                            curProvider.provider_type == GenericProvider.NZB]:
@@ -1832,7 +1885,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'move_associated_files': int(MOVE_ASSOCIATED_FILES),
             'sync_files': SYNC_FILES,
             'postpone_if_sync_files': int(POSTPONE_IF_SYNC_FILES),
-            'postpone_if_no_subs': int(POSTPONE_IF_NO_SUBS),
             'nfo_rename': int(NFO_RENAME),
             'process_automatically': int(PROCESS_AUTOMATICALLY),
             'no_delete': int(NO_DELETE),
@@ -1979,6 +2031,14 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'telegram_apikey': TELEGRAM_APIKEY,
         },
 
+        'Join': {
+            'use_join': int(USE_JOIN),
+            'join_notify_onsnatch': int(JOIN_NOTIFY_ONSNATCH),
+            'join_notify_ondownload': int(JOIN_NOTIFY_ONDOWNLOAD),
+            'join_notify_onsubtitledownload': int(JOIN_NOTIFY_ONSUBTITLEDOWNLOAD),
+            'join_id': JOIN_ID,
+        },
+
         'Prowl': {
             'use_prowl': int(USE_PROWL),
             'prowl_notify_onsnatch': int(PROWL_NOTIFY_ONSNATCH),
@@ -2042,7 +2102,11 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
         },
 
         'Synology': {
-            'use_synoindex': int(USE_SYNOINDEX)
+            'use_synoindex': int(USE_SYNOINDEX),
+            'host': SYNOLOGY_DSM_HOST,
+            'username': SYNOLOGY_DSM_USERNAME,
+            'password': helpers.encrypt(SYNOLOGY_DSM_PASSWORD, ENCRYPTION_VERSION),
+            'path': SYNOLOGY_DSM_PATH
         },
 
         'SynologyNotifier': {
@@ -2050,6 +2114,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'synologynotifier_notify_onsnatch': int(SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH),
             'synologynotifier_notify_ondownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD),
             'synologynotifier_notify_onsubtitledownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)
+        },
+
+        'Slack': {
+            'use_slack': int(USE_SLACK),
+            'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
+            'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
+            'slack_webhook': SLACK_WEBHOOK
         },
 
         'Trakt': {
@@ -2105,7 +2176,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'pushbullet_notify_ondownload': int(PUSHBULLET_NOTIFY_ONDOWNLOAD),
             'pushbullet_notify_onsubtitledownload': int(PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD),
             'pushbullet_api': PUSHBULLET_API,
-            'pushbullet_device': PUSHBULLET_DEVICE
+            'pushbullet_device': PUSHBULLET_DEVICE,
+            'pushbullet_channel': PUSHBULLET_CHANNEL,
         },
 
         'Email': {
@@ -2133,7 +2205,10 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
         'GUI': {
             'gui_name': GUI_NAME,
+            'language': GUI_LANG,
             'theme_name': THEME_NAME,
+            'fanart_background': int(FANART_BACKGROUND),
+            'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
             'history_limit': HISTORY_LIMIT,
@@ -2165,13 +2240,12 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'subtitles_finder_frequency': int(SUBTITLES_FINDER_FREQUENCY),
             'subtitles_multi': int(SUBTITLES_MULTI),
             'subtitles_extra_scripts': '|'.join(SUBTITLES_EXTRA_SCRIPTS),
-            'subtitles_download_in_pp': int(SUBTITLES_DOWNLOAD_IN_PP),
             'subtitles_keep_only_wanted': int(SUBTITLES_KEEP_ONLY_WANTED),
             'addic7ed_username': ADDIC7ED_USER,
             'addic7ed_password': helpers.encrypt(ADDIC7ED_PASS, ENCRYPTION_VERSION),
 
             'itasa_username': ITASA_USER,
-            'itase_password': helpers.encrypt(ITASA_PASS, ENCRYPTION_VERSION),
+            'itasa_password': helpers.encrypt(ITASA_PASS, ENCRYPTION_VERSION),
 
             'legendastv_username': LEGENDASTV_USER,
             'legendastv_password': helpers.encrypt(LEGENDASTV_PASS, ENCRYPTION_VERSION),
@@ -2210,7 +2284,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
     if not startPort:
         startPort = WEB_PORT
 
-    browserURL = '{0!s}://localhost:{1:d}{2!s}/home/'.format(protocol, startPort, web_root)
+    browserURL = '{0}://localhost:{1:d}{2}/home/'.format(protocol, startPort, web_root)
 
     try:
         webbrowser.open(browserURL, 2, 1)

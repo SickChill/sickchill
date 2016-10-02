@@ -1,7 +1,7 @@
 .country-flag {
-	width: 16px;
-	height: 11px;
-	background:url(../images/country-flags.png) no-repeat
+    width: 16px;
+    height: 11px;
+    background:url(../images/country-flags.png) no-repeat
 }
 
 .country-flag.flag-ad {background-position: -16px 0}

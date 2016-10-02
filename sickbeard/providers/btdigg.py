@@ -54,8 +54,8 @@ class BTDiggProvider(TorrentProvider):
                 search_params["q"] = search_string
                 if mode != "RSS":
                     search_params["order"] = 0
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
                 else:
                     search_params["order"] = 2
 
@@ -88,9 +88,9 @@ class BTDiggProvider(TorrentProvider):
                         torrent_size = torrent.pop("size")
                         size = convert_size(torrent_size) or -1
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != "RSS":
-                            logger.log("Found result: {0!s} ".format(title), logger.DEBUG)
+                            logger.log("Found result: {0} ".format(title), logger.DEBUG)
 
                         items.append(item)
 

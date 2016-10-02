@@ -74,14 +74,15 @@ SIMPLE_TEST_CASES = {
         'show.name.2010.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010', 1, [23], 'source.quality.etc', 'group'),
         'show.name.2010.222.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010.222', 1, [23], 'source.quality.etc', 'group'),
         'Show.Name.102': parser.ParseResult(None, 'Show Name', 1, [2]),
+        'Show.Name.01e02': parser.ParseResult(None, 'Show Name', 1, [2]),
         'the.event.401.hdtv-group': parser.ParseResult(None, 'the event', 4, [1], 'hdtv', 'group'),
         'show.name.2010.special.hdtv-blah': None,
         'show.ex-name.102.hdtv-group': parser.ParseResult(None, 'show ex-name', 1, [2], 'hdtv', 'group'),
     },
 
     'stupid': {
-        'tpz-abc102': parser.ParseResult(None, None, 1, [2], None, 'tpz'),
-        'tpz-abc.102': parser.ParseResult(None, None, 1, [2], None, 'tpz')
+        'tpz-abc102': parser.ParseResult(None, 'abc', 1, [2], None, 'tpz'),
+        'tpz-abc.102': parser.ParseResult(None, 'abc', 1, [2], None, 'tpz')
     },
 
     'no_season': {
@@ -322,8 +323,8 @@ class BasicTests(test.SickbeardTestDBCase):
                 print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result
-            self.assertEqual(test_result.which_regex, [section], '{0!s} : {1!s} != {2!s}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0!s} : {1!s} != {2!s}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
 
     def test_standard_names(self):
         """
@@ -486,8 +487,8 @@ class BasicFailedTests(test.SickbeardTestDBCase):
                 print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result
-            self.assertEqual(test_result.which_regex, [section], '{0!s} : {1!s} != {2!s}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0!s} : {1!s} != {2!s}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
 
     def test_no_s_names(self):
         """

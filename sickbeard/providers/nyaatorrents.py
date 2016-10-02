@@ -95,7 +95,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
                                 logger.log('Discarding torrent because it doesn\'t meet the'
-                                           ' minimum seeders or leechers: {} (S:{} L:{})'.format
+                                           ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
@@ -105,7 +105,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                             continue
 
                         size = convert_size(torrent_size) or -1
-                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
                             logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
                                        (title, seeders, leechers), logger.DEBUG)

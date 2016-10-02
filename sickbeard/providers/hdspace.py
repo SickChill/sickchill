@@ -100,8 +100,8 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     search_url = self.urls['search'] % ''
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 data = self.get_url(search_url, returns='text')
                 if not data or 'please try later' in data:
@@ -123,7 +123,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     logger.log(u"No html data parsed from provider", logger.DEBUG)
                     continue
 
-                torrents = html.findAll('tr')
+                torrents = html('tr')
                 if not torrents:
                     continue
 
@@ -137,8 +137,8 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         dl_href = result.find('a', attrs={'href': re.compile(r'download.php.*')})['href']
                         title = re.search('f=(.*).torrent', dl_href).group(1).replace('+', '.')
                         download_url = self.urls['base_url'] + dl_href
-                        seeders = int(result.find('span', attrs={'class': 'seedy'}).find('a').text)
-                        leechers = int(result.find('span', attrs={'class': 'leechy'}).find('a').text)
+                        seeders = int(result.find('span', class_='seedy').find('a').text)
+                        leechers = int(result.find('span', class_='leechy').find('a').text)
                         torrent_size = re.match(r'.*?([0-9]+,?\.?[0-9]* [KkMmGg]+[Bb]+).*', str(result), re.DOTALL).group(1)
                         size = convert_size(torrent_size) or -1
 
@@ -152,9 +152,9 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

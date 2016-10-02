@@ -1,4 +1,4 @@
-﻿# coding=utf-8
+# coding=utf-8
 # Author: Idan Gutman
 #
 # URL: https://sickrage.github.io
@@ -94,8 +94,8 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for search_string in search_strings[mode]:
 
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params["search"] = search_string
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
@@ -105,7 +105,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", border="1")
-                    torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
@@ -113,11 +113,11 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         continue
 
                     # "Type", "Name", Files", "Comm.", "Added", "TTL", "Size", "Snatched", "Seeders", "Leechers"
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all("td")]
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]("td")]
 
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result.find_all("td")
+                            cells = result("td")
 
                             download_url = urljoin(self.url, cells[labels.index("Name")].find("a", href=re.compile(r"download.php\?id="))["href"])
                             title_element = cells[labels.index("Name")].find("a", href=re.compile(r"details.php\?id="))
@@ -144,7 +144,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Need size for failed downloads handling
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
                             size = convert_size(torrent_size) or -1
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                             if mode != "RSS":
                                 logger.log("Found result: {0} with {1} seeders and {2} leechers".format

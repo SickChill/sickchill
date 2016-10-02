@@ -115,8 +115,8 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls['search'] % (freeleech, search_string)
                 init_html = self.get_url(search_url, returns='text')
@@ -131,7 +131,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         # Check to see if there is more than 1 page of results
                         pager = init_soup.find('div', {'class': 'pager'})
-                        page_links = pager.find_all('a', href=True) if pager else []
+                        page_links = pager('a', href=True) if pager else []
 
                         for lnk in page_links:
                             link_text = lnk.text.strip()
@@ -147,7 +147,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                         if max_page_number > 3 and mode == 'RSS':
                             max_page_number = 3
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
                     continue
 
                 data_response_list = [init_html]
@@ -172,7 +172,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                         with BS4Parser(data_response, 'html5lib') as html:
 
-                            torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
+                            torrent_rows = html("tr", class_=re.compile('torrent_[0-9]*'))
 
                             # Continue only if a Release is found
                             if not torrent_rows:
@@ -188,7 +188,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                 try:
                                     title = individual_torrent.find('a', {'class': 'torrent_name_link'})['title']
                                 except Exception:
-                                    logger.log(u"Unable to parse torrent title. Traceback: {0!s} ".format(traceback.format_exc()), logger.WARNING)
+                                    logger.log(u"Unable to parse torrent title. Traceback: {0} ".format(traceback.format_exc()), logger.WARNING)
                                     continue
 
                                 try:
@@ -212,14 +212,14 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                                    (title, seeders, leechers), logger.DEBUG)
                                     continue
 
-                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                                 items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0!s}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

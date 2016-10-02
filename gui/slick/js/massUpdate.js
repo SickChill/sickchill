@@ -8,12 +8,14 @@ $(document).ready(function(){
 
         if(editArr.length === 0) { return; }
 
-        var url = srRoot + '/manage/massEdit?toEdit='+editArr.join('|');
-        if(url.length < 2083) {
-            window.location.href = url;
-        } else {
-            alert("You've selected too many shows, please uncheck some and try again.");
-        }
+        var submitForm = $(
+            "<form method='post' action='" + srRoot + "/manage/massEdit'>" +
+                "<input type='hidden' name='toEdit' value='" + editArr.join('|') + "'/>" +
+            "</form>"
+        );
+        submitForm.appendTo('body');
+
+        submitForm.submit();
     });
 
     $('.submitMassUpdate').on('click', function(){
@@ -68,16 +70,18 @@ $(document).ready(function(){
                     if(updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                         return false;
                     }
-                    $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
-                    location.reload();
+                    var url = srRoot + '/manage/massUpdate';
+                    var params = 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
+                    $.post(url, params, function() { location.reload(true); });
                 }
             });
         }
         if(updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
             return false;
         }
-        $.post(srRoot + '/manage/massUpdate', 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|'));
-        location.reload();
+        var url = srRoot + '/manage/massUpdate';
+        var params = 'toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
+        $.post(url, params, function() { location.reload(true); });
     });
 
     ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {

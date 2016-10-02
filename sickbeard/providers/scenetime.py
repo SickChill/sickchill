@@ -45,12 +45,12 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
                      'detail': 'https://www.scenetime.com/details.php?id=%s',
-                     'search': 'https://www.scenetime.com/browse.php?search=%s%s',
+                     'apisearch': 'https://www.scenetime.com/browse_API.php',
                      'download': 'https://www.scenetime.com/download.php/%s/%s'}
 
         self.url = self.urls['base_url']
 
-        self.categories = "&c2=1&c43=13&c9=1&c63=1&c77=1&c79=1&c100=1&c101=1"
+        self.categories = [2, 42, 9, 63, 77, 79, 100, 83] 
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -81,20 +81,19 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_url = self.urls['search'] % (quote(search_string), self.categories)
+                query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
+                query.update({"c%s"%i: 1 for i in self.categories})
 
-                data = self.get_url(search_url, returns='text')
+                data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
+
                 if not data:
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find('div', id="torrenttable")
-                    torrent_rows = []
-                    if torrent_table:
-                        torrent_rows = torrent_table.select("tr")
+                    torrent_rows = html.findAll('tr')
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
@@ -104,17 +103,17 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     # Scenetime apparently uses different number of cells in #torrenttable based
                     # on who you are. This works around that by extracting labels from the first
                     # <tr> and using their index to find the correct download/seeders/leechers td.
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('td')]
 
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result.find_all('td')
+                            cells = result('td')
 
                             link = cells[labels.index('Name')].find('a')
                             torrent_id = link['href'].replace('details.php?id=', '').split("&")[0]
 
                             title = link.get_text(strip=True)
-                            download_url = self.urls['download'] % (torrent_id, "{0!s}.torrent".format(title.replace(" ", ".")))
+                            download_url = self.urls['download'] % (torrent_id, "{0}.torrent".format(title.replace(" ", ".")))
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
@@ -135,9 +134,9 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

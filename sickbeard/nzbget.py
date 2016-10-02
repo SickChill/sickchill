@@ -109,7 +109,7 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
         nzbget_version_str = nzbGetRPC.version()
         nzbget_version = try_int(nzbget_version_str[:nzbget_version_str.find('.')])
         if nzbget_version == 0:
-            if nzbcontent64 is not None:
+            if nzbcontent64:
                 nzbget_result = nzbGetRPC.append(nzb.name + '.nzb', category, addToTop, nzbcontent64)
             else:
                 if nzb.resultType == 'nzb':

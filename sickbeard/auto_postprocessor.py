@@ -41,15 +41,15 @@ class PostProcessor(object):
         self.amActive = True
 
         if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
-            logger.log(u"Automatic post-processing attempted but directory doesn't exist: {0!s}".format(
-                       sickbeard.TV_DOWNLOAD_DIR), logger.ERROR)
+            logger.log(u"Automatic post-processing attempted but directory doesn't exist: {0}".format(
+                       sickbeard.TV_DOWNLOAD_DIR), logger.WARNING)
             self.amActive = False
             return
 
         if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
             logger.log(u"Automatic post-processing attempted but directory is relative "
                        u"(and probably not what you really want to process): %s" %
-                       sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
+                       sickbeard.TV_DOWNLOAD_DIR, logger.WARNING)
             self.amActive = False
             return
 

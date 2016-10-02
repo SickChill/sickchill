@@ -28,6 +28,7 @@ _clients = [
     'rtorrent',
     'qbittorrent',
     'mlnet'
+    'putio'
 ]
 
 default_host = {
@@ -38,7 +39,8 @@ default_host = {
     'download_station': 'http://localhost:5000',
     'rtorrent': 'scgi://localhost:5000',
     'qbittorrent': 'http://localhost:8080',
-    'mlnet': 'http://localhost:4080'
+    'mlnet': 'http://localhost:4080',
+    'putio': 'https://api.put.io/login'
 }
 
 

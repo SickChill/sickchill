@@ -59,8 +59,8 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 self.search_params.update({'type': ('search', 'rss')[mode == 'RSS'], 'search': search_string})
                 search_url = self.urls['rss'] if not self.custom_url else self.urls['rss'].replace(self.urls['index'], self.custom_url)
@@ -75,7 +75,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     continue
 
                 with BS4Parser(data, 'html5lib') as parser:
-                    for item in parser.findAll('item'):
+                    for item in parser('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
                             seeders = try_int(item.find('seeders').get_text(strip=True))
@@ -104,9 +104,9 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

@@ -20,7 +20,8 @@
 
 import os
 import stat
-from functools import wraps
+# from functools import wraps
+import shutil
 
 import sickbeard
 from sickbeard import postProcessor
@@ -29,7 +30,7 @@ from sickbeard import logger
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 from sickbeard import failedProcessor
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file, subtitle_extensions
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
@@ -40,7 +41,6 @@ from unrar2.rar_exceptions import InvalidRARArchive
 from unrar2.rar_exceptions import InvalidRARArchiveUsage
 from unrar2.rar_exceptions import IncorrectRARPassword
 
-import shutil
 import shutil_custom
 
 shutil.copyfile = shutil_custom.copyfile_custom
@@ -76,21 +76,21 @@ def delete_folder(folder, check_empty=True):
     if check_empty:
         check_files = ek(os.listdir, folder)
         if check_files:
-            logger.log(u"Not deleting folder {0!s} found the following files: {1!s}".format(folder, check_files), logger.INFO)
+            logger.log(u"Not deleting folder {0} found the following files: {1}".format(folder, check_files), logger.INFO)
             return False
 
         try:
-            logger.log(u"Deleting folder (if it's empty): {0!s}".format(folder))
+            logger.log(u"Deleting folder (if it's empty): {0}".format(folder))
             ek(os.rmdir, folder)
         except (OSError, IOError) as e:
-            logger.log(u"Warning: unable to delete folder: {0!s}: {1!s}".format(folder, ex(e)), logger.WARNING)
+            logger.log(u"Warning: unable to delete folder: {0}: {1}".format(folder, ex(e)), logger.WARNING)
             return False
     else:
         try:
             logger.log(u"Deleting folder: " + folder)
             shutil.rmtree(folder)
         except (OSError, IOError) as e:
-            logger.log(u"Warning: unable to delete folder: {0!s}: {1!s}".format(folder, ex(e)), logger.WARNING)
+            logger.log(u"Warning: unable to delete folder: {0}: {1}".format(folder, ex(e)), logger.WARNING)
             return False
 
     return True
@@ -119,21 +119,21 @@ def delete_files(processPath, notwantedFiles, result, force=False):
         if not ek(os.path.isfile, cur_file_path):
             continue  # Prevent error when a notwantedfiles is an associated files
 
-        result.output += logHelper(u"Deleting file: {0!s}".format(cur_file), logger.DEBUG)
+        result.output += logHelper(u"Deleting file: {0}".format(cur_file), logger.DEBUG)
 
         # check first the read-only attribute
         file_attribute = ek(os.stat, cur_file_path)[0]
         if not file_attribute & stat.S_IWRITE:
             # File is read-only, so make it writeable
-            result.output += logHelper(u"Changing ReadOnly Flag for file: {0!s}".format(cur_file), logger.DEBUG)
+            result.output += logHelper(u"Changing ReadOnly Flag for file: {0}".format(cur_file), logger.DEBUG)
             try:
                 ek(os.chmod, cur_file_path, stat.S_IWRITE)
             except OSError as e:
-                result.output += logHelper(u"Cannot change permissions of {0!s}: {1!s}".format(cur_file_path, ex(e)), logger.DEBUG)
+                result.output += logHelper(u"Cannot change permissions of {0}: {1}".format(cur_file_path, ex(e)), logger.DEBUG)
         try:
             ek(os.remove, cur_file_path)
         except OSError as e:
-            result.output += logHelper(u"Unable to delete file {0!s}: {1!s}".format(cur_file, e.strerror), logger.DEBUG)
+            result.output += logHelper(u"Unable to delete file {0}: {1}".format(cur_file, e.strerror), logger.DEBUG)
 
 
 def logHelper(logMessage, logLevel=logger.INFO):
@@ -141,25 +141,25 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def OneRunPP():
-    isRunning = [False]
-
-    def decorate(func):
-        @wraps(func)
-        def func_wrapper(*args, **kargs):
-            if isRunning[0]:
-                return logHelper(u'Post processor is already running', logger.WARNING)
-
-            isRunning[0] = True
-            ret = func(*args, **kargs)
-            isRunning[0] = False
-            return ret
-        return func_wrapper
-    return decorate
+# def OneRunPP():
+#     isRunning = [False]
+#
+#     def decorate(func):
+#         @wraps(func)
+#         def func_wrapper(*args, **kargs):
+#             if isRunning[0]:
+#                 return logHelper(u'Post processor is already running', logger.WARNING)
+#
+#             isRunning[0] = True
+#             ret = func(*args, **kargs)
+#             isRunning[0] = False
+#             return ret
+#         return func_wrapper
+#     return decorate
 
 
 # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
-@OneRunPP()
+# @OneRunPP()
 def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, proc_type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
@@ -176,14 +176,14 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     # if they passed us a real dir then assume it's the one we want
     if ek(os.path.isdir, dirName):
         dirName = ek(os.path.realpath, dirName)
-        result.output += logHelper(u"Processing folder {0!s}".format(dirName), logger.DEBUG)
+        result.output += logHelper(u"Processing folder {0}".format(dirName), logger.DEBUG)
 
     # if the client and SickRage are not on the same machine translate the directory into a network directory
     elif all([sickbeard.TV_DOWNLOAD_DIR,
               ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR),
               ek(os.path.normpath, dirName) == ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
         dirName = ek(os.path.join, sickbeard.TV_DOWNLOAD_DIR, ek(os.path.abspath, dirName).split(os.path.sep)[-1])
-        result.output += logHelper(u"Trying to use folder: {0!s} ".format(dirName), logger.DEBUG)
+        result.output += logHelper(u"Trying to use folder: {0} ".format(dirName), logger.DEBUG)
 
     # if we didn't find a real dir then quit
     if not ek(os.path.isdir, dirName):
@@ -202,28 +202,24 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     # Don't post process if files are still being synced and option is activated
     postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
 
-    # Warn user if 'postpone if no subs' is enabled. Will debug possible user issues with PP
-    if sickbeard.POSTPONE_IF_NO_SUBS:
-        result.output += logHelper(u"Feature 'postpone postprocessing if no subtitle available' is enabled", logger.INFO)
-
     if not postpone:
-        result.output += logHelper(u"PostProcessing Path: {0!s}".format(path), logger.INFO)
-        result.output += logHelper(u"PostProcessing Dirs: {0!s}".format(str(dirs)), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing Path: {0}".format(path), logger.INFO)
+        result.output += logHelper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
 
         videoFiles = [x for x in files if helpers.isMediaFile(x)]
         rarFiles = [x for x in files if helpers.isRarFile(x)]
-        rarContent = ""
-        if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
-            # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+        rarContent = []
+        if rarFiles:
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
             videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
-        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
 
-        result.output += logHelper(u"PostProcessing Files: {0!s}".format(files), logger.DEBUG)
-        result.output += logHelper(u"PostProcessing VideoFiles: {0!s}".format(videoFiles), logger.DEBUG)
-        result.output += logHelper(u"PostProcessing RarContent: {0!s}".format(rarContent), logger.DEBUG)
-        result.output += logHelper(u"PostProcessing VideoInRar: {0!s}".format(videoInRar), logger.DEBUG)
+        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
+
+        result.output += logHelper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing RarContent: {0}".format(rarContent), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing VideoInRar: {0}".format(videoInRar), logger.DEBUG)
 
         # If nzbName is set and there's more than one videofile in the folder, files will be lost (overwritten).
         nzbName = None if len(videoFiles) >= 2 else nzbName
@@ -247,15 +243,15 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 process_media(path, [video], nzbName, process_method, force, is_priority, result)
 
     else:
-        result.output += logHelper(u"Found temporary sync files: {0!s} in path: {1!s}".format(SyncFiles, path))
-        result.output += logHelper(u"Skipping post processing for folder: {0!s}".format(path))
-        result.missedfiles.append(u"{0!s} : Syncfiles found".format(path))
+        result.output += logHelper(u"Found temporary sync files: {0} in path: {1}".format(SyncFiles, path))
+        result.output += logHelper(u"Skipping post processing for folder: {0}".format(path))
+        result.missedfiles.append(u"{0} : Syncfiles found".format(path))
 
     # Process Video File in all TV Subdir
     for curDir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
         result.result = True
 
-        for processPath, _, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
+        for processPath, dirlist_, fileList in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
 
             if not validateDir(path, processPath, nzbNameOriginal, failed, result):
                 continue
@@ -268,17 +264,16 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             if not postpone:
                 videoFiles = [x for x in fileList if helpers.isMediaFile(x)]
                 rarFiles = [x for x in fileList if helpers.isRarFile(x)]
-                rarContent = ""
-                if rarFiles and not (sickbeard.POSTPONE_IF_NO_SUBS and videoFiles):
-                    # Unpack only if video file was not already extracted by 'postpone if no subs' feature
+                rarContent = []
+                if rarFiles:
                     rarContent = unRAR(processPath, rarFiles, force, result)
                     fileList = set(fileList + rarContent)
                     videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
-                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else ''
+                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
-                    result.output += logHelper(u"Found unwanted files: {0!s}".format(notwantedFiles), logger.DEBUG)
+                    result.output += logHelper(u"Found unwanted files: {0}".format(notwantedFiles), logger.DEBUG)
 
                 # Don't Link media when the media is extracted from a rar in the same path
                 if process_method in (u'hardlink', u'symlink') and videoInRar:
@@ -306,23 +301,23 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                             ek(os.path.normpath, processPath) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
 
                         if delete_folder(processPath, check_empty=True):
-                            result.output += logHelper(u"Deleted folder: {0!s}".format(processPath), logger.DEBUG)
+                            result.output += logHelper(u"Deleted folder: {0}".format(processPath), logger.DEBUG)
 
             else:
-                result.output += logHelper(u"Found temporary sync files: {0!s} in path: {1!s}".format(SyncFiles, processPath))
-                result.output += logHelper(u"Skipping post processing for folder: {0!s}".format(processPath))
-                result.missedfiles.append(u"{0!s} : Syncfiles found".format(path))
+                result.output += logHelper(u"Found temporary sync files: {0} in path: {1}".format(SyncFiles, processPath))
+                result.output += logHelper(u"Skipping post processing for folder: {0}".format(processPath))
+                result.missedfiles.append(u"{0} : Syncfiles found".format(path))
 
     if result.aggresult:
         result.output += logHelper(u"Successfully processed")
         if result.missedfiles:
             result.output += logHelper(u"I did encounter some unprocessable items: ")
             for missedfile in result.missedfiles:
-                result.output += logHelper(u"[{0!s}]".format(missedfile))
+                result.output += logHelper(u"[{0}]".format(missedfile))
     else:
         result.output += logHelper(u"Problem(s) during processing, failed the following files/folders:  ", logger.WARNING)
         for missedfile in result.missedfiles:
-            result.output += logHelper(u"[{0!s}]".format(missedfile), logger.WARNING)
+            result.output += logHelper(u"[{0}]".format(missedfile), logger.WARNING)
 
     return result.output
 
@@ -348,25 +343,25 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
 
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
-    if folder_name.startswith(u'_FAILED_'):
+    if folder_name.upper().startswith(u'_FAILED_') or folder_name.upper().endswith(u'_FAILED_'):
         result.output += logHelper(u"The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif folder_name.startswith(u'_UNDERSIZED_'):
+    elif folder_name.upper().startswith(u'_UNDERSIZED_') or folder_name.upper().endswith(u'_UNDERSIZED_'):
         result.output += logHelper(u"The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
         failed = True
-    elif folder_name.upper().startswith(u'_UNPACK'):
+    elif folder_name.upper().startswith(u'_UNPACK') or folder_name.upper().endswith(u'_UNPACK'):
         result.output += logHelper(u"The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
-        result.missedfiles.append(u"{0!s} : Being unpacked".format(dirName))
+        result.missedfiles.append(u"{0} : Being unpacked".format(dirName))
         return False
 
     if failed:
         process_failed(ek(os.path.join, path, dirName), nzbNameOriginal, result)
-        result.missedfiles.append(u"{0!s} : Failed download".format(dirName))
+        result.missedfiles.append(u"{0} : Failed download".format(dirName))
         return False
 
     if helpers.is_hidden_folder(ek(os.path.join, path, dirName)):
-        result.output += logHelper(u"Ignoring hidden folder: {0!s}".format(dirName), logger.DEBUG)
-        result.missedfiles.append(u"{0!s} : Hidden folder".format(dirName))
+        result.output += logHelper(u"Ignoring hidden folder: {0}".format(dirName), logger.DEBUG)
+        result.missedfiles.append(u"{0} : Hidden folder".format(dirName))
         return False
 
     # make sure the dir isn't inside a show dir
@@ -385,7 +380,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
     # Get the videofile list for the next checks
     allFiles = []
     allDirs = []
-    for _, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
+    for root_, processdir, fileList in ek(os.walk, ek(os.path.join, path, dirName), topdown=False):
         allDirs += processdir
         allFiles += fileList
 
@@ -418,7 +413,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):  # pylint: disa
             except (InvalidNameException, InvalidShowException) as error:
                 result.output += logHelper(u"{0}".format(error), logger.DEBUG)
 
-    result.output += logHelper(u"{0!s} : No processable items found in folder".format(dirName), logger.DEBUG)
+    result.output += logHelper(u"{0} : No processable items found in folder".format(dirName), logger.DEBUG)
     return False
 
 
@@ -437,11 +432,11 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
 
     if sickbeard.UNPACK and rarFiles:
 
-        result.output += logHelper(u"Packed Releases detected: {0!s}".format(rarFiles), logger.DEBUG)
+        result.output += logHelper(u"Packed Releases detected: {0}".format(rarFiles), logger.DEBUG)
 
         for archive in rarFiles:
 
-            result.output += logHelper(u"Unpacking archive: {0!s}".format(archive), logger.DEBUG)
+            result.output += logHelper(u"Unpacking archive: {0}".format(archive), logger.DEBUG)
 
             failure = None
             try:
@@ -451,8 +446,10 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 skip_file = False
                 for file_in_archive in [ek(os.path.basename, x.filename) for x in rar_handle.infolist() if not x.isdir]:
                     if already_postprocessed(path, file_in_archive, force, result):
-                        result.output += logHelper(u"Archive file already post-processed, extraction skipped: {0!s}".format(
-                                                   file_in_archive), logger.DEBUG)
+                        result.output += logHelper(
+                            u"Archive file already post-processed, extraction skipped: {0}".format
+                            (file_in_archive), logger.DEBUG)
+
                         skip_file = True
                         break
 
@@ -487,7 +484,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 result.result = False
                 continue
 
-        result.output += logHelper(u"UnRar content: {0!s}".format(unpacked_files), logger.DEBUG)
+        result.output += logHelper(u"UnRar content: {0}".format(unpacked_files), logger.DEBUG)
 
     return unpacked_files
 
@@ -517,14 +514,15 @@ def already_postprocessed(dirName, videofile, force, result):  # pylint: disable
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(dirName, tryIndexers=True).parse(dirName)
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-        parse_result = False
+        parse_result = False  # pylint: disable=redefined-variable-type
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
     if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += " AND tv_episodes.showid={0!s} AND tv_episodes.season={1!s} AND tv_episodes.episode={2!s}".format(parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
+        search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(
+            parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
@@ -554,21 +552,11 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
         cur_video_file_path = ek(os.path.join, processPath, cur_video_file)
 
         if already_postprocessed(processPath, cur_video_file, force, result):
-            result.output += logHelper(u"Skipping already processed file: {0!s}".format(cur_video_file), logger.DEBUG)
+            result.output += logHelper(u"Skipping already processed file: {0}".format(cur_video_file), logger.DEBUG)
             continue
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
-
-            # This feature prevents PP for files that do not have subtitle associated with the video file
-            if sickbeard.POSTPONE_IF_NO_SUBS and subtitles_enabled(cur_video_file):
-                associatedFiles = processor.list_associated_files(cur_video_file_path, subtitles_only=True)
-                if not [associatedFile for associatedFile in associatedFiles if associatedFile[-3:] in subtitle_extensions]:
-                    result.output += logHelper(u"No subtitles associated. Postponing the post-process of this file: {0!s}".format(cur_video_file), logger.DEBUG)
-                    continue
-                else:
-                    result.output += logHelper(u"Found subtitles associated. Continuing the post-process of this file: {0!s}".format(cur_video_file))
-
             result.result = processor.process()
             process_fail_message = u""
         except EpisodePostProcessingFailedException as e:
@@ -579,10 +567,10 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
             result.output += processor.log
 
         if result.result:
-            result.output += logHelper(u"Processing succeeded for {0!s}".format(cur_video_file_path))
+            result.output += logHelper(u"Processing succeeded for {0}".format(cur_video_file_path))
         else:
-            result.output += logHelper(u"Processing failed for {0!s}: {1!s}".format(cur_video_file_path, process_fail_message), logger.WARNING)
-            result.missedfiles.append(u"{0!s} : Processing failed: {1!s}".format(cur_video_file_path, process_fail_message))
+            result.output += logHelper(u"Processing failed for {0}: {1}".format(cur_video_file_path, process_fail_message), logger.WARNING)
+            result.missedfiles.append(u"{0} : Processing failed: {1}".format(cur_video_file_path, process_fail_message))
             result.aggresult = False
 
 
@@ -634,12 +622,12 @@ def process_failed(dirName, nzbName, result):
 
         if sickbeard.DELETE_FAILED and result.result:
             if delete_folder(dirName, check_empty=False):
-                result.output += logHelper(u"Deleted folder: {0!s}".format(dirName), logger.DEBUG)
+                result.output += logHelper(u"Deleted folder: {0}".format(dirName), logger.DEBUG)
 
         if result.result:
-            result.output += logHelper(u"Failed Download Processing succeeded: ({0!s}, {1!s})".format(nzbName, dirName))
+            result.output += logHelper(u"Failed Download Processing succeeded: ({0}, {1})".format(nzbName, dirName))
         else:
-            result.output += logHelper(u"Failed Download Processing failed: ({0!s}, {1!s}): {2!s}".format(nzbName, dirName, process_fail_message), logger.WARNING)
+            result.output += logHelper(u"Failed Download Processing failed: ({0}, {1}): {2}".format(nzbName, dirName, process_fail_message), logger.WARNING)
 
 
 def subtitles_enabled(video):

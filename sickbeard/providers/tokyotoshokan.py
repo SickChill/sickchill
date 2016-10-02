@@ -57,8 +57,8 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params = {
                     "terms": search_string,
@@ -71,14 +71,14 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
                 with BS4Parser(data, 'html5lib') as soup:
                     torrent_table = soup.find('table', class_='listing')
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                    torrent_rows = torrent_table('tr') if torrent_table else []
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
                         logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    a = 1 if len(torrent_rows[0].find_all('td')) < 2 else 0
+                    a = 1 if len(torrent_rows[0]('td')) < 2 else 0
 
                     for top, bot in zip(torrent_rows[a::2], torrent_rows[a + 1::2]):
                         try:
@@ -106,9 +106,9 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0!s} with {1!s} seeders and {2!s} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

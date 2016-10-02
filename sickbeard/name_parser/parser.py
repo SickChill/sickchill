@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -93,9 +92,9 @@ class NameParser(object):
         for regexItem in uncompiled_regex:
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
-                    cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
+                    cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
                 except re.error, errormsg:
-                    logger.log(u"WARNING: Invalid episode_pattern using {0!s} regexs, {1!s}. {2!s}".format(dbg_str, errormsg, cur_pattern))
+                    logger.log(u"WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
@@ -141,7 +140,7 @@ class NameParser(object):
                     result.score += 1
                 else:
                     result.episode_numbers = [ep_num]
-                result.score += 1
+                result.score += 3
 
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
@@ -235,8 +234,7 @@ class NameParser(object):
                     try:
                         lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
 
-                        if bestResult.show.lang:
-                            lINDEXER_API_PARMS['language'] = bestResult.show.lang
+                        lINDEXER_API_PARMS['language'] = bestResult.show.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
                         t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
 
@@ -459,8 +457,8 @@ class NameParser(object):
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         if not final_result.show:
-            raise InvalidShowException("Unable to match {0} to a show in your database".format
-                                       (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
+            raise InvalidShowException(u"Unable to match {0} to a show in your database. Parser result: {1}".format(
+                                         name, file_name_result or dir_name_result))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:

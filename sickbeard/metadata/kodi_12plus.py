@@ -112,10 +112,9 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         lINDEXER_API_PARMS['actors'] = True
 
-        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-            lINDEXER_API_PARMS['language'] = indexer_lang
+        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        if show_obj.dvdorder != 0:
+        if show_obj.dvdorder:
             lINDEXER_API_PARMS['dvdorder'] = True
 
         t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
@@ -247,10 +246,9 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         lINDEXER_API_PARMS['actors'] = True
 
-        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-            lINDEXER_API_PARMS['language'] = indexer_lang
+        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        if ep_obj.show.dvdorder != 0:
+        if ep_obj.show.dvdorder:
             lINDEXER_API_PARMS['dvdorder'] = True
 
         try:
@@ -274,7 +272,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2!s}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
 
                 return None
 

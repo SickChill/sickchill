@@ -98,8 +98,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 if mode != "RSS":
                     search_params["q"] = search_string
-                    logger.log("Search string: {search}".format
-                               (search=search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                     data = self.get_url(search_url, params=search_params, returns="text")
                 else:
@@ -111,19 +111,19 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", id="searchResult")
-                    torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    labels = [process_column_header(label) for label in torrent_rows[0].find_all("th")]
+                    labels = [process_column_header(label) for label in torrent_rows[0]("th")]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result.find_all("td")
+                            cells = result("td")
 
                             title = result.find(class_="detName").get_text(strip=True)
                             download_url = result.find(title="Download this torrent using magnet")["href"] + self._custom_trackers
@@ -146,7 +146,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
                                 if mode != "RSS":
-                                    logger.log("Found result {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                    logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
                                 continue
 
                             # Convert size after all possible skip scenarios
@@ -154,7 +154,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             torrent_size = re.sub(r"Size ([\d.]+).+([KMGT]iB)", r"\1 \2", torrent_size)
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != "RSS":
                                 logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)

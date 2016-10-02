@@ -134,7 +134,7 @@ class Notifier(object):
 
         title = sickbeard.PROWL_MESSAGE_TITLE
 
-        logger.log(u"PROWL: Sending notice with details: title=\"{0!s}\" event=\"{1!s}\", message=\"{2!s}\", priority={3!s}, api={4!s}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.log(u"PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -159,7 +159,7 @@ class Notifier(object):
             logger.log(u"Prowl notifications sent.", logger.INFO)
             return True
         elif request_status == 401:
-            logger.log(u"Prowl auth failed: {0!s}".format(response.reason), logger.ERROR)
+            logger.log(u"Prowl auth failed: {0}".format(response.reason), logger.ERROR)
             return False
         else:
             logger.log(u"Prowl notification failed.", logger.ERROR)
@@ -172,5 +172,5 @@ class Notifier(object):
         sep = " - "
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)
-        logger.log("TITLES: {0!s}".format(titles), logger.DEBUG)
+        logger.log("TITLES: {0}".format(titles), logger.DEBUG)
         return titles
