@@ -126,19 +126,19 @@ $(document).ready(function () {
 (function(){
     $.ajaxEpSearch = {
         defaults: {
-            size:				16,
-            colorRow:         	false,
-            loadingImage:		'loading16.gif',
-            queuedImage:		'queued.png',
-            noImage:			'no16.png',
-            yesImage:			'yes16.png'
+            size: 16,
+            colorRow: false,
+            loadingImage: 'loading16.gif',
+            queuedImage: 'queued.png',
+            noImage: 'no16.png',
+            yesImage: 'yes16.png'
         }
     };
 
     $.fn.ajaxEpSearch = function(options){
         options = $.extend({}, $.ajaxEpSearch.defaults, options);
 
-        $('.epRetry').click(function(event){
+        $('.epRetry').on('click', function(event){
             event.preventDefault();
 
             // Check if we have disabled the click
@@ -206,7 +206,7 @@ $(document).ready(function () {
             return false;
         }
 
-        $('.epSearch').click(function(event){
+        $('.epSearch').on('click', function(event){
             event.preventDefault();
 
             // Check if we have disabled the click
@@ -221,12 +221,12 @@ $(document).ready(function () {
             }
         });
 
-        $('#manualSearchModalFailed .btn').click(function(){
+        $('#manualSearchModalFailed .btn').on('click', function(){
             failedDownload = ($(this).text().toLowerCase() === 'yes');
             $("#manualSearchModalQuality").modal('show');
         });
 
-        $('#manualSearchModalQuality .btn').click(function(){
+        $('#manualSearchModalQuality .btn').on('click', function(){
             qualityDownload = ($(this).text().toLowerCase() === 'yes');
             manualSearch();
         });

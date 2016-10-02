@@ -63,26 +63,26 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 search_params["q"] = search_string if mode != "RSS" else ""
                 search_params["field"] = "seeders" if mode != "RSS" else "time_add"
 
                 if mode != "RSS":
-                    logger.log("Search string: {}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls["search"] % ("usearch" if mode != "RSS" else search_string)
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url: {}".format(self.custom_url), logger.WARNING)
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
+                    logger.log("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one", logger.DEBUG)
                     continue
 
                 if not data.startswith("<?xml"):
@@ -90,7 +90,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    for item in html.find_all("item"):
+                    for item in html("item"):
                         try:
                             title = item.title.get_text(strip=True)
                             # Use the torcache link kat provides,
@@ -110,7 +110,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -126,7 +126,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                             if mode != "RSS":
-                                logger.log("Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 

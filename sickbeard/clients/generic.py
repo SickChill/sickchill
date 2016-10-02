@@ -1,25 +1,50 @@
 # coding=utf-8
 
+# URL: https://sickrage.github.io
+#
+# This file is part of SickRage.
+#
+# SickRage is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickRage is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
+
 import re
 import time
 from hashlib import sha1
+from requests.compat import urlencode
+from requests.models import HTTPError
 from base64 import b16encode, b32decode
+import bencode
 
 import sickbeard
 from sickbeard import logger, helpers
-from bencode import Bencoder, BencodeEncodeError, BencodeDecodeError
-import requests
-import cookielib
-from sickrage.helper.common import http_code_description
 
 
 class GenericClient(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self, name, host=None, username=None, password=None):
+        """
+        Initializes the client
+        :name: str:name of the client
+        :host: str:url or ip of the client
+        :username: str: username for authenticating with the client
+        :password: str: password for authentication with the client
+        """
 
         self.name = name
-        self.username = sickbeard.TORRENT_USERNAME if username is None else username
-        self.password = sickbeard.TORRENT_PASSWORD if password is None else password
-        self.host = sickbeard.TORRENT_HOST if host is None else host
+        self.username = sickbeard.TORRENT_USERNAME if not username else username
+        self.password = sickbeard.TORRENT_PASSWORD if not password else password
+        self.host = sickbeard.TORRENT_HOST if not host else host
         self.rpcurl = sickbeard.TORRENT_RPCURL
 
         self.url = None
@@ -28,53 +53,44 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         self.last_time = time.time()
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
-        self.session.cookies = cookielib.CookieJar()
 
     def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
+        """
+        Makes the actual request for the client, for everything except auth
+        """
 
         if time.time() > self.last_time + 1800 or not self.auth:
             self.last_time = time.time()
             self._get_auth()
 
-        logger.log(
-            self.name + u': Requested a ' + method.upper() + ' connection to url ' + self.url +
-            ' with Params: ' + str(params) + ' Data: ' + str(data)[0:99] + ('...' if len(str(data)) > 200 else ''), logger.DEBUG)
+        log_string = '{0}: Requested a {1} connection to url {2}'.format(
+            self.name, method.upper(), self.url)
+
+        if params:
+            log_string += '?{0}'.format(urlencode(params))
+
+        if data:
+            log_string += ' and data: {0}{1}'.format(
+                str(data)[0:99], '...' if len(str(data)) > 100 else '')
+
+        logger.log(log_string, logger.DEBUG)
 
         if not self.auth:
-            logger.log(self.name + u': Authentication Failed', logger.WARNING)
+            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
             return False
 
         try:
-            self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files, cookies=cookies,
-                                                                  timeout=120, verify=False)
-        except requests.exceptions.ConnectionError as e:
-            logger.log(self.name + u': Unable to connect ' + str(e), logger.ERROR)
-            return False
-        except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
-            logger.log(self.name + u': Invalid Host', logger.ERROR)
-            return False
-        except requests.exceptions.HTTPError as e:
-            logger.log(self.name + u': Invalid HTTP Request ' + str(e), logger.ERROR)
-            return False
-        except requests.exceptions.Timeout as e:
-            logger.log(self.name + u': Connection Timeout ' + str(e), logger.WARNING)
-            return False
-        except Exception as e:
-            logger.log(self.name + u': Unknown exception raised when send torrent to ' + self.name + ': ' + str(e),
-                       logger.ERROR)
+            self.response = self.session.request(
+                method.upper(), self.url, params=params, data=data,
+                files=files, cookies=cookies, timeout=120, verify=False)
+
+            self.response.raise_for_status()
+        except Exception as error:
+            helpers.handle_requests_exception(error)
             return False
 
-        if self.response.status_code == 401:
-            logger.log(self.name + u': Invalid Username or Password, check your config', logger.ERROR)
-            return False
-
-        code_description = http_code_description(self.response.status_code)
-
-        if code_description is not None:
-            logger.log(self.name + u': ' + code_description, logger.INFO)
-            return False
-
-        logger.log(self.name + u': Response to ' + method.upper() + ' request is ' + self.response.text, logger.DEBUG)
+        logger.log('{0}: Response to the {1} request is {2}'.format
+                   (self.name, method.upper(), self.response.text), logger.DEBUG)
 
         return True
 
@@ -137,55 +153,62 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with pause
+        params: :result: an instance of the searchResult class
         """
         return True
 
     @staticmethod
     def _get_torrent_hash(result):
-
+        """
+        Gets the torrent hash from either the magnet or torrent file content
+        params: :result: an instance of the searchResult class
+        """
         if result.url.startswith('magnet'):
             result.hash = re.findall(r'urn:btih:([\w]{32,40})', result.url)[0]
             if len(result.hash) == 32:
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
             if not result.content:
-                logger.log(u'Torrent without content', logger.ERROR)
+                logger.log('Torrent without content', logger.ERROR)
                 raise Exception('Torrent without content')
 
-            bencoder = Bencoder()
             try:
-                torrent_bdecode = bencoder.decode(result.content)
-            except (BencodeDecodeError, Exception) as error:
-                logger.log(u'Unable to bdecode torrent', logger.ERROR)
-                logger.log(u'Error is: {0!r}'.format(error), logger.DEBUG)
-                logger.log(u'Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                torrent_bdecode = bencode.bdecode(result.content)
+            except (bencode.BTL.BTFailure, Exception) as error:
+                logger.log('Unable to bdecode torrent', logger.ERROR)
+                logger.log('Error is: {0}'.format(error), logger.DEBUG)
+                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
             try:
-                info = torrent_bdecode["info"]
+                info = torrent_bdecode[b'info']
             except Exception:
-                logger.log(u'Unable to find info field in torrent', logger.ERROR)
+                logger.log('Unable to find info field in torrent', logger.ERROR)
                 raise
 
             try:
-                result.hash = sha1(bencoder.encode(info)).hexdigest()
-            except (BencodeEncodeError, Exception) as error:
-                logger.log(u'Unable to bencode torrent info', logger.ERROR)
-                logger.log(u'Error is: {0!r}'.format(error), logger.DEBUG)
-                logger.log(u'Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                result.hash = sha1(bencode.bencode(info)).hexdigest()
+                logger.log('Result Hash is {0}'.format(result.hash), logger.DEBUG)
+            except (bencode.BTL.BTFailure, Exception) as error:
+                logger.log('Unable to bencode torrent info', logger.ERROR)
+                logger.log('Error is: {0}'.format(error), logger.DEBUG)
+                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
 
         return result
 
     def sendTORRENT(self, result):
+        """
+        Sends the magnet, url, or torrent file content to the client
+        params: :result: an instance of the searchResult class
+        """
 
         r_code = False
 
-        logger.log(u'Calling ' + self.name + ' Client', logger.DEBUG)
+        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
 
-        if not self.auth:
-            if not self._get_auth():
-                logger.log(self.name + u': Authentication Failed', logger.WARNING)
-                return r_code
+        if not (self.auth or self._get_auth()):
+            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            return r_code
 
         try:
             # Sets per provider seed ratio
@@ -200,51 +223,53 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
-                logger.log(self.name + u': Unable to send Torrent', logger.WARNING)
+                logger.log('{0}: Unable to send Torrent'.format(self.name), logger.WARNING)
                 return False
 
             if not self._set_torrent_pause(result):
-                logger.log(self.name + u': Unable to set the pause for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set the pause for Torrent'.format(self.name), logger.ERROR)
 
             if not self._set_torrent_label(result):
-                logger.log(self.name + u': Unable to set the label for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set the label for Torrent'.format(self.name), logger.ERROR)
 
             if not self._set_torrent_ratio(result):
-                logger.log(self.name + u': Unable to set the ratio for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set the ratio for Torrent'.format(self.name), logger.ERROR)
 
             if not self._set_torrent_seed_time(result):
-                logger.log(self.name + u': Unable to set the seed time for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set the seed time for Torrent'.format(self.name), logger.ERROR)
 
             if not self._set_torrent_path(result):
-                logger.log(self.name + u': Unable to set the path for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set the path for Torrent'.format(self.name), logger.ERROR)
 
             if result.priority != 0 and not self._set_torrent_priority(result):
-                logger.log(self.name + u': Unable to set priority for Torrent', logger.ERROR)
+                logger.log('{0}: Unable to set priority for Torrent'.format(self.name), logger.ERROR)
 
-        except Exception as e:
-            logger.log(self.name + u': Failed Sending Torrent', logger.ERROR)
-            logger.log(self.name + u': Exception raised when sending torrent: ' + str(result) + u'. Error: ' + str(e), logger.DEBUG)
+        except Exception as error:
+            logger.log('{0}: Failed Sending Torrent'.format(self.name), logger.ERROR)
+            logger.log('{0}: Exception raised when sending torrent: {1}. Error {2}'.format(self.name, result, error), logger.DEBUG)
             return r_code
 
         return r_code
 
     def testAuthentication(self):
-
+        """
+        Tests the parameters the user has provided in the ui to see if they are correct
+        """
         try:
             self.response = self.session.get(self.url, timeout=120, verify=False)
-        except requests.exceptions.ConnectionError:
-            return False, 'Error: ' + self.name + ' Connection Error'
-        except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
-            return False, 'Error: Invalid ' + self.name + ' host'
-
-        if self.response.status_code == 401:
-            return False, 'Error: Invalid ' + self.name + ' Username or Password, check your config!'
+        except Exception:
+            pass
 
         try:
             self._get_auth()
-            if self.response.status_code == 200 and self.auth:
+            if not self.response:
+                raise HTTPError(404, 'Not Found')
+
+            self.response.raise_for_status()
+            if self.auth:
                 return True, 'Success: Connected and Authenticated'
             else:
-                return False, 'Error: Unable to get ' + self.name + ' Authentication, check your config!'
-        except Exception:
-            return False, 'Error: Unable to connect to ' + self.name
+                return False, 'Failed to authenticate with {0}'.format(self.name)
+        except Exception as error:
+            helpers.handle_requests_exception(error)
+            return False, '{0}'.format(error)

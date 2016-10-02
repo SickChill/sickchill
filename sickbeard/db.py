@@ -44,7 +44,7 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     @return: the correct location of the database file.
     """
     if suffix:
-        filename = "%s.%s" % (filename, suffix)
+        filename = "{0}.{1}".format(filename, suffix)
     return ek(os.path.join, sickbeard.DATA_DIR, filename)
 
 
@@ -76,7 +76,7 @@ class DBConnection(object):
                 self._set_row_factory()
 
         except OperationalError:
-            logger.log(u'Please check your database owner/permissions: {}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
+            logger.log(u'Please check your database owner/permissions: {0}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
         except Exception as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             raise
@@ -181,7 +181,7 @@ class DBConnection(object):
         :return: list of results
         """
 
-        assert hasattr(querylist, '__iter__'), 'You passed a non-iterable to mass_action: {}'.format(repr(querylist))
+        assert hasattr(querylist, '__iter__'), 'You passed a non-iterable to mass_action: {0!r}'.format(querylist)
 
         # remove None types
         querylist = [i for i in querylist if i]
@@ -337,7 +337,7 @@ class DBConnection(object):
         :param tableName: name of table
         :return: array of name/type info
         """
-        sql_results = self.select("PRAGMA table_info(`%s`)" % tableName)
+        sql_results = self.select("PRAGMA table_info(`{0}`)".format(tableName))
         columns = {}
         for column in sql_results:
             columns[column['name']] = {'type': column['type']}
@@ -393,8 +393,8 @@ class DBConnection(object):
         :param type: Column type to add
         :param default: Default value for column
         """
-        self.action("ALTER TABLE [%s] ADD %s %s" % (table, column, col_type))
-        self.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
+        self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
 
 
 def sanityCheckDatabase(connection, sanity_check):
@@ -474,8 +474,8 @@ class SchemaUpgrade(object):
         return column in self.connection.tableInfo(tableName)
 
     def addColumn(self, table, column, col_type="NUMERIC", default=0):
-        self.connection.action("ALTER TABLE [%s] ADD %s %s" % (table, column, col_type))
-        self.connection.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
+        self.connection.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        self.connection.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
 
     def checkDBVersion(self):
         return self.connection.checkDBVersion()

@@ -59,18 +59,19 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
         search_params = {
             'out': 'json',
             'filter': 2101,
-            'num': 150
+            'showmagnets': 'on',
+            'num': 50
         }
 
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params['s'] = search_string
 
@@ -96,34 +97,15 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : %s" % title, logger.DEBUG)
+                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title), logger.DEBUG)
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
                     torrent_size = torrents[i]["torrent_size"]
+                    if not all([t_hash, torrent_size]):
+                        continue
+                    download_url = torrents[i]["magnet"] + self._custom_trackers
                     size = convert_size(torrent_size) or -1
-
-                    try:
-                        assert seeders < 10
-                        assert mode != 'RSS'
-                        logger.log(u"Torrent has less than 10 seeds getting dyn trackers: " + title, logger.DEBUG)
-
-                        if self.custom_url:
-                            if not validators.url(self.custom_url):
-                                logger.log("Invalid custom url set, please check your settings", logger.WARNING)
-                                return results
-                            trackers_url = self.custom_url
-                        else:
-                            trackers_url = self.url
-
-                        trackers_url = urljoin(trackers_url, t_hash)
-                        trackers_url = urljoin(trackers_url, "/trackers_json")
-                        jdata = self.get_url(trackers_url, returns='json')
-
-                        assert jdata != "maintenance"
-                        download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + "".join(["&tr=" + s for s in jdata])
-                    except (Exception, AssertionError):
-                        download_url = "magnet:?xt=urn:btih:" + t_hash + "&dn=" + title + self._custom_trackers
 
                     if not all([title, download_url]):
                         continue
@@ -131,7 +113,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: {} with {} seeders and {} leechers".format
+                        logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
                                    (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)

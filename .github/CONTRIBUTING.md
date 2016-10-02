@@ -36,7 +36,7 @@ Bugs in old versions of SickRage may have already been fixed. In order to avoid 
 
 ### Reporting the issue
 
-If the above steps fail and you are sure its a bug, issues are tracked in the [SickRage issue tracker](https://github.com/SickRage/sickrage-issues). 
+If the above steps fail and you are sure its a bug, issues are tracked in the [SickRage issue tracker](https://github.com/SickRage/SickRage). 
 
 ## Tips For Submitting Code
 
@@ -58,7 +58,7 @@ Please follow these guidelines before reporting a bug:
 
 1. **Update to the latest version** &mdash; Check if you can reproduce the issue with the latest version from the `develop` branch.
 
-2. **Use the search on sickrage-issues** &mdash; check if the issue has already been reported. If it has been, please comment on the existing issue.
+2. **Use the search on SickRage** &mdash; check if the issue has already been reported. If it has been, please comment on the existing issue.
 
 3. **Provide a means to reproduce the problem** &mdash; Please provide as much details as possible, e.g. SickRage log files (obfuscate apikey/passwords), browser and operating system versions, how you started SickRage, and of course the steps to reproduce the problem.
 

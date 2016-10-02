@@ -1,24 +1,18 @@
 <%!
-    import cgi
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
-<%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)"><%
+<%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)">
+<%
     # Build a string of quality names to use as title attribute
     if showTitle:
         allowed_qualities, preferred_qualities = Quality.splitQuality(quality)
-        title = 'Allowed Quality:\n'
-        if allowed_qualities:
-            for curQual in allowed_qualities:
-                title += "  " + Quality.qualityStrings[curQual] + "\n"
-        else:
-            title += "  None\n"
-        title += "\nPreferred Quality:\n"
-        if preferred_qualities:
-            for curQual in preferred_qualities:
-                title += "  " + Quality.qualityStrings[curQual] + "\n"
-        else:
-            title += "  None\n"
-        title = ' title="' + cgi.escape(title.rstrip(), True) + '"'
+        title = _('Allowed Quality:') + '\n'
+        for curQual in allowed_qualities or [None]:
+            title += "  " + Quality.qualityStrings[curQual] + "\n"
+
+        title += "\n" + _('Preferred Quality:') + "\n"
+        for curQual in preferred_qualities or [None]:
+            title += "  " + Quality.qualityStrings[curQual] + "\n"
     else:
         title = ""
 
@@ -77,9 +71,6 @@
         cssClass = "Custom"
         qualityString = "Custom"
 
-    if overrideClass is None:
-        cssClass = "quality " + cssClass
-    else:
-        cssClass = overrideClass
-
-%><span${title} class="${cssClass}">${qualityString}</span></%def>
+    cssClass = overrideClass or "quality " + cssClass
+%>
+<span title="${title | h}" class="${cssClass}">${qualityString}</span></%def>

@@ -77,7 +77,7 @@ class GenericMedia(object):
         :return: The root folder containing the media
         """
 
-        return ek(join, sickbeard.PROG_DIR, 'gui', 'slick')
+        return ek(join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME or 'slick')
 
     def get_media_type(self):
         """

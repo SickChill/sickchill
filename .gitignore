@@ -68,6 +68,22 @@ lib/unrar2/UnRAR.exe
 
 # Unit test/Coverage #
 ######################
-.tox/
+.tox
 .coverage
 htmlcov
+
+# nzbToMedia #
+######################
+contrib/nzbToMedia
+
+# setup.py #
+######################
+*.egg-info
+.eggs
+build
+
+# virtualenv #
+venv
+
+# diffs
+/*.diff

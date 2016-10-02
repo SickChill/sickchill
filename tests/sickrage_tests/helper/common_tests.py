@@ -33,6 +33,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+from sickrage.helper import glob
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
 from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
 
@@ -469,9 +470,15 @@ class CommonTests(unittest.TestCase):
         # Absolute numbering can't have both season and episode
         self.assertEqual(episode_num(1, 1, numbering='absolute'), None)
 
+    def test_glob_escape(self):
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
+
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(CommonTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

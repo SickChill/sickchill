@@ -83,7 +83,8 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: %s" % search_params, logger.DEBUG)
+        logger.log(u"Search string: {0}".format
+                   (search_params.decode('utf-8')), logger.DEBUG)
 
         self._check_auth()
 
@@ -146,7 +147,7 @@ class HDBitsProvider(TorrentProvider):
             elif show.anime:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'episode': "%i" % int(episode.scene_absolute_number)
+                    'episode': "{0:d}".format(int(episode.scene_absolute_number))
                 }
             else:
                 post_data['tvdb'] = {
@@ -164,7 +165,7 @@ class HDBitsProvider(TorrentProvider):
             elif show.anime:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'season': "%d" % season.scene_absolute_number,
+                    'season': "{0:d}".format(season.scene_absolute_number),
                 }
             else:
                 post_data['tvdb'] = {

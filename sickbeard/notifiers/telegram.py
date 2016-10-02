@@ -29,7 +29,7 @@ from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
     NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
 
-from sickrage.helper.common import http_status_code
+from sickrage.helper import HTTP_STATUS_CODES
 
 
 class Notifier(object):
@@ -61,9 +61,9 @@ class Notifier(object):
         id = sickbeard.TELEGRAM_ID if id is None else id
         api_key = sickbeard.TELEGRAM_APIKEY if api_key is None else api_key
 
-        logger.log('Telegram in use with API KEY: %s' % api_key, logger.DEBUG)
+        logger.log('Telegram in use with API KEY: {0}'.format(api_key), logger.DEBUG)
 
-        message = '%s : %s' % (title.encode(), msg.encode())
+        message = '{0} : {1}'.format(title.encode(), msg.encode())
         payload = urllib.urlencode({'chat_id': id, 'text': message})
         telegram_api = 'https://api.telegram.org/bot%s/%s'
 
@@ -75,7 +75,7 @@ class Notifier(object):
             message = 'Telegram message sent successfully.'
             success = True
         except IOError as e:
-            message = 'Unknown IO error: %s' % e
+            message = 'Unknown IO error: {0}'.format(e)
             if hasattr(e, b'code'):
                 error_message = {
                     400: 'Missing parameter(s). Double check your settings or if the channel/user exists.',
@@ -86,9 +86,9 @@ class Notifier(object):
                 if e.code in error_message:
                     message = error_message.get(e.code)
                 else:
-                    http_status_code.get(e.code, message)
+                    HTTP_STATUS_CODES.get(e.code, message)
         except Exception as e:
-            message = 'Error while sending Telegram message: %s ' % e
+            message = 'Error while sending Telegram message: {0} '.format(e)
         finally:
             logger.log(message, logger.INFO)
             return success, message
@@ -122,7 +122,7 @@ class Notifier(object):
         :param title: The title of the notification to send
         """
         if sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_telegram(title, '%s: %s' % (ep_name, lang))
+            self._notify_telegram(title, '{0}: {1}'.format(ep_name, lang))
 
     def notify_git_update(self, new_version='??'):
         """
@@ -163,6 +163,6 @@ class Notifier(object):
             logger.log('Notification for Telegram not enabled, skipping this notification', logger.DEBUG)
             return False, 'Disabled'
 
-        logger.log('Sending a Telegram message for %s' % message, logger.DEBUG)
+        logger.log('Sending a Telegram message for {0}'.format(message), logger.DEBUG)
 
         return self._send_telegram_msg(title, message, id, api_key)

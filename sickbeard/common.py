@@ -23,24 +23,23 @@ Common interface for Quality and Status
 """
 
 # pylint: disable=line-too-long
+from __future__ import unicode_literals
 
 import operator
 from os import path
 import platform
 import re
 import uuid
-
-from hachoir_parser import createParser  # pylint: disable=import-error
-from hachoir_metadata import extractMetadata  # pylint: disable=import-error
-from hachoir_core.log import log as hachoir_log # pylint: disable=import-error
+import gettext
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 from sickbeard.numdict import NumDict
 from sickrage.helper.encoding import ek
-from sickrage.helper.common import try_int  # pylint: disable=unused-import
+from sickrage.helper import video_screen_size
 from sickrage.tagger.episode import EpisodeTags
 from sickrage.recompiled import tags
 
+gettext.install('messages', unicode=1, codeset='UTF-8')
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
@@ -73,13 +72,14 @@ NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 
 notifyStrings = NumDict({
-    NOTIFY_SNATCH: "Started Download",
-    NOTIFY_DOWNLOAD: "Download Finished",
-    NOTIFY_SUBTITLE_DOWNLOAD: "Subtitle Download Finished",
-    NOTIFY_GIT_UPDATE: "SickRage Updated",
-    NOTIFY_GIT_UPDATE_TEXT: "SickRage Updated To Commit#: ",
-    NOTIFY_LOGIN: "SickRage new login",
-    NOTIFY_LOGIN_TEXT: "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
+    # pylint: disable=undefined-variable
+    NOTIFY_SNATCH: _("Started Download"),
+    NOTIFY_DOWNLOAD: _("Download Finished"),
+    NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
+    NOTIFY_GIT_UPDATE: _("SickRage Updated"),
+    NOTIFY_GIT_UPDATE_TEXT: _("SickRage Updated To Commit#: "),
+    NOTIFY_LOGIN: _("SickRage new login"),
+    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}")
 })
 
 # Episode statuses
@@ -104,12 +104,12 @@ NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
 MULTI_EP_STRINGS = NumDict({
-    NAMING_REPEAT: "Repeat",
-    NAMING_SEPARATED_REPEAT: "Repeat (Separated)",
-    NAMING_DUPLICATE: "Duplicate",
-    NAMING_EXTEND: "Extend",
-    NAMING_LIMITED_EXTEND: "Extend (Limited)",
-    NAMING_LIMITED_EXTEND_E_PREFIXED: "Extend (Limited, E-prefixed)"
+    NAMING_REPEAT: _("Repeat"),
+    NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
+    NAMING_DUPLICATE: ("Duplicate"),
+    NAMING_EXTEND: _("Extend"),
+    NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
+    NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)")
 })
 
 
@@ -213,12 +213,12 @@ class Quality(object):
     })
 
     statusPrefixes = NumDict({
-        DOWNLOADED: "Downloaded",
-        SNATCHED: "Snatched",
-        SNATCHED_PROPER: "Snatched (Proper)",
-        FAILED: "Failed",
-        SNATCHED_BEST: "Snatched (Best)",
-        ARCHIVED: "Archived"
+        DOWNLOADED: _("Downloaded"),
+        SNATCHED: _("Snatched"),
+        SNATCHED_PROPER: _("Snatched (Proper)"),
+        FAILED: _("Failed"),
+        SNATCHED_BEST: _("Snatched (Best)"),
+        ARCHIVED: _("Archived")
     })
 
     @staticmethod
@@ -235,7 +235,7 @@ class Quality(object):
                 stat = Quality.statusPrefixes[status]
                 qual = Quality.qualityStrings[quality]
                 comp = Quality.compositeStatus(status, quality)
-                to_return[comp] = '%s (%s)' % (stat, qual)
+                to_return[comp] = '{0} ({1})'.format(stat, qual)
         return to_return
 
     @staticmethod
@@ -280,11 +280,14 @@ class Quality(object):
         if quality != Quality.UNKNOWN:
             return quality
 
-        quality = Quality.assumeQuality(name)
+        quality = Quality.qualityFromFileMeta(name)
         if quality != Quality.UNKNOWN:
             return quality
 
-        return Quality.UNKNOWN
+        if name.lower().endswith(".ts"):
+            return Quality.RAWHDTV
+        else:
+            return Quality.UNKNOWN
 
     @staticmethod
     def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
@@ -298,8 +301,8 @@ class Quality(object):
 
         if not name:
             return Quality.UNKNOWN
-        else:
-            name = ek(path.basename, name)
+
+        name = ek(path.basename, name)
 
         result = None
         ep = EpisodeTags(name)
@@ -308,7 +311,7 @@ class Quality(object):
             sd_options = tags.anime_sd.search(name)
             hd_options = tags.anime_hd.search(name)
             full_hd = tags.anime_fullhd.search(name)
-            ep.rex[u'bluray'] = tags.anime_bluray
+            ep.rex[b'bluray'] = tags.anime_bluray
 
             # BluRay
             if ep.bluray and (full_hd or hd_options):
@@ -326,7 +329,7 @@ class Quality(object):
             return Quality.UNKNOWN if result is None else result
 
         # Is it UHD?
-        if ep.vres in [2160, 4320] and ep.scan == u'p':
+        if ep.vres in [2160, 4320] and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
             if ep.avc and ep.bluray:
@@ -335,12 +338,12 @@ class Quality(object):
             elif (ep.avc and ep.itunes) or ep.web:
                 result = Quality.UHD_4K_WEBDL if not full_res else Quality.UHD_8K_WEBDL
             # HDTV
-            elif ep.avc and ep.tv == u'hd':
+            elif ep.avc and ep.tv == 'hd':
                 result = Quality.UHD_4K_TV if not full_res else Quality.UHD_8K_TV
 
         # Is it HD?
         elif ep.vres in [1080, 720]:
-            if ep.scan == u'p':
+            if ep.scan == 'p':
                 # BluRay
                 full_res = (ep.vres == 1080)
                 if ep.avc and (ep.bluray or ep.hddvd):
@@ -349,16 +352,15 @@ class Quality(object):
                 elif (ep.avc and ep.itunes) or ep.web:
                     result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
                 # HDTV
-                elif ep.avc and ep.tv == u'hd':
-                    if not all([ep.vres == 1080, ep.raw, ep.avc_non_free]):
-                        result = Quality.FULLHDTV if full_res else Quality.HDTV
-                    else:
-                        result = Quality.RAWHDTV
-                elif all([ep.vres == 720, ep.tv == u'hd', ep.mpeg]):
+                elif ep.avc and ep.tv == 'hd':
+                    result = Quality.FULLHDTV if full_res else Quality.HDTV #1080 HDTV h264
+                # MPEG2 encoded
+                elif all([ep.vres == 1080, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
-            elif (ep.res == u'1080i') and ep.tv == u'hd':
-                if ep.mpeg or (ep.raw and ep.avc_non_free):
+                elif all([ep.vres == 720, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
+            elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
+                result = Quality.RAWHDTV
         elif ep.hrws:
             result = Quality.HDTV
 
@@ -368,27 +370,16 @@ class Quality(object):
             if ep.dvd or ep.bluray:
                 result = Quality.SDDVD
             # SDTV
-            elif ep.res == u'480p' or any([ep.tv, ep.sat, ep.web]):
+            elif ep.res == '480p' or any([ep.tv, ep.sat, ep.web]):
                 result = Quality.SDTV
+        elif ep.dvd:
+            # SD DVD
+            result = Quality.SDDVD
+        elif ep.tv:
+            # SD TV/HD TV
+            result = Quality.SDTV
 
         return Quality.UNKNOWN if result is None else result
-
-    @staticmethod
-    def assumeQuality(name):
-        """
-        Assume a quality from file extension if we cannot resolve it otherwise
-
-        :param name: File name of episode to analyse
-        :return: Quality prefix
-        """
-        quality = Quality.qualityFromFileMeta(name)
-        if quality != Quality.UNKNOWN:
-            return quality
-
-        if name.lower().endswith(".ts"):
-            return Quality.RAWHDTV
-        else:
-            return Quality.UNKNOWN
 
     @staticmethod
     def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
@@ -399,39 +390,7 @@ class Quality(object):
         :return: Quality prefix
         """
 
-        hachoir_log.use_print = False
-
-        try:
-            parser = createParser(filename)
-        except Exception:  # pylint: disable=broad-except
-            parser = None
-
-        if not parser:
-            return Quality.UNKNOWN
-
-        try:
-            metadata = extractMetadata(parser)
-        except Exception:  # pylint: disable=broad-except
-            metadata = None
-
-        try:
-            parser.stream._input.close()  # pylint: disable=protected-access
-        except Exception:  # pylint: disable=broad-except
-            pass
-
-        if not metadata:
-            return Quality.UNKNOWN
-
-        height = 0
-        if metadata.has('height'):
-            height = int(metadata.get('height') or 0)
-        else:
-            test = getattr(metadata, "iterGroups", None)
-            if callable(test):
-                for metagroup in metadata.iterGroups():
-                    if metagroup.has('height'):
-                        height = int(metagroup.get('height') or 0)
-
+        height = video_screen_size(filename)[1]
         if not height:
             return Quality.UNKNOWN
 
@@ -541,19 +500,15 @@ class Quality(object):
             return ""
 
     @staticmethod
-    def statusFromName(name, assume=True, anime=False):
+    def statusFromName(name, anime=False):
         """
         Get a status object from filename
 
         :param name: Filename to check
-        :param assume: boolean to assume quality by extension if we can't figure it out
         :param anime: boolean to enable anime parsing
         :return: Composite status/quality object
         """
-        quality = Quality.nameQuality(name, anime)
-        if assume and quality == Quality.UNKNOWN:
-            quality = Quality.assumeQuality(name)
-        return Quality.compositeStatus(DOWNLOADED, quality)
+        return Quality.compositeStatus(DOWNLOADED, Quality.nameQuality(name, anime))
 
     DOWNLOADED = None
     SNATCHED = None
@@ -639,18 +594,19 @@ class StatusStrings(NumDict):
 
 # Assign strings to statuses
 statusStrings = StatusStrings({
-    UNKNOWN: "Unknown",
-    UNAIRED: "Unaired",
-    SNATCHED: "Snatched",
-    DOWNLOADED: "Downloaded",
-    SKIPPED: "Skipped",
-    SNATCHED_PROPER: "Snatched (Proper)",
-    WANTED: "Wanted",
-    ARCHIVED: "Archived",
-    IGNORED: "Ignored",
-    SUBTITLED: "Subtitled",
-    FAILED: "Failed",
-    SNATCHED_BEST: "Snatched (Best)"
+    # pylint: disable=undefined-variable
+    UNKNOWN: _("Unknown"),
+    UNAIRED: _("Unaired"),
+    SNATCHED: _("Snatched"),
+    DOWNLOADED: _("Downloaded"),
+    SKIPPED: _("Skipped"),
+    SNATCHED_PROPER: _("Snatched (Proper)"),
+    WANTED: _("Wanted"),
+    ARCHIVED: _("Archived"),
+    IGNORED: _("Ignored"),
+    SUBTITLED: _("Subtitled"),
+    FAILED: _("Failed"),
+    SNATCHED_BEST: _("Snatched (Best)")
 })
 
 

@@ -47,6 +47,9 @@ module.exports = function(grunt) {
                     "outlayer": [
                         "item.js",
                         "outlayer.js"
+                    ],
+                    "openSans": [
+                        "*.ttf", "*.css"
                     ]
                 },
                 bowerOptions: {

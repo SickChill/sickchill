@@ -37,7 +37,7 @@ import locale
 import traceback
 
 from urllib import quote
-from github import Github, InputFileContent  # pylint: disable=import-error
+from github import InputFileContent
 
 import sickbeard
 from sickbeard import classes
@@ -179,6 +179,16 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             for logger in self.loggers:
                 logger.addHandler(rfh)
 
+    def set_level(self):
+        self.debug_logging = sickbeard.DEBUG
+        self.database_logging = sickbeard.DBDEBUG
+
+        level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
+        for logger in self.loggers:
+            logger.setLevel(level)
+            for handler in logger.handlers:
+                handler.setLevel(level)
+
     @staticmethod
     def shutdown():
         """
@@ -196,9 +206,12 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param kwargs: to pass to logger
         """
         cur_thread = threading.currentThread().getName()
-        cur_hash = '[{}] '.format(
-            sickbeard.CUR_COMMIT_HASH[:7]
-        ) if sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6 else ''
+
+        cur_hash = ''
+        if level == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
+            cur_hash = '[{0}] '.format(
+                sickbeard.CUR_COMMIT_HASH[:7]
+            )
 
         message = '{thread} :: {hash}{message}'.format(
             thread=cur_thread, hash=cur_hash, message=msg)
@@ -239,7 +252,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         submitter_result = ''
         issue_id = None
 
-        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
+        if not all((sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
             submitter_result = 'Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
@@ -262,11 +275,6 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         self.submitter_running = True
 
-        gh_org = sickbeard.GIT_ORG or 'SickRage'
-        gh_repo = 'sickrage-issues'
-
-        git = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent='SickRage')
-
         try:
             # read log file
             log_data = None
@@ -276,7 +284,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
-                f_name = '%s.%i' % (self.log_file, i)
+                f_name = '{0}.{1:d}'.format(self.log_file, i)
                 if ek(os.path.isfile, f_name) and (len(log_data) <= 500):
                     with io.open(f_name, encoding='utf-8') as log_f:
                         log_data += log_f.readlines()
@@ -294,10 +302,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         title_error = title_error[0:1000]
 
                 except Exception as err_msg:  # pylint: disable=broad-except
-                    self.log('Unable to get error title : %s' % ex(err_msg), ERROR)
+                    self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
 
                 gist = None
-                regex = r'^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{7}\])$' % cur_error.time
+                regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
                 for i, data in enumerate(log_data):
                     match = re.match(regex, data)
                     if match:
@@ -305,7 +313,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(log_data[i:i + 50])
                             if paste_data:
-                                gist = git.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
@@ -316,17 +324,17 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     locale_name = 'unknown'
 
                 if gist and gist != 'No ERROR found':
-                    log_link = 'Link to Log: %s' % gist.html_url
+                    log_link = 'Link to Log: {0}'.format(gist.html_url)
                 else:
                     log_link = 'No Log available with ERRORS:'
 
                 msg = [
                     '### INFO',
-                    'Python Version: **%s**' % sys.version[:120].replace('\n', ''),
-                    'Operating System: **%s**' % platform.platform(),
-                    'Locale: %s' % locale_name,
-                    'Branch: **%s**' % sickbeard.BRANCH,
-                    'Commit: SickRage/SickRage@%s' % sickbeard.CUR_COMMIT_HASH,
+                    'Python Version: **{0}**'.format(sys.version[:120].replace('\n', '')),
+                    'Operating System: **{0}**'.format(platform.platform()),
+                    'Locale: {0}'.format(locale_name),
+                    'Branch: **{0}**'.format(sickbeard.BRANCH),
+                    'Commit: SickRage/SickRage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',
@@ -337,8 +345,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 ]
 
                 message = '\n'.join(msg)
-                title_error = '[APP SUBMITTED]: %s' % title_error
-                reports = git.get_organization(gh_org).get_repo(gh_repo).get_issues(state='all')
+                title_error = '[APP SUBMITTED]: {0}'.format(title_error)
+
+                repo = sickbeard.gh.get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)
+                reports = repo.get_issues(state='all')
 
                 def is_ascii_error(title):
                     # [APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
@@ -361,20 +371,20 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                         issue_id = report.number
                         if not report.raw_data['locked']:
                             if report.create_comment(message):
-                                submitter_result = 'Commented on existing issue #%s successfully!' % issue_id
+                                submitter_result = 'Commented on existing issue #{0} successfully!'.format(issue_id)
                             else:
-                                submitter_result = 'Failed to comment on found issue #%s!' % issue_id
+                                submitter_result = 'Failed to comment on found issue #{0}!'.format(issue_id)
                         else:
-                            submitter_result = 'Issue #%s is locked, check GitHub to find info about the error.' % issue_id
+                            submitter_result = 'Issue #{0} is locked, check GitHub to find info about the error.'.format(issue_id)
 
                         issue_found = True
                         break
 
                 if not issue_found:
-                    issue = git.get_organization(gh_org).get_repo(gh_repo).create_issue(title_error, message)
+                    issue = repo.create_issue(title_error, message)
                     if issue:
                         issue_id = issue.number
-                        submitter_result = 'Your issue ticket #%s was submitted successfully!' % issue_id
+                        submitter_result = 'Your issue ticket #{0} was submitted successfully!'.format(issue_id)
                     else:
                         submitter_result = 'Failed to create a new issue!'
 

@@ -37,7 +37,7 @@ def ex(e):
                 fixed_arg = ss(arg)
             else:
                 try:
-                    fixed_arg = u'error %s' % ss(str(arg))
+                    fixed_arg = u'error {0}'.format(ss(str(arg)))
                 except Exception:
                     fixed_arg = None
 
@@ -46,9 +46,9 @@ def ex(e):
                     message = fixed_arg
                 else:
                     try:
-                        message = u'{} : {}'.format(message, fixed_arg)
+                        message = u'{0} : {1}'.format(message, fixed_arg)
                     except UnicodeError:
-                        message = u'{} : {}'.format(
+                        message = u'{0} : {1}'.format(
                             unicode(message, errors='replace'),
                             unicode(fixed_arg, errors='replace'))
 

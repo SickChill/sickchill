@@ -60,7 +60,7 @@ class Notifier(object):
         if len(keys) > 1:
             batch = True
 
-        logger.log(u"NMA: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, batch=%s" % (event, message, nma_priority, batch), logger.DEBUG)
+        logger.log(u"NMA: Sending notice with details: event=\"{0}\", message=\"{1}\", priority={2}, batch={3}".format(event, message, nma_priority, batch), logger.DEBUG)
         response = p.push(application=title, event=event, description=message, priority=nma_priority, batch_mode=batch)
 
         if not response[nma_api][u'code'] == u'200':

@@ -46,6 +46,12 @@ class Notifier(object):
         headers = {'Access-Token': pushbullet_api}
         return helpers.getURL(urljoin(self.url, 'devices'), session=self.session, headers=headers, returns='text') or {}
 
+    def get_channels(self, pushbullet_api):
+        """Fetches the list of channels a given access key has permissions to push to"""
+        logger.log('Testing Pushbullet authentication and retrieving the device list.', logger.DEBUG)
+        headers = {'Access-Token': pushbullet_api}
+        return helpers.getURL(urljoin(self.url, 'channels'), session=self.session, headers=headers, returns='text') or {}
+
     def notify_snatch(self, ep_name):
         if sickbeard.PUSHBULLET_NOTIFY_ONSNATCH:
             self._sendPushbullet(
@@ -90,23 +96,23 @@ class Notifier(object):
         )
 
     def _sendPushbullet(  # pylint: disable=too-many-arguments
-            self, pushbullet_api=None, pushbullet_device=None, event=None, message=None, link=None, force=False):
+            self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
 
         if not (sickbeard.USE_PUSHBULLET or force):
             return False
 
         pushbullet_api = pushbullet_api or sickbeard.PUSHBULLET_API
         pushbullet_device = pushbullet_device or sickbeard.PUSHBULLET_DEVICE
+        pushbullet_channel = pushbullet_channel or sickbeard.PUSHBULLET_CHANNEL
 
-        logger.log('Pushbullet event: %r' % event, logger.DEBUG)
-        logger.log('Pushbullet message: %r' % message, logger.DEBUG)
-        logger.log('Pushbullet api: %r' % pushbullet_api, logger.DEBUG)
-        logger.log('Pushbullet devices: %r' % pushbullet_device, logger.DEBUG)
+        logger.log('Pushbullet event: {0!r}'.format(event), logger.DEBUG)
+        logger.log('Pushbullet message: {0!r}'.format(message), logger.DEBUG)
+        logger.log('Pushbullet api: {0!r}'.format(pushbullet_api), logger.DEBUG)
+        logger.log('Pushbullet devices: {0!r}'.format(pushbullet_device), logger.DEBUG)
 
         post_data = {
             'title': event,
             'body': message,
-            'device_iden': pushbullet_device,
             'type': 'link' if link else 'note'
         }
         if link:
@@ -114,13 +120,16 @@ class Notifier(object):
 
         headers = {'Access-Token': pushbullet_api}
 
+        if pushbullet_device:
+            post_data['device_iden'] = pushbullet_device
+        elif pushbullet_channel:
+            post_data['channel_tag'] = pushbullet_channel
+
         response = helpers.getURL(urljoin(self.url, 'pushes'), session=self.session, post_data=post_data, headers=headers, returns='json') or {}
-        if not response:
-            return False
 
         failed = response.pop('error', {})
         if failed:
-            logger.log('Pushbullet notification failed: {}'.format(failed.pop('message')), logger.WARNING)
+            logger.log('Pushbullet notification failed: {0}'.format(failed.pop('message')), logger.WARNING)
         else:
             logger.log('Pushbullet notification sent.', logger.DEBUG)
 

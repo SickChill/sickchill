@@ -70,7 +70,7 @@ class Show(object):
         indexer_ids = [indexer_id] if not isinstance(indexer_id, list) else indexer_id
         results = [show for show in shows if show.indexerid in indexer_ids]
 
-        if len(results) == 0:
+        if not results:
             return None
 
         if len(results) == 1:

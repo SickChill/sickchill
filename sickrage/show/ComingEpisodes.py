@@ -69,7 +69,7 @@ class ComingEpisodes(object):
              'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
         results = db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND airdate >= ? '
@@ -84,7 +84,7 @@ class ComingEpisodes(object):
         placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
 
         results += db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND showid NOT IN (' + placeholder + ') '
@@ -100,7 +100,7 @@ class ComingEpisodes(object):
         )
 
         results += db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND s.indexer_id = e.showid '

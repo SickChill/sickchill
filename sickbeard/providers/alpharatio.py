@@ -110,12 +110,12 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    logger.log("Search string: {search}".format
-                               (search=search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params["searchstr"] = search_string
                 search_url = self.urls["search"]
@@ -126,7 +126,7 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", id="torrent_table")
-                    torrent_rows = torrent_table.find_all("tr") if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
@@ -134,11 +134,11 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         continue
 
                     # "", "", "Name /Year", "Files", "Time", "Size", "Snatches", "Seeders", "Leechers"
-                    labels = [process_column_header(label) for label in torrent_rows[0].find_all("td")]
+                    labels = [process_column_header(label) for label in torrent_rows[0]("td")]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
-                        cells = result.find_all("td")
+                        cells = result("td")
                         if len(cells) < len(labels):
                             continue
 
@@ -155,16 +155,16 @@ class AlphaRatioProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.log("Discarding torrent because it doesn't meet the"
-                                               " minimum seeders or leechers: {} (S:{} L:{})".format
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != "RSS":
-                                logger.log("Found result: {} with {} seeders and {} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)

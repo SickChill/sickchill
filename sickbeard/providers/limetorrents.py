@@ -56,12 +56,12 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         results = []
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {}".format(mode), logger.DEBUG)
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {}".format(search_string.decode("utf-8")),
-                               logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
                     search_url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
@@ -77,7 +77,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     data = BeautifulSoup(data, 'html5lib')
 
-                    entries = data.findAll('item')
+                    entries = data('item')
                     if not entries:
                         logger.log(u'Returned xml contained no results', logger.INFO)
                         continue
@@ -94,7 +94,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 download_url = item.enclosure['url']
                                 # http://itorrents.org/torrent/C7203982B6F000393B1CE3A013504E5F87A46A7F.torrent?title=The-Night-of-the-Generals-(1967)[BRRip-1080p-x264-by-alE13-DTS-AC3][Lektor-i-Napisy-PL-Eng][Eng]
                                 # Keep the hash a separate string for when its needed for failed
-                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.IGNORECASE).group(2)
+                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
                                 download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
 
                             if not (title and download_url):
@@ -105,8 +105,8 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
                                 # ]]>
                                 description = item.find('description')
-                                seeders = try_int(description.find_all('br')[0].next_sibling.strip().lstrip('Seeds: '))
-                                leechers = try_int(description.find_all('br')[1].next_sibling.strip().lstrip('Leechers: '))
+                                seeders = try_int(description('br')[0].next_sibling.strip().lstrip('Seeds: '))
+                                leechers = try_int(description('br')[1].next_sibling.strip().lstrip('Leechers: '))
                             else:
                                 # <description>Seeds: 6982 , Leechers 734</description>
                                 description = item.find('description').text.partition(',')
@@ -123,18 +123,18 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {} (S:{} L:{})".format
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: %r" % traceback.format_exc(), logger.ERROR)
+                    logger.log(u"Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

@@ -188,7 +188,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
             else:
                 ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
+                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.prettyName()))
 
                 logger.log(u"Unable to find a download for: [" + self.segment.prettyName() + "]")
 

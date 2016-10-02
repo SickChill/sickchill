@@ -21,7 +21,7 @@ class imdbPopular(object):
             'at': 0,
             'sort': 'moviemeter',
             'title_type': 'tv_series',
-            'year': '%s,%s' % (date.today().year - 1, date.today().year + 1)
+            'year': '{0},{1}'.format(date.today().year - 1, date.today().year + 1)
         }
 
         self.session = helpers.make_session()
@@ -37,7 +37,7 @@ class imdbPopular(object):
 
         soup = BeautifulSoup(data, 'html5lib')
         results = soup.find("table", {"class": "results"})
-        rows = results.find_all("tr")
+        rows = results("tr")
 
         for row in rows:
             show = {}
@@ -100,7 +100,7 @@ class imdbPopular(object):
             matches[6] = int(matches[6]) * factor
             matches[7] = int(matches[7]) * factor
 
-            return "%sV1._%s%s_%s%s,%s,%s,%s_.jpg" % (matches[0], matches[1], matches[2], matches[3], matches[4],
+            return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(matches[0], matches[1], matches[2], matches[3], matches[4],
                                                       matches[5], matches[6], matches[7])
         else:
             return image_url

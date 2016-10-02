@@ -319,12 +319,12 @@ class GenericProviderTests(unittest.TestCase):
 
         self.assertEqual(
             len(items_list), len(results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (len(items_list), len(results_list))
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(items_list), len(results_list))
         )
 
         self.assertEqual(
             len(unicode_items_list), len(unicode_results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(
                 len(unicode_items_list), len(unicode_results_list))
         )
 
@@ -389,7 +389,7 @@ class GenericProviderTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(GenericProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

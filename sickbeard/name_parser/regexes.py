@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -113,19 +112,28 @@ normal_regexes = [
      ((?P<extra_info>.+?)((?<![. _-])
      (?<!WEB)-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$
      '''),
+    ('stupid_with_denotative',
+     # aaf-sns03e09
+     # flhd-supernaturals07e02-1080p
+     r'''
+     (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # aaf-sn
+     (?!264)                                                            # don't count x264
+     s(?P<season_num>\d{1,2})                                           # s03
+     e(?P<ep_num>\d{2})(?:(rp|-(1080p|720p)))?$                             # e09
+     '''),
     ('stupid',
      # tpz-abc102
      r'''
-     (?P<release_group>.+?)-\w+?[\. ]?           # tpz-abc
-     (?!264)                                     # don't count x264
-     (?P<season_num>\d{1,2})                     # 1
-     (?P<ep_num>\d{2})$                          # 02
+     (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # tpz-abc
+     (?!264)                                                            # don't count x264
+     (?P<season_num>\d{1,2})                                            # 1
+     (?P<ep_num>\d{2})$                                                 # 02
      '''),
     ('verbose',
      # Show Name Season 1 Episode 2 Ep Name
      r'''
      ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
-     season[. _-]+                               # season and separator
+     (season|series)[. _-]+                      # season and separator
      (?P<season_num>\d+)[. _-]+                  # 1
      episode[. _-]+                              # episode and separator
      (?P<ep_num>\d+)[. _-]+                      # 02 and separator
@@ -175,6 +183,7 @@ normal_regexes = [
      r'''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
      (?P<season_num>\d{1,2})                     # 1
+     (e?)                                        # Optional episode separator
      (?P<ep_num>\d{2})                           # 02 and separator
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
      (-(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$                # Group
@@ -225,6 +234,7 @@ anime_regexes = [
      # [ISLAND]One_Piece_726_[VOSTFR]_[V1]_[8bit]_[720p]_[2F7B3FA2].mp4
      # Naruto Shippuden 445 VOSTFR par Fansub-Resistance (1280*720) - version MQ
      # Dragon Ball Super 015 VOSTFR par Fansub-Resistance (1280x720) - HQ version
+     # [Mystic.Z-Team].Dragon.Ball.Super.-.épisode.36.VOSTFR.720p
      # [Z-Team][DBSuper.pw] Dragon Ball Super - 028 (VOSTFR)(720p AAC)(MP4)
      # [SnF] Shokugeki no Souma - 24 VOSTFR [720p][41761A60].mkv
      # [Y-F] Ao no Kanata no Four Rhythm - 03 Vostfr HD 8bits
@@ -236,8 +246,9 @@ anime_regexes = [
      ^(\[(?P<release_group>.+?)\][ ._-]*)?                                                     # Release Group and separator (Optional)
      ((\[|\().+?(\]|\))[ ._-]*)?                                                               # Extra info (Optionnal)
      (?P<series_name>.+?)[ ._-]+                                                               # Show_Name and separator
+     ((épisode|episode|Episode)[ ._-]+)?                                                       # Sentence for special fansub (Optionnal)
      (?P<ep_ab_num>\d{1,3})[ ._-]+                                                             # Episode number and separator
-     (((\[|\())?(VOSTFR|vostfr|Vostfr|VostFR)((\]|\)))?([ ._-])*)+                             # Subtitle Language and separator
+     (((\[|\())?(VOSTFR|vostfr|Vostfr|VostFR|vostFR)((\]|\)))?([ ._-])*)+                      # Subtitle Language and separator
      (par Fansub-Resistance)?                                                                  # Sentence for special fansub (Optionnal)
      (\[((v|V)(?P<version>[0-9]))\]([ ._-])*)?                                                 # Version and separator (Optional)
      ((\[(8|10)(Bits|bits|Bit|bit)\])?([ ._-])*)?                                              # Colour resolution and separator (Optional)

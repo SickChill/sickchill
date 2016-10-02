@@ -6,8 +6,10 @@ import os
 import chardet
 import pysrt
 
+from .score import get_equivalent_release_groups
 from .video import Episode, Movie
-from .utils import sanitize
+from .utils import sanitize, sanitize_release_group
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +70,10 @@ class Subtitle(object):
         if not self.content:
             return
 
-        try:
+        if self.encoding:
             return self.content.decode(self.encoding, errors='replace')
-        except (TypeError, LookupError):
-            # Failback to guess_encoding if empty or unknown encoding provided
-            return self.content.decode(self.guess_encoding(), errors='replace')
+
+        return self.content.decode(self.guess_encoding(), errors='replace')
 
     def is_valid(self):
         """Check if a :attr:`text` is a valid SubRip format.
@@ -223,8 +224,9 @@ def guess_matches(video, guess, partial=False):
         if video.title and 'title' in guess and sanitize(guess['title']) == sanitize(video.title):
             matches.add('title')
     # release_group
-    if video.release_group and 'release_group' in guess \
-            and guess['release_group'].lower() == video.release_group.lower():
+    if (video.release_group and 'release_group' in guess and
+            sanitize_release_group(guess['release_group']) in
+            get_equivalent_release_groups(sanitize_release_group(video.release_group))):
         matches.add('release_group')
     # resolution
     if video.resolution and 'screen_size' in guess and guess['screen_size'] == video.resolution:

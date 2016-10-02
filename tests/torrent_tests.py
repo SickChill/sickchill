@@ -64,7 +64,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
         bitcannon.api_key = ""
 
-        if len(bitcannon.custom_url) > 0:
+        if bitcannon.custom_url:
             # pylint: disable=protected-access
             search_strings_list = bitcannon._get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
@@ -87,7 +87,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         soup = BeautifulSoup(html, 'html5lib')
 
         torrent_table = soup.find('table', attrs={'class': 'data'})
-        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+        torrent_rows = torrent_table('tr') if torrent_table else []
 
         # cleanup memory
         soup.clear(True)
@@ -99,15 +99,15 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
         for row in torrent_rows[1:]:
             try:
-                link = urlparse.urljoin(url, (row.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
+                link = urlparse.urljoin(url, (row.find('div', {'class': 'torrentname'})('a')[1])['href'])
                 _id = row.get('id')[-7:]
-                title = (row.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
-                    or (row.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
+                title = (row.find('div', {'class': 'torrentname'})('a')[1]).text \
+                    or (row.find('div', {'class': 'torrentname'})('a')[2]).text
                 url = row.find('a', 'imagnet')['href']
                 verified = True if row.find('a', 'iverify') else False
                 trusted = True if row.find('img', {'alt': 'verified'}) else False
-                seeders = int(row.find_all('td')[-2].text)
-                leechers = int(row.find_all('td')[-1].text)
+                seeders = int(row('td')[-2].text)
+                leechers = int(row('td')[-1].text)
                 _ = link, _id, verified, trusted, seeders, leechers
             except (AttributeError, TypeError):
                 continue

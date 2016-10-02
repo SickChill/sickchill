@@ -10,18 +10,21 @@ from . import ParserBeautifulSoup, Provider
 from .. import __short_version__
 from ..cache import SHOW_EXPIRATION_TIME, region
 from ..exceptions import AuthenticationError, ConfigurationError, DownloadLimitExceeded, TooManyRequests
+from ..score import get_equivalent_release_groups
 from ..subtitle import Subtitle, fix_line_ending, guess_matches
-from ..utils import sanitize
+from ..utils import sanitize, sanitize_release_group
 from ..video import Episode
 
 logger = logging.getLogger(__name__)
 
 language_converters.register('addic7ed = subliminal.converters.addic7ed:Addic7edConverter')
 
-series_year_re = re.compile('^(?P<series>[ \w\'.:-]+)(?: \((?P<year>\d{4})\))?$')
+#: Series header parsing regex
+series_year_re = re.compile(r'^(?P<series>[ \w\'.:(),&!?-]+?)(?: \((?P<year>\d{4})\))?$')
 
 
 class Addic7edSubtitle(Subtitle):
+    """Addic7ed Subtitle."""
     provider_name = 'addic7ed'
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, year, version,
@@ -58,7 +61,9 @@ class Addic7edSubtitle(Subtitle):
         if video.original_series and self.year is None or video.year and video.year == self.year:
             matches.add('year')
         # release_group
-        if video.release_group and self.version and video.release_group.lower() in self.version.lower():
+        if (video.release_group and self.version and
+                any(r in sanitize_release_group(self.version)
+                    for r in get_equivalent_release_groups(sanitize_release_group(video.release_group)))):
             matches.add('release_group')
         # resolution
         if video.resolution and self.version and video.resolution in self.version.lower():
@@ -73,6 +78,7 @@ class Addic7edSubtitle(Subtitle):
 
 
 class Addic7edProvider(Provider):
+    """Addic7ed Provider."""
     languages = {Language('por', 'BR')} | {Language(l) for l in [
         'ara', 'aze', 'ben', 'bos', 'bul', 'cat', 'ces', 'dan', 'deu', 'ell', 'eng', 'eus', 'fas', 'fin', 'fra', 'glg',
         'heb', 'hrv', 'hun', 'hye', 'ind', 'ita', 'jpn', 'kor', 'mkd', 'msa', 'nld', 'nor', 'pol', 'por', 'ron', 'rus',
@@ -144,9 +150,9 @@ class Addic7edProvider(Provider):
 
         :param str series: series of the episode.
         :param year: year of the series, if any.
-        :type year: int or None
+        :type year: int
         :return: the show id, if found.
-        :rtype: int or None
+        :rtype: int
 
         """
         # addic7ed doesn't support search with quotes
@@ -160,6 +166,8 @@ class Addic7edProvider(Provider):
         logger.info('Searching show ids with %r', params)
         r = self.session.get(self.server_url + 'search.php', params=params, timeout=10)
         r.raise_for_status()
+        if r.status_code == 304:
+            raise TooManyRequests()
         soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
 
         # get the suggestion
@@ -178,15 +186,15 @@ class Addic7edProvider(Provider):
     def get_show_id(self, series, year=None, country_code=None):
         """Get the best matching show id for `series`, `year` and `country_code`.
 
-        First search in the result of :meth:`_get_show_ids` and fallback on a search with :meth:`_search_show_id`
+        First search in the result of :meth:`_get_show_ids` and fallback on a search with :meth:`_search_show_id`.
 
         :param str series: series of the episode.
         :param year: year of the series, if any.
-        :type year: int or None
+        :type year: int
         :param country_code: country code of the series, if any.
-        :type country_code: str or None
+        :type country_code: str
         :return: the show id, if found.
-        :rtype: int or None
+        :rtype: int
 
         """
         series_sanitized = sanitize(series).lower()

@@ -24,7 +24,7 @@ import io
 import os
 import re
 from requests.utils import add_dict_to_cookiejar
-from bencode import Bencoder, BencodeDecodeError
+import bencode
 
 import sickbeard
 from sickbeard import helpers, logger, tvcache
@@ -51,11 +51,12 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.search_fallback = search_fallback
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
+        self.enable_cookies = True
         self.cookies = cookies
         self.titleTAG = titleTAG
 
     def configStr(self):  # pylint: disable=too-many-arguments
-        return '{}|{}|{}|{}|{}|{}|{}|{}|{}'.format(
+        return '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}'.format(
             self.name or '',
             self.url or '',
             self.cookies or '',
@@ -69,7 +70,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     @staticmethod
     def get_providers_list(data):
-        providers_list = [x for x in [TorrentRssProvider._make_provider(x) for x in data.split('!!!')] if x]
+        providers_list = [x for x in (TorrentRssProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
         providers_set = []
 
@@ -133,7 +134,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.log('Skipping RSS Torrent provider string: {}, incorrect format'.format(config), logger.ERROR)
+            logger.log('Skipping RSS Torrent provider string: {0}, incorrect format'.format(config), logger.ERROR)
             return None
 
         new_provider = TorrentRssProvider(
@@ -150,14 +151,14 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             if self.cookies:
                 cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
                 if not cookie_validator.match(self.cookies):
-                    return False, 'Cookie is not correctly formatted: {}'.format(self.cookies)
+                    return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
                 add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
 
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:
-                return False, 'No items found in the RSS feed {}'.format(self.url)
+                return False, 'No items found in the RSS feed {0}'.format(self.url)
 
             title, url = self._get_title_and_url(data[0])
 
@@ -172,15 +173,15 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 torrent_file = self.get_url(url, returns='content')
                 try:
-                    Bencoder().decode(torrent_file)
-                except (BencodeDecodeError, Exception) as error:
+                    bencode.bdecode(torrent_file)
+                except (bencode.BTL.BTFailure, Exception) as error:
                     self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: {0!r}'.format(error)
+                    return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 
             return True, 'RSS feed Parsed correctly'
 
         except Exception as error:
-            return False, 'Error when trying to load RSS: {}'.format(ex(error))
+            return False, 'Error when trying to load RSS: {0}'.format(ex(error))
 
     @staticmethod
     def dumpHTML(data):
@@ -192,10 +193,10 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError as error:
-            logger.log('Unable to save the file: {}'.format(ex(error)), logger.ERROR)
+            logger.log('Unable to save the file: {0}'.format(ex(error)), logger.ERROR)
             return False
 
-        logger.log('Saved custom_torrent html dump {} '.format(dumpName), logger.INFO)
+        logger.log('Saved custom_torrent html dump {0} '.format(dumpName), logger.INFO)
         return True
 
 

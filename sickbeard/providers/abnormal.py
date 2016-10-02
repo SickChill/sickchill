@@ -96,13 +96,13 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log('Search string: {}'.format(search_string.decode('utf-8')),
-                               logger.DEBUG)
+                    logger.log('Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                 # Sorting: Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
                 search_params['order'] = ('Seeders', 'Time')[mode == 'RSS']
@@ -113,7 +113,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find(class_='torrent_table')
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+                    torrent_rows = torrent_table('tr') if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
@@ -121,11 +121,11 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                         continue
 
                     # Catégorie, Release, Date, DL, Size, C, S, L
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0].find_all('td')]
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('td')]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
-                        cells = result.find_all('td')
+                        cells = result('td')
                         if len(cells) < len(labels):
                             continue
 
@@ -141,7 +141,7 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {} (S:{} L:{})'.format
+                                    logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -149,9 +149,9 @@ class ABNormalProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             torrent_size = cells[size_index].get_text()
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log('Found result: {} with {} seeders and {} leechers'.format
+                                logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
