@@ -80,7 +80,7 @@ class EpisodeTags(object):
         """
         attr = 'res'
         match = self._get_match_obj(attr)
-        return None if not match or not match.group('scan') else match.group('scan').lower()
+        return '' if not match or not match.group('scan') else match.group('scan').lower()
 
     # SOURCES
     @property
