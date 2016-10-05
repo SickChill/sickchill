@@ -34,7 +34,6 @@ except ImportError:
     from pkg_resources import require
     require('pytz')
 
-import shutil_custom
 
 from sickbeard.indexers import indexer_api
 from sickbeard.common import SD, SKIPPED, WANTED
@@ -76,7 +75,6 @@ dynamic_strings = (
 )
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 requests.packages.urllib3.disable_warnings()
 indexerApi = indexer_api.indexerApi
 

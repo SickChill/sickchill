@@ -72,8 +72,6 @@ if sys.version_info >= (2, 7, 9):
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
 
-import shutil_custom  # pylint: disable=import-error
-shutil.copyfile = shutil_custom.copyfile_custom
 
 # Fix mimetypes on misconfigured systems
 import mimetypes
