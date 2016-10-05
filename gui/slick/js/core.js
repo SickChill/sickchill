@@ -3292,25 +3292,27 @@ var SICKRAGE = {
             });
 
             $('#submitShowDirs').on('click', function() {
-                var shows = "";
-                $('.dirCheck').each(function() {
-                    if (this.checked === true) {
-                        var show = $(this).attr('id');
-                        var indexer = $(this).closest('tr').find('select').val();
-                        shows += "<input type='hidden' name='shows_to_add' value='" + indexer + '|' + show + "'/>";
-                    }
-                });
-
-                if (shows === "") {
-                    return false;
-                }
-
                 var submitForm = $(
                     "<form method='post' action='" + srRoot + "/addShows/addExistingShows" +
                     "?promptForSettings=" + ($('#promptForSettings').prop('checked') ? 'on' : 'off') + "'>" +
-                        shows +
                     "</form>"
                 );
+                
+                var has_shows = false;
+                $('.dirCheck').each(function() {
+                    if (this.checked === true) {
+                        hasShows = true;
+                        var show = $(this).attr('id');
+                        var indexer = $(this).closest('tr').find('select').val();
+                        showInput = $('<input type="hidden" name="shows_to_add" value=""');
+                        showInput.val(indexer + '|' + show);
+                        showInput.appendTo(submitForm);
+                    }
+                });
+
+                if (!hasShows) {
+                    return false;
+                }
 
                 submitForm.appendTo('body');
 
