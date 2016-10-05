@@ -28,9 +28,7 @@ import traceback
 import time
 import datetime
 import shutil
-import shutil_custom
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 import sickbeard
 from sickbeard import db

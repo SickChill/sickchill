@@ -41,9 +41,7 @@ from unrar2.rar_exceptions import InvalidRARArchive
 from unrar2.rar_exceptions import InvalidRARArchiveUsage
 from unrar2.rar_exceptions import IncorrectRARPassword
 
-import shutil_custom
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods

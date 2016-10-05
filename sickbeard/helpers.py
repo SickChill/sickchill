@@ -60,10 +60,8 @@ from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
 
 
-import shutil_custom
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 # pylint: disable=protected-access
 # Access to a protected member of a client class
