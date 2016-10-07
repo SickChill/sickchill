@@ -47,6 +47,7 @@ import xml.etree.ElementTree as ET
 
 import adba
 import certifi
+import cfscrape
 import requests
 from requests.utils import urlparse
 from cachecontrol import CacheControl
@@ -1334,6 +1335,8 @@ def make_session():
     session = requests.Session()
 
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+
+    session = cfscrape.create_scraper(sess=session)
 
     return CacheControl(sess=session, cache_etags=True)
 
