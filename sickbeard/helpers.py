@@ -1587,7 +1587,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     # Lets also do this for symlink and hardlink
-    if method.endswith('link') and diskfree > 1024**2:
+    if 'link' in method and diskfree > 1024**2:
         return True
 
     neededspace = ek(os.path.getsize, src)
