@@ -2885,11 +2885,12 @@ class HomeAddShows(Home):
 
         return indexer, show_dir, indexer_id, show_name
 
-    def addExistingShows(self, shows_to_add=None, promptForSettings=None):
+    def addExistingShows(self, shows_to_add, promptForSettings, **kwargs):
         """
         Receives a dir list and add them. Adds the ones with given TVDB IDs first, then forwards
         along to the newShow page.
         """
+
         # grab a list of other shows to add, if provided
         if not shows_to_add:
             shows_to_add = []
