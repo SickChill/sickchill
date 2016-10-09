@@ -54,8 +54,6 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             'base': self.url,
         }
 
-        self.headers.update({'User-Agent': USER_AGENT})
-
         # Proper Strings
 
         # Cache
