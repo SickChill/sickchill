@@ -50,8 +50,6 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.url = self.urls['base_url']
 
-        self.headers.update({'User-Agent': USER_AGENT})
-
         self.subcategories = [433, 637, 455, 639]
 
         self.minseed = 0

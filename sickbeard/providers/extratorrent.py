@@ -49,7 +49,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.custom_url = None
 
         self.cache = tvcache.TVCache(self, min_time=30)  # Only poll ExtraTorrent every 30 minutes max
-        self.headers.update({'User-Agent': USER_AGENT})
+
         self.search_params = {'cid': 8}
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches

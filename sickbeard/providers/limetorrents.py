@@ -47,7 +47,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.headers.update({'User-Agent': USER_AGENT})
+
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
         self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})

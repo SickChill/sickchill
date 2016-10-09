@@ -46,7 +46,6 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.url = 'https://torrentproject.se/'
 
         self.custom_url = None
-        self.headers.update({'User-Agent': USER_AGENT})
 
         # Proper Strings
 
