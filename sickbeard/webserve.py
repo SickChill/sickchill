@@ -650,22 +650,43 @@ class Home(WebRoot):
 
         return ep_obj, ''
 
-    def index(self):
+    def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, filename="home.mako")
+
+        selected_root = kwargs.get('root')
+        if selected_root and sickbeard.ROOT_DIRS:
+            backend_pieces = sickbeard.ROOT_DIRS.split('|')
+            backend_dirs = backend_pieces[1:]
+            try:
+                assert selected_root != '-1'
+                selected_root_dir = backend_dirs[int(selected_root)]
+                if selected_root_dir[-1] not in ('/', '\\'):
+                    selected_root_dir += os.sep
+            except (IndexError, ValueError, TypeError, AssertionError):
+                selected_root_dir = ''
+        else:
+            selected_root_dir = ''
+
         if sickbeard.ANIME_SPLIT_HOME:
             shows = []
             anime = []
             for show in sickbeard.showList:
-                if show.is_anime:
-                    anime.append(show)
-                else:
-                    shows.append(show)
+                if selected_root_dir in show._location:
+                    if show.is_anime:
+                        anime.append(show)
+                    else:
+                        shows.append(show)
             showlists = [["Shows", shows], ["Anime", anime]]
         else:
-            showlists = [["Shows", sickbeard.showList]]
+            shows = []
+            for show in sickbeard.showList:
+                if selected_root_dir in show._location:
+                    shows.append(show)
+            showlists = [["Shows", shows]]
 
         stats = self.show_statistics()
-        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[0], max_download_count=stats[1], controller="home", action="index")
+        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[
+            0], max_download_count=stats[1], controller="home", action="index", selected_root=selected_root or '-1')
 
     @staticmethod
     def show_statistics():

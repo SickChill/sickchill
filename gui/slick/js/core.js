@@ -2008,6 +2008,10 @@ var SICKRAGE = {
                 }
             });
 
+            $('#rootDirSelect').on('change', function(){
+                $('#rootDirForm').submit();
+            });
+
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function(){
                 var percentage = $(this).data('progress-percentage');
