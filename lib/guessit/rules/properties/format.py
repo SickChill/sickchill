@@ -45,7 +45,7 @@ def format_():
 
 class ValidateFormat(Rule):
     """
-    Validate format with screener property or separated.
+    Validate format with screener property, with video_codec property or separated
     """
     priority = 64
     consequence = RemoveMatch
@@ -60,7 +60,8 @@ class ValidateFormat(Rule):
                 continue
             if not seps_after(format_match) and \
                     not matches.range(format_match.end, format_match.end + 1,
-                                      lambda match: match.name == 'other' and match.value == 'Screener'):
+                                      lambda match: match.name == 'video_codec' or (
+                                          match.name == 'other' and match.value == 'Screener')):
                 ret.append(format_match)
                 continue
         return ret

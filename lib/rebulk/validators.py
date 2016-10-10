@@ -25,7 +25,7 @@ def chars_before(chars, match):
 
 def chars_after(chars, match):
     """
-    Validate the match if left character is in a given sequence.
+    Validate the match if right character is in a given sequence.
 
     :param chars:
     :type chars:

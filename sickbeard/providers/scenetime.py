@@ -50,7 +50,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.url = self.urls['base_url']
 
-        self.categories = [2, 42, 9, 63, 77, 79, 100, 83] 
+        self.categories = [2, 42, 9, 63, 77, 79, 100, 83]
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -103,7 +103,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     # Scenetime apparently uses different number of cells in #torrenttable based
                     # on who you are. This works around that by extracting labels from the first
                     # <tr> and using their index to find the correct download/seeders/leechers td.
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('td')]
+                    labels = [label.get_text(strip=True) or label.img['title'] for label in torrent_rows[0]('td')]
 
                     for result in torrent_rows[1:]:
                         try:

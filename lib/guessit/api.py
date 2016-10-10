@@ -79,6 +79,16 @@ class GuessItApi(object):
         """
         self.rebulk = rebulk
 
+    @staticmethod
+    def _fix_option_encoding(value):
+        if isinstance(value, list):
+            return [GuessItApi._fix_option_encoding(item) for item in value]
+        if six.PY2 and isinstance(value, six.text_type):
+            return value.encode("utf-8")
+        if six.PY3 and isinstance(value, six.binary_type):
+            return value.decode('ascii')
+        return value
+
     def guessit(self, string, options=None):
         """
         Retrieves all matches from string as a dict
@@ -93,6 +103,14 @@ class GuessItApi(object):
             options = parse_options(options)
             result_decode = False
             result_encode = False
+
+            fixed_options = {}
+            for (key, value) in options.items():
+                key = GuessItApi._fix_option_encoding(key)
+                value = GuessItApi._fix_option_encoding(value)
+                fixed_options[key] = value
+            options = fixed_options
+
             if six.PY2 and isinstance(string, six.text_type):
                 string = string.encode("utf-8")
                 result_decode = True
@@ -124,6 +142,8 @@ class GuessItApi(object):
         ordered = OrderedDict()
         for k in sorted(unordered.keys(), key=six.text_type):
             ordered[k] = list(sorted(unordered[k], key=six.text_type))
+        if hasattr(self.rebulk, 'customize_properties'):
+            ordered = self.rebulk.customize_properties(ordered)
         return ordered
 
 

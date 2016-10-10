@@ -26,7 +26,8 @@ def release_group():
 
 forbidden_groupnames = ['rip', 'by', 'for', 'par', 'pour', 'bonus']
 
-groupname_seps = ''.join([c for c in seps if c not in '[]{}()'])
+groupname_ignore_seps = '[]{}()'
+groupname_seps = ''.join([c for c in seps if c not in groupname_ignore_seps])
 
 
 def clean_groupname(string):
@@ -38,6 +39,9 @@ def clean_groupname(string):
     :rtype:
     """
     string = string.strip(groupname_seps)
+    if not (string.endswith(tuple(groupname_ignore_seps)) and string.startswith(tuple(groupname_ignore_seps)))\
+            and not any(i in string.strip(groupname_ignore_seps) for i in groupname_ignore_seps):
+        string = string.strip(groupname_ignore_seps)
     for forbidden in forbidden_groupnames:
         if string.lower().startswith(forbidden):
             string = string[len(forbidden):]
@@ -49,7 +53,8 @@ def clean_groupname(string):
 
 
 _scene_previous_names = ['video_codec', 'format', 'video_api', 'audio_codec', 'audio_profile', 'video_profile',
-                         'audio_channels', 'screen_size']
+                         'audio_channels', 'screen_size', 'other', 'container', 'language', 'subtitle_language',
+                         'subtitle_language.suffix', 'subtitle_language.prefix']
 
 _scene_previous_tags = ['release-group-prefix']
 
@@ -93,8 +98,6 @@ class SceneReleaseGroup(Rule):
 
     def when(self, matches, context):
         # If a release_group is found before, ignore this kind of release_group rule.
-        if matches.named('release_group'):
-            return
 
         ret = []
 
@@ -105,7 +108,10 @@ class SceneReleaseGroup(Rule):
                                       predicate=lambda hole: cleanup(hole.value), index=-1)
 
             if last_hole:
-                previous_match = matches.previous(last_hole, lambda match: not match.private, index=0)
+                previous_match = matches.previous(last_hole,
+                                                  lambda match: not match.private or
+                                                  match.name in _scene_previous_names,
+                                                  index=0)
                 if previous_match and (previous_match.name in _scene_previous_names or
                                        any(tag in previous_match.tags for tag in _scene_previous_tags)) and \
                         not matches.input_string[previous_match.end:last_hole.start].strip(seps) \
@@ -114,7 +120,7 @@ class SceneReleaseGroup(Rule):
                     last_hole.name = 'release_group'
                     last_hole.tags = ['scene']
 
-                    # if hole is insed a group marker with same value, remove [](){} ...
+                    # if hole is inside a group marker with same value, remove [](){} ...
                     group = matches.markers.at_match(last_hole, lambda marker: marker.name == 'group', 0)
                     if group:
                         group.formatter = clean_groupname
@@ -141,8 +147,9 @@ class AnimeReleaseGroup(Rule):
         ret = []
 
         # If a release_group is found before, ignore this kind of release_group rule.
-        if matches.named('release_group'):
-            return ret
+        if not matches.named('episode') and not matches.named('season') and matches.named('release_group'):
+            # This doesn't seems to be an anime
+            return
 
         for filepart in marker_sorted(matches.markers.named('path'), matches):
 

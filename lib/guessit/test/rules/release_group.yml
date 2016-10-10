@@ -7,8 +7,16 @@
 ? Some.Title.XViD-by.Artik[SEDG].avi
 : release_group: Artik[SEDG]
 
-? "[ABC] Some.Title.XViD.avi"
+? "[ABC] Some.Title.avi"
 ? some/folder/[ABC]Some.Title.avi
+: release_group: ABC
+
+? "[ABC] Some.Title.XViD-GRP.avi"
+? some/folder/[ABC]Some.Title.XViD-GRP.avi
+: release_group: GRP
+
+? "[ABC] Some.Title.S01E02.avi"
+? some/folder/[ABC]Some.Title.S01E02.avi
 : release_group: ABC
 
 ? Some.Title.XViD-S2E02.NoReleaseGroup.avi
