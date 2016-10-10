@@ -1383,7 +1383,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
                     post_data[param] = post_data[param].encode('utf-8')
 
         resp = session.request(
-            'POST' if post_data else 'GET', url, data=post_data, params=params,
+            'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )
