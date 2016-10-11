@@ -24,12 +24,9 @@ import datetime
 import os
 
 import sickbeard
-from sickbeard import tv
-from sickbeard import common
-from sickbeard import logger
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.common import Quality, DOWNLOADED
-
+from sickbeard import common, logger, tv
+from sickbeard.common import DOWNLOADED, Quality
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.encoding import ek
 
 name_presets = (

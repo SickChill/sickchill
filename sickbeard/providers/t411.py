@@ -23,7 +23,6 @@ import time
 import traceback
 
 from sickbeard import logger, tvcache
-from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -49,8 +48,6 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                      'download': 'https://api.t411.ch/torrents/download/%s'}
 
         self.url = self.urls['base_url']
-
-        self.headers.update({'User-Agent': USER_AGENT})
 
         self.subcategories = [433, 637, 455, 639]
 

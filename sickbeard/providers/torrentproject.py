@@ -18,11 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from requests.compat import urljoin
 import validators
 
 from sickbeard import logger, tvcache
-from sickbeard.common import USER_AGENT
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -46,7 +44,6 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.url = 'https://torrentproject.se/'
 
         self.custom_url = None
-        self.headers.update({'User-Agent': USER_AGENT})
 
         # Proper Strings
 

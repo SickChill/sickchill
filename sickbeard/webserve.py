@@ -18,15 +18,15 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+import ast
+import datetime
+import gettext
 import io
 import os
 import re
 import time
-import urllib
-import datetime
 import traceback
-import gettext
-import ast
+import urllib
 
 try:
     import json
@@ -650,22 +650,43 @@ class Home(WebRoot):
 
         return ep_obj, ''
 
-    def index(self):
+    def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, filename="home.mako")
+
+        selected_root = kwargs.get('root')
+        if selected_root and sickbeard.ROOT_DIRS:
+            backend_pieces = sickbeard.ROOT_DIRS.split('|')
+            backend_dirs = backend_pieces[1:]
+            try:
+                assert selected_root != '-1'
+                selected_root_dir = backend_dirs[int(selected_root)]
+                if selected_root_dir[-1] not in ('/', '\\'):
+                    selected_root_dir += os.sep
+            except (IndexError, ValueError, TypeError, AssertionError):
+                selected_root_dir = ''
+        else:
+            selected_root_dir = ''
+
         if sickbeard.ANIME_SPLIT_HOME:
             shows = []
             anime = []
             for show in sickbeard.showList:
-                if show.is_anime:
-                    anime.append(show)
-                else:
-                    shows.append(show)
+                if selected_root_dir in show._location:
+                    if show.is_anime:
+                        anime.append(show)
+                    else:
+                        shows.append(show)
             showlists = [["Shows", shows], ["Anime", anime]]
         else:
-            showlists = [["Shows", sickbeard.showList]]
+            shows = []
+            for show in sickbeard.showList:
+                if selected_root_dir in show._location:
+                    shows.append(show)
+            showlists = [["Shows", shows]]
 
         stats = self.show_statistics()
-        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[0], max_download_count=stats[1], controller="home", action="index")
+        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[
+            0], max_download_count=stats[1], controller="home", action="index", selected_root=selected_root or '-1')
 
     @staticmethod
     def show_statistics():
@@ -1312,11 +1333,14 @@ class Home(WebRoot):
                     anime.append(show)
                 else:
                     shows.append(show)
-            sortedShowLists = [["Shows", sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
-                               ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+            sortedShowLists = [
+                ["Shows", sorted(shows, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))],
+                ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
+            ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+                ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
+            ]
 
         bwl = None
         if show_obj.is_anime:
@@ -2885,11 +2909,12 @@ class HomeAddShows(Home):
 
         return indexer, show_dir, indexer_id, show_name
 
-    def addExistingShows(self, shows_to_add=None, promptForSettings=None):
+    def addExistingShows(self, shows_to_add, promptForSettings, **kwargs):
         """
         Receives a dir list and add them. Adds the ones with given TVDB IDs first, then forwards
         along to the newShow page.
         """
+
         # grab a list of other shows to add, if provided
         if not shows_to_add:
             shows_to_add = []

@@ -23,7 +23,6 @@ import traceback
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard.common import USER_AGENT
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -53,8 +52,6 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             'feed': 'https://torrentz2.eu/feed',
             'base': self.url,
         }
-
-        self.headers.update({'User-Agent': USER_AGENT})
 
         # Proper Strings
 

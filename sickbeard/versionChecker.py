@@ -17,26 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import platform
-import subprocess
 import re
-
-import tarfile
-import stat
-import traceback
-import time
-import datetime
 import shutil
-import shutil_custom
-
-shutil.copyfile = shutil_custom.copyfile_custom
+import stat
+import subprocess
+import tarfile
+import time
+import traceback
 
 import sickbeard
-from sickbeard import db
-from sickbeard import ui
-from sickbeard import notifiers
-from sickbeard import logger, helpers
+from sickbeard import db, helpers, logger, notifiers, ui
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 

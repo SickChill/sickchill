@@ -19,31 +19,19 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import stat
-# from functools import wraps
 import shutil
-
-import sickbeard
-from sickbeard import postProcessor
-from sickbeard import db, helpers
-from sickbeard import logger
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard import common
-from sickbeard import failedProcessor
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
+import stat
 
 from unrar2 import RarFile
-from unrar2.rar_exceptions import FileOpenError
-from unrar2.rar_exceptions import ArchiveHeaderBroken
-from unrar2.rar_exceptions import InvalidRARArchive
-from unrar2.rar_exceptions import InvalidRARArchiveUsage
-from unrar2.rar_exceptions import IncorrectRARPassword
+from unrar2.rar_exceptions import ArchiveHeaderBroken, FileOpenError, IncorrectRARPassword, InvalidRARArchive, \
+    InvalidRARArchiveUsage
 
-import shutil_custom
-
-shutil.copyfile = shutil_custom.copyfile_custom
+import sickbeard
+from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
+from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException, ex
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods

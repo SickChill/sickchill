@@ -20,11 +20,11 @@
 
 from __future__ import unicode_literals
 
-import os.path
 import datetime
-import threading
+import os.path
 import re
 import stat
+import threading
 import traceback
 
 try:
@@ -66,10 +66,8 @@ from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXT
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
 import shutil
-import shutil_custom
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 
 def dirty_setter(attr_name):

@@ -21,7 +21,7 @@
 from adba.aniDBerrors import AniDBCommandTimeoutError
 
 import sickbeard
-from sickbeard import db, logger, helpers
+from sickbeard import db, helpers, logger
 
 
 class BlackAndWhiteList(object):

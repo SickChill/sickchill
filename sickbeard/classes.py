@@ -23,8 +23,7 @@ import sys
 import urllib
 
 import sickbeard
-from sickbeard.common import USER_AGENT, Quality
-
+from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
 
 

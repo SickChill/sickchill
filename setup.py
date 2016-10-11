@@ -2,8 +2,9 @@
 Use setup tools to install sickrage
 """
 import os
-from setuptools import find_packages, setup
+
 from babel.messages import frontend as babel
+from setuptools import find_packages, setup
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 

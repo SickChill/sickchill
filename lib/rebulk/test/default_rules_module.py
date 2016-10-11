@@ -77,4 +77,3 @@ class RuleRemoveTags1(Rule):
     consequence = RemoveTags(['new-tag'])
     def when(self, matches, context):
         return matches.named('tags')
-

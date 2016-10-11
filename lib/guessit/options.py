@@ -3,17 +3,10 @@
 """
 Options
 """
-import sys
 from argparse import ArgumentParser
 import shlex
 
 import six
-
-
-if six.PY2:
-    StrOptType = lambda s: unicode(s, sys.stdin.encoding)  # pylint:disable=undefined-variable
-else:
-    StrOptType = str  # pylint:disable=redefined-variable-type
 
 
 def build_argument_parser():
@@ -42,9 +35,9 @@ def build_argument_parser():
                              default=False,
                              help='Guess "serie.213.avi" as the episode 213. Without this option, '
                                   'it will be guessed as season 2, episode 13')
-    naming_opts.add_argument('-T', '--expected-title', action='append', dest='expected_title', type=StrOptType,
+    naming_opts.add_argument('-T', '--expected-title', action='append', dest='expected_title',
                              help='Expected title to parse (can be used multiple times)')
-    naming_opts.add_argument('-G', '--expected-group', action='append', dest='expected_group', type=StrOptType,
+    naming_opts.add_argument('-G', '--expected-group', action='append', dest='expected_group',
                              help='Expected release group (can be used multiple times)')
 
     input_opts = opts.add_argument_group("Input")

@@ -25,19 +25,20 @@ Common interface for Quality and Status
 # pylint: disable=line-too-long
 from __future__ import unicode_literals
 
+import gettext
 import operator
-from os import path
 import platform
 import re
 import uuid
-import gettext
+from os import path
 
-from fake_useragent import settings as UA_SETTINGS, UserAgent
+from fake_useragent import UserAgent, settings as UA_SETTINGS
+
 from sickbeard.numdict import NumDict
-from sickrage.helper.encoding import ek
 from sickrage.helper import video_screen_size
-from sickrage.tagger.episode import EpisodeTags
+from sickrage.helper.encoding import ek
 from sickrage.recompiled import tags
+from sickrage.tagger.episode import EpisodeTags
 
 gettext.install('messages', unicode=1, codeset='UTF-8')
 
