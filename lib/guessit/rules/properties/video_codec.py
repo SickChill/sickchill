@@ -6,6 +6,8 @@ video_codec and video_profile property
 from rebulk.remodule import re
 
 from rebulk import Rebulk, Rule, RemoveMatch
+
+from guessit.rules.common.validators import seps_after, seps_before
 from ..common import dash
 from ..common.validators import seps_surround
 
@@ -17,7 +19,7 @@ def video_codec():
     :rtype: Rebulk
     """
     rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE, abbreviations=[dash]).string_defaults(ignore_case=True)
-    rebulk.defaults(name="video_codec", validator=seps_surround)
+    rebulk.defaults(name="video_codec")
 
     rebulk.regex(r"Rv\d{2}", value="Real")
     rebulk.regex("Mpeg2", value="Mpeg2")
@@ -42,9 +44,29 @@ def video_codec():
 
     rebulk.string('DXVA', value='DXVA', name='video_api')
 
-    rebulk.rules(VideoProfileRule)
+    rebulk.rules(ValidateVideoCodec, VideoProfileRule)
 
     return rebulk
+
+
+class ValidateVideoCodec(Rule):
+    """
+    Validate video_codec with format property or separated
+    """
+    priority = 64
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        ret = []
+        for codec in matches.named('video_codec'):
+            if not seps_before(codec) and \
+                    not matches.at_index(codec.start - 1, lambda match: match.name == 'format'):
+                ret.append(codec)
+                continue
+            if not seps_after(codec):
+                ret.append(codec)
+                continue
+        return ret
 
 
 class VideoProfileRule(Rule):

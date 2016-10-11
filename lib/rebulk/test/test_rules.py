@@ -10,7 +10,7 @@ from ..rules import Rules
 from ..match import Matches, Match
 
 from .rules_module import Rule1, Rule2, Rule3, Rule0, Rule1Disabled
-import rebulk.test.rules_module as rm
+from . import rules_module as rm
 
 
 def test_rule_priority():

@@ -1344,10 +1344,11 @@ def make_session():
 def request_defaults(kwargs):
     hooks = kwargs.pop('hooks', None)
     cookies = kwargs.pop('cookies', None)
+    allow_proxy = kwargs.pop('allow_proxy', True)
     verify = certifi.old_where() if all([sickbeard.SSL_VERIFY, kwargs.pop('verify', True)]) else False
 
     # request session proxies
-    if sickbeard.PROXY_SETTING:
+    if allow_proxy and sickbeard.PROXY_SETTING:
         logger.log("Using global proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
         parsed_url = urlparse(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
@@ -1383,7 +1384,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
                     post_data[param] = post_data[param].encode('utf-8')
 
         resp = session.request(
-            'POST' if post_data else 'GET', url, data=post_data, params=params,
+            'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )

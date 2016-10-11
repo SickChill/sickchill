@@ -26,3 +26,26 @@ def int_coercable(string):
         return True
     except ValueError:
         return False
+
+
+def compose(*validators):
+    """
+    Compose validators functions
+    :param validators:
+    :type validators:
+    :return:
+    :rtype:
+    """
+    def composed(string):
+        """
+        Composed validators function
+        :param string:
+        :type string:
+        :return:
+        :rtype:
+        """
+        for validator in validators:
+            if not validator(string):
+                return False
+        return True
+    return composed

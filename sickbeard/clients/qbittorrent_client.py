@@ -95,7 +95,7 @@ class qbittorrentAPI(GenericClient):
 
     def _set_torrent_priority(self, result):
 
-        self.url = self.host + 'command/decreasePrio '
+        self.url = self.host + 'command/decreasePrio'
         if result.priority == 1:
             self.url = self.host + 'command/increasePrio'
 

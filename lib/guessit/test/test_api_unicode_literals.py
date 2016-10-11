@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name, pointless-string-statement
 
+
+from __future__ import unicode_literals
+
 import os
 
 import pytest

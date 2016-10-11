@@ -1,23 +1,38 @@
+from __future__ import absolute_import, unicode_literals
+
+import codecs
+import json
 import os
 import re
-
-from . import settings
+from time import sleep
+from threading import Lock
 
 try:  # Python 2
-    from urllib import urlopen, quote_plus
+    from urllib2 import urlopen, Request, URLError
+    from urllib import quote_plus
 except ImportError:  # Python 3
-    from urllib.request import urlopen
+    from urllib.request import urlopen, Request
     from urllib.parse import quote_plus
-try:
-    import json
-except ImportError:
-    import simplejson as json
+    from urllib.error import URLError
 
 
-def get(url, annex=None):
-    if annex is not None:
-        url = url % (quote_plus(annex), )
-    return urlopen(url).read()
+def get(url):
+    with get.lock:
+        request = Request(url)
+
+        attempt = 0
+
+        while attempt < settings.HTTP_RETRIES:
+            attempt += 1
+
+            try:
+                return urlopen(request, timeout=settings.HTTP_TIMEOUT).read()
+            except URLError:
+                if attempt == settings.HTTP_RETRIES:
+                    raise
+                else:
+                    sleep(settings.HTTP_DELAY)
+get.lock = Lock()
 
 
 def get_browsers():
@@ -31,17 +46,13 @@ def get_browsers():
 
     browsers = re.findall(r'\.asp">(.+?)<', html, re.UNICODE)
 
-    for value, override in settings.OVERRIDES:
-        browsers = [
-            value if browser == override else browser
-            for browser in browsers
-        ]
+    browsers = [
+        settings.OVERRIDES.get(browser, browser) for browser in browsers
+    ]
 
     browsers_statistics = re.findall(
         r'td\sclass="right">(.+?)\s', html, re.UNICODE
     )
-
-    # TODO: ensure encoding
 
     return list(zip(browsers, browsers_statistics))
 
@@ -50,14 +61,12 @@ def get_browser_versions(browser):
     """
     very very hardcoded/dirty re/split stuff, but no dependencies
     """
-    html = get(settings.BROWSER_BASE_PAGE, browser)
+    html = get(settings.BROWSER_BASE_PAGE.format(browser=quote_plus(browser)))
     html = html.decode('iso-8859-1')
     html = html.split('<div id=\'liste\'>')[1]
     html = html.split('</div>')[0]
 
-    browsers_iter = re.finditer(r'\.php\'>(.+?)</a', html, re.UNICODE)
-
-    count = 0
+    browsers_iter = re.finditer(r'\?id=\d+\'>(.+?)</a', html, re.UNICODE)
 
     browsers = []
 
@@ -65,11 +74,9 @@ def get_browser_versions(browser):
         if 'more' in browser.group(1).lower():
             continue
 
-        # TODO: ensure encoding
         browsers.append(browser.group(1))
-        count += 1
 
-        if count == settings.BROWSERS_COUNT_LIMIT:
+        if len(browsers) == settings.BROWSERS_COUNT_LIMIT:
             break
 
     return browsers
@@ -84,39 +91,30 @@ def load():
 
         browser_key = browser
 
-        for replacement in settings.REPLACEMENTS:
-            browser_key = browser_key.replace(replacement, '')
+        for value, replacement in settings.REPLACEMENTS.items():
+            browser_key = browser_key.replace(value, replacement)
 
         browser_key = browser_key.lower()
 
         browsers_dict[browser_key] = get_browser_versions(browser)
 
-        for counter in range(int(float(percent))):
+        for _ in range(int(float(percent) * 10)):
             randomize_dict[str(len(randomize_dict))] = browser_key
 
-    db = {}
-    db['browsers'] = browsers_dict
-    db['randomize'] = randomize_dict
-
-    return db
+    return {
+        'browsers': browsers_dict,
+        'randomize': randomize_dict
+    }
 
 
 def write(data):
-    data = json.dumps(data, ensure_ascii=False)
-
-    # no codecs\with for python 2.5
-    f = open(settings.DB, 'w+')
-    f.write(data)
-    f.close()
+    with codecs.open(settings.DB, encoding='utf-8', mode='wb+',) as fp:
+        json.dump(data, fp)
 
 
 def read():
-    # no codecs\with for python 2.5
-    f = open(settings.DB, 'r')
-    data = f.read()
-    f.close()
-
-    return json.loads(data)
+    with codecs.open(settings.DB, encoding='utf-8', mode='rb',) as fp:
+        return json.load(fp)
 
 
 def exist():
@@ -140,3 +138,6 @@ def load_cached():
         update()
 
     return read()
+
+
+from fake_useragent import settings  # noqa # isort:skip

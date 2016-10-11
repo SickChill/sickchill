@@ -26,7 +26,48 @@ def valid_year(year):
     return 1920 <= year < 2030
 
 
-def search_date(string, year_first=None, day_first=True):
+def _is_int(string):
+    """
+    Check if the input string is an integer
+
+    :param string:
+    :type string:
+    :return:
+    :rtype:
+    """
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+
+def _guess_day_first_parameter(groups):
+    """
+    If day_first is not defined, use some heuristic to fix it.
+    It helps to solve issues with python dateutils 2.5.3 parser changes.
+
+    :param groups: match groups found for the date
+    :type groups: list of match objects
+    :return: day_first option guessed value
+    :rtype: bool
+    """
+
+    # If match starts with a long year, then day_first is force to false.
+    if _is_int(groups[0]) and valid_year(int(groups[0][:4])):
+        return False
+    # If match ends with a long year, the day_first is forced to true.
+    elif _is_int(groups[-1]) and valid_year(int(groups[-1][-4:])):
+        return True
+    # If match starts with a short year, then day_first is force to false.
+    elif _is_int(groups[0]) and int(groups[0][:2]) > 31:
+        return False
+    # If match ends with a short year, then day_first is force to true.
+    elif _is_int(groups[-1]) and int(groups[-1][-2:]) > 31:
+        return True
+
+
+def search_date(string, year_first=None, day_first=None):
     """Looks for date patterns, and if found return the date and group span.
 
     Assumes there are sentinels at the beginning and end of the string that
@@ -45,14 +86,22 @@ def search_date(string, year_first=None, day_first=True):
     """
     start, end = None, None
     match = None
+    groups = None
     for date_re in date_regexps:
         search_match = date_re.search(string)
         if search_match and (match is None or search_match.end() - search_match.start() > len(match)):
             start, end = search_match.start(1), search_match.end(1)
-            match = '-'.join(search_match.groups()[1:])
+            groups = search_match.groups()[1:]
+            match = '-'.join(groups)
 
     if match is None:
         return
+
+    if year_first and day_first is None:
+        day_first = False
+
+    if day_first is None:
+        day_first = _guess_day_first_parameter(groups)
 
     # If day_first/year_first is undefined, parse is made using both possible values.
     yearfirst_opts = [False, True]

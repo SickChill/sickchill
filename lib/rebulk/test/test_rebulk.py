@@ -4,7 +4,7 @@
 
 from ..rebulk import Rebulk
 from ..rules import Rule
-import rebulk.test.rebulk_rules_module as rm
+from . import rebulk_rules_module as rm
 
 
 def test_rebulk_simple():
@@ -417,4 +417,3 @@ class TestImmutable(object):
 
         assert len(named) == 0
         assert len(matches) == 3
-

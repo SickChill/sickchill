@@ -33,7 +33,6 @@ string_predicate = None
 # string_predicate = lambda string: '-DVD.BlablaBla.Fix.Blablabla.XVID' in string
 
 
-
 class EntryResult(object):
     def __init__(self, string, negates=False):
         self.string = string

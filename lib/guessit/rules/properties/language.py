@@ -106,8 +106,10 @@ class GuessitConverter(babelfish.LanguageReverseConverter):  # pylint: disable=m
 
 babelfish.language_converters['guessit'] = GuessitConverter()
 
-subtitle_prefixes = ['sub', 'subs', 'st', 'vost', 'subforced', 'fansub', 'hardsub']
-subtitle_suffixes = ['subforced', 'fansub', 'hardsub', 'sub', 'subs']
+subtitle_both = ['sub', 'subs', 'subbed', 'custom subbed', 'custom subs', 'custom sub', 'customsubbed', 'customsubs',
+                 'customsub']
+subtitle_prefixes = subtitle_both + ['st', 'vost', 'subforced', 'fansub', 'hardsub']
+subtitle_suffixes = subtitle_both + ['subforced', 'fansub', 'hardsub']
 lang_prefixes = ['true']
 
 all_lang_prefixes_suffixes = subtitle_prefixes + subtitle_suffixes + lang_prefixes
@@ -134,7 +136,7 @@ def find_languages(string, context=None):
                 key = 'subtitle_language'
         for suffix in subtitle_suffixes:
             if lang_word.endswith(suffix):
-                lang_word = lang_word[:len(suffix) - 1]
+                lang_word = lang_word[:len(lang_word) - len(suffix)]
                 key = 'subtitle_language'
         for prefix in lang_prefixes:
             if lang_word.startswith(prefix):
