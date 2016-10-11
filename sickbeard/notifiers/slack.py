@@ -16,12 +16,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
+
+import json
+import requests
 
 import sickbeard
-import lib.requests as requests
-
 from sickbeard import logger, common
 from sickrage.helper.exceptions import ex
+
 
 class Notifier(object):
 
@@ -29,53 +32,51 @@ class Notifier(object):
 
     def notify_snatch(self, ep_name):
         if sickbeard.SLACK_NOTIFY_SNATCH:
-            self._notifySlack(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
 
     def notify_download(self, ep_name):
         if sickbeard.SLACK_NOTIFY_DOWNLOAD:
-            self._notifySlack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notifySlack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
         if sickbeard.USE_SLACK:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
-            self._notifySlack(title + " - " + update_text + new_version)
+            self._notify_slack(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
         if sickbeard.USE_SLACK:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notifySlack(title + " - " + update_text.format(ipaddress))
+            self._notify_slack(title + " - " + update_text.format(ipaddress))
 
     def test_notify(self):
-        return self._notifySlack("This is a test notification from SickRage", force=True)
+        return self._notify_slack("This is a test notification from SickRage", force=True)
 
     def _send_slack(self, message=None):
-        slack_webhook = self.SLACK_WEBHOOK_URL + sickbeard.SLACK_WEBHOOK.replace(self.SLACK_WEBHOOK_URL,'')
+        slack_webhook = self.SLACK_WEBHOOK_URL + sickbeard.SLACK_WEBHOOK.replace(self.SLACK_WEBHOOK_URL, '')
 
-        logger.log(u"Sending slack message: " + message, logger.INFO)
-        logger.log(u"Sending slack message  to url: " + slack_webhook, logger.INFO)
+        logger.log("Sending slack message: " + message, logger.INFO)
+        logger.log("Sending slack message  to url: " + slack_webhook, logger.INFO)
 
-        method = 'POST'
-        headers = {"Content-Type": "application/json"}
-        postdata = '{"text":"%s"}' % message
+        if isinstance(message, unicode):
+            message = message.encode('utf-8')
+
+        headers = {b"Content-Type": b"application/json"}
         try:
-            r = requests.request(method,
-                             slack_webhook,
-                             data=postdata,
-                             headers=headers
-                             )
+            r = requests.post(slack_webhook, data=json.dumps(dict(text=message)), headers=headers)
+            r.raise_for_status()
         except Exception as e:
-            logger.log(u"Error Sending Slack message: " + ex(e), logger.ERROR)
+            logger.log("Error Sending Slack message: " + ex(e), logger.ERROR)
             return False
 
         return True
 
-    def _notifySlack(self, message='', force=False):
+    def _notify_slack(self, message='', force=False):
         if not sickbeard.USE_SLACK and not force:
             return False
 
