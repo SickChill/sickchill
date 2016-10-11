@@ -18,26 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import re
 import threading
-import datetime
 import traceback
 
 import sickbeard
-
-from sickbeard.common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT
-
-from sickbeard import logger, db, show_name_helpers, helpers
-from sickbeard import sab
-from sickbeard import nzbget
-from sickbeard import clients
-from sickbeard import history
-from sickbeard import notifiers
-from sickbeard import nzbSplitter
-from sickbeard import ui
-from sickbeard import failed_history
-from sickbeard import common
+from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbSplitter, nzbget, \
+    sab, show_name_helpers, ui
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.GenericProvider import GenericProvider

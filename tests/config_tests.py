@@ -45,11 +45,11 @@ Methods
 
 # pylint: disable=line-too-long
 
-from collections import namedtuple
 import logging
 import os.path
 import sys
 import unittest
+from collections import namedtuple
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

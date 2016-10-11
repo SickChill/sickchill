@@ -20,11 +20,11 @@
 
 from __future__ import unicode_literals
 
-import os.path
 import datetime
-import threading
+import os.path
 import re
 import stat
+import threading
 import traceback
 
 try:

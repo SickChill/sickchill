@@ -19,30 +19,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import re
-import datetime
-import traceback
 import subprocess
 import threading
-
-from babelfish import Language, language_converters
-
-from guessit import guessit
+import traceback
 
 import subliminal
+from babelfish import Language, language_converters
+from guessit import guessit
 from subliminal import Episode, ProviderPool, provider_manager
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import history
-from sickbeard import db
+from sickbeard import db, history, logger
 from sickbeard.common import Quality
 from sickbeard.helpers import isMediaFile
-
-from sickrage.helper.common import episode_num, dateTimeFormat
-from sickrage.show.Show import Show
+from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')

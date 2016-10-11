@@ -18,15 +18,15 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+import ast
+import datetime
+import gettext
 import io
 import os
 import re
 import time
-import urllib
-import datetime
 import traceback
-import gettext
-import ast
+import urllib
 
 try:
     import json

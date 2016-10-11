@@ -21,42 +21,41 @@
 
 from __future__ import unicode_literals
 
-import io
-import os
-import re
 import ast
+import base64
+import ctypes
+import datetime
+import hashlib
+import io
+import operator
+import os
+import platform
+import random
+import re
+import shutil
+import socket
 import ssl
 import stat
 import time
-import ctypes
-import shutil
-import socket
 import traceback
 import urllib
 import uuid
-import base64
-import zipfile
-import datetime
-import operator
-import platform
-import hashlib
-import random
-from contextlib import closing
-from itertools import izip, cycle
 import xml.etree.ElementTree as ET
+import zipfile
+from contextlib import closing
+from itertools import cycle, izip
 
 import adba
 import certifi
 import cfscrape
 import requests
-from requests.utils import urlparse
 from cachecontrol import CacheControl
-# from httpcache import CachingHTTPAdapter
+from requests.utils import urlparse
 
 import sickbeard
-from sickbeard import logger, classes, db
+from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, pretty_file_size, episode_num
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
 

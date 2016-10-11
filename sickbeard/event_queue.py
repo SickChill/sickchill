@@ -1,7 +1,8 @@
 # coding=utf-8
 import threading
 import traceback
-from Queue import Queue, Empty
+from Queue import Empty, Queue
+
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
 

@@ -22,48 +22,33 @@
 # pylint: disable=line-too-long,too-many-lines,abstract-method
 # pylint: disable=no-member,method-hidden,missing-docstring,invalid-name
 
+import datetime
 import io
 import os
 import re
 import time
-import urllib
-import datetime
 import traceback
+import urllib
 
 import sickbeard
+from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, processTV, sbdatetime, search_queue, \
+    ui
+from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
+    SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
+from sickbeard.versionChecker import CheckVersion
 from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
+from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException, ex
 from sickrage.helper.quality import get_quality_string
+from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
 from sickrage.media.ShowPoster import ShowPoster
-from sickrage.media.ShowBanner import ShowBanner
 from sickrage.show.ComingEpisodes import ComingEpisodes
 from sickrage.show.History import History
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-from sickbeard.versionChecker import CheckVersion
-from sickbeard import db, logger, ui, helpers
-from sickbeard import search_queue
-from sickbeard import image_cache
-from sickbeard import classes
-from sickbeard import processTV
-from sickbeard import network_timezones, sbdatetime
-from sickbeard.common import DOWNLOADED
-from sickbeard.common import FAILED
-from sickbeard.common import IGNORED
-from sickbeard.common import Overview
-from sickbeard.common import Quality
-from sickbeard.common import SKIPPED
-from sickbeard.common import SNATCHED
-from sickbeard.common import SNATCHED_PROPER
-from sickbeard.common import UNAIRED
-from sickbeard.common import UNKNOWN
-from sickbeard.common import WANTED
-from sickbeard.common import ARCHIVED
-from sickbeard.common import statusStrings
 
 try:
     import json

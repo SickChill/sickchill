@@ -19,8 +19,8 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import time
 import threading
+import time
 import traceback
 
 from sickbeard import logger

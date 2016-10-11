@@ -23,7 +23,6 @@ import time
 import traceback
 
 from sickbeard import logger, tvcache
-from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider

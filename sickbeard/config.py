@@ -18,17 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import os.path
 import datetime
+import os.path
 import re
 import urlparse
+
 import sickbeard
-
-from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import naming
-from sickbeard import db
-
+from sickbeard import db, helpers, logger, naming
 from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 

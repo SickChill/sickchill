@@ -18,19 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
-import time
 import datetime
 import operator
+import re
 import threading
+import time
 import traceback
 
 import sickbeard
 from sickbeard import db, helpers, logger
-from sickbeard.search import snatchEpisode, pickBestResult
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-
+from sickbeard.common import DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER, cpu_presets
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickbeard.search import pickBestResult, snatchEpisode
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.History import History
 

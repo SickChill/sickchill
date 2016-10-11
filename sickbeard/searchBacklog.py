@@ -22,12 +22,7 @@ import datetime
 import threading
 
 import sickbeard
-
-from sickbeard import db, scheduler
-from sickbeard import search_queue
-from sickbeard import logger
-from sickbeard import ui
-from sickbeard import common
+from sickbeard import common, db, logger, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):
