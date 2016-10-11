@@ -21,6 +21,7 @@
 import re
 import time
 import traceback
+import time
 
 import sickbeard
 from sickbeard import logger, tvcache
@@ -48,6 +49,9 @@ class EliteTorrentProvider(TorrentProvider):
         }
 
         self.url = self.urls['base_url']
+        
+        self.minsearchinterval = 2
+        self.lastsearchts = 0
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
@@ -72,7 +76,7 @@ class EliteTorrentProvider(TorrentProvider):
             'buscar': ''
 
         }
-
+        
         for mode in search_strings:
             items = []
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
@@ -89,9 +93,15 @@ class EliteTorrentProvider(TorrentProvider):
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
+                
+                wait = self.minsearchinterval - (time.time() - self.lastsearchts)
+                if wait > 0:
+                    #logger.log(u"Waiting {0:.3f} seconds to bypass elitetorrent search ignore".format(wait), logger.DEBUG)
+                    time.sleep(wait)
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                self.lastsearchts = time.time()
                 if not data:
                     continue
 
@@ -108,8 +118,12 @@ class EliteTorrentProvider(TorrentProvider):
                             try:
                                 download_url = self.urls['base_url'] + row.find('a')['href']
                                 title = self._processTitle(row.find('a', class_='nombre')['title'])
-                                seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
-                                leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
+                                
+                                #ignore seeders and leechers because are not well reported
+                                #seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
+                                #leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
+                                seeders = 1
+                                leechers = 0                                
 
                                 # Provider does not provide size
                                 size = -1
