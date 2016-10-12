@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -36,30 +36,30 @@ import requests  # pylint: disable=import-error
 import sickbeard.providers as providers
 
 
-def test_generator(_provider):
+def generator(_provider):
     """
     Generate tests for each provider
 
     :param test_strings: to generate tests from
     :return: test
     """
-    def _connectivity_test(self):  # pylint: disable=unused-argument
+    def _connectivity_test():
         """
         Generate tests
         :param self:
         :return: test to run
         """
         if not _provider.url:
-            print '%s has no url set, skipping' % _provider.name
+            print '{0} has no url set, skipping'.format(_provider.name)
             return
 
         try:
             requests.head(_provider.url, verify=certifi.old_where(), timeout=10)
         except requests.exceptions.SSLError as error:
             if 'certificate verify failed' in str(error):
-                print 'Cannot verify certificate for %s' % _provider.name
+                print 'Cannot verify certificate for {0}'.format(_provider.name)
             else:
-                print 'SSLError on %s: %s' % (_provider.name, ex(error.message))
+                print 'SSLError on {0}: {1}'.format(_provider.name, ex(error.message))
                 raise
         except requests.exceptions.Timeout:
             print 'Provider timed out'
@@ -71,14 +71,14 @@ class SniTests(unittest.TestCase):
     pass
 
 if __name__ == "__main__":
-    print("==================")
-    print("STARTING - Provider Connectivity TESTS and SSL/SNI")
-    print("==================")
-    print("######################################################################")
+    print "=================="
+    print "STARTING - Provider Connectivity TESTS and SSL/SNI"
+    print "=================="
+    print "######################################################################"
     # Just checking all providers - we should make this error on non-existent urls.
     for provider in [p for p in providers.makeProviderList()]:
-        test_name = 'test_%s' % provider.name
-        test = test_generator(provider)
+        test_name = 'test_{0}'.format(provider.name)
+        test = generator(provider)
         setattr(SniTests, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SniTests)

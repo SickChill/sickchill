@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Idan Gutman
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,23 +12,23 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import urllib
-import traceback
+from requests.utils import dict_from_cookiejar
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SceneTimeProvider(TorrentProvider):
+class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
@@ -35,28 +36,29 @@ class SceneTimeProvider(TorrentProvider):
 
         self.username = None
         self.password = None
-        self.ratio = None
         self.minseed = None
         self.minleech = None
 
-        self.cache = SceneTimeCache(self)
+        self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
                      'detail': 'https://www.scenetime.com/details.php?id=%s',
-                     'search': 'https://www.scenetime.com/browse.php?search=%s%s',
+                     'apisearch': 'https://www.scenetime.com/browse_API.php',
                      'download': 'https://www.scenetime.com/download.php/%s/%s'}
 
         self.url = self.urls['base_url']
 
-        self.categories = "&c2=1&c43=13&c9=1&c63=1&c77=1&c79=1&c100=1&c101=1"
+        self.categories = [2, 42, 9, 63, 77, 79, 100, 83]
 
     def login(self):
+        if any(dict_from_cookiejar(self.session.cookies).values()):
+            return True
 
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -67,104 +69,82 @@ class SceneTimeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+        for mode in search_params:
+            items = []
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
-                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
+                query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
+                query.update({"c%s"%i: 1 for i in self.categories})
 
-                data = self.get_url(searchURL)
+                data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
+
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.select("#torrenttable table")
-                        torrent_rows = torrent_table[0].select("tr") if torrent_table else []
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_rows = html.findAll('tr')
 
-                        # Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
-                            continue
+                    # Continue only if one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        continue
 
-                        # Scenetime apparently uses different number of cells in #torrenttable based
-                        # on who you are. This works around that by extracting labels from the first
-                        # <tr> and using their index to find the correct download/seeders/leechers td.
-                        labels = [label.get_text() for label in torrent_rows[0].find_all('td')]
+                    # Scenetime apparently uses different number of cells in #torrenttable based
+                    # on who you are. This works around that by extracting labels from the first
+                    # <tr> and using their index to find the correct download/seeders/leechers td.
+                    labels = [label.get_text(strip=True) or label.img['title'] for label in torrent_rows[0]('td')]
 
-                        for result in torrent_rows[1:]:
-                            cells = result.find_all('td')
+                    for result in torrent_rows[1:]:
+                        try:
+                            cells = result('td')
 
                             link = cells[labels.index('Name')].find('a')
+                            torrent_id = link['href'].replace('details.php?id=', '').split("&")[0]
 
-                            full_id = link['href'].replace('details.php?id=', '')
-                            torrent_id = full_id.split("&")[0]
+                            title = link.get_text(strip=True)
+                            download_url = self.urls['download'] % (torrent_id, "{0}.torrent".format(title.replace(" ", ".")))
 
-                            try:
-                                title = link.contents[0].get_text()
-                                filename = "%s.torrent" % title.replace(" ", ".")
-                                download_url = self.urls['download'] % (torrent_id, filename)
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            torrent_size = cells[labels.index('Size')].get_text()
 
-                                seeders = int(cells[labels.index('Seeders')].get_text())
-                                leechers = int(cells[labels.index('Leechers')].get_text())
-                                # FIXME
-                                size = -1
+                            size = convert_size(torrent_size) or -1
 
-                            except (AttributeError, TypeError):
-                                continue
+                        except (AttributeError, TypeError, KeyError, ValueError):
+                            continue
 
-                            if not all([title, download_url]):
-                                continue
+                        if not all([title, download_url]):
+                            continue
 
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            item = title, download_url, size, seeders, leechers
+                        # Filter unseeded torrent
+                        if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
 
-                            items[mode].append(item)
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        if mode != 'RSS':
+                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
-                except Exception as e:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
-
-    def seed_ratio(self):
-        return self.ratio
-
-
-class SceneTimeCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll SceneTime every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 
 provider = SceneTimeProvider()

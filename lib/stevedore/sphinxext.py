@@ -36,12 +36,15 @@ def _simple_list(mgr):
               ext.entry_point.module_name)
 
 
-def _detailed_list(mgr, over='', under='-'):
+def _detailed_list(mgr, over='', under='-', titlecase=False):
     for name in sorted(mgr.names()):
         ext = mgr[name]
         if over:
             yield (over * len(ext.name), ext.entry_point.module_name)
-        yield (ext.name, ext.entry_point.module_name)
+        if titlecase:
+            yield (ext.name.title(), ext.entry_point.module_name)
+        else:
+            yield (ext.name, ext.entry_point.module_name)
         if under:
             yield (under * len(ext.name), ext.entry_point.module_name)
         yield ('\n', ext.entry_point.module_name)
@@ -61,6 +64,7 @@ class ListPluginsDirective(rst.Directive):
     option_spec = {
         'class': directives.class_option,
         'detailed': directives.flag,
+        'titlecase': directives.flag,
         'overline-style': directives.single_char_or_unicode,
         'underline-style': directives.single_char_or_unicode,
     }
@@ -86,9 +90,12 @@ class ListPluginsDirective(rst.Directive):
 
         result = ViewList()
 
+        titlecase = 'titlecase' in self.options
+
         if 'detailed' in self.options:
             data = _detailed_list(
-                mgr, over=overline_style, under=underline_style)
+                mgr, over=overline_style, under=underline_style,
+                titlecase=titlecase)
         else:
             data = _simple_list(mgr)
         for text, source in data:

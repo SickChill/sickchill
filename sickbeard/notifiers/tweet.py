@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
 
@@ -33,7 +33,7 @@ import oauth2 as oauth
 import pythontwitter as twitter
 
 
-class TwitterNotifier(object):
+class Notifier(object):
     consumer_key = "vHHtcB6WzpWDG6KYlBMr8g"
     consumer_secret = "zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E"
 
@@ -80,7 +80,7 @@ class TwitterNotifier(object):
         resp, content = oauth_client.request(self.REQUEST_TOKEN_URL, 'GET')
 
         if resp['status'] != '200':
-            logger.log(u'Invalid response from Twitter requesting temp token: %s' % resp['status'], logger.ERROR)
+            logger.log(u'Invalid response from Twitter requesting temp token: {0}'.format(resp['status']), logger.ERROR)
         else:
             request_token = dict(parse_qsl(content))
 
@@ -106,7 +106,7 @@ class TwitterNotifier(object):
         logger.log(u'oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
         oauth_client = oauth.Client(oauth_consumer, token)
         logger.log(u'oauth_client: ' + str(oauth_client), logger.DEBUG)
-        resp, content = oauth_client.request(self.ACCESS_TOKEN_URL, method='POST', body='oauth_verifier=%s' % key)
+        resp, content = oauth_client.request(self.ACCESS_TOKEN_URL, method='POST', body='oauth_verifier={0}'.format(key))
         logger.log(u'resp, content: ' + str(resp) + ',' + str(content), logger.DEBUG)
 
         access_token = dict(parse_qsl(content))
@@ -117,8 +117,8 @@ class TwitterNotifier(object):
             logger.log(u'The request for a token with did not succeed: ' + str(resp['status']), logger.ERROR)
             return False
         else:
-            logger.log(u'Your Twitter Access Token key: %s' % access_token['oauth_token'], logger.DEBUG)
-            logger.log(u'Access Token secret: %s' % access_token['oauth_token_secret'], logger.DEBUG)
+            logger.log(u'Your Twitter Access Token key: {0}'.format(access_token['oauth_token']), logger.DEBUG)
+            logger.log(u'Access Token secret: {0}'.format(access_token['oauth_token_secret']), logger.DEBUG)
             sickbeard.TWITTER_USERNAME = access_token['oauth_token']
             sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
             return True
@@ -172,5 +172,3 @@ class TwitterNotifier(object):
             return self._send_dm(prefix + ": " + message)
         else:
             return self._send_tweet(prefix + ": " + message)
-
-notifier = TwitterNotifier

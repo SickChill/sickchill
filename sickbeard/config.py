@@ -12,23 +12,19 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import os.path
 import datetime
+import os.path
 import re
 import urlparse
+
 import sickbeard
-
-from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import naming
-from sickbeard import db
-
+from sickbeard import db, helpers, logger, naming
 from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 
@@ -117,7 +113,7 @@ def change_LOG_DIR(log_dir, web_log):
             sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
             sickbeard.LOG_DIR = abs_log_dir
 
-            logger.initLogging()
+            logger.init_logging()
             logger.log(u"Initialized new log file in " + sickbeard.LOG_DIR)
             log_dir_changed = True
 
@@ -419,7 +415,7 @@ def checkbox_to_value(option, value_on=1, value_off=0):
     if isinstance(option, list):
         option = option[-1]
 
-    if option == 'on' or option == 'true':
+    if option in ('on', 'true', value_on):
         return value_on
 
     return value_off
@@ -467,17 +463,12 @@ def clean_hosts(hosts, default_port=None):
     """
     cleaned_hosts = []
 
-    for cur_host in [x.strip() for x in hosts.split(",")]:
-        if cur_host:
-            cleaned_host = clean_host(cur_host, default_port)
-            if cleaned_host:
-                cleaned_hosts.append(cleaned_host)
+    for cur_host in [host.strip() for host in hosts.split(",") if host.strip()]:
+        cleaned_host = clean_host(cur_host, default_port)
+        if cleaned_host:
+            cleaned_hosts.append(cleaned_host)
 
-    if cleaned_hosts:
-        cleaned_hosts = ",".join(cleaned_hosts)
-
-    else:
-        cleaned_hosts = ''
+    cleaned_hosts = ",".join(cleaned_hosts) if cleaned_hosts else ''
 
     return cleaned_hosts
 
@@ -597,9 +588,8 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
             config[cfg_name] = {}
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if censor_log or (cfg_name, item_name) in logger.censoredItems.iteritems():
-        if not item_name.endswith('custom_url'):
-            logger.censoredItems[cfg_name, item_name] = my_val
+    if (censor_log or (cfg_name, item_name) in logger.censored_items.iteritems()) and not item_name.endswith('custom_url'):
+        logger.censored_items[cfg_name, item_name] = my_val
 
     if not silent:
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
@@ -626,7 +616,8 @@ class ConfigMigrator(object):
             4: 'Add newznab catIDs',
             5: 'Metadata update',
             6: 'Convert from XBMC to new KODI variables',
-            7: 'Use version 2 for password encryption'
+            7: 'Use version 2 for password encryption',
+            8: 'Convert Plex setting keys'
         }
 
     def migrate_config(self):
@@ -636,9 +627,8 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                u"""Your config version (%i) has been incremented past what this version of SickRage supports (%i).
-                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""" %
-                (self.config_version, self.expected_config_version)
+                u"""Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
+                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(self.config_version, self.expected_config_version)
             )
 
         sickbeard.CONFIG_VERSION = self.config_version
@@ -687,8 +677,8 @@ class ConfigMigrator(object):
         sickbeard.NAMING_MULTI_EP = int(check_setting_int(self.config_obj, 'General', 'naming_multi_ep_type', 1))
 
         # see if any of their shows used season folders
-        myDB = db.DBConnection()
-        season_folder_shows = myDB.select("SELECT indexer_id FROM tv_shows WHERE flatten_folders = 0 LIMIT 1")
+        main_db_con = db.DBConnection()
+        season_folder_shows = main_db_con.select("SELECT indexer_id FROM tv_shows WHERE flatten_folders = 0 LIMIT 1")
 
         # if any shows had season folders on then prepend season folder to the pattern
         if season_folder_shows:
@@ -714,7 +704,7 @@ class ConfigMigrator(object):
             logger.log(u"No shows were using season folders before so I'm disabling flattening on all shows")
 
             # don't flatten any shows at all
-            myDB.action("UPDATE tv_shows SET flatten_folders = 0")
+            main_db_con.action("UPDATE tv_shows SET flatten_folders = 0")
 
         sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
 
@@ -730,11 +720,12 @@ class ConfigMigrator(object):
         use_ep_name = bool(check_setting_int(self.config_obj, 'General', 'naming_ep_name', 1))
 
         # make the presets into templates
-        naming_ep_type = ("%Sx%0E",
-                          "s%0Se%0E",
-                          "S%0SE%0E",
-                          "%0Sx%0E")
-        naming_sep_type = (" - ", " ")
+        _naming_ep_type = (
+            "%Sx%0E",
+            "s%0Se%0E",
+            "S%0SE%0E",
+            "%0Sx%0E"
+        )
 
         # set up our data to use
         if use_periods:
@@ -748,26 +739,26 @@ class ConfigMigrator(object):
             ep_quality = '%QN'
             abd_string = '%A-D'
 
-        if abd:
+        if abd and abd_string:
             ep_string = abd_string
         else:
-            ep_string = naming_ep_type[ep_type]
+            ep_string = _naming_ep_type[ep_type]
 
         finalName = ""
 
         # start with the show name
-        if use_show_name:
+        if use_show_name and show_name:
             finalName += show_name + naming_sep_type[sep_type]
 
         # add the season/ep stuff
         finalName += ep_string
 
         # add the episode name
-        if use_ep_name:
+        if use_ep_name and ep_name:
             finalName += naming_sep_type[sep_type] + ep_name
 
         # add the quality
-        if use_quality:
+        if use_quality and ep_quality:
             finalName += naming_sep_type[sep_type] + ep_quality
 
         if use_periods:
@@ -776,7 +767,8 @@ class ConfigMigrator(object):
         return finalName
 
     # Migration v2: Dummy migration to sync backup number with config version number
-    def _migrate_v2(self):
+    @staticmethod
+    def _migrate_v2():
         return
 
     # Migration v2: Rename omgwtfnzb variables
@@ -912,5 +904,12 @@ class ConfigMigrator(object):
         sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
     # Migration v6: Use version 2 for password encryption
-    def _migrate_v7(self):
+    @staticmethod
+    def _migrate_v7():
         sickbeard.ENCRYPTION_VERSION = 2
+
+    def _migrate_v8(self):
+        sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host', '')
+        sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', '', censor_log=True)
+        sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', '', censor_log=True)
+        sickbeard.USE_PLEX_SERVER = bool(check_setting_int(self.config_obj, 'Plex', 'use_plex', 0))

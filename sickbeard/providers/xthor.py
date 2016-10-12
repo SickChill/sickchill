@@ -1,6 +1,7 @@
-# -*- coding: latin-1 -*-
-# Author: adaur <adaur.underground@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# coding=utf-8
+# Author: Dustyn Gibson <miigotu@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,127 +12,112 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
-import cookielib
-import urllib
-import requests
+from sickbeard import logger, tvcache
 
-from sickbeard import logger
-from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class XthorProvider(TorrentProvider):
+class XThorProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Xthor")
+        TorrentProvider.__init__(self, 'XThor')
 
-        self.cj = cookielib.CookieJar()
+        self.url = 'https://xthor.bz'
+        self.urls = {'search': 'https://api.xthor.bz'}
 
-        self.url = "https://xthor.bz"
-        self.urlsearch = "https://xthor.bz/browse.php?search=\"%s\"%s"
-        self.categories = "&searchin=title&incldead=0"
+        self.freeleech = None
+        self.api_key = None
 
-        self.username = None
-        self.password = None
-        self.ratio = None
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll XThor every 10 minutes max
 
-    def login(self):
-
-        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+    def _check_auth(self):
+        if self.api_key:
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password,
-                        'submitme': 'X'}
+        logger.log('Your authentication credentials for {0} are missing, check your config.'.format(self.name), logger.WARNING)
+        return False
 
-        response = self.get_url(self.url + '/takelogin.php', post_data=login_params, timeout=30)
-        if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
-            return False
-
-        if re.search('donate.php', response):
-            return True
-        else:
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
-            return False
-
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        # check for auth
-        if not self.login():
+        if not self._check_auth:
             return results
 
-        for mode in search_params.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_params[mode]:
+        search_params = {
+            'passkey': self.api_key
+        }
+        if self.freeleech:
+            search_params['freeleech'] = 1
 
+        for mode in search_strings:
+            items = []
+            logger.log(u'Search Mode: {0}'.format(mode), logger.DEBUG)
+            for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u'Search string: ' + search_string.strip(), logger.DEBUG)
+                    search_params['search'] = search_string
+                else:
+                    search_params.pop('search', '')
 
-                searchURL = self.urlsearch % (urllib.quote(search_string), self.categories)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.get_url(searchURL)
-
-                if not data:
+                jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
+                if not jdata:
+                    logger.log(u'No data returned from provider', logger.DEBUG)
                     continue
 
-                with BS4Parser(data, 'html5lib') as html:
-                    resultsTable = html.find("table", {"class": "table2 table-bordered2"})
-                    if not resultsTable:
+                error_code = jdata.pop('error')
+                if error_code['code']:
+                    if error_code['code'] != 2:
+                        logger.log(u'{0}'.format(error_code['descr']), logger.WARNING)
+                        return results
+                    continue
+
+                account_ok = jdata.pop('user')['can_leech']
+                if not account_ok:
+                    logger.log(u'Sorry, your account is not allowed to download, check your ratio', logger.WARNING)
+                    return results
+
+                torrents = jdata.pop('torrents')
+                if not torrents:
+                    logger.log(u'Provider has no results for this search', logger.DEBUG)
+                    continue
+
+                for torrent in torrents:
+                    try:
+                        title = torrent.get('name')
+                        download_url = torrent.get('download_link')
+                        if not (title and download_url):
+                            continue
+
+                        seeders = torrent.get('seeders')
+                        leechers = torrent.get('leechers')
+                        if not seeders and mode != 'RSS':
+                            logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                       (title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        size = torrent.get('size') or -1
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+
+                        if mode != 'RSS':
+                            logger.log(u'Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+
+                        items.append(item)
+                    except StandardError:
                         continue
 
-                    rows = resultsTable.findAll("tr")
-                    for row in rows:
-                        link = row.find("a", href=re.compile("details.php"))
-                        if not link:
-                            continue
+            # For each search mode sort all the items by seeders if available
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
-                        title = link.text
-                        download_item = row.find("a", href=re.compile("download.php"))
-                        if not download_item:
-                            continue
-
-                        download_url = self.url + '/' + download_item['href']
-
-                        # FIXME
-                        size = -1
-                        seeders = 1
-                        leechers = 0
-
-                        if not all([title, download_url]):
-                            continue
-
-                        # Filter unseeded torrent
-                        # if seeders < self.minseed or leechers < self.minleech:
-                        #    if mode != 'RSS':
-                        #        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        #    continue
-
-                        item = title, download_url, size, seeders, leechers
-                        if mode != 'RSS':
-                            logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                        items[mode].append(item)
-
-            # For each search mode sort all the items by seeders if available if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
-provider = XthorProvider()
+provider = XThorProvider()

@@ -52,6 +52,9 @@ $(document).ready(function(){
         });
     };
 
+    var newznabProviders = [];
+    var torrentRssProviders = [];
+
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
         url = $.trim(url);
         if (!url) {
@@ -69,10 +72,8 @@ $(document).ready(function(){
         var newData = [isDefault, [name, url, key, cat]];
         newznabProviders[id] = newData;
 
-        if (!isDefault){
-            $('#editANewznabProvider').addOption(id, name);
-            $(this).populateNewznabSection();
-        }
+        $('#editANewznabProvider').addOption(id, name);
+        $(this).populateNewznabSection();
 
         if ($('#provider_order_list > #'+id).length === 0 && showProvider !== false) {
             var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
@@ -204,20 +205,20 @@ $(document).ready(function(){
             } else {
                 $('#newznab_url').removeAttr("disabled");
                 $('#newznab_delete').removeAttr("disabled");
-
-                //Get Categories Capabilities
-                if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
-                    $(this).getCategories(isDefault, data);
-                }
-                $(this).updateNewznabCaps( null, data );
             }
+
+            //Get Categories Capabilities
+            if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
+                $(this).getCategories(isDefault, data);
+            }
+            $(this).updateNewznabCaps(null, data);
         }
     };
 
     /**
      * Updates the Global array $.fn.newznabProvidersCapabilities with a combination of newznab prov name
      * and category capabilities. Return
-     * @param {Array} newzNabCaps, is the returned object with newzNabprod Name and Capabilities.
+     * @param {Array} newzNabCaps, is the returned object with newznabprovider Name and Capabilities.
      * @param {Array} selectedProvider
      * @return no return data. The multiselect input $("#newznab_cap") is updated, as a result.
      */
@@ -228,6 +229,7 @@ $(document).ready(function(){
 
         //Loop through the array and if currently selected newznab provider name matches one in the array, use it to
         //update the capabilities select box (on the left).
+        $("#newznab_cap").empty();
         if (selectedProvider[0]) {
             $.fn.newznabProvidersCapabilities.forEach(function(newzNabCap) {
                 if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && newzNabCap.categories instanceof Array) {
@@ -313,7 +315,7 @@ $(document).ready(function(){
     };
 
     $.fn.refreshEditAProvider = function() {
-        $('#provider-list').empty();
+        $('#editAProvider').empty();
 
         var idArr = $("#provider_order_list").sortable('toArray');
         var finalArr = [];
@@ -335,9 +337,6 @@ $(document).ready(function(){
 
         $(this).showHideProviders();
     };
-
-    var newznabProviders = [];
-    var torrentRssProviders = [];
 
     $(this).on('change', '.newznab_key', function(){
         var providerId = $(this).attr('id');

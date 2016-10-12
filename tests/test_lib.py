@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -52,12 +52,10 @@ from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode
-import shutil_custom  # pylint: disable=import-error
 import sickbeard
 
 # pylint: disable=import-error
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 # =================
 #  test globals
@@ -118,7 +116,7 @@ sickbeard.providerList = providers.makeProviderList()
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR
 sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
-sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
+sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8')
 
 sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch', '')
 sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash', '')
@@ -126,14 +124,14 @@ sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'Gene
 sickbeard.GIT_PASSWORD = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_password', '', censor_log=True)
 
 sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickbeard.logger.logFile = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
+sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
 # pylint: disable=no-member
-sickbeard.logger.initLogging(False, True)
+sickbeard.logger.init_logging(False, True)
 
 
 # =================
@@ -255,10 +253,10 @@ def setup_test_db():
     db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
 
     # and for cache.db too
-    db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
+    db.upgradeDatabase(db.DBConnection('cache.db'), cache_db.InitialSchema)
 
     # and for failed.db too
-    db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
+    db.upgradeDatabase(db.DBConnection('failed.db'), failed_db.InitialSchema)
 
 
 def teardown_test_db():
@@ -320,18 +318,3 @@ def teardown_test_show_dir():
     """
     if os.path.exists(SHOW_DIR):
         shutil.rmtree(SHOW_DIR)
-
-
-if __name__ == '__main__':
-    print "=================="
-    print "Don't call this directly"
-    print "=================="
-    print "you might want to call"
-
-    DIR_LIST = os.listdir(TEST_DIR)
-    for filename in DIR_LIST:
-        if (filename.find("_test") > 0) and (filename.find("pyc") < 0):
-            print "- " + filename
-
-    print "=================="
-    print "or just call all_tests.py"

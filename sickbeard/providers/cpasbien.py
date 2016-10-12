@@ -1,28 +1,29 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: Guillaume Serre <guillaume.serre@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import traceback
 import re
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -33,125 +34,69 @@ class CpasbienProvider(TorrentProvider):
         TorrentProvider.__init__(self, "Cpasbien")
 
         self.public = True
-        self.ratio = None
         self.minseed = None
         self.minleech = None
-        self.url = "http://www.cpasbien.io"
+        self.url = "http://www.cpasbien.cm"
 
         self.proper_strings = ['PROPER', 'REPACK']
+        self.cache = tvcache.TVCache(self)
 
-        self.cache = CpasbienCache(self)
-
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        for mode in search_params.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
-            for search_string in search_params[mode]:
+        for mode in search_strings:
+            items = []
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
-                if mode != 'RSS':
-                    searchURL = self.url + '/recherche/' + search_string.replace('.', '-') + '.html'
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
+
+                    search_url = self.url + '/recherche/' + search_string.replace('.', '-').replace(' ', '-') + '.html,trie-seeds-d'
                 else:
-                    searchURL = self.url + '/view_cat.php?categorie=series'
+                    search_url = self.url + '/view_cat.php?categorie=series&trie=date-d'
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.get_url(searchURL)
-
+                data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 
-                try:
-                    with BS4Parser(data, 'html5lib') as html:
-                        lin = erlin = 0
-                        resultdiv = []
-                        while erlin == 0:
-                            try:
-                                classlin = 'ligne' + str(lin)
-                                resultlin = html.findAll(attrs={'class': [classlin]})
-                                if resultlin:
-                                    for ele in resultlin:
-                                        resultdiv.append(ele)
-                                    lin += 1
-                                else:
-                                    erlin = 1
-                            except Exception:
-                                erlin = 1
-
-                        for torrent in resultdiv:
-                            try:
-                                title = torrent.findAll(attrs={'class': ["titre"]})[0].text.replace("HDTV", "HDTV x264-CPasBien")
-                                detail_url = torrent.find("a")['href']
-                                tmp = detail_url.split('/')[-1].replace('.html', '.torrent')
-                                download_url = (self.url + '/telechargement/%s' % tmp)
-                                torrent_size = (str(torrent.findAll(attrs={'class': ["poid"]})[0].text).rstrip('&nbsp;')).rstrip()
-                                size = -1
-                                if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Oo]", torrent_size):
-                                    size = self._convertSize(torrent_size.rstrip())
-                                seeders = torrent.findAll(attrs={'class': ["seed_ok"]})[0].text
-                                leechers = torrent.findAll(attrs={'class': ["down"]})[0].text
-
-                            except (AttributeError, TypeError):
-                                continue
-
+                with BS4Parser(data, 'html5lib') as html:
+                    torrent_rows = html(class_=re.compile('ligne[01]'))
+                    for result in torrent_rows:
+                        try:
+                            title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
+                            title = re.sub(r' Saison', ' Season', title, flags=re.I)
+                            tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
+                            download_url = (self.url + '/telechargement/{0}'.format(tmp))
                             if not all([title, download_url]):
                                 continue
 
-                            # Filter unseeded torrent
+                            seeders = try_int(result.find(class_="up").get_text(strip=True))
+                            leechers = try_int(result.find(class_="down").get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            item = title, download_url, size, seeders, leechers
+                            torrent_size = result.find(class_="poid").get_text(strip=True)
+
+                            units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po']
+                            size = convert_size(torrent_size, units=units) or -1
+
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
-                            items[mode].append(item)
-
-                except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                            items.append(item)
+                        except StandardError:
+                            continue
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KO':
-                size *= 1024 ** 1
-            elif modifier in 'MO':
-                size *= 1024 ** 2
-            elif modifier in 'GO':
-                size *= 1024 ** 3
-            elif modifier in 'TO':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
-
-
-class CpasbienCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 provider = CpasbienProvider()

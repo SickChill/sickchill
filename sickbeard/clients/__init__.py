@@ -11,13 +11,15 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = [
+from __future__ import unicode_literals
+
+_clients = [
     'utorrent',
     'transmission',
     'deluge',
@@ -26,6 +28,7 @@ __all__ = [
     'rtorrent',
     'qbittorrent',
     'mlnet'
+    'putio'
 ]
 
 default_host = {
@@ -36,7 +39,8 @@ default_host = {
     'download_station': 'http://localhost:5000',
     'rtorrent': 'scgi://localhost:5000',
     'qbittorrent': 'http://localhost:8080',
-    'mlnet': 'http://localhost:4080'
+    'mlnet': 'http://localhost:4080',
+    'putio': 'https://api.put.io/login'
 }
 
 
@@ -44,11 +48,12 @@ def getClientModule(name):
     name = name.lower()
     prefix = "sickbeard.clients."
 
-    return __import__(prefix + name + '_client', fromlist=__all__)
+    return __import__('{prefix}{name}_client'.format
+                      (prefix=prefix, name=name), fromlist=_clients)
 
 
 def getClientIstance(name):
     module = getClientModule(name)
-    className = module.api.__class__.__name__
+    class_name = module.api.__class__.__name__
 
-    return getattr(module, className)
+    return getattr(module, class_name)

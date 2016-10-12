@@ -1,30 +1,30 @@
-#fileBrowserDialog {
+.fileBrowserDialog {
     max-height: 480px;
     overflow-y: auto;
 }
 
-#fileBrowserDialog ul {
+.fileBrowserDialog ul {
     margin: 0;
     padding: 0;
 }
 
-#fileBrowserDialog ul li {
+.fileBrowserDialog ul li {
     margin: 2px 0;
     cursor: pointer;
     list-style-type: none;
 }
 
-#fileBrowserDialog ul li a {
+.fileBrowserDialog ul li a {
     display: block;
     padding: 4px 0;
 }
 
-#fileBrowserDialog ul li a:hover {
+.fileBrowserDialog ul li a:hover {
     color: #00f;
     background: none;
 }
 
-#fileBrowserDialog ul li a span.ui-icon {
+.fileBrowserDialog ul li a .ui-icon {
     margin: 0 4px;
     float: left;
 }

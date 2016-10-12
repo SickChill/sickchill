@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test TorrentProvider
@@ -108,12 +108,12 @@ class TorrentProviderTests(GenericProviderTests):
 
         self.assertEqual(
             len(items_list), len(results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (len(items_list), len(results_list))
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(items_list), len(results_list))
         )
 
         self.assertEqual(
             len(unicode_items_list), len(unicode_results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(
                 len(unicode_items_list), len(unicode_results_list))
         )
 
@@ -138,7 +138,7 @@ class TorrentProviderTests(GenericProviderTests):
 
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TorrentProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

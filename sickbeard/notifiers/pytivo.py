@@ -12,16 +12,16 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sickbeard
 
-from urllib import urlencode
+from requests.compat import urlencode
 from urllib2 import Request, urlopen, HTTPError
 
 from sickbeard import logger
@@ -29,7 +29,7 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
-class pyTivoNotifier(object):
+class Notifier(object):
     def notify_snatch(self, ep_name):
         pass
 
@@ -93,7 +93,7 @@ class pyTivoNotifier(object):
         request = Request(requestUrl)
 
         try:
-            response = urlopen(request)  # @UnusedVariable
+            urlopen(request)
         except HTTPError as e:
             if hasattr(e, 'reason'):
                 logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
@@ -107,6 +107,3 @@ class pyTivoNotifier(object):
         else:
             logger.log(u"pyTivo notification: Successfully requested transfer of file")
             return True
-
-
-notifier = pyTivoNotifier

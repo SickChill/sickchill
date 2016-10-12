@@ -1,1 +1,0 @@
-Just a dummy srt file (used for unittests: do not remove!)

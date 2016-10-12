@@ -126,19 +126,19 @@ $(document).ready(function () {
 (function(){
     $.ajaxEpSearch = {
         defaults: {
-            size:				16,
-            colorRow:         	false,
-            loadingImage:		'loading16.gif',
-            queuedImage:		'queued.png',
-            noImage:			'no16.png',
-            yesImage:			'yes16.png'
+            size: 16,
+            colorRow: false,
+            loadingImage: 'loading16.gif',
+            queuedImage: 'queued.png',
+            noImage: 'no16.png',
+            yesImage: 'yes16.png'
         }
     };
 
     $.fn.ajaxEpSearch = function(options){
         options = $.extend({}, $.ajaxEpSearch.defaults, options);
 
-        $('.epRetry').click(function(event){
+        $('.epRetry').on('click', function(event){
             event.preventDefault();
 
             // Check if we have disabled the click
@@ -147,31 +147,6 @@ $(document).ready(function () {
             selectedEpisode = $(this);
 
             $("#manualSearchModalFailed").modal('show');
-        });
-
-        $('.epSearch').click(function(event){
-            event.preventDefault();
-
-            // Check if we have disabled the click
-            if ($(this).prop('enableClick') === '0') { return false; }
-
-            selectedEpisode = $(this);
-
-            if ($(this).parent().parent().children(".col-status").children(".quality").length) {
-                $("#manualSearchModalQuality").modal('show');
-            } else {
-                manualSearch();
-            }
-        });
-
-        $('#manualSearchModalFailed .btn').click(function(){
-            failedDownload = ($(this).text().toLowerCase() === 'yes');
-            $("#manualSearchModalQuality").modal('show');
-        });
-
-        $('#manualSearchModalQuality .btn').click(function(){
-            qualityDownload = ($(this).text().toLowerCase() === 'yes');
-            manualSearch();
         });
 
         function manualSearch(){
@@ -230,5 +205,30 @@ $(document).ready(function () {
             // don't follow the link
             return false;
         }
+
+        $('.epSearch').on('click', function(event){
+            event.preventDefault();
+
+            // Check if we have disabled the click
+            if ($(this).prop('enableClick') === '0') { return false; }
+
+            selectedEpisode = $(this);
+
+            if ($(this).parent().parent().children(".col-status").children(".quality").length) {
+                $("#manualSearchModalQuality").modal('show');
+            } else {
+                manualSearch();
+            }
+        });
+
+        $('#manualSearchModalFailed .btn').on('click', function(){
+            failedDownload = ($(this).text().toLowerCase() === 'yes');
+            $("#manualSearchModalQuality").modal('show');
+        });
+
+        $('#manualSearchModalQuality .btn').on('click', function(){
+            qualityDownload = ($(this).text().toLowerCase() === 'yes');
+            manualSearch();
+        });
     };
 })();

@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -12,69 +12,26 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-import re
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+import datetime
 import sys
+import urllib
 
 import sickbeard
-
-import urllib
-import datetime
-from dateutil import parser
-
-from sickbeard.common import USER_AGENT, Quality
-from sickrage.helper.common import dateFormat, dateTimeFormat
+from sickbeard.common import Quality, USER_AGENT
+from sickrage.helper.common import dateTimeFormat
 
 
-class SickBeardURLopener(urllib.FancyURLopener):
+class SickBeardURLopener(urllib.FancyURLopener, object):
     version = USER_AGENT
 
 
-class AuthURLOpener(SickBeardURLopener):
-    """
-    URLOpener class that supports http auth without needing interactive password entry.
-    If the provided username/password don't work it simply fails.
-
-    user: username to use for HTTP auth
-    pw: password to use for HTTP auth
-    """
-
-    def __init__(self, user, pw):
-        self.username = user
-        self.password = pw
-
-        # remember if we've tried the username/password before
-        self.numTries = 0
-
-        # call the base class
-        urllib.FancyURLopener.__init__(self)
-
-    def prompt_user_passwd(self, host, realm):
-        """
-        Override this function and instead of prompting just give the
-        username/password that were provided when the class was instantiated.
-        """
-
-        # if this is the first try then provide a username/password
-        if self.numTries == 0:
-            self.numTries = 1
-            return self.username, self.password
-
-        # if we've tried before then return blank which cancels the request
-        else:
-            return '', ''
-
-    # this is pretty much just a hack for convenience
-    def openit(self, url):
-        self.numTries = 0
-        return SickBeardURLopener.open(self, url)
-
-
-class SearchResult(object):
+class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
     Represents a search result from an indexer.
     """
@@ -86,7 +43,7 @@ class SearchResult(object):
         self.show = None
 
         # URL to the NZB/torrent file
-        self.url = ""
+        self.url = u''
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -98,13 +55,13 @@ class SearchResult(object):
         self.quality = Quality.UNKNOWN
 
         # release name
-        self.name = ""
+        self.name = u''
 
         # size of the release (-1 = n/a)
         self.size = -1
 
         # release group
-        self.release_group = ""
+        self.release_group = u''
 
         # version
         self.version = -1
@@ -115,65 +72,67 @@ class SearchResult(object):
         # content
         self.content = None
 
-        self.resultType = ''
+        self.resultType = u''
 
     def __str__(self):
 
         if self.provider is None:
-            return "Invalid provider, unable to print self"
+            return u'Invalid provider, unable to print self'
 
-        myString = self.provider.name + " @ " + self.url + "\n"
-        myString += "Extra Info:\n"
+        my_string = u'{0} @ {1}\n'.format(self.provider.name, self.url)
+        my_string += u'Extra Info:\n'
         for extra in self.extraInfo:
-            myString += "  " + extra + "\n"
+            my_string += u' {0}\n'.format(extra)
 
-        myString += "Episodes:\n"
+        my_string += u'Episodes:\n'
         for ep in self.episodes:
-            myString += "  " + str(ep) + "\n"
+            my_string += u' {0}\n'.format(ep)
 
-        myString += "Quality: " + Quality.qualityStrings[self.quality] + "\n"
-        myString += "Name: " + self.name + "\n"
-        myString += "Size: " + str(self.size) + "\n"
-        myString += "Release Group: " + str(self.release_group) + "\n"
+        my_string += u'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += u'Name: {0}\n'.format(self.name)
+        my_string += u'Size: {0}\n'.format(self.size)
+        my_string += u'Release Group: {0}\n'.format(self.release_group)
 
-        return myString
+        return my_string
 
     def fileName(self):
-        return self.episodes[0].prettyName() + "." + self.resultType
+        return u'{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
-class NZBSearchResult(SearchResult):
+class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     Regular NZB result with an URL to the NZB
     """
     def __init__(self, episodes):
         super(NZBSearchResult, self).__init__(episodes)
-        self.resultType = "nzb"
+        self.resultType = u'nzb'
 
 
-class NZBDataSearchResult(SearchResult):
+class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
     def __init__(self, episodes):
         super(NZBDataSearchResult, self).__init__(episodes)
-        self.resultType = "nzbdata"
+        self.resultType = u'nzbdata'
 
 
-class TorrentSearchResult(SearchResult):
+class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     Torrent result with an URL to the torrent
     """
     def __init__(self, episodes):
         super(TorrentSearchResult, self).__init__(episodes)
-        self.resultType = "torrent"
+        self.resultType = u'torrent'
 
 
-class AllShowsListUI(object):
+class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
     """
-    This class is for indexer api. Instead of prompting with a UI to pick the
-    desired result out of a list of shows it tries to be smart about it
-    based on what shows are in SB.
+    This class is for indexer api.
+
+    Instead of prompting with a UI to pick the desired result out of a
+    list of shows it tries to be smart about it based on what shows
+    are in SickRage.
     """
 
     def __init__(self, config, log=None):
@@ -181,63 +140,63 @@ class AllShowsListUI(object):
         self.log = log
 
     def selectSeries(self, allSeries):
-        searchResults = []
-        seriesnames = []
+        search_results = []
+        series_names = []
 
         # get all available shows
-        if allSeries:
-            if 'searchterm' in self.config:
-                searchterm = self.config['searchterm']
-                # try to pick a show that's in my show list
-                for curShow in allSeries:
-                    if curShow in searchResults:
-                        continue
+        if allSeries and 'searchterm' in self.config:
+            search_term = self.config['searchterm']
+            # try to pick a show that's in my show list
+            for curShow in allSeries:
+                if curShow in search_results:
+                    continue
 
-                    if 'seriesname' in curShow:
-                        seriesnames.append(curShow['seriesname'])
-                    if 'aliasnames' in curShow:
-                        seriesnames.extend(curShow['aliasnames'].split('|'))
+                if 'seriesname' in curShow:
+                    series_names.append(curShow['seriesname'])
+                if 'aliasnames' in curShow:
+                    series_names.extend(curShow['aliasnames'].split('|'))
 
-                    for name in seriesnames:
-                        if searchterm.lower() in name.lower():
-                            if 'firstaired' not in curShow:
-                                curShow['firstaired'] = str(datetime.date.fromordinal(1))
-                                curShow['firstaired'] = re.sub("([-]0{2})+", "", curShow['firstaired'])
-                                fixDate = parser.parse(curShow['firstaired'], fuzzy=True).date()
-                                curShow['firstaired'] = fixDate.strftime(dateFormat)
+                for name in series_names:
+                    if search_term.lower() in name.lower():
+                        if 'firstaired' not in curShow:
+                            curShow['firstaired'] = 'Unknown'
 
-                            if curShow not in searchResults:
-                                searchResults += [curShow]
+                        if curShow not in search_results:
+                            search_results += [curShow]
 
-        return searchResults
+        return search_results
 
 
-class ShowListUI(object):
+class ShowListUI(object):  # pylint: disable=too-few-public-methods
     """
-    This class is for tvdb-api. Instead of prompting with a UI to pick the
-    desired result out of a list of shows it tries to be smart about it
-    based on what shows are in SickRage.
+    This class is for tvdb-api.
+
+    Instead of prompting with a UI to pick the desired result out of a
+    list of shows it tries to be smart about it based on what shows
+    are in SickRage.
     """
 
     def __init__(self, config, log=None):
         self.config = config
         self.log = log
 
-    def selectSeries(self, allSeries):
+    @staticmethod
+    def selectSeries(allSeries):
         try:
             # try to pick a show that's in my show list
-            showIDList = [int(x.indexerid) for x in sickbeard.showList]
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
             for curShow in allSeries:
-                if int(curShow['id']) in showIDList:
+                if int(curShow['id']) in show_id_list:
                     return curShow
         except Exception:
+            # Maybe curShow doesnt have id? Ignore it
             pass
 
         # if nothing matches then return first result
         return allSeries[0]
 
 
-class Proper(object):
+class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
     def __init__(self, name, url, date, show):
         self.name = name
         self.url = url
@@ -256,8 +215,9 @@ class Proper(object):
         self.scene_episode = -1
 
     def __str__(self):
-        return str(self.date) + " " + self.name + " " + str(self.season) + "x" + str(self.episode) + " of " + str(
-            self.indexerid) + " from " + str(sickbeard.indexerApi(self.indexer).name)
+        return u'{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
+            date=self.date, name=self.name, season=self.season, episode=self.episode,
+            series_id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name)
 
 
 class ErrorViewer(object):
@@ -310,7 +270,7 @@ class WarningViewer(object):
         return WarningViewer.errors
 
 
-class UIError(object):
+class UIError(object):  # pylint: disable=too-few-public-methods
     """
     Represents an error to be displayed in the web UI.
     """

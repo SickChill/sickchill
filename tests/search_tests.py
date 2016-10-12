@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -54,7 +54,7 @@ class SearchTest(test.SickbeardTestDBCase):
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(cur_data, cur_name, cur_provider):
+def generator(cur_data, cur_name, cur_provider):
     """
     Generate test
 
@@ -64,7 +64,7 @@ def test_generator(cur_data, cur_name, cur_provider):
     :return:
     """
 
-    def do_test():
+    def do_test(self):
         """
         Test to perform
         """
@@ -92,7 +92,7 @@ def test_generator(cur_data, cur_name, cur_provider):
             cur_string = ''
             for cur_string in season_strings, episode_strings:
                 if not all([isinstance(cur_string, list), isinstance(cur_string[0], dict)]):
-                    print " %s is using a wrong string format!" % cur_provider.name
+                    print " {0} is using a wrong string format!".format(cur_provider.name)
                     print cur_string
                     fail = True
                     continue
@@ -104,7 +104,7 @@ def test_generator(cur_data, cur_name, cur_provider):
                 assert season_strings == cur_data["s_strings"]
                 assert episode_strings == cur_data["e_strings"]
             except AssertionError:
-                print " %s is using a wrong string format!" % cur_provider.name
+                print " {0} is using a wrong string format!".format(cur_provider.name)
                 print cur_string
                 continue
 
@@ -125,7 +125,7 @@ def test_generator(cur_data, cur_name, cur_provider):
             title, url = cur_provider._get_title_and_url(items[0])  # pylint: disable=protected-access
             for word in show.name.split(" "):
                 if not word.lower() in title.lower():
-                    print "Show cur_name not in title: %s. URL: %s" % (title, url)
+                    print "Show cur_name not in title: {0}. URL: {1}".format(title, url)
                     continue
 
             if not url:
@@ -136,7 +136,7 @@ def test_generator(cur_data, cur_name, cur_provider):
             size = cur_provider._get_size(items[0])  # pylint: disable=protected-access
 
             if not show.quality & quality:
-                print "Quality not in common.ANY, %r %s" % (quality, size)
+                print "Quality not in common.ANY, {0!r} {1}".format(quality, size)
                 continue
 
     return do_test
@@ -154,10 +154,10 @@ if __name__ == '__main__':
             for provider in sickbeard.providers.sortedProviderList():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
-                        test_name = 'test_manual_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
+                        test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
                     else:
-                        test_name = 'test_%s_%s_%s' % (filename, data["tvdbid"], provider.name)
-                    test = test_generator(data, name, provider)
+                        test_name = 'test_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
+                    test = generator(data, name, provider)
                     setattr(SearchTest, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SearchTest)

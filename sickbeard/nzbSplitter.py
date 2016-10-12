@@ -12,15 +12,14 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
-import requests  # pylint: disable=import-error
 import re
 
 try:
@@ -29,7 +28,6 @@ except ImportError:
     import xml.etree.ElementTree as ETree
 
 from sickbeard import logger, classes, helpers
-from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import ex
@@ -63,7 +61,7 @@ def get_season_nzbs(name, url_data, season):
 
     nzb_element = show_xml.getroot()
 
-    scene_name_match = re.search(regex_string['scene_name'] % season, filename, re.I)
+    scene_name_match = re.search(regex_string['scene_name'] % season, name, re.I)
     if scene_name_match:
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection
@@ -151,19 +149,16 @@ def split_result(obj):
     :param obj: to search for results
     :return: a list of episode objects or an empty list
     """
-    url_data = helpers.getURL(obj.url, session=requests.Session(), need_bytes=True)
+    url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns='content')
     if url_data is None:
-        logger.log(u"Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)  # pylint: disable=no-member
+        logger.log(u"Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
         return []
 
     # parse the season ep name
     try:
         parsed_obj = NameParser(False, showObj=obj.show).parse(obj.name)
-    except InvalidNameException:
-        logger.log(u"Unable to parse the filename " + obj.name + " into a valid episode", logger.DEBUG)  # pylint: disable=no-member
-        return []
-    except InvalidShowException:
-        logger.log(u"Unable to parse the filename " + obj.name + " into a valid show", logger.DEBUG)  # pylint: disable=no-member
+    except (InvalidNameException, InvalidShowException) as error:
+        logger.log(u"{0}".format(error), logger.DEBUG)
         return []
 
     # bust it up
@@ -183,11 +178,8 @@ def split_result(obj):
         # parse the name
         try:
             parsed_obj = NameParser(False, showObj=obj.show).parse(new_nzb)
-        except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + new_nzb + " into a valid episode", logger.DEBUG)  # pylint: disable=no-member
-            return []
-        except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + new_nzb + " into a valid show", logger.DEBUG)  # pylint: disable=no-member
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.log(u"{0}".format(error), logger.DEBUG)
             return []
 
         # make sure the result is sane
@@ -196,7 +188,7 @@ def split_result(obj):
             logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it",
                        logger.WARNING)
             continue
-        elif len(parsed_obj.episode_numbers) == 0:
+        elif not parsed_obj.episode_numbers:
             # pylint: disable=no-member
             logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
                        logger.WARNING)

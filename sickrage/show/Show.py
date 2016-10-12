@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
 
@@ -70,7 +70,7 @@ class Show(object):
         indexer_ids = [indexer_id] if not isinstance(indexer_id, list) else indexer_id
         results = [show for show in shows if show.indexerid in indexer_ids]
 
-        if len(results) == 0:
+        if not results:
             return None
 
         if len(results) == 1:

@@ -1,50 +1,63 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# GuessIt - A library for guessing information from filenames
-# Copyright (c) 2014 Nicolas Wack <wackou@gmail.com>
-#
-# GuessIt is free software; you can redistribute it and/or modify it under
-# the terms of the Lesser GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# GuessIt is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# Lesser GNU General Public License for more details.
-#
-# You should have received a copy of the Lesser GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name, pointless-string-statement
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+import os
 
-from guessit.test.guessittest import *
+import pytest
+import six
+
+from ..api import guessit, properties, GuessitException
+
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
-class TestApi(TestGuessit):
-    def test_api(self):
-        movie_path = 'Movies/Dark City (1998)/Dark.City.(1998).DC.BDRip.720p.DTS.X264-CHD.mkv'
+def test_default():
+    ret = guessit('Fear.and.Loathing.in.Las.Vegas.FRENCH.ENGLISH.720p.HDDVD.DTS.x264-ESiR.mkv')
+    assert ret and 'title' in ret
 
-        movie_info = guessit.guess_movie_info(movie_path)
-        video_info = guessit.guess_video_info(movie_path)
-        episode_info = guessit.guess_episode_info(movie_path)
-        file_info = guessit.guess_file_info(movie_path)
 
-        assert guessit.guess_file_info(movie_path, type='movie') == movie_info
-        assert guessit.guess_file_info(movie_path, type='video') == video_info
-        assert guessit.guess_file_info(movie_path, type='episode') == episode_info 
+def test_forced_unicode():
+    ret = guessit(u'Fear.and.Loathing.in.Las.Vegas.FRENCH.ENGLISH.720p.HDDVD.DTS.x264-ESiR.mkv')
+    assert ret and 'title' in ret and isinstance(ret['title'], six.text_type)
 
-        assert guessit.guess_file_info(movie_path, options={'type': 'movie'}) == movie_info
-        assert guessit.guess_file_info(movie_path, options={'type': 'video'}) == video_info
-        assert guessit.guess_file_info(movie_path, options={'type': 'episode'}) == episode_info
 
-        # kwargs priority other options
-        assert guessit.guess_file_info(movie_path, options={'type': 'episode'}, type='movie') == episode_info
+def test_forced_binary():
+    ret = guessit(b'Fear.and.Loathing.in.Las.Vegas.FRENCH.ENGLISH.720p.HDDVD.DTS.x264-ESiR.mkv')
+    assert ret and 'title' in ret and isinstance(ret['title'], six.binary_type)
 
-        movie_path_name_only = 'Movies/Dark City (1998)/Dark.City.(1998).DC.BDRip.720p.DTS.X264-CHD'
-        file_info_name_only = guessit.guess_file_info(movie_path_name_only, options={"name_only": True})
 
-        assert 'container' not in file_info_name_only
-        assert 'container' in file_info
+def test_unicode_japanese():
+    ret = guessit('[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi')
+    assert ret and 'title' in ret
+
+
+def test_unicode_japanese_options():
+    ret = guessit("[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": ["阿维达"]})
+    assert ret and 'title' in ret and ret['title'] == "阿维达"
+
+
+def test_forced_unicode_japanese_options():
+    ret = guessit(u"[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": [u"阿维达"]})
+    assert ret and 'title' in ret and ret['title'] == u"阿维达"
+
+# TODO: This doesn't compile on python 3, but should be tested on python 2.
+"""
+if six.PY2:
+    def test_forced_binary_japanese_options():
+        ret = guessit(b"[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": [b"阿维达"]})
+        assert ret and 'title' in ret and ret['title'] == b"阿维达"
+"""
+
+
+def test_properties():
+    props = properties()
+    assert 'video_codec' in props.keys()
+
+
+def test_exception():
+    with pytest.raises(GuessitException) as excinfo:
+        guessit(object())
+    assert "An internal error has occured in guessit" in str(excinfo.value)
+    assert "Guessit Exception Report" in str(excinfo.value)
+    assert "Please report at https://github.com/guessit-io/guessit/issues" in str(excinfo.value)

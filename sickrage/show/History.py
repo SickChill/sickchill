@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
 from datetime import timedelta
@@ -58,12 +58,12 @@ class History(object):
         order_sql = 'ORDER BY date DESC '
 
         if limit == 0:
-            if len(actions) > 0:
+            if actions:
                 results = self.db.select(common_sql + filter_sql + order_sql, actions)
             else:
                 results = self.db.select(common_sql + order_sql)
         else:
-            if len(actions) > 0:
+            if actions:
                 results = self.db.select(common_sql + filter_sql + order_sql + 'LIMIT ?', actions + [limit])
             else:
                 results = self.db.select(common_sql + order_sql + 'LIMIT ?', [limit])

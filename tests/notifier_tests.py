@@ -10,11 +10,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
@@ -40,8 +40,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import db
 from sickbeard.tv import TVEpisode, TVShow
 from sickbeard.webserve import Home
-from sickbeard.notifiers.emailnotify import EmailNotifier
-from sickbeard.notifiers.prowl import ProwlNotifier
+from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
+from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
 from sickrage.helper.encoding import ss
 import tests.test_lib as test
 

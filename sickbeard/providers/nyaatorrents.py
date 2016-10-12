@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Mr_Orange
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,128 +12,113 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
+from __future__ import unicode_literals
+
 import re
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class NyaaProvider(TorrentProvider):
+class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
-        TorrentProvider.__init__(self, "NyaaTorrents")
+        TorrentProvider.__init__(self, 'NyaaTorrents')
 
         self.public = True
         self.supports_absolute_numbering = True
         self.anime_only = True
-        self.ratio = None
 
-        self.cache = NyaaCache(self)
-
-        self.urls = {'base_url': 'http://www.nyaa.se/'}
-
-        self.url = self.urls['base_url']
+        self.url = 'http://www.nyaa.se'
 
         self.minseed = 0
         self.minleech = 0
         self.confirmed = False
 
-    def search(self, search_strings, age=0, ep_obj=None):
-        if self.show and not self.show.is_anime:
-            return []
+        self.regex = re.compile(r'(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)', re.DOTALL)
 
+        self.cache = tvcache.TVCache(self, min_time=20)  # only poll NyaaTorrents every 20 minutes max
+
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
+        if self.show and not self.show.is_anime:
+            return results
 
-        for mode in search_strings.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+        for mode in search_strings:
+            items = []
+            logger.log(u'Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                    logger.log(u'Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
-                params = {
-                    "page": 'rss',
-                    "cats": '1_0',  # All anime
-                    "sort": 2,     # Sort Descending By Seeders
-                    "order": 1
+                search_params = {
+                    'page': 'rss',
+                    'cats': '1_0',  # All anime
+                    'sort': 2,  # Sort Descending By Seeders
+                    'order': 1
                 }
                 if mode != 'RSS':
-                    params["term"] = search_string.encode('utf-8')
-
-                searchURL = self.url + '?' + urllib.urlencode(params)
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-
-                summary_regex = ur"(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)"
-                s = re.compile(summary_regex, re.DOTALL)
+                    search_params['term'] = search_string
 
                 results = []
-                for curItem in self.cache.getRSSFeed(searchURL)['entries'] or []:
-                    title = curItem['title']
-                    download_url = curItem['link']
-                    if not all([title, download_url]):
-                        continue
+                data = self.cache.getRSSFeed(self.url, params=search_params)['entries']
+                if not data:
+                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
 
-                    seeders, leechers, size, verified = s.findall(curItem['summary'])[0]
-                    size = self._convertSize(size)
+                for curItem in data:
+                    try:
+                        title = curItem['title']
+                        download_url = curItem['link']
+                        if not all([title, download_url]):
+                            continue
 
-                    # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                        item_info = self.regex.search(curItem['summary'])
+                        if not item_info:
+                            logger.log('There was a problem parsing an item summary, skipping: {0}'.format
+                                       (title), logger.DEBUG)
+                            continue
+
+                        seeders, leechers, torrent_size, verified = item_info.groups()
+                        seeders = try_int(seeders)
+                        leechers = try_int(leechers)
+
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != 'RSS':
+                                logger.log('Discarding torrent because it doesn\'t meet the'
+                                           ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        if self.confirmed and not verified and mode != 'RSS':
+                            logger.log('Found result {0} but that doesn\'t seem like a verified result so I\'m ignoring it'.format
+                                       (title), logger.DEBUG)
+                            continue
+
+                        size = convert_size(torrent_size) or -1
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
+                                       (title, seeders, leechers), logger.DEBUG)
+
+                        items.append(result)
+                    except StandardError:
                         continue
-
-                    if self.confirmed and not verified and mode != 'RSS':
-                        logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
-                        continue
-
-                    item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s " % title, logger.DEBUG)
-
-                    items[mode].append(item)
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            results += items
 
         return results
 
-    @staticmethod
-    def _convertSize(size):
-        size, modifier = size.split(' ')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
-
-    def seed_ratio(self):
-        return self.ratio
-
-
-class NyaaCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll NyaaTorrents every 15 minutes max
-        self.minTime = 15
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = NyaaProvider()

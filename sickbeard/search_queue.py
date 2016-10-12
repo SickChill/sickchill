@@ -11,23 +11,19 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 
+import threading
 import time
 import traceback
-import threading
 
 import sickbeard
-from sickbeard import common
-from sickbeard import logger
-from sickbeard import generic_queue
-from sickbeard import search, failed_history, history
-from sickbeard import ui
+from sickbeard import common, failed_history, generic_queue, history, logger, search, ui
 
 search_queue_lock = threading.Lock()
 
@@ -137,7 +133,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             logger.log(u"Beginning daily search for new episodes")
             foundResults = search.searchForNeededEpisodes()
 
-            if not len(foundResults):
+            if not foundResults:
                 logger.log(u"No needed episodes found")
             else:
                 for result in foundResults:
@@ -188,7 +184,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
             else:
                 ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
+                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.prettyName()))
 
                 logger.log(u"Unable to find a download for: [" + self.segment.prettyName() + "]")
 

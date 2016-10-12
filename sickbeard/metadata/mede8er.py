@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import io
 import os
@@ -105,10 +105,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         lINDEXER_API_PARMS['actors'] = True
 
-        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-            lINDEXER_API_PARMS['language'] = indexer_lang
+        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        if show_obj.dvdorder != 0:
+        if show_obj.dvdorder:
             lINDEXER_API_PARMS['dvdorder'] = True
 
         t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
@@ -223,10 +222,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             # change the language value elsewhere
             lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
 
-            if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
-                lINDEXER_API_PARMS['language'] = indexer_lang
+            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-            if ep_obj.show.dvdorder != 0:
+            if ep_obj.show.dvdorder:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
             t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
@@ -250,8 +248,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode %dx%d on %s... has it been removed? Should I delete from db?" %
-                           (curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:
@@ -381,7 +378,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             nfo_file = io.open(nfo_file_path, 'wb')
 
-            data.write(nfo_file)
+            data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
@@ -426,7 +423,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             nfo_file = io.open(nfo_file_path, 'wb')
 
-            data.write(nfo_file)
+            data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:

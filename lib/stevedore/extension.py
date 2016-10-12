@@ -5,6 +5,7 @@ import pkg_resources
 
 import logging
 
+from .exception import NoMatches
 
 LOG = logging.getLogger(__name__)
 
@@ -218,7 +219,7 @@ class ExtensionManager(object):
         """
         if not self.extensions:
             # FIXME: Use a more specific exception class here.
-            raise RuntimeError('No %s extensions found' % self.namespace)
+            raise NoMatches('No %s extensions found' % self.namespace)
         response = []
         for e in self.extensions:
             self._invoke_one_plugin(response.append, func, e, args, kwds)

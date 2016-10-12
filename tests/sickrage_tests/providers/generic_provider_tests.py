@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test GenericProvider
@@ -26,6 +26,8 @@ from __future__ import print_function
 import os
 import sys
 import unittest
+
+from mock import patch, MagicMock
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -317,12 +319,12 @@ class GenericProviderTests(unittest.TestCase):
 
         self.assertEqual(
             len(items_list), len(results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (len(items_list), len(results_list))
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(items_list), len(results_list))
         )
 
         self.assertEqual(
             len(unicode_items_list), len(unicode_results_list),
-            'Number of parameters (%d) and results (%d) does not match' % (
+            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(
                 len(unicode_items_list), len(unicode_results_list))
         )
 
@@ -339,8 +341,55 @@ class GenericProviderTests(unittest.TestCase):
         self.assertTrue(GenericProvider('Test Provider')._verify_download())
 
 
+    @patch('sickrage.providers.GenericProvider.download_file')
+    @patch('sickrage.providers.GenericProvider.remove_file_failed')
+    def test_download_file(self, remove_file_mock, df_mock):
+        """
+        Test download_result
+        """
+        domain = 'domain'
+        filename = 'TestFilename.nzb'
+        urls = [
+            'http://{0}/{1}.torrentNO_DOWNLOAD_NAME'.format(domain, filename),
+            'http://{0}/{1}.torrent'.format(domain, filename),
+        ]
+
+        # Test the login() check
+        gp1 = GenericProvider('Test Provider 1')
+        login_mock = MagicMock()
+        login_mock.return_value = False
+        with patch.object(gp1, 'login', login_mock):
+            self.assertFalse(gp1.download_result('result 1'))
+            self.assertTrue(login_mock.called)
+
+        # Test the _make_url call
+        gp2 = GenericProvider('Test Provider 2')
+        make_url_mock = MagicMock()
+        make_url_mock.return_value = (urls, filename)
+        df_mock.return_value = True
+        with patch.object(gp2, '_make_url', make_url_mock):
+            resp = gp2.download_result('result 2')
+            self.assertTrue(resp)
+            self.assertTrue('Referer' in gp2.headers)
+            self.assertTrue(domain in gp2.headers['Referer'])
+            self.assertTrue(df_mock.called)
+
+        # Test the remove_file_failed path
+        gp3 = GenericProvider('Test Provider 3')
+        make_url_mock = MagicMock()
+        make_url_mock.return_value = (urls, filename)
+        verify_download_mock = MagicMock()
+        verify_download_mock.return_value = False
+        df_mock.return_value = True
+        with patch.object(gp3, '_make_url', make_url_mock):
+            with patch.object(gp3, '_verify_download', verify_download_mock):
+                resp = gp3.download_result('result 3')
+                self.assertFalse(resp)
+                self.assertTrue(remove_file_mock.called)
+
+
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(GenericProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

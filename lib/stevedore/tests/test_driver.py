@@ -4,6 +4,7 @@
 import pkg_resources
 
 from stevedore import driver
+from stevedore import exception
 from stevedore import extension
 from stevedore.tests import test_extension
 from stevedore.tests import utils
@@ -37,7 +38,7 @@ class TestCallback(utils.TestCase):
     def test_no_drivers(self):
         try:
             driver.DriverManager('stevedore.test.extension.none', 't1')
-        except RuntimeError as err:
+        except exception.NoMatches as err:
             self.assertIn("No 'stevedore.test.extension.none' driver found",
                           str(err))
 
@@ -70,7 +71,7 @@ class TestCallback(utils.TestCase):
             dm = driver.DriverManager.make_test_instance(extensions[0])
             # Call the initialization code that verifies the extension
             dm._init_plugins(extensions)
-        except RuntimeError as err:
+        except exception.MultipleMatches as err:
             self.assertIn("Multiple", str(err))
         else:
             self.fail('Should have had an error')

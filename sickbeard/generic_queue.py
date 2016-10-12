@@ -12,11 +12,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
 import threading
@@ -32,6 +32,8 @@ class QueuePriorities(object):
 
 class GenericQueue(object):
     def __init__(self):
+
+        self.amActive = False
 
         self.currentItem = None
 
@@ -72,6 +74,8 @@ class GenericQueue(object):
 
         :param force: Force queue processing (currently not implemented)
         """
+        self.amActive = True
+
         with self.lock:
             # only start a new task if one isn't already going
             if self.currentItem is None or not self.currentItem.isAlive():
@@ -82,7 +86,7 @@ class GenericQueue(object):
                     self.currentItem = None
 
                 # if there's something in the queue then run it in a thread and take it out of the queue
-                if len(self.queue) > 0:
+                if self.queue:
 
                     # sort by priority
                     def sorter(x, y):

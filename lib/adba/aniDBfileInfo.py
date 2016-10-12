@@ -71,21 +71,17 @@ def _remove_file_failed(file):
 def download_file(url, filename):
     try:
         r = requests.get(url, stream=True, verify=False)
+        r.raise_for_status()
         with open(filename, 'wb') as fp:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     fp.write(chunk)
                     fp.flush()
 
-    except requests.HTTPError, e:
+    except (requests.HTTPError, requests.exceptions.RequestException):
         _remove_file_failed(filename)
         return False
-    except requests.ConnectionError, e:
-        return False
-    except requests.Timeout, e:
-        return False
-    except Exception:
-        _remove_file_failed(filename)
+    except (requests.ConnectionError, requests.Timeout):
         return False
 
     return True

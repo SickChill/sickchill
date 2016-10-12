@@ -12,16 +12,16 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import db
 import datetime
 
-from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
+import db
+from sickbeard.common import FAILED, Quality, SNATCHED, SUBTITLED
 from sickrage.helper.encoding import ss
 from sickrage.show.History import History
 
@@ -42,8 +42,8 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
     logDate = datetime.datetime.today().strftime(History.date_format)
     resource = ss(resource)
 
-    myDB = db.DBConnection()
-    myDB.action(
+    main_db_con = db.DBConnection()
+    main_db_con.action(
         "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?,?,?,?,?,?,?,?,?)",
         [action, logDate, showid, season, episode, quality, resource, provider, version])
 

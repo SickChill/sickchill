@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -8,52 +11,43 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 import re
-# from urllib import urlencode
 
-import sickbeard
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard import show_name_helpers
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TVChaosUKProvider(TorrentProvider):
+class TVChaosUKProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, 'TvChaosUK')
-
-        self.urls = {'base_url': 'https://tvchaosuk.com/',
-                     'login': 'https://tvchaosuk.com/takelogin.php',
-                     'index': 'https://tvchaosuk.com/index.php',
-                     'search': 'https://tvchaosuk.com/browse.php'}
-
-        self.url = self.urls['base_url']
 
         self.username = None
         self.password = None
-        self.ratio = None
+
         self.minseed = None
         self.minleech = None
         self.freeleech = None
 
-        self.cache = TVChaosUKCache(self)
-
-        self.search_params = {
-            'do': 'search',
-            'keywords': '',
-            'search_type': 't_name',
-            'category': 0,
-            'include_dead_torrents': 'no',
+        self.url = 'https://www.tvchaosuk.com/'
+        self.urls = {
+            'login': self.url + 'takelogin.php',
+            'index': self.url + 'index.php',
+            'search': self.url + 'browse.php'
         }
+
+        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
         if self.username and self.password:
@@ -61,177 +55,127 @@ class TVChaosUKProvider(TorrentProvider):
 
         raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
 
-    def _get_season_search_strings(self, ep_obj):
-
-        search_string = {'Season': []}
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            for sep in ' ', ' - ':
-                season_string = show_name + sep + 'Series '
-                if ep_obj.show.air_by_date or ep_obj.show.sports:
-                    season_string += str(ep_obj.airdate).split('-')[0]
-                elif ep_obj.show.anime:
-                    season_string += '%d' % ep_obj.scene_absolute_number
-                else:
-                    season_string += '%d' % int(ep_obj.scene_season)
-
-                search_string['Season'].append(re.sub(r'\s+', ' ', season_string.replace('.', ' ').strip()))
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
-        search_string = {'Episode': []}
-
-        if not ep_obj:
-            return []
-
-        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            for sep in ' ', ' - ':
-                ep_string = sanitizeSceneName(show_name) + sep
-                if self.show.air_by_date:
-                    ep_string += str(ep_obj.airdate).replace('-', '|')
-                elif self.show.sports:
-                    ep_string += str(ep_obj.airdate).replace('-', '|') + '|' + ep_obj.airdate.strftime('%b')
-                elif self.show.anime:
-                    ep_string += '%i' % int(ep_obj.scene_absolute_number)
-                else:
-                    ep_string += sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season, 'episodenumber': ep_obj.scene_episode}
-
-                if add_string:
-                    ep_string += ' %s' % add_string
-
-                search_string['Episode'].append(re.sub(r'\s+', ' ', ep_string.replace('.', ' ').strip()))
-
-        return [search_string]
-
     def login(self):
+        if len(self.session.cookies) >= 4:
+            return True
 
-        login_params = {'username': self.username, 'password': self.password}
-        response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
+        login_params = {
+            'username': self.username,
+            'password': self.password,
+            'logout': 'no',
+            'submit': 'LOGIN',
+            'returnto': '/browse.php'
+        }
+
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log('Unable to connect to provider', logger.WARNING)
             return False
 
         if re.search('Error: Username or password incorrect!', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
-
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_strings.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+        # Search Params
+        search_params = {
+            'do': 'search',
+            'search_type': 't_name',
+            'category': 0,
+            'include_dead_torrents': 'no',
+            'submit': 'search'
+        }
+
+        # Units
+        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
+        for mode in search_strings:
+            items = []
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+
             for search_string in search_strings[mode]:
 
+                if mode == 'Season':
+                    search_string = re.sub(ur'(.*)S0?', ur'\1Series ', search_string)
+
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log('Search string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
-                self.search_params['keywords'] = search_string.strip()
-                data = self.get_url(self.urls['search'], params=self.search_params)
-                # url_searched = self.urls['search'] + '?' + urlencode(self.search_params)
-
+                search_params['keywords'] = search_string
+                data = self.get_url(self.urls['search'], post_data=search_params, returns='text')
                 if not data:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log('No data returned from provider', logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find(id='listtorrents')
-                    if not torrent_table:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    torrent_table = html.find(id='sortabletable')
+                    torrent_rows = torrent_table("tr") if torrent_table else []
+
+                    # Continue only if at least one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    torrent_rows = torrent_table.find_all('tr')
-                    for torrent in torrent_rows:
+                    labels = [label.img['title'] if label.img else label.get_text(strip=True) for label in torrent_rows[0]('td')]
+                    for torrent in torrent_rows[1:]:
                         try:
-                            cells = torrent.find_all('td')
-                            freeleech = torrent.find('img', alt=re.compile('Free Torrent'))
-                            if self.freeleech and not freeleech:
+                            if self.freeleech and not torrent.find('img', alt=re.compile('Free Torrent')):
                                 continue
-                            title = (torrent.find('div', style='text-align:left; margin-top: 5px').text.strip()).replace("mp4", "x264")
-                            download_url = torrent.find(title="Click to Download this Torrent!").parent['href'].strip()
-                            seeders = int(torrent.find(title='Seeders').text.strip())
-                            leechers = int(torrent.find(title='Leechers').text.strip())
 
+                            title = torrent.find(class_='tooltip-content').div.get_text(strip=True)
+                            download_url = torrent.find(title='Click to Download this Torrent!').parent['href']
                             if not all([title, download_url]):
                                 continue
+
+                            seeders = try_int(torrent.find(title='Seeders').get_text(strip=True))
+                            leechers = try_int(torrent.find(title='Leechers').get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log('Discarding torrent because it doesn\'t meet the'
+                                               ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                               (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!
-                            show_name_first_word = re.search(r'^[^ .]+', self.search_params['keywords'])
-                            if show_name_first_word and not title.startswith(show_name_first_word.group()) and show_name_first_word in title:
-                                title = re.match(r'.*(' + show_name_first_word + '.*)', title).group(1)
+                            if mode != 'RSS' and search_params['keywords']:
+                                show_name_first_word = re.search(ur'^[^ .]+', search_params['keywords']).group()
+                                if not title.startswith(show_name_first_word):
+                                    title = re.sub(ur'.*(' + show_name_first_word + '.*)', ur'\1', title)
 
                             # Change title from Series to Season, or we can't parse
-                            if 'Series' not in self.search_params['keywords']:
-                                title = re.sub(r'(?i)series', 'Season', title)
+                            if mode == 'Season':
+                                title = re.sub(ur'(.*)(?i)Series', ur'\1Season', title)
 
                             # Strip year from the end or we can't parse it!
-                            title = re.sub(r'[\. ]?\(\d{4}\)', '', title)
-                            torrent_size = cells[4].getText().strip()
-                            size = -1
-                            if re.match(r"\d+([,\.]\d+)?\s*[KkMmGgTt]?[Bb]", torrent_size):
-                                size = self._convertSize(torrent_size.rstrip())
-                            item = title, download_url, size, seeders, leechers
+                            title = re.sub(ur'(.*)[\. ]?\(\d{4}\)', ur'\1', title)
+                            title = re.sub(ur'\s+', ur' ', title)
+
+                            torrent_size = torrent('td')[labels.index('Size')].get_text(strip=True)
+                            size = convert_size(torrent_size, units=units) or -1
+
                             if mode != 'RSS':
-                                logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
+                                           (title, seeders, leechers), logger.DEBUG)
 
-                            items[mode].append(item)
-
-                        except Exception:
+                            item = {'title': title + '.hdtv.x264', 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
+                            items.append(item)
+                        except StandardError:
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            results += items
 
         return results
-
-    def seed_ratio(self):
-        return self.ratio
-
-    def _convertSize(self, sizeString):
-        size = sizeString[:-2].strip()
-        modifier = sizeString[-2:].upper()
-        try:
-            size = float(size)
-            if modifier in 'KB':
-                size *= 1024 ** 1
-            elif modifier in 'MB':
-                size *= 1024 ** 2
-            elif modifier in 'GB':
-                size *= 1024 ** 3
-            elif modifier in 'TB':
-                size *= 1024 ** 4
-        except Exception:
-            size = -1
-        return long(size)
-
-
-class TVChaosUKCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll TVChaosUK every 20 minutes max
-        self.minTime = 20
-
-    def _getRSSData(self):
-        search_strings = {'RSS': ['']}
-        return {'entries': self.provider.search(search_strings)}
 
 
 provider = TVChaosUKProvider()

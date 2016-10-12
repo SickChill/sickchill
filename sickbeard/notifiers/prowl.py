@@ -12,17 +12,17 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
 import socket
 from httplib import HTTPSConnection, HTTPException
-from urllib import urlencode
+from requests.compat import urlencode
 
 try:
     # this only exists in 2.6
@@ -40,7 +40,7 @@ from sickbeard import logger, common, db
 from sickrage.helper.encoding import ss
 
 
-class ProwlNotifier(object):
+class Notifier(object):
     def test_notify(self, prowl_api, prowl_priority):
         return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickRage", force=True)
 
@@ -49,7 +49,7 @@ class ProwlNotifier(object):
         if sickbeard.PROWL_NOTIFY_ONSNATCH:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:
@@ -61,7 +61,7 @@ class ProwlNotifier(object):
         if sickbeard.PROWL_NOTIFY_ONDOWNLOAD:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:
@@ -73,7 +73,7 @@ class ProwlNotifier(object):
         if sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
-            if len(recipients) == 0:
+            if not recipients:
                 logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
             else:
                 for api in recipients:
@@ -109,12 +109,11 @@ class ProwlNotifier(object):
         if show is not None:
             for value in show:
                 for subs in mydb.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (value,)):
-                    if subs['notify_list']:
-                        if subs['notify_list'][0] == '{':               # legacy format handling
-                            entries = dict(ast.literal_eval(subs['notify_list']))
-                            for api in entries['prowlAPIs'].split(','):
-                                if len(api.strip()) > 0:
-                                    apis.append(api)
+                    if subs['notify_list'] and subs['notify_list'][0] == '{':               # legacy format handling
+                        entries = dict(ast.literal_eval(subs['notify_list']))
+                        for api in entries['prowlAPIs'].split(','):
+                            if len(api.strip()) > 0:
+                                apis.append(api)
 
         apis = set(apis)
         return apis
@@ -135,8 +134,7 @@ class ProwlNotifier(object):
 
         title = sickbeard.PROWL_MESSAGE_TITLE
 
-        logger.log(u"PROWL: Sending notice with details: title=\"%s\" event=\"%s\", message=\"%s\", priority=%s, api=%s"
-                   % (title, event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.log(u"PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -161,7 +159,7 @@ class ProwlNotifier(object):
             logger.log(u"Prowl notifications sent.", logger.INFO)
             return True
         elif request_status == 401:
-            logger.log(u"Prowl auth failed: %s" % response.reason, logger.ERROR)
+            logger.log(u"Prowl auth failed: {0}".format(response.reason), logger.ERROR)
             return False
         else:
             logger.log(u"Prowl notification failed.", logger.ERROR)
@@ -174,7 +172,5 @@ class ProwlNotifier(object):
         sep = " - "
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)
-        logger.log("TITLES: %s" % titles, logger.DEBUG)
+        logger.log("TITLES: {0}".format(titles), logger.DEBUG)
         return titles
-
-notifier = ProwlNotifier

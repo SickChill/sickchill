@@ -1,7 +1,7 @@
-"""Tests for stevedore.exmaple.fields
+"""Tests for stevedore.example2.fields
 """
 
-from stevedore.example import fields
+from stevedore.example2 import fields
 from stevedore.tests import utils
 
 

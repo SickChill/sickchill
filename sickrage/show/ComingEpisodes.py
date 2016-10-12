@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
 
@@ -65,11 +65,11 @@ class ComingEpisodes(object):
 
         db = DBConnection()
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
+            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
              'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
         results = db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND airdate >= ? '
@@ -84,7 +84,7 @@ class ComingEpisodes(object):
         placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
 
         results += db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND showid NOT IN (' + placeholder + ') '
@@ -100,7 +100,7 @@ class ComingEpisodes(object):
         )
 
         results += db.select(
-            'SELECT %s ' % fields_to_select +
+            'SELECT {0} '.format(fields_to_select) +
             'FROM tv_episodes e, tv_shows s '
             'WHERE season != 0 '
             'AND s.indexer_id = e.showid '

@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -33,8 +33,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+from sickrage.helper import glob
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int
+from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
 
 
 class CommonTests(unittest.TestCase):
@@ -50,7 +51,7 @@ class CommonTests(unittest.TestCase):
             '12.3': None,
             '-123': None,
             '-12.3': None,
-            '300': None,
+            '300': 'Multiple Choices',
             0: None,
             123: None,
             12.3: None,
@@ -69,7 +70,7 @@ class CommonTests(unittest.TestCase):
             u'12.3': None,
             u'-123': None,
             u'-12.3': None,
-            u'300': None,
+            u'300': 'Multiple Choices',
         }
 
         for test in test_cases, unicode_test_cases:
@@ -397,9 +398,87 @@ class CommonTests(unittest.TestCase):
             for (candidate, result) in test.iteritems():
                 self.assertEqual(try_int(candidate, default_value), result)
 
+    def test_convert_size(self):
+        # converts pretty file sizes to integers
+        self.assertEqual(convert_size('1 B'), 1)
+        self.assertEqual(convert_size('1 KB'), 1024)
+        self.assertEqual(convert_size('1 kb', use_decimal=True), 1000)  # can use decimal units (e.g. KB = 1000 bytes instead of 1024)
+
+        # returns integer sizes for integers
+        self.assertEqual(convert_size(0, -1), 0)
+        self.assertEqual(convert_size(100, -1), 100)
+        self.assertEqual(convert_size(1.312, -1), 1)  # returns integer sizes for floats too
+
+        # without a default value, failures return None
+        self.assertEqual(convert_size('pancakes'), None)
+
+        # default value can be anything
+        self.assertEqual(convert_size(None, -1), -1)
+        self.assertEqual(convert_size('', 3.14), 3.14)
+        self.assertEqual(convert_size('elephant', 'frog'), 'frog')
+
+        # negative sizes return 0
+        self.assertEqual(convert_size(-1024, -1), 0)
+        self.assertEqual(convert_size('-1 GB', -1), 0)
+
+        # can also use `or` for a default value
+        self.assertEqual(convert_size(None) or 100, 100)
+        self.assertEqual(convert_size(None) or 1.61803, 1.61803)  # default doesn't have to be integer
+        self.assertEqual(convert_size(None) or '100', '100')  # default doesn't have to be numeric either
+        self.assertEqual(convert_size('-1 GB') or -1, -1)  # can use `or` to provide a default when size evaluates to 0
+
+        # default units can be kwarg'd
+        self.assertEqual(convert_size('1', default_units='GB'), convert_size('1 GB'))
+
+        # separator can be kwarg'd
+        self.assertEqual(convert_size('1?GB', sep='?'), convert_size('1 GB'))
+
+        # can use custom dictionary to support internationalization
+        french = ['O', 'KO', 'MO', 'GO', 'TO', 'PO']
+        self.assertEqual(convert_size('1 o', units=french), 1)
+        self.assertEqual(convert_size('1 go', use_decimal=True, units=french), 1000000000)
+        self.assertEqual(convert_size('1 o'), None)  # Wrong units so result is None
+
+        # custom units need to be uppercase or they won't match
+        oops = ['b', 'kb', 'Mb', 'Gb', 'tB', 'Pb']
+        self.assertEqual(convert_size('1 b', units=oops), None)
+        self.assertEqual(convert_size('1 B', units=oops), None)
+        self.assertEqual(convert_size('1 Mb', units=oops), None)
+        self.assertEqual(convert_size('1 MB', units=oops), None)
+
+    def test_episode_num(self):
+        # Standard numbering
+        self.assertEqual(episode_num(0, 1), 'S00E01')  # Seasons start at 0 for specials
+        self.assertEqual(episode_num(1, 1), 'S01E01')
+
+        # Absolute numbering
+        self.assertEqual(episode_num(1, numbering='absolute'), '001')
+        self.assertEqual(episode_num(0, 1, numbering='absolute'), '001')
+        self.assertEqual(episode_num(1, 0, numbering='absolute'), '001')
+
+        # Must have both season and episode for standard numbering
+        self.assertEqual(episode_num(0), None)
+        self.assertEqual(episode_num(1), None)
+
+        # Episode numbering starts at 1
+        self.assertEqual(episode_num(0, 0), None)
+        self.assertEqual(episode_num(1, 0), None)
+
+        # Absolute numbering starts at 1
+        self.assertEqual(episode_num(0, 0, numbering='absolute'), None)
+
+        # Absolute numbering can't have both season and episode
+        self.assertEqual(episode_num(1, 1, numbering='absolute'), None)
+
+    def test_glob_escape(self):
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
+
 
 if __name__ == '__main__':
-    print('=====> Testing %s' % __file__)
+    print('=====> Testing {0}'.format(__file__))
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(CommonTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

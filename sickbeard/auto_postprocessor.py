@@ -11,18 +11,17 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 import threading
-import sickbeard
 
-from sickbeard import logger
-from sickbeard import processTV
+import sickbeard
+from sickbeard import logger, processTV
 from sickrage.helper.encoding import ek
 
 
@@ -41,15 +40,15 @@ class PostProcessor(object):
         self.amActive = True
 
         if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
-            logger.log(u"Automatic post-processing attempted but directory doesn't exist: %s" %
-                       sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
+            logger.log(u"Automatic post-processing attempted but directory doesn't exist: {0}".format(
+                       sickbeard.TV_DOWNLOAD_DIR), logger.WARNING)
             self.amActive = False
             return
 
         if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
-            logger.log(u"Automatic post-processing attempted but directory is relatve "
+            logger.log(u"Automatic post-processing attempted but directory is relative "
                        u"(and probably not what you really want to process): %s" %
-                       sickbeard.TV_DOWNLOAD_DIR, logger.ERROR)
+                       sickbeard.TV_DOWNLOAD_DIR, logger.WARNING)
             self.amActive = False
             return
 

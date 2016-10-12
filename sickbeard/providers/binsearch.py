@@ -1,45 +1,53 @@
 # coding=utf-8
 # Author: moparisthebest <admin@moparisthebest.com>
 #
-# This file is part of Sick Beard.
+# URL: https://sickrage.github.io
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# This file is part of SickRage.
+#
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
+from __future__ import unicode_literals
+
 import re
+from requests.compat import urljoin
 
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import logger, tvcache
+
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
 
 class BinSearchProvider(NZBProvider):
+
     def __init__(self):
-        NZBProvider.__init__(self, "BinSearch")
+
+        NZBProvider.__init__(self, 'BinSearch')
+
+        self.url = 'https://www.binsearch.info'
+        self.urls = {'rss': urljoin(self.url, 'rss.php')}
 
         self.public = True
-        self.cache = BinSearchCache(self)
-        self.urls = {'base_url': 'https://www.binsearch.info/'}
-        self.url = self.urls['base_url']
         self.supports_backlog = False
+
+        self.cache = BinSearchCache(self, min_time=30)  # only poll Binsearch every 30 minutes max
 
 
 class BinSearchCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        # only poll Binsearch every 30 minutes max
-        self.minTime = 30
+    def __init__(self, provider_obj, **kwargs):
+        kwargs.pop('search_params', None)  # does not use _getRSSData so strip param from kwargs...
+        search_params = None  # ...and pass None instead
+        tvcache.TVCache.__init__(self, provider_obj, search_params=search_params, **kwargs)
 
         # compile and save our regular expressions
 
@@ -64,7 +72,6 @@ class BinSearchCache(tvcache.TVCache):
 
         title = item.get('description')
         if title:
-            title = u'' + title
             if self.descTitleStart.match(title):
                 title = self.descTitleStart.sub('', title)
                 title = self.descTitleEnd.sub('', title)
@@ -94,22 +101,21 @@ class BinSearchCache(tvcache.TVCache):
         self.setLastUpdate()
 
         cl = []
-        for group in ['alt.binaries.hdtv', 'alt.binaries.hdtv.x264', 'alt.binaries.tv', 'alt.binaries.tvseries', 'alt.binaries.teevee']:
-            url = self.provider.url + 'rss.php?'
-            urlArgs = {'max': 50, 'g': group}
+        for group in ['alt.binaries.hdtv', 'alt.binaries.hdtv.x264', 'alt.binaries.tv', 'alt.binaries.tvseries']:
+            search_params = {'max': 50, 'g': group}
+            data = self.getRSSFeed(self.provider.urls['rss'], search_params)['entries']
+            if not data:
+                logger.log('No data returned from provider', logger.DEBUG)
+                continue
 
-            url += urllib.urlencode(urlArgs)
-
-            logger.log(u"Cache update URL: %s " % url, logger.DEBUG)
-
-            for item in self.getRSSFeed(url)['entries'] or []:
+            for item in data:
                 ci = self._parseItem(item)
                 if ci:
                     cl.append(ci)
 
-        if len(cl) > 0:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+        if cl:
+            cache_db_con = self._getDB()
+            cache_db_con.mass_action(cl)
 
     def _checkAuth(self, data):
         return data if data['feed'] and data['feed']['title'] != 'Invalid Link' else None

@@ -1,4 +1,7 @@
 # coding=utf-8
+#
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -8,17 +11,17 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import urllib
+from requests.compat import urlencode, urljoin
 
-from sickbeard import classes
-from sickbeard import logger, tvcache
+from sickbeard import classes, logger, tvcache
+
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -29,22 +32,22 @@ except ImportError:
 
 
 class HDBitsProvider(TorrentProvider):
+
     def __init__(self):
 
         TorrentProvider.__init__(self, "HDBits")
 
         self.username = None
         self.passkey = None
-        self.ratio = None
 
-        self.cache = HDBitsCache(self)
+        self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
 
-        self.urls = {'base_url': 'https://hdbits.org',
-                     'search': 'https://hdbits.org/api/torrents',
-                     'rss': 'https://hdbits.org/api/torrents',
-                     'download': 'https://hdbits.org/download.php?'}
-
-        self.url = self.urls['base_url']
+        self.url = 'https://hdbits.org'
+        self.urls = {
+            'search': urljoin(self.url, '/api/torrents'),
+            'rss': urljoin(self.url, '/api/torrents'),
+            'download': urljoin(self.url, '/download.php')
+        }
 
     def _check_auth(self):
 
@@ -71,7 +74,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + '?' + urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return title, url
 
@@ -80,11 +83,12 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: %s" % search_params, logger.DEBUG)
+        logger.log(u"Search string: {0}".format
+                   (search_params.decode('utf-8')), logger.DEBUG)
 
         self._check_auth()
 
-        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, json=True)
+        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, returns='json')
         if not parsedJSON:
             return []
 
@@ -143,7 +147,7 @@ class HDBitsProvider(TorrentProvider):
             elif show.anime:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'episode': "%i" % int(episode.scene_absolute_number)
+                    'episode': "{0:d}".format(int(episode.scene_absolute_number))
                 }
             else:
                 post_data['tvdb'] = {
@@ -161,7 +165,7 @@ class HDBitsProvider(TorrentProvider):
             elif show.anime:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'season': "%d" % season.scene_absolute_number,
+                    'season': "{0:d}".format(season.scene_absolute_number),
                 }
             else:
                 post_data['tvdb'] = {
@@ -174,23 +178,14 @@ class HDBitsProvider(TorrentProvider):
 
         return json.dumps(post_data)
 
-    def seed_ratio(self):
-        return self.ratio
-
 
 class HDBitsCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll HDBits every 15 minutes max
-        self.minTime = 15
-
     def _getRSSData(self):
+        self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 
         try:
-            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), json=True)
+            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
             if self.provider._checkAuthFromData(parsedJSON):
                 results = parsedJSON['data']
@@ -198,6 +193,5 @@ class HDBitsCache(tvcache.TVCache):
             pass
 
         return {'entries': results}
-
 
 provider = HDBitsProvider()

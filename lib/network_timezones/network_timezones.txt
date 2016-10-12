@@ -1639,6 +1639,7 @@ sky 3D (UK):Europe/London
 sky ARTS 2 (UK):Europe/London
 Sky Arts:Europe/London
 Sky Atlantic HD (DE):Europe/Berlin
+Sky Atlantic (IT):Europe/Rome
 Sky Atlantic:Europe/London
 Sky Box Office:Europe/London
 SKY Business TV (AU):Australia/Sydney

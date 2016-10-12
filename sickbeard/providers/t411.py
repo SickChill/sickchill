@@ -1,53 +1,53 @@
-# -*- coding: latin-1 -*-
+# coding=utf-8
 # Author: djoole <bobby.djoole@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from requests.auth import AuthBase
 import time
 import traceback
-from requests.auth import AuthBase
 
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard.common import USER_AGENT
+from sickbeard import logger, tvcache
+from sickrage.helper.common import try_int
+from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class T411Provider(TorrentProvider):
+class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "T411")
 
         self.username = None
         self.password = None
-        self.ratio = None
         self.token = None
         self.tokenLastUpdate = None
 
-        self.cache = T411Cache(self)
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'http://www.t411.in/',
-                     'search': 'https://api.t411.in/torrents/search/%s?cid=%s&limit=100',
-                     'rss': 'https://api.t411.in/torrents/top/today',
-                     'login_page': 'https://api.t411.in/auth',
-                     'download': 'https://api.t411.in/torrents/download/%s'}
+        self.urls = {'base_url': 'https://www.t411.ch/',
+                     'search': 'https://api.t411.ch/torrents/search/%s*?cid=%s&limit=100',
+                     'rss': 'https://api.t411.ch/torrents/top/today',
+                     'login_page': 'https://api.t411.ch/auth',
+                     'download': 'https://api.t411.ch/torrents/download/%s'}
 
         self.url = self.urls['base_url']
-
-        self.headers.update({'User-Agent': USER_AGENT})
 
         self.subcategories = [433, 637, 455, 639]
 
@@ -64,7 +64,7 @@ class T411Provider(TorrentProvider):
         login_params = {'username': self.username,
                         'password': self.password}
 
-        response = self.get_url(self.urls['login_page'], post_data=login_params, timeout=30, json=True)
+        response = self.get_url(self.urls['login_page'], post_data=login_params, returns='json', verify=False)
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -72,32 +72,30 @@ class T411Provider(TorrentProvider):
         if response and 'token' in response:
             self.token = response['token']
             self.tokenLastUpdate = time.time()
-            self.uid = response['uid'].encode('ascii', 'ignore')
+            # self.uid = response['uid'].encode('ascii', 'ignore')
             self.session.auth = T411Auth(self.token)
             return True
         else:
             logger.log(u"Token not found in authentication response", logger.WARNING)
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):
-
+    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
-
         if not self.login():
             return results
 
-        for mode in search_params.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+        for mode in search_params:
+            items = []
+            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: %s " % search_string, logger.DEBUG)
+                    logger.log(u"Search string: {0}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
 
-                searchURLS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
-                for searchURL in searchURLS:
-                    logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                    data = self.get_url(searchURL, json=True)
+                search_urlS = ([self.urls['search'] % (search_string, u) for u in self.subcategories], [self.urls['rss']])[mode == 'RSS']
+                for search_url in search_urlS:
+                    data = self.get_url(search_url, returns='json', verify=False)
                     if not data:
                         continue
 
@@ -113,7 +111,7 @@ class T411Provider(TorrentProvider):
                             continue
 
                         for torrent in torrents:
-                            if mode == 'RSS' and int(torrent['category']) not in self.subcategories:
+                            if mode == 'RSS' and 'category' in torrent and try_int(torrent['category'], 0) not in self.subcategories:
                                 continue
 
                             try:
@@ -123,10 +121,10 @@ class T411Provider(TorrentProvider):
                                 if not all([title, download_url]):
                                     continue
 
-                                size = int(torrent['size'])
-                                seeders = int(torrent['seeders'])
-                                leechers = int(torrent['leechers'])
+                                seeders = try_int(torrent['seeders'])
+                                leechers = try_int(torrent['leechers'])
                                 verified = bool(torrent['isVerified'])
+                                torrent_size = torrent['size']
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
@@ -138,32 +136,30 @@ class T411Provider(TorrentProvider):
                                     logger.log(u"Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
                                     continue
 
-                                item = title, download_url, size, seeders, leechers
+                                size = convert_size(torrent_size) or -1
+                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+                                    logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
-                                items[mode].append(item)
+                                items.append(item)
 
                             except Exception:
-                                logger.log(u"Invalid torrent data, skipping result: %s" % torrent, logger.DEBUG)
-                                logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.DEBUG)
+                                logger.log(u"Invalid torrent data, skipping result: {0}".format(torrent), logger.DEBUG)
+                                logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.DEBUG)
                                 continue
 
                     except Exception:
-                        logger.log(u"Failed parsing provider. Traceback: %s" % traceback.format_exc(), logger.ERROR)
+                        logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
-            results += items[mode]
+            results += items
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
-
-class T411Auth(AuthBase):
+class T411Auth(AuthBase):  # pylint: disable=too-few-public-methods
     """Attaches HTTP Authentication to the given Request object."""
     def __init__(self, token):
         self.token = token
@@ -171,18 +167,5 @@ class T411Auth(AuthBase):
     def __call__(self, r):
         r.headers['Authorization'] = self.token
         return r
-
-
-class T411Cache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # Only poll T411 every 10 minutes max
-        self.minTime = 10
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
-
 
 provider = T411Provider()

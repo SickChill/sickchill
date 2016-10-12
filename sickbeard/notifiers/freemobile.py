@@ -14,19 +14,19 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 import urllib2
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
+from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT
 
 
-class FreeMobileNotifier(object):
+class Notifier(object):
     def test_notify(self, cust_id=None, apiKey=None):
         return self._notifyFreeMobile('Test', "This is a test notification from SickRage", cust_id, apiKey, force=True)
 
@@ -76,9 +76,9 @@ class FreeMobileNotifier(object):
                     logger.log(message, logger.ERROR)
                     return False, message
         except Exception as e:
-                message = u"Error while sending SMS: {0}".format(e)
-                logger.log(message, logger.ERROR)
-                return False, message
+            message = u"Error while sending SMS: {0}".format(e)
+            logger.log(message, logger.ERROR)
+            return False, message
 
         message = "Free Mobile SMS successful."
         logger.log(message, logger.INFO)
@@ -104,11 +104,11 @@ class FreeMobileNotifier(object):
 
     def notify_login(self, ipaddress=""):
         if sickbeard.USE_FREEMOBILE:
-            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
+            title = notifyStrings[NOTIFY_LOGIN]
             self._notifyFreeMobile(title, update_text.format(ipaddress))
 
-    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
+    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):  # pylint: disable=too-many-arguments
         """
         Sends a SMS notification
 
@@ -126,6 +126,3 @@ class FreeMobileNotifier(object):
         logger.log(u"Sending a SMS for " + message, logger.DEBUG)
 
         return self._sendFreeMobileSMS(title, message, cust_id, apiKey)
-
-
-notifier = FreeMobileNotifier

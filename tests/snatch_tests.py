@@ -11,11 +11,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -100,7 +100,7 @@ class SearchTest(test.SickbeardTestDBCase):
         super(SearchTest, self).__init__(something)
 
 
-def test_generator(tvdb_id, show_name, cur_data, force_search):
+def generator(tvdb_id, show_name, cur_data, force_search):
     """
     Generate tests
 
@@ -148,11 +148,11 @@ if __name__ == '__main__':
                 continue
             filename = name.replace(' ', '_')
             if forceSearch:
-                test_name = 'test_manual_%s_%s' % (filename, cur_tvdb_id)
+                test_name = 'test_manual_{0}_{1}'.format(filename, cur_tvdb_id)
             else:
-                test_name = 'test_%s_%s' % (filename, cur_tvdb_id)
+                test_name = 'test_{0}_{1}'.format(filename, cur_tvdb_id)
 
-            test = test_generator(cur_tvdb_id, name, data, forceSearch)
+            test = generator(cur_tvdb_id, name, data, forceSearch)
             setattr(SearchTest, test_name, test)
             cur_tvdb_id += 1
 

@@ -1,6 +1,7 @@
 # coding=utf-8
-# Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: http://code.google.com/p/sickbeard/
+# Author: Dustyn Gibson <miigotu@gmail.com>
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,148 +12,162 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
 
 import re
-import posixpath  # Must use posixpath
-from urllib import urlencode
-from sickbeard import logger
-from sickbeard import tvcache
-from sickbeard.common import USER_AGENT
+import validators
+from requests.compat import urljoin
+
+from sickbeard import logger, tvcache
+from sickbeard.bs4_parser import BS4Parser
+
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ThePirateBayProvider(TorrentProvider):
+class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
 
+        # Provider Init
         TorrentProvider.__init__(self, "ThePirateBay")
 
+        # Credentials
         self.public = True
 
-        self.ratio = None
-        self.confirmed = True
+        # Torrent Stats
         self.minseed = None
         self.minleech = None
+        self.confirmed = True
 
-        self.cache = ThePirateBayCache(self)
-
+        # URLs
+        self.url = "https://thepiratebay.se"
         self.urls = {
-            'base_url': 'https://thepiratebay.se/',
-            'search': 'https://thepiratebay.se/s/',
-            'rss': 'https://thepiratebay.se/tv/latest'
+            "rss": urljoin(self.url, "browse/200"),
+            "search": urljoin(self.url, "s/"),  # Needs trailing /
         }
-
-        self.url = self.urls['base_url']
         self.custom_url = None
 
-        self.headers.update({'User-Agent': USER_AGENT})
+        # Proper Strings
 
+        # Cache
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
+
+    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        results = []
         """
         205 = SD, 208 = HD, 200 = All Videos
         https://pirateproxy.pl/s/?q=Game of Thrones&type=search&orderby=7&page=0&category=200
         """
-        self.search_params = {
-            'q': '',
-            'type': 'search',
-            'orderby': 7,
-            'page': 0,
-            'category': 200
+        search_params = {
+            "q": "",
+            "type": "search",
+            "orderby": 7,
+            "page": 0,
+            "category": 200
         }
 
-        self.re_title_url = r'/torrent/(?P<id>\d+)/(?P<title>.*?)".+?(?P<url>magnet.*?)".+?Size (?P<size>[\d\.]*&nbsp;[TGKMiB]{2,3}).+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
+        # Units
+        units = ["B", "KB", "MB", "GB", "TB", "PB"]
 
-    def search(self, search_strings, age=0, ep_obj=None):
+        def process_column_header(th):
+            result = ""
+            if th.a:
+                result = th.a.get_text(strip=True)
+            if not result:
+                result = th.get_text(strip=True)
+            return result
 
-        results = []
-        items = {'Season': [], 'Episode': [], 'RSS': []}
+        for mode in search_strings:
+            items = []
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
-        for mode in search_strings.keys():
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
-
-                self.search_params.update({'q': search_string.strip()})
-
-                if mode != 'RSS':
-                    logger.log(u"Search string: " + search_string, logger.DEBUG)
-
-                searchURL = self.urls[('search', 'rss')[mode == 'RSS']] + '?' + urlencode(self.search_params)
+                search_url = self.urls["search"] if mode != "RSS" else self.urls["rss"]
                 if self.custom_url:
-                    searchURL = posixpath.join(self.custom_url, searchURL.split(self.url)[1].lstrip('/'))  # Must use posixpath
+                    if not validators.url(self.custom_url):
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        return results
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                logger.log(u"Search URL: %s" % searchURL, logger.DEBUG)
-                data = self.get_url(searchURL)
+                if mode != "RSS":
+                    search_params["q"] = search_string
+                    logger.log("Search string: {}".format
+                               (search_string.decode("utf-8")), logger.DEBUG)
+
+                    data = self.get_url(search_url, params=search_params, returns="text")
+                else:
+                    data = self.get_url(search_url, returns="text")
+
                 if not data:
-                    logger.log(u'URL did not return data, maybe try a custom url, or a different one', logger.DEBUG)
+                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
                     continue
 
-                matches = re.compile(self.re_title_url, re.DOTALL).finditer(data)
-                for torrent in matches:
-                    title = torrent.group('title')
-                    download_url = torrent.group('url')
-                    # id = int(torrent.group('id'))
-                    size = self._convertSize(torrent.group('size'))
-                    seeders = int(torrent.group('seeders'))
-                    leechers = int(torrent.group('leechers'))
+                with BS4Parser(data, "html5lib") as html:
+                    torrent_table = html.find("table", id="searchResult")
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
-                    if not all([title, download_url]):
+                    # Continue only if at least one Release is found
+                    if len(torrent_rows) < 2:
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
-                    # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
-                            logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                        continue
+                    labels = [process_column_header(label) for label in torrent_rows[0]("th")]
 
-                    # Accept Torrent only from Good People for every Episode Search
-                    if self.confirmed and re.search(r'(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        if mode != 'RSS':
-                            logger.log(u"Found result %s but that doesn't seem like a trusted result so I'm ignoring it" % title, logger.DEBUG)
-                        continue
+                    # Skip column headers
+                    for result in torrent_rows[1:]:
+                        try:
+                            cells = result("td")
 
-                    item = title, download_url, size, seeders, leechers
-                    if mode != 'RSS':
-                        logger.log(u"Found result: %s " % title, logger.DEBUG)
+                            title = result.find(class_="detName").get_text(strip=True)
+                            download_url = result.find(title="Download this torrent using magnet")["href"] + self._custom_trackers
+                            if "magnet:?" not in download_url:
+                                logger.log("Invalid ThePirateBay proxy please try another one", logger.DEBUG)
+                                continue
+                            if not all([title, download_url]):
+                                continue
 
-                    items[mode].append(item)
+                            seeders = try_int(cells[labels.index("SE")].get_text(strip=True))
+                            leechers = try_int(cells[labels.index("LE")].get_text(strip=True))
+
+                            # Filter unseeded torrent
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != "RSS":
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            # Accept Torrent only from Good People for every Episode Search
+                            if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
+                                if mode != "RSS":
+                                    logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                continue
+
+                            # Convert size after all possible skip scenarios
+                            torrent_size = cells[labels.index("Name")].find(class_="detDesc").get_text(strip=True).split(", ")[1]
+                            torrent_size = re.sub(r"Size ([\d.]+).+([KMGT]iB)", r"\1 \2", torrent_size)
+                            size = convert_size(torrent_size, units=units) or -1
+
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                            if mode != "RSS":
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
+                                           (title, seeders, leechers), logger.DEBUG)
+
+                            items.append(item)
+                        except StandardError:
+                            continue
 
             # For each search mode sort all the items by seeders if available
-            items[mode].sort(key=lambda tup: tup[3], reverse=True)
-
-            results += items[mode]
+            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            results += items
 
         return results
 
-    def _convertSize(self, size):
-        size, modifier = size.split('&nbsp;')
-        size = float(size)
-        if modifier in 'KiB':
-            size *= 1024 ** 1
-        elif modifier in 'MiB':
-            size *= 1024 ** 2
-        elif modifier in 'GiB':
-            size *= 1024 ** 3
-        elif modifier in 'TiB':
-            size *= 1024 ** 4
-        return long(size)
-
-    def seed_ratio(self):
-        return self.ratio
-
-
-class ThePirateBayCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # only poll ThePirateBay every 30 minutes max
-        self.minTime = 30
-
-    def _getRSSData(self):
-        search_params = {'RSS': ['']}
-        return {'entries': self.provider.search(search_params)}
 
 provider = ThePirateBayProvider()

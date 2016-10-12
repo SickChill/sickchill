@@ -12,39 +12,38 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import sickbeard
-from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 from requests.auth import HTTPDigestAuth
 
 
 class qbittorrentAPI(GenericClient):
-    
+
     def __init__(self, host=None, username=None, password=None):
 
         super(qbittorrentAPI, self).__init__('qbittorrent', host, username, password)
 
         self.url = self.host
         self.session.auth = HTTPDigestAuth(self.username, self.password)
-    
+
     @property
     def api(self):
-        self.url = self.host + 'version/api'
         try:
+            self.url = self.host + 'version/api'
             version = int(self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT).content)
-        except:
+        except Exception:
             version = 1
-        return version        
-        
+        return version
+
     def _get_auth(self):
-        
-        if self.api > 1:            
+
+        if self.api > 1:
             self.url = self.host + 'login'
             data = {'username': self.username, 'password': self.password}
             try:
@@ -58,10 +57,10 @@ class qbittorrentAPI(GenericClient):
                 self.auth = self.response.content
             except Exception:
                 return None
-        
+
         self.session.cookies = self.response.cookies
         self.auth = self.response.content
-                
+
         return self.auth if not self.response.status_code == 404 else None
 
     def _add_torrent_uri(self, result):
@@ -75,22 +74,28 @@ class qbittorrentAPI(GenericClient):
         self.url = self.host + 'command/upload'
         files = {'torrents': (result.name + '.torrent', result.content)}
         return self._request(method='post', files=files, cookies=self.session.cookies)
-    
+
     def _set_torrent_label(self, result):
 
         label = sickbeard.TORRENT_LABEL
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME
 
-        if self.api > 6:
+        if self.api > 6 and self.api <  10 and label:
             self.url = self.host + 'command/setLabel'
-            data = {'hashes': result.hash.lower(), 'label': label}
+            data = {'hashes': result.hash.lower(), 'label': label.replace(' ', '_')}
             return self._request(method='post', data=data, cookies=self.session.cookies)
-        return None
+
+        elif self.api >= 10 and label:
+            self.url = self.host + 'command/setCategory'
+            data = {'hashes': result.hash.lower(), 'category': label.replace(' ', '_')}
+            return self._request(method='post', data=data, cookies=self.session.cookies)
+
+        return True
 
     def _set_torrent_priority(self, result):
 
-        self.url = self.host + 'command/decreasePrio '
+        self.url = self.host + 'command/decreasePrio'
         if result.priority == 1:
             self.url = self.host + 'command/increasePrio'
 

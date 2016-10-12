@@ -13,11 +13,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import urllib2
 from xml.dom.minidom import parseString
@@ -32,22 +32,22 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-class NMJv2Notifier(object):
-    def notify_snatch(self, ep_name):
+class Notifier(object):
+    def notify_snatch(self, ep_name):  # pylint: disable=unused-argument
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
 
-    def notify_download(self, ep_name):
+    def notify_download(self, ep_name):  # pylint: disable=unused-argument
         self._notifyNMJ()
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, ep_name, lang):  # pylint: disable=unused-argument
         self._notifyNMJ()
-        
-    def notify_git_update(self, new_version):
+
+    def notify_git_update(self, new_version):  # pylint: disable=unused-argument
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ipaddress=""):  # pylint: disable=unused-argument
         return False
 
     def test_notify(self, host):
@@ -56,15 +56,15 @@ class NMJv2Notifier(object):
     def notify_settings(self, host, dbloc, instance):
         """
         Retrieves the NMJv2 database location from Popcorn hour
-        
+
         host: The hostname/IP of the Popcorn Hour server
         dbloc: 'local' for PCH internal hard drive. 'network' for PCH network shares
         instance: Allows for selection of different DB in case of multiple databases
-        
+
         Returns: True if the settings were retrieved successfully, False otherwise
         """
         try:
-            url_loc = "http://" + host + ":8008/file_operation?arg0=list_user_storage_file&arg1=&arg2=" + instance + "&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false"
+            url_loc = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(host, instance)
             req = urllib2.Request(url_loc)
             handle1 = urllib2.urlopen(req)
             response1 = handle1.read()
@@ -81,9 +81,8 @@ class NMJv2Notifier(object):
                 returnvalue = xmldb.getElementsByTagName('returnValue')[0].toxml().replace('<returnValue>', '').replace(
                     '</returnValue>', '')
                 if returnvalue == "0":
-                    DB_path = xmldb.getElementsByTagName('database_path')[0].toxml().replace('<database_path>',
-                                                                                             '').replace(
-                        '</database_path>', '').replace('[=]', '')
+                    DB_path = xmldb.getElementsByTagName('database_path')[0].toxml().replace(
+                        '<database_path>', '').replace('</database_path>', '').replace('[=]', '')
                     if dbloc == "local" and DB_path.find("localhost") > -1:
                         sickbeard.NMJv2_HOST = host
                         sickbeard.NMJv2_DATABASE = DB_path
@@ -94,27 +93,27 @@ class NMJv2Notifier(object):
                         return True
 
         except IOError as e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e), logger.WARNING)
+            logger.log(u"Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
             return False
         return False
 
     def _sendNMJ(self, host):
         """
         Sends a NMJ update command to the specified machine
-        
+
         host: The hostname/IP to send the request to (no port)
         database: The database to send the request to
         mount: The mount URL to use (optional)
-        
+
         Returns: True if the request succeeded, False otherwise
         """
 
         # if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
-            logger.log(u"NMJ scan update command sent to host: %s" % host, logger.DEBUG)
+            logger.log(u"NMJ scan update command sent to host: {0}".format(host), logger.DEBUG)
             url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
-            logger.log(u"Try to mount network drive via url: %s" % host, logger.DEBUG)
+            logger.log(u"Try to mount network drive via url: {0}".format(host), logger.DEBUG)
             prereq = urllib2.Request(url_scandir)
             req = urllib2.Request(url_updatedb)
             handle1 = urllib2.urlopen(prereq)
@@ -123,19 +122,19 @@ class NMJv2Notifier(object):
             handle2 = urllib2.urlopen(req)
             response2 = handle2.read()
         except IOError as e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e), logger.WARNING)
+            logger.log(u"Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
             return False
         try:
             et = etree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % e, logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e), logger.ERROR)
             return False
         try:
             et = etree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % e, logger.ERROR)
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e), logger.ERROR)
             return False
 
         # if the result was a number then consider that an error
@@ -149,12 +148,12 @@ class NMJv2Notifier(object):
                           "Read only file system"]
         if int(result1) > 0:
             index = error_codes.index(result1)
-            logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]), logger.ERROR)
+            logger.log(u"Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
             return False
         else:
             if int(result2) > 0:
                 index = error_codes.index(result2)
-                logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]), logger.ERROR)
+                logger.log(u"Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
                 return False
             else:
                 logger.log(u"NMJv2 started background scan", logger.INFO)
@@ -163,7 +162,7 @@ class NMJv2Notifier(object):
     def _notifyNMJ(self, host=None, force=False):
         """
         Sends a NMJ update command based on the SB config settings
-        
+
         host: The host to send the command to (optional, defaults to the host in the config)
         database: The database to use (optional, defaults to the database in the config)
         mount: The mount URL (optional, defaults to the mount URL in the config)
@@ -180,6 +179,3 @@ class NMJv2Notifier(object):
         logger.log(u"Sending scan command for NMJ ", logger.DEBUG)
 
         return self._sendNMJ(host)
-
-
-notifier = NMJv2Notifier

@@ -1,6 +1,7 @@
 # coding=utf-8
 # Author: Daniel Heimans
-# URL: http://code.google.com/p/sickbeard
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -11,39 +12,39 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import socket
-import math
-import jsonrpclib
 from datetime import datetime
+import jsonrpclib
+import math
+import socket
+import time
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import classes
-from sickbeard import tvcache
-from sickbeard import scene_exceptions
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
+from sickbeard.helpers import sanitizeSceneName
+
+from sickrage.helper.common import episode_num
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):
+
     def __init__(self):
+
         TorrentProvider.__init__(self, "BTN")
 
         self.supports_absolute_numbering = True
 
         self.api_key = None
-        self.ratio = None
 
-        self.cache = BTNCache(self)
+        self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
 
         self.urls = {'base_url': u'http://api.btnapps.net',
                      'website': u'http://broadcasthe.net/', }
@@ -62,13 +63,13 @@ class BTNProvider(TorrentProvider):
             return self._check_auth()
 
         if 'api-error' in parsedJSON:
-            logger.log(u"Incorrect authentication credentials: % s" % parsedJSON['api-error'], logger.DEBUG)
+            logger.log(u"Incorrect authentication credentials: {0}".format(parsedJSON['api-error']), logger.DEBUG)
             raise AuthException(
                 "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, ep_obj=None):  # pylint:disable=too-many-locals
 
         self._check_auth()
 
@@ -82,7 +83,8 @@ class BTNProvider(TorrentProvider):
 
         if search_params:
             params.update(search_params)
-            logger.log(u"Search string: %s" % search_params, logger.DEBUG)
+            logger.log(u"Search string: {0}".format
+                       (search_params), logger.DEBUG)
 
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
@@ -116,30 +118,30 @@ class BTNProvider(TorrentProvider):
                     if 'torrents' in parsedJSON:
                         found_torrents.update(parsedJSON['torrents'])
 
-            for torrentid, torrent_info in found_torrents.iteritems():
+            for _, torrent_info in found_torrents.iteritems():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.log(u"Found result: %s " % title, logger.DEBUG)
+                    logger.log(u"Found result: {0} ".format(title), logger.DEBUG)
                     results.append(torrent_info)
 
         # FIXME SORT RESULTS
         return results
 
-    def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
+    def _api_call(self, apikey, params=None, results_per_page=1000, offset=0):
 
         server = jsonrpclib.Server(self.urls['base_url'])
         parsedJSON = {}
 
         try:
-            parsedJSON = server.getTorrents(apikey, params, int(results_per_page), int(offset))
+            parsedJSON = server.getTorrents(apikey, params or {}, int(results_per_page), int(offset))
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError, error:
             if error.message == 'Call Limit Exceeded':
                 logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
             else:
-                logger.log(u"JSON-RPC protocol error while accessing provicer. Error: %s " % repr(error), logger.ERROR)
+                logger.log(u"JSON-RPC protocol error while accessing provicer. Error: {0} ".format(repr(error)), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
             return parsedJSON
 
@@ -148,13 +150,13 @@ class BTNProvider(TorrentProvider):
 
         except socket.error, error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.log(u"Socket error while accessing provider. Error: %s " % error[1], logger.WARNING)
+            logger.log(u"Socket error while accessing provider. Error: {0} ".format(error[1]), logger.WARNING)
 
         except Exception, error:
             errorstring = str(error)
             if errorstring.startswith('<') and errorstring.endswith('>'):
                 errorstring = errorstring[1:-1]
-            logger.log(u"Unknown error while accessing provider. Error: %s " % errorstring, logger.WARNING)
+            logger.log(u"Unknown error while accessing provider. Error: {0} ".format(errorstring), logger.WARNING)
 
         return parsedJSON
 
@@ -201,7 +203,7 @@ class BTNProvider(TorrentProvider):
             # Search for the year of the air by date show
             current_params['name'] = str(ep_obj.airdate).split('-')[0]
         elif ep_obj.show.is_anime:
-            current_params['name'] = "%d" % ep_obj.scene_absolute_number
+            current_params['name'] = "{0:d}".format(ep_obj.scene_absolute_number)
         else:
             current_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
@@ -235,10 +237,10 @@ class BTNProvider(TorrentProvider):
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
         elif ep_obj.show.anime:
-            search_params['name'] = "%i" % int(ep_obj.scene_absolute_number)
+            search_params['name'] = "{0:d}".format(int(ep_obj.scene_absolute_number))
         else:
             # Do a general name search for the episode, formatted like SXXEYY
-            search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)
+            search_params['name'] = u"{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
 
         # search
         if ep_obj.show.indexer == 1:
@@ -279,17 +281,8 @@ class BTNProvider(TorrentProvider):
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
-
 
 class BTNCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-
-        # At least 15 minutes between queries
-        self.minTime = 15
-
     def _getRSSData(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))
@@ -306,7 +299,7 @@ class BTNCache(tvcache.TVCache):
                 logger.DEBUG)
             seconds_since_last_update = 86400
 
-        return {'entries': self.provider.search(search_params=None, age=seconds_since_last_update)}
-
+        self.search_params = None  # BTN cache does not use search params
+        return {'entries': self.provider.search(search_params=self.search_params, age=seconds_since_last_update)}
 
 provider = BTNProvider()

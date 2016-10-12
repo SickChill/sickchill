@@ -13,11 +13,11 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import httplib
 import urllib
@@ -32,7 +32,7 @@ from sickrage.helper.exceptions import ex
 API_URL = "https://api.pushover.net/1/messages.json"
 
 
-class PushoverNotifier(object):
+class Notifier(object):
     def __init__(self):
         pass
 
@@ -178,6 +178,3 @@ class PushoverNotifier(object):
         logger.log(u"Sending notification for " + message, logger.DEBUG)
 
         return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey)
-
-
-notifier = PushoverNotifier

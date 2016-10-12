@@ -12,17 +12,16 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from sickbeard import helpers
 from sickbeard import logger
-import requests
 
-meta_session = requests.Session()
+meta_session = helpers.make_session()
 
 
 def getShowImage(url, imgNum=None):
@@ -37,7 +36,7 @@ def getShowImage(url, imgNum=None):
 
     logger.log(u"Fetching image from " + tempURL, logger.DEBUG)
 
-    image_data = helpers.getURL(tempURL, session=meta_session, need_bytes=True)
+    image_data = helpers.getURL(tempURL, session=meta_session, returns='content')
     if image_data is None:
         logger.log(u"There was an error trying to retrieve the image, aborting", logger.WARNING)
         return

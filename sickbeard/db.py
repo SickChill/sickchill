@@ -12,20 +12,21 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 import re
 import sqlite3
-import time
 import threading
-import sickbeard
+import time
+import warnings
+from sqlite3 import OperationalError
 
+import sickbeard
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -43,7 +44,7 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     @return: the correct location of the database file.
     """
     if suffix:
-        filename = "%s.%s" % (filename, suffix)
+        filename = "{0}.{1}".format(filename, suffix)
     return ek(os.path.join, sickbeard.DATA_DIR, filename)
 
 
@@ -55,33 +56,42 @@ class DBConnection(object):
         self.row_type = row_type
 
         try:
-            if self.filename not in db_cons:
+            if self.filename not in db_cons or not db_cons[self.filename]:
                 db_locks[self.filename] = threading.Lock()
 
                 self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-                self.connection.text_factory = self._unicode_text_factory
+                self.connection.text_factory = DBConnection._unicode_text_factory
 
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]
 
-            if self.row_type == "dict":
-                self.connection.row_factory = self._dict_factory
-            else:
-                self.connection.row_factory = sqlite3.Row
+            # start off row factory configured as before out of
+            # paranoia but wait to do so until other potential users
+            # of the shared connection are done using
+            # it... technically not required as row factory is reset
+            # in all the public methods after the lock has been
+            # aquired
+            with db_locks[self.filename]:
+                self._set_row_factory()
+
+        except OperationalError:
+            logger.log(u'Please check your database owner/permissions: {0}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
         except Exception as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             raise
 
-    def _execute(self, query, args):
-        try:
-            if not args:
-                return self.connection.cursor().execute(query)
-            return self.connection.cursor().execute(query, args)
-        except Exception:
-            raise
+    def _set_row_factory(self):
+        """
+        once lock is aquired we can configure the connection for
+        this particular instance of DBConnection
+        """
+        if self.row_type == "dict":
+            self.connection.row_factory = DBConnection._dict_factory
+        else:
+            self.connection.row_factory = sqlite3.Row
 
-    def execute(self, query, args=None, fetchall=False, fetchone=False):
+    def _execute(self, query, args=None, fetchall=False, fetchone=False):
         """
         Executes DB query
 
@@ -92,16 +102,30 @@ class DBConnection(object):
         :return: query results
         """
         try:
-            if fetchall:
-                return self._execute(query, args).fetchall()
-            elif fetchone:
-                return self._execute(query, args).fetchone()
+            if not args:
+                sql_results = self.connection.cursor().execute(query)
             else:
-                return self._execute(query, args)
+                sql_results = self.connection.cursor().execute(query, args)
+            if fetchall:
+                return sql_results.fetchall()
+            elif fetchone:
+                return sql_results.fetchone()
+            else:
+                return sql_results
         except Exception:
             raise
 
     def checkDBVersion(self):
+        """
+        Fetch major database version
+
+        :return: Integer indicating current DB major version
+        """
+        if self.hasColumn('db_version', 'db_minor_version'):
+            warnings.warn('Deprecated: Use the version property', DeprecationWarning)
+        return self.check_db_major_version()
+
+    def check_db_major_version(self):
         """
         Fetch database version
 
@@ -112,7 +136,7 @@ class DBConnection(object):
         try:
             if self.hasTable('db_version'):
                 result = self.select("SELECT db_version FROM db_version")
-        except:
+        except Exception:
             return 0
 
         if result:
@@ -120,7 +144,34 @@ class DBConnection(object):
         else:
             return 0
 
-    def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
+    def check_db_minor_version(self):
+        """
+        Fetch database version
+
+        :return: Integer inidicating current DB major version
+        """
+        result = None
+
+        try:
+            if self.hasColumn('db_version', 'db_minor_version'):
+                result = self.select("SELECT db_minor_version FROM db_version")
+        except Exception:
+            return 0
+
+        if result:
+            return int(result[0]["db_minor_version"])
+        else:
+            return 0
+
+    @property
+    def version(self):
+        """The database version
+
+        :return: A tuple containing the major and minor versions
+        """
+        return self.check_db_major_version(), self.check_db_minor_version()
+
+    def mass_action(self, querylist=None, logTransaction=False, fetchall=False):
         """
         Execute multiple queries
 
@@ -129,31 +180,35 @@ class DBConnection(object):
         :param fetchall: Boolean, when using a select query force returning all results
         :return: list of results
         """
-        # remove None types
-        querylist = [i for i in querylist if i is not None and len(i)]
 
-        sqlResult = []
+        assert hasattr(querylist, '__iter__'), 'You passed a non-iterable to mass_action: {0!r}'.format(querylist)
+
+        # remove None types
+        querylist = [i for i in querylist if i]
+
+        sql_results = []
         attempt = 0
 
         with db_locks[self.filename]:
+            self._set_row_factory()
             while attempt < 5:
                 try:
                     for qu in querylist:
                         if len(qu) == 1:
                             if logTransaction:
                                 logger.log(qu[0], logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], fetchall=fetchall))
+                            sql_results.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             if logTransaction:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], qu[1], fetchall=fetchall))
+                            sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
 
                     # finished
                     break
                 except sqlite3.OperationalError as e:
-                    sqlResult = []
+                    sql_results = []
                     if self.connection:
                         self.connection.rollback()
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
@@ -164,7 +219,7 @@ class DBConnection(object):
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
                 except sqlite3.DatabaseError as e:
-                    sqlResult = []
+                    sql_results = []
                     if self.connection:
                         self.connection.rollback()
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
@@ -172,7 +227,7 @@ class DBConnection(object):
 
             # time.sleep(0.02)
 
-            return sqlResult
+            return sql_results
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
         """
@@ -187,10 +242,11 @@ class DBConnection(object):
         if query is None:
             return
 
-        sqlResult = None
+        sql_results = None
         attempt = 0
 
         with db_locks[self.filename]:
+            self._set_row_factory()
             while attempt < 5:
                 try:
                     if args is None:
@@ -198,7 +254,7 @@ class DBConnection(object):
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
 
-                    sqlResult = self.execute(query, args, fetchall=fetchall, fetchone=fetchone)
+                    sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
 
                     # get out of the connection attempt loop since we were successful
@@ -217,7 +273,7 @@ class DBConnection(object):
 
             # time.sleep(0.02)
 
-            return sqlResult
+            return sql_results
 
     def select(self, query, args=None):
         """
@@ -228,12 +284,12 @@ class DBConnection(object):
         :return: query results
         """
 
-        sqlResults = self.action(query, args, fetchall=True)
+        sql_results = self.action(query, args, fetchall=True)
 
-        if sqlResults is None:
+        if sql_results is None:
             return []
 
-        return sqlResults
+        return sql_results
 
     def selectOne(self, query, args=None):
         """
@@ -243,12 +299,12 @@ class DBConnection(object):
         :param args: arguments to query string
         :return: query results
         """
-        sqlResults = self.action(query, args, fetchone=True)
+        sql_results = self.action(query, args, fetchone=True)
 
-        if sqlResults is None:
+        if sql_results is None:
             return []
 
-        return sqlResults
+        return sql_results
 
     def upsert(self, tableName, valueDict, keyDict):
         """
@@ -281,13 +337,14 @@ class DBConnection(object):
         :param tableName: name of table
         :return: array of name/type info
         """
-        sqlResult = self.select("PRAGMA table_info(`%s`)" % tableName)
+        sql_results = self.select("PRAGMA table_info(`{0}`)".format(tableName))
         columns = {}
-        for column in sqlResult:
+        for column in sql_results:
             columns[column['name']] = {'type': column['type']}
         return columns
 
-    def _unicode_text_factory(self, x):
+    @staticmethod
+    def _unicode_text_factory(x):
         """
         Convert text to unicode
 
@@ -297,10 +354,11 @@ class DBConnection(object):
         try:
             # Just revert to the old code for now, until we can fix unicode
             return unicode(x, 'utf-8')
-        except:
+        except Exception:
             return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
 
-    def _dict_factory(self, cursor, row):
+    @staticmethod
+    def _dict_factory(cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
@@ -325,7 +383,7 @@ class DBConnection(object):
         """
         return column in self.tableInfo(tableName)
 
-    def addColumn(self, table, column, type="NUMERIC", default=0):
+    def addColumn(self, table, column, col_type="NUMERIC", default=0):
         """
         Adds a column to a table, default column type is NUMERIC
         TODO: Make this return true/false on success/failure
@@ -335,15 +393,15 @@ class DBConnection(object):
         :param type: Column type to add
         :param default: Default value for column
         """
-        self.action("ALTER TABLE [%s] ADD %s %s" % (table, column, type))
-        self.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
+        self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
 
 
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
 
 
-class DBSanityCheck(object):
+class DBSanityCheck(object):  # pylint: disable=too-few-public-methods
     def __init__(self, connection):
         self.connection = connection
 
@@ -387,35 +445,18 @@ def restoreDatabase(version):
 
 def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
-    logger.log(u"Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
+    # logger.log(u"Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
     if not instance.test():
         logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
         try:
             instance.execute()
-        except sqlite3.DatabaseError as e:
-            # attemping to restore previous DB backup and perform upgrade
-            try:
-                instance.execute()
-            except:
-                restored = False
-                result = connection.select("SELECT db_version FROM db_version")
-                if result:
-                    version = int(result[0]["db_version"])
+        except Exception as e:
+            logger.log("Error in " + str(upgradeClass.__name__) + ": " + ex(e), logger.ERROR)
+            raise
 
-                    # close db before attempting restore
-                    connection.close()
-
-                    if restoreDatabase(version):
-                        # initialize the main SB database
-                        upgradeDatabase(DBConnection(), sickbeard.mainDB.InitialSchema)
-                        restored = True
-
-                if not restored:
-                    print "Error in " + str(upgradeClass.__name__) + ": " + ex(e)
-                    raise
         logger.log(upgradeClass.__name__ + " upgrade completed", logger.DEBUG)
-    else:
-        logger.log(upgradeClass.__name__ + " upgrade not required", logger.DEBUG)
+    # else:
+    #     logger.log(upgradeClass.__name__ + " upgrade not required", logger.DEBUG)
 
     for upgradeSubClass in upgradeClass.__subclasses__():
         _processUpgrade(connection, upgradeSubClass)
@@ -432,9 +473,9 @@ class SchemaUpgrade(object):
     def hasColumn(self, tableName, column):
         return column in self.connection.tableInfo(tableName)
 
-    def addColumn(self, table, column, type="NUMERIC", default=0):
-        self.connection.action("ALTER TABLE [%s] ADD %s %s" % (table, column, type))
-        self.connection.action("UPDATE [%s] SET %s = ?" % (table, column), (default,))
+    def addColumn(self, table, column, col_type="NUMERIC", default=0):
+        self.connection.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        self.connection.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
 
     def checkDBVersion(self):
         return self.connection.checkDBVersion()

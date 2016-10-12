@@ -1,5 +1,7 @@
 # coding=utf-8
-# Author: Mr_Orange
+# # Author: Mr_Orange
+#
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -10,64 +12,65 @@
 #
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
 
 import io
 import os
 import re
-import requests
-from bencode import bdecode
+from requests.utils import add_dict_to_cookiejar
+import bencode
 
 import sickbeard
-from sickbeard import helpers
-from sickbeard import logger
-from sickbeard import tvcache
+from sickbeard import helpers, logger, tvcache
 
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentRssProvider(TorrentProvider):
-    def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
-                 enable_backlog=False):
+class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+
+    def __init__(self, name, url, cookies='',  # pylint: disable=too-many-arguments
+                 titleTAG='title', search_mode='eponly', search_fallback=False,
+                 enable_daily=False, enable_backlog=False):
+
         TorrentProvider.__init__(self, name)
-        self.cache = TorrentRssCache(self)
 
-        self.urls = {'base_url': re.sub(r'\/$', '', url)}
+        self.cache = TorrentRssCache(self, min_time=15)
+        self.url = url.rstrip('/')
 
-        self.url = self.urls['base_url']
-
-        self.ratio = None
         self.supports_backlog = False
 
         self.search_mode = search_mode
         self.search_fallback = search_fallback
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
+        self.enable_cookies = True
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):
-        return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (
+    def configStr(self):  # pylint: disable=too-many-arguments
+        return '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}'.format(
             self.name or '',
             self.url or '',
             self.cookies or '',
             self.titleTAG or '',
-            self.enabled,
+            int(self.enabled),
             self.search_mode or '',
-            self.search_fallback,
-            self.enable_daily,
-            self.enable_backlog
+            int(self.search_fallback),
+            int(self.enable_daily),
+            int(self.enable_backlog)
         )
 
     @staticmethod
     def get_providers_list(data):
-        providers_list = [x for x in [TorrentRssProvider._make_provider(x) for x in data.split('!!!')] if x]
+        providers_list = [x for x in (TorrentRssProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
         providers_set = []
 
@@ -89,11 +92,11 @@ class TorrentRssProvider(TorrentProvider):
 
         title = item.get(self.titleTAG, '').replace(' ', '.')
 
-        attempt_list = [lambda: item.get('torrent_magneturi'),
-
-                        lambda: item.enclosures[0].href,
-
-                        lambda: item.get('link')]
+        attempt_list = [
+            lambda: item.get('torrent_magneturi'),
+            lambda: item.enclosures[0].href,
+            lambda: item.get('link')
+        ]
 
         url = None
         for cur_attempt in attempt_list:
@@ -131,7 +134,7 @@ class TorrentRssProvider(TorrentProvider):
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.log(u'Skipping RSS Torrent provider string: \'%s\', incorrect format' % config, logger.ERROR)
+            logger.log('Skipping RSS Torrent provider string: {0}, incorrect format'.format(config), logger.ERROR)
             return None
 
         new_provider = TorrentRssProvider(
@@ -142,21 +145,22 @@ class TorrentRssProvider(TorrentProvider):
 
         return new_provider
 
-    def validateRSS(self):
+    def validateRSS(self):  # pylint: disable=too-many-return-statements
 
         try:
             if self.cookies:
-                cookie_validator = re.compile(r"^(\w+=\w+)(;\w+=\w+)*$")
+                cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
                 if not cookie_validator.match(self.cookies):
-                    return False, 'Cookie is not correctly formatted: ' + self.cookies
+                    return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
+                add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
 
             # pylint: disable=protected-access
             # Access to a protected member of a client class
             data = self.cache._getRSSData()['entries']
             if not data:
-                return False, 'No items found in the RSS feed ' + self.url
+                return False, 'No items found in the RSS feed {0}'.format(self.url)
 
-            (title, url) = self._get_title_and_url(data[0])
+            title, url = self._get_title_and_url(data[0])
 
             if not title:
                 return False, 'Unable to get title from first item'
@@ -167,20 +171,17 @@ class TorrentRssProvider(TorrentProvider):
             if url.startswith('magnet:') and re.search(r'urn:btih:([\w]{32,40})', url):
                 return True, 'RSS feed Parsed correctly'
             else:
-                if self.cookies:
-                    requests.utils.add_dict_to_cookiejar(self.session.cookies,
-                                                         dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
-                torrent_file = self.get_url(url, need_bytes=True)
+                torrent_file = self.get_url(url, returns='content')
                 try:
-                    bdecode(torrent_file)
-                except Exception as e:
+                    bencode.bdecode(torrent_file)
+                except (bencode.BTL.BTFailure, Exception) as error:
                     self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: ' + ex(e)
+                    return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 
             return True, 'RSS feed Parsed correctly'
 
-        except Exception as e:
-            return False, 'Error when trying to load RSS: ' + ex(e)
+        except Exception as error:
+            return False, 'Error when trying to load RSS: {0}'.format(ex(error))
 
     @staticmethod
     def dumpHTML(data):
@@ -191,25 +192,17 @@ class TorrentRssProvider(TorrentProvider):
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)
-        except IOError as e:
-            logger.log(u"Unable to save the file: %s " % repr(e), logger.ERROR)
+        except IOError as error:
+            logger.log('Unable to save the file: {0}'.format(ex(error)), logger.ERROR)
             return False
-        logger.log(u"Saved custom_torrent html dump %s " % dumpName, logger.INFO)
-        return True
 
-    def seed_ratio(self):
-        return self.ratio
+        logger.log('Saved custom_torrent html dump {0} '.format(dumpName), logger.INFO)
+        return True
 
 
 class TorrentRssCache(tvcache.TVCache):
-    def __init__(self, provider_obj):
-        tvcache.TVCache.__init__(self, provider_obj)
-        self.minTime = 15
-
     def _getRSSData(self):
-        logger.log(u"Cache update URL: %s" % self.provider.url, logger.DEBUG)
-
         if self.provider.cookies:
-            self.provider.headers.update({'Cookie': self.provider.cookies})
+            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
         return self.getRSSFeed(self.provider.url)
