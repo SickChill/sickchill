@@ -13,6 +13,5 @@ reviewers:
   - VinceVal
   - beschoenen
   - neoatomic
-  - lulandco
   name: default
   required: 1
