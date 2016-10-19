@@ -17,16 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
-from threading import Lock
-
 import datetime
-import socket
+import gettext
 import os
-import sys
+import random
 import re
 import shutil
-import random
-import gettext
+import socket
+import sys
+from threading import Lock
 
 try:
     import pytz  # pylint: disable=unused-import
@@ -34,7 +33,6 @@ except ImportError:
     from pkg_resources import require
     require('pytz')
 
-import shutil_custom
 
 from sickbeard.indexers import indexer_api
 from sickbeard.common import SD, SKIPPED, WANTED
@@ -76,7 +74,6 @@ dynamic_strings = (
 )
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 requests.packages.urllib3.disable_warnings()
 indexerApi = indexer_api.indexerApi
 
@@ -468,6 +465,12 @@ SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
 SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
+USE_SLACK = False
+SLACK_NOTIFY_SNATCH = None
+SLACK_NOTIFY_DOWNLOAD = None
+SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
+SLACK_WEBHOOK = None
+
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -663,7 +666,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -690,6 +693,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
+        CheckSection(CFG, 'Slack')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -1140,6 +1144,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             check_setting_int(CFG, 'SynologyNotifier', 'synologynotifier_notify_ondownload', 0))
         SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'SynologyNotifier', 'synologynotifier_notify_onsubtitledownload', 0))
+
+        USE_SLACK = bool(check_setting_int(CFG, 'Slack', 'use_slack', 0 ))
+        SLACK_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Slack', 'slack_notify_snatch', 0))
+        SLACK_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Slack', 'slack_notify_download', 0))
+        SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook', '')
 
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
         TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
@@ -2102,6 +2111,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'synologynotifier_notify_onsnatch': int(SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH),
             'synologynotifier_notify_ondownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD),
             'synologynotifier_notify_onsubtitledownload': int(SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)
+        },
+
+        'Slack': {
+            'use_slack': int(USE_SLACK),
+            'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
+            'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
+            'slack_webhook': SLACK_WEBHOOK
         },
 
         'Trakt': {

@@ -24,7 +24,6 @@ import os
 import string
 
 from sickbeard import logger
-
 from sickrage.helper.encoding import ek
 
 

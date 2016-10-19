@@ -56,7 +56,7 @@
   audio_profile: HE
   language: [ french, english ]
   subtitle_language: [ french, english ]
-  release_group: XCT
+  release_group: Chaps
 
 ? Battle Royale (2000)/Battle.Royale.(Batoru.Rowaiaru).(2000).(Special.Edition).CD1of2.DVDRiP.XviD-[ZeaL].avi
 : title: Battle Royale
@@ -81,7 +81,7 @@
   audio_codec: AAC
   language: [ French, English ]
   subtitle_language: [ French, English ]
-  release_group: XCT
+  release_group: Ind
 
 ? Movies/Toy Story (1995)/Toy Story [HDTV 720p English-Spanish].mkv
 : title: Toy Story
@@ -787,3 +787,51 @@
 ? "Looney Tunes 1444x866 Porky's Last Stand.mkv"
 : screen_size: 1444x866
   title: Looney Tunes
+
+? Das.Appartement.German.AC3D.DL.720p.BluRay.x264-TVP
+: audio_codec: AC3
+  format: BluRay
+  language: mul
+  release_group: TVP
+  screen_size: 720p
+  title: Das Appartement German
+  type: movie
+  video_codec: h264
+
+? Das.Appartement.GERMAN.AC3D.DL.720p.BluRay.x264-TVP
+: audio_codec: AC3
+  format: BluRay
+  language:
+  - de
+  - mul
+  release_group: TVP
+  screen_size: 720p
+  title: Das Appartement
+  video_codec: h264
+
+? Hyena.Road.2015.German.1080p.DL.DTSHD.Bluray.x264-pmHD
+: audio_codec: DTS
+  audio_profile: HD
+  format: BluRay
+  language:
+  - de
+  - mul
+  release_group: pmHD
+  screen_size: 1080p
+  title: Hyena Road
+  type: movie
+  video_codec: h264
+  year: 2015
+
+? Hyena.Road.2015.German.Ep.Title.1080p.DL.DTSHD.Bluray.x264-pmHD
+: audio_codec: DTS
+  audio_profile: HD
+  episode_title: German Ep Title
+  format: BluRay
+  language: mul
+  release_group: pmHD
+  screen_size: 1080p
+  title: Hyena Road
+  type: movie
+  video_codec: h264
+  year: 2015

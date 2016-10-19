@@ -563,9 +563,3 @@ class TestMaches(object):
 
         assert len(holes) == 4
         assert [hole.value for hole in holes] == ["Test hole ", " with ", " separators ", " included"]
-
-
-
-
-
-

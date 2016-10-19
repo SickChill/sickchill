@@ -547,7 +547,7 @@ class Match(object):
         self.pattern = pattern
         self.private = private
         self.conflict_solver = conflict_solver
-        self.children = []
+        self.children = Matches([], input_string)
         self._raw_start = None
         self._raw_end = None
         self.defined_at = pattern.defined_at if pattern else defined_at()
@@ -770,12 +770,15 @@ class Match(object):
         name = ""
         tags = ""
         defined = ""
+        initiator = ""
+        if self.initiator.value != self.value:
+            initiator = "+initiator=" + self.initiator.value
         if self.private:
             flags += '+private'
         if self.name:
-            name = "+name=" + self.name
+            name = "+name=%s" % (self.name,)
         if self.tags:
-            tags = "+tags=" + six.text_type(self.tags)
+            tags = "+tags=%s" % (self.tags,)
         if self.defined_at:
-            defined += "@" + six.text_type(self.defined_at)
-        return "<%s:%s%s%s%s%s>" % (self.value, self.span, flags, name, tags, defined)
+            defined += "@%s" % (self.defined_at,)
+        return "<%s:%s%s%s%s%s%s>" % (self.value, self.span, flags, name, tags, initiator, defined)

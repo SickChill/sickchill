@@ -2,7 +2,6 @@
 from feedparser.api import parse
 
 from sickbeard import logger
-
 from sickrage.helper.exceptions import ex
 
 

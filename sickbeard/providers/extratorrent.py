@@ -24,7 +24,6 @@ import re
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard.common import USER_AGENT
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -49,7 +48,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.custom_url = None
 
         self.cache = tvcache.TVCache(self, min_time=30)  # Only poll ExtraTorrent every 30 minutes max
-        self.headers.update({'User-Agent': USER_AGENT})
+
         self.search_params = {'cid': 8}
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches

@@ -6,6 +6,7 @@ Subliminal uses `click <http://click.pocoo.org>`_ to provide a powerful :abbr:`C
 from __future__ import division
 from collections import defaultdict
 from datetime import timedelta
+import glob
 import json
 import logging
 import os
@@ -15,7 +16,7 @@ from appdirs import AppDirs
 from babelfish import Error as BabelfishError, Language
 import click
 from dogpile.cache.backends.file import AbstractFileLock
-from dogpile.core import ReadWriteMutex
+from dogpile.util.readwrite_lock import ReadWriteMutex
 from six.moves import configparser
 
 from subliminal import (AsyncProviderPool, Episode, Movie, Video, __version__, check_video, compute_score, get_scores,
@@ -263,7 +264,8 @@ def subliminal(ctx, addic7ed, legendastv, opensubtitles, subscenter, cache_dir, 
 def cache(ctx, clear_subliminal):
     """Cache management."""
     if clear_subliminal:
-        os.remove(os.path.join(ctx.parent.params['cache_dir'], cache_file))
+        for file in glob.glob(os.path.join(ctx.parent.params['cache_dir'], cache_file) + '*'):
+            os.remove(file)
         click.echo('Subliminal\'s cache cleared.')
     else:
         click.echo('Nothing done.')
@@ -335,10 +337,10 @@ def download(obj, provider, refiner, language, age, directory, encoding, single,
                     errored_paths.append(p)
                     continue
                 for video in scanned_videos:
+                    if not force:
+                        video.subtitle_languages |= set(search_external_subtitles(video.name,
+                                                                                  directory=directory).values())
                     if check_video(video, languages=language, age=age, undefined=single):
-                        if not force:
-                            video.subtitle_languages |= set(search_external_subtitles(video.name,
-                                                                                      directory=directory).values())
                         refine(video, episode_refiners=refiner, movie_refiners=refiner, embedded_subtitles=not force)
                         videos.append(video)
                     else:
@@ -352,9 +354,9 @@ def download(obj, provider, refiner, language, age, directory, encoding, single,
                 logger.exception('Unexpected error while collecting path %s', p)
                 errored_paths.append(p)
                 continue
+            if not force:
+                video.subtitle_languages |= set(search_external_subtitles(video.name, directory=directory).values())
             if check_video(video, languages=language, age=age, undefined=single):
-                if not force:
-                    video.subtitle_languages |= set(search_external_subtitles(video.name, directory=directory).values())
                 refine(video, episode_refiners=refiner, movie_refiners=refiner, embedded_subtitles=not force)
                 videos.append(video)
             else:

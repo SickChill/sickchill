@@ -31,9 +31,11 @@
                     <input type="hidden" id="srRoot" value="${srRoot}" />
                     <div class="form-inline">
                         <label for="pickShow">${_('Change Show')}:</label>
-                        <div>
-                            <div class="navShow"><span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}" /></div>
-                            <select id="pickShow" class="form-control input-sm input350" title="Change Show">
+                        <div class="pick-show-group input350">
+                            <div class="navShow">
+                                <span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}"></span>
+                            </div>
+                            <select id="pickShow" class="form-control input-sm" title="Change Show">
                                 % for curShowList in sortedShowLists:
                                     <% curShowType = curShowList[0] %>
                                     <% curShowList = curShowList[1] %>
@@ -49,7 +51,9 @@
                                     % endif
                                 % endfor
                             </select>
-                            <div class="navShow"><span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}" /></div>
+                            <div class="navShow">
+                                <span id="nextShow" class="displayshow-icon-right" title="${_('Next Show')}"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,17 +79,19 @@
                                         % endfor
                                     </select>
                                 % else:
-                                    ${_('Season')}:
-                                    % for seasonNum in seasonResults:
-                                        % if int(seasonNum["season"]) == 0:
-                                            <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
-                                        % else:
-                                            <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
-                                        % endif
-                                        % if seasonNum != seasonResults[-1]:
-                                            <span class="separator">|</span>
-                                        % endif
-                                    % endfor
+                                    <label>
+                                        <span>${_('Season')}:</span>
+                                        % for seasonNum in seasonResults:
+                                            % if int(seasonNum["season"]) == 0:
+                                                <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
+                                            % else:
+                                                <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
+                                            % endif
+                                            % if seasonNum != seasonResults[-1]:
+                                                <span class="separator">|</span>
+                                            % endif
+                                        % endfor
+                                    </label>
                                 % endif
                             </span>
                         </div>
@@ -561,7 +567,13 @@
                                         <td class="col-subtitles" align="center">
                                             % for flag in (epResult["subtitles"] or '').split(','):
                                                 % if flag.strip():
-                                                    <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
+                                                    % if flag != 'und':
+                                                        <a class="epRetrySubtitlesSearch" href="retrySearchSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}&amp;lang=${flag}">
+                                                            <img src="${srRoot}/images/subtitles/flags/${flag}.png" data-image-url="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
+                                                        </a>
+                                                    % else:
+                                                        <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
+                                                    % endif
                                                 % endif
                                             % endfor
                                         </td>
@@ -625,6 +637,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
                     <button type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmSubtitleDownloadModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">${_('Download subtitle')}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>${_('Do you want to redownload the subtitle for this language?')}</p>
+                    <p class="text-warning"><small>${_('It will overwrite your current subtitle')}</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">${_('No')}</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">${_('Yes')}</button>
                 </div>
             </div>
         </div>

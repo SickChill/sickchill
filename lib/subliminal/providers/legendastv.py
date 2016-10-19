@@ -6,8 +6,10 @@ import os
 import re
 
 from babelfish import Language, language_converters
+from datetime import datetime, timedelta
 from dogpile.cache.api import NO_VALUE
 from guessit import guessit
+import pytz
 import rarfile
 from rarfile import RarFile, is_rarfile
 from requests import Session
@@ -15,8 +17,8 @@ from zipfile import ZipFile, is_zipfile
 
 from . import ParserBeautifulSoup, Provider
 from .. import __short_version__
-from ..cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
-from ..exceptions import AuthenticationError, ConfigurationError
+from ..cache import SHOW_EXPIRATION_TIME, region
+from ..exceptions import AuthenticationError, ConfigurationError, ProviderError
 from ..subtitle import SUBTITLE_EXTENSIONS, Subtitle, fix_line_ending, guess_matches, sanitize
 from ..video import Episode, Movie
 
@@ -31,10 +33,16 @@ rarfile.PATH_SEP = '/'
 type_map = {'M': 'movie', 'S': 'episode', 'C': 'episode'}
 
 #: BR title season parsing regex
-season_re = re.compile(' - (?P<season>\d+)(\xaa|a) temporada', re.IGNORECASE)
+season_re = re.compile(r' - (?P<season>\d+)(\xaa|a|st|nd|rd|th) (temporada|season)', re.IGNORECASE)
+
+#: Downloads parsing regex
+downloads_re = re.compile(r'(?P<downloads>\d+) downloads')
 
 #: Rating parsing regex
-rating_re = re.compile('^(?P<downloads>\d+) downloads, nota (?P<rating>\d+)?')
+rating_re = re.compile(r'nota (?P<rating>\d+)')
+
+#: Timestamp parsing regex
+timestamp_re = re.compile(r'(?P<day>\d+)/(?P<month>\d+)/(?P<year>\d+) - (?P<hour>\d+):(?P<minute>\d+)')
 
 #: Cache key for releases
 releases_key = __name__ + ':releases|{archive_id}'
@@ -50,9 +58,11 @@ class LegendasTVArchive(object):
     :param str link: link.
     :param int downloads: download count.
     :param int rating: rating (0-10).
+    :param timestamp: timestamp.
+    :type timestamp: datetime.datetime
 
     """
-    def __init__(self, id, name, pack, featured, link, downloads=None, rating=None):
+    def __init__(self, id, name, pack, featured, link, downloads=0, rating=0, timestamp=None):
         #: Identifier
         self.id = id
 
@@ -71,8 +81,11 @@ class LegendasTVArchive(object):
         #: Download count
         self.downloads = downloads
 
-        #: Rating  (0-10)
+        #: Rating (0-10)
         self.rating = rating
+
+        #: Timestamp
+        self.timestamp = timestamp
 
         #: Compressed content as :class:`rarfile.RarFile` or :class:`zipfile.ZipFile`
         self.content = None
@@ -169,9 +182,7 @@ class LegendasTVProvider(Provider):
             r.raise_for_status()
 
             soup = ParserBeautifulSoup(r.content, ['html.parser'])
-            auth_error = soup.find('div', {'class': 'alert-error'}, text=re.compile(u'.*Usuário ou senha inválidos.*'))
-
-            if auth_error:
+            if soup.find('div', {'class': 'alert-error'}, string=re.compile(u'Usuário ou senha inválidos')):
                 raise AuthenticationError(self.username)
 
             logger.debug('Logged in')
@@ -211,9 +222,12 @@ class LegendasTVProvider(Provider):
             # extract id
             title_id = int(source['id_filme'])
 
-            # extract type, title and year
-            title = {'type': type_map[source['tipo']], 'title': source['dsc_nome'],
-                     'year': int(source['dsc_data_lancamento'])}
+            # extract type and title
+            title = {'type': type_map[source['tipo']], 'title': source['dsc_nome']}
+
+            # extract year
+            if source['dsc_data_lancamento'] and source['dsc_data_lancamento'].isdigit():
+                title['year'] = int(source['dsc_data_lancamento'])
 
             # extract imdb_id
             if source['id_imdb'] != '0':
@@ -224,11 +238,14 @@ class LegendasTVProvider(Provider):
 
             # extract season
             if title['type'] == 'episode':
-                if source['temporada'] is not None:
+                if source['temporada'] and source['temporada'].isdigit():
                     title['season'] = int(source['temporada'])
                 else:
                     match = season_re.search(source['dsc_nome_br'])
-                    title['season'] = int(match.group('season'))
+                    if match:
+                        title['season'] = int(match.group('season'))
+                    else:
+                        logger.warning('No season detected for title %d', title_id)
 
             # add title
             titles[title_id] = title
@@ -237,7 +254,7 @@ class LegendasTVProvider(Provider):
 
         return titles
 
-    @region.cache_on_arguments(expiration_time=EPISODE_EXPIRATION_TIME)
+    @region.cache_on_arguments(expiration_time=timedelta(minutes=15).total_seconds())
     def get_archives(self, title_id, language_code):
         """Get the archive list from a given `title_id` and `language_code`.
 
@@ -265,17 +282,28 @@ class LegendasTVProvider(Provider):
                                             'pack' in archive_soup['class'], 'destaque' in archive_soup['class'],
                                             self.server_url + archive_soup.a['href'][1:])
 
+                # extract text containing downloads, rating and timestamp
+                data_text = archive_soup.find('p', class_='data').text
+
+                # match downloads
+                archive.downloads = int(downloads_re.search(data_text).group('downloads'))
+
                 # match rating
-                match = rating_re.match(archive_soup.find('p', class_='data').text)
-                archive.downloads = int(match.group('downloads'))
-                if match.group('rating') is not None:
+                match = rating_re.search(data_text)
+                if match:
                     archive.rating = int(match.group('rating'))
+
+                # match timestamp and validate it
+                time_data = {k: int(v) for k, v in timestamp_re.search(data_text).groupdict().items()}
+                archive.timestamp = pytz.timezone('America/Sao_Paulo').localize(datetime(**time_data))
+                if archive.timestamp > datetime.utcnow().replace(tzinfo=pytz.utc):
+                    raise ProviderError('Archive timestamp is in the future')
 
                 # add archive
                 archives.append(archive)
 
             # stop on last page
-            if soup.find('a', attrs={'class': 'load_more'}, text='carregar mais') is None:
+            if soup.find('a', attrs={'class': 'load_more'}, string='carregar mais') is None:
                 break
 
             # increment page count
@@ -311,9 +339,10 @@ class LegendasTVProvider(Provider):
         # search for titles
         titles = self.search_titles(sanitize(title))
 
-        # search for titles with the quote character
-        if '\'' in title:
-            titles.update(self.search_titles(sanitize(title, ignore_characters={'\''})))
+        # search for titles with the quote or dot character
+        ignore_characters = {'\'', '.'}
+        if any(c in title for c in ignore_characters):
+            titles.update(self.search_titles(sanitize(title, ignore_characters=ignore_characters)))
 
         subtitles = []
         # iterate over titles
@@ -329,7 +358,7 @@ class LegendasTVProvider(Provider):
                     continue
 
                 # discard mismatches on season
-                if t['season'] != season:
+                if 'season' not in t or t['season'] != season:
                     continue
             # movie
             else:
@@ -338,7 +367,7 @@ class LegendasTVProvider(Provider):
                     continue
 
                 # discard mismatches on year
-                if year is not None and t['year'] != year:
+                if year is not None and 'year' in t and t['year'] != year:
                     continue
 
             # iterate over title's archives
@@ -357,8 +386,11 @@ class LegendasTVProvider(Provider):
                     if not a.pack and 'episode' in guess and guess['episode'] != episode:
                         continue
 
+                # compute an expiration time based on the archive timestamp
+                expiration_time = (datetime.utcnow().replace(tzinfo=pytz.utc) - a.timestamp).total_seconds()
+
                 # attempt to get the releases from the cache
-                releases = region.get(releases_key.format(archive_id=a.id))
+                releases = region.get(releases_key.format(archive_id=a.id), expiration_time=expiration_time)
 
                 # the releases are not in cache or cache is expired
                 if releases == NO_VALUE:
@@ -389,7 +421,7 @@ class LegendasTVProvider(Provider):
 
                 # iterate over releases
                 for r in releases:
-                    subtitle = LegendasTVSubtitle(language, t['type'], t['title'], t['year'], t.get('imdb_id'),
+                    subtitle = LegendasTVSubtitle(language, t['type'], t['title'], t.get('year'), t.get('imdb_id'),
                                                   t.get('season'), a, r)
                     logger.debug('Found subtitle %r', subtitle)
                     subtitles.append(subtitle)

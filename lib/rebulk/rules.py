@@ -93,7 +93,7 @@ class CustomRule(Condition, Consequence):
     def __repr__(self):
         defined = ""
         if self.defined_at:
-            defined = "@" + six.text_type(self.defined_at)
+            defined = "@%s" % (self.defined_at,)
         return "<%s%s>" % (self.name if self.name else self.__class__.__name__, defined)
 
     def __eq__(self, other):
@@ -373,6 +373,3 @@ def toposort_rules(rules):
                     dependencies.add(dependency)
         graph[rule] = dependencies
     return toposort(graph)
-
-
-

@@ -52,13 +52,20 @@ class ConflictSolver(Rule):
 
     def when(self, matches, context):
         to_remove_matches = IdentitySet()
-        for match in filter(lambda match: not match.private, matches):
+
+        public_matches = [match for match in matches if not match.private]
+        public_matches.sort(key=len)
+
+        for match in public_matches:
             conflicting_matches = matches.conflicting(match)
 
             if conflicting_matches:
                 # keep the match only if it's the longest
-                for conflicting_match in filter(lambda match: not match.private, conflicting_matches):
-                    reverse = False
+                conflicting_matches = [conflicting_match for conflicting_match in conflicting_matches if
+                                       not conflicting_match.private]
+                conflicting_matches.sort(key=len)
+
+                for conflicting_match in conflicting_matches:
                     conflict_solvers = [(self.default_conflict_solver, False)]
 
                     if match.conflict_solver:
@@ -74,7 +81,15 @@ class ConflictSolver(Rule):
                         if to_remove == DEFAULT:
                             continue
                         if to_remove and to_remove not in to_remove_matches:
-                            to_remove_matches.add(to_remove)
+                            both_matches = [match, conflicting_match]
+                            both_matches.remove(to_remove)
+                            to_keep = both_matches[0]
+
+                            if to_keep not in to_remove_matches:
+                                log(self.log_level, "Conflicting match %s will be removed in favor of match %s",
+                                    to_remove, to_keep)
+
+                                to_remove_matches.add(to_remove)
                         break
         return to_remove_matches
 
@@ -89,4 +104,3 @@ class PrivateRemover(Rule):
 
     def when(self, matches, context):
         return [match for match in matches if match.private]
-

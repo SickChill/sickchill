@@ -19,7 +19,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import quote
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -45,12 +44,12 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
                      'detail': 'https://www.scenetime.com/details.php?id=%s',
-                     'search': 'https://www.scenetime.com/browse.php?search=%s%s',
+                     'apisearch': 'https://www.scenetime.com/browse_API.php',
                      'download': 'https://www.scenetime.com/download.php/%s/%s'}
 
         self.url = self.urls['base_url']
 
-        self.categories = "&c2=1&c43=13&c9=1&c63=1&c77=1&c79=1&c100=1&c101=1"
+        self.categories = [2, 42, 9, 63, 77, 79, 100, 83]
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -84,17 +83,16 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_url = self.urls['search'] % (quote(search_string), self.categories)
+                query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
+                query.update({"c%s"%i: 1 for i in self.categories})
 
-                data = self.get_url(search_url, returns='text')
+                data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
+
                 if not data:
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find('div', id="torrenttable")
-                    torrent_rows = []
-                    if torrent_table:
-                        torrent_rows = torrent_table.select("tr")
+                    torrent_rows = html.findAll('tr')
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
@@ -104,7 +102,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     # Scenetime apparently uses different number of cells in #torrenttable based
                     # on who you are. This works around that by extracting labels from the first
                     # <tr> and using their index to find the correct download/seeders/leechers td.
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('td')]
+                    labels = [label.get_text(strip=True) or label.img['title'] for label in torrent_rows[0]('td')]
 
                     for result in torrent_rows[1:]:
                         try:

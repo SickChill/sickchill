@@ -122,6 +122,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             logger.log(u"Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
+                        labels = [x.get_text(strip=True) or x.a.img.get('alt') for x in torrent_table.find('tr', class_='colhead').find_all('td')]
                         torrent_rows = torrent_table('tr', class_='torrent')
 
                         # Continue only if one Release is found
@@ -158,8 +159,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                                 continue
 
                             cells = torrent_row('td')
-                            seeders = try_int(cells[8].text.strip())
-                            leechers = try_int(cells[9].text.strip())
+                            seeders = try_int(cells[labels.index('Seeders')].text.strip())
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:

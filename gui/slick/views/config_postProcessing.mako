@@ -79,8 +79,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select name="process_method" id="process_method" class="form-control input-sm input350" title="process_method">
-                                            <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"} %>
-                                            % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
+                                            <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link", 'symlink_reversed' : "Symbolic Link Reversed"} %>
+                                            % for curAction in ('copy', 'move', 'hardlink', 'symlink', 'symlink_reversed'):
                                                 <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
                                             % endfor
                                         </select>

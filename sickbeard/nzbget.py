@@ -19,10 +19,11 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-import httplib
+
 import datetime
-from base64 import standard_b64encode
+import httplib
 import xmlrpclib
+from base64 import standard_b64encode
 
 import sickbeard
 from sickbeard import logger

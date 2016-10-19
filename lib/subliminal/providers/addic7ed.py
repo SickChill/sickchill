@@ -10,6 +10,7 @@ from . import ParserBeautifulSoup, Provider
 from .. import __short_version__
 from ..cache import SHOW_EXPIRATION_TIME, region
 from ..exceptions import AuthenticationError, ConfigurationError, DownloadLimitExceeded, TooManyRequests
+from ..score import get_equivalent_release_groups
 from ..subtitle import Subtitle, fix_line_ending, guess_matches
 from ..utils import sanitize, sanitize_release_group
 from ..video import Episode
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 language_converters.register('addic7ed = subliminal.converters.addic7ed:Addic7edConverter')
 
 #: Series header parsing regex
-series_year_re = re.compile('^(?P<series>[ \w\'.:-]+)(?: \((?P<year>\d{4})\))?$')
+series_year_re = re.compile(r'^(?P<series>[ \w\'.:(),&!?-]+?)(?: \((?P<year>\d{4})\))?$')
 
 
 class Addic7edSubtitle(Subtitle):
@@ -61,7 +62,8 @@ class Addic7edSubtitle(Subtitle):
             matches.add('year')
         # release_group
         if (video.release_group and self.version and
-                sanitize_release_group(video.release_group) in sanitize_release_group(self.version)):
+                any(r in sanitize_release_group(self.version)
+                    for r in get_equivalent_release_groups(sanitize_release_group(video.release_group)))):
             matches.add('release_group')
         # resolution
         if video.resolution and self.version and video.resolution in self.version.lower():
@@ -164,6 +166,8 @@ class Addic7edProvider(Provider):
         logger.info('Searching show ids with %r', params)
         r = self.session.get(self.server_url + 'search.php', params=params, timeout=10)
         r.raise_for_status()
+        if r.status_code == 304:
+            raise TooManyRequests()
         soup = ParserBeautifulSoup(r.content, ['lxml', 'html.parser'])
 
         # get the suggestion

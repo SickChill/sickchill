@@ -750,3 +750,51 @@
   type: movie
   video_codec: h264
   year: 2002
+
+? Peep.Show.S06E02.DVDrip.x264-faks86.mkv
+: container: mkv
+  episode: 2
+  format: DVD
+  release_group: faks86
+  season: 6
+  title: Peep Show
+  type: episode
+  video_codec: h264
+
+? The Soup - 11x41 - October 8, 2014.mp4
+: container: mp4
+  episode: 41
+  episode_title: October 8
+  season: 11
+  title: The Soup
+  type: episode
+  year: 2014
+
+? Red.Rock.S02E59.WEB-DLx264-JIVE
+: episode: 59
+  season: 2
+  format: WEB-DL
+  release_group: JIVE
+  title: Red Rock
+  type: episode
+  video_codec: h264
+
+? Pawn.Stars.S12E31.Deals.On.Wheels.PDTVx264-JIVE
+: episode: 31
+  episode_title: Deals On Wheels
+  season: 12
+  format: DVB
+  release_group: JIVE
+  title: Pawn Stars
+  type: episode
+  video_codec: h264
+
+? Duck.Dynasty.S09E09.Van.He-llsing.HDTVx264-JIVE
+: episode: 9
+  episode_title: Van He-llsing
+  season: 9
+  format: HDTV
+  release_group: JIVE
+  title: Duck Dynasty
+  type: episode
+  video_codec: h264

@@ -61,6 +61,20 @@ def test_build_chain():
     assert chain.parts[4].repeater_end is None
 
 
+def test_chain_defaults():
+    rebulk = Rebulk()
+    rebulk.defaults(validator=lambda x: True, ignore_names=['testIgnore'], children=True)
+
+    rebulk.chain()\
+        .regex("(?P<test>test)") \
+        .regex(" ").repeater("*") \
+        .regex("(?P<testIgnore>testIgnore)")
+    matches = rebulk.matches("test testIgnore")
+
+    assert len(matches) == 1
+    assert matches[0].name == "test"
+
+
 def test_matches():
     rebulk = Rebulk()
 
@@ -130,7 +144,8 @@ def test_matches():
 def test_matches_2():
     rebulk = Rebulk() \
         .regex_defaults(flags=re.IGNORECASE) \
-        .chain(children=True, formatter={'episode': int, 'version': int}) \
+        .chain(children=True, formatter={'episode': int}) \
+        .defaults(formatter={'version': int}) \
         .regex(r'e(?P<episode>\d{1,4})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
         .regex(r'[ex-](?P<episode>\d{1,4})').repeater('*') \
@@ -241,3 +256,48 @@ def test_matches_4():
     assert matches[1].value == 2
     assert matches[2].value == 3
 
+
+def test_matches_5():
+    seps_surround = partial(chars_surround, " ")
+
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.defaults(private_names=['episodeSeparator', 'seasonSeparator'], validate_all=True,
+                    validator={'__parent__': seps_surround}, children=True, private_parent=True)
+
+    rebulk.chain(formatter={'episode': int, 'version': int}) \
+        .defaults(validator=None) \
+        .regex(r'e(?P<episode>\d{1,4})') \
+        .regex(r'v(?P<version>\d+)').repeater('?') \
+        .regex(r'(?P<episodeSeparator>e|x|-)(?P<episode>\d{1,4})').repeater('{2,3}')
+
+    matches = rebulk.matches("Some Series E01E02E03")
+    assert len(matches) == 3
+
+    matches = rebulk.matches("Some Series E01E02")
+    assert len(matches) == 0
+
+    matches = rebulk.matches("Some Series E01E02E03E04E05E06")  # Parent can't be validated, so no results at all
+    assert len(matches) == 0
+
+
+def test_matches_6():
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.defaults(private_names=['episodeSeparator', 'seasonSeparator'], validate_all=True,
+                    validator=None, children=True, private_parent=True)
+
+    rebulk.chain(formatter={'episode': int, 'version': int}) \
+        .defaults(validator=None) \
+        .regex(r'e(?P<episode>\d{1,4})') \
+        .regex(r'v(?P<version>\d+)').repeater('?') \
+        .regex(r'(?P<episodeSeparator>e|x|-)(?P<episode>\d{1,4})').repeater('{2,3}')
+
+    matches = rebulk.matches("Some Series E01E02E03")
+    assert len(matches) == 3
+
+    matches = rebulk.matches("Some Series E01E02")
+    assert len(matches) == 0
+
+    matches = rebulk.matches("Some Series E01E02E03E04E05E06")  # No validator on parent, so it should give 4 episodes.
+    assert len(matches) == 4

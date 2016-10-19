@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import datetime
+import re
+
 from dateutil import tz
 
 from sickbeard import db, helpers, logger
@@ -114,7 +115,7 @@ def get_network_timezone(network):
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log(u'Missing time zone for network: {0}'.format(network), logger.ERROR)
+        logger.log(u'Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(network), logger.ERROR)
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone

@@ -22,30 +22,21 @@
 import fnmatch
 import os
 import re
-import subprocess
 import stat
-
-import sickbeard
-
-from sickbeard import db
-from sickbeard import common
-from sickbeard import helpers
-from sickbeard import history
-from sickbeard import logger
-from sickbeard import notifiers
-from sickbeard import show_name_helpers
-from sickbeard import failed_history
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.helpers import verify_freespace
-
-from sickrage.helper import glob
-from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
-from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-from sickrage.show.Show import Show
+import subprocess
 
 import adba
+
+import sickbeard
+from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from sickbeard.helpers import verify_freespace
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper import glob
+from sickrage.helper.common import SUBTITLE_EXTENSIONS, remove_extension, replace_extension
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, \
+    ShowDirectoryNotFoundException, ex
+from sickrage.show.Show import Show
 
 
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
@@ -448,6 +439,30 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_move_and_sym_link, subtitles=subtitles)
+
+    def _symlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+        """
+        symlink destination to source location, and set proper permissions
+
+        :param file_path: The full path of the media file to move
+        :param new_path: Destination path where we want to move the file to create a symbolic link to
+        :param new_base_name: The base filename (no extension) to use during the link. Use None to keep the same name.
+        :param associated_files: Boolean, whether we should move similarly-named files too
+        """
+
+        def _int_sym_link(cur_file_path, new_file_path):
+
+            self._log(u"Creating then symbolic linking file from " + new_file_path + " to " + cur_file_path, logger.DEBUG)
+            try:
+                helpers.symlink(cur_file_path, new_file_path)
+                helpers.chmodAsParent(cur_file_path)
+            except (IOError, OSError) as e:
+                self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
+                raise
+
+        self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
+                                      action=_int_sym_link, subtitles=subtitles)
+
 
     def _history_lookup(self):
         """
@@ -1151,6 +1166,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 if helpers.isFileLocked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
                 self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
+                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+            elif self.process_method == "symlink_reversed":
+                self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
                 logger.log(u"Unknown process method: " + str(self.process_method), logger.ERROR)

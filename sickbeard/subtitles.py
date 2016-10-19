@@ -19,30 +19,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import re
-import datetime
-import traceback
 import subprocess
 import threading
-
-from babelfish import Language, language_converters
-
-from guessit import guessit
+import traceback
 
 import subliminal
+from babelfish import Language, language_converters
+from guessit import guessit
 from subliminal import Episode, ProviderPool, provider_manager
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import history
-from sickbeard import db
+from sickbeard import db, history, logger
 from sickbeard.common import Quality
 from sickbeard.helpers import isMediaFile
-
-from sickrage.helper.common import episode_num, dateTimeFormat
-from sickrage.show.Show import Show
+from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.exceptions import ex
+from sickrage.show.Show import Show
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -156,12 +151,16 @@ def subtitle_code_filter():
     return {code for code in language_converters['opensubtitles'].codes if len(code) == 3}
 
 
-def needs_subtitles(subtitles):
+def needs_subtitles(subtitles, force_lang=None):
     if not wanted_languages():
         return False
 
     if isinstance(subtitles, basestring):
         subtitles = {subtitle.strip() for subtitle in subtitles.split(',') if subtitle.strip()}
+
+    # if force language is set, we remove it from already downloaded subtitles
+    if force_lang in subtitles:
+        subtitles.remove(force_lang)
 
     if sickbeard.SUBTITLES_MULTI:
         return wanted_languages().difference(subtitles)
@@ -185,16 +184,20 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(episode):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     existing_subtitles = episode.subtitles
 
-    if not needs_subtitles(existing_subtitles):
+    if not needs_subtitles(existing_subtitles, force_lang):
         logger.log(u'Episode already has all needed subtitles, skipping {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
                     episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
         return existing_subtitles, None
 
-    languages = get_needed_languages(existing_subtitles)
+    if not force_lang:
+        languages = get_needed_languages(existing_subtitles)
+    else:
+        languages = {from_code(force_lang)}
+
     if not languages:
         logger.log(u'No subtitles needed for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or

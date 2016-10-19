@@ -23,7 +23,6 @@ import traceback
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickbeard.common import USER_AGENT
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -38,20 +37,21 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         # Credentials
         self.public = True
-        self.confirmed = True
+
+        # Feed verified does not exist on this clone
+        # self.confirmed = True
 
         # Torrent Stats
         self.minseed = None
         self.minleech = None
 
         # URLs
-        self.url = 'https://torrentz.eu/'
+        self.url = 'https://torrentz2.eu/'
         self.urls = {
-            'verified': 'https://torrentz.eu/feed_verified',
-            'feed': 'https://torrentz.eu/feed',
+            'verified': 'https://torrentz2.eu/feed_verified',
+            'feed': 'https://torrentz2.eu/feed',
             'base': self.url,
         }
-        self.headers.update({'User-Agent': USER_AGENT})
 
         # Proper Strings
 
@@ -70,12 +70,15 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             items = []
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
-                search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
+
+                # Feed verified does not exist on this clone
+                # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
+                search_url = self.urls['feed']
                 if mode != 'RSS':
                     logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                data = self.get_url(search_url, params={'q': search_string}, returns='text')
+                data = self.get_url(search_url, params={'f': search_string}, returns='text')
                 if not data:
                     logger.log(u"No data returned from provider", logger.DEBUG)
                     continue
@@ -87,11 +90,11 @@ class TorrentzProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                 try:
                     with BS4Parser(data, 'html5lib') as parser:
                         for item in parser('item'):
-                            if item.category and 'tv' not in item.category.get_text(strip=True):
+                            if item.category and 'tv' not in item.category.get_text(strip=True).lower():
                                 continue
 
-                            title = item.title.text.rsplit(' ', 1)[0].replace(' ', '.')
-                            t_hash = item.guid.text.rsplit('/', 1)[-1]
+                            title = item.title.get_text(strip=True)
+                            t_hash = item.guid.get_text(strip=True).rsplit('/', 1)[-1]
 
                             if not all([title, t_hash]):
                                 continue

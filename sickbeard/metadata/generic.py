@@ -321,7 +321,7 @@ class GenericMetadata(object):
     def create_season_posters(self, show_obj):
         if self.season_posters and show_obj:
             result = []
-            for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
+            for season in show_obj.episodes:
                 if not self._has_season_poster(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
@@ -333,7 +333,7 @@ class GenericMetadata(object):
         if self.season_banners and show_obj:
             result = []
             logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name, logger.DEBUG)
-            for season, _ in show_obj.episodes.iteritems():  # @UnusedVariable
+            for season in show_obj.episodes:
                 if not self._has_season_banner(show_obj, season):
                     result.extend([self.save_season_banners(show_obj, season)])
             return all(result)
@@ -835,7 +835,8 @@ class GenericMetadata(object):
 
         # find the correct season in the TVDB object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
-            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE:
+            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (
+                    indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
 
         return result
@@ -889,7 +890,7 @@ class GenericMetadata(object):
 
         # find the correct season in the TVDB object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
-            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE:
+            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
 
         return result

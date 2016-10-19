@@ -53,7 +53,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
             'http://btdig.com/torrent/{torrent_hash}.torrent',
             # 'http://torrage.com/torrent/{torrent_hash}.torrent',
-            # 'http://itorrents.org/torrent/{torrent_hash}.torrent',
+            'http://itorrents.org/torrent/{torrent_hash}.torrent',
         ]
         self.cache = TVCache(self)
         self.enable_backlog = False
@@ -427,6 +427,10 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 episode_string += 'S{0:02d}'.format(int(episode.scene_season))
 
             search_string['Season'].append(episode_string.encode('utf-8').strip())
+
+            if not (episode.show.air_by_date or episode.show.sports or episode.show.anime):
+                season_string = show_name + ' Season {0:d}'.format(int(episode.scene_season))
+                search_string['Season'].append(season_string.encode('utf-8').strip())
 
         return [search_string]
 

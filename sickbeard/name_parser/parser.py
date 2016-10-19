@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -458,13 +457,13 @@ class NameParser(object):
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         if not final_result.show:
-            raise InvalidShowException("Unable to match {0} to a show in your database".format
-                                       (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
+            raise InvalidShowException(u"Unable to match {0} to a show in your database. Parser result: {1}".format(
+                name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
-            raise InvalidNameException("Unable to parse {0} to a valid episode".format
-                                       (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
+            raise InvalidNameException(u"Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
+                name, final_result.show.name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         if cache_result:
             name_parser_cache.add(name, final_result)

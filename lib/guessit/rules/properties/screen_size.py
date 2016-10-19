@@ -7,7 +7,7 @@ from rebulk.remodule import re
 
 from rebulk import Rebulk, Rule, RemoveMatch
 from ..common.validators import seps_surround
-from guessit.rules.common import dash
+from ..common import dash
 
 
 def screen_size():
@@ -38,12 +38,12 @@ def screen_size():
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?576(?:i|p?x?)", value="576p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?720(?:i|p?(?:50|60)?x?)", value="720p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?720(?:p(?:50|60)?x?)", value="720p")
-    rebulk.regex(r"(?:\d{3,}(?:x|\*))?720hd", value="720p")
+    rebulk.regex(r"(?:\d{3,}(?:x|\*))?720p?hd", value="720p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?900(?:i|p?x?)", value="900p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080i", value="1080i")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080p?x?", value="1080p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080(?:p(?:50|60)?x?)", value="1080p")
-    rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080hd", value="1080p")
+    rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080p?hd", value="1080p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?2160(?:i|p?x?)", value="4K")
 
     _digits_re = re.compile(r'\d+')

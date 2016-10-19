@@ -19,10 +19,9 @@
 
 import os.path
 import threading
-import sickbeard
 
-from sickbeard import logger
-from sickbeard import processTV
+import sickbeard
+from sickbeard import logger, processTV
 from sickrage.helper.encoding import ek
 
 

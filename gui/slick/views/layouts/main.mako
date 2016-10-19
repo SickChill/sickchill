@@ -12,8 +12,7 @@
         import resource
     except ImportError:
         has_resource_module = False
-%>
-<%
+
     srRoot = sickbeard.WEB_ROOT
 %>
 <!DOCTYPE html>
@@ -246,23 +245,22 @@
                     <div id="sub-menu" class="hidden-print">
                         <% first = True %>
                         % for menuItem in reversed(submenu):
-                            % if 'requires' not in menuItem or menuItem['requires']:
-                                <% icon_class = '' if 'icon' not in menuItem else menuItem['icon'] %>
-                                % if type(menuItem['path']) == dict:
+                            % if menuItem.get('requires', 1):
+                                % if isinstance(menuItem['path'], dict):
                                     ${("</span><span>", "")[bool(first)]}<b>${menuItem['title']}</b>
                                     <%
                                         first = False
                                         inner_first = True
                                     %>
                                     % for cur_link in menuItem['path']:
-                                        ${("&middot; ", "")[bool(inner_first)]}<a class="inner" href="${srRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                                        ${("&middot;", "")[bool(inner_first)]}<a href="${srRoot}/${menuItem['path'][cur_link]}" class="inner ${menuItem.get('class', '')}">${cur_link}</a>
                                         <% inner_first = False %>
                                     % endfor
                                 % else:
-                                    <a href="${srRoot}/${menuItem['path']}" class="btn${('', ' confirm ' + menuItem.get('class', ''))['confirm' in menuItem]}">
-                                        ${('', '<span class="pull-left"><i class="' + icon_class + '"></i>' + menuItem['title'] + '</span> ')[bool(icon_class)]}
+                                    <a href="${srRoot}/${menuItem['path']}" class="btn ${('', ' confirm ')['confirm' in menuItem] + menuItem.get('class', '')}">
+                                        <i class='${menuItem.get('icon', '')}'></i> ${menuItem['title']}
                                     </a>
-                                <% first = False %>
+                                    <% first = False %>
                                 % endif
                             % endif
                         % endfor
