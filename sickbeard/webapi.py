@@ -1541,7 +1541,7 @@ class CMD_SickBeardPauseBacklog(ApiCall):
     _help = {
         "desc": "Pause or un-pause the backlog search",
         "optionalParameters": {
-            "pause ": {"desc": "True to pause the backlog search, False to un-pause it"}
+            "pause": {"desc": "True to pause the backlog search, False to un-pause it"}
         }
     }
 
