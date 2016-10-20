@@ -19,31 +19,19 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import stat
-# from functools import wraps
 import shutil
-
-import sickbeard
-from sickbeard import postProcessor
-from sickbeard import db, helpers
-from sickbeard import logger
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard import common
-from sickbeard import failedProcessor
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
+import stat
 
 from unrar2 import RarFile
-from unrar2.rar_exceptions import FileOpenError
-from unrar2.rar_exceptions import ArchiveHeaderBroken
-from unrar2.rar_exceptions import InvalidRARArchive
-from unrar2.rar_exceptions import InvalidRARArchiveUsage
-from unrar2.rar_exceptions import IncorrectRARPassword
+from unrar2.rar_exceptions import ArchiveHeaderBroken, FileOpenError, IncorrectRARPassword, InvalidRARArchive, \
+    InvalidRARArchiveUsage
 
-import shutil_custom
-
-shutil.copyfile = shutil_custom.copyfile_custom
+import sickbeard
+from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
+from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException, ex
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods
@@ -439,6 +427,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
             result.output += logHelper(u"Unpacking archive: {0}".format(archive), logger.DEBUG)
 
             failure = None
+            rar_handle = None
             try:
                 rar_handle = RarFile(ek(os.path.join, path, archive))
 
@@ -462,7 +451,6 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                         basename = ek(os.path.basename, x.filename)
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
-                del rar_handle
 
             except ArchiveHeaderBroken:
                 failure = (u'Archive Header Broken', u'Unpacking failed because the Archive Header is Broken')
@@ -477,6 +465,9 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 failure = (u'Invalid Rar Archive', u'Unpacking Failed with an Invalid Rar Archive Error')
             except Exception as e:
                 failure = (ex(e), u'Unpacking failed for an unknown reason')
+            finally:
+                if rar_handle:
+                    del rar_handle
 
             if failure is not None:
                 result.output += logHelper(u'Failed Unrar archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)

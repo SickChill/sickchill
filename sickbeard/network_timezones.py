@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import datetime
+import re
+
 from dateutil import tz
 
 from sickbeard import db, helpers, logger

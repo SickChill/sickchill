@@ -1,18 +1,18 @@
 # coding=utf-8
 import os
 import threading
-import sickbeard
 
-from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler, CalendarHandler
-from sickbeard.webapi import ApiHandler
-from sickbeard import logger
-from sickbeard.helpers import create_https_certificates, generateApiKey
-from sickrage.helper.encoding import ek
-
-from tornado.web import Application, StaticFileHandler, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
+from tornado.web import Application, RedirectHandler, StaticFileHandler
+
+import sickbeard
+from sickbeard import logger
+from sickbeard.helpers import create_https_certificates, generateApiKey
+from sickbeard.webapi import ApiHandler
+from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
+from sickrage.helper.encoding import ek
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes

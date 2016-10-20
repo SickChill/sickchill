@@ -23,7 +23,7 @@
 
                 <div id="core-component-group1" class="tab-pane active component-group">
 
-                    <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
+                    <form id="addShowForm" method="post" action="${srRoot}/addShows/addExistingShows" accept-charset="utf-8">
 
                         <div id="tabs">
                             <ul>

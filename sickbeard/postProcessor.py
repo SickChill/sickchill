@@ -22,30 +22,21 @@
 import fnmatch
 import os
 import re
-import subprocess
 import stat
-
-import sickbeard
-
-from sickbeard import db
-from sickbeard import common
-from sickbeard import helpers
-from sickbeard import history
-from sickbeard import logger
-from sickbeard import notifiers
-from sickbeard import show_name_helpers
-from sickbeard import failed_history
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.helpers import verify_freespace
-
-from sickrage.helper import glob
-from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
-from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-from sickrage.show.Show import Show
+import subprocess
 
 import adba
+
+import sickbeard
+from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from sickbeard.helpers import verify_freespace
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper import glob
+from sickrage.helper.common import SUBTITLE_EXTENSIONS, remove_extension, replace_extension
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, \
+    ShowDirectoryNotFoundException, ex
+from sickrage.show.Show import Show
 
 
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
@@ -472,7 +463,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_sym_link, subtitles=subtitles)
 
-        
+
     def _history_lookup(self):
         """
         Look up the NZB name in the history and see if it contains a record for self.nzb_name

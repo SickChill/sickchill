@@ -25,27 +25,25 @@ Custom Logger for SickRage
 from __future__ import unicode_literals
 
 import io
-import os
-import re
-import sys
+import locale
 import logging
 import logging.handlers
-from logging import NullHandler
-import threading
+import os
 import platform
-import locale
+import re
+import sys
+import threading
 import traceback
-
+from logging import NullHandler
 from urllib import quote
+
 from github import InputFileContent
 
 import sickbeard
 from sickbeard import classes
-
-from sickrage.helper.encoding import ss
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
 from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 
 # pylint: disable=line-too-long
 
@@ -303,6 +301,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
                 except Exception as err_msg:  # pylint: disable=broad-except
                     self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
+                    title_error = 'UNKNOWN'
 
                 gist = None
                 regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
@@ -416,3 +415,7 @@ class Wrapper(object):
 
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
+
+
+def log(*args, **kwargs):
+    return Wrapper.instance.log(*args, **kwargs)

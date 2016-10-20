@@ -9,8 +9,7 @@ import sys
 import unittest
 
 import tests.test_lib as test
-
-from sickbeard import show_name_helpers, scene_exceptions, common, name_cache, db
+from sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
 from sickbeard.tv import TVShow as Show
 
 

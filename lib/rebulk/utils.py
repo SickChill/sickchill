@@ -3,9 +3,9 @@
 """
 Various utilities functions
 """
-from types import GeneratorType
-
 from collections import MutableSet
+
+from types import GeneratorType
 
 
 def find_all(string, sub, start=None, end=None, ignore_case=False):
@@ -50,6 +50,26 @@ def find_all(string, sub, start=None, end=None, ignore_case=False):
             return
         yield start
         start += len(sub)
+
+
+def get_first_defined(data, keys, default_value=None):
+    """
+    Get the first defined key in data.
+    :param data:
+    :type data:
+    :param keys:
+    :type keys:
+    :param default_value:
+    :type default_value:
+    :return:
+    :rtype:
+    """
+    for key in keys:
+        try:
+            return data[key]
+        except KeyError:
+            pass
+    return default_value
 
 
 def is_iterable(obj):

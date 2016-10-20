@@ -3,7 +3,7 @@
 """
 container property
 """
-from rebulk.remodule import re, REGEX_AVAILABLE
+from rebulk.remodule import re
 
 from rebulk import Rebulk
 from ..common.validators import seps_surround
@@ -33,16 +33,10 @@ def container():
               'iso', 'vob']
     torrent = ['torrent']
 
-    if REGEX_AVAILABLE:
-        rebulk.regex(r'\.\L<exts>$', exts=subtitles, tags=['extension', 'subtitle'])
-        rebulk.regex(r'\.\L<exts>$', exts=info, tags=['extension', 'info'])
-        rebulk.regex(r'\.\L<exts>$', exts=videos, tags=['extension', 'video'])
-        rebulk.regex(r'\.\L<exts>$', exts=torrent, tags=['extension', 'torrent'])
-    else:
-        rebulk.regex(r'\.'+build_or_pattern(subtitles)+'$', exts=subtitles, tags=['extension', 'subtitle'])
-        rebulk.regex(r'\.'+build_or_pattern(info)+'$', exts=info, tags=['extension', 'info'])
-        rebulk.regex(r'\.'+build_or_pattern(videos)+'$', exts=videos, tags=['extension', 'video'])
-        rebulk.regex(r'\.'+build_or_pattern(torrent)+'$', exts=torrent, tags=['extension', 'torrent'])
+    rebulk.regex(r'\.'+build_or_pattern(subtitles)+'$', exts=subtitles, tags=['extension', 'subtitle'])
+    rebulk.regex(r'\.'+build_or_pattern(info)+'$', exts=info, tags=['extension', 'info'])
+    rebulk.regex(r'\.'+build_or_pattern(videos)+'$', exts=videos, tags=['extension', 'video'])
+    rebulk.regex(r'\.'+build_or_pattern(torrent)+'$', exts=torrent, tags=['extension', 'torrent'])
 
     rebulk.defaults(name='container',
                     validator=seps_surround,

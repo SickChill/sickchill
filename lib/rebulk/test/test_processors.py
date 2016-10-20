@@ -5,7 +5,7 @@
 from ..pattern import StringPattern, RePattern
 from ..processors import ConflictSolver
 from ..rules import execute_rule
-from rebulk.match import Matches
+from ..match import Matches
 
 
 def test_conflict_1():

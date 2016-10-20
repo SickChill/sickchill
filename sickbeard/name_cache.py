@@ -18,8 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 import threading
+
 import sickbeard
 from sickbeard import db
+
 # from sickbeard import logger
 
 nameCache = {}

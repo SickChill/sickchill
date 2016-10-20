@@ -19,7 +19,6 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import quote
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -40,6 +39,8 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minseed = None
         self.minleech = None
 
+        self.enable_cookies = True
+
         self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
@@ -50,25 +51,31 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.url = self.urls['base_url']
 
-        self.categories = [2, 42, 9, 63, 77, 79, 100, 83] 
+        self.categories = [2, 42, 9, 63, 77, 79, 100, 83]
 
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        cookie_dict = dict_from_cookiejar(self.session.cookies)
+        if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password}
+        if self.cookies:
+            success, status = self.add_cookies_from_ui()
+            if not success:
+                logger.log(status, logger.INFO)
+                return False
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
-            return False
+            login_params = {'username': self.username, 'password': self.password}
 
-        if re.search('Username or password incorrect', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
-            return False
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+            if response.status_code != 200:
+                logger.log(u"Unable to connect to provider", logger.WARNING)
+                return False
 
-        return True
+            if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
+                return True
+            else:
+                logger.log('Failed to login, check your cookies', logger.WARNING)
+                return False
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []
@@ -103,7 +110,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     # Scenetime apparently uses different number of cells in #torrenttable based
                     # on who you are. This works around that by extracting labels from the first
                     # <tr> and using their index to find the correct download/seeders/leechers td.
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]('td')]
+                    labels = [label.get_text(strip=True) or label.img['title'] for label in torrent_rows[0]('td')]
 
                     for result in torrent_rows[1:]:
                         try:

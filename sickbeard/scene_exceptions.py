@@ -18,11 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import adba
-import time
 import datetime
-import requests
 import threading
+import time
+
+import adba
 
 import sickbeard
 from sickbeard import db, helpers, logger

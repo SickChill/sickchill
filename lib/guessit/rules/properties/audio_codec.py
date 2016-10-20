@@ -19,13 +19,30 @@ def audio_codec():
     :rtype: Rebulk
     """
     rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE, abbreviations=[dash]).string_defaults(ignore_case=True)
-    rebulk.defaults(name="audio_codec")
+
+    def audio_codec_priority(match1, match2):
+        """
+        Gives priority to audio_codec
+        :param match1:
+        :type match1:
+        :param match2:
+        :type match2:
+        :return:
+        :rtype:
+        """
+        if match1.name == 'audio_codec' and match2.name in ['audio_profile', 'audio_channels']:
+            return match2
+        if match1.name in ['audio_profile', 'audio_channels'] and match2.name == 'audio_codec':
+            return match1
+        return '__default__'
+
+    rebulk.defaults(name="audio_codec", conflict_solver=audio_codec_priority)
 
     rebulk.regex("MP3", "LAME", r"LAME(?:\d)+-?(?:\d)+", value="MP3")
-    rebulk.regex("DolbyDigital", "Dolby-Digital", "DD", value="DolbyDigital")
+    rebulk.regex("Dolby", "DolbyDigital", "Dolby-Digital", "DD", value="DolbyDigital")
     rebulk.regex("DolbyAtmos", "Dolby-Atmos", "Atmos", value="DolbyAtmos")
     rebulk.regex("AAC", value="AAC")
-    rebulk.regex("AC3", value="AC3")
+    rebulk.regex("AC3D?", value="AC3")
     rebulk.regex("Flac", value="FLAC")
     rebulk.regex("DTS", value="DTS")
     rebulk.regex("True-?HD", value="TrueHD")
@@ -38,9 +55,9 @@ def audio_codec():
     rebulk.string("HQ", value="HQ", tags="AC3")
 
     rebulk.defaults(name="audio_channels")
-    rebulk.regex(r'(7[\W_]1)(?:[^\d]|$)', value='7.1', children=True)
-    rebulk.regex(r'(5[\W_]1)(?:[^\d]|$)', value='5.1', children=True)
-    rebulk.regex(r'(2[\W_]0)(?:[^\d]|$)', value='2.0', children=True)
+    rebulk.regex(r'(7[\W_][01](?:ch)?)(?:[^\d]|$)', value='7.1', children=True)
+    rebulk.regex(r'(5[\W_][01](?:ch)?)(?:[^\d]|$)', value='5.1', children=True)
+    rebulk.regex(r'(2[\W_]0(?:ch)?)(?:[^\d]|$)', value='2.0', children=True)
     rebulk.string('7ch', '8ch', value='7.1')
     rebulk.string('5ch', '6ch', value='5.1')
     rebulk.string('2ch', 'stereo', value='2.0')

@@ -447,8 +447,17 @@
   video_codec: h264
   release_group: IMMERSE
 
+? Marvels.Agents.of.S.H.I.E.L.D-S01E06.720p.HDTV.X264-DIMENSION.mkv
+: title: Marvels Agents of S.H.I.E.L.D
+  season: 1
+  episode: 6
+  screen_size: 720p
+  format: HDTV
+  video_codec: h264
+  release_group: DIMENSION
+
 ? Marvels.Agents.of.S.H.I.E.L.D.S01E06.720p.HDTV.X264-DIMENSION.mkv
-: title: Marvels Agents of S H I E L D
+: title: Marvels Agents of S.H.I.E.L.D.
   season: 1
   episode: 6
   screen_size: 720p
@@ -457,7 +466,7 @@
   release_group: DIMENSION
 
 ? Marvels.Agents.of.S.H.I.E.L.D..S01E06.720p.HDTV.X264-DIMENSION.mkv
-: title: Marvels Agents of S H I E L D
+: title: Marvels Agents of S.H.I.E.L.D.
   season: 1
   episode: 6
   screen_size: 720p
@@ -983,7 +992,7 @@
 : other: Complete
   season: 1
   title: Something
-  episode_title: FlexGet  # 1.x guess this as release_group, but it's better to guess it as episode_title
+  release_group: FlexGet
 
 ? FlexGet.US.S2013E14.Title.Here.720p.HDTV.AAC5.1.x264-NOGRP
 : audio_channels: '5.1'
@@ -1494,7 +1503,9 @@
 ? '[Kaerizaki-Fansub] One Piece 603 VOSTFR PS VITA (960x544) V2.mp4'
 : options: -E
   episode: 603
-  release_group: Kaerizaki-Fansub
+  release_group:
+    - Kaerizaki-Fansub
+    - PS VITA
   screen_size: 960x544
   title: One Piece
   subtitle_language: fr
@@ -1755,4 +1766,283 @@
   release_group: W4F
   season: 2
   title: Running Wild With Bear Grylls
+  video_codec: h264
+
+? Homeland.S05E11.Our.Man.in.Damascus.German.Sub.720p.HDTV.x264.iNTERNAL-BaCKToRG
+: episode: 11
+  episode_title: Our Man in Damascus
+  format: HDTV
+  release_group: iNTERNAL-BaCKToRG
+  screen_size: 720p
+  season: 5
+  subtitle_language: de
+  title: Homeland
+  type: episode
+  video_codec: h264
+
+? Breaking.Bad.S01E01.2008.BluRay.VC1.1080P.5.1.WMV-NOVO
+: title: Breaking Bad
+  season: 1
+  episode: 1
+  year: 2008
+  format: BluRay
+  screen_size: 1080p
+  audio_channels: '5.1'
+  container: WMV
+  release_group: NOVO
+  type: episode
+
+? Cosmos.A.Space.Time.Odyssey.S01E02.HDTV.x264.PROPER-LOL
+: title: Cosmos A Space Time Odyssey
+  season: 1
+  episode: 2
+  format: HDTV
+  video_codec: h264
+  other: Proper
+  proper_count: 1
+  release_group: LOL
+  type: episode
+
+? Fear.The.Walking.Dead.S02E01.HDTV.x264.AAC.MP4-k3n
+: title: Fear The Walking Dead
+  season: 2
+  episode: 1
+  format: HDTV
+  video_codec: h264
+  audio_codec: AAC
+  container: MP4
+  release_group: k3n
+  type: episode
+
+? Elementary.S01E01.Pilot.DVDSCR.x264.PREAiR-NoGRP
+: title: Elementary
+  season: 1
+  episode: 1
+  episode_details: Pilot
+  episode_title: Pilot
+  format: DVD
+  video_codec: h264
+  other: [Screener, Preair]
+  release_group: NoGRP
+  type: episode
+
+? Once.Upon.a.Time.S05E19.HDTV.x264.REPACK-LOL[ettv]
+: title: Once Upon a Time
+  season: 5
+  episode: 19
+  format: HDTV
+  video_codec: h264
+  other: Proper
+  proper_count: 1
+  release_group: LOL[ettv]
+  type: episode
+
+? Show.Name.S01E03.WEB-DL.x264.HUN-nIk
+: title: Show Name
+  season: 1
+  episode: 3
+  format: WEB-DL
+  video_codec: h264
+  language: hu
+  release_group: nIk
+  type: episode
+
+? Game.of.Thrones.S6.Ep5.X265.Dolby.2.0.KTM3.mp4
+: audio_channels: '2.0'
+  audio_codec: DolbyDigital
+  container: mp4
+  episode: 5
+  release_group: KTM3
+  season: 6
+  title: Game of Thrones
+  type: episode
+  video_codec: h265
+
+? Fargo.-.Season.1.-.720p.BluRay.-.x264.-.ShAaNiG
+: format: BluRay
+  release_group: ShAaNiG
+  screen_size: 720p
+  season: 1
+  title: Fargo
+  type: episode
+  video_codec: h264
+
+? Show.Name.S02E02.Episode.Title.1080p.WEB-DL.x264.5.1Ch.-.Group
+: audio_channels: '5.1'
+  episode: 2
+  episode_title: Episode Title
+  format: WEB-DL
+  release_group: Group
+  screen_size: 1080p
+  season: 2
+  title: Show Name
+  type: episode
+  video_codec: h264
+
+? Breaking.Bad.S01E01.2008.BluRay.VC1.1080P.5.1.WMV-NOVO
+: audio_channels: '5.1'
+  container: WMV
+  episode: 1
+  format: BluRay
+  release_group: NOVO
+  screen_size: 1080p
+  season: 1
+  title: Breaking Bad
+  type: episode
+  year: 2008
+
+? Cosmos.A.Space.Time.Odyssey.S01E02.HDTV.x264.PROPER-LOL
+: episode: 2
+  format: HDTV
+  other: Proper
+  proper_count: 1
+  release_group: LOL
+  season: 1
+  title: Cosmos A Space Time Odyssey
+  type: episode
+  video_codec: h264
+
+? Elementary.S01E01.Pilot.DVDSCR.x264.PREAiR-NoGRP
+: episode: 1
+  episode_details: Pilot
+  episode_title: Pilot
+  format: DVD
+  other:
+  - Screener
+  - Preair
+  release_group: NoGRP
+  season: 1
+  title: Elementary
+  type: episode
+  video_codec: h264
+
+? Fear.The.Walking.Dead.S02E01.HDTV.x264.AAC.MP4-k3n.mp4
+: audio_codec: AAC
+  container:
+  - MP4
+  - mp4
+  episode: 1
+  format: HDTV
+  mimetype: video/mp4
+  release_group: k3n
+  season: 2
+  title: Fear The Walking Dead
+  type: episode
+  video_codec: h264
+
+? Game.of.Thrones.S03.1080p.BluRay.DTS-HD.MA.5.1.AVC.REMUX-FraMeSToR
+: audio_channels: '5.1'
+  audio_codec: DTS
+  audio_profile: HDMA
+  format: BluRay
+  other: Remux
+  release_group: FraMeSToR
+  screen_size: 1080p
+  season: 3
+  title: Game of Thrones
+  type: episode
+
+? Show.Name.S01E02.HDTV.x264.NL-subs-ABC
+: episode: 2
+  format: HDTV
+  release_group: ABC
+  season: 1
+  subtitle_language: nl
+  title: Show Name
+  type: episode
+  video_codec: h264
+
+? Friends.S01-S10.COMPLETE.720p.BluRay.x264-PtM
+: format: BluRay
+  other: Complete
+  release_group: PtM
+  screen_size: 720p
+  season: # Should it be [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ?
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  title: Friends
+  type: episode
+  video_codec: h264
+
+? Duck.Dynasty.S02E07.Streik.German.DOKU.DL.WS.DVDRiP.x264-CDP
+: episode: 7
+  episode_title: Streik German DOKU
+  format: DVD
+  language: mul
+  other: WideScreen
+  release_group: CDP
+  season: 2
+  title: Duck Dynasty
+  type: episode
+  video_codec: h264
+
+? Family.Guy.S13E14.JOLO.German.AC3D.DL.720p.WebHD.x264-CDD
+: audio_codec: AC3
+  episode: 14
+  episode_title: JOLO German
+  format: WEB-DL
+  language: mul
+  release_group: CDD
+  screen_size: 720p
+  season: 13
+  title: Family Guy
+  type: episode
+  video_codec: h264
+
+? How.I.Met.Your.Mother.COMPLETE.SERIES.DVDRip.XviD-AR
+: options: -L en -C us
+  format: DVD
+  other: Complete
+  release_group: AR
+  title: How I Met Your Mother
+  type: movie
+  video_codec: XviD
+
+? Show Name The Complete Seasons 1 to 5 720p BluRay x265 HEVC-SUJAIDR[UTR]
+: format: BluRay
+  other: Complete
+  release_group: SUJAIDR[UTR]
+  screen_size: 720p
+  season:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  title: Show Name
+  type: episode
+  video_codec: h265
+
+? Fear.the.Walking.Dead.-.Season.2.epi.02.XviD.Eng.Ac3-5.1.sub.ita.eng.iCV-MIRCrew
+: options: -t episode
+  audio_channels: '5.1'
+  audio_codec: AC3
+  episode: 2
+  episode_title: epi
+  language: en
+  release_group: iCV-MIRCrew
+  season: 2
+  subtitle_language: it
+  title: Fear the Walking Dead
+  type: episode
+  video_codec: XviD
+
+? Game.Of.Thrones.S06E04.720p.PROPER.HDTV.x264-HDD
+: episode: 4
+  format: HDTV
+  other: Proper
+  proper_count: 1
+  release_group: HDD
+  screen_size: 720p
+  season: 6
+  title: Game Of Thrones
+  type: episode
   video_codec: h264

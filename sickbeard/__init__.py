@@ -17,16 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
-from threading import Lock
-
 import datetime
-import socket
+import gettext
 import os
-import sys
+import random
 import re
 import shutil
-import random
-import gettext
+import socket
+import sys
+from threading import Lock
 
 try:
     import pytz  # pylint: disable=unused-import
@@ -34,7 +33,6 @@ except ImportError:
     from pkg_resources import require
     require('pytz')
 
-import shutil_custom
 
 from sickbeard.indexers import indexer_api
 from sickbeard.common import SD, SKIPPED, WANTED
@@ -76,7 +74,6 @@ dynamic_strings = (
 )
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 requests.packages.urllib3.disable_warnings()
 indexerApi = indexer_api.indexerApi
 

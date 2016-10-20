@@ -52,12 +52,10 @@ from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode
-import shutil_custom  # pylint: disable=import-error
 import sickbeard
 
 # pylint: disable=import-error
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 # =================
 #  test globals

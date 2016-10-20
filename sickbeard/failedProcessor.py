@@ -19,10 +19,8 @@
 
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import show_name_helpers
-from sickbeard import search_queue
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard import logger, search_queue, show_name_helpers
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.exceptions import FailedPostProcessingFailedException
 
 

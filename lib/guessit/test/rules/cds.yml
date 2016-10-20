@@ -3,3 +3,8 @@
 ? cd 1of3
 : cd: 1
   cd_count: 3
+
+? Some.Title-DVDRIP-x264-CDP
+: cd: !!null
+  release_group: CDP
+  video_codec: h264

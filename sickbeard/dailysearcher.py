@@ -22,12 +22,9 @@ import datetime
 import threading
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import db
-from sickbeard import common
-from sickbeard import network_timezones
-from sickrage.show.Show import Show
+from sickbeard import common, db, logger, network_timezones
 from sickrage.helper.exceptions import MultipleShowObjectsException
+from sickrage.show.Show import Show
 
 
 class DailySearcher(object):  # pylint:disable=too-few-public-methods

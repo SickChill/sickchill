@@ -245,12 +245,7 @@
                                         <div class="col-md-12">
                                             <input id="use_failed_downloads" type="checkbox" class="enabler"
                                                    name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]} />
-                                            <label for="download_propers">${_('replace original download with "Proper" or "Repack" if nuked')}</label>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label>${_('Use Failed Download Handling?')}</label>
+                                            <label for="use_failed_downloads">${_('use Failed Download Handling?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">

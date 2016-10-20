@@ -50,6 +50,12 @@ class TestStringPattern(object):
         assert len(matches) == 1
         assert matches[0].private
 
+    def test_ignore_names(self):
+        pattern = StringPattern("celtic", name="test", ignore_names=["test"], ignore_case=True)
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 0
+
     def test_no_match(self):
         pattern = StringPattern("Python")
 
@@ -344,6 +350,23 @@ class TestRePattern(object):
         assert group2.name == "param2"
         assert group2.value == "violin"
 
+    def test_private_names(self):
+        pattern = RePattern(r"(?P<param1>Celt.?c)\s+(?P<param2>\w+)", private_names=["param2"], children=True)
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 2
+        assert matches[0].name == "param1"
+        assert not matches[0].private
+        assert matches[1].name == "param2"
+        assert matches[1].private
+
+    def test_ignore_names(self):
+        pattern = RePattern(r"(?P<param1>Celt.?c)\s+(?P<param2>\w+)", ignore_names=["param2"], children=True)
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 1
+        assert matches[0].name == "param1"
+
     def test_matches_kwargs(self):
         pattern = RePattern("He.rew", name="test", value="HE")
         matches = list(pattern.matches(self.input_string))
@@ -543,6 +566,75 @@ class TestFunctionalPattern(object):
         assert len(matches) == 1
         assert matches[0].name == "test"
         assert matches[0].value == "PLAY"
+
+
+class TestValue(object):
+    """
+    Tests for value option
+    """
+
+    input_string = "This string contains 1849 a number"
+
+    def test_str_value(self):
+        pattern = StringPattern("1849", name="dummy", value="test")
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 1
+        assert isinstance(matches[0], Match)
+        assert matches[0].pattern == pattern
+        assert matches[0].span == (21, 25)
+        assert matches[0].value == "test"
+
+    def test_dict_child_value(self):
+        pattern = RePattern(r"(?P<strParam>cont.?ins)\s+(?P<intParam>\d+)",
+                            formatter={'intParam': lambda x: int(x) * 2,
+                                       'strParam': lambda x: "really " + x},
+                            format_all=True,
+                            value={'intParam': 'INT_PARAM_VALUE'})
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 1
+
+        parent = matches[0]
+        assert len(parent.children) == 2
+
+        group1, group2 = parent.children
+
+        assert isinstance(group1, Match)
+        assert group1.pattern == pattern
+        assert group1.span == (12, 20)
+        assert group1.value == "really contains"
+
+        assert isinstance(group2, Match)
+        assert group2.pattern == pattern
+        assert group2.span == (21, 25)
+        assert group2.value == 'INT_PARAM_VALUE'
+
+    def test_dict_default_value(self):
+        pattern = RePattern(r"(?P<strParam>cont.?ins)\s+(?P<intParam>\d+)",
+                            formatter={'intParam': lambda x: int(x) * 2,
+                                       'strParam': lambda x: "really " + x},
+                            format_all=True,
+                            value={'__children__': 'CHILD', 'strParam': 'STR_VALUE', '__parent__': 'PARENT'})
+
+        matches = list(pattern.matches(self.input_string))
+        assert len(matches) == 1
+
+        parent = matches[0]
+        assert parent.value == "PARENT"
+        assert len(parent.children) == 2
+
+        group1, group2 = parent.children
+
+        assert isinstance(group1, Match)
+        assert group1.pattern == pattern
+        assert group1.span == (12, 20)
+        assert group1.value == "STR_VALUE"
+
+        assert isinstance(group2, Match)
+        assert group2.pattern == pattern
+        assert group2.span == (21, 25)
+        assert group2.value == "CHILD"
 
 
 class TestFormatter(object):
@@ -754,4 +846,3 @@ class TestValidator(object):
 
         matches = list(pattern.matches(self.input_string))
         assert len(matches) == 1
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name, pointless-string-statement
 
 import os
 
@@ -27,9 +27,27 @@ def test_forced_binary():
     assert ret and 'title' in ret and isinstance(ret['title'], six.binary_type)
 
 
-def test_unicode():
+def test_unicode_japanese():
     ret = guessit('[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi')
     assert ret and 'title' in ret
+
+
+def test_unicode_japanese_options():
+    ret = guessit("[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": ["阿维达"]})
+    assert ret and 'title' in ret and ret['title'] == "阿维达"
+
+
+def test_forced_unicode_japanese_options():
+    ret = guessit(u"[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": [u"阿维达"]})
+    assert ret and 'title' in ret and ret['title'] == u"阿维达"
+
+# TODO: This doesn't compile on python 3, but should be tested on python 2.
+"""
+if six.PY2:
+    def test_forced_binary_japanese_options():
+        ret = guessit(b"[阿维达].Avida.2006.FRENCH.DVDRiP.XViD-PROD.avi", options={"expected_title": [b"阿维达"]})
+        assert ret and 'title' in ret and ret['title'] == b"阿维达"
+"""
 
 
 def test_properties():

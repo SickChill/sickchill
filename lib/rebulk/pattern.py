@@ -6,13 +6,14 @@ Abstract pattern class definition along with various implementations (regexp, st
 # pylint: disable=super-init-not-called,wrong-import-position
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+
 import six
 
-from .remodule import re, REGEX_AVAILABLE
-from .match import Match
-from .utils import find_all, is_iterable
-from .loose import call, ensure_list, ensure_dict
 from . import debug
+from .loose import call, ensure_list, ensure_dict
+from .match import Match
+from .remodule import re, REGEX_AVAILABLE
+from .utils import find_all, is_iterable, get_first_defined
 
 
 @six.add_metaclass(ABCMeta)
@@ -21,9 +22,10 @@ class Pattern(object):
     Definition of a particular pattern to search for.
     """
 
-    def __init__(self, name=None, tags=None, formatter=None, validator=None, children=False, every=False,
-                 private_parent=False, private_children=False, private=False, private_names=None, marker=False,
-                 format_all=False, validate_all=False, disabled=lambda context: False, log_level=None, properties=None):
+    def __init__(self, name=None, tags=None, formatter=None, value=None, validator=None, children=False, every=False,
+                 private_parent=False, private_children=False, private=False, private_names=None, ignore_names=None,
+                 marker=False, format_all=False, validate_all=False, disabled=lambda context: False, log_level=None,
+                 properties=None):
         """
         :param name: Name of this pattern
         :type name: str
@@ -33,6 +35,10 @@ class Pattern(object):
         and func a function(input_string) that returns the formatted string. A single formatter function can also be
         passed as a shortcut for {None: formatter}. The returned formatted string with be set in Match.value property.
         :type formatter: dict[str, func] || func
+        :param value: dict (name, value) of value to use with this pattern. name is the match name to support,
+        and value an object for the match value. A single object value can also be
+        passed as a shortcut for {None: value}. The value with be set in Match.value property.
+        :type value: dict[str, object] || object
         :param validator: dict (name, func) of validator to use with this pattern. name is the match name to support,
         and func a function(match) that returns the a boolean. A single validator function can also be
         passed as a shortcut for {None: validator}. If return value is False, match will be ignored.
@@ -48,6 +54,8 @@ class Pattern(object):
         :type private_children: bool
         :param private_names: force return of named matches as private.
         :type private_names: bool
+        :param ignore_names: drop some named matches after validation.
+        :type ignore_names: bool
         :param marker: flag this pattern as beeing a marker.
         :type private: bool
         :param format_all if True, pattern will format every match in the hierarchy (even match not yield).
@@ -63,11 +71,13 @@ class Pattern(object):
         self.name = name
         self.tags = ensure_list(tags)
         self.formatters, self._default_formatter = ensure_dict(formatter, lambda x: x)
+        self.values, self._default_value = ensure_dict(value, None)
         self.validators, self._default_validator = ensure_dict(validator, lambda match: True)
         self.every = every
         self.children = children
         self.private = private
         self.private_names = private_names if private_names else []
+        self.ignore_names = ignore_names if ignore_names else []
         self.private_parent = private_parent
         self.private_children = private_children
         self.marker = marker
@@ -92,7 +102,7 @@ class Pattern(object):
 
     def _yield_children(self, match):
         """
-        Does this mat
+        Does this match has children
         :param match:
         :type match:
         :return:
@@ -123,12 +133,18 @@ class Pattern(object):
         if len(match) < 0 or match.value == "":
             return False
 
+        pattern_value = get_first_defined(self.values, [match.name, '__parent__', None],
+                                          self._default_value)
+        if pattern_value:
+            match.value = pattern_value
+
         if yield_parent or self.format_all:
-            match.formatter = self.formatters.get(match.name,
-                                                  self.formatters.get('__parent__', self._default_formatter))
+            match.formatter = get_first_defined(self.formatters, [match.name, '__parent__', None],
+                                                self._default_formatter)
         if yield_parent or self.validate_all:
-            validator = self.validators.get(match.name, self.validators.get('__parent__', self._default_validator))
-            if not validator(match):
+            validator = get_first_defined(self.validators, [match.name, '__parent__', None],
+                                          self._default_validator)
+            if validator and not validator(match):
                 return False
         return True
 
@@ -145,16 +161,23 @@ class Pattern(object):
         if len(child) < 0 or child.value == "":
             return False
 
+        pattern_value = get_first_defined(self.values, [child.name, '__children__', None],
+                                          self._default_value)
+        if pattern_value:
+            child.value = pattern_value
+
         if yield_children or self.format_all:
-            child.formatter = self.formatters.get(child.name,
-                                                  self.formatters.get('__children__', self._default_formatter))
+            child.formatter = get_first_defined(self.formatters, [child.name, '__children__', None],
+                                                self._default_formatter)
+
         if yield_children or self.validate_all:
-            validator = self.validators.get(child.name, self.validators.get('__children__', self._default_validator))
-            if not validator(child):
+            validator = get_first_defined(self.validators, [child.name, '__children__', None],
+                                          self._default_validator)
+            if validator and not validator(child):
                 return False
         return True
 
-    def matches(self, input_string, context=None):
+    def matches(self, input_string, context=None, with_raw_matches=False):
         """
         Computes all matches for a given input
 
@@ -162,14 +185,22 @@ class Pattern(object):
         :type input_string: str
         :param context: the context
         :type context: dict
+        :param with_raw_matches: should return details
+        :type with_raw_matches: dict
         :return: matches based on input_string for this pattern
         :rtype: iterator[Match]
         """
+        # pylint: disable=too-many-branches
 
-        ret = []
+        matches = []
+        raw_matches = []
         for pattern in self.patterns:
             yield_parent = self._yield_parent()
+            match_index = -1
             for match in self._match(pattern, input_string, context):
+                match_index += 1
+                match.match_index = match_index
+                raw_matches.append(match)
                 yield_children = self._yield_children(match)
                 if not self._match_parent(match, yield_parent):
                     continue
@@ -185,12 +216,16 @@ class Pattern(object):
                         for child in match.children:
                             child.private = True
                     if yield_parent or self.private_parent:
-                        ret.append(match)
+                        matches.append(match)
                     if yield_children or self.private_children:
                         for child in match.children:
-                            ret.append(child)
-        self._matches_privatize(ret)
-        return ret
+                            child.match_index = match_index
+                            matches.append(child)
+        self._matches_privatize(matches)
+        self._matches_ignore(matches)
+        if with_raw_matches:
+            return matches, raw_matches
+        return matches
 
     def _matches_privatize(self, matches):
         """
@@ -201,9 +236,22 @@ class Pattern(object):
         :rtype:
         """
         if self.private_names:
-            for child in matches:
-                if child.name in self.private_names:
-                    child.private = True
+            for match in matches:
+                if match.name in self.private_names:
+                    match.private = True
+
+    def _matches_ignore(self, matches):
+        """
+        Ignore matches included in ignore_names.
+        :param matches:
+        :type matches:
+        :return:
+        :rtype:
+        """
+        if self.ignore_names:
+            for match in list(matches):
+                if match.name in self.ignore_names:
+                    matches.remove(match)
 
     @abstractproperty
     def patterns(self):  # pragma: no cover
@@ -254,8 +302,12 @@ class Pattern(object):
     def __repr__(self):
         defined = ""
         if self.defined_at:
-            defined = "@" + six.text_type(self.defined_at)
-        return "<%s%s:%s>" % (self.__class__.__name__, defined, self.patterns)
+            defined = "@%s" % (self.defined_at,)
+        return "<%s%s:%s>" % (self.__class__.__name__, defined, self.__repr__patterns__)
+
+    @property
+    def __repr__patterns__(self):
+        return self.patterns
 
 
 class StringPattern(Pattern):
@@ -318,6 +370,10 @@ class RePattern(Pattern):
     @property
     def patterns(self):
         return self._patterns
+
+    @property
+    def __repr__patterns__(self):
+        return [pattern.pattern for pattern in self.patterns]
 
     @property
     def match_options(self):
@@ -405,7 +461,7 @@ def filter_match_kwargs(kwargs, children=False):
     :rtype: dict
     """
     kwargs = kwargs.copy()
-    for key in ('pattern', 'start', 'end', 'parent', 'formatter'):
+    for key in ('pattern', 'start', 'end', 'parent', 'formatter', 'value'):
         if key in kwargs:
             del kwargs[key]
     if children:

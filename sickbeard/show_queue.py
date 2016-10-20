@@ -21,22 +21,21 @@ from __future__ import unicode_literals
 
 import os
 import traceback
+
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
 
 import sickbeard
-from sickbeard.common import WANTED
-from sickbeard.tv import TVShow
-from sickbeard import logger, notifiers, ui, generic_queue, name_cache
-from sickbeard.helpers import makeDir, chmodAsParent, get_showname_from_indexer
+from sickbeard import generic_queue, logger, name_cache, notifiers, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList
-
-from sickrage.show.Show import Show
-from sickrage.helper.encoding import ek
+from sickbeard.common import WANTED
+from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir
+from sickbeard.tv import TVShow
 from sickrage.helper.common import sanitize_filename
-from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-from sickrage.helper.exceptions import EpisodeDeletedException, MultipleShowObjectsException
-from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, \
+    EpisodeDeletedException, MultipleShowObjectsException, ShowDirectoryNotFoundException
+from sickrage.show.Show import Show
 
 
 class ShowQueue(generic_queue.GenericQueue):

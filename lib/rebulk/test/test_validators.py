@@ -62,7 +62,3 @@ def test_chain():
 
     matches = list(StringPattern("word", validator=validators(left, right)).matches("word"))
     assert len(matches) == 1
-
-
-
-

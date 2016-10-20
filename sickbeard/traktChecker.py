@@ -17,20 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import traceback
-import datetime
-from libtrakt.exceptions import traktException
+
 from libtrakt import TraktAPI
+from libtrakt.exceptions import traktException
 
 import sickbeard
-from sickbeard import logger
-from sickbeard import helpers
-from sickbeard import search_queue
-from sickbeard import db
-from sickbeard.common import SKIPPED, UNKNOWN, WANTED, Quality
-
-from sickrage.helper.common import sanitize_filename, episode_num
+from sickbeard import db, helpers, logger, search_queue
+from sickbeard.common import Quality, SKIPPED, UNKNOWN, WANTED
+from sickrage.helper.common import episode_num, sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show

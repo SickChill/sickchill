@@ -66,19 +66,17 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
     def login(self):
-        if dict_from_cookiejar(self.session.cookies).get('uid') and dict_from_cookiejar(self.session.cookies).get('pass'):
+        cookie_dict = dict_from_cookiejar(self.session.cookies)
+        if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
         if self.cookies:
-            if 'uid' in self.cookies and 'pass' in self.cookies:
-                self.add_cookies_from_ui()
+            success, status = self.add_cookies_from_ui()
+            if not success:
+                logger.log(status, logger.INFO)
+                return False
 
-            login_params = {
-                'username': self.username,
-                'password': self.password,
-                'submit.x': 0,
-                'submit.y': 0,
-            }
+            login_params = {'username': self.username, 'password': self.password, 'submit.x': 0, 'submit.y': 0}
 
             response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
             if response.status_code not in [200]:

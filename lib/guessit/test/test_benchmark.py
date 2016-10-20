@@ -50,4 +50,3 @@ class TestBenchmark(object):
     def test_case4(self, benchmark):
         ret = benchmark(case4)
         assert ret
-

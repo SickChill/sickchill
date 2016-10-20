@@ -20,16 +20,15 @@
 
 import os.path
 
-import sickbeard
+from hachoir_core.log import log
+from hachoir_metadata import extractMetadata
+from hachoir_parser import createParser
 
+import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata.generic import GenericMetadata
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-
-from hachoir_parser import createParser
-from hachoir_metadata import extractMetadata
-from hachoir_core.log import log
 log.use_print = False
 
 

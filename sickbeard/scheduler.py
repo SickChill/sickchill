@@ -19,8 +19,8 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import time
 import threading
+import time
 import traceback
 
 from sickbeard import logger
@@ -56,7 +56,8 @@ class Scheduler(threading.Thread):
         """
         if self.isAlive():
             if self.start_time is None:
-                return self.cycleTime - (datetime.datetime.now() - self.lastRun)
+                delta = datetime.datetime.now() - self.lastRun
+                return (self.cycleTime - delta, self.cycleTime)[delta < self.cycleTime]
             else:
                 time_now = datetime.datetime.now()
                 start_time_today = datetime.datetime.combine(time_now.date(), self.start_time)

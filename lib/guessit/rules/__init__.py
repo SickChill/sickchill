@@ -71,4 +71,18 @@ def rebulk_builder():
     rebulk.rebulk(mimetype())
     rebulk.rebulk(type_())
 
+    def customize_properties(properties):
+        """
+        Customize default rebulk properties
+        """
+        count = properties['count']
+        del properties['count']
+
+        properties['season_count'] = count
+        properties['episode_count'] = count
+
+        return properties
+
+    rebulk.customize_properties = customize_properties
+
     return rebulk

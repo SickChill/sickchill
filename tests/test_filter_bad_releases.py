@@ -1,10 +1,9 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 
-from __future__ import unicode_literals, print_function
-import unittest
+from __future__ import print_function, unicode_literals
 
-import test_lib as test_  # pylint: disable=unused-import
+import unittest
 
 import sickbeard
 from sickbeard.show_name_helpers import filter_bad_releases
