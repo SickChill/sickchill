@@ -19,6 +19,8 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import validators
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -40,6 +42,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.freeleech = False
         self.minseed = None
         self.minleech = None
+        self.custom_url = None
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
@@ -95,7 +98,6 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             items = []
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
-
                 if mode != 'RSS':
                     logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
@@ -104,12 +106,18 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)
                 search_url += ';o=seeders' if mode != 'RSS' else ''
 
+                if self.custom_url:
+                    if not validators.url(self.custom_url):
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        return results
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+
                 data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 
                 try:
-                    data = re.sub(r'(?im)<button.+?<[\/]button>', '', data, 0)
+                    data = re.sub(r'(?im)<button.+?</button>', '', data, 0)
                     with BS4Parser(data, 'html5lib') as html:
                         if not html:
                             logger.log(u"No data returned from provider", logger.DEBUG)
@@ -130,7 +138,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         for result in torrents[1:]:
                             try:
                                 title = result('td')[1].find('a').text
-                                download_url = self.urls['base_url'] + result('td')[3].find('a')['href']
+                                download_url = urljoin(search_url, result('td')[3].find('a')['href'])
                                 seeders = int(result.find('td', class_='ac t_seeders').text)
                                 leechers = int(result.find('td', class_='ac t_leechers').text)
                                 torrent_size = result('td')[5].text

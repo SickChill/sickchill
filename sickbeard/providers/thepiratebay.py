@@ -61,12 +61,13 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
 
-    def convert_url(self, params):
+    @staticmethod
+    def convert_url(url, params):
         # noinspection PyBroadException
         try:
-            return urljoin(self.urls['search'], '{type}/{q}/{page}/{orderby}/{category}/'.format(**params)), {}
+            return urljoin(url, '{type}/{q}/{page}/{orderby}/{category}/'.format(**params)), {}
         except Exception:
-            return self.urls['search'].replace('search', 's/'), params
+            return url.replace('search', 's/'), params
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
@@ -116,7 +117,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                         # Prevents a 302 redirect, since there is always a 301 from .se to the best mirror having an extra
                         # redirect is excessive on the provider and spams the debug log unnecessarily
-                        search_url, search_params = self.convert_url(search_params)
+                        search_url, search_params = self.convert_url(search_url, search_params)
 
                         data = self.get_url(search_url, params=search_params, returns="text")
                     else:
