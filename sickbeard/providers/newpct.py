@@ -109,8 +109,8 @@ class newpctProvider(TorrentProvider):
                             cells = row('td')
 
                             torrent_row = row.find('a')
-                            title = self._processTitle(torrent_row.get('title', ''))
                             download_url = torrent_row.get('href', '')
+                            title = self._processTitle(torrent_row.get('title', ''), download_url)
                             if not all([title, download_url]):
                                 continue
 
@@ -184,9 +184,10 @@ class newpctProvider(TorrentProvider):
         return False
 
     @staticmethod
-    def _processTitle(title):
+    def _processTitle(title, url):
         # Remove 'Mas informacion sobre ' literal from title
         title = title[22:]
+        title = re.sub(r'( ){2,}', ' ', title, flags=re.I)
 
         # Quality - Use re module to avoid case sensitive problems with replace
         title = re.sub(r'\[HDTV 1080p?[^\[]*]', '1080p HDTV x264', title, flags=re.I)
@@ -200,6 +201,13 @@ class newpctProvider(TorrentProvider):
         title = re.sub(r'\[BLuRay[^\[]*]', '720p BluRay x264', title, flags=re.I)
         title = re.sub(r'\[BRrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
         title = re.sub(r'\[BDrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
+        
+        #detect hdtv 720 by url
+        #hdtv 720 example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
+        is_hdtv = re.search(r'hdtv', title, flags=re.I) and re.search(r'720p', title, flags=re.I)
+        if not is_hdtv:
+            if re.search(r'hdtv', url, flags=re.I) and re.search(r'720p', url, flags=re.I):
+                title += ' 720p HDTV x264'
 
         # Language
         title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
