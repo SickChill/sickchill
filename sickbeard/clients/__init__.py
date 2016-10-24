@@ -27,8 +27,9 @@ _clients = [
     'download_station',
     'rtorrent',
     'qbittorrent',
-    'mlnet'
-    'putio'
+    'mlnet',
+    'putio',
+    'jdownloader'
 ]
 
 default_host = {
@@ -40,7 +41,8 @@ default_host = {
     'rtorrent': 'scgi://localhost:5000',
     'qbittorrent': 'http://localhost:8080',
     'mlnet': 'http://localhost:4080',
-    'putio': 'https://api.put.io/login'
+    'putio': 'https://api.put.io/login',
+    'jdownloader': 'https://api.jdownloader.org'
 }
 
 

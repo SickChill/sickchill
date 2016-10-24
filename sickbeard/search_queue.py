@@ -171,9 +171,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         try:
             logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
-
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
-
             if searchResult:
                 # just use the first result for now
                 logger.log(u"Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)

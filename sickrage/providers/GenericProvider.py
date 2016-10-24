@@ -42,6 +42,7 @@ from requests.utils import add_dict_to_cookiejar
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     NZB = 'nzb'
     TORRENT = 'torrent'
+    DDL = 'ddl'
 
     def __init__(self, name):
         self.name = name
@@ -147,7 +148,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 search_strings = self._get_season_search_strings(episode)
             elif search_mode == 'eponly':
                 search_strings = self._get_episode_search_strings(episode)
-
+                
             for search_string in search_strings:
                 items_list += self.search(search_string, ep_obj=episode)
 

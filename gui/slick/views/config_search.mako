@@ -7,6 +7,7 @@
     <li><a href="#episode-search">${_('Episode Search')}</a></li>
     <li><a href="#nzb-search">${_('NZB Search')}</a></li>
     <li><a href="#torrent-search">${_('Torrent Search')}</a></li>
+    <li><a href="#ddl-search">${_('DDL Search')}</a></li>
 </%block>
 
 <%block name="pages">
@@ -1146,6 +1147,131 @@
                                         <div class="col-md-12">
                                             <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent"/>
                                             <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DDL search -->
+            <div id="ddl-search" class="component-group">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <div class="component-group-desc">
+                            <h3>${_('Search Search')}</h3>
+                            <p>${_('How to handle DDL search results.')}</p>
+                            <div id="ddl_method_icon" class="add-client-icon-${sickbeard.DDL_METHOD}"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
+                        <fieldset class="component-group-list">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Search ddls')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="use_ddls" class="enabler"
+                                           id="use_ddls" ${('', 'checked="checked"')[bool(sickbeard.USE_DDLS)]}/>
+                                    <label for="use_ddls">${_('enable ddl search providers')}</label>
+                                </div>
+                            </div>
+
+                            <div id="content_use_ddls">
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Send link files to')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <select name="ddl_method" id="ddl_method" class="form-control input-sm input200" title="ddl_method">
+                                            <% ddl_method_text = {'jdownloader' : "Jdownloader"} %>
+                                            % for curAction in ddl_method_text:
+                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.DDL_METHOD == curAction]}>${ddl_method_text[curAction]}</option>
+                                            % endfor
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="options_ddls_clients">
+
+                                    <div class="field-pair row" id="ddl_username_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="username_title">${_('Client username')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="ddl_username" id="ddl_username"
+                                                           value="${sickbeard.DDL_USERNAME}"
+                                                           class="form-control input-sm input200" autocapitalize="off"
+                                                           autocomplete="no"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="ddl_username">${_('(blank for none)')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field-pair row" id="ddl_password_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="password_title">${_('Client password')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="password" name="ddl_password" id="ddl_password"
+                                                           value="${sickbeard.DDL_PASSWORD}"
+                                                           class="form-control input-sm input200" autocomplete="no"
+                                                           autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="ddl_password">${_('(blank for none)')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field-pair row" id="jdownloader_device_name_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="jdownloader_device_name_title">${_('Device name')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="jdownloader_device_name" id="jdownloader_device_name"
+                                                           value="${sickbeard.JDOWNLOADER_DEVICE_NAME}"
+                                                           class="form-control input-sm input200"
+                                                           autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="jdownloader_device_name">${_('(Device name association at your my.jdownloader account)')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field-pair row" id="jdownloader_auto_start_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Auto start')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="jdownloader_auto_start" class="enabler"
+                                                   id="jdownloader_auto_start" ${('', 'checked="checked"')[bool(sickbeard.JDOWNLOADER_AUTO_START)]}/>
+                                            <label for="jdownloader_auto_start" id="ddl_verify_jdownloader">${_('Auto download after transfert to Jdownloader')}</label>
                                         </div>
                                     </div>
 

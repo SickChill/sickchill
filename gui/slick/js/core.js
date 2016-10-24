@@ -1660,6 +1660,34 @@ var SICKRAGE = {
                 }
             };
 
+            $.ddlMethodHandler = function() {
+                var selectedProvider = $('#ddl_method :selected').val(),
+                    ddlUsernameOption = '#ddl_username_option',
+                    ddlPasswordOption = '#ddl_password_option',
+                    jdownloaderDeviceNameOption = '#jdownloader_device_name_option',
+                    jdownloaderAutoStartOption = '#jdownloader_auto_start_option';
+
+                $('#ddl_method_icon').removeClass (function (index, css) {
+                    return (css.match (/(^|\s)add-client-icon-\S+/g) || []).join(' ');
+                });
+                $('#ddl_method_icon').addClass('add-client-icon-' + selectedProvider.replace('_', '-'));
+
+                $(ddlUsernameOption).hide();
+                $(ddlPasswordOption).hide();
+                $(jdownloaderDeviceNameOption).hide();
+                $(jdownloaderAutoStartOption).hide();
+
+                if (selectedProvider.toLowerCase() === 'jdownloader') {
+                    $(ddlUsernameOption).show();
+                    $(ddlPasswordOption).show();
+                    $(jdownloaderDeviceNameOption).show();
+                    $(jdownloaderAutoStartOption).show();
+                }
+            };
+
+            $('#ddl_method').on('change', $.ddlMethodHandler);
+            $.ddlMethodHandler();
+
             $.torrentMethodHandler = function() {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();

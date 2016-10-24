@@ -50,7 +50,7 @@
                         <p>${_('At least one provider is required but two are recommended.')}</p>
 
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
-                            <blockquote style="margin: 20px 0;">NZB/${_('Torrent providers can be toggled in ')}
+                            <blockquote style="margin: 20px 0;">NZB/DDL/${_('Torrent providers can be toggled in ')}
                                 <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
                         % else:
                             <br>
@@ -75,6 +75,8 @@
                                     continue
                                 elif curProvider.provider_type == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
                                     continue
+                                elif curProvider.provider_type == GenericProvider.DDL and not sickbeard.USE_DDLS:
+                                    continue
 
                                 curName = curProvider.get_id()
                                 if hasattr(curProvider, 'custom_url'):
@@ -82,7 +84,8 @@
                                 else:
                                         curURL = curProvider.url
                             %>
-                                <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.provider_type == GenericProvider.TORRENT)]}" id="${curName}">
+                                
+                                <li class="ui-state-default ${curProvider.provider_type.lower()}-provider" id="${curName}">
                                     <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled() is True]}/>
                                     <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer"
                                        onclick="window.open(this.href, '_blank'); return false;">
@@ -131,6 +134,8 @@
                                         if curProvider.provider_type == GenericProvider.NZB and (not sickbeard.USE_NZBS or not curProvider.is_enabled()):
                                             continue
                                         elif curProvider.provider_type == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.is_enabled()):
+                                            continue
+                                        elif curProvider.provider_type == GenericProvider.DDL and ( not sickbeard.USE_DDLS or not curProvider.is_enabled()):
                                             continue
                                         provider_config_list.append(curProvider)
                                 %>
@@ -692,15 +697,139 @@
                                     </div>
                                 % endif
 
-                                % if hasattr(curTorrentProvider, 'subtitle') and curTorrentProvider.get_id() == 'tntvillage':
+                                % if hasattr(curTorrentProvider, 'username') and curTorrentProvider.get_id() == 'tntvillage':
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Subtitled')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id()}_subtitle"
-                                                   id="${curTorrentProvider.get_id()}_subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
-                                            <label for="${curTorrentProvider.get_id()}_subtitle">${_('select torrent with Italian subtitle')}</label>
+                                                   id="${curTorrentProvider.get_id()}username" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
+                                            <label for="${curTorrentProvider.get_id()}username">${_('select torrent with Italian subtitle')}</label>
+                                        </div>
+                                    </div>
+                                % endif
+
+                            </div>
+                        % endfor
+
+                        % for curDDLProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.provider_type == GenericProvider.DDL]:
+                            <div class="providerDiv" id="${curDDLProvider.get_id()}Div">
+
+                            % if hasattr(curDDLProvider, 'search_mode'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Season search mode')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>${_('when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.')}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="radio" name="${curDDLProvider.get_id()}_search_mode"
+                                                           id="${curDDLProvider.get_id()}_search_mode_sponly"
+                                                           value="sponly" ${('', 'checked="checked"')[curDDLProvider.search_mode=="sponly"]}/>${_('season packs only.')}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="radio" name="${curDDLProvider.get_id()}_search_mode"
+                                                           id="${curDDLProvider.get_id()}_search_mode_eponly"
+                                                           value="eponly" ${('', 'checked="checked"')[curDDLProvider.search_mode=="eponly"]}/>${_('episodes only.')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(curDDLProvider, 'enable_daily'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Enable daily searches')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_enable_daily"
+                                                   id="${curDDLProvider.get_id()}_enable_daily" ${('', 'checked="checked"')[bool(curDDLProvider.enable_daily)]}/>
+                                            <label for="${curDDLProvider.get_id()}_enable_daily">${_('enable provider to perform daily searches.')}</label>
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(curDDLProvider, 'enable_backlog'):
+                                    <div class="field-pair row${(' hidden', '')[curDDLProvider.supports_backlog]}">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Enable backlog searches')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_enable_backlog"
+                                                   id="${curDDLProvider.get_id()}_enable_backlog" ${('', 'checked="checked"')[bool(curDDLProvider.enable_backlog and curDDLProvider.supports_backlog)]}/>
+                                            <label for="${curDDLProvider.get_id()}_enable_backlog">${_('enable provider to perform backlog searches.')}</label>
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(curDDLProvider, 'storageProviderAllow') and curDDLProvider.get_id() == 'zonetelechargement':
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Uptobox')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_uptobox"
+                                                   id="${curDDLProvider.get_id()}_allow_uptobox" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['Uptobox'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_uptobox">${_('download <b class="uptoboxColor">"Uptobox"</b> links.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Uplea')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_uplea"
+                                                   id="${curDDLProvider.get_id()}_allow_uplea" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['Uplea'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_uplea">${_('download <b class="upleaColor">"Uplea"</b> links.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('1fichier')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_1fichier"
+                                                   id="${curDDLProvider.get_id()}_allow_1fichier" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['1fichier'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_1fichier">${_('download <b class="onefichierColor">"1fichier"</b> links.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Uploaded')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_uploaded"
+                                                   id="${curDDLProvider.get_id()}_allow_uploaded" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['Uploaded'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_uploaded">${_('download <b class="uploadedColor">"Uploaded"</b> links.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Rapidgator')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_rapidgator"
+                                                   id="${curDDLProvider.get_id()}_allow_rapidgator" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['Rapidgator'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_rapidgator">${_('download <b class="rapidgatorColor">"Rapidgator"</b> links.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('TurboBit')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="checkbox" name="${curDDLProvider.get_id()}_allow_turboBit"
+                                                   id="${curDDLProvider.get_id()}_allow_turboBit" ${('', 'checked="checked"')[bool(curDDLProvider.storageProviderAllow['TurboBit'])]}/>
+                                            <label for="${curDDLProvider.get_id()}_allow_turboBit">${_('download <b class="turboBitColor">"TurboBit"</b> links.')}</label>
                                         </div>
                                     </div>
                                 % endif

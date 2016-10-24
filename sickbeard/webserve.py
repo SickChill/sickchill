@@ -4085,7 +4085,9 @@ class ConfigSearch(Config):
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
-                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None):
+                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None,
+                   use_ddls=None, ddl_method=None, ddl_username=None, ddl_password=None,
+                   jdownloader_device_name=None, jdownloader_auto_start=None):
 
         results = []
 
@@ -4102,9 +4104,12 @@ class ConfigSearch(Config):
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
+        sickbeard.USE_DDLS = config.checkbox_to_value(use_ddls)
 
         sickbeard.NZB_METHOD = nzb_method
         sickbeard.TORRENT_METHOD = torrent_method
+        sickbeard.DDL_METHOD = ddl_method
+
         sickbeard.USENET_RETENTION = try_int(usenet_retention, 500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
@@ -4157,6 +4162,12 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
         sickbeard.TORRENT_RPCURL = torrent_rpcurl
         sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
+
+        sickbeard.DDL_USERNAME = ddl_username
+        sickbeard.DDL_PASSWORD = ddl_password
+
+        sickbeard.JDOWNLOADER_AUTO_START = config.checkbox_to_value(jdownloader_auto_start)
+        sickbeard.JDOWNLOADER_DEVICE_NAME = jdownloader_device_name
 
         sickbeard.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
         sickbeard.SYNOLOGY_DSM_USERNAME = syno_dsm_user
@@ -4657,6 +4668,7 @@ class ConfigProviders(Config):
                 sickbeard.torrentRssProviderList.remove(curProvider)
 
         disabled_list = []
+
         # do the enable/disable
         for curProviderStr in provider_str_list:
             curProvider, curEnabled = curProviderStr.split(':')
@@ -4878,6 +4890,67 @@ class ConfigProviders(Config):
                         kwargs[curNzbProvider.get_id() + '_enable_backlog'])
                 except Exception:
                     curNzbProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
+
+        for curDdlProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
+                                   prov.provider_type == GenericProvider.DDL]:
+
+            if hasattr(curDdlProvider, 'search_mode'):
+                try:
+                    curDdlProvider.search_mode = str(kwargs[curDdlProvider.get_id() + '_search_mode']).strip()
+                except Exception:
+                    curDdlProvider.search_mode = 'eponly'
+
+            if hasattr(curDdlProvider, 'enable_daily'):
+                try:
+                    curDdlProvider.enable_daily = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_enable_daily'])
+                except Exception:
+                    curDdlProvider.enable_daily = 0  # these exceptions are actually catching unselected checkboxes
+
+            if hasattr(curDdlProvider, 'enable_backlog'):
+                try:
+                    curDdlProvider.enable_backlog = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_enable_backlog'])
+                except Exception:
+                    curDdlProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
+
+
+            if hasattr(curDdlProvider, 'storageProviderAllow'):
+                try:
+                    curDdlProvider.storageProviderAllow['Uptobox'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_uptobox'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['Uptobox'] = False
+
+                try:
+                    curDdlProvider.storageProviderAllow['Uplea'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_uplea'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['Uplea'] = False
+
+                try:
+                    curDdlProvider.storageProviderAllow['1fichier'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_1fichier'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['1fichier'] = False
+
+                try:
+                    curDdlProvider.storageProviderAllow['Uploaded'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_uploaded'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['Uploaded'] = False
+
+                try:
+                    curDdlProvider.storageProviderAllow['Rapidgator'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_rapidgator'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['Rapidgator'] = False
+
+                try:
+                    curDdlProvider.storageProviderAllow['TurboBit'] = config.checkbox_to_value(
+                        kwargs[curDdlProvider.get_id() + '_allow_turboBit'])
+                except Exception:
+                    curDdlProvider.storageProviderAllow['TurboBit'] = False
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list

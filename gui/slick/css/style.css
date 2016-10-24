@@ -1704,6 +1704,29 @@ select .selected {
     background-color: #DDDDDD !important;
 }
 
+#provider_order_list .ui-state-default.ddl-provider {
+    background-color: #BBBBBB !important;
+}
+
+#provider-options #zonetelechargementDiv .uptoboxColor{
+    color: #0130CA !important;
+}
+#provider-options #zonetelechargementDiv .upleaColor{
+    color: #0099CC !important;
+}
+#provider-options #zonetelechargementDiv .oneFichierColor{
+    color: #000000 !important;
+}
+#provider-options #zonetelechargementDiv .uploadedColor{
+    color: #216BE7 !important;
+}
+#provider-options #zonetelechargementDiv .rapidgatorColor{
+    color: #FFA518 !important;
+}
+#provider-options #zonetelechargementDiv .turboBitColor{
+    color: #F76B00 !important;
+}
+
 #provider_order_list input,
 #service_order_list input {
     margin: 0 2px;
@@ -1886,6 +1909,10 @@ select .selected {
 
 .add-client-icon-putio {
     background-position: -517px 0;
+}
+
+.add-client-icon-jdownloader {
+    background-position: -549px 0;
 }
 
 /* =======================================================================

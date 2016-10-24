@@ -125,6 +125,13 @@ class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
         super(TorrentSearchResult, self).__init__(episodes)
         self.resultType = u'torrent'
 
+class DDLSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+    """
+    Torrent result with an URL to the torrent
+    """
+    def __init__(self, episodes):
+        super(DDLSearchResult, self).__init__(episodes)
+        self.resultType = u'ddl'
 
 class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
     """

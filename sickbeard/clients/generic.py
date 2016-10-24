@@ -251,6 +251,30 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
 
         return r_code
 
+    def sendDDL(self, result):
+        """
+        Sends the magnet, url, or torrent file content to the client
+        params: :result: an instance of the searchResult class
+        """
+
+        r_code = False
+
+        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
+
+        if not (self.auth or self._get_auth()):
+            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            return r_code
+
+        try:
+            r_code = self._add_uri(result)
+            
+        except Exception as error:
+            logger.log('{0}: Failed Sending URI'.format(self.name), logger.ERROR)
+            logger.log('{0}: Exception raised when sending uri: {1}. Error {2}'.format(self.name, result, error), logger.DEBUG)
+            return r_code
+
+        return r_code
+
     def testAuthentication(self):
         """
         Tests the parameters the user has provided in the ui to see if they are correct
