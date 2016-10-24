@@ -697,15 +697,15 @@
                                     </div>
                                 % endif
 
-                                % if hasattr(curTorrentProvider, 'username') and curTorrentProvider.get_id() == 'tntvillage':
+                                % if hasattr(curTorrentProvider, 'subtitle') and curTorrentProvider.get_id() == 'tntvillage':
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Subtitled')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id()}_subtitle"
-                                                   id="${curTorrentProvider.get_id()}username" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
-                                            <label for="${curTorrentProvider.get_id()}username">${_('select torrent with Italian subtitle')}</label>
+                                                   id="${curTorrentProvider.get_id()}subtitle" ${('', 'checked="checked"')[bool(curTorrentProvider.subtitle)]}/>
+                                            <label for="${curTorrentProvider.get_id()}subtitle">${_('select torrent with Italian subtitle')}</label>
                                         </div>
                                     </div>
                                 % endif
