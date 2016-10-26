@@ -1912,7 +1912,11 @@ select .selected {
 }
 
 .add-client-icon-jdownloader {
-    background-position: -549px 0;
+    background-position: -551px 0;
+}
+
+.add-client-icon-pyload {
+    background-position: -585px 0;
 }
 
 /* =======================================================================

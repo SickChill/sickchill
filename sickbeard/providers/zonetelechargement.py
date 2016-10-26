@@ -76,6 +76,7 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
             items = []
 
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+
             for search_string in search_params[mode]:
                     
                 detectSeasonEpisode = re.search('(\d{1,2})[^\d]{1,2}(\d{1,2})(?:[^\d]{1,2}(\d{1,2}))?.*', search_string)
@@ -100,7 +101,7 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                         for result_rows in serie_rows:
                             try:
                                 links_page = result_rows.find_all('a')
-                                logger.log(links_page[0].get('href'))
+                                logger.log(links_page[0].get('href'), logger.DEBUG)
                                 
                                 seasonNameDetect = links_page[0].get_text()
                                 if not seasonNameDetect.find("Saison "+str(int(seasonVersion))) >= 0:
@@ -134,8 +135,8 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                                             if providerDDLName in self.storageProviderAllow and \
                                             self.storageProviderAllow[providerDDLName] == 1 and \
                                             providerDDLEpisode.startswith("Episode "+str(int(episodeVersion))):
-                                                logger.log(providerDDLName)
-                                                logger.log(providerDDLLink)
+                                                logger.log(providerDDLName, logger.DEBUG)
+                                                logger.log(providerDDLLink, logger.DEBUG)
 
                                                 item = {'title': title, 'link': providerDDLLink}
                                                 items.append(item)

@@ -342,6 +342,7 @@ TORRENT_AUTH_TYPE = 'none'
 
 DDL_USERNAME = None
 DDL_PASSWORD = None
+DDL_HOST = None
 
 JDOWNLOADER_AUTO_START = None
 JDOWNLOADER_DEVICE_NAME = None
@@ -675,7 +676,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
             FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
-            DDL_USERNAME, DDL_PASSWORD, DDL_METHOD, \
+            DDL_USERNAME, DDL_PASSWORD, DDL_METHOD, DDL_HOST, \
             JDOWNLOADER_AUTO_START, JDOWNLOADER_DEVICE_NAME
 
         if __INITIALIZED__:
@@ -929,9 +930,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         if TORRENT_METHOD not in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
             TORRENT_METHOD = 'blackhole'
 
-        DDL_METHOD = check_setting_str(CFG, 'General', 'ddl_method', 'jdownloader')
-        if DDL_METHOD not in ('jdownloader'):
-            DDL_METHOD = None
+        DDL_METHOD = check_setting_str(CFG, 'General', 'ddl_method', 'pyload')
+        if DDL_METHOD not in ('jdownloader', 'pyload'):
+            DDL_METHOD = 'pyload'
 
         DOWNLOAD_PROPERS = bool(check_setting_int(CFG, 'General', 'download_propers', 1))
         CHECK_PROPERS_INTERVAL = check_setting_str(CFG, 'General', 'check_propers_interval', '')
@@ -1042,7 +1043,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         DDL_USERNAME = check_setting_str(CFG, 'DDL', 'ddl_username', '', censor_log=True)
         DDL_PASSWORD = check_setting_str(CFG, 'DDL', 'ddl_password', '', censor_log=True)
-
+        DDL_HOST = check_setting_str(CFG, 'DDL', 'ddl_host', '')
+        
         JDOWNLOADER_DEVICE_NAME = check_setting_str(CFG, 'JDOWNLOADER', 'jdownloader_device_name', '', censor_log=True)
         JDOWNLOADER_AUTO_START = check_setting_int(CFG, 'JDOWNLOADER', 'jdownloader_auto_start', 0)
 
@@ -2072,7 +2074,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
         'DDL': {
             'ddl_username': DDL_USERNAME,
-            'ddl_password': helpers.encrypt(DDL_PASSWORD, ENCRYPTION_VERSION)
+            'ddl_password': helpers.encrypt(DDL_PASSWORD, ENCRYPTION_VERSION),
+            'ddl_host': DDL_HOST,
         },
 
         'JDOWNLOADER': {

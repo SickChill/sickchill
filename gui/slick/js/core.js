@@ -1664,6 +1664,7 @@ var SICKRAGE = {
                 var selectedProvider = $('#ddl_method :selected').val(),
                     ddlUsernameOption = '#ddl_username_option',
                     ddlPasswordOption = '#ddl_password_option',
+                    ddlHostOption = '#ddl_host_option',
                     jdownloaderDeviceNameOption = '#jdownloader_device_name_option',
                     jdownloaderAutoStartOption = '#jdownloader_auto_start_option';
 
@@ -1674,6 +1675,7 @@ var SICKRAGE = {
 
                 $(ddlUsernameOption).hide();
                 $(ddlPasswordOption).hide();
+                $(ddlHostOption).hide();
                 $(jdownloaderDeviceNameOption).hide();
                 $(jdownloaderAutoStartOption).hide();
 
@@ -1682,6 +1684,10 @@ var SICKRAGE = {
                     $(ddlPasswordOption).show();
                     $(jdownloaderDeviceNameOption).show();
                     $(jdownloaderAutoStartOption).show();
+                }else if (selectedProvider.toLowerCase() === 'pyload') {
+                    $(ddlUsernameOption).show();
+                    $(ddlPasswordOption).show();
+                    $(ddlHostOption).show();
                 }
             };
 

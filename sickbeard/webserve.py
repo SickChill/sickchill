@@ -4086,7 +4086,7 @@ class ConfigSearch(Config):
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
                    syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None,
-                   use_ddls=None, ddl_method=None, ddl_username=None, ddl_password=None,
+                   use_ddls=None, ddl_method=None, ddl_username=None, ddl_password=None, ddl_host=None,
                    jdownloader_device_name=None, jdownloader_auto_start=None):
 
         results = []
@@ -4165,6 +4165,7 @@ class ConfigSearch(Config):
 
         sickbeard.DDL_USERNAME = ddl_username
         sickbeard.DDL_PASSWORD = ddl_password
+        sickbeard.DDL_HOST = ddl_host
 
         sickbeard.JDOWNLOADER_AUTO_START = config.checkbox_to_value(jdownloader_auto_start)
         sickbeard.JDOWNLOADER_DEVICE_NAME = jdownloader_device_name

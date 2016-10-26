@@ -1191,7 +1191,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="ddl_method" id="ddl_method" class="form-control input-sm input200" title="ddl_method">
-                                            <% ddl_method_text = {'jdownloader' : "Jdownloader"} %>
+                                            <% ddl_method_text = {'pyload' : "pyLoad", 'jdownloader' : "Jdownloader"} %>
                                             % for curAction in ddl_method_text:
                                                 <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.DDL_METHOD == curAction]}>${ddl_method_text[curAction]}</option>
                                             % endfor
@@ -1200,6 +1200,26 @@
                                 </div>
 
                                 <div id="options_ddls_clients">
+
+                                    <div class="field-pair row" id="ddl_host_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="host_title">${_('DDL host:port')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="ddl_host" id="ddl_host"
+                                                           value="${sickbeard.DDL_HOST}"
+                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="ddl_host" id="host_desc_ddl">${_('URL to your ddl client (e.g. http://localhost:8000/)')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <div class="field-pair row" id="ddl_username_option">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">

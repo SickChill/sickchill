@@ -29,7 +29,8 @@ _clients = [
     'qbittorrent',
     'mlnet',
     'putio',
-    'jdownloader'
+    'jdownloader',
+    'pyload'
 ]
 
 default_host = {
@@ -42,7 +43,8 @@ default_host = {
     'qbittorrent': 'http://localhost:8080',
     'mlnet': 'http://localhost:4080',
     'putio': 'https://api.put.io/login',
-    'jdownloader': 'https://api.jdownloader.org'
+    'jdownloader': 'https://api.jdownloader.org',
+    'pyload': 'http://localhost:8000'
 }
 
 
