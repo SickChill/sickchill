@@ -70,6 +70,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'password': self.password,
                         'login': 'submit'}
 
+        login_url = self.urls['login']
         if self.custom_url:
             if not validators.url(self.custom_url):
                 logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
