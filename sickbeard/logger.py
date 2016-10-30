@@ -159,6 +159,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         for logger in self.loggers:
             logger.setLevel(log_level)
 
+        logging.getLogger("tornado.general").setLevel('ERROR')
+
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()

@@ -94,11 +94,14 @@ Syntax Reference
 Template expressions are surrounded by double curly braces: ``{{ ... }}``.
 The contents may be any python expression, which will be escaped according
 to the current autoescape setting and inserted into the output.  Other
-template directives use ``{% %}``.  These tags may be escaped as ``{{!``
-and ``{%!`` if you need to include a literal ``{{`` or ``{%`` in the output.
+template directives use ``{% %}``.
 
 To comment out a section so that it is omitted from the output, surround it
 with ``{# ... #}``.
+
+These tags may be escaped as ``{{!``, ``{%!``, and ``{#!``
+if you need to include a literal ``{{``, ``{%``, or ``{#`` in the output.
+
 
 ``{% apply *function* %}...{% end %}``
     Applies a function to the output of all template code between ``apply``
@@ -186,6 +189,11 @@ with ``{# ... #}``.
 ``{% while *condition* %}... {% end %}``
     Same as the python ``while`` statement.  ``{% break %}`` and
     ``{% continue %}`` may be used inside the loop.
+
+``{% whitespace *mode* %}``
+    Sets the whitespace mode for the remainder of the current file
+    (or until the next ``{% whitespace %}`` directive). See
+    `filter_whitespace` for available options. New in Tornado 4.3.
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
@@ -199,15 +207,40 @@ import threading
 
 from tornado import escape
 from tornado.log import app_log
-from tornado.util import ObjectDict, exec_in, unicode_type
+from tornado.util import ObjectDict, exec_in, unicode_type, PY3
 
-try:
-    from cStringIO import StringIO  # py2
-except ImportError:
-    from io import StringIO  # py3
+if PY3:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
 
 _DEFAULT_AUTOESCAPE = "xhtml_escape"
 _UNSET = object()
+
+
+def filter_whitespace(mode, text):
+    """Transform whitespace in ``text`` according to ``mode``.
+
+    Available modes are:
+
+    * ``all``: Return all whitespace unmodified.
+    * ``single``: Collapse consecutive whitespace with a single whitespace
+      character, preserving newlines.
+    * ``oneline``: Collapse all runs of whitespace into a single space
+      character, removing all newlines in the process.
+
+    .. versionadded:: 4.3
+    """
+    if mode == 'all':
+        return text
+    elif mode == 'single':
+        text = re.sub(r"([\t ]+)", " ", text)
+        text = re.sub(r"(\s*\n\s*)", "\n", text)
+        return text
+    elif mode == 'oneline':
+        return re.sub(r"(\s+)", " ", text)
+    else:
+        raise Exception("invalid whitespace mode %s" % mode)
 
 
 class Template(object):
@@ -220,21 +253,58 @@ class Template(object):
     # autodoc because _UNSET looks like garbage.  When changing
     # this signature update website/sphinx/template.rst too.
     def __init__(self, template_string, name="<string>", loader=None,
-                 compress_whitespace=None, autoescape=_UNSET):
-        self.name = name
-        if compress_whitespace is None:
-            compress_whitespace = name.endswith(".html") or \
-                name.endswith(".js")
+                 compress_whitespace=_UNSET, autoescape=_UNSET,
+                 whitespace=None):
+        """Construct a Template.
+
+        :arg str template_string: the contents of the template file.
+        :arg str name: the filename from which the template was loaded
+            (used for error message).
+        :arg tornado.template.BaseLoader loader: the `~tornado.template.BaseLoader` responsible for this template,
+            used to resolve ``{% include %}`` and ``{% extend %}``
+            directives.
+        :arg bool compress_whitespace: Deprecated since Tornado 4.3.
+            Equivalent to ``whitespace="single"`` if true and
+            ``whitespace="all"`` if false.
+        :arg str autoescape: The name of a function in the template
+            namespace, or ``None`` to disable escaping by default.
+        :arg str whitespace: A string specifying treatment of whitespace;
+            see `filter_whitespace` for options.
+
+        .. versionchanged:: 4.3
+           Added ``whitespace`` parameter; deprecated ``compress_whitespace``.
+        """
+        self.name = escape.native_str(name)
+
+        if compress_whitespace is not _UNSET:
+            # Convert deprecated compress_whitespace (bool) to whitespace (str).
+            if whitespace is not None:
+                raise Exception("cannot set both whitespace and compress_whitespace")
+            whitespace = "single" if compress_whitespace else "all"
+        if whitespace is None:
+            if loader and loader.whitespace:
+                whitespace = loader.whitespace
+            else:
+                # Whitespace defaults by filename.
+                if name.endswith(".html") or name.endswith(".js"):
+                    whitespace = "single"
+                else:
+                    whitespace = "all"
+        # Validate the whitespace setting.
+        filter_whitespace(whitespace, '')
+
         if autoescape is not _UNSET:
             self.autoescape = autoescape
         elif loader:
             self.autoescape = loader.autoescape
         else:
             self.autoescape = _DEFAULT_AUTOESCAPE
+
         self.namespace = loader.namespace if loader else {}
-        reader = _TemplateReader(name, escape.native_str(template_string))
+        reader = _TemplateReader(name, escape.native_str(template_string),
+                                 whitespace)
         self.file = _File(self, _parse(reader, self))
-        self.code = self._generate_python(loader, compress_whitespace)
+        self.code = self._generate_python(loader)
         self.loader = loader
         try:
             # Under python2.5, the fake filename used here must match
@@ -277,7 +347,7 @@ class Template(object):
         linecache.clearcache()
         return execute()
 
-    def _generate_python(self, loader, compress_whitespace):
+    def _generate_python(self, loader):
         buffer = StringIO()
         try:
             # named_blocks maps from names to _NamedBlock objects
@@ -286,8 +356,8 @@ class Template(object):
             ancestors.reverse()
             for ancestor in ancestors:
                 ancestor.find_named_blocks(loader, named_blocks)
-            writer = _CodeWriter(buffer, named_blocks, loader, ancestors[0].template,
-                                 compress_whitespace)
+            writer = _CodeWriter(buffer, named_blocks, loader,
+                                 ancestors[0].template)
             ancestors[0].generate(writer)
             return buffer.getvalue()
         finally:
@@ -312,12 +382,26 @@ class BaseLoader(object):
     ``{% extends %}`` and ``{% include %}``. The loader caches all
     templates after they are loaded the first time.
     """
-    def __init__(self, autoescape=_DEFAULT_AUTOESCAPE, namespace=None):
-        """``autoescape`` must be either None or a string naming a function
-        in the template namespace, such as "xhtml_escape".
+    def __init__(self, autoescape=_DEFAULT_AUTOESCAPE, namespace=None,
+                 whitespace=None):
+        """Construct a template loader.
+
+        :arg str autoescape: The name of a function in the template
+            namespace, such as "xhtml_escape", or ``None`` to disable
+            autoescaping by default.
+        :arg dict namespace: A dictionary to be added to the default template
+            namespace, or ``None``.
+        :arg str whitespace: A string specifying default behavior for
+            whitespace in templates; see `filter_whitespace` for options.
+            Default is "single" for files ending in ".html" and ".js" and
+            "all" for other files.
+
+        .. versionchanged:: 4.3
+           Added ``whitespace`` parameter.
         """
         self.autoescape = autoescape
         self.namespace = namespace or {}
+        self.whitespace = whitespace
         self.templates = {}
         # self.lock protects self.templates.  It's a reentrant lock
         # because templates may load other templates via `include` or
@@ -558,37 +642,49 @@ class _Module(_Expression):
 
 
 class _Text(_Node):
-    def __init__(self, value, line):
+    def __init__(self, value, line, whitespace):
         self.value = value
         self.line = line
+        self.whitespace = whitespace
 
     def generate(self, writer):
         value = self.value
 
-        # Compress lots of white space to a single character. If the whitespace
-        # breaks a line, have it continue to break a line, but just with a
-        # single \n character
-        if writer.compress_whitespace and "<pre>" not in value:
-            value = re.sub(r"([\t ]+)", " ", value)
-            value = re.sub(r"(\s*\n\s*)", "\n", value)
+        # Compress whitespace if requested, with a crude heuristic to avoid
+        # altering preformatted whitespace.
+        if "<pre>" not in value:
+            value = filter_whitespace(self.whitespace, value)
 
         if value:
             writer.write_line('_tt_append(%r)' % escape.utf8(value), self.line)
 
 
 class ParseError(Exception):
-    """Raised for template syntax errors."""
-    pass
+    """Raised for template syntax errors.
+
+    ``ParseError`` instances have ``filename`` and ``lineno`` attributes
+    indicating the position of the error.
+
+    .. versionchanged:: 4.3
+       Added ``filename`` and ``lineno`` attributes.
+    """
+    def __init__(self, message, filename=None, lineno=0):
+        self.message = message
+        # The names "filename" and "lineno" are chosen for consistency
+        # with python SyntaxError.
+        self.filename = filename
+        self.lineno = lineno
+
+    def __str__(self):
+        return '%s at %s:%d' % (self.message, self.filename, self.lineno)
 
 
 class _CodeWriter(object):
-    def __init__(self, file, named_blocks, loader, current_template,
-                 compress_whitespace):
+    def __init__(self, file, named_blocks, loader, current_template):
         self.file = file
         self.named_blocks = named_blocks
         self.loader = loader
         self.current_template = current_template
-        self.compress_whitespace = compress_whitespace
         self.apply_counter = 0
         self.include_stack = []
         self._indent = 0
@@ -633,9 +729,10 @@ class _CodeWriter(object):
 
 
 class _TemplateReader(object):
-    def __init__(self, name, text):
+    def __init__(self, name, text, whitespace):
         self.name = name
         self.text = text
+        self.whitespace = whitespace
         self.line = 1
         self.pos = 0
 
@@ -687,6 +784,9 @@ class _TemplateReader(object):
     def __str__(self):
         return self.text[self.pos:]
 
+    def raise_parse_error(self, msg):
+        raise ParseError(msg, self.name, self.line)
+
 
 def _format_code(code):
     lines = code.splitlines()
@@ -704,9 +804,10 @@ def _parse(reader, template, in_block=None, in_loop=None):
             if curly == -1 or curly + 1 == reader.remaining():
                 # EOF
                 if in_block:
-                    raise ParseError("Missing {%% end %%} block for %s" %
-                                     in_block)
-                body.chunks.append(_Text(reader.consume(), reader.line))
+                    reader.raise_parse_error(
+                        "Missing {%% end %%} block for %s" % in_block)
+                body.chunks.append(_Text(reader.consume(), reader.line,
+                                         reader.whitespace))
                 return body
             # If the first curly brace is not the start of a special token,
             # start searching from the character after it
@@ -725,7 +826,8 @@ def _parse(reader, template, in_block=None, in_loop=None):
         # Append any text before the special token
         if curly > 0:
             cons = reader.consume(curly)
-            body.chunks.append(_Text(cons, reader.line))
+            body.chunks.append(_Text(cons, reader.line,
+                                     reader.whitespace))
 
         start_brace = reader.consume(2)
         line = reader.line
@@ -736,14 +838,15 @@ def _parse(reader, template, in_block=None, in_loop=None):
         # which also use double braces.
         if reader.remaining() and reader[0] == "!":
             reader.consume(1)
-            body.chunks.append(_Text(start_brace, line))
+            body.chunks.append(_Text(start_brace, line,
+                                     reader.whitespace))
             continue
 
         # Comment
         if start_brace == "{#":
             end = reader.find("#}")
             if end == -1:
-                raise ParseError("Missing end expression #} on line %d" % line)
+                reader.raise_parse_error("Missing end comment #}")
             contents = reader.consume(end).strip()
             reader.consume(2)
             continue
@@ -752,11 +855,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
         if start_brace == "{{":
             end = reader.find("}}")
             if end == -1:
-                raise ParseError("Missing end expression }} on line %d" % line)
+                reader.raise_parse_error("Missing end expression }}")
             contents = reader.consume(end).strip()
             reader.consume(2)
             if not contents:
-                raise ParseError("Empty expression on line %d" % line)
+                reader.raise_parse_error("Empty expression")
             body.chunks.append(_Expression(contents, line))
             continue
 
@@ -764,11 +867,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
         assert start_brace == "{%", start_brace
         end = reader.find("%}")
         if end == -1:
-            raise ParseError("Missing end block %%} on line %d" % line)
+            reader.raise_parse_error("Missing end block %}")
         contents = reader.consume(end).strip()
         reader.consume(2)
         if not contents:
-            raise ParseError("Empty block tag ({%% %%}) on line %d" % line)
+            reader.raise_parse_error("Empty block tag ({% %})")
 
         operator, space, suffix = contents.partition(" ")
         suffix = suffix.strip()
@@ -783,46 +886,55 @@ def _parse(reader, template, in_block=None, in_loop=None):
         allowed_parents = intermediate_blocks.get(operator)
         if allowed_parents is not None:
             if not in_block:
-                raise ParseError("%s outside %s block" %
-                                 (operator, allowed_parents))
+                reader.raise_parse_error("%s outside %s block" %
+                                         (operator, allowed_parents))
             if in_block not in allowed_parents:
-                raise ParseError("%s block cannot be attached to %s block" % (operator, in_block))
+                reader.raise_parse_error(
+                    "%s block cannot be attached to %s block" %
+                    (operator, in_block))
             body.chunks.append(_IntermediateControlBlock(contents, line))
             continue
 
         # End tag
         elif operator == "end":
             if not in_block:
-                raise ParseError("Extra {%% end %%} block on line %d" % line)
+                reader.raise_parse_error("Extra {% end %} block")
             return body
 
         elif operator in ("extends", "include", "set", "import", "from",
-                          "comment", "autoescape", "raw", "module"):
+                          "comment", "autoescape", "whitespace", "raw",
+                          "module"):
             if operator == "comment":
                 continue
             if operator == "extends":
                 suffix = suffix.strip('"').strip("'")
                 if not suffix:
-                    raise ParseError("extends missing file path on line %d" % line)
+                    reader.raise_parse_error("extends missing file path")
                 block = _ExtendsBlock(suffix)
             elif operator in ("import", "from"):
                 if not suffix:
-                    raise ParseError("import missing statement on line %d" % line)
+                    reader.raise_parse_error("import missing statement")
                 block = _Statement(contents, line)
             elif operator == "include":
                 suffix = suffix.strip('"').strip("'")
                 if not suffix:
-                    raise ParseError("include missing file path on line %d" % line)
+                    reader.raise_parse_error("include missing file path")
                 block = _IncludeBlock(suffix, reader, line)
             elif operator == "set":
                 if not suffix:
-                    raise ParseError("set missing statement on line %d" % line)
+                    reader.raise_parse_error("set missing statement")
                 block = _Statement(suffix, line)
             elif operator == "autoescape":
                 fn = suffix.strip()
                 if fn == "None":
                     fn = None
                 template.autoescape = fn
+                continue
+            elif operator == "whitespace":
+                mode = suffix.strip()
+                # Validate the selected mode
+                filter_whitespace(mode, '')
+                reader.whitespace = mode
                 continue
             elif operator == "raw":
                 block = _Expression(suffix, line, raw=True)
@@ -844,11 +956,11 @@ def _parse(reader, template, in_block=None, in_loop=None):
 
             if operator == "apply":
                 if not suffix:
-                    raise ParseError("apply missing method name on line %d" % line)
+                    reader.raise_parse_error("apply missing method name")
                 block = _ApplyBlock(suffix, line, block_body)
             elif operator == "block":
                 if not suffix:
-                    raise ParseError("block missing name on line %d" % line)
+                    reader.raise_parse_error("block missing name")
                 block = _NamedBlock(suffix, block_body, template, line)
             else:
                 block = _ControlBlock(contents, line, block_body)
@@ -857,9 +969,10 @@ def _parse(reader, template, in_block=None, in_loop=None):
 
         elif operator in ("break", "continue"):
             if not in_loop:
-                raise ParseError("%s outside %s block" % (operator, set(["for", "while"])))
+                reader.raise_parse_error("%s outside %s block" %
+                                         (operator, set(["for", "while"])))
             body.chunks.append(_Statement(contents, line))
             continue
 
         else:
-            raise ParseError("unknown operator: %r" % operator)
+            reader.raise_parse_error("unknown operator: %r" % operator)

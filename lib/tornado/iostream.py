@@ -58,7 +58,7 @@ except ImportError:
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 
 if hasattr(errno, "WSAEWOULDBLOCK"):
-    _ERRNO_WOULDBLOCK += (errno.WSAEWOULDBLOCK,)
+    _ERRNO_WOULDBLOCK += (errno.WSAEWOULDBLOCK,)  # type: ignore
 
 # These errnos indicate that a connection has been abruptly terminated.
 # They should be caught and handled less noisily than other errors.
@@ -66,7 +66,7 @@ _ERRNO_CONNRESET = (errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE,
                     errno.ETIMEDOUT)
 
 if hasattr(errno, "WSAECONNRESET"):
-    _ERRNO_CONNRESET += (errno.WSAECONNRESET, errno.WSAECONNABORTED, errno.WSAETIMEDOUT)
+    _ERRNO_CONNRESET += (errno.WSAECONNRESET, errno.WSAECONNABORTED, errno.WSAETIMEDOUT)  # type: ignore
 
 if sys.platform == 'darwin':
     # OSX appears to have a race condition that causes send(2) to return
@@ -74,13 +74,13 @@ if sys.platform == 'darwin':
     # http://erickt.github.io/blog/2014/11/19/adventures-in-debugging-a-potential-osx-kernel-bug/
     # Since the socket is being closed anyway, treat this as an ECONNRESET
     # instead of an unexpected error.
-    _ERRNO_CONNRESET += (errno.EPROTOTYPE,)
+    _ERRNO_CONNRESET += (errno.EPROTOTYPE,)  # type: ignore
 
 # More non-portable errnos:
 _ERRNO_INPROGRESS = (errno.EINPROGRESS,)
 
 if hasattr(errno, "WSAEINPROGRESS"):
-    _ERRNO_INPROGRESS += (errno.WSAEINPROGRESS,)
+    _ERRNO_INPROGRESS += (errno.WSAEINPROGRESS,)  # type: ignore
 
 
 class StreamClosedError(IOError):
@@ -89,8 +89,16 @@ class StreamClosedError(IOError):
     Note that the close callback is scheduled to run *after* other
     callbacks on the stream (to allow for buffered data to be processed),
     so you may see this error before you see the close callback.
+
+    The ``real_error`` attribute contains the underlying error that caused
+    the stream to close (if any).
+
+    .. versionchanged:: 4.3
+       Added the ``real_error`` attribute.
     """
-    pass
+    def __init__(self, real_error=None):
+        super(StreamClosedError, self).__init__('Stream is closed')
+        self.real_error = real_error
 
 
 class UnsatisfiableReadError(Exception):
@@ -344,7 +352,8 @@ class BaseIOStream(object):
         try:
             self._try_inline_read()
         except:
-            future.add_done_callback(lambda f: f.exception())
+            if future is not None:
+                future.add_done_callback(lambda f: f.exception())
             raise
         return future
 
@@ -446,13 +455,7 @@ class BaseIOStream(object):
                 futures.append(self._ssl_connect_future)
                 self._ssl_connect_future = None
             for future in futures:
-                if self._is_connreset(self.error):
-                    # Treat connection resets as closed connections so
-                    # clients only have to catch one kind of exception
-                    # to avoid logging.
-                    future.set_exception(StreamClosedError())
-                else:
-                    future.set_exception(self.error or StreamClosedError())
+                future.set_exception(StreamClosedError(real_error=self.error))
             if self._close_callback is not None:
                 cb = self._close_callback
                 self._close_callback = None
@@ -644,8 +647,8 @@ class BaseIOStream(object):
             pos = self._read_to_buffer_loop()
         except UnsatisfiableReadError:
             raise
-        except Exception:
-            gen_log.warning("error on read", exc_info=True)
+        except Exception as e:
+            gen_log.warning("error on read: %s" % e)
             self.close(exc_info=True)
             return
         if pos is not None:
@@ -722,18 +725,22 @@ class BaseIOStream(object):
         to read (i.e. the read returns EWOULDBLOCK or equivalent).  On
         error closes the socket and raises an exception.
         """
-        try:
-            chunk = self.read_from_fd()
-        except (socket.error, IOError, OSError) as e:
-            # ssl.SSLError is a subclass of socket.error
-            if self._is_connreset(e):
-                # Treat ECONNRESET as a connection close rather than
-                # an error to minimize log spam  (the exception will
-                # be available on self.error for apps that care).
+        while True:
+            try:
+                chunk = self.read_from_fd()
+            except (socket.error, IOError, OSError) as e:
+                if errno_from_exception(e) == errno.EINTR:
+                    continue
+                # ssl.SSLError is a subclass of socket.error
+                if self._is_connreset(e):
+                    # Treat ECONNRESET as a connection close rather than
+                    # an error to minimize log spam  (the exception will
+                    # be available on self.error for apps that care).
+                    self.close(exc_info=True)
+                    return
                 self.close(exc_info=True)
-                return
-            self.close(exc_info=True)
-            raise
+                raise
+            break
         if chunk is None:
             return 0
         self._read_buffer.append(chunk)
@@ -875,7 +882,7 @@ class BaseIOStream(object):
 
     def _check_closed(self):
         if self.closed():
-            raise StreamClosedError("Stream is closed")
+            raise StreamClosedError(real_error=self.error)
 
     def _maybe_add_error_listener(self):
         # This method is part of an optimization: to detect a connection that
@@ -1148,6 +1155,15 @@ class IOStream(BaseIOStream):
 
         def close_callback():
             if not future.done():
+                # Note that unlike most Futures returned by IOStream,
+                # this one passes the underlying error through directly
+                # instead of wrapping everything in a StreamClosedError
+                # with a real_error attribute. This is because once the
+                # connection is established it's more helpful to raise
+                # the SSLError directly than to hide it behind a
+                # StreamClosedError (and the client is expecting SSL
+                # issues rather than network issues since this method is
+                # named start_tls).
                 future.set_exception(ssl_stream.error or StreamClosedError())
             if orig_close_callback is not None:
                 orig_close_callback()
@@ -1262,10 +1278,11 @@ class SSLIOStream(IOStream):
             raise
         except socket.error as err:
             # Some port scans (e.g. nmap in -sT mode) have been known
-            # to cause do_handshake to raise EBADF, so make that error
-            # quiet as well.
+            # to cause do_handshake to raise EBADF and ENOTCONN, so make
+            # those errors quiet as well.
             # https://groups.google.com/forum/?fromgroups#!topic/python-tornado/ApucKJat1_0
-            if self._is_connreset(err) or err.args[0] == errno.EBADF:
+            if (self._is_connreset(err) or
+                    err.args[0] in (errno.EBADF, errno.ENOTCONN)):
                 return self.close(exc_info=True)
             raise
         except AttributeError:
@@ -1311,8 +1328,8 @@ class SSLIOStream(IOStream):
             return False
         try:
             ssl_match_hostname(peercert, self._server_hostname)
-        except SSLCertificateError:
-            gen_log.warning("Invalid SSL certificate", exc_info=True)
+        except SSLCertificateError as e:
+            gen_log.warning("Invalid SSL certificate: %s" % e)
             return False
         else:
             return True

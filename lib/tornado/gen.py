@@ -79,23 +79,58 @@ from __future__ import absolute_import, division, print_function, with_statement
 import collections
 import functools
 import itertools
+import os
 import sys
+import textwrap
 import types
-import weakref
 
 from tornado.concurrent import Future, TracebackFuture, is_future, chain_future
 from tornado.ioloop import IOLoop
 from tornado.log import app_log
 from tornado import stack_context
-from tornado.util import raise_exc_info
+from tornado.util import PY3, raise_exc_info
 
 try:
-    from functools import singledispatch  # py34+
-except ImportError as e:
     try:
-        from singledispatch import singledispatch  # backport
+        # py34+
+        from functools import singledispatch  # type: ignore
     except ImportError:
-        singledispatch = None
+        from singledispatch import singledispatch  # backport
+except ImportError:
+    # In most cases, singledispatch is required (to avoid
+    # difficult-to-diagnose problems in which the functionality
+    # available differs depending on which invisble packages are
+    # installed). However, in Google App Engine third-party
+    # dependencies are more trouble so we allow this module to be
+    # imported without it.
+    if 'APPENGINE_RUNTIME' not in os.environ:
+        raise
+    singledispatch = None
+
+try:
+    try:
+        # py35+
+        from collections.abc import Generator as GeneratorType  # type: ignore
+    except ImportError:
+        from backports_abc import Generator as GeneratorType  # type: ignore
+
+    try:
+        # py35+
+        from inspect import isawaitable  # type: ignore
+    except ImportError:
+        from backports_abc import isawaitable
+except ImportError:
+    if 'APPENGINE_RUNTIME' not in os.environ:
+        raise
+    from types import GeneratorType
+
+    def isawaitable(x):  # type: ignore
+        return False
+
+if PY3:
+    import builtins
+else:
+    import __builtin__ as builtins
 
 
 class KeyReuseError(Exception):
@@ -120,6 +155,21 @@ class ReturnValueIgnoredError(Exception):
 
 class TimeoutError(Exception):
     """Exception raised by ``with_timeout``."""
+
+
+def _value_from_stopiteration(e):
+    try:
+        # StopIteration has a value attribute beginning in py33.
+        # So does our Return class.
+        return e.value
+    except AttributeError:
+        pass
+    try:
+        # Cython backports coroutine functionality by putting the value in
+        # e.args[0].
+        return e.args[0]
+    except (AttributeError, IndexError):
+        return None
 
 
 def engine(func):
@@ -202,6 +252,11 @@ def _make_coroutine_wrapper(func, replace_callback):
     argument, so we cannot simply implement ``@engine`` in terms of
     ``@coroutine``.
     """
+    # On Python 3.5, set the coroutine flag on our generator, to allow it
+    # to be used with 'await'.
+    if hasattr(types, 'coroutine'):
+        func = types.coroutine(func)
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         future = TracebackFuture()
@@ -214,12 +269,12 @@ def _make_coroutine_wrapper(func, replace_callback):
         try:
             result = func(*args, **kwargs)
         except (Return, StopIteration) as e:
-            result = getattr(e, 'value', None)
+            result = _value_from_stopiteration(e)
         except Exception:
             future.set_exc_info(sys.exc_info())
             return future
         else:
-            if isinstance(result, types.GeneratorType):
+            if isinstance(result, GeneratorType):
                 # Inline the first iteration of Runner.run.  This lets us
                 # avoid the cost of creating a Runner when the coroutine
                 # never actually yields, which in turn allows us to
@@ -235,7 +290,7 @@ def _make_coroutine_wrapper(func, replace_callback):
                                 'stack_context inconsistency (probably caused '
                                 'by yield within a "with StackContext" block)'))
                 except (StopIteration, Return) as e:
-                    future.set_result(getattr(e, 'value', None))
+                    future.set_result(_value_from_stopiteration(e))
                 except Exception:
                     future.set_exc_info(sys.exc_info())
                 else:
@@ -280,6 +335,8 @@ class Return(Exception):
     def __init__(self, value=None):
         super(Return, self).__init__()
         self.value = value
+        # Cython recognizes subclasses of StopIteration with a .args tuple.
+        self.args = (value,)
 
 
 class WaitIterator(object):
@@ -318,7 +375,22 @@ class WaitIterator(object):
     arguments were used in the construction of the `WaitIterator`,
     ``current_index`` will use the corresponding keyword).
 
+    On Python 3.5, `WaitIterator` implements the async iterator
+    protocol, so it can be used with the ``async for`` statement (note
+    that in this version the entire iteration is aborted if any value
+    raises an exception, while the previous example can continue past
+    individual errors)::
+
+      async for result in gen.WaitIterator(future1, future2):
+          print("Result {} received from {} at {}".format(
+              result, wait_iterator.current_future,
+              wait_iterator.current_index))
+
     .. versionadded:: 4.1
+
+    .. versionchanged:: 4.3
+       Added ``async for`` support in Python 3.5.
+
     """
     def __init__(self, *args, **kwargs):
         if args and kwargs:
@@ -374,6 +446,16 @@ class WaitIterator(object):
 
         self.current_future = done
         self.current_index = self._unfinished.pop(done)
+
+    @coroutine
+    def __aiter__(self):
+        raise Return(self)
+
+    def __anext__(self):
+        if self.done():
+            # Lookup by name to silence pyflakes on older versions.
+            raise getattr(builtins, 'StopAsyncIteration')()
+        return self.next()
 
 
 class YieldPoint(object):
@@ -539,27 +621,91 @@ class YieldFuture(YieldPoint):
             return self.result_fn()
 
 
-class Multi(YieldPoint):
+def _contains_yieldpoint(children):
+    """Returns True if ``children`` contains any YieldPoints.
+
+    ``children`` may be a dict or a list, as used by `MultiYieldPoint`
+    and `multi_future`.
+    """
+    if isinstance(children, dict):
+        return any(isinstance(i, YieldPoint) for i in children.values())
+    if isinstance(children, list):
+        return any(isinstance(i, YieldPoint) for i in children)
+    return False
+
+
+def multi(children, quiet_exceptions=()):
     """Runs multiple asynchronous operations in parallel.
 
-    Takes a list of ``YieldPoints`` or ``Futures`` and returns a list of
-    their responses.  It is not necessary to call `Multi` explicitly,
-    since the engine will do so automatically when the generator yields
-    a list of ``YieldPoints`` or a mixture of ``YieldPoints`` and ``Futures``.
+    ``children`` may either be a list or a dict whose values are
+    yieldable objects. ``multi()`` returns a new yieldable
+    object that resolves to a parallel structure containing their
+    results. If ``children`` is a list, the result is a list of
+    results in the same order; if it is a dict, the result is a dict
+    with the same keys.
 
-    Instead of a list, the argument may also be a dictionary whose values are
-    Futures, in which case a parallel dictionary is returned mapping the same
-    keys to their results.
+    That is, ``results = yield multi(list_of_futures)`` is equivalent
+    to::
 
-    It is not normally necessary to call this class directly, as it
-    will be created automatically as needed. However, calling it directly
-    allows you to use the ``quiet_exceptions`` argument to control
-    the logging of multiple exceptions.
+        results = []
+        for future in list_of_futures:
+            results.append(yield future)
+
+    If any children raise exceptions, ``multi()`` will raise the first
+    one. All others will be logged, unless they are of types
+    contained in the ``quiet_exceptions`` argument.
+
+    If any of the inputs are `YieldPoints <YieldPoint>`, the returned
+    yieldable object is a `YieldPoint`. Otherwise, returns a `.Future`.
+    This means that the result of `multi` can be used in a native
+    coroutine if and only if all of its children can be.
+
+    In a ``yield``-based coroutine, it is not normally necessary to
+    call this function directly, since the coroutine runner will
+    do it automatically when a list or dict is yielded. However,
+    it is necessary in ``await``-based coroutines, or to pass
+    the ``quiet_exceptions`` argument.
+
+    This function is available under the names ``multi()`` and ``Multi()``
+    for historical reasons.
+
+    .. versionchanged:: 4.2
+       If multiple yieldables fail, any exceptions after the first
+       (which is raised) will be logged. Added the ``quiet_exceptions``
+       argument to suppress this logging for selected exception types.
+
+    .. versionchanged:: 4.3
+       Replaced the class ``Multi`` and the function ``multi_future``
+       with a unified function ``multi``. Added support for yieldables
+       other than `YieldPoint` and `.Future`.
+
+    """
+    if _contains_yieldpoint(children):
+        return MultiYieldPoint(children, quiet_exceptions=quiet_exceptions)
+    else:
+        return multi_future(children, quiet_exceptions=quiet_exceptions)
+
+Multi = multi
+
+
+class MultiYieldPoint(YieldPoint):
+    """Runs multiple asynchronous operations in parallel.
+
+    This class is similar to `multi`, but it always creates a stack
+    context even when no children require it. It is not compatible with
+    native coroutines.
 
     .. versionchanged:: 4.2
        If multiple ``YieldPoints`` fail, any exceptions after the first
        (which is raised) will be logged. Added the ``quiet_exceptions``
        argument to suppress this logging for selected exception types.
+
+    .. versionchanged:: 4.3
+       Renamed from ``Multi`` to ``MultiYieldPoint``. The name ``Multi``
+       remains as an alias for the equivalent `multi` function.
+
+    .. deprecated:: 4.3
+       Use `multi` instead.
     """
     def __init__(self, children, quiet_exceptions=()):
         self.keys = None
@@ -568,6 +714,8 @@ class Multi(YieldPoint):
             children = children.values()
         self.children = []
         for i in children:
+            if not isinstance(i, YieldPoint):
+                i = convert_yielded(i)
             if is_future(i):
                 i = YieldFuture(i)
             self.children.append(i)
@@ -609,24 +757,8 @@ class Multi(YieldPoint):
 def multi_future(children, quiet_exceptions=()):
     """Wait for multiple asynchronous futures in parallel.
 
-    Takes a list of ``Futures`` (but *not* other ``YieldPoints``) and returns
-    a new Future that resolves when all the other Futures are done.
-    If all the ``Futures`` succeeded, the returned Future's result is a list
-    of their results.  If any failed, the returned Future raises the exception
-    of the first one to fail.
-
-    Instead of a list, the argument may also be a dictionary whose values are
-    Futures, in which case a parallel dictionary is returned mapping the same
-    keys to their results.
-
-    It is not normally necessary to call `multi_future` explcitly,
-    since the engine will do so automatically when the generator
-    yields a list of ``Futures``. However, calling it directly
-    allows you to use the ``quiet_exceptions`` argument to control
-    the logging of multiple exceptions.
-
-    This function is faster than the `Multi` `YieldPoint` because it
-    does not require the creation of a stack context.
+    This function is similar to `multi`, but does not support
+    `YieldPoints <YieldPoint>`.
 
     .. versionadded:: 4.0
 
@@ -634,12 +766,16 @@ def multi_future(children, quiet_exceptions=()):
        If multiple ``Futures`` fail, any exceptions after the first (which is
        raised) will be logged. Added the ``quiet_exceptions``
        argument to suppress this logging for selected exception types.
+
+    .. deprecated:: 4.3
+       Use `multi` instead.
     """
     if isinstance(children, dict):
         keys = list(children.keys())
         children = children.values()
     else:
         keys = None
+    children = list(map(convert_yielded, children))
     assert all(is_future(i) for i in children)
     unfinished_children = set(children)
 
@@ -682,6 +818,11 @@ def maybe_future(x):
     it is wrapped in a new `.Future`.  This is suitable for use as
     ``result = yield gen.maybe_future(f())`` when you don't know whether
     ``f()`` returns a `.Future` or not.
+
+    .. deprecated:: 4.3
+       This function only handles ``Futures``, not other yieldable objects.
+       Instead of `maybe_future`, check for the non-future result types
+       you expect (often just ``None``), and ``yield`` anything unknown.
     """
     if is_future(x):
         return x
@@ -692,7 +833,7 @@ def maybe_future(x):
 
 
 def with_timeout(timeout, future, io_loop=None, quiet_exceptions=()):
-    """Wraps a `.Future` in a timeout.
+    """Wraps a `.Future` (or other yieldable object) in a timeout.
 
     Raises `TimeoutError` if the input future does not complete before
     ``timeout``, which may be specified in any form allowed by
@@ -703,15 +844,18 @@ def with_timeout(timeout, future, io_loop=None, quiet_exceptions=()):
     will be logged unless it is of a type contained in ``quiet_exceptions``
     (which may be an exception type or a sequence of types).
 
-    Currently only supports Futures, not other `YieldPoint` classes.
+    Does not support `YieldPoint` subclasses.
 
     .. versionadded:: 4.0
 
     .. versionchanged:: 4.1
        Added the ``quiet_exceptions`` argument and the logging of unhandled
        exceptions.
+
+    .. versionchanged:: 4.4
+       Added support for yieldable objects other than `.Future`.
     """
-    # TODO: allow yield points in addition to futures?
+    # TODO: allow YieldPoints in addition to other yieldables?
     # Tricky to do with stack_context semantics.
     #
     # It's tempting to optimize this by cancelling the input future on timeout
@@ -719,6 +863,7 @@ def with_timeout(timeout, future, io_loop=None, quiet_exceptions=()):
     # one waiting on the input future, so cancelling it might disrupt other
     # callers and B) concurrent futures can only be cancelled while they are
     # in the queue, so cancellation cannot reliably bound our waiting time.
+    future = convert_yielded(future)
     result = Future()
     chain_future(future, result)
     if io_loop is None:
@@ -894,7 +1039,7 @@ class Runner(object):
                         raise LeakedCallbackError(
                             "finished without waiting for callbacks %r" %
                             self.pending_callbacks)
-                    self.result_future.set_result(getattr(e, 'value', None))
+                    self.result_future.set_result(_value_from_stopiteration(e))
                     self.result_future = None
                     self._deactivate_stack_context()
                     return
@@ -912,13 +1057,9 @@ class Runner(object):
 
     def handle_yield(self, yielded):
         # Lists containing YieldPoints require stack contexts;
-        # other lists are handled via multi_future in convert_yielded.
-        if (isinstance(yielded, list) and
-                any(isinstance(f, YieldPoint) for f in yielded)):
-            yielded = Multi(yielded)
-        elif (isinstance(yielded, dict) and
-              any(isinstance(f, YieldPoint) for f in yielded.values())):
-            yielded = Multi(yielded)
+        # other lists are handled in convert_yielded.
+        if _contains_yieldpoint(yielded):
+            yielded = multi(yielded)
 
         if isinstance(yielded, YieldPoint):
             # YieldPoints are too closely coupled to the Runner to go
@@ -1001,6 +1142,67 @@ def _argument_adapter(callback):
             callback(None)
     return wrapper
 
+# Convert Awaitables into Futures. It is unfortunately possible
+# to have infinite recursion here if those Awaitables assume that
+# we're using a different coroutine runner and yield objects
+# we don't understand. If that happens, the solution is to
+# register that runner's yieldable objects with convert_yielded.
+if sys.version_info >= (3, 3):
+    exec(textwrap.dedent("""
+    @coroutine
+    def _wrap_awaitable(x):
+        if hasattr(x, '__await__'):
+            x = x.__await__()
+        return (yield from x)
+    """))
+else:
+    # Py2-compatible version for use with Cython.
+    # Copied from PEP 380.
+    @coroutine
+    def _wrap_awaitable(x):
+        if hasattr(x, '__await__'):
+            _i = x.__await__()
+        else:
+            _i = iter(x)
+        try:
+            _y = next(_i)
+        except StopIteration as _e:
+            _r = _value_from_stopiteration(_e)
+        else:
+            while 1:
+                try:
+                    _s = yield _y
+                except GeneratorExit as _e:
+                    try:
+                        _m = _i.close
+                    except AttributeError:
+                        pass
+                    else:
+                        _m()
+                    raise _e
+                except BaseException as _e:
+                    _x = sys.exc_info()
+                    try:
+                        _m = _i.throw
+                    except AttributeError:
+                        raise _e
+                    else:
+                        try:
+                            _y = _m(*_x)
+                        except StopIteration as _e:
+                            _r = _value_from_stopiteration(_e)
+                            break
+                else:
+                    try:
+                        if _s is None:
+                            _y = next(_i)
+                        else:
+                            _y = _i.send(_s)
+                    except StopIteration as _e:
+                        _r = _value_from_stopiteration(_e)
+                        break
+        raise Return(_r)
+
 
 def convert_yielded(yielded):
     """Convert a yielded object into a `.Future`.
@@ -1016,14 +1218,31 @@ def convert_yielded(yielded):
 
     .. versionadded:: 4.1
     """
-    # Lists and dicts containing YieldPoints were handled separately
-    # via Multi().
+    # Lists and dicts containing YieldPoints were handled earlier.
     if isinstance(yielded, (list, dict)):
-        return multi_future(yielded)
+        return multi(yielded)
     elif is_future(yielded):
         return yielded
+    elif isawaitable(yielded):
+        return _wrap_awaitable(yielded)
     else:
         raise BadYieldError("yielded unknown object %r" % (yielded,))
 
 if singledispatch is not None:
     convert_yielded = singledispatch(convert_yielded)
+
+    try:
+        # If we can import t.p.asyncio, do it for its side effect
+        # (registering asyncio.Future with convert_yielded).
+        # It's ugly to do this here, but it prevents a cryptic
+        # infinite recursion in _wrap_awaitable.
+        # Note that even with this, asyncio integration is unlikely
+        # to work unless the application also configures AsyncIOLoop,
+        # but at least the error messages in that case are more
+        # comprehensible than a stack overflow.
+        import tornado.platform.asyncio
+    except ImportError:
+        pass
+    else:
+        # Reference the imported module to make pyflakes happy.
+        tornado
