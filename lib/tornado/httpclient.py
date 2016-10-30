@@ -108,14 +108,14 @@ class AsyncHTTPClient(Configurable):
 
     Example usage::
 
-        def handle_request(response):
+        def handle_response(response):
             if response.error:
                 print "Error:", response.error
             else:
                 print response.body
 
         http_client = AsyncHTTPClient()
-        http_client.fetch("http://www.google.com/", handle_request)
+        http_client.fetch("http://www.google.com/", handle_response)
 
     The constructor for this class is magic in several respects: It
     actually creates an instance of an implementation-specific
@@ -211,10 +211,12 @@ class AsyncHTTPClient(Configurable):
         kwargs: ``HTTPRequest(request, **kwargs)``
 
         This method returns a `.Future` whose result is an
-        `HTTPResponse`.  By default, the ``Future`` will raise an `HTTPError`
-        if the request returned a non-200 response code. Instead, if
-        ``raise_error`` is set to False, the response will always be
-        returned regardless of the response code.
+        `HTTPResponse`. By default, the ``Future`` will raise an
+        `HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
 
         If a ``callback`` is given, it will be invoked with the `HTTPResponse`.
         In the callback interface, `HTTPError` is not automatically raised.
@@ -225,6 +227,9 @@ class AsyncHTTPClient(Configurable):
             raise RuntimeError("fetch() called on closed AsyncHTTPClient")
         if not isinstance(request, HTTPRequest):
             request = HTTPRequest(url=request, **kwargs)
+        else:
+            if kwargs:
+                raise ValueError("kwargs can't be used if request is an HTTPRequest object")
         # We may modify this (to add Host, Accept-Encoding, etc),
         # so make sure we don't modify the caller's object.  This is also
         # where normal dicts get converted to HTTPHeaders objects.
@@ -567,15 +572,14 @@ class HTTPResponse(object):
         self.request_time = request_time
         self.time_info = time_info or {}
 
-    def _get_body(self):
+    @property
+    def body(self):
         if self.buffer is None:
             return None
         elif self._body is None:
             self._body = self.buffer.getvalue()
 
         return self._body
-
-    body = property(_get_body)
 
     def rethrow(self):
         """If there was an error on the request, raise an `HTTPError`."""
@@ -603,9 +607,18 @@ class HTTPError(Exception):
     """
     def __init__(self, code, message=None, response=None):
         self.code = code
-        message = message or httputil.responses.get(code, "Unknown")
+        self.message = message or httputil.responses.get(code, "Unknown")
         self.response = response
-        Exception.__init__(self, "HTTP %d: %s" % (self.code, message))
+        super(HTTPError, self).__init__(code, message, response)
+
+    def __str__(self):
+        return "HTTP %d: %s" % (self.code, self.message)
+
+    # There is a cyclic reference between self and self.response,
+    # which breaks the default __repr__ implementation.
+    # (especially on pypy, which doesn't have the same recursion
+    # detection as cpython).
+    __repr__ = __str__
 
 
 class _RequestProxy(object):
