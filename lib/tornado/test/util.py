@@ -1,8 +1,10 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
+import platform
 import socket
 import sys
+import textwrap
 
 from tornado.testing import bind_unused_port
 
@@ -10,7 +12,7 @@ from tornado.testing import bind_unused_port
 # To be used as 'from tornado.test.util import unittest'.
 if sys.version_info < (2, 7):
     # In py26, we must always use unittest2.
-    import unittest2 as unittest
+    import unittest2 as unittest  # type: ignore
 else:
     # Otherwise, use whichever version of unittest was imported in
     # tornado.testing.
@@ -24,12 +26,21 @@ skipIfNonUnix = unittest.skipIf(os.name != 'posix' or sys.platform == 'cygwin',
 skipOnTravis = unittest.skipIf('TRAVIS' in os.environ,
                                'timing tests unreliable on travis')
 
+skipOnAppEngine = unittest.skipIf('APPENGINE_RUNTIME' in os.environ,
+                                  'not available on Google App Engine')
+
 # Set the environment variable NO_NETWORK=1 to disable any tests that
 # depend on an external network.
 skipIfNoNetwork = unittest.skipIf('NO_NETWORK' in os.environ,
                                   'network access disabled')
 
 skipIfNoIPv6 = unittest.skipIf(not socket.has_ipv6, 'ipv6 support not present')
+
+
+skipBefore33 = unittest.skipIf(sys.version_info < (3, 3), 'PEP 380 (yield from) not available')
+skipBefore35 = unittest.skipIf(sys.version_info < (3, 5), 'PEP 492 (async/await) not available')
+skipNotCPython = unittest.skipIf(platform.python_implementation() != 'CPython',
+                                 'Not CPython implementation')
 
 
 def refusing_port():
@@ -50,3 +61,18 @@ def refusing_port():
     conn.close()
     server_socket.close()
     return (client_socket.close, client_addr[1])
+
+
+def exec_test(caller_globals, caller_locals, s):
+    """Execute ``s`` in a given context and return the result namespace.
+
+    Used to define functions for tests in particular python
+    versions that would be syntax errors in older versions.
+    """
+    # Flatten the real global and local namespace into our fake
+    # globals: it's all global from the perspective of code defined
+    # in s.
+    global_namespace = dict(caller_globals, **caller_locals)  # type: ignore
+    local_namespace = {}
+    exec(textwrap.dedent(s), global_namespace, local_namespace)
+    return local_namespace

@@ -16,7 +16,7 @@ from tornado.log import app_log
 from tornado.platform.select import _Select
 from tornado.stack_context import ExceptionStackContext, StackContext, wrap, NullContext
 from tornado.testing import AsyncTestCase, bind_unused_port, ExpectLog
-from tornado.test.util import unittest, skipIfNonUnix, skipOnTravis
+from tornado.test.util import unittest, skipIfNonUnix, skipOnTravis, skipBefore35, exec_test
 
 try:
     from concurrent import futures
@@ -140,6 +140,8 @@ class TestIOLoop(AsyncTestCase):
     def test_add_callback_while_closing(self):
         # Issue #635: add_callback() should raise a clean exception
         # if called while another thread is closing the IOLoop.
+        if IOLoop.configured_class().__name__.endswith('AsyncIOLoop'):
+            raise unittest.SkipTest("AsyncIOMainLoop shutdown not thread safe")
         closing = threading.Event()
 
         def target():
@@ -363,6 +365,19 @@ class TestIOLoop(AsyncTestCase):
             with ExpectLog(app_log, "Exception in callback"):
                 self.wait()
 
+    @skipBefore35
+    def test_exception_logging_native_coro(self):
+        """The IOLoop examines exceptions from awaitables and logs them."""
+        namespace = exec_test(globals(), locals(), """
+        async def callback():
+            self.io_loop.add_callback(self.stop)
+            1 / 0
+        """)
+        with NullContext():
+            self.io_loop.add_callback(namespace["callback"])
+            with ExpectLog(app_log, "Exception in callback"):
+                self.wait()
+
     def test_spawn_callback(self):
         # An added callback runs in the test's stack_context, so will be
         # re-arised in wait().
@@ -395,7 +410,7 @@ class TestIOLoop(AsyncTestCase):
                     self.io_loop.remove_handler(client)
             self.io_loop.add_handler(client, handle_read, self.io_loop.READ)
             self.io_loop.add_handler(server, handle_read, self.io_loop.READ)
-            self.io_loop.call_later(0.03, self.stop)
+            self.io_loop.call_later(0.1, self.stop)
             self.wait()
 
             # Only one fd was read; the other was cleanly removed.
@@ -409,18 +424,46 @@ class TestIOLoop(AsyncTestCase):
 # automatically set as current.
 class TestIOLoopCurrent(unittest.TestCase):
     def setUp(self):
-        self.io_loop = IOLoop()
+        self.io_loop = None
+        IOLoop.clear_current()
 
     def tearDown(self):
-        self.io_loop.close()
+        if self.io_loop is not None:
+            self.io_loop.close()
 
-    def test_current(self):
-        def f():
-            self.current_io_loop = IOLoop.current()
-            self.io_loop.stop()
-        self.io_loop.add_callback(f)
-        self.io_loop.start()
-        self.assertIs(self.current_io_loop, self.io_loop)
+    def test_default_current(self):
+        self.io_loop = IOLoop()
+        # The first IOLoop with default arguments is made current.
+        self.assertIs(self.io_loop, IOLoop.current())
+        # A second IOLoop can be created but is not made current.
+        io_loop2 = IOLoop()
+        self.assertIs(self.io_loop, IOLoop.current())
+        io_loop2.close()
+
+    def test_non_current(self):
+        self.io_loop = IOLoop(make_current=False)
+        # The new IOLoop is not initially made current.
+        self.assertIsNone(IOLoop.current(instance=False))
+        # Starting the IOLoop makes it current, and stopping the loop
+        # makes it non-current. This process is repeatable.
+        for i in range(3):
+            def f():
+                self.current_io_loop = IOLoop.current()
+                self.io_loop.stop()
+            self.io_loop.add_callback(f)
+            self.io_loop.start()
+            self.assertIs(self.current_io_loop, self.io_loop)
+            # Now that the loop is stopped, it is no longer current.
+            self.assertIsNone(IOLoop.current(instance=False))
+
+    def test_force_current(self):
+        self.io_loop = IOLoop(make_current=True)
+        self.assertIs(self.io_loop, IOLoop.current())
+        with self.assertRaises(RuntimeError):
+            # A second make_current=True construction cannot succeed.
+            IOLoop(make_current=True)
+        # current() was not affected by the failed construction.
+        self.assertIs(self.io_loop, IOLoop.current())
 
 
 class TestIOLoopAddCallback(AsyncTestCase):
@@ -530,7 +573,8 @@ class TestIOLoopRunSync(unittest.TestCase):
         self.io_loop.close()
 
     def test_sync_result(self):
-        self.assertEqual(self.io_loop.run_sync(lambda: 42), 42)
+        with self.assertRaises(gen.BadYieldError):
+            self.io_loop.run_sync(lambda: 42)
 
     def test_sync_exception(self):
         with self.assertRaises(ZeroDivisionError):
@@ -561,6 +605,14 @@ class TestIOLoopRunSync(unittest.TestCase):
         def f():
             yield gen.Task(self.io_loop.add_timeout, self.io_loop.time() + 1)
         self.assertRaises(TimeoutError, self.io_loop.run_sync, f, timeout=0.01)
+
+    @skipBefore35
+    def test_native_coroutine(self):
+        namespace = exec_test(globals(), locals(), """
+        async def f():
+            await gen.Task(self.io_loop.add_callback)
+        """)
+        self.io_loop.run_sync(namespace['f'])
 
 
 class TestPeriodicCallback(unittest.TestCase):
