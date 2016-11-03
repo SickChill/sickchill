@@ -57,7 +57,7 @@ class Scheduler(threading.Thread):
         if self.isAlive():
             if self.start_time is None:
                 delta = datetime.datetime.now() - self.lastRun
-                return (self.cycleTime - delta, self.cycleTime)[delta < self.cycleTime]
+                return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
             else:
                 time_now = datetime.datetime.now()
                 start_time_today = datetime.datetime.combine(time_now.date(), self.start_time)
