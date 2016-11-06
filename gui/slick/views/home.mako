@@ -22,19 +22,6 @@
         <div class="col-lg-9 col-md-${'12' if(sickbeard.HOME_LAYOUT == 'poster') else '9'} col-sm-${'12' if(sickbeard.HOME_LAYOUT == 'poster') else '8'} col-xs-12 pull-right">
             <div class="pull-right">
 
-                % if sickbeard.ROOT_DIRS:
-                    <span class="show-option">${_('Root')}:</span>
-                    <label>
-                        <form method="post" action="" id="rootDirForm">
-                            <select id="rootDirSelect" name="root" class="form-control form-control-inline input200" title="Root Select">
-                            <option value="-1" ${('', 'selected="selected"')[selected_root == '-1']}>${_('All')}</option>
-                            % for root_dir in sickbeard.ROOT_DIRS.split('|')[1:]:
-                                <option value="${loop.index}" ${('', 'selected="selected"')[selected_root == str(loop.index)]}>${loop.index}</option>
-                            % endfor
-                            </select>
-                        </form>
-                    </label>
-                % endif
                 % if sickbeard.HOME_LAYOUT != 'poster':
                     <span class="show-option">
                         <button type="button" class="resetsorting btn btn-inline">${_('Clear Filter(s)')}</button>
@@ -87,6 +74,16 @@
                     </select>
                 </label>
 
+                <label>
+                    <span class="show-option">${_('Split')}:</span>
+                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Split">
+                        <option value="${srRoot}/setHomeSplit/?split=none" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'none']}>${_('None')}</option>
+                        <option value="${srRoot}/setHomeSplit/?split=anime" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'anime']}>${_('Anime')}</option>
+                        <option value="${srRoot}/setHomeSplit/?split=sports" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'sports']}>${_('Sports')}</option>
+                        <option value="${srRoot}/setHomeSplit/?split=animesports" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'animesports']}>${_('Anime & Sports')}</option>
+                        <option value="${srRoot}/setHomeSplit/?split=rootdir" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'rootdir']}>${_('Root dir')}</option>
+                    </select>
+                </label>
             </div>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -109,18 +106,27 @@
                     <div class="col-md-12">
                         <% curListType = curShowlist[0] %>
                         <% myShowList = list(curShowlist[1]) %>
-                        % if curListType == "Anime":
+                        % if curListType in ["Anime", "Sports"]:
                             <br/>
                             <br/>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="header">${_('Anime List')}</h1>
+                                    <h1 class="header">${_(curListType)}&nbsp;${_('List')}</h1>
                                     % if sickbeard.HOME_LAYOUT == 'poster':
                                         <div class="loading-spinner"></div>
                                     % endif
                                 </div>
                             </div>
                         % endif
+
+                        %if sickbeard.HOME_SPLIT == 'rootdir':
+                            <br/>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="header">${_(curListType)}</h4>
+                                </div>
+                            </div>
+                        %endif
 
                         % if sickbeard.HOME_LAYOUT == 'poster':
                             <div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
@@ -264,7 +270,7 @@
                             </div>
                         % else:
                             <div class="horizontal-scroll">
-                                <table id="showListTable${curListType}" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
+                                <table class="show-table tablesorter" cellspacing="1" border="0" cellpadding="0">
                                     <thead>
                                         <tr>
                                             <th class="nowrap">${_('Next Ep')}</th>
@@ -280,7 +286,7 @@
                                     </thead>
                                     <tfoot class="hidden-print">
                                         <tr>
-                                            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
+                                            <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">${_('Add Show')}</a></th>
                                             <th>&nbsp;</th>
                                             <th>&nbsp;</th>
                                             <th>&nbsp;</th>

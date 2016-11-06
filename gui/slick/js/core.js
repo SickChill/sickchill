@@ -2028,7 +2028,7 @@ var SICKRAGE = {
                 $(this).remove();
             });
 
-            $("#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)").tablesorter({
+            $(".show-table:has(tbody tr)").tablesorter({
                 sortList: [[7,1],[2,0]],
                 textExtraction: {
                     0: function(node) { return $(node).find('time').attr('datetime'); },
@@ -2215,11 +2215,7 @@ var SICKRAGE = {
                 content: '<div id="popover-target"></div>'
             }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
                 // call this function to copy the column selection code into the popover
-                $.tablesorter.columnSelector.attachTo( $('#showListTableShows'), '#popover-target');
-                if(metaToBool('sickbeard.ANIME_SPLIT_HOME')){
-                    $.tablesorter.columnSelector.attachTo( $('#showListTableAnime'), '#popover-target');
-                }
-
+                $.tablesorter.columnSelector.attachTo( $('.show-table'), '#popover-target');
             });
         },
         displayShow: function() {
