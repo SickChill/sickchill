@@ -4287,7 +4287,7 @@ class ConfigPostProcessing(Config):
             sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime) in [1, 2]:
+            if int(naming_anime or 0) in [1, 2]:
                 results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
             else:
                 results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
@@ -4298,7 +4298,7 @@ class ConfigPostProcessing(Config):
             sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime) in [1, 2]:
+            if int(naming_anime or 0) in [1, 2]:
                 results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
             else:
                 results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
