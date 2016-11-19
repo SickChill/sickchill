@@ -293,6 +293,7 @@ TV_DOWNLOAD_DIR = None
 UNPACK = False
 SKIP_REMOVED_FILES = False
 ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
+USE_FREE_SPACE_CHECK = True
 
 NZBS = False
 NZBS_UID = None
@@ -656,7 +657,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
-            POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, \
+            POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
@@ -981,6 +982,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NFO_RENAME = bool(check_setting_int(CFG, 'General', 'nfo_rename', 1))
         CREATE_MISSING_SHOW_DIRS = bool(check_setting_int(CFG, 'General', 'create_missing_show_dirs', 0))
         ADD_SHOWS_WO_DIR = bool(check_setting_int(CFG, 'General', 'add_shows_wo_dir', 0))
+        USE_FREE_SPACE_CHECK = bool(check_setting_int(CFG, 'General', 'use_free_space_check', 1))
 
         NZBS = bool(check_setting_int(CFG, 'NZBs', 'nzbs', 0))
         NZBS_UID = check_setting_str(CFG, 'NZBs', 'nzbs_uid', '', censor_log=True)
@@ -1891,6 +1893,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'file_timestamp_timezone': FILE_TIMESTAMP_TIMEZONE,
             'create_missing_show_dirs': int(CREATE_MISSING_SHOW_DIRS),
             'add_shows_wo_dir': int(ADD_SHOWS_WO_DIR),
+            'use_free_space_check': int(USE_FREE_SPACE_CHECK),
 
             'extra_scripts': '|'.join(EXTRA_SCRIPTS),
             'git_path': GIT_PATH,

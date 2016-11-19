@@ -1038,12 +1038,13 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
-        if not helpers.isFileLocked(self.file_path, False):
-            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
-                self._log("Not enough space to continue PP, exiting", logger.WARNING)
-                return False
-        else:
-            self._log("Unable to determine needed filespace as the source file is locked for access")
+        if sickbeard.USE_FREE_SPACE_CHECK:
+            if not helpers.isFileLocked(self.file_path, False):
+                if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
+                    self._log("Not enough space to continue PP, exiting", logger.WARNING)
+                    return False
+            else:
+                self._log("Unable to determine needed filespace as the source file is locked for access")
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
