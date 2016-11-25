@@ -365,6 +365,14 @@ def searchForNeededEpisodes():
         if not curShow.paused:
             sickbeard.name_cache.buildNameCache(curShow)
             episodes.extend(wantedEpisodes(curShow, fromDate))
+    if not episodes:
+        # nothing wanted so early out, ie: avoid whatever abritrarily
+        # complex thing a provider cache update entails, for example,
+        # reading rss feeds
+        logger.log(u"No episodes needed.", logger.INFO)
+        return foundResults.values()
+
+    origThreadName = threading.currentThread().name
 
     if not episodes:
         # nothing wanted so early out, ie: avoid whatever abritrarily
