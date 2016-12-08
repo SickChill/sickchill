@@ -63,13 +63,13 @@ class Torrent9Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.tr
+                    torrent_rows = html.findAll('tr')
                     for result in torrent_rows:
                         try:
-                            title = result.find('a').get_text(strip=True).replace("HDTV", "HDTV x264-Torrent9")
+                            title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r' Saison', ' Season', title, flags=re.I)
                             tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
-                            download_url = (self.url + '/get_torrent/{0}'.format(tmp))
+                            download_url = (self.url + '/get_torrent/{0}'.format(tmp) + ".torrent")
                             if not all([title, download_url]):
                                 continue
 
