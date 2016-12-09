@@ -525,6 +525,11 @@ class QueueItemRefresh(ShowQueueItem):
         self.force = force
 
     def run(self):
+
+        if self.force == False and sickbeard.SHOWUPDATE_DISABLE_PAUSEDENDED and self.show.status == "Ended" and self.show.paused:
+            logger.log('Skipping show [{0}] because is paused and ended.'.format(self.show.name), logger.DEBUG)
+            return
+
         ShowQueueItem.run(self)
 
         logger.log('Performing refresh on {0}'.format(self.show.name))

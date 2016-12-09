@@ -107,6 +107,23 @@
                             </div>
                         </div>
 
+
+                        ## Fix
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Don\'t refresh shows automatically if are paused and ended')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="showupdate_disable_pausedended" id="showupdate_disable_pausedended"  ${('', 'checked="checked"')[bool(sickbeard.SHOWUPDATE_DISABLE_PAUSEDENDED)]} />
+                                        <label for="showupdate_disable_pausedended">${_('You will be still able to force a show refresh')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Send to trash for actions')}</label>
