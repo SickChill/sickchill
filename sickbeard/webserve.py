@@ -3864,7 +3864,7 @@ class ConfigGeneral(Config):
     def saveGeneral(  # pylint: disable=unused-argument
             self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
-            indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, showupdate_disable_pausedended=False, web_username=None,
+            indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
             api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
             web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
             handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
@@ -3893,7 +3893,6 @@ class ConfigGeneral(Config):
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_SHOWUPDATE_HOUR(showupdate_hour)
-        sickbeard.SHOWUPDATE_DISABLE_PAUSEDENDED = config.checkbox_to_value(showupdate_disable_pausedended)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
