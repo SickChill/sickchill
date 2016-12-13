@@ -559,6 +559,15 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testTwilio').on('click', function() {
+                $('#testTwilio').addClass('disabled');
+                $.get(srRoot + '/home/testTwilio', function(data) {
+                    $('#testTwilio-result').html(data);
+                }).always(function() {
+                    $('#testTwilio').removeClass('disabled');
+                });
+            });
+
             $('#testSlack').on('click', function() {
                 $.get(srRoot + '/home/testSlack', function(data) {
                     $('#testSlack-result').html(data);
