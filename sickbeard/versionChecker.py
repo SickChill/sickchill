@@ -420,7 +420,7 @@ class GitUpdateManager(UpdateManager):
         return None
 
     @staticmethod
-    def _run_git(git_path, args):
+    def _run_git(git_path, args, log_errors=True):
 
         output = err = exit_status = None
 
@@ -452,15 +452,15 @@ class GitUpdateManager(UpdateManager):
         elif exit_status == 1:
             if 'stash' in output:
                 logger.log(u"Please enable 'git reset' in settings or stash your changes in local files", logger.WARNING)
-            else:
+            elif log_errors:
                 logger.log(cmd + u" returned : " + str(output), logger.ERROR)
             exit_status = 1
 
-        elif exit_status == 128 or 'fatal:' in output or err:
+        elif log_errors and exit_status == 128 or 'fatal:' in output or err:
             logger.log(cmd + u" returned : " + str(output), logger.WARNING)
             exit_status = 128
 
-        else:
+        elif log_errors:
             logger.log(cmd + u" returned : " + str(output) + u", treat as error for now", logger.ERROR)
             exit_status = 1
 
@@ -511,9 +511,14 @@ class GitUpdateManager(UpdateManager):
 
         # get all new info from github
         output, errors_, exit_status = self._run_git(self._git_path, 'fetch {0}'.format(sickbeard.GIT_REMOTE))
-        if not exit_status == 0:
+        if exit_status != 0:
             logger.log(u"Unable to contact github, can't check for update", logger.WARNING)
             return
+
+        # Try both formats, but continue on fail because older git versions do not have this option
+        output, stderr_, exit_status = self._run_git(self._git_path, 'branch --set-upstream-to {0}/{1}'.format(sickbeard.GIT_REMOTE, self.branch), False)
+        if exit_status != 0:
+            self._run_git(self._git_path, 'branch -u {0}/{1}'.format(sickbeard.GIT_REMOTE, self.branch), False)
 
         # get latest commit_hash from remote
         output, stderr_, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet "@{upstream}"')
