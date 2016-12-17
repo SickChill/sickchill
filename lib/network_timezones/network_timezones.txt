@@ -288,6 +288,7 @@ BR-alpha:Europe/Berlin
 Bravo (CA):Canada/Eastern
 Bravo (UK):Europe/London
 Bravo (US):US/Eastern
+Bravo (NZ):Pacific/Auckland
 Bravo!:Canada/Eastern
 Bravo:US/Eastern
 bravotv.com (US):US/Eastern
