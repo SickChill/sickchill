@@ -5,10 +5,6 @@ python:
 
 sudo: false
 
-branches:
-  except:
-    - master
-
 env:
   - TRAVIS_NODE_VERSION="5.6.0"
 
