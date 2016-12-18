@@ -130,6 +130,7 @@ class NameParser(object):
                 tmp_season = int(match.group('season_num'))
                 if cur_regex_name == 'bare' and tmp_season in (19, 20):
                     continue
+
                 result.season_number = tmp_season
                 result.score += 1
 
@@ -137,6 +138,10 @@ class NameParser(object):
                 ep_num = self._convert_number(match.group('ep_num'))
                 if 'extra_ep_num' in named_groups and match.group('extra_ep_num'):
                     result.episode_numbers = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
+                    if len(result.episode_numbers) > 4:
+                        matches = []
+                        break
+
                     result.score += 1
                 else:
                     result.episode_numbers = [ep_num]
