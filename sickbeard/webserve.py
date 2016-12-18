@@ -880,6 +880,26 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
         else:
             return _("Error sending tweet")
+    
+    @staticmethod
+    def testTwilio():
+        if not notifiers.twilio_notifier.account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):
+            return _('Please enter a valid account sid')
+
+        if not notifiers.twilio_notifier.auth_regex.match(sickbeard.TWILIO_AUTH_TOKEN):
+            return _('Please enter a valid auth token')
+
+        if not notifiers.twilio_notifier.phone_regex.match(sickbeard.TWILIO_PHONE_SID):
+            return _('Please enter a valid phone sid')
+
+        if not notifiers.twilio_notifier.number_regex.match(sickbeard.TWILIO_TO_NUMBER):
+            return _('Please format the phone number as "+1-###-###-####"')
+
+        result = notifiers.twilio_notifier.test_notify()
+        if result:
+            return _('Authorization successful and number ownership verified')
+        else:
+            return _('Error sending sms')
 
     @staticmethod
     def testSlack():
@@ -4931,6 +4951,8 @@ class ConfigNotifications(Config):
             prowl_show_list=None, prowl_show=None, prowl_message_title=None,
             use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
             twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
+            use_twilio=None, twilio_notify_onsnatch=None, twilio_notify_ondownload=None, twilio_notify_onsubtitledownload=None,
+            twilio_phone_sid=None, twilio_account_sid=None, twilio_auth_token=None, twilio_to_number=None,
             use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
             boxcar2_notify_onsubtitledownload=None, boxcar2_accesstoken=None,
             use_pushover=None, pushover_notify_onsnatch=None, pushover_notify_ondownload=None,
@@ -5037,6 +5059,15 @@ class ConfigNotifications(Config):
         sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
         sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
         sickbeard.TWITTER_DMTO = twitter_dmto
+
+        sickbeard.USE_TWILIO = config.checkbox_to_value(use_twilio)
+        sickbeard.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
+        sickbeard.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
+        sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
+        sickbeard.TWILIO_PHONE_SID = twilio_phone_sid
+        sickbeard.TWILIO_ACCOUNT_SID = twilio_account_sid
+        sickbeard.TWILIO_AUTH_TOKEN = twilio_auth_token
+        sickbeard.TWILIO_TO_NUMBER = twilio_to_number
 
         sickbeard.USE_SLACK = config.checkbox_to_value(use_slack)
         sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
