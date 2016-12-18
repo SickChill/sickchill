@@ -1506,6 +1506,30 @@
                                 </div>
                             </div>
 
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Pushover priority')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <select id="pushover_priority" name="pushover_priority" class="form-control input-sm input250">
+                                            <option value="-2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
+                                            <option value="-1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
+                                            <option value="0" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
+                                            <option value="1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
+                                            <option value="2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="component-desc">${_('Choose priority to use')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="testNotification" id="testPushover-result">${_('Click below to test.')}</div>
