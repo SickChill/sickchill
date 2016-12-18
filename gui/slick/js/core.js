@@ -527,6 +527,13 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testSNS').on('click', function() {
+                $('#testSNS-result').html(loading);
+                $.get(srRoot + '/home/testSNS', function (data) {
+                    $('#testSNS-result').html(data);
+                });
+            });
+
             $('#twitterStep1').on('click', function() {
                 $('#testTwitter-result').html(loading);
                 $.get(srRoot + '/home/twitterStep1', function (data) {
