@@ -784,7 +784,7 @@ class Home(WebRoot):
 
         host = config.clean_url(host)
 
-        client = clients.getClientIstance(torrent_method)
+        client = clients.getClientInstance(torrent_method)
 
         result_, accesMsg = client(host, username, password).testAuthentication()
 
@@ -859,6 +859,11 @@ class Home(WebRoot):
             return _("Error sending Pushover notification")
 
     @staticmethod
+    def putio_authorize():
+        client = clients.getClientInstance('putio')
+        return client().authentication_url  # pylint: disable=protected-access
+
+    @staticmethod
     def twitterStep1():
         return notifiers.twitter_notifier._get_authorization()  # pylint: disable=protected-access
 
@@ -880,7 +885,7 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
         else:
             return _("Error sending tweet")
-    
+
     @staticmethod
     def testTwilio():
         if not notifiers.twilio_notifier.account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):

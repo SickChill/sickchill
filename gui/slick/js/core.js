@@ -1863,6 +1863,14 @@ var SICKRAGE = {
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
 
+                if (torrent.method.toLowerCase() === 'putio') {
+                    $.get(srRoot + '/home/putio_authorize', function (data) {
+                        window.open(data);
+                    }).done(function() {
+                        $('#test_torrent_result').html('Confirm Authorization');
+                    });
+                }
+
                 $.get(srRoot + '/home/testTorrent', {
                     'torrent_method': torrent.method,
                     'host': torrent.host,
