@@ -2228,7 +2228,7 @@ yesSTARS (IL):Asia/Jerusalem
 YESTERDAY (UK):Europe/London
 YLE Fem (FI):Europe/Helsinki
 YLE:Europe/Helsinki
-Yomiuri TV (JP):Asia/Tokyo
+Yomiuri TV:Asia/Tokyo
 Yorin (NL):Europe/Amsterdam
 York Channel (UK):Europe/London
 Yorkshire Coast TV (UK):Europe/London
