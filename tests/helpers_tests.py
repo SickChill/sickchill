@@ -283,6 +283,8 @@ class HelpersFileTests(unittest.TestCase):
             'Show.Name.S01E01.HDTV.sample1.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sample12.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sampleA.mkv': True,  # samples should not be indexed alphabetically
+            'RARBG.mp4': False,
+            'rarbg.MP4': False
         }
 
         edge_cases = {
