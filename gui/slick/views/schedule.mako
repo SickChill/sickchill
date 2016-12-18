@@ -108,18 +108,19 @@
                                         continue
 
                                     cur_ep_airdate = cur_result['localtime'].date()
-
+                                    cur_ep_enddate = cur_result['localtime']
                                     if run_time:
-                                            cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
-                                            if cur_ep_enddate < today:
-                                                show_div = 'listing-overdue'
-                                            elif cur_ep_airdate >= next_week.date():
-                                                show_div = 'listing-toofar'
-                                            elif today.date() <= cur_ep_airdate < next_week.date():
-                                                if cur_ep_airdate == today.date():
-                                                    show_div = 'listing-current'
-                                                else:
-                                                    show_div = 'listing-default'
+                                        cur_ep_enddate += datetime.timedelta(minutes = run_time)
+
+                                    if cur_ep_enddate < today:
+                                        show_div = 'listing-overdue'
+                                    elif cur_ep_airdate >= next_week.date():
+                                        show_div = 'listing-toofar'
+                                    elif today.date() <= cur_ep_airdate < next_week.date():
+                                        if cur_ep_airdate == today.date():
+                                            show_div = 'listing-current'
+                                        else:
+                                            show_div = 'listing-default'
                                 %>
                                 <tr class="${show_div}">
                                     <td align="center" nowrap="nowrap">

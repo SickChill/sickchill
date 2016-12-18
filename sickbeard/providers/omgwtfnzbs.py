@@ -36,10 +36,10 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         self.cache = OmgwtfnzbsCache(self)
 
-        self.url = 'https://omgwtfnzbs.org/'
+        self.url = 'https://omgwtfnzbs.me/'
         self.urls = {
-            'rss': 'https://rss.omgwtfnzbs.org/rss-download.php',
-            'api': 'https://api.omgwtfnzbs.org/json/'
+            'rss': 'https://rss.omgwtfnzbs.me/rss-download.php',
+            'api': 'https://api.omgwtfnzbs.me/json/'
         }
 
         self.proper_strings = ['.PROPER.', '.REPACK.']

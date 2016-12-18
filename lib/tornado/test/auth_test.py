@@ -5,13 +5,13 @@
 
 
 from __future__ import absolute_import, division, print_function, with_statement
-from tornado.auth import OpenIdMixin, OAuthMixin, OAuth2Mixin, TwitterMixin, AuthError
+from tornado.auth import OpenIdMixin, OAuthMixin, OAuth2Mixin, TwitterMixin, AuthError, GoogleOAuth2Mixin, FacebookGraphMixin
 from tornado.concurrent import Future
 from tornado.escape import json_decode
 from tornado import gen
+from tornado.httputil import url_concat
 from tornado.log import gen_log
 from tornado.testing import AsyncHTTPTestCase, ExpectLog
-from tornado.util import u
 from tornado.web import RequestHandler, Application, asynchronous, HTTPError
 
 
@@ -123,6 +123,38 @@ class OAuth2ClientLoginHandler(RequestHandler, OAuth2Mixin):
         res = self.authorize_redirect()
         assert isinstance(res, Future)
         assert res.done()
+
+
+class FacebookClientLoginHandler(RequestHandler, FacebookGraphMixin):
+    def initialize(self, test):
+        self._OAUTH_AUTHORIZE_URL = test.get_url('/facebook/server/authorize')
+        self._OAUTH_ACCESS_TOKEN_URL = test.get_url('/facebook/server/access_token')
+        self._FACEBOOK_BASE_URL = test.get_url('/facebook/server')
+
+    @gen.coroutine
+    def get(self):
+        if self.get_argument("code", None):
+            user = yield self.get_authenticated_user(
+                redirect_uri=self.request.full_url(),
+                client_id=self.settings["facebook_api_key"],
+                client_secret=self.settings["facebook_secret"],
+                code=self.get_argument("code"))
+            self.write(user)
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=self.request.full_url(),
+                client_id=self.settings["facebook_api_key"],
+                extra_params={"scope": "read_stream,offline_access"})
+
+
+class FacebookServerAccessTokenHandler(RequestHandler):
+    def get(self):
+        self.write('access_token=asdf')
+
+
+class FacebookServerMeHandler(RequestHandler):
+    def get(self):
+        self.write('{}')
 
 
 class TwitterClientHandler(RequestHandler, TwitterMixin):
@@ -259,6 +291,8 @@ class AuthTest(AsyncHTTPTestCase):
                  dict(version='1.0a')),
                 ('/oauth2/client/login', OAuth2ClientLoginHandler, dict(test=self)),
 
+                ('/facebook/client/login', FacebookClientLoginHandler, dict(test=self)),
+
                 ('/twitter/client/login', TwitterClientLoginHandler, dict(test=self)),
                 ('/twitter/client/login_gen_engine', TwitterClientLoginGenEngineHandler, dict(test=self)),
                 ('/twitter/client/login_gen_coroutine', TwitterClientLoginGenCoroutineHandler, dict(test=self)),
@@ -270,13 +304,17 @@ class AuthTest(AsyncHTTPTestCase):
                 ('/oauth1/server/request_token', OAuth1ServerRequestTokenHandler),
                 ('/oauth1/server/access_token', OAuth1ServerAccessTokenHandler),
 
+                ('/facebook/server/access_token', FacebookServerAccessTokenHandler),
+                ('/facebook/server/me', FacebookServerMeHandler),
                 ('/twitter/server/access_token', TwitterServerAccessTokenHandler),
                 (r'/twitter/api/users/show/(.*)\.json', TwitterServerShowUserHandler),
                 (r'/twitter/api/account/verify_credentials\.json', TwitterServerVerifyCredentialsHandler),
             ],
             http_client=self.http_client,
             twitter_consumer_key='test_twitter_consumer_key',
-            twitter_consumer_secret='test_twitter_consumer_secret')
+            twitter_consumer_secret='test_twitter_consumer_secret',
+            facebook_api_key='test_facebook_api_key',
+            facebook_secret='test_facebook_secret')
 
     def test_openid_redirect(self):
         response = self.fetch('/openid/client/login', follow_redirects=False)
@@ -357,6 +395,13 @@ class AuthTest(AsyncHTTPTestCase):
         self.assertEqual(response.code, 302)
         self.assertTrue('/oauth2/server/authorize?' in response.headers['Location'])
 
+    def test_facebook_login(self):
+        response = self.fetch('/facebook/client/login', follow_redirects=False)
+        self.assertEqual(response.code, 302)
+        self.assertTrue('/facebook/server/authorize?' in response.headers['Location'])
+        response = self.fetch('/facebook/client/login?code=1234', follow_redirects=False)
+        self.assertEqual(response.code, 200)
+
     def base_twitter_redirect(self, url):
         # Same as test_oauth10a_redirect
         response = self.fetch(url, follow_redirects=False)
@@ -384,12 +429,12 @@ class AuthTest(AsyncHTTPTestCase):
         response.rethrow()
         parsed = json_decode(response.body)
         self.assertEqual(parsed,
-                         {u('access_token'): {u('key'): u('hjkl'),
-                                              u('screen_name'): u('foo'),
-                                              u('secret'): u('vbnm')},
-                          u('name'): u('Foo'),
-                          u('screen_name'): u('foo'),
-                          u('username'): u('foo')})
+                         {u'access_token': {u'key': u'hjkl',
+                                            u'screen_name': u'foo',
+                                            u'secret': u'vbnm'},
+                          u'name': u'Foo',
+                          u'screen_name': u'foo',
+                          u'username': u'foo'})
 
     def test_twitter_show_user(self):
         response = self.fetch('/twitter/client/show_user?name=somebody')
@@ -413,3 +458,87 @@ class AuthTest(AsyncHTTPTestCase):
         response = self.fetch('/twitter/client/show_user_future?name=error')
         self.assertEqual(response.code, 500)
         self.assertIn(b'Error response HTTP 500', response.body)
+
+
+class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
+    def initialize(self, test):
+        self.test = test
+        self._OAUTH_REDIRECT_URI = test.get_url('/client/login')
+        self._OAUTH_AUTHORIZE_URL = test.get_url('/google/oauth2/authorize')
+        self._OAUTH_ACCESS_TOKEN_URL = test.get_url('/google/oauth2/token')
+
+    @gen.coroutine
+    def get(self):
+        code = self.get_argument('code', None)
+        if code is not None:
+            # retrieve authenticate google user
+            access = yield self.get_authenticated_user(self._OAUTH_REDIRECT_URI,
+                                                       code)
+            user = yield self.oauth2_request(
+                self.test.get_url("/google/oauth2/userinfo"),
+                access_token=access["access_token"])
+            # return the user and access token as json
+            user["access_token"] = access["access_token"]
+            self.write(user)
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=self._OAUTH_REDIRECT_URI,
+                client_id=self.settings['google_oauth']['key'],
+                client_secret=self.settings['google_oauth']['secret'],
+                scope=['profile', 'email'],
+                response_type='code',
+                extra_params={'prompt': 'select_account'})
+
+
+class GoogleOAuth2AuthorizeHandler(RequestHandler):
+    def get(self):
+        # issue a fake auth code and redirect to redirect_uri
+        code = 'fake-authorization-code'
+        self.redirect(url_concat(self.get_argument('redirect_uri'),
+                                 dict(code=code)))
+
+
+class GoogleOAuth2TokenHandler(RequestHandler):
+    def post(self):
+        assert self.get_argument('code') == 'fake-authorization-code'
+        # issue a fake token
+        self.finish({
+            'access_token': 'fake-access-token',
+            'expires_in': 'never-expires'
+        })
+
+
+class GoogleOAuth2UserinfoHandler(RequestHandler):
+    def get(self):
+        assert self.get_argument('access_token') == 'fake-access-token'
+        # return a fake user
+        self.finish({
+            'name': 'Foo',
+            'email': 'foo@example.com'
+        })
+
+
+class GoogleOAuth2Test(AsyncHTTPTestCase):
+    def get_app(self):
+        return Application(
+            [
+                # test endpoints
+                ('/client/login', GoogleLoginHandler, dict(test=self)),
+
+                # simulated google authorization server endpoints
+                ('/google/oauth2/authorize', GoogleOAuth2AuthorizeHandler),
+                ('/google/oauth2/token', GoogleOAuth2TokenHandler),
+                ('/google/oauth2/userinfo', GoogleOAuth2UserinfoHandler),
+            ],
+            google_oauth={
+                "key": 'fake_google_client_id',
+                "secret": 'fake_google_client_secret'
+            })
+
+    def test_google_login(self):
+        response = self.fetch('/client/login')
+        self.assertDictEqual({
+            u'name': u'Foo',
+            u'email': u'foo@example.com',
+            u'access_token': u'fake-access-token',
+        }, json_decode(response.body))

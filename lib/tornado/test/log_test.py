@@ -29,7 +29,7 @@ from tornado.escape import utf8
 from tornado.log import LogFormatter, define_logging_options, enable_pretty_logging
 from tornado.options import OptionParser
 from tornado.test.util import unittest
-from tornado.util import u, basestring_type
+from tornado.util import basestring_type
 
 
 @contextlib.contextmanager
@@ -51,9 +51,9 @@ class LogFormatterTest(unittest.TestCase):
         # for testing.  (testing with color off fails to expose some potential
         # encoding issues from the control characters)
         self.formatter._colors = {
-            logging.ERROR: u("\u0001"),
+            logging.ERROR: u"\u0001",
         }
-        self.formatter._normal = u("\u0002")
+        self.formatter._normal = u"\u0002"
         # construct a Logger directly to bypass getLogger's caching
         self.logger = logging.Logger('LogFormatterTest')
         self.logger.propagate = False
@@ -96,16 +96,16 @@ class LogFormatterTest(unittest.TestCase):
 
     def test_utf8_logging(self):
         with ignore_bytes_warning():
-            self.logger.error(u("\u00e9").encode("utf8"))
+            self.logger.error(u"\u00e9".encode("utf8"))
         if issubclass(bytes, basestring_type):
             # on python 2, utf8 byte strings (and by extension ascii byte
             # strings) are passed through as-is.
-            self.assertEqual(self.get_output(), utf8(u("\u00e9")))
+            self.assertEqual(self.get_output(), utf8(u"\u00e9"))
         else:
             # on python 3, byte strings always get repr'd even if
             # they're ascii-only, so this degenerates into another
             # copy of test_bytes_logging.
-            self.assertEqual(self.get_output(), utf8(repr(utf8(u("\u00e9")))))
+            self.assertEqual(self.get_output(), utf8(repr(utf8(u"\u00e9"))))
 
     def test_bytes_exception_logging(self):
         try:
@@ -128,8 +128,8 @@ class UnicodeLogFormatterTest(LogFormatterTest):
         return logging.FileHandler(filename, encoding="utf8")
 
     def test_unicode_logging(self):
-        self.logger.error(u("\u00e9"))
-        self.assertEqual(self.get_output(), utf8(u("\u00e9")))
+        self.logger.error(u"\u00e9")
+        self.assertEqual(self.get_output(), utf8(u"\u00e9"))
 
 
 class EnablePrettyLoggingTest(unittest.TestCase):
@@ -159,6 +159,39 @@ class EnablePrettyLoggingTest(unittest.TestCase):
             for filename in glob.glob(tmpdir + '/test_log*'):
                 os.unlink(filename)
             os.rmdir(tmpdir)
+
+    def test_log_file_with_timed_rotating(self):
+        tmpdir = tempfile.mkdtemp()
+        try:
+            self.options.log_file_prefix = tmpdir + '/test_log'
+            self.options.log_rotate_mode = 'time'
+            enable_pretty_logging(options=self.options, logger=self.logger)
+            self.logger.error('hello')
+            self.logger.handlers[0].flush()
+            filenames = glob.glob(tmpdir + '/test_log*')
+            self.assertEqual(1, len(filenames))
+            with open(filenames[0]) as f:
+                self.assertRegexpMatches(
+                    f.read(),
+                    r'^\[E [^]]*\] hello$')
+        finally:
+            for handler in self.logger.handlers:
+                handler.flush()
+                handler.close()
+            for filename in glob.glob(tmpdir + '/test_log*'):
+                os.unlink(filename)
+            os.rmdir(tmpdir)
+
+    def test_wrong_rotate_mode_value(self):
+        try:
+            self.options.log_file_prefix = 'some_path'
+            self.options.log_rotate_mode = 'wrong_mode'
+            self.assertRaises(ValueError, enable_pretty_logging,
+                              options=self.options, logger=self.logger)
+        finally:
+            for handler in self.logger.handlers:
+                handler.flush()
+                handler.close()
 
 
 class LoggingOptionTest(unittest.TestCase):
