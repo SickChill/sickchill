@@ -327,6 +327,7 @@ Canal Once:America/Mexico_City
 Canal Sur:Europe/Madrid
 Canal+ (ES):Europe/Madrid
 Canal+:Europe/Paris
+Canal+ Cyfrowy:Poland/Warsaw
 Canale 5:Europe/Rome
 Cancao News (US):US/Eastern
 Canvas/Ketnet:Europe/Brussels
