@@ -421,6 +421,15 @@ TWITTER_PREFIX = None
 TWITTER_DMTO = None
 TWITTER_USEDM = False
 
+USE_TWILIO = False
+TWILIO_NOTIFY_ONSNATCH = False
+TWILIO_NOTIFY_ONDOWNLOAD = False
+TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = False
+TWILIO_PHONE_SID = ''
+TWILIO_ACCOUNT_SID = ''
+TWILIO_AUTH_TOKEN = ''
+TWILIO_TO_NUMBER = ''
+
 USE_BOXCAR2 = False
 BOXCAR2_NOTIFY_ONSNATCH = False
 BOXCAR2_NOTIFY_ONDOWNLOAD = False
@@ -435,6 +444,7 @@ PUSHOVER_USERKEY = None
 PUSHOVER_APIKEY = None
 PUSHOVER_DEVICE = None
 PUSHOVER_SOUND = None
+PUSHOVER_PRIORITY = 0
 
 USE_LIBNOTIFY = False
 LIBNOTIFY_NOTIFY_ONSNATCH = False
@@ -649,8 +659,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             RENAME_EPISODES, AIRDATE_EPISODES, FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
             providerList, newznabProviderList, torrentRssProviderList, \
             EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, DAILYSEARCH_FREQUENCY, TWITTER_DMTO, TWITTER_USEDM, \
+            USE_TWILIO, TWILIO_NOTIFY_ONSNATCH, TWILIO_NOTIFY_ONDOWNLOAD, TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD, TWILIO_PHONE_SID, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_TO_NUMBER, \
             USE_BOXCAR2, BOXCAR2_ACCESSTOKEN, BOXCAR2_NOTIFY_ONDOWNLOAD, BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD, BOXCAR2_NOTIFY_ONSNATCH, \
-            USE_PUSHOVER, PUSHOVER_USERKEY, PUSHOVER_APIKEY, PUSHOVER_DEVICE, PUSHOVER_NOTIFY_ONDOWNLOAD, PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHOVER_NOTIFY_ONSNATCH, PUSHOVER_SOUND, \
+            USE_PUSHOVER, PUSHOVER_USERKEY, PUSHOVER_APIKEY, PUSHOVER_DEVICE, PUSHOVER_NOTIFY_ONDOWNLOAD, PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHOVER_NOTIFY_ONSNATCH, PUSHOVER_SOUND, PUSHOVER_PRIORITY, \
             USE_LIBNOTIFY, LIBNOTIFY_NOTIFY_ONSNATCH, LIBNOTIFY_NOTIFY_ONDOWNLOAD, LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD, USE_NMJ, NMJ_HOST, NMJ_DATABASE, NMJ_MOUNT, USE_NMJv2, NMJv2_HOST, NMJv2_DATABASE, NMJv2_DBLOC, USE_SYNOINDEX, \
             USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
@@ -1107,6 +1118,15 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TWITTER_DMTO = check_setting_str(CFG, 'Twitter', 'twitter_dmto', '')
         TWITTER_USEDM = bool(check_setting_int(CFG, 'Twitter', 'twitter_usedm', 0))
 
+        USE_TWILIO = bool(check_setting_int(CFG, 'Twilio', 'use_twilio', 0))
+        TWILIO_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Twilio', 'twilio_notify_onsnatch', 0))
+        TWILIO_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Twilio', 'twilio_notify_ondownload', 0))
+        TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Twilio', 'twilio_notify_onsubtitledownload', 0))
+        TWILIO_PHONE_SID = check_setting_str(CFG, 'Twilio', 'twilio_phone_sid', '', censor_log=True)
+        TWILIO_ACCOUNT_SID = check_setting_str(CFG, 'Twilio', 'twilio_account_sid', '', censor_log=True)
+        TWILIO_AUTH_TOKEN = check_setting_str(CFG, 'Twilio', 'twilio_auth_token', '', censor_log=True)
+        TWILIO_TO_NUMBER = check_setting_str(CFG, 'Twilio', 'twilio_to_number', '', censor_log=True)
+        
         USE_BOXCAR2 = bool(check_setting_int(CFG, 'Boxcar2', 'use_boxcar2', 0))
         BOXCAR2_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_onsnatch', 0))
         BOXCAR2_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_ondownload', 0))
@@ -1121,6 +1141,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PUSHOVER_APIKEY = check_setting_str(CFG, 'Pushover', 'pushover_apikey', '', censor_log=True)
         PUSHOVER_DEVICE = check_setting_str(CFG, 'Pushover', 'pushover_device', '')
         PUSHOVER_SOUND = check_setting_str(CFG, 'Pushover', 'pushover_sound', 'pushover')
+        PUSHOVER_PRIORITY = check_setting_str(CFG, 'Pushover', 'pushover_priority', "0")
 
         USE_LIBNOTIFY = bool(check_setting_int(CFG, 'Libnotify', 'use_libnotify', 0))
         LIBNOTIFY_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Libnotify', 'libnotify_notify_onsnatch', 0))
@@ -2061,6 +2082,17 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'twitter_usedm': int(TWITTER_USEDM),
         },
 
+        'Twilio': {
+            'use_twilio': int(USE_TWILIO),
+            'twilio_notify_onsnatch': int(TWILIO_NOTIFY_ONSNATCH),
+            'twilio_notify_ondownload': int(TWILIO_NOTIFY_ONDOWNLOAD),
+            'twilio_notify_onsubtitledownload': int(TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD),
+            'twilio_phone_sid': helpers.encrypt(TWILIO_PHONE_SID, ENCRYPTION_VERSION),
+            'twilio_account_sid': helpers.encrypt(TWILIO_ACCOUNT_SID, ENCRYPTION_VERSION),
+            'twilio_auth_token': helpers.encrypt(TWILIO_AUTH_TOKEN, ENCRYPTION_VERSION),
+            'twilio_to_number': helpers.encrypt(TWILIO_TO_NUMBER, ENCRYPTION_VERSION),
+        },
+
         'Boxcar2': {
             'use_boxcar2': int(USE_BOXCAR2),
             'boxcar2_notify_onsnatch': int(BOXCAR2_NOTIFY_ONSNATCH),
@@ -2078,6 +2110,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'pushover_apikey': PUSHOVER_APIKEY,
             'pushover_device': PUSHOVER_DEVICE,
             'pushover_sound': PUSHOVER_SOUND,
+            'pushover_priority': PUSHOVER_PRIORITY,
         },
 
         'Libnotify': {

@@ -113,7 +113,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
         elif sickbeard.NZB_METHOD == "download_station":
-            client = clients.getClientIstance(sickbeard.NZB_METHOD)(
+            client = clients.getClientInstance(sickbeard.NZB_METHOD)(
                 sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
             dlResult = client.sendNZB(result)
         else:
@@ -131,7 +131,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
                     result.content = result.provider.get_url(result.url, returns='content')
 
             if result.content or result.url.startswith('magnet'):
-                client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.log(u"Torrent file content is empty", logger.WARNING)

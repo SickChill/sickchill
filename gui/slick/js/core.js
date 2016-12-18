@@ -559,6 +559,15 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testTwilio').on('click', function() {
+                $('#testTwilio').addClass('disabled');
+                $.get(srRoot + '/home/testTwilio', function(data) {
+                    $('#testTwilio-result').html(data);
+                }).always(function() {
+                    $('#testTwilio').removeClass('disabled');
+                });
+            });
+
             $('#testSlack').on('click', function() {
                 $.get(srRoot + '/home/testSlack', function(data) {
                     $('#testSlack-result').html(data);
@@ -1853,6 +1862,14 @@ var SICKRAGE = {
                 torrent.host = $('#torrent_host').val();
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
+
+                if (torrent.method.toLowerCase() === 'putio') {
+                    $.get(srRoot + '/home/putio_authorize', function (data) {
+                        window.open(data);
+                    }).done(function() {
+                        $('#test_torrent_result').html('Confirm Authorization');
+                    });
+                }
 
                 $.get(srRoot + '/home/testTorrent', {
                     'torrent_method': torrent.method,
