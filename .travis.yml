@@ -17,7 +17,6 @@ before_install:
 install:
     - pip install --upgrade pip
     - pip install --upgrade tox
-    - pip install --upgrade boto3
 
 script:
   - cd .build && grunt travis && cd ..
