@@ -543,10 +543,10 @@ Deutsche Welle (US):US/Eastern
 Deutsche Welle TV:Europe/Berlin
 DFamilia (US):US/Eastern
 Discovery Channel (Asia):Asia/Singapore
-Discovery CHANNEL (AU):Australia/Sydney
+Discovery Channel (AU):Australia/Sydney
 Discovery Channel (Australia):Australia/Sydney
 Discovery Channel (CA):Canada/Eastern
-Discovery CHANNEL (UK):Europe/London
+Discovery Channel (UK):Europe/London
 Discovery en Español (US):US/Eastern
 Discovery Family (US):US/Eastern
 Discovery Family:US/Eastern
@@ -1768,6 +1768,7 @@ Starz TV (UK):Europe/London
 Starz!:US/Eastern
 Steel:Europe/Rome
 Stöð 2 (IS):Atlantic/Reykjavik
+Stöð 2:Atlantic/Reykjavik
 Store (UK):Europe/London
 STQ (AU):Australia/Sydney
 STUDIO (AU):Australia/Sydney
@@ -2150,6 +2151,8 @@ VH1 Classics:US/Eastern
 VH1 Soul (US):US/Eastern
 VH1:US/Eastern
 Viasat 4:Europe/Oslo
+Viceland (US):US/Eastern
+Viceland (CA):US/Eastern
 Victory Television Network (US):US/Eastern
 Videoland Television Network:Asia/Taipei
 Viên Thao TV (US):US/Eastern
