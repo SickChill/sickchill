@@ -113,7 +113,8 @@ def get_network_timezone(network):
     """
 
     orig_network = network
-    network = network.lower()
+    if network:
+        network = network.lower()
 
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
