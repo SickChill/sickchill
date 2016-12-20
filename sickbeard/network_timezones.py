@@ -78,9 +78,8 @@ def update_network_dict():
         if existing:
             del network_list[network]
 
-    if network_list:
-        purged = [x for x in network_list]
-        queries.append(['DELETE FROM network_timezones WHERE network_name IN ({0});'.format(','.join(['?'] * len(purged))), purged])
+    for network in network_list:
+        queries.append(['DELETE FROM network_timezones WHERE network_name = ?;', [network]])
 
     if queries:
         cache_db_con.mass_action(queries)
