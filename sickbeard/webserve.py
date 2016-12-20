@@ -878,6 +878,15 @@ class Home(WebRoot):
             return _("Unable to verify key")
 
     @staticmethod
+    def testSNS():
+
+        result = notifiers.sns_notifier.test_notify()
+        if result:
+            return _("SNS successful")
+        else:
+            return _("Error sending SNS")
+
+    @staticmethod
     def testTwitter():
 
         result = notifiers.twitter_notifier.test_notify()
@@ -4954,6 +4963,8 @@ class ConfigNotifications(Config):
             use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
             prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
             prowl_show_list=None, prowl_show=None, prowl_message_title=None,
+            use_sns=None, sns_notify_onsnatch=None, sns_notify_ondownload=None, sns_notify_onsubtitledownload=None,
+            sns_accesskeyid=None, sns_secretkey=None, sns_arn=None, sns_usejsonmsg=None,
             use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
             twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
             use_twilio=None, twilio_notify_onsnatch=None, twilio_notify_ondownload=None, twilio_notify_onsubtitledownload=None,
@@ -5058,6 +5069,15 @@ class ConfigNotifications(Config):
         sickbeard.PROWL_PRIORITY = prowl_priority
         sickbeard.PROWL_MESSAGE_TITLE = prowl_message_title
 
+        sickbeard.USE_SNS = config.checkbox_to_value(use_sns)
+        sickbeard.SNS_NOTIFY_ONSNATCH = config.checkbox_to_value(sns_notify_onsnatch)
+        sickbeard.SNS_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(sns_notify_ondownload)
+        sickbeard.SNS_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(sns_notify_onsubtitledownload)
+        sickbeard.SNS_ACCESSKEYID = sns_accesskeyid
+        sickbeard.SNS_SECRETKEY = sns_secretkey
+        sickbeard.SNS_ARN = sns_arn
+        sickbeard.SNS_USEJSONMSG = config.checkbox_to_value(sns_usejsonmsg)
+ 
         sickbeard.USE_TWITTER = config.checkbox_to_value(use_twitter)
         sickbeard.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
         sickbeard.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)

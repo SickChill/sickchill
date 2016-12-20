@@ -411,6 +411,15 @@ PROWL_API = None
 PROWL_PRIORITY = 0
 PROWL_MESSAGE_TITLE = 'SickRage'
 
+USE_SNS = False
+SNS_ACCESSKEYID = None
+SNS_SECRETKEY = None
+SNS_ARN = None
+SNS_USEJSONMSG = False
+SNS_NOTIFY_ONSNATCH = False
+SNS_NOTIFY_ONDOWNLOAD = False
+SNS_NOTIFY_ONSUBTITLEDOWNLOAD = False
+
 USE_TWITTER = False
 TWITTER_NOTIFY_ONSNATCH = False
 TWITTER_NOTIFY_ONDOWNLOAD = False
@@ -678,7 +687,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
+            USE_SNS, SNS_ARN, SNS_USEJSONMSG, SNS_ACCESSKEYID, SNS_SECRETKEY, SNS_NOTIFY_ONSNATCH, SNS_NOTIFY_ONDOWNLOAD, SNS_NOTIFY_ONSUBTITLEDOWNLOAD
 
         if __INITIALIZED__:
             return False
@@ -706,6 +716,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
         CheckSection(CFG, 'Slack')
+        CheckSection(CFG, 'SNS')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -1127,6 +1138,18 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TWILIO_AUTH_TOKEN = check_setting_str(CFG, 'Twilio', 'twilio_auth_token', '', censor_log=True)
         TWILIO_TO_NUMBER = check_setting_str(CFG, 'Twilio', 'twilio_to_number', '', censor_log=True)
         
+        USE_SNS = bool(check_setting_int(CFG, 'SNS', 'use_sns', 0))
+        SNS_ACCESSKEYID = check_setting_str(CFG, 'SNS', 'sns_accesskeyid', '')
+        SNS_SECRETKEY = check_setting_str(CFG, 'SNS', 'sns_secretkey', '', censor_log=True)
+        SNS_ARN = check_setting_str(CFG, 'SNS', 'sns_arn', '')
+        SNS_USEJSONMSG = bool(
+            check_setting_int(CFG, 'SNS', 'sns_usejsonmsg', 0))
+
+        SNS_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'SNS', 'sns_notify_onsnatch', 0))
+        SNS_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'SNS', 'sns_notify_ondownload', 0))
+        SNS_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
+            check_setting_int(CFG, 'SNS', 'sns_notify_onsubtitledownload', 0))
+
         USE_BOXCAR2 = bool(check_setting_int(CFG, 'Boxcar2', 'use_boxcar2', 0))
         BOXCAR2_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_onsnatch', 0))
         BOXCAR2_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_ondownload', 0))
@@ -2068,6 +2091,17 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'prowl_api': PROWL_API,
             'prowl_priority': PROWL_PRIORITY,
             'prowl_message_title': PROWL_MESSAGE_TITLE,
+        },
+
+        'SNS': {
+            'use_sns': int(USE_SNS),
+            'sns_accesskeyid': SNS_ACCESSKEYID,
+            'sns_secretkey': SNS_SECRETKEY,
+            'sns_usejsonmsg': int(SNS_USEJSONMSG),
+            'sns_arn': SNS_ARN,
+            'sns_notify_onsnatch': int(SNS_NOTIFY_ONSNATCH),
+            'sns_notify_ondownload': int(SNS_NOTIFY_ONDOWNLOAD),
+            'sns_notify_onsubtitledownload': int(SNS_NOTIFY_ONSUBTITLEDOWNLOAD),
         },
 
         'Twitter': {

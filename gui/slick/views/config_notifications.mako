@@ -9,6 +9,7 @@
     <li><a href="#htpcnas">${_('Home Theater / NAS')}</a></li>
     <li><a href="#devices">${_('Devices')}</a></li>
     <li><a href="#social">${_('Social')}</a></li>
+    <li><a href="#general">${_('General')}</a></li>
 </%block>
 
 <%block name="pages">
@@ -2450,6 +2451,145 @@
                 </div>
             </div>
         </div>
+
+        <!-- /General //-->
+        <div id="general">
+
+            <!-- /sns component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-sns" title="${_('AWS SNS')}"></span>
+                        <h3><a href="${anon_url('http://aws.amazon.com/sns/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">AWS SNS</a></h3>
+                        <p>${_('Amazon Simple Notification Service (Amazon SNS) is a fast, flexible, fully managed push notification service that lets you send individual messages or to fan-out messages to large numbers of recipients.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_sns" id="use_sns" ${('', 'checked="checked"')[bool(sickbeard.USE_SNS)]}/>
+                                        <label for="use_twitter">${_('Should SickRage send AWS SNS messages?')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('Note')}:</b> ${_('Amazon AWS account required.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_sns">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Use JSON Message')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="sns_usejsonmsg" id="sns_usejsonmsg" ${('', 'checked="checked"')[bool(sickbeard.SNS_USEJSONMSG)]}/>
+                                    <label for="sns_notify_onsnatch">${_('Use the field-separated JSON Message Format?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('AWS Access Key ID')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="sns_accesskeyid" id="sns_accesskeyid" value="${sickbeard.SNS_ACCESSKEYID}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('AWS Secret Key')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="sns_secretkey" id="sns_secretkey" value="${sickbeard.SNS_SECRETKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('SNS Topic ARN')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="sns_arn" id="sns_arn" value="${sickbeard.SNS_ARN}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+ 
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="sns_notify_onsnatch" id="sns_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.SNS_NOTIFY_ONSNATCH)]}/>
+                                    <label for="sns_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="sns_notify_ondownload" id="sns_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.SNS_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="sns_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="sns_notify_onsubtitledownload" id="sns_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SNS_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="sns_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testSNS-result">${_('Click below to test. Please note your changes must be saved to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test SNS" id="testSNS" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+
+
+        </div>
+
 
         <!-- /Social //-->
         <div id="social">

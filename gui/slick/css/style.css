@@ -1992,6 +1992,11 @@ div.metadataDiv .disabled {
     float: left;
 }
 
+.icon-notifiers-sns {
+    background: url("../images/sns.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-slack {
     background: url("../images/Slack_Mark_Web.png");
     background-size: 32px;
