@@ -46,6 +46,12 @@ class Notifier(object):
         if sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwilio(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ': ' + lang)
 
+    def notify_login(self, ipaddress=""):
+        if sickbeard.USE_TWILIO:
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyTwilio(title + " - " + update_text.format(ipaddress))
+
     def test_notify(self):
         try:
             if not self.number.capabilities['sms']:

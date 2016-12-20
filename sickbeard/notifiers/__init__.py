@@ -104,5 +104,8 @@ def notify_git_update(new_version=""):
 
 def notify_login(ipaddress):
     for n in notifiers:
-        if sickbeard.NOTIFY_ON_LOGIN:
+        if sickbeard.NOTIFY_ON_LOGIN and hasattr(n, 'notify_login'):
             n.notify_login(ipaddress)
+        else:
+            print(n.__module__)
+
