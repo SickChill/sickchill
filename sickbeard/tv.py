@@ -898,7 +898,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             'last_update': ''
         }
 
-        i = imdb.IMDb()
+        if sickbeard.PROXY_SETTING:
+            i = imdb.IMDb(proxy=sickbeard.PROXY_SETTING)
+        else:
+            i = imdb.IMDb()
+
         if not self.imdbid:
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
 

@@ -119,6 +119,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             logging.getLogger('tornado.application'),
             # logging.getLogger('subliminal'),
             # logging.getLogger('tornado.access'),
+            # logging.getLogger('tvdb_api'),
+            # logging.getLogger("requests.packages.urllib3")
         ]
 
         self.console_logging = False
