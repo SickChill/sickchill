@@ -85,9 +85,9 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     if dict_from_cookiejar(self.session.cookies)['uid'] and dict_from_cookiejar(self.session.cookies)['pass']:
                         self._uid = dict_from_cookiejar(self.session.cookies)['uid']
                         self._hash = dict_from_cookiejar(self.session.cookies)['pass']
-
-                        self.cookies = {'uid': self._uid,
+                        cookie_dict = {'uid': self._uid,
                                         'pass': self._hash}
+                        add_dict_to_cookiejar(self.cookies, cookie_dict)
                         return True
                 except Exception:
                     logger.log(u"Unable to login to provider (cookie)", logger.WARNING)
