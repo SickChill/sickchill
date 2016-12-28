@@ -386,7 +386,7 @@ def searchForNeededEpisodes():
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            logger.log(u"Authentication error: " + ex(e), logger.WARNING)
             continue
         except Exception as e:
             logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
@@ -478,7 +478,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
             except AuthException as error:
-                logger.log(u"Authentication error: {0!r}".format(error), logger.ERROR)
+                logger.log(u"Authentication error: {0!r}".format(error), logger.WARNING)
                 break
             except Exception as error:
                 logger.log(u"Exception while searching {0}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
