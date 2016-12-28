@@ -69,7 +69,7 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
 
         try:
             # Send magnet to rTorrent
-            torrent = self.auth.load_magnet(result.url, result.hash)
+            torrent = self.auth.load_magnet(result.url, result.hash, verify_load=not sickbeard.TORRENT_PAUSED)
 
             if not torrent:
                 return False
@@ -84,8 +84,9 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
             if sickbeard.TORRENT_PATH:
                 torrent.set_directory(sickbeard.TORRENT_PATH)
 
-            # Start torrent
-            torrent.start()
+            if not sickbeard.TORRENT_PAUSED:
+                # Start torrent
+                torrent.start()
 
             return True
 
@@ -127,8 +128,9 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
             # Set Ratio Group
             # torrent.set_visible(group_name)
 
-            # Start torrent
-            torrent.start()
+            if not sickbeard.TORRENT_PAUSED:
+                # Start torrent
+                torrent.start()
 
             return True
 
