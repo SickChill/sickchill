@@ -1745,3 +1745,14 @@ def is_ip_private(ip):
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+
+def anyAnimeShow():
+    try:
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT distinct anime FROM tv_shows order by anime desc limit 1")
+        if sql_results:
+            return boolean(sql_results(rows[0]["anime"]))
+        else:
+            return False
+    except Exception:
+        return False
