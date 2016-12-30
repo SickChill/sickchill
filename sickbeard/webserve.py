@@ -974,8 +974,7 @@ class Home(WebRoot):
 
         if notifiers.libnotify_notifier.test_notify():
             return _("Tried sending desktop notification via libnotify")
-        else:
-            return notifiers.libnotify.diagnose()
+        return notifiers.libnotify_notifier.diagnose()
 
     @staticmethod
     def testEMBY(host=None, emby_apikey=None):
@@ -1087,11 +1086,10 @@ class Home(WebRoot):
 
         if emails:
             entries['emails'] = emails
-            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
-                return 'ERROR'
-
         if prowlAPIs:
             entries['prowlAPIs'] = prowlAPIs
+
+        if emails or prowlAPIs:
             if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
@@ -3886,6 +3884,8 @@ class ConfigGeneral(Config):
         sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickbeard.save_config()
 
+        ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
+
     def saveGeneral(  # pylint: disable=unused-argument
             self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
@@ -4448,33 +4448,6 @@ class ConfigProviders(Config):
             return json.dumps({'success': tempProvider.get_id()})
 
     @staticmethod
-    def saveNewznabProvider(name, url, key=''):
-
-        if not name or not url:
-            return '0'
-
-        providerDict = dict(zip([x.name for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
-
-        if name in providerDict:
-            if not providerDict[name].default:
-                providerDict[name].name = name
-                providerDict[name].url = config.clean_url(url)
-
-            providerDict[name].key = key
-            # a 0 in the key spot indicates that no key is needed
-            if key == '0':
-                providerDict[name].needs_auth = False
-            else:
-                providerDict[name].needs_auth = True
-
-            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
-
-        else:
-            newProvider = newznab.NewznabProvider(name, url, key=key)
-            sickbeard.newznabProviderList.append(newProvider)
-            return newProvider.get_id() + '|' + newProvider.configStr()
-
-    @staticmethod
     def getNewznabCategories(name, url, key):
         """
         Retrieves a list of possible categories with category id's
@@ -4539,27 +4512,6 @@ class ConfigProviders(Config):
                 return json.dumps({'success': tempProvider.get_id()})
             else:
                 return json.dumps({'error': errMsg})
-
-    @staticmethod
-    def saveTorrentRssProvider(name, url, cookies, titleTAG):
-
-        if not name or not url:
-            return '0'
-
-        providerDict = dict(zip([x.name for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
-
-        if name in providerDict:
-            providerDict[name].name = name
-            providerDict[name].url = config.clean_url(url)
-            providerDict[name].cookies = cookies
-            providerDict[name].titleTAG = titleTAG
-
-            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
-
-        else:
-            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
-            sickbeard.torrentRssProviderList.append(newProvider)
-            return newProvider.get_id() + '|' + newProvider.configStr()
 
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
@@ -5207,8 +5159,6 @@ class ConfigSubtitles(Config):
             addic7ed_user=None, addic7ed_pass=None, itasa_user=None, itasa_pass=None, legendastv_user=None, legendastv_pass=None,
             opensubtitles_user=None, opensubtitles_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
 
-        results = []
-
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
@@ -5248,13 +5198,7 @@ class ConfigSubtitles(Config):
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()
 
-        if len(results) > 0:
-            for x in results:
-                logger.log(x, logger.ERROR)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
-        else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")
 
@@ -5275,8 +5219,6 @@ class ConfigAnime(Config):
     def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
                   split_home=None):
 
-        results = []
-
         sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
         sickbeard.ANIDB_PASSWORD = anidb_password
@@ -5284,14 +5226,7 @@ class ConfigAnime(Config):
         sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
 
         sickbeard.save_config()
-
-        if len(results) > 0:
-            for x in results:
-                logger.log(x, logger.ERROR)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
-        else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/anime/")
 
