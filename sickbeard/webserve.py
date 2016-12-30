@@ -1578,7 +1578,9 @@ class Home(WebRoot):
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
 
-            location = location.decode('UTF-8')
+            if not isinstance(location, unicode):
+                location = ek(unicode, location, 'utf-8')
+
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if ek(os.path.normpath, show_obj._location) != ek(os.path.normpath, location):  # pylint: disable=protected-access
                 logger.log(ek(os.path.normpath, show_obj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)  # pylint: disable=protected-access
@@ -3398,12 +3400,8 @@ class Manage(Home, WebRoot):
                        subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args_,
                        **kwargs):
         dir_map = {}
-        for cur_arg in kwargs:
-            if not cur_arg.startswith('orig_root_dir_'):
-                continue
-            which_index = cur_arg.replace('orig_root_dir_', '')
-            end_dir = kwargs['new_root_dir_' + which_index]
-            dir_map[kwargs[cur_arg]] = end_dir
+        for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
+            dir_map[kwargs[cur_arg]] = ek(unicode, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
