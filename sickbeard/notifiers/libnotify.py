@@ -20,19 +20,22 @@
 
 import os
 import cgi
+import warnings
 
 import sickbeard
 
-from sickbeard import logger, common
+from sickbeard import common
 from sickrage.helper.encoding import ek
 
-try:
-    from pgi.repository import Notify
-except (ImportError, Exception):
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
     try:
-        from gi.repository import Notify
+        from pgi.repository import Notify
     except (ImportError, Exception):
-        Notify = None
+        try:
+            from gi.repository import Notify
+        except (ImportError, Exception):
+            Notify = None
 
 
 class Notifier(object):
