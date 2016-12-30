@@ -1,0 +1,6 @@
+(Unused) Experimental cffi bindings for glib/gobject/girepository.
+
+Takes a very long time to import due to slow loading of cdefs in cffi (0.7 
+atm). Because of that not an option atm...
+
+TODO: reevaluate in the future.

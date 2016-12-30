@@ -27,38 +27,20 @@ from sickbeard import logger, common
 from sickrage.helper.encoding import ek
 
 try:
-    from gi.repository import Notify
-except Exception:
-    Notify = None
-
-try:
-    from gi.repository import GObject
-except Exception:
-    GObject = None
-
-try:
-    import dbus
-except ImportError:
-    dbus = None
+    from pgi.repository import Notify
+except (ImportError, Exception):
+    try:
+        from gi.repository import Notify
+    except (ImportError, Exception):
+        Notify = None
 
 
 class Notifier(object):
 
     def __init__(self):
-        self.notify = None
-
-    def setup(self):
-        if not self.notify:
-            if not Notify:
-                logger.log(u"Unable to import Notify from gi.repository. libnotify notifications won't work.", logger.ERROR)
-            elif not GObject:
-                logger.log(u"Unable to import GObject from gi.repository. We can't catch a GError in display.", logger.ERROR)
-            else:
-                notify = Notify.init('SickRage')
-                if notify:
-                    self.notify = notify
-                else:
-                    logger.log(u"Initialization of Notify failed. libnotify notifications won't work.", logger.ERROR)
+        self.notify_initialized = None
+        if Notify:
+            self.notify_initialized = Notify.init('SickRage')
 
     @staticmethod
     def diagnose():
@@ -75,6 +57,11 @@ class Notifier(object):
             return (u"<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
                     u"aren't set.  libnotify will only work when you run SickRage "
                     u"from a desktop login.")
+
+        try:
+            import dbus
+        except (ImportError, Exception):
+            dbus = None
 
         if dbus:
             try:
@@ -119,13 +106,11 @@ class Notifier(object):
         return self._notify('Test notification', "This is a test notification from SickRage", force=True)
 
     def _notify(self, title, message, force=False):
-        self.setup()
-        if not (self.notify and (sickbeard.USE_LIBNOTIFY or force)):
-            return False
-
-        icon = ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
-        try:
-            n = Notify.Notification.new(title, message, icon)
-            return n.show()
-        except GObject.GError:
-            return False
+        if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:
+            icon = ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
+            # noinspection PyBroadException
+            try:
+                n = Notify.Notification.new(title, message, icon)
+                return n.show()
+            except Exception:
+                return False
