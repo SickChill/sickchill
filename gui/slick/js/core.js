@@ -3084,11 +3084,6 @@ var SICKRAGE = {
                 });
 
                 $(this).attr('disabled', true);
-                new PNotify({
-                    title: 'Saved Defaults',
-                    text: 'Your "add show" defaults have been set to your current selections.',
-                    shadow: false
-                });
             });
 
             $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
