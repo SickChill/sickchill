@@ -31,7 +31,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <form action="editShow" method="post">
+                <form action="editShow" method="post" accept-charset="utf-8">
 
                     <div id="config-components">
                         <!-- Tabs -->
