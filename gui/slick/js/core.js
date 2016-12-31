@@ -1734,7 +1734,6 @@ var SICKRAGE = {
                         $('#path_synology').show();
                     } else if (selectedProvider.toLowerCase() === 'rtorrent'){
                         client = 'rTorrent';
-                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_verify_deluge').hide();
