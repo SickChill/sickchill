@@ -2216,8 +2216,9 @@ var SICKRAGE = {
                 html: true, // required if content has HTML
                 content: '<div id="popover-target"></div>'
             }).on('shown.bs.popover', function () { // bootstrap popover event triggered when the popover opens
-                // call this function to copy the column selection code into the popover
-                $.tablesorter.columnSelector.attachTo( $('.show-table'), '#popover-target');
+                $(".show-table").each(function () {
+                    $.tablesorter.columnSelector.attachTo($(this), '#popover-target');
+                });
             });
         },
         displayShow: function() {
