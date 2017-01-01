@@ -1384,9 +1384,7 @@ class Home(WebRoot):
         def titler(x):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
-        sortedShowLists = [
-            ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
-        ]
+        sortedShowLists = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))
 
         bwl = None
         if show_obj.is_anime:
