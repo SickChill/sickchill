@@ -1299,7 +1299,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         METADATA_MEDE8ER = check_setting_str(CFG, 'General', 'metadata_mede8er', '0|0|0|0|0|0|0|0|0|0')
 
         HOME_LAYOUT = check_setting_str(CFG, 'GUI', 'home_layout', 'poster')
-        HOME_VIEW = check_setting_int(CFG, 'GUI', 'home_view', None)
+        HOME_VIEW = check_setting_str(CFG, 'GUI', 'home_view', None)
         HISTORY_LAYOUT = check_setting_str(CFG, 'GUI', 'history_layout', 'detailed')
         HISTORY_LIMIT = check_setting_str(CFG, 'GUI', 'history_limit', '100')
         DISPLAY_SHOW_SPECIALS = bool(check_setting_int(CFG, 'GUI', 'display_show_specials', 1))
@@ -2239,6 +2239,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,
+            'home_view': HOME_VIEW,
             'history_layout': HISTORY_LAYOUT,
             'history_limit': HISTORY_LIMIT,
             'display_show_specials': int(DISPLAY_SHOW_SPECIALS),
