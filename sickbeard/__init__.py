@@ -461,7 +461,6 @@ ANIDB_USERNAME = None
 ANIDB_PASSWORD = None
 ANIDB_USE_MYLIST = False
 ADBA_CONNECTION = None
-ANIME_SPLIT_HOME = False
 
 USE_SYNOINDEX = False
 
@@ -545,7 +544,7 @@ GUI_NAME = None
 GUI_LANG = None
 
 HOME_LAYOUT = None
-HOME_SPLIT = None
+HOME_VIEW = None
 HISTORY_LAYOUT = None
 HISTORY_LIMIT = 0
 DISPLAY_SHOW_SPECIALS = False
@@ -667,7 +666,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
-            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
+            GUI_NAME, HOME_LAYOUT, HOME_VIEW, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
@@ -675,7 +674,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
+            SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
             FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
@@ -1291,8 +1290,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '', censor_log=True)
         ANIDB_USE_MYLIST = bool(check_setting_int(CFG, 'ANIDB', 'anidb_use_mylist', 0))
 
-        ANIME_SPLIT_HOME = bool(check_setting_int(CFG, 'ANIME', 'anime_split_home', 0))
-
         METADATA_KODI = check_setting_str(CFG, 'General', 'metadata_kodi', '0|0|0|0|0|0|0|0|0|0')
         METADATA_KODI_12PLUS = check_setting_str(CFG, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0|0|0|0|0')
         METADATA_MEDIABROWSER = check_setting_str(CFG, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0|0|0|0|0')
@@ -1302,6 +1299,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         METADATA_MEDE8ER = check_setting_str(CFG, 'General', 'metadata_mede8er', '0|0|0|0|0|0|0|0|0|0')
 
         HOME_LAYOUT = check_setting_str(CFG, 'GUI', 'home_layout', 'poster')
+        HOME_VIEW = check_setting_int(CFG, 'GUI', 'home_view', None)
         HISTORY_LAYOUT = check_setting_str(CFG, 'GUI', 'history_layout', 'detailed')
         HISTORY_LIMIT = check_setting_str(CFG, 'GUI', 'history_limit', '100')
         DISPLAY_SHOW_SPECIALS = bool(check_setting_int(CFG, 'GUI', 'display_show_specials', 1))
@@ -2295,10 +2293,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'anidb_username': ANIDB_USERNAME,
             'anidb_password': helpers.encrypt(ANIDB_PASSWORD, ENCRYPTION_VERSION),
             'anidb_use_mylist': int(ANIDB_USE_MYLIST),
-        },
-
-        'ANIME': {
-            'anime_split_home': int(ANIME_SPLIT_HOME),
         }
     })
     new_config.write()

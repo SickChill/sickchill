@@ -6,7 +6,6 @@
 
 <%block name="tabs">
     <li><a href="#animedb-settings">${_('AnimeDB Settings')}</a></li>
-    <li><a href="#anime-look-feel">${_('Look &amp; Feel')}</a></li>
 </%block>
 
 <%block name="pages">
@@ -90,33 +89,6 @@
                                            id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
                                     <label for="anidb_use_mylist">${_('Do you want to add the PostProcessed Episodes to the MyList ?')}</label>
                                 </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-        </div>
-
-        <!-- /component-group //-->
-        <div id="anime-look-feel" class="component-group">
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                    <div class="component-group-desc">
-                        <span class="icon-notifiers-look" title="look"></span>
-                        <h3>${_('Look and Feel')}</h3>
-                        <p>${_('How should the anime functions show and behave.')}</p>
-                    </div>
-                </div>
-                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-                    <fieldset class="component-group-list">
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Split show lists')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" name="split_home"
-                                       id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
-                                <label for="split_home">${_('Separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>

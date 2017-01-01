@@ -75,13 +75,20 @@
                 </label>
 
                 <label>
-                    <span class="show-option">${_('Split')}:</span>
-                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Split">
-                        <option value="${srRoot}/setHomeSplit/?split=none" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'none']}>${_('None')}</option>
-                        <option value="${srRoot}/setHomeSplit/?split=anime" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'anime']}>${_('Anime')}</option>
-                        <option value="${srRoot}/setHomeSplit/?split=sports" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'sports']}>${_('Sports')}</option>
-                        <option value="${srRoot}/setHomeSplit/?split=animesports" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'animesports']}>${_('Anime & Sports')}</option>
-                        <option value="${srRoot}/setHomeSplit/?split=rootdir" ${('', 'selected="selected"')[sickbeard.HOME_SPLIT == 'rootdir']}>${_('Root dir')}</option>
+                    <span class="show-option">${_('View')}:</span>
+                    <select style="max-width:200px;" name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View">
+                        <optgroup label="Split Types">
+                            <option value="${srRoot}/setHomeView/?view=normal" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == 'normal']}>${_('Normal')}</option>
+                            <option value="${srRoot}/setHomeView/?view=anime" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == 'anime']}>${_('Split Anime')}</option>
+                            <option value="${srRoot}/setHomeView/?view=sports" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == 'sports']}>${_('Split Sports')}</option>
+                            <option value="${srRoot}/setHomeView/?view=animesports" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == 'animesports']}>${_('Split Anime & Sports')}</option>
+                            <option value="${srRoot}/setHomeView/?view=rootdir" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == 'rootdir']}>${_('By Root directory')}</option>
+                        </optgroup>
+                        <optgroup label="Root Directories">
+                            % for root_dir in sickbeard.ROOT_DIRS.split('|')[1:]:
+                                <option value="${srRoot}/setHomeView/?view=root:${loop.index}" ${('', 'selected="selected"')[sickbeard.HOME_VIEW == ('root:'+str(loop.index))]}>${root_dir}</option>
+                            % endfor
+                        </optgroup>
                     </select>
                 </label>
             </div>
@@ -119,7 +126,7 @@
                             </div>
                         % endif
 
-                        %if sickbeard.HOME_SPLIT == 'rootdir':
+                        %if sickbeard.HOME_VIEW == 'rootdir':
                             <br/>
                             <div class="row">
                                 <div class="col-md-12">

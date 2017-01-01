@@ -412,11 +412,11 @@ class WebRoot(WebHandler):
         # Don't redirect to default page so user can see new layout
         return self.redirect("/home/")
 
-    def setHomeSplit(self, split):
-        if split not in ('anime', 'sports', 'animesports', 'rootdir'):
-            split = None
+    def setHomeView(self, view):
+        if view not in ('anime', 'sports', 'animesports', 'rootdir') and not view.startswith("root"):
+            view = None
 
-        sickbeard.HOME_SPLIT = split
+        sickbeard.HOME_VIEW = view
         # Don't redirect to default page so user can see new layout
         return self.redirect("/home/")
 
@@ -665,21 +665,21 @@ class Home(WebRoot):
         shows = []
         anime = []
         sports = []
-        if sickbeard.HOME_SPLIT == 'anime':
+        if sickbeard.HOME_VIEW == 'anime':
             for show in sickbeard.showList:
                 if show.is_anime:
                     anime.append(show)
                 else:
                     shows.append(show)
             showlists = [["Shows", shows], ["Anime", anime]]
-        elif sickbeard.HOME_SPLIT == 'sports':
+        elif sickbeard.HOME_VIEW == 'sports':
             for show in sickbeard.showList:
                 if show.sports:
                     sports.append(show)
                 else:
                     shows.append(show)
             showlists = [["Shows", shows], ["Sports", sports]]
-        elif sickbeard.HOME_SPLIT == 'animesports':
+        elif sickbeard.HOME_VIEW == 'animesports':
             for show in sickbeard.showList:
                 if show.sports:
                     sports.append(show)
@@ -688,7 +688,7 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             showlists = [["Shows", shows], ["Anime", anime], ["Sports", sports]]
-        elif sickbeard.HOME_SPLIT == 'rootdir':
+        elif sickbeard.HOME_VIEW == 'rootdir':
             root_dirs = {}
 
             for show in sickbeard.showList:
@@ -712,12 +712,17 @@ class Home(WebRoot):
             for attr, value in root_dirs.iteritems():
                 if len(value) > 0:
                     showlists.append([attr, value])
+        elif sickbeard.HOME_VIEW is not None and sickbeard.HOME_VIEW.startswith("root"):
+            for show in sickbeard.showList:
+                if sickbeard.ROOT_DIRS.split("|")[1:][int(sickbeard.HOME_VIEW[5:])] in show._location:
+                    shows.append(show)
+            showlists = [["Shows", shows]]
         else:
             showlists = [["Shows", sickbeard.showList]]
 
         stats = self.show_statistics()
-        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[
-            0], max_download_count=stats[1], controller="home", action="index")
+        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[0],
+                        max_download_count=stats[1], controller="home", action="index")
 
     @staticmethod
     def show_statistics():
@@ -1379,22 +1384,9 @@ class Home(WebRoot):
         def titler(x):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
-        if sickbeard.ANIME_SPLIT_HOME:
-            shows = []
-            anime = []
-            for show in sickbeard.showList:
-                if show.is_anime:
-                    anime.append(show)
-                else:
-                    shows.append(show)
-            sortedShowLists = [
-                ["Shows", sorted(shows, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))],
-                ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
-            ]
-        else:
-            sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
-            ]
+        sortedShowLists = [
+            ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
+        ]
 
         bwl = None
         if show_obj.is_anime:
@@ -5252,7 +5244,6 @@ class ConfigAnime(Config):
         sickbeard.ANIDB_USERNAME = anidb_username
         sickbeard.ANIDB_PASSWORD = anidb_password
         sickbeard.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
-        sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
 
         sickbeard.save_config()
         ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
