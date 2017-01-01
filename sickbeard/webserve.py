@@ -815,7 +815,7 @@ class Home(WebRoot):
 
         host = config.clean_url(host)
 
-        client = clients.getClientIstance(torrent_method)
+        client = clients.getClientInstance(torrent_method)
 
         result_, accesMsg = client(host, username, password).testAuthentication()
 
@@ -890,6 +890,11 @@ class Home(WebRoot):
             return _("Error sending Pushover notification")
 
     @staticmethod
+    def putio_authorize():
+        client = clients.getClientInstance('putio')
+        return client().authentication_url  # pylint: disable=protected-access
+
+    @staticmethod
     def twitterStep1():
         return notifiers.twitter_notifier._get_authorization()  # pylint: disable=protected-access
 
@@ -911,6 +916,26 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
         else:
             return _("Error sending tweet")
+
+    @staticmethod
+    def testTwilio():
+        if not notifiers.twilio_notifier.account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):
+            return _('Please enter a valid account sid')
+
+        if not notifiers.twilio_notifier.auth_regex.match(sickbeard.TWILIO_AUTH_TOKEN):
+            return _('Please enter a valid auth token')
+
+        if not notifiers.twilio_notifier.phone_regex.match(sickbeard.TWILIO_PHONE_SID):
+            return _('Please enter a valid phone sid')
+
+        if not notifiers.twilio_notifier.number_regex.match(sickbeard.TWILIO_TO_NUMBER):
+            return _('Please format the phone number as "+1-###-###-####"')
+
+        result = notifiers.twilio_notifier.test_notify()
+        if result:
+            return _('Authorization successful and number ownership verified')
+        else:
+            return _('Error sending sms')
 
     @staticmethod
     def testSlack():
@@ -980,8 +1005,7 @@ class Home(WebRoot):
 
         if notifiers.libnotify_notifier.test_notify():
             return _("Tried sending desktop notification via libnotify")
-        else:
-            return notifiers.libnotify.diagnose()
+        return notifiers.libnotify_notifier.diagnose()
 
     @staticmethod
     def testEMBY(host=None, emby_apikey=None):
@@ -1093,11 +1117,10 @@ class Home(WebRoot):
 
         if emails:
             entries['emails'] = emails
-            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
-                return 'ERROR'
-
         if prowlAPIs:
             entries['prowlAPIs'] = prowlAPIs
+
+        if emails or prowlAPIs:
             if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
 
@@ -1586,7 +1609,9 @@ class Home(WebRoot):
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
 
-            location = location.decode('UTF-8')
+            if not isinstance(location, unicode):
+                location = ek(unicode, location, 'utf-8')
+
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if ek(os.path.normpath, show_obj._location) != ek(os.path.normpath, location):  # pylint: disable=protected-access
                 logger.log(ek(os.path.normpath, show_obj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)  # pylint: disable=protected-access
@@ -3406,12 +3431,8 @@ class Manage(Home, WebRoot):
                        subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args_,
                        **kwargs):
         dir_map = {}
-        for cur_arg in kwargs:
-            if not cur_arg.startswith('orig_root_dir_'):
-                continue
-            which_index = cur_arg.replace('orig_root_dir_', '')
-            end_dir = kwargs['new_root_dir_' + which_index]
-            dir_map[kwargs[cur_arg]] = end_dir
+        for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
+            dir_map[kwargs[cur_arg]] = ek(unicode, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
@@ -3892,6 +3913,8 @@ class ConfigGeneral(Config):
         sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickbeard.save_config()
 
+        ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
+
     def saveGeneral(  # pylint: disable=unused-argument
             self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
@@ -3899,7 +3922,7 @@ class ConfigGeneral(Config):
             api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
             web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
             handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-            proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
+            proxy_setting=None, anon_redirect=None, git_path=None, git_remote=None,
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
@@ -3939,7 +3962,6 @@ class ConfigGeneral(Config):
         sickbeard.CPU_PRESET = cpu_preset
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
-        sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
         git_credentials_changed = sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD != git_username, git_password
         sickbeard.GIT_USERNAME = git_username
@@ -4318,7 +4340,7 @@ class ConfigPostProcessing(Config):
             sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime) in [1, 2]:
+            if int(naming_anime or 0) in [1, 2]:
                 results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
             else:
                 results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
@@ -4329,7 +4351,7 @@ class ConfigPostProcessing(Config):
             sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime) in [1, 2]:
+            if int(naming_anime or 0) in [1, 2]:
                 results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
             else:
                 results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
@@ -4455,33 +4477,6 @@ class ConfigProviders(Config):
             return json.dumps({'success': tempProvider.get_id()})
 
     @staticmethod
-    def saveNewznabProvider(name, url, key=''):
-
-        if not name or not url:
-            return '0'
-
-        providerDict = dict(zip([x.name for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
-
-        if name in providerDict:
-            if not providerDict[name].default:
-                providerDict[name].name = name
-                providerDict[name].url = config.clean_url(url)
-
-            providerDict[name].key = key
-            # a 0 in the key spot indicates that no key is needed
-            if key == '0':
-                providerDict[name].needs_auth = False
-            else:
-                providerDict[name].needs_auth = True
-
-            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
-
-        else:
-            newProvider = newznab.NewznabProvider(name, url, key=key)
-            sickbeard.newznabProviderList.append(newProvider)
-            return newProvider.get_id() + '|' + newProvider.configStr()
-
-    @staticmethod
     def getNewznabCategories(name, url, key):
         """
         Retrieves a list of possible categories with category id's
@@ -4546,27 +4541,6 @@ class ConfigProviders(Config):
                 return json.dumps({'success': tempProvider.get_id()})
             else:
                 return json.dumps({'error': errMsg})
-
-    @staticmethod
-    def saveTorrentRssProvider(name, url, cookies, titleTAG):
-
-        if not name or not url:
-            return '0'
-
-        providerDict = dict(zip([x.name for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
-
-        if name in providerDict:
-            providerDict[name].name = name
-            providerDict[name].url = config.clean_url(url)
-            providerDict[name].cookies = cookies
-            providerDict[name].titleTAG = titleTAG
-
-            return providerDict[name].get_id() + '|' + providerDict[name].configStr()
-
-        else:
-            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
-            sickbeard.torrentRssProviderList.append(newProvider)
-            return newProvider.get_id() + '|' + newProvider.configStr()
 
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
@@ -4962,10 +4936,12 @@ class ConfigNotifications(Config):
             prowl_show_list=None, prowl_show=None, prowl_message_title=None,
             use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None,
             twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
+            use_twilio=None, twilio_notify_onsnatch=None, twilio_notify_ondownload=None, twilio_notify_onsubtitledownload=None,
+            twilio_phone_sid=None, twilio_account_sid=None, twilio_auth_token=None, twilio_to_number=None,
             use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
             boxcar2_notify_onsubtitledownload=None, boxcar2_accesstoken=None,
             use_pushover=None, pushover_notify_onsnatch=None, pushover_notify_ondownload=None,
-            pushover_notify_onsubtitledownload=None, pushover_userkey=None, pushover_apikey=None, pushover_device=None, pushover_sound=None,
+            pushover_notify_onsubtitledownload=None, pushover_userkey=None, pushover_apikey=None, pushover_device=None, pushover_sound=None, pushover_priority=0,
             use_libnotify=None, libnotify_notify_onsnatch=None, libnotify_notify_ondownload=None,
             libnotify_notify_onsubtitledownload=None,
             use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
@@ -5069,6 +5045,15 @@ class ConfigNotifications(Config):
         sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
         sickbeard.TWITTER_DMTO = twitter_dmto
 
+        sickbeard.USE_TWILIO = config.checkbox_to_value(use_twilio)
+        sickbeard.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
+        sickbeard.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
+        sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
+        sickbeard.TWILIO_PHONE_SID = twilio_phone_sid
+        sickbeard.TWILIO_ACCOUNT_SID = twilio_account_sid
+        sickbeard.TWILIO_AUTH_TOKEN = twilio_auth_token
+        sickbeard.TWILIO_TO_NUMBER = twilio_to_number
+
         sickbeard.USE_SLACK = config.checkbox_to_value(use_slack)
         sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
         sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
@@ -5088,6 +5073,7 @@ class ConfigNotifications(Config):
         sickbeard.PUSHOVER_APIKEY = pushover_apikey
         sickbeard.PUSHOVER_DEVICE = pushover_device
         sickbeard.PUSHOVER_SOUND = pushover_sound
+        sickbeard.PUSHOVER_PRIORITY = pushover_priority
 
         sickbeard.USE_LIBNOTIFY = config.checkbox_to_value(use_libnotify)
         sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
@@ -5202,8 +5188,6 @@ class ConfigSubtitles(Config):
             addic7ed_user=None, addic7ed_pass=None, itasa_user=None, itasa_pass=None, legendastv_user=None, legendastv_pass=None,
             opensubtitles_user=None, opensubtitles_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
 
-        results = []
-
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
@@ -5243,13 +5227,7 @@ class ConfigSubtitles(Config):
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()
 
-        if len(results) > 0:
-            for x in results:
-                logger.log(x, logger.ERROR)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
-        else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")
 
@@ -5270,8 +5248,6 @@ class ConfigAnime(Config):
     def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
                   split_home=None):
 
-        results = []
-
         sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
         sickbeard.ANIDB_PASSWORD = anidb_password
@@ -5279,14 +5255,7 @@ class ConfigAnime(Config):
         sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
 
         sickbeard.save_config()
-
-        if len(results) > 0:
-            for x in results:
-                logger.log(x, logger.ERROR)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
-        else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/anime/")
 

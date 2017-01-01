@@ -283,20 +283,6 @@ var SICKRAGE = {
             });
         },
         index: function() {
-            if ($("input[name='proxy_setting']").val().length === 0) {
-                $("input[id='proxy_indexers']").prop('checked', false);
-                $("label[for='proxy_indexers']").hide();
-            }
-
-            $("input[name='proxy_setting']").on('input', function() {
-                if($(this).val().length === 0) {
-                    $("input[id='proxy_indexers']").prop('checked', false);
-                    $("label[for='proxy_indexers']").hide();
-                } else {
-                    $("label[for='proxy_indexers']").show();
-                }
-            });
-
             $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
         },
         backupRestore: function(){
@@ -556,6 +542,15 @@ var SICKRAGE = {
             $('#testTwitter').on('click', function() {
                 $.get(srRoot + '/home/testTwitter', function(data) {
                     $('#testTwitter-result').html(data);
+                });
+            });
+
+            $('#testTwilio').on('click', function() {
+                $('#testTwilio').addClass('disabled');
+                $.get(srRoot + '/home/testTwilio', function(data) {
+                    $('#testTwilio-result').html(data);
+                }).always(function() {
+                    $('#testTwilio').removeClass('disabled');
                 });
             });
 
@@ -1739,7 +1734,6 @@ var SICKRAGE = {
                         $('#path_synology').show();
                     } else if (selectedProvider.toLowerCase() === 'rtorrent'){
                         client = 'rTorrent';
-                        $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_verify_deluge').hide();
@@ -1853,6 +1847,14 @@ var SICKRAGE = {
                 torrent.host = $('#torrent_host').val();
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
+
+                if (torrent.method.toLowerCase() === 'putio') {
+                    $.get(srRoot + '/home/putio_authorize', function (data) {
+                        window.open(data);
+                    }).done(function() {
+                        $('#test_torrent_result').html('Confirm Authorization');
+                    });
+                }
 
                 $.get(srRoot + '/home/testTorrent', {
                     'torrent_method': torrent.method,
@@ -3054,6 +3056,40 @@ var SICKRAGE = {
                     }
                 });
             };
+
+            $('#saveDefaultsButton').on('click', function () {
+                var anyQualArray = [];
+                var bestQualArray = [];
+                $('#anyQualities option:selected').each(function (i, d) {
+                    anyQualArray.push($(d).val());
+                });
+                $('#bestQualities option:selected').each(function (i, d) {
+                    bestQualArray.push($(d).val());
+                });
+
+                $.get(srRoot + '/config/general/saveAddShowDefaults', {
+                    defaultStatus: $('#statusSelect').val(),
+                    anyQualities: anyQualArray.join(','),
+                    bestQualities: bestQualArray.join(','),
+                    defaultFlattenFolders: $('#flatten_folders').prop('checked'),
+                    subtitles: $('#subtitles').prop('checked'),
+                    anime: $('#anime').prop('checked'),
+                    scene: $('#scene').prop('checked'),
+                    defaultStatusAfter: $('#statusSelectAfter').val()
+                });
+
+                $(this).attr('disabled', true);
+            });
+
+            $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+                $('#saveDefaultsButton').attr('disabled', false);
+            });
+
+            $('#qualityPreset').on('change', function() {
+                //fix issue #181 - force re-render to correct the height of the outer div
+                $('span.prev').click();
+                $('span.next').click();
+            });
         },
         index: function() {
 

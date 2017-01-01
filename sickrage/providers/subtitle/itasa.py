@@ -63,7 +63,7 @@ class ItaSASubtitle(Subtitle):
         if video.year and self.year == video.year:
             matches.add('year')
         if video.series_tvdb_id and self.tvdb_id == video.series_tvdb_id:
-            matches.add('tvdb_id')
+            matches.add('series_tvdb_id')
 
         # other properties
         matches |= guess_matches(video, guessit(self.full_data), partial=True)

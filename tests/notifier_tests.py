@@ -281,6 +281,13 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         """
         pass
 
+    @unittest.skip('Not yet implemented')
+    def test_twilio(self):
+        """
+        Test twilio notifications
+        """
+        pass
+
     @staticmethod
     def _debug_spew(text):
         """

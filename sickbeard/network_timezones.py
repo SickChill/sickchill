@@ -54,7 +54,7 @@ def update_network_dict():
         for line in data.splitlines():
             (key, val) = line.strip().rsplit(u':', 1)
             if key and val:
-                d[key] = val
+                d[key.lower()] = val
     except (IOError, OSError):
         pass
 
@@ -78,9 +78,8 @@ def update_network_dict():
         if existing:
             del network_list[network]
 
-    if network_list:
-        purged = [x for x in network_list]
-        queries.append(['DELETE FROM network_timezones WHERE network_name IN ({0});'.format(','.join(['?'] * len(purged))), purged])
+    for network in network_list:
+        queries.append(['DELETE FROM network_timezones WHERE network_name = ?;', [network]])
 
     if queries:
         cache_db_con.mass_action(queries)
@@ -112,10 +111,15 @@ def get_network_timezone(network):
     :return: network timezone if found, or sb_timezone
     """
 
+    orig_network = network
+    if network:
+        network = network.lower()
+
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log(u'Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(network), logger.ERROR)
+        logger.log(u'Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network),
+                   logger.ERROR)
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone

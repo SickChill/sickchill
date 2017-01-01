@@ -78,7 +78,7 @@
         // make a fileBrowserDialog object if one doesn't exist already
         if (!fileBrowserDialog) {
             // set up the jquery dialog
-            fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:hidden"></div>').appendTo('body').dialog({
+            fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:none"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 title:       options.title,
                 position:    { my: 'center top', at: 'center top+60', of: window },
@@ -99,7 +99,7 @@
             'class': 'btn',
             click: function () {
                 // store the browsed path to the associated text field
-                callback(currentBrowserPath, options);
+                callback($('.fileBrowserField').val(), options);
                 $(this).dialog('close');
             }
         }, {
@@ -171,11 +171,13 @@
         if (ls && options.key) {
             path = localStorage['fileBrowser-' + options.key];
         }
-        if (options.key && options.field.val().length === 0 && (path)) {
+        if (options.key && options.field.val().length === 0 && path) {
             options.field.val(path);
         }
 
         callback = function (path, options) {
+
+            path = $('.fileBrowserField').val();
             // store the browsed path to the associated text field
             options.field.val(path);
 

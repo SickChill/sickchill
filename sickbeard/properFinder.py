@@ -86,7 +86,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             try:
                 curPropers = curProvider.find_propers(search_date)
             except AuthException as e:
-                logger.log(u"Authentication error: " + ex(e), logger.DEBUG)
+                logger.log(u"Authentication error: " + ex(e), logger.WARNING)
                 continue
             except Exception as e:
                 logger.log(u"Exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)

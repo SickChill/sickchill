@@ -20,6 +20,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
@@ -334,7 +335,7 @@
                     <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
                 % endif
                 <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}"></script>
+                <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}" charset="utf-8"></script>
                 <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
             % endif
             <%block name="scripts" />

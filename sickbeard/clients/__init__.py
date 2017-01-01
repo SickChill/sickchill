@@ -52,7 +52,7 @@ def getClientModule(name):
                       (prefix=prefix, name=name), fromlist=_clients)
 
 
-def getClientIstance(name):
+def getClientInstance(name):
     module = getClientModule(name)
     class_name = module.api.__class__.__name__
 
