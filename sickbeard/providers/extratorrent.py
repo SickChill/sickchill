@@ -36,8 +36,8 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         TorrentProvider.__init__(self, "ExtraTorrent")
 
         self.urls = {
-            'index': 'http://extratorrent.cc',
-            'rss': 'http://extratorrent.cc/rss.xml',
+            'index': 'http://extra.to',
+            'rss': 'http://extra.to/rss.xml',
         }
 
         self.url = self.urls['index']
