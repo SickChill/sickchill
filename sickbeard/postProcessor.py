@@ -1044,7 +1044,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
                     return False
             else:
-                self._log("Unable to determine needed filespace as the source file is locked for access")
+                self._log("Unable to determine needed file space as the source file is locked for access")
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:

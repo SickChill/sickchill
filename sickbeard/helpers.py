@@ -1572,6 +1572,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
+    if not (ek(os.path.exists, dest) or ek(os.path.exists, ek(os.path.dirname, dest))):
+        logger.log("A path is required for the destination. Check the root dir and show locations are correct for {0} (I got '{1}')".format(
+            oldfile[0].name, dest), logger.WARNING)
+        return False
+
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
     if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
