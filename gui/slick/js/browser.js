@@ -99,7 +99,7 @@
             'class': 'btn',
             click: function () {
                 // store the browsed path to the associated text field
-                callback($('.fileBrowserField').val(), options);
+                callback($(this).find('.fileBrowserField').val(), options);
                 $(this).dialog('close');
             }
         }, {
@@ -177,8 +177,6 @@
 
         callback = function (path, options) {
 
-            path = $('.fileBrowserField').val();
-            // store the browsed path to the associated text field
             options.field.val(path);
 
             // use a localStorage to remember for next time -- no ie6/7
