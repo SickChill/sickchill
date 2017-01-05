@@ -56,12 +56,13 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
     def queue_length(self):
         length = {'auto': 0, 'manual': 0}
-        for cur_item in self.queue:
+        for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, PostProcessorTask):
                 if cur_item.mode == 'auto':
                     length['auto'] += 1
                 else:
                     length['manual'] += 1
+        return length
 
     def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
 
@@ -98,7 +99,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         else:
             message = "{mode} post processing task for {directory} was added to the queue".format(**replacements)
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
-            generic_queue.GenericQueue.add_item(self, item)
+            super(ProcessingQueue, self).add_item(item)
             logger.log(message, logger.INFO)
             return message
 
@@ -114,8 +115,10 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.failed = self.__bool(failed)
         self.mode = mode
 
+        self.priority = (generic_queue.QueuePriorities.HIGH, generic_queue.QueuePriorities.NORMAL)[mode == 'auto']
+
         self.last_result = None
-        generic_queue.QueueItem.__init__(self, u'{mode} Post Process'.format(mode=self.mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+        generic_queue.QueueItem.__init__(self, u'{mode}'.format(mode=self.mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
     def set_params(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
         self.directory = directory
@@ -142,7 +145,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         return argument
 
     def run(self):
-        generic_queue.QueueItem.run(self)
+        super(PostProcessorTask, self).run()
 
         try:
             logger.log(u"Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.directory))
@@ -159,9 +162,8 @@ class PostProcessorTask(generic_queue.QueueItem):
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
-
-            generic_queue.QueueItem.finish(self)
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
+        super(PostProcessorTask, self).finish()
         self.finish()
