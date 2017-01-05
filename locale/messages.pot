@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2017-01-05 02:43-0800\n"
+"POT-Creation-Date: 2017-01-05 08:52-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -235,6 +235,101 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:712 gui/slick/views/history.mako:125
 #: sickbeard/common.py:608
 msgid "Subtitled"
+msgstr ""
+
+#: sickbeard/logger.py:449
+msgid "&lt;No Filter&gt;"
+msgstr ""
+
+#: sickbeard/logger.py:450
+msgid "Daily Searcher"
+msgstr ""
+
+#: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:12
+#: sickbeard/logger.py:451
+msgid "Backlog"
+msgstr ""
+
+#: sickbeard/logger.py:452
+msgid "Show Updater"
+msgstr ""
+
+#: sickbeard/logger.py:453
+msgid "Check Version"
+msgstr ""
+
+#: gui/slick/views/status.mako:15 gui/slick/views/status.mako:124
+#: sickbeard/logger.py:454
+msgid "Show Queue"
+msgstr ""
+
+#: sickbeard/logger.py:455
+msgid "Search Queue (All)"
+msgstr ""
+
+#: sickbeard/logger.py:456
+msgid "Search Queue (Daily Searcher)"
+msgstr ""
+
+#: sickbeard/logger.py:457
+msgid "Search Queue (Backlog)"
+msgstr ""
+
+#: sickbeard/logger.py:458
+msgid "Search Queue (Manual)"
+msgstr ""
+
+#: sickbeard/logger.py:459
+msgid "Search Queue (Retry/Failed)"
+msgstr ""
+
+#: sickbeard/logger.py:460
+msgid "Search Queue (RSS)"
+msgstr ""
+
+#: sickbeard/logger.py:461
+msgid "Find Propers"
+msgstr ""
+
+#: sickbeard/logger.py:462
+msgid "Postprocessor"
+msgstr ""
+
+#: sickbeard/logger.py:463
+msgid "Find Subtitles"
+msgstr ""
+
+#: gui/slick/views/status.mako:20 sickbeard/logger.py:464
+msgid "Trakt Checker"
+msgstr ""
+
+#: sickbeard/logger.py:465
+msgid "Event"
+msgstr ""
+
+#: sickbeard/logger.py:466 sickbeard/webserve.py:1258 sickbeard/webserve.py:1261
+#: sickbeard/webserve.py:1439 sickbeard/webserve.py:1448 sickbeard/webserve.py:1644
+#: sickbeard/webserve.py:1655 sickbeard/webserve.py:1678 sickbeard/webserve.py:1691
+#: sickbeard/webserve.py:1696 sickbeard/webserve.py:1712 sickbeard/webserve.py:1717
+#: sickbeard/webserve.py:1781 sickbeard/webserve.py:1784 sickbeard/webserve.py:1790
+#: sickbeard/webserve.py:1793 sickbeard/webserve.py:1800 sickbeard/webserve.py:1803
+#: sickbeard/webserve.py:1826 sickbeard/webserve.py:1923 sickbeard/webserve.py:1928
+#: sickbeard/webserve.py:1933 sickbeard/webserve.py:1962 sickbeard/webserve.py:1966
+#: sickbeard/webserve.py:1971
+msgid "Error"
+msgstr ""
+
+#: sickbeard/logger.py:467
+msgid "Tornado"
+msgstr ""
+
+#: sickbeard/logger.py:468
+msgid "Thread"
+msgstr ""
+
+#: gui/slick/views/editShow.mako:39 gui/slick/views/manage_massEdit.mako:21
+#: sickbeard/logger.py:469
+msgid "Main"
 msgstr ""
 
 #: sickbeard/versionChecker.py:66
@@ -607,18 +702,6 @@ msgstr ""
 
 #: sickbeard/webserve.py:1230
 msgid "Already on branch"
-msgstr ""
-
-#: sickbeard/webserve.py:1258 sickbeard/webserve.py:1261 sickbeard/webserve.py:1439
-#: sickbeard/webserve.py:1448 sickbeard/webserve.py:1644 sickbeard/webserve.py:1655
-#: sickbeard/webserve.py:1678 sickbeard/webserve.py:1691 sickbeard/webserve.py:1696
-#: sickbeard/webserve.py:1712 sickbeard/webserve.py:1717 sickbeard/webserve.py:1781
-#: sickbeard/webserve.py:1784 sickbeard/webserve.py:1790 sickbeard/webserve.py:1793
-#: sickbeard/webserve.py:1800 sickbeard/webserve.py:1803 sickbeard/webserve.py:1826
-#: sickbeard/webserve.py:1923 sickbeard/webserve.py:1928 sickbeard/webserve.py:1933
-#: sickbeard/webserve.py:1962 sickbeard/webserve.py:1966 sickbeard/webserve.py:1971
-#: sickbeard/webserve.py:5355
-msgid "Error"
 msgstr ""
 
 #: sickbeard/webserve.py:1258
@@ -1258,94 +1341,11 @@ msgstr ""
 msgid "Logs &amp; Errors"
 msgstr ""
 
-#: sickbeard/webserve.py:5338
-msgid "&lt;No Filter&gt;"
-msgstr ""
-
-#: sickbeard/webserve.py:5339
-msgid "Daily Searcher"
-msgstr ""
-
-#: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:12
-#: sickbeard/webserve.py:5340
-msgid "Backlog"
-msgstr ""
-
-#: sickbeard/webserve.py:5341
-msgid "Show Updater"
-msgstr ""
-
-#: sickbeard/webserve.py:5342
-msgid "Check Version"
-msgstr ""
-
-#: gui/slick/views/status.mako:15 gui/slick/views/status.mako:124
-#: sickbeard/webserve.py:5343
-msgid "Show Queue"
-msgstr ""
-
-#: sickbeard/webserve.py:5344
-msgid "Search Queue (All)"
-msgstr ""
-
-#: sickbeard/webserve.py:5345
-msgid "Search Queue (Daily Searcher)"
-msgstr ""
-
-#: sickbeard/webserve.py:5346
-msgid "Search Queue (Backlog)"
-msgstr ""
-
-#: sickbeard/webserve.py:5347
-msgid "Search Queue (Manual)"
-msgstr ""
-
-#: sickbeard/webserve.py:5348
-msgid "Search Queue (Retry/Failed)"
-msgstr ""
-
-#: sickbeard/webserve.py:5349
-msgid "Search Queue (RSS)"
-msgstr ""
-
-#: sickbeard/webserve.py:5350
-msgid "Find Propers"
-msgstr ""
-
-#: sickbeard/webserve.py:5351
-msgid "Postprocessor"
-msgstr ""
-
-#: sickbeard/webserve.py:5352
-msgid "Find Subtitles"
-msgstr ""
-
-#: gui/slick/views/status.mako:20 sickbeard/webserve.py:5353
-msgid "Trakt Checker"
-msgstr ""
-
-#: sickbeard/webserve.py:5354
-msgid "Event"
-msgstr ""
-
-#: sickbeard/webserve.py:5356
-msgid "Tornado"
-msgstr ""
-
-#: sickbeard/webserve.py:5357
-msgid "Thread"
-msgstr ""
-
-#: gui/slick/views/editShow.mako:39 gui/slick/views/manage_massEdit.mako:21
-#: sickbeard/webserve.py:5358
-msgid "Main"
-msgstr ""
-
-#: sickbeard/webserve.py:5378
+#: sickbeard/webserve.py:5292
 msgid "Log File"
 msgstr ""
 
-#: sickbeard/webserve.py:5378
+#: sickbeard/webserve.py:5292
 msgid "Logs"
 msgstr ""
 
@@ -6601,7 +6601,7 @@ msgstr ""
 msgid "Filter log by"
 msgstr ""
 
-#: gui/slick/views/viewlogs.mako:37
+#: gui/slick/views/viewlogs.mako:36
 msgid "Search log by"
 msgstr ""
 
