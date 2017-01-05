@@ -1260,7 +1260,7 @@ msgid "Find Propers"
 msgstr "Намери Propers"
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
+msgid "Postprocessor"
 msgstr ""
 
 #: sickbeard/webserve.py:5383

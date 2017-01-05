@@ -189,19 +189,19 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
     return True
 
 
-def change_AUTOPOSTPROCESSER_FREQUENCY(freq):
+def change_AUTOPOSTPROCESSOR_FREQUENCY(freq):
     """
     Change frequency of automatic postprocessing thread
     TODO: Make all thread frequency changers in config.py return True/False status
 
     :param freq: New frequency
     """
-    sickbeard.AUTOPOSTPROCESSER_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSER_FREQUENCY)
+    sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
 
-    if sickbeard.AUTOPOSTPROCESSER_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSER_FREQUENCY:
-        sickbeard.AUTOPOSTPROCESSER_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSER_FREQUENCY
+    if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
+        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
-    sickbeard.autoPostProcesserScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSER_FREQUENCY)
+    sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
 
 
 def change_DAILYSEARCH_FREQUENCY(freq):
@@ -384,16 +384,16 @@ def change_PROCESS_AUTOMATICALLY(process_automatically):
 
     sickbeard.PROCESS_AUTOMATICALLY = process_automatically
     if sickbeard.PROCESS_AUTOMATICALLY:
-        if not sickbeard.autoPostProcesserScheduler.enable:
-            logger.log(u"Starting POSTPROCESSER thread", logger.INFO)
-            sickbeard.autoPostProcesserScheduler.silent = False
-            sickbeard.autoPostProcesserScheduler.enable = True
+        if not sickbeard.autoPostProcessorScheduler.enable:
+            logger.log(u"Starting POSTPROCESSOR thread", logger.INFO)
+            sickbeard.autoPostProcessorScheduler.silent = False
+            sickbeard.autoPostProcessorScheduler.enable = True
         else:
-            logger.log(u"Unable to start POSTPROCESSER thread. Already running", logger.INFO)
+            logger.log(u"Unable to start POSTPROCESSOR thread. Already running", logger.INFO)
     else:
-        logger.log(u"Stopping POSTPROCESSER thread", logger.INFO)
-        sickbeard.autoPostProcesserScheduler.enable = False
-        sickbeard.autoPostProcesserScheduler.silent = True
+        logger.log(u"Stopping POSTPROCESSOR thread", logger.INFO)
+        sickbeard.autoPostProcessorScheduler.enable = False
+        sickbeard.autoPostProcessorScheduler.silent = True
 
 
 def CheckSection(CFG, sec):
@@ -913,3 +913,6 @@ class ConfigMigrator(object):
         sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', '', censor_log=True)
         sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', '', censor_log=True)
         sickbeard.USE_PLEX_SERVER = bool(check_setting_int(self.config_obj, 'Plex', 'use_plex', 0))
+
+    def _migrate_v9(self):
+        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency', '')

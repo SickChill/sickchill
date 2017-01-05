@@ -15,7 +15,7 @@
         _('Show Queue'): 'showQueueScheduler',
         _('Search Queue'): 'searchQueueScheduler',
         _('Proper Finder'): 'properFinderScheduler',
-        _('Post Process'): 'autoPostProcesserScheduler',
+        _('Post Process'): 'autoPostProcessorScheduler',
         _('Subtitles Finder'): 'subtitlesFinderScheduler',
         _('Trakt Checker'): 'traktCheckerScheduler',
     }

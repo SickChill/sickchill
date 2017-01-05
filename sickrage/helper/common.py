@@ -113,7 +113,7 @@ HTTP_STATUS_CODES = {
     599: 'Network connect timeout error',
 }
 MEDIA_EXTENSIONS = [
-    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'img', 'iso', 'm2ts', 'm4v',
+    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'm2ts', 'm4v',
     'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'rmvb', 'tp', 'ts', 'vob',
     'webm', 'wmv', 'wtv',
 ]

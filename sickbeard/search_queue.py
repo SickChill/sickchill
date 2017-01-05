@@ -25,8 +25,6 @@ import traceback
 import sickbeard
 from sickbeard import common, failed_history, generic_queue, history, logger, search, ui
 
-search_queue_lock = threading.Lock()
-
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20
 FAILED_SEARCH = 30
@@ -96,7 +94,7 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def queue_length(self):
         length = {'backlog': 0, 'daily': 0, 'manual': 0, 'failed': 0}
-        for cur_item in self.queue:
+        for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length['daily'] += 1
             elif isinstance(cur_item, BacklogQueueItem):
@@ -108,17 +106,22 @@ class SearchQueue(generic_queue.GenericQueue):
         return length
 
     def add_item(self, item):
+
+        add_item = False
         if isinstance(item, DailySearchQueueItem):
             # daily searches
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+            add_item = True
+        elif isinstance(item, BacklogQueueItem):
             # backlog searches
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)) and not self.is_ep_in_queue(item.segment):
+            add_item = not self.is_in_queue(item.show, item.segment)
+        elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)):
             # manual and failed searches
-            generic_queue.GenericQueue.add_item(self, item)
+            add_item = not self.is_ep_in_queue(item.segment)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
+
+        if add_item:
+            super(SearchQueue, self).add_item(item)
 
 
 class DailySearchQueueItem(generic_queue.QueueItem):
@@ -127,30 +130,29 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.__init__(self, u'Daily Search', DAILY_SEARCH)
 
     def run(self):
-        generic_queue.QueueItem.run(self)
+        super(DailySearchQueueItem, self).run()
 
         try:
             logger.log(u"Beginning daily search for new episodes")
-            foundResults = search.searchForNeededEpisodes()
+            found_results = search.searchForNeededEpisodes()
 
-            if not foundResults:
+            if not found_results:
                 logger.log(u"No needed episodes found")
             else:
-                for result in foundResults:
+                for result in found_results:
                     # just use the first result for now
                     logger.log(u"Downloading " + result.name + " from " + result.provider.name)
                     self.success = search.snatchEpisode(result)
 
                     # give the CPU a break
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
-
-            generic_queue.QueueItem.finish(self)
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         if self.success is None:
             self.success = False
 
+        super(DailySearchQueueItem, self).finish()
         self.finish()
 
 
@@ -166,7 +168,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.downCurQuality = downCurQuality
 
     def run(self):
-        generic_queue.QueueItem.run(self)
+        super(ManualSearchQueueItem, self).run()
 
         try:
             logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
@@ -197,6 +199,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
+        super(ManualSearchQueueItem, self).finish()
         self.finish()
 
 
@@ -210,7 +213,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.segment = segment
 
     def run(self):
-        generic_queue.QueueItem.run(self)
+        super(BacklogQueueItem, self).run()
 
         if not self.show.paused:
             try:
@@ -230,6 +233,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
+        super(BacklogQueueItem, self).finish()
         self.finish()
 
 
@@ -245,7 +249,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.downCurQuality = downCurQuality
 
     def run(self):
-        generic_queue.QueueItem.run(self)
+        super(FailedQueueItem, self).run()
         self.started = True
 
         try:
@@ -287,6 +291,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
+        super(FailedQueueItem, self).finish()
         self.finish()
 
 

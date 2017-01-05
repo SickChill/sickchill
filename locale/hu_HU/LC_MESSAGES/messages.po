@@ -1260,7 +1260,7 @@ msgid "Find Propers"
 msgstr ""
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
+msgid "Postprocessor"
 msgstr "Utómunka"
 
 #: sickbeard/webserve.py:5383
