@@ -250,7 +250,7 @@ class RTorrent:
 
             assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful (load_magnet)."
 
-        return self.find_torrent(info_hash, self.torrents)
+        return self.find_torrent(info_hash)
 
     def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8
         """
@@ -304,7 +304,7 @@ class RTorrent:
 
             assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful. (load_torrent)"
 
-        return self.find_torrent(info_hash, self.torrents)
+        return self.find_torrent(info_hash)
 
     def load_torrent_simple(self, torrent, file_type,
                             start=False, verbose=False):
