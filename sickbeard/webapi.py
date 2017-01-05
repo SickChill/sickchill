@@ -31,7 +31,7 @@ import traceback
 import urllib
 
 import sickbeard
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, processTV, sbdatetime, search_queue, \
+from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, \
     ui
 from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
     SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
@@ -178,6 +178,8 @@ class ApiHandler(RequestHandler):
 
                 if len(cmd.split("_")) > 1:
                     cmd, cmd_index = cmd.split("_")
+                else:
+                    cmd_index = None
 
                 logger.log(u"API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
@@ -365,13 +367,12 @@ class ApiCall(ApiHandler):
 
         if default:
             default = self._check_param_type(default, key, arg_type)
-            if arg_type == "bool":
-                arg_type = []
             self._check_param_value(default, key, allowed_values)
 
         return default, args
 
-    def _check_param_type(self, value, name, arg_type):
+    @staticmethod
+    def _check_param_type(value, name, arg_type):
         """ checks if value can be converted / parsed to arg_type
             will raise an error on failure
             or will convert it to arg_type and return new converted value
@@ -412,7 +413,8 @@ class ApiCall(ApiHandler):
 
         return value
 
-    def _check_param_value(self, value, name, allowed_values):
+    @staticmethod
+    def _check_param_value(value, name, allowed_values):
         """ will check if value (or all values in it ) are in allowed values
             will raise an exception if value is "out of range"
             if bool(allowed_value) is False a check is not performed and all values are excepted
@@ -516,34 +518,80 @@ def _history_date_to_datetime_form(time_string):
     date = datetime.datetime.strptime(time_string, History.date_format)
     return date.strftime(dateTimeFormat)
 
+QUALITY_MAP = {
+    Quality.SDTV: 'sdtv',
+    'sdtv': Quality.SDTV,
 
-def _map_quality(show_obj):
-    quality_map = _get_quality_map()
+    Quality.SDDVD: 'sddvd',
+    'sddvd': Quality.SDDVD,
+
+    Quality.HDTV: 'hdtv',
+    'hdtv': Quality.HDTV,
+
+    Quality.RAWHDTV: 'rawhdtv',
+    'rawhdtv': Quality.RAWHDTV,
+
+    Quality.FULLHDTV: 'fullhdtv',
+    'fullhdtv': Quality.FULLHDTV,
+
+    Quality.HDWEBDL: 'hdwebdl',
+    'hdwebdl': Quality.HDWEBDL,
+
+    Quality.FULLHDWEBDL: 'fullhdwebdl',
+    'fullhdwebdl': Quality.FULLHDWEBDL,
+
+    Quality.HDBLURAY: 'hdbluray',
+    'hdbluray': Quality.HDBLURAY,
+
+    Quality.FULLHDBLURAY: 'fullhdbluray',
+    'fullhdbluray': Quality.FULLHDBLURAY,
+
+    Quality.UHD_4K_TV: 'uhd4ktv',
+    'udh4ktv': Quality.UHD_4K_TV,
+
+    Quality.UHD_4K_BLURAY: '4kbluray',
+    'uhd4kbluray': Quality.UHD_4K_BLURAY,
+
+    Quality.UHD_4K_WEBDL: '4kwebdl',
+    'udh4kwebdl': Quality.UHD_4K_WEBDL,
+
+    Quality.UHD_8K_TV: 'uhd8ktv',
+    'udh8ktv': Quality.UHD_8K_TV,
+
+    Quality.UHD_8K_BLURAY: 'uhd8kbluray',
+    'uhd8kbluray': Quality.UHD_8K_BLURAY,
+
+    Quality.UHD_8K_WEBDL: 'udh8kwebdl',
+    "udh8kwebdl": Quality.UHD_8K_WEBDL,
+
+    Quality.UNKNOWN: 'unknown',
+    'unknown': Quality.UNKNOWN
+}
+
+ALLOWED_QUALITY_LIST = [
+    "sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray",
+    "udh4ktv", "uhd4kbluray", "udh4kwebdl", "udh8ktv", "uhd8kbluray", "udh8kwebdl", "unknown"
+]
+
+PREFERRED_QUALITY_LIST = [
+    "sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray",
+    "udh4ktv", "uhd4kbluray", "udh4kwebdl", "udh8ktv", "uhd8kbluray", "udh8kwebdl"
+]
+
+
+def _map_quality(show_quality):
 
     any_qualities = []
     best_qualities = []
 
-    i_quality_id, a_quality_id = Quality.splitQuality(int(show_obj))
+    i_quality_id, a_quality_id = Quality.splitQuality(int(show_quality))
     if i_quality_id:
         for quality in i_quality_id:
-            any_qualities.append(quality_map[quality])
+            any_qualities.append(QUALITY_MAP[quality])
     if a_quality_id:
         for quality in a_quality_id:
-            best_qualities.append(quality_map[quality])
+            best_qualities.append(QUALITY_MAP[quality])
     return any_qualities, best_qualities
-
-
-def _get_quality_map():
-    return {Quality.SDTV: 'sdtv',
-            Quality.SDDVD: 'sddvd',
-            Quality.HDTV: 'hdtv',
-            Quality.RAWHDTV: 'rawhdtv',
-            Quality.FULLHDTV: 'fullhdtv',
-            Quality.HDWEBDL: 'hdwebdl',
-            Quality.FULLHDWEBDL: 'fullhdwebdl',
-            Quality.HDBLURAY: 'hdbluray',
-            Quality.FULLHDBLURAY: 'fullhdbluray',
-            Quality.UNKNOWN: 'unknown'}
 
 
 def _get_root_dirs():
@@ -1739,12 +1787,9 @@ class CMD_SickBeardSetDefaults(ApiCall):
     def __init__(self, args, kwargs):
         # required
         # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", None, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
@@ -1755,26 +1800,15 @@ class CMD_SickBeardSetDefaults(ApiCall):
     def run(self):
         """ Set SickRage's user default configuration value """
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         i_quality_id = []
         a_quality_id = []
 
         if self.initial:
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             sickbeard.QUALITY_DEFAULT = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -1834,11 +1868,8 @@ class CMD_SickBeardUpdate(ApiCall):
         if check_version.check_for_new_version():
             if check_version.run_backup_if_safe():
                 check_version.update()
-
                 return _responds(RESULT_SUCCESS, msg="SickRage is updating ...")
-
             return _responds(RESULT_FAILURE, msg="SickRage could not backup config ...")
-
         return _responds(RESULT_FAILURE, msg="SickRage is already up to date")
 
 
@@ -1957,12 +1988,8 @@ class CMD_ShowAddExisting(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
                                                        bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
@@ -1994,17 +2021,6 @@ class CMD_ShowAddExisting(ApiCall):
         # set indexer so we can pass it along when adding show to SR
         indexer = indexer_result['data']['results'][0]['indexer']
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
         i_quality_id = []
@@ -2012,10 +2028,10 @@ class CMD_ShowAddExisting(ApiCall):
 
         if self.initial:
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -2057,12 +2073,10 @@ class CMD_ShowAddNew(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(
+            args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(
+            args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
                                                        bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
@@ -2099,17 +2113,6 @@ class CMD_ShowAddNew(ApiCall):
         if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
         i_quality_id = []
@@ -2117,10 +2120,10 @@ class CMD_ShowAddNew(ApiCall):
 
         if self.initial:
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -2598,15 +2601,8 @@ class CMD_ShowSetQuality(ApiCall):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        # this for whatever reason removes hdbluray not sdtv... which is just wrong. reverting to previous code.. plus we didnt use the new code everywhere.
-        # self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", _get_quality_map().values()[1:])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl",
-                                                "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -2616,17 +2612,6 @@ class CMD_ShowSetQuality(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
         i_quality_id = []
@@ -2634,10 +2619,10 @@ class CMD_ShowSetQuality(ApiCall):
 
         if self.initial:
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
