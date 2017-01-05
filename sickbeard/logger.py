@@ -421,5 +421,116 @@ class Wrapper(object):
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
 
 
+def init_logging(*args, **kwargs):
+    return Wrapper.instance.init_logging(*args, **kwargs)
+
+
 def log(*args, **kwargs):
     return Wrapper.instance.log(*args, **kwargs)
+
+
+def log_error_and_exit(*args, **kwargs):
+    return Wrapper.instance.log_error_and_exit(*args, **kwargs)
+
+
+def set_level(*args, **kwargs):
+    return Wrapper.instance.set_level(*args, **kwargs)
+
+
+def shutdown():
+    return Wrapper.instance.shutdown()
+
+
+def submit_errors(*args, **kwargs):
+    return Wrapper.instance.submit_errors(*args, **kwargs)
+
+
+LOG_FILTERS = {
+    '<NONE>': _(u'&lt;No Filter&gt;'),
+    'DAILYSEARCHER': _(u'Daily Searcher'),
+    'BACKLOG': _(u'Backlog'),
+    'SHOWUPDATER': _(u'Show Updater'),
+    'CHECKVERSION': _(u'Check Version'),
+    'SHOWQUEUE': _(u'Show Queue'),
+    'SEARCHQUEUE': _(u'Search Queue (All)'),
+    'SEARCHQUEUE-DAILY-SEARCH': _(u'Search Queue (Daily Searcher)'),
+    'SEARCHQUEUE-BACKLOG': _(u'Search Queue (Backlog)'),
+    'SEARCHQUEUE-MANUAL': _(u'Search Queue (Manual)'),
+    'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
+    'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
+    'FINDPROPERS': _(u'Find Propers'),
+    'POSTPROCESSOR': _(u'Postprocessor'),
+    'FINDSUBTITLES': _(u'Find Subtitles'),
+    'TRAKTCHECKER': _(u'Trakt Checker'),
+    'EVENT': _(u'Event'),
+    'ERROR': _(u'Error'),
+    'TORNADO': _(u'Tornado'),
+    'Thread': _(u'Thread'),
+    'MAIN': _(u'Main'),
+}
+
+
+def log_data(min_level, log_filter, log_search, max_lines):
+    regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+    if log_filter not in LOG_FILTERS:
+        log_filter = '<NONE>'
+
+    final_data = []
+
+    log_files = set()
+    if ek(os.path.isfile, Wrapper.instance.log_file):
+        log_files.add(Wrapper.instance.log_file)
+
+        for i in range(1, int(sickbeard.LOG_NR)):
+            name = Wrapper.instance.log_file + "." + str(i)
+            if not ek(os.path.isfile, name):
+                break
+            log_files.add(name)
+    else:
+        return final_data
+
+    data = []
+    for log_file in log_files:
+        if len(data) < max_lines:
+            with io.open(log_file, 'r', encoding='utf-8') as f:
+                data += f.readlines()
+
+    found_lines = 0
+    continue_line = False
+    for x in reversed(data):
+        match = re.match(regex, x)
+
+        if match:
+            level = match.group(7)
+            log_name = match.group(8)
+
+            if not sickbeard.DEBUG and level == 'DEBUG':
+                continue
+
+            if not sickbeard.DBDEBUG and level == 'DB':
+                continue
+
+            if level not in LOGGING_LEVELS:
+                continue_line = False
+                continue
+
+            if log_search and log_search.lower() in x.lower():
+                continue_line = True
+                final_data.append(x)
+                found_lines += 1
+            elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == '<NONE>' or log_name.startswith(log_filter)):
+                continue_line = True
+                final_data.append(x)
+                found_lines += 1
+            else:
+                continue_line = False
+                continue
+
+        elif continue_line:
+            final_data.append("AA" + x)
+            found_lines += 1
+
+        if found_lines >= max_lines:
+            return final_data
+
+    return final_data

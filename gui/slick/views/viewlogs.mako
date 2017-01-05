@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import sickbeard
-    from sickbeard.logger import LOGGING_LEVELS
+    from sickbeard.logger import LOGGING_LEVELS, LOG_FILTERS
 %>
 <%block name="content">
     <div class="row">
@@ -9,7 +9,7 @@
             <div class="pull-right">
                 <label>
                     <span>${_('Minimum logging level to display')}:</span>
-                    <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm" title="Minimal level">
+                    <select name="min_level" id="min_level" class="form-control form-control-inline input-sm" title="Minimum log level">
                         <%
                             levels = LOGGING_LEVELS.keys()
                             levels.sort(lambda x, y: cmp(LOGGING_LEVELS[x], LOGGING_LEVELS[y]))
@@ -19,23 +19,22 @@
                                 levels.remove('DB')
                         %>
                         % for level in levels:
-                            <option value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[minLevel == LOGGING_LEVELS[level]]}>${level.title()}</option>
+                            <option value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[min_level == LOGGING_LEVELS[level]]}>${level.title()}</option>
                         % endfor
                     </select>
                     &nbsp;
                 </label>
                 <label>
                     <span>${_('Filter log by')}:</span>
-                    <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm" title="filter">
-                        % for logNameFilter in sorted(logNameFilters):
-                            <option value="${logNameFilter}" ${('', 'selected="selected"')[logFilter == logNameFilter]}>${logNameFilters[logNameFilter]}</option>
+                    <select name="log_filter" id="log_filter" class="form-control form-control-inline input-sm" title="filter">
+                        % for _log_filter in sorted(LOG_FILTERS):
+                            <option value="${_log_filter}" ${('', 'selected="selected"')[log_filter == _log_filter]}>${LOG_FILTERS[_log_filter]}</option>
                         % endfor
                     </select>
-                    &nbsp;
                 </label>
                 <label>
                     <span>${_('Search log by')}:</span>
-                    <input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logSearch)[bool(logSearch)]}" class="form-control form-control-inline input-sm" autocapitalize="off" />
+                    <input type="text" name="log_search" placeholder="clear to reset" id="log_search" value="${log_search}" class="form-control form-control-inline input-sm" autocapitalize="off" />
                 </label>
             </div>
         </div>
@@ -49,7 +48,7 @@
     </div>
     <div class="row">
         <div class="col-md-12 align-left">
-            <pre>${logLines}</pre>
+            <pre id="log_data">${log_data}</pre>
         </div>
     </div>
 </%block>
