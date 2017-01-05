@@ -2911,23 +2911,37 @@ var SICKRAGE = {
 
         },
         viewlogs: function() {
-            $('#minLevel,#logFilter,#logSearch').on('keyup change', _.debounce(function () {
-                if ($('#logSearch').val().length > 0){
-                    $('#logFilter option[value="<NONE>"]').prop('selected', true);
-                    $('#minLevel option[value=5]').prop('selected', true);
+            $('#min_level,#log_filter,#log_search').on('keyup change', _.debounce(function () {
+                if ($('#log_search').val().length > 0){
+                    $('#log_filter option[value="<NONE>"]').prop('selected', true);
+                    $('#min_level option[value=5]').prop('selected', true);
                 }
-                $('#minLevel').prop('disabled', true);
-                $('#logFilter').prop('disabled', true);
+                $('#min_level').prop('disabled', true);
+                $('#log_filter').prop('disabled', true);
                 document.body.style.cursor='wait';
-                var url = srRoot + '/errorlogs/viewlog/?minLevel='+$('select[name=minLevel]').val()+'&logFilter='+$('select[name=logFilter]').val()+'&logSearch='+$('#logSearch').val();
-                $.get(url, function(data){
+                var url = srRoot + '/errorlogs/viewlog/';
+                var postData = 'min_level='+$('select[name=min_level]').val()+'&log_filter='+$('select[name=log_filter]').val()+'&log_search='+$('#log_search').val();
+                $.post(url, postData, function(data){
                     history.pushState('data', '', url);
                     $('pre').html($(data).find('pre').html());
-                    $('#minLevel').prop('disabled', false);
-                    $('#logFilter').prop('disabled', false);
+                    $('#min_level').prop('disabled', false);
+                    $('#log_filter').prop('disabled', false);
                     document.body.style.cursor='default';
                 });
             }, 500));
+
+            function updateLogData() {
+                var postData = 'min_level='+$('select[name=min_level]').val()+'&log_filter='+$('select[name=log_filter]').val()+'&log_search='+$('#log_search').val();
+                var url = srRoot + '/errorlogs/viewlog/';
+                $.post(url, postData, function (data) {
+                    $('pre').html($(data).find('pre').html());
+                });
+                setTimeout(function () {
+                    "use strict";
+                    updateLogData();
+                }, 500);
+            }
+            updateLogData();
         }
     },
     schedule: {

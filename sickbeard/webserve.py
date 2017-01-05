@@ -5284,100 +5284,14 @@ class ErrorLogs(WebRoot):
 
         return self.redirect("/errorlogs/viewlog/")
 
-    def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>", logSearch=None, maxLines=500):
-
-        def Get_Data(data_in, lines_in, regex):
-
-            lastLine = False
-            numLines = lines_in
-            numToShow = min(maxLines, numLines + len(data_in))
-
-            finalData = []
-
-            for x in reversed(data_in):
-                match = re.match(regex, x)
-
-                if match:
-                    level = match.group(7)
-                    logName = match.group(8)
-
-                    if not sickbeard.DEBUG and level == 'DEBUG':
-                        continue
-
-                    if not sickbeard.DBDEBUG and level == 'DB':
-                        continue
-
-                    if level not in logger.LOGGING_LEVELS:
-                        lastLine = False
-                        continue
-
-                    if logSearch and logSearch.lower() in x.lower():
-                        lastLine = True
-                        finalData.append(x)
-                        numLines += 1
-                    elif not logSearch and logger.LOGGING_LEVELS[level] >= int(minLevel) and (logFilter == '<NONE>' or logName.startswith(logFilter)):
-                        lastLine = True
-                        finalData.append(x)
-                        numLines += 1
-                    else:
-                        lastLine = False
-                        continue
-
-                elif lastLine:
-                    finalData.append("AA" + x)
-                    numLines += 1
-
-                if numLines >= numToShow:
-                    return finalData
-
-            return finalData
+    def viewlog(self, min_level=logger.INFO, log_filter="<NONE>", log_search='', max_lines=500):
+        data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
-
-        logNameFilters = {
-            '<NONE>': _(u'&lt;No Filter&gt;'),
-            'DAILYSEARCHER': _(u'Daily Searcher'),
-            'BACKLOG': _(u'Backlog'),
-            'SHOWUPDATER': _(u'Show Updater'),
-            'CHECKVERSION': _(u'Check Version'),
-            'SHOWQUEUE': _(u'Show Queue'),
-            'SEARCHQUEUE': _(u'Search Queue (All)'),
-            'SEARCHQUEUE-DAILY-SEARCH': _(u'Search Queue (Daily Searcher)'),
-            'SEARCHQUEUE-BACKLOG': _(u'Search Queue (Backlog)'),
-            'SEARCHQUEUE-MANUAL': _(u'Search Queue (Manual)'),
-            'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
-            'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
-            'FINDPROPERS': _(u'Find Propers'),
-            'POSTPROCESSOR': _(u'Postprocessor'),
-            'FINDSUBTITLES': _(u'Find Subtitles'),
-            'TRAKTCHECKER': _(u'Trakt Checker'),
-            'EVENT': _(u'Event'),
-            'ERROR': _(u'Error'),
-            'TORNADO': _(u'Tornado'),
-            'Thread': _(u'Thread'),
-            'MAIN': _(u'Main'),
-        }
-
-        if logFilter not in logNameFilters:
-            logFilter = '<NONE>'
-
-        regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
-
-        data = []
-
-        if ek(os.path.isfile, logger.log_file):
-            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
-                data = Get_Data(f.readlines(), 0, regex)
-
-        for i in range(1, int(sickbeard.LOG_NR)):
-            if ek(os.path.isfile, logger.log_file + "." + str(i)) and (len(data) <= maxLines):
-                with io.open(logger.log_file + "." + str(i), 'r', encoding='utf-8') as f:
-                    data += Get_Data(f.readlines(), len(data), regex)
-
         return t.render(
             header=_("Log File"), title=_("Logs"), topmenu="system",
-            logLines=u"".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
-            logFilter=logFilter, logSearch=logSearch,
+            log_data=u"".join(data), min_level=min_level,
+            log_filter=log_filter, log_search=log_search,
             controller="errorlogs", action="viewlogs")
 
     def submit_errors(self):

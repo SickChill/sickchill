@@ -65,7 +65,6 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
         for i in range(100):
             result = self.queue.action.add_item(sickbeard.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
             self.assertIsNotNone(result)
-            print result
             self.assertTrue(self.queue.action.queue_length()['auto'] <= 1)
             self.assertTrue(self.queue.action.queue_length()['manual'] <= 1)
             self.assertTrue(len(self.queue.action.queue) <= 2)
