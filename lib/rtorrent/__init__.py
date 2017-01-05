@@ -41,7 +41,7 @@ __license__ = "MIT"
 
 MIN_RTORRENT_VERSION = (0, 8, 1)
 MIN_RTORRENT_VERSION_STR = convert_version_tuple_to_str(MIN_RTORRENT_VERSION)
-
+MAX_RETRIES = 3
 
 class RTorrent:
 
@@ -243,31 +243,14 @@ class RTorrent:
         getattr(p, func_name)(magneturl)
 
         if verify_load:
-            MAX_RETRIES = 3
-            i = 0
-            while i < MAX_RETRIES:
-                for torrent in self.get_torrents():
-                    if torrent.info_hash != info_hash:
-                        continue
-                    time.sleep(1)
-                    i += 1
+            for i in range(MAX_RETRIES):
+                time.sleep(1)
+                if self.find_torrent(info_hash):
+                    break
 
-            # Resolve magnet to torrent
-            torrent.start()
+            assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful (load_magnet)."
 
-            assert info_hash in [t.info_hash for t in self.torrents],\
-                "Adding torrent was unsuccessful."
-
-            MAX_RETRIES = 3
-            i = 0
-            while i < MAX_RETRIES:
-                for torrent in self.get_torrents():
-                    if torrent.info_hash == info_hash:
-                        if str(info_hash) not in str(torrent.name):
-                            time.sleep(1)
-                            i += 1
-
-        return(torrent)
+        return self.find_torrent(info_hash, self.torrents)
 
     def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8
         """
@@ -314,21 +297,14 @@ class RTorrent:
         getattr(p, func_name)(torrent)
 
         if verify_load:
-            MAX_RETRIES = 3
-            i = 0
-            while i < MAX_RETRIES:
-                self.get_torrents()
-                if info_hash in [t.info_hash for t in self.torrents]:
+            for i in range(MAX_RETRIES):
+                time.sleep(1)
+                if self.find_torrent(info_hash):
                     break
 
-                # was still getting AssertionErrors, delay should help
-                time.sleep(1)
-                i += 1
+            assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful. (load_torrent)"
 
-            assert info_hash in [t.info_hash for t in self.torrents],\
-                "Adding torrent was unsuccessful."
-
-        return(find_torrent(info_hash, self.torrents))
+        return self.find_torrent(info_hash, self.torrents)
 
     def load_torrent_simple(self, torrent, file_type,
                             start=False, verbose=False):

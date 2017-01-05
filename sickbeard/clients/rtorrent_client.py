@@ -69,7 +69,7 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
 
         try:
             # Send magnet to rTorrent
-            torrent = self.auth.load_magnet(result.url, result.hash, verify_load=not sickbeard.TORRENT_PAUSED)
+            torrent = self.auth.load_magnet(result.url, result.hash)
 
             if not torrent:
                 return False
