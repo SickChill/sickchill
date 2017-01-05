@@ -1260,8 +1260,8 @@ msgid "Find Propers"
 msgstr "Find Propers"
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
-msgstr "Postprocesser"
+msgid "Postprocessor"
+msgstr "Postprocessor"
 
 #: sickbeard/webserve.py:5383
 msgid "Find Subtitles"

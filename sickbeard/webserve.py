@@ -2342,9 +2342,9 @@ class HomePostProcess(Home):
             return self.redirect("/home/postprocess/")
 
         nzbName = ss(nzbName) if nzbName else nzbName
-        result = processTV.processDir(
-            ss(proc_dir), nzbName, process_method=process_method, force=argToBool(force),
-            is_priority=argToBool(is_priority), delete_on=argToBool(delete_on), failed=argToBool(failed), proc_type=proc_type
+        result = sickbeard.postProcessorTaskScheduler.action.add_item(
+            ss(proc_dir), nzbName, method=process_method, force=force,
+            is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type
         )
 
         if argToBool(quiet):
@@ -4248,14 +4248,14 @@ class ConfigPostProcessing(Config):
                            naming_abd_pattern=None, naming_strip_year=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
                            naming_custom_anime=None, naming_anime_pattern=None,
-                           naming_anime_multi_ep=None, autopostprocesser_frequency=None):
+                           naming_anime_multi_ep=None, autopostprocessor_frequency=None):
 
         results = []
 
         if not config.change_TV_DOWNLOAD_DIR(tv_download_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, tv_download_dir) + ", dir not changed."]
 
-        config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
+        config.change_AUTOPOSTPROCESSOR_FREQUENCY(autopostprocessor_frequency)
         config.change_PROCESS_AUTOMATICALLY(process_automatically)
 
         if unpack:
@@ -5348,7 +5348,7 @@ class ErrorLogs(WebRoot):
             'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
             'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
             'FINDPROPERS': _(u'Find Propers'),
-            'POSTPROCESSER': _(u'Postprocesser'),
+            'POSTPROCESSOR': _(u'Postprocessor'),
             'FINDSUBTITLES': _(u'Find Subtitles'),
             'TRAKTCHECKER': _(u'Trakt Checker'),
             'EVENT': _(u'Event'),

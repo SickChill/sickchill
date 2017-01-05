@@ -1260,7 +1260,7 @@ msgid "Find Propers"
 msgstr "Encontrar mensagens"
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
+msgid "Postprocessor"
 msgstr "Pós-processamento"
 
 #: sickbeard/webserve.py:5383

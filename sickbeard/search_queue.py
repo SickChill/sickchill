@@ -25,8 +25,6 @@ import traceback
 import sickbeard
 from sickbeard import common, failed_history, generic_queue, history, logger, search, ui
 
-search_queue_lock = threading.Lock()
-
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20
 FAILED_SEARCH = 30

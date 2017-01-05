@@ -1294,8 +1294,9 @@ class CMD_PostProcess(ApiCall):
         if not self.type:
             self.type = 'manual'
 
-        data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace,
-                                    is_priority=self.is_priority, failed=self.failed, proc_type=self.type)
+        data = sickbeard.postProcessorTaskScheduler.action.add_item(
+            self.path, method=self.process_method, force=self.force_replace,
+            is_priority=self.is_priority, failed=self.failed, mode=self.type)
 
         if not self.return_data:
             data = ""

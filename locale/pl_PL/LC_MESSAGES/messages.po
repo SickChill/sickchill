@@ -1260,7 +1260,7 @@ msgid "Find Propers"
 msgstr "Znajdź właściwe"
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
+msgid "Postprocessor"
 msgstr "Postprocesor"
 
 #: sickbeard/webserve.py:5383

@@ -172,7 +172,7 @@ class CheckVersion(object):
                 return False
 
         def postprocessor_safe():
-            if not sickbeard.autoPostProcesserScheduler.action.amActive:
+            if not sickbeard.autoPostProcessorScheduler.action.amActive:
                 logger.log(u"We can proceed with the update. Post-Processor is not running", logger.DEBUG)
                 return True
             else:

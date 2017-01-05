@@ -1260,7 +1260,7 @@ msgid "Find Propers"
 msgstr "Find forbedrede udgivelser"
 
 #: sickbeard/webserve.py:5382
-msgid "Postprocesser"
+msgid "Postprocessor"
 msgstr "Efterbehandler"
 
 #: sickbeard/webserve.py:5383
