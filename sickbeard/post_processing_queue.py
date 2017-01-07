@@ -90,14 +90,15 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 logger.log(message, logger.INFO)
                 return message
 
-            message = "A task for {directory} was already in the processing queue, updating the settings for that task".format(**replacements)
+            message = "A task for {directory} was already in the processing queue, updating the settings for that task\n<br\><span class='hidden'>Processing succeeded</span>".format(**replacements)
             if item.mode != 'auto':
                 logger.log(message, logger.DEBUG)
 
             item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
             return message
         else:
-            message = "{mode} post processing task for {directory} was added to the queue".format(**replacements)
+            message = "{mode} post processing task for {directory} was added to the queue\n<br\><span class='hidden'>Processing succeeded</span>".format(
+                **replacements)
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
             super(ProcessingQueue, self).add_item(item)
             logger.log(message, logger.INFO)
