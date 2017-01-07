@@ -31,6 +31,7 @@ import operator
 import os
 import platform
 import random
+import rarfile
 import re
 import shutil
 import socket
@@ -201,36 +202,22 @@ def isMediaFile(filename):
         return False
 
 
-def isRarFile(filename):
+def is_rarfile(filename):
     """
     Check if file is a RAR file, or part of a RAR set
 
     :param filename: Filename to check
     :return: True if this is RAR/Part file, False if not
     """
-
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    ret = re.search(archive_regex, filename) is not None
+    try:
+        if ek(os.path.exists, filename) and ek(os.path.isfile, filename):
+            ret = ek(rarfile.is_rarfile, filename)
+    except (IOError, OSError):
+        pass
 
-    if re.search(archive_regex, filename):
-        return True
-
-    return False
-
-
-def isBeingWritten(filepath):
-    """
-    Check if file has been written in last 60 seconds
-
-    :param filepath: Filename to check
-    :return: True if file has been written recently, False if none
-    """
-
-    # Return True if file was modified within 60 seconds. it might still be being written to.
-    ctime = max(ek(os.path.getctime, filepath), ek(os.path.getmtime, filepath))
-    if ctime > time.time() - 60:
-        return True
-
-    return False
+    return ret
 
 
 def remove_file_failed(failed_file):
@@ -824,7 +811,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     # assert isinstance(ssl_cert, unicode)
 
     try:
-        from OpenSSL import crypto  # @UnresolvedImport
+        from OpenSSL import crypto  # noinspection PyUnresolvedReferences
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
     except Exception:
@@ -1077,14 +1064,14 @@ def is_hidden_folder(folder):
     """
     def is_hidden(filepath):
         name = ek(os.path.basename, ek(os.path.abspath, filepath))
-        return name.startswith('.') or has_hidden_attribute(filepath)
+        return name == u'@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(unicode(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
-        except (AttributeError, AssertionError):
+        except (AttributeError, AssertionError, OSError, IOError):
             result = False
         return result
 
@@ -1750,3 +1737,9 @@ def is_ip_private(ip):
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+
+
+def recursive_listdir(path):
+    for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
+        for filename in file_names:
+            yield ek(os.path.join, directory_path, filename)

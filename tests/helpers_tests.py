@@ -25,8 +25,7 @@ Public Methods:
     indentXML
     remove_non_release_groups
     isMediaFile
-    isRarFile
-    isBeingWritten
+    is_rarfile
     remove_file_failed
     makeDir
     searchIndexerForShowID
@@ -202,7 +201,7 @@ class HelpersZipTests(unittest.TestCase):
 
     def test_is_rar_file(self):
         """
-        Test isRarFile
+        Test is_rarfile
         """
         self.assertTrue(helpers.isRarFile('lala.rar'))
         self.assertFalse(helpers.isRarFile('lala.zip'))
@@ -310,13 +309,6 @@ class HelpersFileTests(unittest.TestCase):
     def test_is_file_locked(self):
         """
         Test isFileLocked
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_is_being_written(self):
-        """
-        Test isBeingWritten
         """
         pass
 

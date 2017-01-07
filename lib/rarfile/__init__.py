@@ -2945,7 +2945,8 @@ def _check_unrar_tool():
             TEST_ARGS = ALT_TEST_ARGS
         except RarCannotExec:
             # no usable tool, only uncompressed archives work
-            pass
+            return False
+
+    return True
 
 _check_unrar_tool()
-
