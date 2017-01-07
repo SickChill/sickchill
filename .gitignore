@@ -87,3 +87,6 @@ venv
 
 # diffs
 /*.diff
+
+/genchanges.sh
+/Downloads
