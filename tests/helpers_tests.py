@@ -200,13 +200,17 @@ class HelpersZipTests(unittest.TestCase):
         """
         pass
 
-    @unittest.skip('Not yet implemented')
     def test_is_rar_file(self):
         """
         Test isRarFile
         """
-        pass
-
+        self.assertTrue(helpers.isRarFile('lala.rar'))
+        self.assertFalse(helpers.isRarFile('lala.zip'))
+        self.assertFalse(helpers.isRarFile('lala.iso'))
+        self.assertFalse(helpers.isRarFile('lala.wmv'))
+        self.assertFalse(helpers.isRarFile('lala.avi'))
+        self.assertFalse(helpers.isRarFile('lala.mkv'))
+        self.assertFalse(helpers.isRarFile('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """
