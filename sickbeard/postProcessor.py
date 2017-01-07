@@ -1193,6 +1193,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         ep_obj.airdateModifyStamp()
 
+        if sickbeard.USE_ICACLS and os.name == 'nt':
+            os.popen('icacls "' + ep_obj._location + '"* /reset /T')
+
         # generate nfo/tbn
         try:
             ep_obj.createMetaFiles()
