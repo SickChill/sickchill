@@ -1,0 +1,24 @@
+Archive: test/files/rar5-psw-blake.rar
+  comment='RAR5 archive - nohdr-password-blake\n'
+R5_FILE: hdrlen=125 datlen=64 hdr_extra=95
+  block_flags=0x0003:EXTRA,DATA
+  name=stest1.txt
+  file_flags=0x0000:-
+  cmp_algo=0 cmp_meth=3 dict=0 solid=False
+  os=1:UNIX mode=0100644 cmp=64 dec=2048 vol=0
+  blake2sp=5cdbd3f49f594a35edb63c923b64abdadba3bf1468b6259ee1e1c54ba2f0d65e
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  algo=0:AES256 enc_flags=0003:CHECKVAL,TWEAKED kdf_lg=15 kdf_count=32768 salt=9db5988f74a009519a4073bdfda0e046 iv=4209dcd38ab7be9299ab3e74d3abc760 checkval=3978909499ddfdb80dfc899e
+R5_FILE: hdrlen=142 datlen=2048 hdr_extra=111
+  block_flags=0x0003:EXTRA,DATA
+  name=stest2.txt
+  file_flags=0x0000:-
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100644 cmp=2048 dec=2048 vol=0
+  blake2sp=5cdbd3f49f594a35edb63c923b64abdadba3bf1468b6259ee1e1c54ba2f0d65e
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  ctime=2016-05-22T09:12:33+00:00
+  atime=2016-05-22T09:12:37+00:00
+  algo=0:AES256 enc_flags=0003:CHECKVAL,TWEAKED kdf_lg=15 kdf_count=32768 salt=9db5988f74a009519a4073bdfda0e046 iv=e420cdee55a90d84a6341ba90d41d6e0 checkval=3978909499ddfdb80dfc899e
