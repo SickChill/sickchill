@@ -1313,6 +1313,7 @@ class CMD_PostProcess(ApiCall):
             "process_method": {"desc": "How should valid post-processed files be handled"},
             "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
             "failed": {"desc": "Mark download as failed"},
+            "delete": {"desc": "Delete processed files and folders"},
             "type": {"desc": "The type of post-process being requested"},
         }
     }
@@ -1327,6 +1328,7 @@ class CMD_PostProcess(ApiCall):
                                                       ["copy", "symlink", "hardlink", "move"])
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
+        self.delete, args = self.check_params(args, kwargs, "delete", False, False, "bool", [])
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -1344,7 +1346,7 @@ class CMD_PostProcess(ApiCall):
 
         data = sickbeard.postProcessorTaskScheduler.action.add_item(
             self.path, method=self.process_method, force=self.force_replace,
-            is_priority=self.is_priority, failed=self.failed, mode=self.type)
+            is_priority=self.is_priority, failed=self.failed, delete=self.delete, mode=self.type)
 
         if not self.return_data:
             data = ""
