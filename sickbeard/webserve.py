@@ -21,7 +21,6 @@
 import ast
 import datetime
 import gettext
-import io
 import os
 import re
 import time
@@ -4248,7 +4247,8 @@ class ConfigPostProcessing(Config):
                            naming_abd_pattern=None, naming_strip_year=None,
                            naming_custom_sports=None, naming_sports_pattern=None,
                            naming_custom_anime=None, naming_anime_pattern=None,
-                           naming_anime_multi_ep=None, autopostprocessor_frequency=None):
+                           naming_anime_multi_ep=None, autopostprocessor_frequency=None,
+                           use_icacls=None):
 
         results = []
 
@@ -4257,6 +4257,7 @@ class ConfigPostProcessing(Config):
 
         config.change_AUTOPOSTPROCESSOR_FREQUENCY(autopostprocessor_frequency)
         config.change_PROCESS_AUTOMATICALLY(process_automatically)
+        sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
         if unpack:
             if self.isRarSupported() != 'not supported':

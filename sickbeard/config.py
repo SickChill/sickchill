@@ -414,8 +414,10 @@ def checkbox_to_value(option, value_on=1, value_off=0):
 
     if isinstance(option, list):
         option = option[-1]
+    if isinstance(option, (str, unicode)):
+        option = str(option).strip().lower()
 
-    if option in ('on', 'true', value_on):
+    if option in (True, 'on', 'true', '1', value_on):
         return value_on
 
     return value_off
