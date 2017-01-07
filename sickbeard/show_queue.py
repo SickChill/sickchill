@@ -116,6 +116,10 @@ class ShowQueue(generic_queue.GenericQueue):
                 logger.DEBUG)
             return
 
+        if force == False and show.paused:
+            logger.log('Skipping show [{0}] because is paused.'.format(show.name), logger.DEBUG)
+            return
+
         logger.log('Queueing show refresh for {0}'.format(show.name), logger.DEBUG)
 
         queueItemObj = QueueItemRefresh(show, force=force)
@@ -279,10 +283,15 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
     def run(self):  # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
 
-        ShowQueueItem.run(self)
+        super(QueueItemAdd, self).run()
 
         if self.showDir:
-            assert isinstance(self.showDir, unicode)
+            try:
+                assert isinstance(self.showDir, unicode)
+            except AssertionError:
+                logger.log(traceback.format_exc(), logger.WARNING)
+                self._finishEarly()
+                return
 
         logger.log('Starting to add show {0}'.format('by ShowDir: {0}'.format(self.showDir) if self.showDir else 'by Indexer Id: {0}'.format(self.indexer_id)))
         # make sure the Indexer IDs are valid
@@ -302,6 +311,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 show_name = get_showname_from_indexer(self.indexer, self.indexer_id, self.lang)
                 if not show_name:
                     logger.log('Unable to get a show {0}, can\'t add the show'.format(self.showDir))
+                    self._finishEarly()
                     return
 
                 self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_name))
@@ -309,6 +319,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 dir_exists = makeDir(self.showDir)
                 if not dir_exists:
                     logger.log('Unable to create the folder {0}, can\'t add the show'.format(self.showDir))
+                    self._finishEarly()
                     return
 
                 chmodAsParent(self.showDir)
@@ -505,12 +516,14 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         # After initial add, set to default_status_after.
         self.show.default_ep_status = self.default_status_after
 
+        super(QueueItemAdd, self).finish()
         self.finish()
 
     def _finishEarly(self):
         if self.show is not None:
             sickbeard.showQueueScheduler.action.removeShow(self.show)
 
+        super(QueueItemAdd, self).finish()
         self.finish()
 
 
@@ -525,7 +538,8 @@ class QueueItemRefresh(ShowQueueItem):
         self.force = force
 
     def run(self):
-        ShowQueueItem.run(self)
+
+        super(QueueItemRefresh, self).run()
 
         logger.log('Performing refresh on {0}'.format(self.show.name))
 
@@ -538,6 +552,7 @@ class QueueItemRefresh(ShowQueueItem):
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
+        super(QueueItemRefresh, self).finish()
         self.finish()
 
 
@@ -547,7 +562,7 @@ class QueueItemRename(ShowQueueItem):
 
     def run(self):
 
-        ShowQueueItem.run(self)
+        super(QueueItemRename, self).run()
 
         logger.log('Performing rename on {0}'.format(self.show.name))
 
@@ -555,6 +570,8 @@ class QueueItemRename(ShowQueueItem):
             self.show.location
         except ShowDirectoryNotFoundException:
             logger.log('Can\'t perform rename on {0} when the show dir is missing.'.format(self.show.name), logger.WARNING)
+            super(QueueItemRename, self).finish()
+            self.finish()
             return
 
         ep_obj_rename_list = []
@@ -579,6 +596,7 @@ class QueueItemRename(ShowQueueItem):
         for cur_ep_obj in ep_obj_rename_list:
             cur_ep_obj.rename()
 
+        super(QueueItemRename, self).finish()
         self.finish()
 
 
@@ -587,11 +605,13 @@ class QueueItemSubtitle(ShowQueueItem):
         ShowQueueItem.__init__(self, ShowQueueActions.SUBTITLE, show)
 
     def run(self):
-        ShowQueueItem.run(self)
+        super(QueueItemSubtitle, self).run()
 
         logger.log('Downloading subtitles for {0} '.format(self.show.name))
 
         self.show.download_subtitles()
+
+        super(QueueItemSubtitle, self).finish()
         self.finish()
 
 
@@ -604,7 +624,7 @@ class QueueItemUpdate(ShowQueueItem):
 
     def run(self):  # pylint: disable=too-many-branches, too-many-statements
 
-        ShowQueueItem.run(self)
+        super(QueueItemUpdate, self).run()
 
         logger.log('Beginning update of {0}'.format(self.show.name), logger.DEBUG)
 
@@ -614,10 +634,14 @@ class QueueItemUpdate(ShowQueueItem):
         except sickbeard.indexer_error as error:
             logger.log('Unable to contact {0}, aborting: {1}'.format
                        (sickbeard.indexerApi(self.show.indexer).name, error), logger.WARNING)
+            super(QueueItemUpdate, self).finish()
+            self.finish()
             return
         except sickbeard.indexer_attributenotfound as error:
             logger.log('Data retrieved from {0} was incomplete, aborting: {1}'.format
                        (sickbeard.indexerApi(self.show.indexer).name, error), logger.ERROR)
+            super(QueueItemUpdate, self).finish()
+            self.finish()
             return
 
         logger.log('Retrieving show info from IMDb', logger.DEBUG)
@@ -683,6 +707,7 @@ class QueueItemUpdate(ShowQueueItem):
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
+        super(QueueItemUpdate, self).finish()
         self.finish()
 
 
@@ -695,7 +720,7 @@ class QueueItemRemove(ShowQueueItem):
         self.full = full
 
     def run(self):
-        ShowQueueItem.run(self)
+        super(QueueItemRemove, self).run()
         logger.log('Removing {0}'.format(self.show.name))
         self.show.deleteShow(full=self.full)
 
@@ -705,4 +730,5 @@ class QueueItemRemove(ShowQueueItem):
             except Exception as error:
                 logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
 
+        super(QueueItemRemove, self).finish()
         self.finish()

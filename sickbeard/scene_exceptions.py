@@ -197,8 +197,16 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
         loc = sickbeard.indexerApi(INDEXER_TVDB).config['scene_loc']
         logger.log(u"Checking for scene exception updates from {0}".format(loc))
 
+        session = sickbeard.indexerApi(INDEXER_TVDB).session
+        proxy = sickbeard.PROXY_SETTING
+        if proxy:
+            session.proxies = {
+                "http": proxy,
+                "https": proxy,
+            }
+
         try:
-            jdata = helpers.getURL(loc, session=sickbeard.indexerApi(INDEXER_TVDB).session, returns='json')
+            jdata = helpers.getURL(loc, session=session, returns='json')
         except Exception:
             jdata = None
 

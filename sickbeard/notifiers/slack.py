@@ -68,7 +68,7 @@ class Notifier(object):
 
         headers = {b"Content-Type": b"application/json"}
         try:
-            r = requests.post(slack_webhook, data=json.dumps(dict(text=message)), headers=headers)
+            r = requests.post(slack_webhook, data=json.dumps(dict(text=message, username="SickRageBot")), headers=headers)
             r.raise_for_status()
         except Exception as e:
             logger.log("Error Sending Slack message: " + ex(e), logger.ERROR)

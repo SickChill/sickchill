@@ -427,6 +427,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
             result.output += logHelper(u"Unpacking archive: {0}".format(archive), logger.DEBUG)
 
             failure = None
+            rar_handle = None
             try:
                 rar_handle = RarFile(ek(os.path.join, path, archive))
 
@@ -450,7 +451,6 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                         basename = ek(os.path.basename, x.filename)
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
-                del rar_handle
 
             except ArchiveHeaderBroken:
                 failure = (u'Archive Header Broken', u'Unpacking failed because the Archive Header is Broken')
@@ -465,6 +465,9 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 failure = (u'Invalid Rar Archive', u'Unpacking Failed with an Invalid Rar Archive Error')
             except Exception as e:
                 failure = (ex(e), u'Unpacking failed for an unknown reason')
+            finally:
+                if rar_handle:
+                    del rar_handle
 
             if failure is not None:
                 result.output += logHelper(u'Failed Unrar archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)

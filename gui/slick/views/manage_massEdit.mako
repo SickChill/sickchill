@@ -13,8 +13,8 @@
 
         anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
     %>
-    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}" charset="utf-8"></script>
+    <script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}" charset="utf-8"></script>
 </%block>
 
 <%block name="tabs">
@@ -22,7 +22,7 @@
 </%block>
 
 <%block name="pages">
-    <form id="configForm" action="massEditSubmit" method="post">
+    <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
         <input type="hidden" name="toEdit" value="${showList}" />
 
         <div id="main">

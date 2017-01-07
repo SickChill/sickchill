@@ -3,7 +3,10 @@ import re
 
 
 # Resolutions
-resolution = re.compile(r'(?P<vres>4320|2160|1080|720|480|360)(?P<scan>[pi])', re.I)
+resolution = [
+    re.compile(r'(?P<vres>4320|2160|1080|720|480|360)(?P<scan>[pi])', re.I),
+    re.compile(r'(:?[sph]d)(:?.?tv)?[ \-_\.]*(?P<vres>4320|2160|1080|720|480|360)(:?(?P<scan>[pi])|[^\d]|$)', re.I)
+]
 
 # Sources
 tv = re.compile(r'([sph]d).?tv|tv(rip|mux)', re.I)

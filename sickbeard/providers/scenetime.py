@@ -18,12 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -39,6 +37,8 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.minseed = None
         self.minleech = None
 
+        self.enable_cookies = True
+
         self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
@@ -52,22 +52,28 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.categories = [2, 42, 9, 63, 77, 79, 100, 83]
 
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        cookie_dict = dict_from_cookiejar(self.session.cookies)
+        if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password}
+        if self.cookies:
+            success, status = self.add_cookies_from_ui()
+            if not success:
+                logger.log(status, logger.INFO)
+                return False
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
-            return False
+            login_params = {'username': self.username, 'password': self.password}
 
-        if re.search('Username or password incorrect', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
-            return False
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+            if response.status_code != 200:
+                logger.log(u"Unable to connect to provider", logger.WARNING)
+                return False
 
-        return True
+            if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
+                return True
+            else:
+                logger.log('Failed to login, check your cookies', logger.WARNING)
+                return False
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
         results = []

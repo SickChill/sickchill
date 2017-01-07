@@ -39,7 +39,7 @@ class Notifier(object):
     def test_notify(self, userKey=None, apiKey=None):
         return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey=userKey, apiKey=apiKey, force=True)
 
-    def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None):
+    def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None, priority=None):
         """
         Sends a pushover notification to the address provided
 
@@ -60,6 +60,9 @@ class Notifier(object):
         if sound is None:
             sound = sickbeard.PUSHOVER_SOUND
 
+        if priority is None:
+            priority = sickbeard.PUSHOVER_PRIORITY
+
         logger.log(u"Pushover API KEY in use: " + apiKey, logger.DEBUG)
 
         # build up the URL and parameters
@@ -77,6 +80,7 @@ class Notifier(object):
                     "retry": 60,
                     "expire": 3600,
                     "sound": sound,
+                    "priority": priority,
                 }
             else:
                 # sound is default, so don't send it
@@ -88,6 +92,7 @@ class Notifier(object):
                     "timestamp": int(time.time()),
                     "retry": 60,
                     "expire": 3600,
+                    "priority": priority,
                 }
 
             if sickbeard.PUSHOVER_DEVICE:

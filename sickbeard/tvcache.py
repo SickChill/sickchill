@@ -125,7 +125,7 @@ class TVCache(object):
                     cache_db_con.mass_action(cl)
 
         except AuthException as e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            logger.log(u"Authentication error: " + ex(e), logger.WARNING)
         except Exception as e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 

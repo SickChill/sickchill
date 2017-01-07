@@ -183,7 +183,7 @@ def isMediaFile(filename):
             return False
 
         # ignore RARBG release intro
-        if re.search(r'^RARBG\.\w+\.(mp4|avi|txt)$', filename, re.I):
+        if re.search(r'^RARBG\.(\w+\.)?(mp4|avi|txt)$', filename, re.I):
             return False
 
         # ignore MAC OS's retarded "resource fork" files
@@ -1571,6 +1571,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     if not ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
+
+    if not (ek(os.path.exists, dest) or ek(os.path.exists, ek(os.path.dirname, dest))):
+        logger.log("A path is required for the destination. Check the root dir and show locations are correct for {0} (I got '{1}')".format(
+            oldfile[0].name, dest), logger.WARNING)
+        return False
 
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space

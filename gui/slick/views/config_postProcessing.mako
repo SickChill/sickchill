@@ -106,12 +106,12 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocesser_frequency"/>
+                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${sickbeard.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocessor_frequency"/>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="autopostprocesser_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
+                                        <label for="autopostprocessor_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -298,6 +298,20 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label><b>${_('Note')}:</b>&nbsp;${_('Can be overridden using manual Post Processing')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <label class="component-title">${_('Use icacls')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(sickbeard.USE_ICACLS)]}/>
+                                        <label for="no_delete">${_('Windows ONLY. Sets video permissions after using the move method in post processing')}</label>
                                     </div>
                                 </div>
                             </div>

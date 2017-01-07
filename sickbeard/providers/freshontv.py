@@ -54,7 +54,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         self.url = self.urls['base_url']
 
-        self.cookies = None
+        self._cookies = None
 
     def _check_auth(self):
 
@@ -68,7 +68,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             return True
 
         if self._uid and self._hash:
-            add_dict_to_cookiejar(self.session.cookies, self.cookies)
+            add_dict_to_cookiejar(self.session.cookies, self._cookies)
         else:
             login_params = {'username': self.username,
                             'password': self.password,
@@ -86,7 +86,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                         self._uid = dict_from_cookiejar(self.session.cookies)['uid']
                         self._hash = dict_from_cookiejar(self.session.cookies)['pass']
 
-                        self.cookies = {'uid': self._uid,
+                        self._cookies = {'uid': self._uid,
                                         'pass': self._hash}
                         return True
                 except Exception:

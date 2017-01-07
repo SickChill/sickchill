@@ -73,21 +73,21 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
                     continue
 
-                with BS4Parser(data, 'html5lib') as parser:
-                    for item in parser('item'):
+                with BS4Parser(data, 'html.parser') as page:
+                    for item in page('item'):
                         try:
                             title = re.sub(r'^<!\[CDATA\[|\]\]>$', '', item.find('title').get_text(strip=True))
                             seeders = try_int(item.find('seeders').get_text(strip=True))
                             leechers = try_int(item.find('leechers').get_text(strip=True))
                             torrent_size = item.find('size').get_text()
                             size = convert_size(torrent_size) or -1
+                            info_hash = item.find('info_hash').get_text(strip=True)
 
                             if sickbeard.TORRENT_METHOD == 'blackhole':
                                 enclosure = item.find('enclosure')  # Backlog doesnt have enclosure
-                                download_url = enclosure['url'] if enclosure else item.find('link').next.strip()
+                                download_url = enclosure['url'] if enclosure else item.find('link').get_text(strip=True)
                                 download_url = re.sub(r'(.*)/torrent/(.*).html', r'\1/download/\2.torrent', download_url)
                             else:
-                                info_hash = item.find('info_hash').get_text(strip=True)
                                 download_url = "magnet:?xt=urn:btih:" + info_hash + "&dn=" + title + self._custom_trackers
 
                         except (AttributeError, TypeError, KeyError, ValueError):
@@ -103,7 +103,7 @@ class ExtraTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
                             logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 

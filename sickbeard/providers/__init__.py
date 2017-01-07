@@ -23,21 +23,21 @@ from random import shuffle
 
 import sickbeard
 from sickbeard.providers import btn, womble, thepiratebay, torrentleech, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, bluetigers, xthor, abnormal, torrentbytes, cpasbien,\
-    freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, btdigg, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents, \
-    norbits, ilovetorrents, horriblesubs, filelist
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien,\
+    torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
+    scenetime, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents, \
+    norbits, horriblesubs, filelist
 
 __all__ = [
     'womble', 'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
     'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
-    'morethantv', 't411', 'tokyotoshokan', 'alpharatio',
-    'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'bluetigers',
-    'xthor', 'abnormal', 'scenetime', 'btdigg', 'transmitthenet', 'tvchaosuk',
+    'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
+    'shazbat', 'rarbg', 'tntvillage', 'binsearch',
+    'xthor', 'abnormal', 'scenetime', 'transmitthenet', 'tvchaosuk',
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits', 'hd4free', 'limetorrents',
-    'norbits', 'ilovetorrents', 'horriblesubs', 'filelist'
+    'norbits', 'horriblesubs', 'filelist'
 ]
 
 

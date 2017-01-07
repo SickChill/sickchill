@@ -51,7 +51,7 @@ from configobj import ConfigObj
 from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.tv import TVEpisode
+from sickbeard.tv import TVEpisode, TVShow
 import sickbeard
 
 # pylint: disable=import-error
@@ -72,7 +72,9 @@ FILENAME = u"show name - s0" + str(SEASON) + "e0" + str(EPISODE) + ".mkv"
 FILE_DIR = os.path.join(TEST_DIR, SHOW_NAME)
 FILE_PATH = os.path.join(FILE_DIR, FILENAME)
 SHOW_DIR = os.path.join(TEST_DIR, SHOW_NAME + " final")
-
+PROCESSING_DIR = os.path.join(TEST_DIR, 'Downloads')
+NUM_SEASONS = 5
+EPISODES_PER_SEASON = 20
 
 # =================
 #  prepare env functions
@@ -108,6 +110,7 @@ sickbeard.NAMING_ABD_PATTERN = ''
 sickbeard.NAMING_SPORTS_PATTERN = ''
 sickbeard.NAMING_MULTI_EP = 1
 
+sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
 sickbeard.newznabProviderList = NewznabProvider.get_providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
@@ -188,6 +191,46 @@ class SickbeardTestDBCase(unittest.TestCase):
         teardown_test_episode_file()
         teardown_test_show_dir()
 
+
+class SickbeardTestPostProcessorCase(unittest.TestCase):
+    """
+    Superclass for testing the database.
+
+    Methods:
+        setUp
+        tearDown
+    """
+    def setUp(self):
+        sickbeard.showList = []
+        setup_test_db()
+        setup_test_episode_file()
+        setup_test_show_dir()
+        setup_test_processing_dir()
+
+        show = TVShow(1, 0001, 'en')
+        show.name = SHOW_NAME
+        show.location = FILE_DIR
+
+        show.episodes = {}
+        for season in range(1, NUM_SEASONS):
+            show.episodes[season] = {}
+            for episode in range(1, EPISODES_PER_SEASON):
+                if season == SEASON and episode == EPISODE:
+                    episode = TVEpisode(show, season, episode, ep_file=FILE_PATH)
+                else:
+                    episode = TVEpisode(show, season, episode)
+                show.episodes[season][episode] = episode
+                episode.saveToDB()
+
+        show.saveToDB()
+        sickbeard.showList = [show]
+
+    def tearDown(self):
+        sickbeard.showList = []
+        teardown_test_db()
+        teardown_test_episode_file()
+        teardown_test_show_dir()
+        teardown_test_processing_dir()
 
 class TestDBConnection(db.DBConnection, object):
     """
@@ -294,6 +337,24 @@ def setup_test_episode_file():
     except Exception:
         print "Unable to set up test episode"
         raise
+
+
+def setup_test_processing_dir():
+    if not os.path.exists(PROCESSING_DIR):
+        os.makedirs(PROCESSING_DIR)
+
+    for season in range(1, NUM_SEASONS):
+        for episode in range(11, EPISODES_PER_SEASON):
+            path = os.path.join(PROCESSING_DIR, '{show_name}.S0{season}E{episode}.HDTV.x264.[SickRage].mkv'.format(
+                show_name=SHOW_NAME, season=season, episode=episode))
+            with open(path, 'wb') as ep_file:
+                ep_file.write("foo bar")
+                ep_file.flush()
+
+
+def teardown_test_processing_dir():
+    if os.path.exists(PROCESSING_DIR):
+        shutil.rmtree(PROCESSING_DIR)
 
 
 def teardown_test_episode_file():

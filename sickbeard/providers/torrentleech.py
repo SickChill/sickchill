@@ -47,7 +47,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minleech = None
 
         # URLs
-        self.url = "https://torrentleech.org"
+        self.url = "https://www.torrentleech.org"
         self.urls = {
             "login": urljoin(self.url, "user/account/login/"),
             "search": urljoin(self.url, "torrents/browse"),
@@ -66,8 +66,6 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         login_params = {
             "username": self.username.encode("utf-8"),
             "password": self.password.encode("utf-8"),
-            "login": "submit",
-            # "remember_me": "on",
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")

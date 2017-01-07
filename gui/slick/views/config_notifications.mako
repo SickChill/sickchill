@@ -1506,6 +1506,30 @@
                                 </div>
                             </div>
 
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Pushover priority')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <select id="pushover_priority" name="pushover_priority" class="form-control input-sm input250">
+                                            <option value="-2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
+                                            <option value="-1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
+                                            <option value="0" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
+                                            <option value="1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
+                                            <option value="2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="component-desc">${_('Choose priority to use')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="testNotification" id="testPushover-result">${_('Click below to test.')}</div>
@@ -2276,6 +2300,155 @@
                 </div>
             </div>
 
+            <div class="config-group-divider"></div>
+
+            <!-- /twilio component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-twilio" title="${_('Twilio')}"></span>
+                        <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twilio</a></h3>
+                        <p>${_('Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(sickbeard.USE_TWILIO)]}/>
+                                        <label for="use_twilio">${_('Should SickRage text your mobile device?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_twilio">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSNATCH)]}/>
+                                    <label for="twilio_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="twilio_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="twilio_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Twilio Account SID')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="twilio_account_sid" id="twilio_account_sid" value="${sickbeard.TWILIO_ACCOUNT_SID}" class="form-control input-sm input300" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="twilio_account_sid">${_('Account SID of your Twilio Account.')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Twilio Auth Token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="twilio_auth_token" id="twilio_auth_token" value="${sickbeard.TWILIO_AUTH_TOKEN}" class="form-control input-sm input300" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="twilio_auth_token">${_('Account SID of your Twilio Account.')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Twilio Phone SID')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="twilio_phone_sid" id="twilio_phone_sid" value="${sickbeard.TWILIO_PHONE_SID}" class="form-control input-sm input300" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="twilio_phone_sid">${_('Phone SID that you would like to send the sms from')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Your phone number')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="twilio_to_number" id="twilio_to_number" value="${sickbeard.TWILIO_TO_NUMBER}" class="form-control input-sm input200" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="twilio_to_number">${_('Phone number that will recieve the sms. Please use the format +1-###-###-####')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testTwilio-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Twilio" id="testTwilio" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
         </div>
 
         <!-- /Social //-->

@@ -23,7 +23,7 @@ import sickbeard
 from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
     synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
     nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, \
-    slack, join
+    slack, join, twilio_notify
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -49,6 +49,7 @@ telegram_notifier = telegram.Notifier()
 join_notifier = join.Notifier()
 # social
 twitter_notifier = tweet.Notifier()
+twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
@@ -72,6 +73,7 @@ notifiers = [
     pushalot_notifier,
     pushbullet_notifier,
     twitter_notifier,
+    twilio_notifier,
     trakt_notifier,
     email_notifier,
     slack_notifier,
@@ -102,5 +104,8 @@ def notify_git_update(new_version=""):
 
 def notify_login(ipaddress):
     for n in notifiers:
-        if sickbeard.NOTIFY_ON_LOGIN:
+        if sickbeard.NOTIFY_ON_LOGIN and hasattr(n, 'notify_login'):
             n.notify_login(ipaddress)
+        else:
+            print(n.__module__)
+

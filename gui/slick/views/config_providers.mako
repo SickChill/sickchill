@@ -455,10 +455,24 @@
                                             <label class="component-title">${_('Cookies')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${curTorrentProvider.get_id()}_cookies"
-                                                   id="${curTorrentProvider.get_id()}_cookies"
-                                                   value="${curTorrentProvider.cookies}" class="form-control input-sm input350"
-                                                   autocapitalize="off" autocomplete="no"/>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="${curTorrentProvider.get_id()}_cookies"
+                                                           id="${curTorrentProvider.get_id()}_cookies"
+                                                           value="${curTorrentProvider.cookies}"
+                                                           class="form-control input-sm input350"
+                                                           autocapitalize="off" autocomplete="no" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="${curTorrentProvider.get_id()}_cookies">
+                                                        ${_('Example: uid=1234;pass=567845439634987<br>' +
+                                                        'Note: uid and pass are not your username/password.<br>' +
+                                                        'Use DevTools or Firebug to get these values after logging in on your browser.')}
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 % endif

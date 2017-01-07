@@ -3,34 +3,40 @@ from tornado.concurrent import Future
 from tornado import gen
 from tornado.escape import json_decode, utf8, to_unicode, recursive_unicode, native_str, to_basestring
 from tornado.httputil import format_timestamp
+from tornado.ioloop import IOLoop
 from tornado.iostream import IOStream
 from tornado import locale
 from tornado.log import app_log, gen_log
 from tornado.simple_httpclient import SimpleAsyncHTTPClient
 from tornado.template import DictLoader
-from tornado.testing import AsyncHTTPTestCase, ExpectLog, gen_test
-from tornado.test.util import unittest
-from tornado.util import u, ObjectDict, unicode_type, timedelta_to_seconds
-from tornado.web import RequestHandler, authenticated, Application, asynchronous, url, HTTPError, StaticFileHandler, _create_signature_v1, create_signed_value, decode_signed_value, ErrorHandler, UIModule, MissingArgumentError, stream_request_body, Finish, removeslash, addslash, RedirectHandler as WebRedirectHandler, get_signature_key_version
+from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, ExpectLog, gen_test
+from tornado.test.util import unittest, skipBefore35, exec_test
+from tornado.util import ObjectDict, unicode_type, timedelta_to_seconds, PY3
+from tornado.web import RequestHandler, authenticated, Application, asynchronous, url, HTTPError, StaticFileHandler, _create_signature_v1, create_signed_value, decode_signed_value, ErrorHandler, UIModule, MissingArgumentError, stream_request_body, Finish, removeslash, addslash, RedirectHandler as WebRedirectHandler, get_signature_key_version, GZipContentEncoding
 
 import binascii
 import contextlib
+import copy
 import datetime
 import email.utils
+import gzip
+from io import BytesIO
 import itertools
 import logging
 import os
 import re
 import socket
 
-try:
+if PY3:
     import urllib.parse as urllib_parse  # py3
-except ImportError:
+else:
     import urllib as urllib_parse  # py2
 
 wsgi_safe_tests = []
 
-relpath = lambda *a: os.path.join(os.path.dirname(__file__), *a)
+
+def relpath(*a):
+    return os.path.join(os.path.dirname(__file__), *a)
 
 
 def wsgi_safe(cls):
@@ -184,7 +190,7 @@ class CookieTest(WebTestCase):
                 # Try setting cookies with different argument types
                 # to ensure that everything gets encoded correctly
                 self.set_cookie("str", "asdf")
-                self.set_cookie("unicode", u("qwer"))
+                self.set_cookie("unicode", u"qwer")
                 self.set_cookie("bytes", b"zxcv")
 
         class GetCookieHandler(RequestHandler):
@@ -195,8 +201,8 @@ class CookieTest(WebTestCase):
             def get(self):
                 # unicode domain and path arguments shouldn't break things
                 # either (see bug #285)
-                self.set_cookie("unicode_args", "blah", domain=u("foo.com"),
-                                path=u("/foo"))
+                self.set_cookie("unicode_args", "blah", domain=u"foo.com",
+                                path=u"/foo")
 
         class SetCookieSpecialCharHandler(RequestHandler):
             def get(self):
@@ -273,8 +279,8 @@ class CookieTest(WebTestCase):
 
         data = [('foo=a=b', 'a=b'),
                 ('foo="a=b"', 'a=b'),
-                ('foo="a;b"', 'a;b'),
-                # ('foo=a\\073b', 'a;b'),  # even encoded, ";" is a delimiter
+                ('foo="a;b"', '"a'),  # even quoted, ";" is a delimiter
+                ('foo=a\\073b', 'a\\073b'),  # escapes only decoded in quotes
                 ('foo="a\\073b"', 'a;b'),
                 ('foo="a\\"b"', 'a"b'),
                 ]
@@ -430,9 +436,9 @@ class RequestEncodingTest(WebTestCase):
     def test_group_encoding(self):
         # Path components and query arguments should be decoded the same way
         self.assertEqual(self.fetch_json('/group/%C3%A9?arg=%C3%A9'),
-                         {u("path"): u("/group/%C3%A9"),
-                          u("path_args"): [u("\u00e9")],
-                          u("args"): {u("arg"): [u("\u00e9")]}})
+                         {u"path": u"/group/%C3%A9",
+                          u"path_args": [u"\u00e9"],
+                          u"args": {u"arg": [u"\u00e9"]}})
 
     def test_slashes(self):
         # Slashes may be escaped to appear as a single "directory" in the path,
@@ -570,8 +576,8 @@ class RedirectHandler(RequestHandler):
 
 
 class EmptyFlushCallbackHandler(RequestHandler):
-    @gen.engine
     @asynchronous
+    @gen.engine
     def get(self):
         # Ensure that the flush callback is run whether or not there
         # was any output.  The gen.Task and direct yield forms are
@@ -686,15 +692,15 @@ class WSGISafeWebTest(WebTestCase):
             response = self.fetch(req_url)
             response.rethrow()
             data = json_decode(response.body)
-            self.assertEqual(data, {u('path'): [u('unicode'), u('\u00e9')],
-                                    u('query'): [u('unicode'), u('\u00e9')],
+            self.assertEqual(data, {u'path': [u'unicode', u'\u00e9'],
+                                    u'query': [u'unicode', u'\u00e9'],
                                     })
 
         response = self.fetch("/decode_arg/%C3%A9?foo=%C3%A9")
         response.rethrow()
         data = json_decode(response.body)
-        self.assertEqual(data, {u('path'): [u('bytes'), u('c3a9')],
-                                u('query'): [u('bytes'), u('c3a9')],
+        self.assertEqual(data, {u'path': [u'bytes', u'c3a9'],
+                                u'query': [u'bytes', u'c3a9'],
                                 })
 
     def test_decode_argument_invalid_unicode(self):
@@ -713,8 +719,8 @@ class WSGISafeWebTest(WebTestCase):
             response = self.fetch(req_url)
             response.rethrow()
             data = json_decode(response.body)
-            self.assertEqual(data, {u('path'): [u('unicode'), u('1 + 1')],
-                                    u('query'): [u('unicode'), u('1 + 1')],
+            self.assertEqual(data, {u'path': [u'unicode', u'1 + 1'],
+                                    u'query': [u'unicode', u'1 + 1'],
                                     })
 
     def test_reverse_url(self):
@@ -724,7 +730,7 @@ class WSGISafeWebTest(WebTestCase):
                          '/decode_arg/42')
         self.assertEqual(self.app.reverse_url('decode_arg', b'\xe9'),
                          '/decode_arg/%E9')
-        self.assertEqual(self.app.reverse_url('decode_arg', u('\u00e9')),
+        self.assertEqual(self.app.reverse_url('decode_arg', u'\u00e9'),
                          '/decode_arg/%C3%A9')
         self.assertEqual(self.app.reverse_url('decode_arg', '1 + 1'),
                          '/decode_arg/1%20%2B%201')
@@ -761,9 +767,9 @@ js_embed()
 
     def test_optional_path(self):
         self.assertEqual(self.fetch_json("/optional_path/foo"),
-                         {u("path"): u("foo")})
+                         {u"path": u"foo"})
         self.assertEqual(self.fetch_json("/optional_path/"),
-                         {u("path"): None})
+                         {u"path": None})
 
     def test_multi_header(self):
         response = self.fetch("/multi_header")
@@ -967,7 +973,8 @@ class StaticFileTest(WebTestCase):
 
         return [('/static_url/(.*)', StaticUrlHandler),
                 ('/abs_static_url/(.*)', AbsoluteStaticUrlHandler),
-                ('/override_static_url/(.*)', OverrideStaticUrlHandler)]
+                ('/override_static_url/(.*)', OverrideStaticUrlHandler),
+                ('/root_static/(.*)', StaticFileHandler, dict(path='/'))]
 
     def get_app_kwargs(self):
         return dict(static_path=relpath('static'))
@@ -978,6 +985,19 @@ class StaticFileTest(WebTestCase):
 
         response = self.fetch('/static/robots.txt')
         self.assertTrue(b"Disallow: /" in response.body)
+        self.assertEqual(response.headers.get("Content-Type"), "text/plain")
+
+    def test_static_compressed_files(self):
+        response = self.fetch("/static/sample.xml.gz")
+        self.assertEqual(response.headers.get("Content-Type"),
+                         "application/gzip")
+        response = self.fetch("/static/sample.xml.bz2")
+        self.assertEqual(response.headers.get("Content-Type"),
+                         "application/octet-stream")
+        # make sure the uncompressed file still has the correct type
+        response = self.fetch("/static/sample.xml")
+        self.assertTrue(response.headers.get("Content-Type")
+                        in set(("text/xml", "application/xml")))
 
     def test_static_url(self):
         response = self.fetch("/static_url/robots.txt")
@@ -1182,6 +1202,10 @@ class StaticFileTest(WebTestCase):
         self.assertEqual(response.code, 404)
 
     def test_path_traversal_protection(self):
+        # curl_httpclient processes ".." on the client side, so we
+        # must test this with simple_httpclient.
+        self.http_client.close()
+        self.http_client = SimpleAsyncHTTPClient()
         with ExpectLog(gen_log, ".*not in root static directory"):
             response = self.get_and_head('/static/../static_foo.txt')
         # Attempted path traversal should result in 403, not 200
@@ -1189,6 +1213,17 @@ class StaticFileTest(WebTestCase):
         # or 404 (which means that the file didn't exist and
         # is probably a packaging error).
         self.assertEqual(response.code, 403)
+
+    @unittest.skipIf(os.name != 'posix', 'non-posix OS')
+    def test_root_static_path(self):
+        # Sometimes people set the StaticFileHandler's path to '/'
+        # to disable Tornado's path validation (in conjunction with
+        # their own validation in get_absolute_path). Make sure
+        # that the stricter validation in 4.2.1 doesn't break them.
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            'static/robots.txt')
+        response = self.get_and_head('/root_static' + urllib_parse.quote(path))
+        self.assertEqual(response.code, 200)
 
 
 @wsgi_safe
@@ -1337,7 +1372,7 @@ class NamedURLSpecGroupsTest(WebTestCase):
                 self.write(path)
 
         return [("/str/(?P<path>.*)", EchoHandler),
-                (u("/unicode/(?P<path>.*)"), EchoHandler)]
+                (u"/unicode/(?P<path>.*)", EchoHandler)]
 
     def test_named_urlspec_groups(self):
         response = self.fetch("/str/foo")
@@ -1360,6 +1395,19 @@ class ClearHeaderTest(SimpleHandlerTestCase):
         response = self.fetch("/")
         self.assertTrue("h1" not in response.headers)
         self.assertEqual(response.headers["h2"], "bar")
+
+
+class Header204Test(SimpleHandlerTestCase):
+    class Handler(RequestHandler):
+        def get(self):
+            self.set_status(204)
+            self.finish()
+
+    def test_204_headers(self):
+        response = self.fetch('/')
+        self.assertEqual(response.code, 204)
+        self.assertNotIn("Content-Length", response.headers)
+        self.assertNotIn("Transfer-Encoding", response.headers)
 
 
 @wsgi_safe
@@ -1443,6 +1491,9 @@ class RaiseWithReasonTest(SimpleHandlerTestCase):
     def test_httperror_str(self):
         self.assertEqual(str(HTTPError(682, reason="Foo")), "HTTP 682: Foo")
 
+    def test_httperror_str_from_httputil(self):
+        self.assertEqual(str(HTTPError(682)), "HTTP 682: Unknown")
+
 
 @wsgi_safe
 class ErrorHandlerXSRFTest(WebTestCase):
@@ -1468,17 +1519,17 @@ class ErrorHandlerXSRFTest(WebTestCase):
 class GzipTestCase(SimpleHandlerTestCase):
     class Handler(RequestHandler):
         def get(self):
-            if self.get_argument('vary', None):
-                self.set_header('Vary', self.get_argument('vary'))
-            self.write('hello world')
+            for v in self.get_arguments('vary'):
+                self.add_header('Vary', v)
+            # Must write at least MIN_LENGTH bytes to activate compression.
+            self.write('hello world' + ('!' * GZipContentEncoding.MIN_LENGTH))
 
     def get_app_kwargs(self):
         return dict(
             gzip=True,
             static_path=os.path.join(os.path.dirname(__file__), 'static'))
 
-    def test_gzip(self):
-        response = self.fetch('/')
+    def assert_compressed(self, response):
         # simple_httpclient renames the content-encoding header;
         # curl_httpclient doesn't.
         self.assertEqual(
@@ -1486,17 +1537,18 @@ class GzipTestCase(SimpleHandlerTestCase):
                 'Content-Encoding',
                 response.headers.get('X-Consumed-Content-Encoding')),
             'gzip')
+
+
+    def test_gzip(self):
+        response = self.fetch('/')
+        self.assert_compressed(response)
         self.assertEqual(response.headers['Vary'], 'Accept-Encoding')
 
     def test_gzip_static(self):
         # The streaming responses in StaticFileHandler have subtle
         # interactions with the gzip output so test this case separately.
         response = self.fetch('/robots.txt')
-        self.assertEqual(
-            response.headers.get(
-                'Content-Encoding',
-                response.headers.get('X-Consumed-Content-Encoding')),
-            'gzip')
+        self.assert_compressed(response)
         self.assertEqual(response.headers['Vary'], 'Accept-Encoding')
 
     def test_gzip_not_requested(self):
@@ -1506,9 +1558,16 @@ class GzipTestCase(SimpleHandlerTestCase):
 
     def test_vary_already_present(self):
         response = self.fetch('/?vary=Accept-Language')
-        self.assertEqual(response.headers['Vary'],
-                         'Accept-Language, Accept-Encoding')
+        self.assert_compressed(response)
+        self.assertEqual([s.strip() for s in response.headers['Vary'].split(',')],
+                         ['Accept-Language', 'Accept-Encoding'])
 
+    def test_vary_already_present_multiple(self):
+        # Regression test for https://github.com/tornadoweb/tornado/issues/1670
+        response = self.fetch('/?vary=Accept-Language&vary=Cookie')
+        self.assert_compressed(response)
+        self.assertEqual([s.strip() for s in response.headers['Vary'].split(',')],
+                         ['Accept-Language', 'Cookie', 'Accept-Encoding'])
 
 @wsgi_safe
 class PathArgsInPrepareTest(WebTestCase):
@@ -1547,8 +1606,11 @@ class ClearAllCookiesTest(SimpleHandlerTestCase):
     def test_clear_all_cookies(self):
         response = self.fetch('/', headers={'Cookie': 'foo=bar; baz=xyzzy'})
         set_cookies = sorted(response.headers.get_list('Set-Cookie'))
-        self.assertTrue(set_cookies[0].startswith('baz=;'))
-        self.assertTrue(set_cookies[1].startswith('foo=;'))
+        # Python 3.5 sends 'baz="";'; older versions use 'baz=;'
+        self.assertTrue(set_cookies[0].startswith('baz=;') or
+                        set_cookies[0].startswith('baz="";'))
+        self.assertTrue(set_cookies[1].startswith('foo=;') or
+                        set_cookies[1].startswith('foo="";'))
 
 
 class PermissionError(Exception):
@@ -1609,10 +1671,10 @@ class ExceptionHandlerTest(SimpleHandlerTestCase):
 class BuggyLoggingTest(SimpleHandlerTestCase):
     class Handler(RequestHandler):
         def get(self):
-            1/0
+            1 / 0
 
         def log_exception(self, typ, value, tb):
-            1/0
+            1 / 0
 
     def test_buggy_log_exception(self):
         # Something gets logged even though the application's
@@ -2064,59 +2126,55 @@ class StreamingRequestBodyTest(WebTestCase):
         yield self.close_future
 
 
-class StreamingRequestFlowControlTest(WebTestCase):
-    def get_handlers(self):
-        from tornado.ioloop import IOLoop
+# Each method in this handler returns a yieldable object and yields to the
+# IOLoop so the future is not immediately ready.  Ensure that the
+# yieldables are respected and no method is called before the previous
+# one has completed.
+@stream_request_body
+class BaseFlowControlHandler(RequestHandler):
+    def initialize(self, test):
+        self.test = test
+        self.method = None
+        self.methods = []
 
-        # Each method in this handler returns a Future and yields to the
-        # IOLoop so the future is not immediately ready.  Ensure that the
-        # Futures are respected and no method is called before the previous
-        # one has completed.
-        @stream_request_body
-        class FlowControlHandler(RequestHandler):
-            def initialize(self, test):
-                self.test = test
-                self.method = None
-                self.methods = []
+    @contextlib.contextmanager
+    def in_method(self, method):
+        if self.method is not None:
+            self.test.fail("entered method %s while in %s" %
+                           (method, self.method))
+        self.method = method
+        self.methods.append(method)
+        try:
+            yield
+        finally:
+            self.method = None
 
-            @contextlib.contextmanager
-            def in_method(self, method):
-                if self.method is not None:
-                    self.test.fail("entered method %s while in %s" %
-                                   (method, self.method))
-                self.method = method
-                self.methods.append(method)
-                try:
-                    yield
-                finally:
-                    self.method = None
+    @gen.coroutine
+    def prepare(self):
+        # Note that asynchronous prepare() does not block data_received,
+        # so we don't use in_method here.
+        self.methods.append('prepare')
+        yield gen.Task(IOLoop.current().add_callback)
 
-            @gen.coroutine
-            def prepare(self):
-                # Note that asynchronous prepare() does not block data_received,
-                # so we don't use in_method here.
-                self.methods.append('prepare')
-                yield gen.Task(IOLoop.current().add_callback)
+    @gen.coroutine
+    def post(self):
+        with self.in_method('post'):
+            yield gen.Task(IOLoop.current().add_callback)
+        self.write(dict(methods=self.methods))
 
-            @gen.coroutine
-            def data_received(self, data):
-                with self.in_method('data_received'):
-                    yield gen.Task(IOLoop.current().add_callback)
 
-            @gen.coroutine
-            def post(self):
-                with self.in_method('post'):
-                    yield gen.Task(IOLoop.current().add_callback)
-                self.write(dict(methods=self.methods))
-
-        return [('/', FlowControlHandler, dict(test=self))]
-
+class BaseStreamingRequestFlowControlTest(object):
     def get_httpserver_options(self):
         # Use a small chunk size so flow control is relevant even though
         # all the data arrives at once.
-        return dict(chunk_size=10)
+        return dict(chunk_size=10, decompress_request=True)
 
-    def test_flow_control(self):
+    def get_http_client(self):
+        # simple_httpclient only: curl doesn't support body_producer.
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop)
+
+    # Test all the slightly different code paths for fixed, chunked, etc bodies.
+    def test_flow_control_fixed_body(self):
         response = self.fetch('/', body='abcdefghijklmnopqrstuvwxyz',
                               method='POST')
         response.rethrow()
@@ -2124,6 +2182,60 @@ class StreamingRequestFlowControlTest(WebTestCase):
                          dict(methods=['prepare', 'data_received',
                                        'data_received', 'data_received',
                                        'post']))
+
+    def test_flow_control_chunked_body(self):
+        chunks = [b'abcd', b'efgh', b'ijkl']
+
+        @gen.coroutine
+        def body_producer(write):
+            for i in chunks:
+                yield write(i)
+        response = self.fetch('/', body_producer=body_producer, method='POST')
+        response.rethrow()
+        self.assertEqual(json_decode(response.body),
+                         dict(methods=['prepare', 'data_received',
+                                       'data_received', 'data_received',
+                                       'post']))
+
+    def test_flow_control_compressed_body(self):
+        bytesio = BytesIO()
+        gzip_file = gzip.GzipFile(mode='w', fileobj=bytesio)
+        gzip_file.write(b'abcdefghijklmnopqrstuvwxyz')
+        gzip_file.close()
+        compressed_body = bytesio.getvalue()
+        response = self.fetch('/', body=compressed_body, method='POST',
+                              headers={'Content-Encoding': 'gzip'})
+        response.rethrow()
+        self.assertEqual(json_decode(response.body),
+                         dict(methods=['prepare', 'data_received',
+                                       'data_received', 'data_received',
+                                       'post']))
+
+
+class DecoratedStreamingRequestFlowControlTest(
+        BaseStreamingRequestFlowControlTest,
+        WebTestCase):
+    def get_handlers(self):
+        class DecoratedFlowControlHandler(BaseFlowControlHandler):
+            @gen.coroutine
+            def data_received(self, data):
+                with self.in_method('data_received'):
+                    yield gen.Task(IOLoop.current().add_callback)
+        return [('/', DecoratedFlowControlHandler, dict(test=self))]
+
+
+@skipBefore35
+class NativeStreamingRequestFlowControlTest(
+        BaseStreamingRequestFlowControlTest,
+        WebTestCase):
+    def get_handlers(self):
+        class NativeFlowControlHandler(BaseFlowControlHandler):
+            data_received = exec_test(globals(), locals(), """
+            async def data_received(self, data):
+                with self.in_method('data_received'):
+                    await gen.Task(IOLoop.current().add_callback)
+            """)["data_received"]
+        return [('/', NativeFlowControlHandler, dict(test=self))]
 
 
 @wsgi_safe
@@ -2398,6 +2510,22 @@ class XSRFTest(SimpleHandlerTestCase):
                 body=urllib_parse.urlencode(dict(_xsrf=self.xsrf_token)))
         self.assertEqual(response.code, 403)
 
+    def test_xsrf_fail_argument_invalid_format(self):
+        with ExpectLog(gen_log, ".*'_xsrf' argument has invalid format"):
+            response = self.fetch(
+                "/", method="POST",
+                headers=self.cookie_headers(),
+                body=urllib_parse.urlencode(dict(_xsrf='3|')))
+        self.assertEqual(response.code, 403)
+
+    def test_xsrf_fail_cookie_invalid_format(self):
+        with ExpectLog(gen_log, ".*XSRF cookie does not match POST"):
+            response = self.fetch(
+                "/", method="POST",
+                headers=self.cookie_headers(token='3|'),
+                body=urllib_parse.urlencode(dict(_xsrf=self.xsrf_token)))
+        self.assertEqual(response.code, 403)
+
     def test_xsrf_fail_cookie_no_body(self):
         with ExpectLog(gen_log, ".*'_xsrf' argument missing"):
             response = self.fetch(
@@ -2435,7 +2563,7 @@ class XSRFTest(SimpleHandlerTestCase):
 
     def test_xsrf_success_header(self):
         response = self.fetch("/", method="POST", body=b"",
-                              headers=dict({"X-Xsrftoken": self.xsrf_token},
+                              headers=dict({"X-Xsrftoken": self.xsrf_token},  # type: ignore
                                            **self.cookie_headers()))
         self.assertEqual(response.code, 200)
 
@@ -2511,20 +2639,39 @@ class XSRFTest(SimpleHandlerTestCase):
 
 
 @wsgi_safe
+class XSRFCookieKwargsTest(SimpleHandlerTestCase):
+    class Handler(RequestHandler):
+        def get(self):
+            self.write(self.xsrf_token)
+
+    def get_app_kwargs(self):
+        return dict(xsrf_cookies=True,
+                    xsrf_cookie_kwargs=dict(httponly=True))
+
+    def test_xsrf_httponly(self):
+        response = self.fetch("/")
+        self.assertIn('httponly;', response.headers['Set-Cookie'].lower())
+
+
+@wsgi_safe
 class FinishExceptionTest(SimpleHandlerTestCase):
     class Handler(RequestHandler):
         def get(self):
             self.set_status(401)
             self.set_header('WWW-Authenticate', 'Basic realm="something"')
-            self.write('authentication required')
-            raise Finish()
+            if self.get_argument('finish_value', ''):
+                raise Finish('authentication required')
+            else:
+                self.write('authentication required')
+                raise Finish()
 
     def test_finish_exception(self):
-        response = self.fetch('/')
-        self.assertEqual(response.code, 401)
-        self.assertEqual('Basic realm="something"',
-                         response.headers.get('WWW-Authenticate'))
-        self.assertEqual(b'authentication required', response.body)
+        for u in ['/', '/?finish_value=1']:
+            response = self.fetch(u)
+            self.assertEqual(response.code, 401)
+            self.assertEqual('Basic realm="something"',
+                             response.headers.get('WWW-Authenticate'))
+            self.assertEqual(b'authentication required', response.body)
 
 
 @wsgi_safe
@@ -2643,3 +2790,47 @@ class RequestSummaryTest(SimpleHandlerTestCase):
     def test_missing_remote_ip(self):
         resp = self.fetch("/")
         self.assertEqual(resp.body, b"GET / (None)")
+
+
+class HTTPErrorTest(unittest.TestCase):
+    def test_copy(self):
+        e = HTTPError(403, reason="Go away")
+        e2 = copy.copy(e)
+        self.assertIsNot(e, e2)
+        self.assertEqual(e.status_code, e2.status_code)
+        self.assertEqual(e.reason, e2.reason)
+
+
+class ApplicationTest(AsyncTestCase):
+    def test_listen(self):
+        app = Application([])
+        server = app.listen(0, address='127.0.0.1')
+        server.stop()
+
+
+class URLSpecReverseTest(unittest.TestCase):
+    def test_reverse(self):
+        self.assertEqual('/favicon.ico', url(r'/favicon\.ico', None).reverse())
+        self.assertEqual('/favicon.ico', url(r'^/favicon\.ico$', None).reverse())
+
+    def test_non_reversible(self):
+        # URLSpecs are non-reversible if they include non-constant
+        # regex features outside capturing groups. Currently, this is
+        # only strictly enforced for backslash-escaped character
+        # classes.
+        paths = [
+            r'^/api/v\d+/foo/(\w+)$',
+        ]
+        for path in paths:
+            # A URLSpec can still be created even if it cannot be reversed.
+            url_spec = url(path, None)
+            try:
+                result = url_spec.reverse()
+                self.fail("did not get expected exception when reversing %s. "
+                          "result: %s" % (path, result))
+            except ValueError:
+                pass
+
+    def test_reverse_arguments(self):
+        self.assertEqual('/api/v1/foo/bar',
+                         url(r'^/api/v1/foo/(\w+)$', None).reverse('bar'))
