@@ -75,12 +75,11 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Snatched</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Snatched</h3>'
+                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p><p>Quality: <b>{}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1)),
+                        'Powered by SickRage.</h5></body>'.format(show[2], show[3], show[1], show[0]),
                         'html'))
 
                 except Exception:
@@ -121,12 +120,11 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Downloaded</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Downloaded</h3>'
+                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p><p>Quality: <b>{}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1)),
+                        'Powered by SickRage.</h5></body>'.format(show[0], show[3], show[2], show[1]),
                         'html'))
 
                 except Exception:
@@ -167,13 +165,12 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Subtitle Downloaded</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br>'
-                        '<p>Language: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Subtitle Downloaded</h3>'
+                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p></p>'
+                        '<p>Language: <b>{}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1), lang),
+                        'Powered by SickRage.</h5></body>'.format(show[0], show[2], show[1], lang),
                         'html'))
                 except Exception:
                     try:
