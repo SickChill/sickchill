@@ -50,6 +50,9 @@ class CpasbienProvider(TorrentProvider):
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
+                if mode == 'Season':
+                    search_string = re.sub(ur'(.*)S0?', ur'\1Saison ', search_string)
+
                 if mode != 'RSS':
                     logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
