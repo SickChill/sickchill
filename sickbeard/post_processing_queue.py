@@ -64,7 +64,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     length['manual'] += 1
         return length
 
-    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
+    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto", run_now=False):
 
         replacements = dict(mode=mode.title(), directory=directory)
         if not directory:
@@ -100,13 +100,21 @@ class ProcessingQueue(generic_queue.GenericQueue):
             message = "{mode} post processing task for {directory} was added to the queue\n<br\><span class='hidden'>Processing succeeded</span>".format(
                 **replacements)
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
-            super(ProcessingQueue, self).add_item(item)
-            logger.log(message.split('\n')[0], logger.INFO)
+            if run_now:
+                with self.lock:
+                    item.run()  # Non threaded, but with queue lock
+                    message = item.last_result
+            else:
+                super(ProcessingQueue, self).add_item(item)
+                logger.log(message.split('\n')[0], logger.INFO)
+
             return message
 
 
 class PostProcessorTask(generic_queue.QueueItem):
     def __init__(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
+        super(PostProcessorTask, self).__init__(u'{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+
         self.directory = directory
         self.filename = filename
         self.method = method
@@ -119,7 +127,6 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.priority = (generic_queue.QueuePriorities.HIGH, generic_queue.QueuePriorities.NORMAL)[mode == 'auto']
 
         self.last_result = None
-        generic_queue.QueueItem.__init__(self, u'{mode}'.format(mode=self.mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
     def set_params(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
         self.directory = directory

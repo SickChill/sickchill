@@ -2341,9 +2341,11 @@ class HomePostProcess(Home):
             return self.redirect("/home/postprocess/")
 
         nzbName = ss(nzbName) if nzbName else nzbName
+
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
             ss(proc_dir), nzbName, method=process_method, force=force,
-            is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type
+            is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type,
+            run_now=False
         )
 
         if argToBool(quiet):
