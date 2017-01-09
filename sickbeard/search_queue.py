@@ -126,8 +126,8 @@ class SearchQueue(generic_queue.GenericQueue):
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
+        super(DailySearchQueueItem, self).__init__(u'Daily Search', DAILY_SEARCH)
         self.success = None
-        generic_queue.QueueItem.__init__(self, u'Daily Search', DAILY_SEARCH)
 
     def run(self):
         super(DailySearchQueueItem, self).run()
@@ -158,7 +158,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        generic_queue.QueueItem.__init__(self, u'Manual Search', MANUAL_SEARCH)
+        super(ManualSearchQueueItem, self).__init__(u'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'MANUAL-' + str(show.indexerid)
         self.success = None
@@ -205,7 +205,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
-        generic_queue.QueueItem.__init__(self, u'Backlog', BACKLOG_SEARCH)
+        super(BacklogQueueItem, self).__init__(u'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
@@ -239,7 +239,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        generic_queue.QueueItem.__init__(self, u'Retry', FAILED_SEARCH)
+        super(FailedQueueItem, self).__init__(u'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'RETRY-' + str(show.indexerid)
         self.show = show
