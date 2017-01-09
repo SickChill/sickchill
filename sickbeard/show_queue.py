@@ -210,7 +210,7 @@ class ShowQueueItem(generic_queue.QueueItem):
     """
 
     def __init__(self, action_id, show):
-        generic_queue.QueueItem.__init__(self, ShowQueueActions.names[action_id], action_id)
+        super(ShowQueueItem, self).__init__(ShowQueueActions.names[action_id], action_id)
         self.show = show
 
     def isInQueue(self):
