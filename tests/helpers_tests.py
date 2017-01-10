@@ -199,17 +199,17 @@ class HelpersZipTests(unittest.TestCase):
         """
         pass
 
-    def test_is_rar_file(self):
+    def test_is_rarfile(self):
         """
         Test is_rarfile
         """
-        self.assertTrue(helpers.isRarFile('lala.rar'))
-        self.assertFalse(helpers.isRarFile('lala.zip'))
-        self.assertFalse(helpers.isRarFile('lala.iso'))
-        self.assertFalse(helpers.isRarFile('lala.wmv'))
-        self.assertFalse(helpers.isRarFile('lala.avi'))
-        self.assertFalse(helpers.isRarFile('lala.mkv'))
-        self.assertFalse(helpers.isRarFile('lala.mp4'))
+        self.assertTrue(helpers.is_rarfile('lala.rar'))
+        self.assertFalse(helpers.is_rarfile('lala.zip'))
+        self.assertFalse(helpers.is_rarfile('lala.iso'))
+        self.assertFalse(helpers.is_rarfile('lala.wmv'))
+        self.assertFalse(helpers.is_rarfile('lala.avi'))
+        self.assertFalse(helpers.is_rarfile('lala.mkv'))
+        self.assertFalse(helpers.is_rarfile('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """

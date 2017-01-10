@@ -105,6 +105,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param delete: delete files and folders after they are processed (always happens with move and auto combination)
         :param failed: mark downloads as failed if they fail to process
         :param mode: processing type: auto/manual
+        :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
         :return: string indicating success or failure
         """
         replacements = dict(mode=mode.title(), directory=directory)
@@ -148,10 +149,7 @@ class PostProcessorTask(generic_queue.QueueItem):
     Processing task
     """
     def __init__(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
-        super(PostProcessorTask, self).__init__(u'{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
-
         """
-
         :param directory: directory to process
         :param filename: release/nzb name if available
         :param method: processing method, copy/move/symlink/link
@@ -162,6 +160,8 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param mode: processing type: auto/manual
         :return: None
         """
+        super(PostProcessorTask, self).__init__(u'{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+
         self.directory = directory
         self.filename = filename
         self.method = method

@@ -128,7 +128,6 @@ def log_helper(message, level=logger.INFO):
 
 
 # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
-# @OneRunPP()
 def process_dir(process_path, release_name=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, mode="auto"):
     """
     Scans through the files in process_path and processes whatever media files it finds
