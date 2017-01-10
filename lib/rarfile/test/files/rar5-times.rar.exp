@@ -1,0 +1,11 @@
+Archive: test/files/rar5-times.rar
+R5_FILE: hdrlen=45 datlen=55 hdr_extra=11
+  block_flags=0x0003:EXTRA,DATA
+  name=stest1.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=3 dict=0 solid=False
+  os=1:UNIX mode=0100644 cmp=55 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  atime=2016-05-22T09:12:36+00:00

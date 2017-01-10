@@ -1,0 +1,13 @@
+Archive: test/files/rar3-old.rar
+FILE: hdrlen=50 datlen=102310
+  flags=0x9022:SPLIT_AFTER,EXTTIME,LONG,D128
+  os=3:UNIX ver=20 mode=0100664 meth=0 cmp=205000 dec=205000 vol=0
+  crc=0x509ad74c (1352324940) date_time=2016-05-24 11:42:37
+  name=vols/bigfile.txt
+  mtime=2016-05-24T11:42:37
+FILE: hdrlen=52 datlen=2050
+  flags=0x9020:EXTTIME,LONG,D128
+  os=3:UNIX ver=20 mode=0100664 meth=0 cmp=2050 dec=2050 vol=2
+  crc=0xd08a1f86 (3498712966) date_time=2016-05-24 11:42:43
+  name=vols/smallfile.txt
+  mtime=2016-05-24T11:42:43

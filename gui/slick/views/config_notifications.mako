@@ -28,7 +28,6 @@
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                     <fieldset class="component-group-list">
-
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Enable')}</label>

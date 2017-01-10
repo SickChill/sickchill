@@ -22,6 +22,7 @@ import ast
 import datetime
 import gettext
 import os
+import rarfile
 import re
 import time
 import traceback
@@ -50,7 +51,6 @@ from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
 from dateutil import tz
-from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
@@ -2325,30 +2325,20 @@ class HomePostProcess(Home):
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on="0", failed="0", proc_type="auto", force_next=False, *args_, **kwargs):
 
-        def argToBool(argument):
-            _arg = argument.strip().lower() if isinstance(argument, basestring) else argument
-
-            if _arg in (1, '1', 'on', 'true', True):
-                return True
-            elif _arg in (0, '0', 'off', 'false', False):
-                return False
-
-            return argument
-
-        proc_type = kwargs.get('type', proc_type)
-        proc_dir = kwargs.get('dir', proc_dir)
-        if not proc_dir:
+        mode = kwargs.get('type', proc_type)
+        process_path = ss(kwargs.get('dir', proc_dir))
+        if not process_path:
             return self.redirect("/home/postprocess/")
 
-        nzbName = ss(nzbName) if nzbName else nzbName
+        release_name = ss(nzbName) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
-            ss(proc_dir), nzbName, method=process_method, force=force,
-            is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type,
+            process_path, release_name, method=process_method, force=force,
+            is_priority=is_priority, delete=delete_on, failed=failed, mode=mode,
             force_next=force_next
         )
 
-        if argToBool(quiet):
+        if config.checkbox_to_value(quiet):
             return result
 
         result = result.replace("\n", "<br>\n")
@@ -4238,7 +4228,8 @@ class ConfigPostProcessing(Config):
                            keep_processed_dir=None, process_method=None,
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
-                           file_timestamp_timezone=None, unpack=None,
+                           file_timestamp_timezone=None,
+                           unpack=None, unrar_tool=None, alt_unrar_tool=None,
                            move_associated_files=None, sync_files=None,
                            postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
@@ -4261,6 +4252,9 @@ class ConfigPostProcessing(Config):
         config.change_PROCESS_AUTOMATICALLY(process_automatically)
         sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
+        sickbeard.UNRAR_TOOL = unrar_tool
+        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
+
         if unpack:
             if self.isRarSupported() != 'not supported':
                 sickbeard.UNPACK = config.checkbox_to_value(unpack)
@@ -4269,6 +4263,7 @@ class ConfigPostProcessing(Config):
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         else:
             sickbeard.UNPACK = config.checkbox_to_value(unpack)
+
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
         sickbeard.CREATE_MISSING_SHOW_DIRS = config.checkbox_to_value(create_missing_show_dirs)
@@ -4408,17 +4403,10 @@ class ConfigPostProcessing(Config):
         Test Packing Support:
             - Simulating in memory rar extraction on test.rar file
         """
-
-        try:
-            rar_path = ek(os.path.join, sickbeard.PROG_DIR, 'lib', 'unrar2', 'test.rar')
-            testing = RarFile(rar_path).read_files('*test.txt')
-            if testing[0][1] == 'This is only a test.':
-                return 'supported'
-            logger.log(u'Rar Not Supported: Can not read the content of test file', logger.ERROR)
-            return 'not supported'
-        except Exception as e:
-            logger.log(u'Rar Not Supported: ' + ex(e), logger.ERROR)
-            return 'not supported'
+        check = rarfile._check_unrar_tool()
+        if not check:
+            logger.log(u'Looks like unrar is not installed, check failed', logger.WARNING)
+        return ('not supported', 'supported')[check]
 
 
 @route('/config/providers(/?.*)')

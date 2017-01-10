@@ -1,0 +1,19 @@
+Archive: test/files/rar5-vols.part1.rar
+R5_FILE: hdrlen=45 datlen=205000 hdr_extra=0
+  block_flags=0x0012:DATA,SPLIT_AFTER
+  name=vols/bigfile.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100664 cmp=205000 dec=205000 vol=0
+  crc=0x509ad74c (1352324940)
+  date_time=2016-05-24 08:42:37
+  mtime=2016-05-24T08:42:37+00:00
+R5_FILE: hdrlen=45 datlen=2050 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=vols/smallfile.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100664 cmp=2050 dec=2050 vol=2
+  crc=0xd08a1f86 (3498712966)
+  date_time=2016-05-24 08:42:43
+  mtime=2016-05-24T08:42:43+00:00
