@@ -259,34 +259,19 @@ class ApiCall(ApiHandler):
 
     _help = {"desc": "This command is not documented. Please report this to the developers."}
 
+    # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
-        super(ApiCall, self).__init__(args, kwargs)
-        try:
-            if self._missing:
-                self.run = self.return_missing
-        except AttributeError:
-            pass
-
-        # help
-        if 'help' in kwargs:
-            self.run = self.return_help
+        # TODO: Find out why this buggers up RequestHandler init if called
+        # super(ApiCall, self).__init__(args, kwargs)
+        self._missing = []
+        self._requiredParams = {}
+        self._optionalParams = {}
+        self.check_params(args, kwargs)
 
     def run(self):
-        # override with real output function in subclass
-        return {}
+        raise NotImplementedError()
 
     def return_help(self):
-        try:
-            if self._requiredParams:
-                pass
-        except AttributeError:
-            self._requiredParams = []
-        try:
-            if self._optionalParams:
-                pass
-        except AttributeError:
-            self._optionalParams = []
-
         for paramDict, paramType in [(self._requiredParams, "requiredParameters"),
                                      (self._optionalParams, "optionalParameters")]:
 
@@ -307,9 +292,11 @@ class ApiCall(ApiHandler):
                     self._help[paramType][paramName] = paramDict[paramName]
             else:
                 self._help[paramType] = {}
+
         msg = "No description available"
         if "desc" in self._help:
             msg = self._help["desc"]
+
         return _responds(RESULT_SUCCESS, self._help, msg)
 
     def return_missing(self):
@@ -319,7 +306,7 @@ class ApiCall(ApiHandler):
             msg = "The required parameters: '" + "','".join(self._missing) + "' where not set"
         return _responds(RESULT_ERROR, msg=msg)
 
-    def check_params(self, args, kwargs, key, default, required, arg_type, allowed_values):
+    def check_params(self, args, kwargs, key=None, default=None, required=None, arg_type=None, allowed_values=None):
 
         """ function to check passed params for the shorthand wrapper
             and to detect missing/required params
@@ -332,44 +319,43 @@ class ApiCall(ApiHandler):
 
             self.indexer = indexer_ids.index(key)
 
-        missing = True
-        org_default = default
+        if key:
+            missing = True
+            org_default = default
 
-        if arg_type == "bool":
-            allowed_values = [0, 1]
+            if arg_type == "bool":
+                allowed_values = [0, 1]
 
-        if args:
-            default = args[0]
-            missing = False
-            args = args[1:]
-        if kwargs.get(key):
-            default = kwargs.get(key)
-            missing = False
-        if required:
-            try:
-                self._missing
-                self._requiredParams.append(key)
-            except AttributeError:
-                self._missing = []
-                self._requiredParams = {key: {"allowedValues": allowed_values,
-                                              "defaultValue": org_default,
-                                              "type": arg_type}}
+            if args:
+                default = args[0]
+                missing = False
+                args = args[1:]
+            if kwargs.get(key):
+                default = kwargs.get(key)
+                missing = False
 
-            if missing and key not in self._missing:
-                self._missing.append(key)
-        else:
-            try:
-                self._optionalParams[key] = {"allowedValues": allowed_values,
-                                             "defaultValue": org_default,
-                                             "type": arg_type}
-            except AttributeError:
-                self._optionalParams = {key: {"allowedValues": allowed_values,
-                                              "defaultValue": org_default,
-                                              "type": arg_type}}
+            key_value = {
+                "allowedValues": allowed_values,
+                "defaultValue": org_default,
+                "type": arg_type
+            }
 
-        if default:
-            default = self._check_param_type(default, key, arg_type)
-            self._check_param_value(default, key, allowed_values)
+            if required:
+                self._requiredParams[key] = key_value
+                if missing and key not in self._missing:
+                    self._missing.append(key)
+            else:
+                self._optionalParams[key] = key_value
+
+            if default:
+                default = self._check_param_type(default, key, arg_type)
+                self._check_param_value(default, key, allowed_values)
+
+        if self._missing:
+            setattr(self, "run", self.return_missing)
+
+        if 'help' in kwargs:
+            setattr(self, "run", self.return_help)
 
         return default, args
 
@@ -691,7 +677,6 @@ class CMDComingEpisodes(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDComingEpisodes, self).__init__(args, kwargs)
-
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ComingEpisodes.sorts.keys())
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
@@ -808,7 +793,6 @@ class CMDEpisodeSearch(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDEpisodeSearch, self).__init__(args, kwargs)
-
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
@@ -860,7 +844,6 @@ class CMDEpisodeSetStatus(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDEpisodeSetStatus, self).__init__(args, kwargs)
-
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.status, args = self.check_params(args, kwargs, "status", None, True, "string",
@@ -974,7 +957,6 @@ class CMDSubtitleSearch(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSubtitleSearch, self).__init__(args, kwargs)
-
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
@@ -1064,7 +1046,6 @@ class CMDHistory(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDHistory, self).__init__(args, kwargs)
-
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string", ["downloaded", "snatched"])
         self.type = self.type.lower() if isinstance(self.type, str) else ''
@@ -1303,7 +1284,6 @@ class CMDPostProcess(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDPostProcess, self).__init__(args, kwargs)
-
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
@@ -1366,7 +1346,6 @@ class CMDSickBeardAddRootDir(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardAddRootDir, self).__init__(args, kwargs)
-
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
 
@@ -1624,7 +1603,6 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
-
         self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
@@ -1750,7 +1728,6 @@ class CMDSickBeardSetDefaults(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSetDefaults, self).__init__(args, kwargs)
-
         self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
 
@@ -1942,7 +1919,6 @@ class CMDShowAddExisting(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowAddExisting, self).__init__(args, kwargs)
-
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
@@ -2026,7 +2002,6 @@ class CMDShowAddNew(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowAddNew, self).__init__(args, kwargs)
-
         self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
@@ -2211,7 +2186,6 @@ class CMDShowDelete(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowDelete, self).__init__(args, kwargs)
-
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
 
