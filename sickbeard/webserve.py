@@ -2323,7 +2323,7 @@ class HomePostProcess(Home):
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="auto", *args_, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", proc_type="auto", force_next=False, *args_, **kwargs):
 
         def argToBool(argument):
             _arg = argument.strip().lower() if isinstance(argument, basestring) else argument
@@ -2345,7 +2345,7 @@ class HomePostProcess(Home):
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
             ss(proc_dir), nzbName, method=process_method, force=force,
             is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type,
-            run_now=False
+            force_next=force_next
         )
 
         if argToBool(quiet):

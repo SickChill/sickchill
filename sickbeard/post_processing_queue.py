@@ -64,7 +64,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     length['manual'] += 1
         return length
 
-    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto", run_now=False):
+    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto", force_next=False):
 
         replacements = dict(mode=mode.title(), directory=directory)
         if not directory:
@@ -100,7 +100,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
             message = "{mode} post processing task for {directory} was added to the queue\n<br\><span class='hidden'>Processing succeeded</span>".format(
                 **replacements)
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
-            if run_now:
+            if force_next:
                 with self.lock:
                     item.run()  # Non threaded, but with queue lock
                     message = item.last_result
