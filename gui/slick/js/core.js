@@ -2550,7 +2550,7 @@ var SICKRAGE = {
 
         },
         postProcess: function() {
-            $('#process_directory').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+            $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
         },
         status: function() {
             $("#schedulerStatusTable").tablesorter({
