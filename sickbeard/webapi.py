@@ -1309,6 +1309,7 @@ class CMD_PostProcess(ApiCall):
         "optionalParameters": {
             "path": {"desc": "The path to the folder to post-process"},
             "force_replace": {"desc": "Force already post-processed files to be post-processed again"},
+            "force_next": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
             "return_data": {"desc": "Returns the result of the post-process"},
             "process_method": {"desc": "How should valid post-processed files be handled"},
             "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
@@ -1323,6 +1324,7 @@ class CMD_PostProcess(ApiCall):
         # optional
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
                                                       ["copy", "symlink", "hardlink", "move"])
@@ -1346,7 +1348,8 @@ class CMD_PostProcess(ApiCall):
 
         data = sickbeard.postProcessorTaskScheduler.action.add_item(
             self.path, method=self.process_method, force=self.force_replace,
-            is_priority=self.is_priority, failed=self.failed, delete=self.delete, mode=self.type, force_next=False)
+            is_priority=self.is_priority, failed=self.failed, delete=self.delete,
+            mode=self.type, force_next=self.force_next)
 
         if not self.return_data:
             data = ""
