@@ -17,7 +17,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Enter the folder containing the episode')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input type="text" name="proc_dir" id="episodeDir" class="form-control form-control-inline input-sm input250" autocapitalize="off" title="directory"/>
+                        <input type="text" name="process_directory" id="process_directory" class="form-control form-control-inline input-sm input250" autocapitalize="off" title="directory"/>
                     </div>
                 </div>
                 <div class="row">

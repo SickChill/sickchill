@@ -2322,33 +2322,21 @@ class HomePostProcess(Home):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
-    def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="auto", force_next=False, *args_, **kwargs):
+    def processEpisode(self, process_directory=None, nzbName=None, quiet=None, process_method=None, force=None,
+                       is_priority=None, delete_on="0", failed="0", mode="auto", force_next=False, *args_, **kwargs):
 
-        def argToBool(argument):
-            _arg = argument.strip().lower() if isinstance(argument, basestring) else argument
-
-            if _arg in (1, '1', 'on', 'true', True):
-                return True
-            elif _arg in (0, '0', 'off', 'false', False):
-                return False
-
-            return argument
-
-        proc_type = kwargs.get('type', proc_type)
-        proc_dir = kwargs.get('dir', proc_dir)
-        if not proc_dir:
+        if not process_directory:
             return self.redirect("/home/postprocess/")
 
         nzbName = ss(nzbName) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
-            ss(proc_dir), nzbName, method=process_method, force=force,
+            ss(process_directory), nzbName, method=process_method, force=force,
             is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type,
             force_next=force_next
         )
 
-        if argToBool(quiet):
+        if config.checkbox_to_value(quiet):
             return result
 
         result = result.replace("\n", "<br>\n")
