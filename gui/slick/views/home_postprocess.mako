@@ -59,6 +59,15 @@
                         <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to delete files and folders like auto processing)')}</i></span>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Don\'t use processing queue')}</b>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <input id="force_next" name="force_next" type="checkbox">
+                        <span style="line-height: 0; font-size: 12px;"><i>${_('(If checked this will return the result of the process here, but may be slow!)')}</i></span>
+                    </div>
+                </div>
                 % if sickbeard.USE_FAILED_DOWNLOADS:
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
