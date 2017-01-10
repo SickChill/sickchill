@@ -444,6 +444,7 @@ def shutdown():
 def submit_errors(*args, **kwargs):
     return Wrapper.instance.submit_errors(*args, **kwargs)
 
+log_file = Wrapper.instance.log_file
 
 LOG_FILTERS = {
     '<NONE>': _(u'&lt;No Filter&gt;'),
@@ -503,7 +504,6 @@ def log_data(min_level, log_filter, log_search, max_lines):
         match = re.match(regex, x)
 
         if match:
-            global continue_line
             level = match.group(7)
             log_name = match.group(8)
 
