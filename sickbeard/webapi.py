@@ -1346,7 +1346,7 @@ class CMD_PostProcess(ApiCall):
 
         data = sickbeard.postProcessorTaskScheduler.action.add_item(
             self.path, method=self.process_method, force=self.force_replace,
-            is_priority=self.is_priority, failed=self.failed, delete=self.delete, mode=self.type, run_now=False)
+            is_priority=self.is_priority, failed=self.failed, delete=self.delete, mode=self.type, force_next=False)
 
         if not self.return_data:
             data = ""
