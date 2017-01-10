@@ -92,6 +92,7 @@ class ApiHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
+        # noinspection PyCompatibility
         for arg, value in kwargs.iteritems():
             if len(value) == 1:
                 kwargs[arg] = value[0]
@@ -263,6 +264,8 @@ class ApiCall(ApiHandler):
     def __init__(self, args, kwargs):
         # TODO: Find out why this buggers up RequestHandler init if called
         # super(ApiCall, self).__init__(args, kwargs)
+        self.rh = None
+        self.indexer = 1
         self._missing = []
         self._requiredParams = {}
         self._optionalParams = {}
@@ -278,17 +281,23 @@ class ApiCall(ApiHandler):
             if paramType in self._help:
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName] = {}
                     if paramDict[paramName]["allowedValues"]:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
                     else:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName]["allowedValues"] = "see desc"
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
             elif paramDict:
                 for paramName in paramDict:
                     self._help[paramType] = {}
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName] = paramDict[paramName]
             else:
                 self._help[paramType] = {}
@@ -688,6 +697,7 @@ class CMDComingEpisodes(ApiCall):
         grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
+        # noinspection PyCompatibility
         for section, coming_episodes in grouped_coming_episodes.iteritems():
             for coming_episode in coming_episodes:
                 data[section].append({
@@ -741,6 +751,7 @@ class CMDEpisode(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         main_db_con = db.DBConnection(row_type="dict")
+        # noinspection PyPep8
         sql_results = main_db_con.select(
             "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
             [self.indexerid, self.e, self.s])
@@ -896,6 +907,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
                 # don't let them mess up UN-AIRED episodes
                 if ep_obj.status == UNAIRED:
+                    # noinspection PyPep8
                     if self.e is not None:  # setting the status of an un-aired is only considered a failure if we directly wanted this episode, but is ignored on a season request
                         ep_results.append(
                             _ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is UN-AIRED"))
@@ -926,6 +938,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
         extra_msg = ""
         if start_backlog:
+            # noinspection PyCompatibility
             for season, segment in segments.iteritems():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
@@ -1151,6 +1164,7 @@ class CMDBacklog(ApiCall):
 
             show_eps = []
 
+            # noinspection PyPep8
             sql_results = main_db_con.select(
                 "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
@@ -1385,6 +1399,7 @@ class CMDSickBeardAddRootDir(ApiCall):
 
         root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs]
         root_dirs_new.insert(0, index)
+        # noinspection PyCompatibility
         root_dirs_new = '|'.join(unicode(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
@@ -1482,6 +1497,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs_new]
         if len(root_dirs_new) > 0:
             root_dirs_new.insert(0, new_index)
+        # noinspection PyCompatibility
         root_dirs_new = "|".join(unicode(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
@@ -1663,6 +1679,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
                     return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
                 # found show
+                # noinspection PyCompatibility
                 results = [{indexer_ids[_indexer]: int(my_show.data['id']),
                             "name": unicode(my_show.data['seriesname']),
                             "first_aired": my_show.data['firstaired'],
@@ -1728,8 +1745,8 @@ class CMDSickBeardSetDefaults(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSetDefaults, self).__init__(args, kwargs)
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", None, False, "bool", [])
@@ -1743,9 +1760,11 @@ class CMDSickBeardSetDefaults(ApiCall):
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
                 i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
                 a_quality_id.append(QUALITY_MAP[quality])
 
@@ -1922,8 +1941,8 @@ class CMDShowAddExisting(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
                                                        bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
@@ -1959,9 +1978,11 @@ class CMDShowAddExisting(ApiCall):
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
                 i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
                 a_quality_id.append(QUALITY_MAP[quality])
 
@@ -2048,9 +2069,11 @@ class CMDShowAddNew(ApiCall):
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
                 i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
                 a_quality_id.append(QUALITY_MAP[quality])
 
@@ -2508,8 +2531,8 @@ class CMDShowSetQuality(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowSetQuality, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
@@ -2523,9 +2546,11 @@ class CMDShowSetQuality(ApiCall):
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
                 i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
                 a_quality_id.append(QUALITY_MAP[quality])
 
@@ -2593,9 +2618,11 @@ class CMDShowStats(ApiCall):
 
             if status in Quality.DOWNLOADED + Quality.ARCHIVED:
                 episode_qualities_counts_download["total"] += 1
+                # noinspection PyTypeChecker
                 episode_qualities_counts_download[int(row["status"])] += 1
             elif status in Quality.SNATCHED + Quality.SNATCHED_PROPER:
                 episode_qualities_counts_snatch["total"] += 1
+                # noinspection PyTypeChecker
                 episode_qualities_counts_snatch[int(row["status"])] += 1
             elif status == 0:  # we don't count NONE = 0 = N/A
                 pass
