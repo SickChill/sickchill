@@ -41,6 +41,8 @@ class ProcessResult(object):  # pylint: disable=too-few-public-methods
         self.missedfiles = []
         self.aggresult = True
 
+extraction_in_progress = False
+extraction_in_progress_path = ''
 
 def delete_folder(folder, check_empty=True):
     """
@@ -198,7 +200,18 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
         rarFiles = [x for x in files if helpers.isRarFile(x)]
         rarContent = []
         if rarFiles:
+            global extraction_in_progress
+            global extraction_in_progress_path
+
+            extraction_in_progress_path = path
+
+            if extraction_in_progress:
+                logHelper(u"Extraction Exceeded PostProcessor Frequency: {0}{1}".format(extraction_in_progress_path, rarFiles), logger.ERROR)
+
+            extraction_in_progress = True
             rarContent = unRAR(path, rarFiles, force, result)
+            extraction_in_progress = False
+
             files += rarContent
             videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
@@ -254,7 +267,21 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 rarFiles = [x for x in fileList if helpers.isRarFile(x)]
                 rarContent = []
                 if rarFiles:
+
+                    global extraction_in_progress
+                    global extraction_in_progress_path
+
+                    extraction_in_progress_path = path
+
+                    if extraction_in_progress:
+                        logHelper(
+                            u"Extraction Exceeded PostProcessor Frequency: {0}{1}".format(extraction_in_progress_path, rarFiles),
+                            logger.ERROR)
+
+                    extraction_in_progress = True
                     rarContent = unRAR(processPath, rarFiles, force, result)
+                    extraction_in_progress = False
+
                     fileList = set(fileList + rarContent)
                     videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
 
