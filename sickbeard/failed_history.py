@@ -18,14 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import re
 import urllib
-import datetime
 
-from sickbeard import db
-from sickbeard import logger
-from sickbeard.common import Quality
-from sickbeard.common import WANTED, FAILED
+from sickbeard import db, logger
+from sickbeard.common import FAILED, Quality, WANTED
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History

@@ -17,13 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import os.path
 import threading
-import sickbeard
 
-from sickbeard import logger
-from sickbeard import processTV
-from sickrage.helper.encoding import ek
+import sickbeard
 
 
 class PostProcessor(object):
@@ -39,22 +35,7 @@ class PostProcessor(object):
         :return: Returns when done without a return state/code
         """
         self.amActive = True
-
-        if not ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
-            logger.log(u"Automatic post-processing attempted but directory doesn't exist: {0}".format(
-                       sickbeard.TV_DOWNLOAD_DIR), logger.WARNING)
-            self.amActive = False
-            return
-
-        if not (force or ek(os.path.isabs, sickbeard.TV_DOWNLOAD_DIR)):
-            logger.log(u"Automatic post-processing attempted but directory is relative "
-                       u"(and probably not what you really want to process): %s" %
-                       sickbeard.TV_DOWNLOAD_DIR, logger.WARNING)
-            self.amActive = False
-            return
-
-        processTV.processDir(sickbeard.TV_DOWNLOAD_DIR, force=force)
-
+        sickbeard.postProcessorTaskScheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
         self.amActive = False
 
     def __del__(self):

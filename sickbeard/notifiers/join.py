@@ -24,10 +24,8 @@ import urllib2
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
-    NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
-
-from sickrage.helper import HTTP_STATUS_CODES
+from sickbeard.common import NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH, \
+    NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings
 
 
 class Notifier(object):
@@ -59,7 +57,7 @@ class Notifier(object):
         logger.log('Join in use with device ID: {0}'.format(id), logger.DEBUG)
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
-        params = {   
+        params = {
             "deviceId": id,
             "title": title,
             "text": message,
@@ -72,7 +70,7 @@ class Notifier(object):
         try:
             urllib2.urlopen(join_api)
             message = 'Join message sent successfully.'
-            logger.log('Join message returned : {0}'.format(message), logger.DEBUG) 
+            logger.log('Join message returned : {0}'.format(message), logger.DEBUG)
             success = True
         except Exception as e:
             message = 'Error while sending Join message: {0} '.format(e)

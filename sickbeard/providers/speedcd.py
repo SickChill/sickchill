@@ -68,6 +68,13 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
             'password': self.password,
         }
 
+        # Yay lets add another request to the process since they are unreasonable.
+        response = self.get_url(self.url, returns='text')
+        with BS4Parser(response, 'html5lib') as html:
+            form = html.find('form', id='loginform')
+            if form:
+                self.urls['login'] = urljoin(self.url, form['action'])
+
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
@@ -87,7 +94,6 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         # http://speed.cd/browse.php?c49=1&c50=1&c52=1&c41=1&c55=1&c2=1&c30=1&freeleech=on&search=arrow&d=on
         # Search Params
         search_params = {
-            'c2': 1,  # TV/Episodes
             'c30': 1,  # Anime
             'c41': 1,  # TV/Packs
             'c49': 1,  # TV/HD
@@ -102,10 +108,9 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         def process_column_header(td):
             result = ''
-            if td.a and td.a.img:
-                result = td.a.img.get('alt', td.a.get_text(strip=True))
-            if td.img and not result:
-                result = td.img.get('alt', '')
+            img = td.find('img')
+            if img:
+                result = img.get('alt')
             if not result:
                 result = td.get_text(strip=True)
             return result
@@ -147,12 +152,12 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             cells = result('td')
 
                             title = cells[labels.index('Title')].find('a', class_='torrent').get_text()
-                            download_url = urljoin(self.url, cells[labels.index('Download')].find(title='Download').parent['href'])
+                            download_url = urljoin(self.url, cells[labels.index('Download') - 1].a['href'])
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
-                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            seeders = try_int(cells[labels.index('Seeders') - 1].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers') - 1].get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -160,7 +165,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                                     logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = cells[labels.index('Size')].get_text()
+                            torrent_size = cells[labels.index('Size') - 1].get_text()
                             torrent_size = torrent_size[:-2] + ' ' + torrent_size[-2:]
                             size = convert_size(torrent_size, units=units) or -1
 

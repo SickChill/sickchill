@@ -17,18 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import datetime
 import itertools
+import time
 
 import sickbeard
-from sickbeard import db
-from sickbeard import logger
+from sickbeard import db, logger, show_name_helpers
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.rssfeeds import getFeed
-from sickbeard import show_name_helpers
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.Show import Show
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class CacheDBConnection(db.DBConnection):
@@ -127,7 +125,7 @@ class TVCache(object):
                     cache_db_con.mass_action(cl)
 
         except AuthException as e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            logger.log(u"Authentication error: " + ex(e), logger.WARNING)
         except Exception as e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 

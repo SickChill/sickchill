@@ -18,26 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import os
 import re
 import threading
-import datetime
 import traceback
 
 import sickbeard
-
-from sickbeard.common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT
-
-from sickbeard import logger, db, show_name_helpers, helpers
-from sickbeard import sab
-from sickbeard import nzbget
-from sickbeard import clients
-from sickbeard import history
-from sickbeard import notifiers
-from sickbeard import nzbSplitter
-from sickbeard import ui
-from sickbeard import failed_history
-from sickbeard import common
+from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbSplitter, nzbget, \
+    sab, show_name_helpers, ui
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.GenericProvider import GenericProvider
@@ -123,7 +113,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
         elif sickbeard.NZB_METHOD == "download_station":
-            client = clients.getClientIstance(sickbeard.NZB_METHOD)(
+            client = clients.getClientInstance(sickbeard.NZB_METHOD)(
                 sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
             dlResult = client.sendNZB(result)
         else:
@@ -141,7 +131,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
                     result.content = result.provider.get_url(result.url, returns='content')
 
             if result.content or result.url.startswith('magnet'):
-                client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.log(u"Torrent file content is empty", logger.WARNING)
@@ -396,7 +386,7 @@ def searchForNeededEpisodes():
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            logger.log(u"Authentication error: " + ex(e), logger.WARNING)
             continue
         except Exception as e:
             logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
@@ -488,7 +478,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
             except AuthException as error:
-                logger.log(u"Authentication error: {0!r}".format(error), logger.ERROR)
+                logger.log(u"Authentication error: {0!r}".format(error), logger.WARNING)
                 break
             except Exception as error:
                 logger.log(u"Exception while searching {0}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)

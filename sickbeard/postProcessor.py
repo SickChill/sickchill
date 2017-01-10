@@ -22,30 +22,21 @@
 import fnmatch
 import os
 import re
-import subprocess
 import stat
-
-import sickbeard
-
-from sickbeard import db
-from sickbeard import common
-from sickbeard import helpers
-from sickbeard import history
-from sickbeard import logger
-from sickbeard import notifiers
-from sickbeard import show_name_helpers
-from sickbeard import failed_history
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.helpers import verify_freespace
-
-from sickrage.helper import glob
-from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex
-from sickrage.helper.exceptions import ShowDirectoryNotFoundException
-from sickrage.show.Show import Show
+import subprocess
 
 import adba
+
+import sickbeard
+from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from sickbeard.helpers import verify_freespace
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper import glob
+from sickrage.helper.common import SUBTITLE_EXTENSIONS, remove_extension, replace_extension
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, \
+    ShowDirectoryNotFoundException, ex
+from sickrage.show.Show import Show
 
 
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
@@ -472,7 +463,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_sym_link, subtitles=subtitles)
 
-        
+
     def _history_lookup(self):
         """
         Look up the NZB name in the history and see if it contains a record for self.nzb_name
@@ -1047,12 +1038,13 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
-        if not helpers.isFileLocked(self.file_path, False):
-            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
-                self._log("Not enough space to continue PP, exiting", logger.WARNING)
-                return False
-        else:
-            self._log("Unable to determine needed filespace as the source file is locked for access")
+        if sickbeard.USE_FREE_SPACE_CHECK:
+            if not helpers.isFileLocked(self.file_path, False):
+                if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
+                    self._log("Not enough space to continue PP, exiting", logger.WARNING)
+                    return False
+            else:
+                self._log("Unable to determine needed file space as the source file is locked for access")
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
@@ -1200,6 +1192,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             main_db_con.mass_action(sql_l)
 
         ep_obj.airdateModifyStamp()
+
+        if sickbeard.USE_ICACLS and os.name == 'nt':
+            os.popen('icacls "' + ep_obj._location + '"* /reset /T')
 
         # generate nfo/tbn
         try:

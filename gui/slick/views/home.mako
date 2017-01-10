@@ -22,6 +22,19 @@
         <div class="col-lg-9 col-md-${'12' if(sickbeard.HOME_LAYOUT == 'poster') else '9'} col-sm-${'12' if(sickbeard.HOME_LAYOUT == 'poster') else '8'} col-xs-12 pull-right">
             <div class="pull-right">
 
+                % if sickbeard.ROOT_DIRS:
+                    <span class="show-option">${_('Root')}:</span>
+                    <label>
+                        <form method="post" action="" id="rootDirForm">
+                            <select id="rootDirSelect" name="root" class="form-control form-control-inline input200" title="Root Select">
+                            <option value="-1" ${('', 'selected="selected"')[selected_root == '-1']}>${_('All')}</option>
+                            % for root_dir in sickbeard.ROOT_DIRS.split('|')[1:]:
+                                <option value="${loop.index}" ${('', 'selected="selected"')[selected_root == str(loop.index)]}>${loop.index}</option>
+                            % endfor
+                            </select>
+                        </form>
+                    </label>
+                % endif
                 % if sickbeard.HOME_LAYOUT != 'poster':
                     <span class="show-option">
                         <button type="button" class="resetsorting btn btn-inline">${_('Clear Filter(s)')}</button>

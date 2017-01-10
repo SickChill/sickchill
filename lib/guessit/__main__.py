@@ -6,17 +6,17 @@ Entry point module
 # pragma: no cover
 from __future__ import print_function
 
-import os
-import logging
 import json
+import logging
+import os
 import sys
 
 import six
-from guessit.jsonutils import GuessitEncoder
-
-from guessit.__version__ import __version__
-from guessit.options import argument_parser
 from guessit import api
+from guessit.__version__ import __version__
+from guessit.jsonutils import GuessitEncoder
+from guessit.options import argument_parser
+from rebulk.__version__ import __version__ as __rebulk_version__
 
 
 def guess_filename(filename, options):
@@ -111,6 +111,8 @@ def main(args=None):  # pylint:disable=too-many-branches
     if options.version:
         print('+-------------------------------------------------------+')
         print('+                   GuessIt ' + __version__ + (28 - len(__version__)) * ' ' + '+')
+        print('+-------------------------------------------------------+')
+        print('+                   Rebulk ' + __rebulk_version__ + (29 - len(__rebulk_version__)) * ' ' + '+')
         print('+-------------------------------------------------------+')
         print('|      Please report any bug or feature request at      |')
         print('|     https://github.com/guessit-io/guessit/issues.     |')

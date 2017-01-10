@@ -130,16 +130,23 @@ class NameParser(object):
                 tmp_season = int(match.group('season_num'))
                 if cur_regex_name == 'bare' and tmp_season in (19, 20):
                     continue
+                if cur_regex_name == 'fov' and tmp_season > 500:
+                    continue
+
                 result.season_number = tmp_season
                 result.score += 1
 
             if 'ep_num' in named_groups:
                 ep_num = self._convert_number(match.group('ep_num'))
                 if 'extra_ep_num' in named_groups and match.group('extra_ep_num'):
-                    result.episode_numbers = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
-                    result.score += 1
+                    tmp_episodes = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
+                    if len(tmp_episodes) > 4:
+                        matches = []
+                        break
                 else:
-                    result.episode_numbers = [ep_num]
+                    tmp_episodes = [ep_num]
+
+                result.episode_numbers = tmp_episodes
                 result.score += 3
 
             if 'ep_ab_num' in named_groups:
@@ -458,12 +465,12 @@ class NameParser(object):
 
         if not final_result.show:
             raise InvalidShowException(u"Unable to match {0} to a show in your database. Parser result: {1}".format(
-                                         name, file_name_result or dir_name_result))
+                name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
-            raise InvalidNameException("Unable to parse {0} to a valid episode".format
-                                       (name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')))
+            raise InvalidNameException(u"Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
+                name, final_result.show.name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         if cache_result:
             name_parser_cache.add(name, final_result)

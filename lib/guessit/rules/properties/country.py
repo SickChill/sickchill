@@ -32,6 +32,7 @@ def country():
 COUNTRIES_SYN = {'ES': ['españa'],
                  'GB': ['UK'],
                  'BR': ['brazilian', 'bra'],
+                 'CA': ['québec', 'quebec', 'qc'],
                  # FIXME: this one is a bit of a stretch, not sure how to do it properly, though...
                  'MX': ['Latinoamérica', 'latin america']}
 
@@ -80,15 +81,14 @@ class GuessitCountryConverter(babelfish.CountryReverseConverter):  # pylint: dis
 babelfish.country_converters['guessit'] = GuessitCountryConverter()
 
 
-def is_valid_country(country_object, context=None):
+def is_allowed_country(country_object, context=None):
     """
-    Check if country is valid.
+    Check if country is allowed.
     """
     if context and context.get('allowed_countries'):
         allowed_countries = context.get('allowed_countries')
         return country_object.name.lower() in allowed_countries or country_object.alpha2.lower() in allowed_countries
-    else:
-        return country_object.name.lower() not in COMMON_WORDS and country_object.alpha2.lower() not in COMMON_WORDS
+    return True
 
 
 def find_countries(string, context=None):
@@ -98,9 +98,11 @@ def find_countries(string, context=None):
     ret = []
     for word_match in iter_words(string.strip().lower()):
         word = word_match.value
+        if word.lower() in COMMON_WORDS:
+            continue
         try:
             country_object = babelfish.Country.fromguessit(word)
-            if is_valid_country(country_object, context):
+            if is_allowed_country(country_object, context):
                 ret.append((word_match.span[0], word_match.span[1], {'value': country_object}))
         except babelfish.Error:
             continue

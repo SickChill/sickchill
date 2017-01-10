@@ -1,0 +1,30 @@
+Archive: test/files/rar5-hlink.rar
+R5_FILE: hdrlen=37 datlen=55 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=stest1.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=3 dict=0 solid=False
+  os=1:UNIX mode=0100664 cmp=55 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+R5_FILE: hdrlen=53 datlen=0 hdr_extra=15
+  block_flags=0x0003:EXTRA,DATA
+  name=stest2.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100664 cmp=0 dec=2048 vol=0
+  crc=0x00000000 (0)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  redir: type=HARD_LINK flags=0:- destination=stest1.txt
+R5_FILE: hdrlen=53 datlen=0 hdr_extra=15
+  block_flags=0x0003:EXTRA,DATA
+  name=stest3.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100664 cmp=0 dec=2048 vol=0
+  crc=0x00000000 (0)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  redir: type=HARD_LINK flags=0:- destination=stest1.txt

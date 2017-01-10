@@ -20,11 +20,11 @@
 
 from __future__ import unicode_literals
 
-import os.path
 import datetime
-import threading
+import os.path
 import re
 import stat
+import threading
 import traceback
 
 try:
@@ -66,10 +66,8 @@ from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXT
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
 import shutil
-import shutil_custom
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 
 def dirty_setter(attr_name):
@@ -648,7 +646,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         if not episodes:
             logger.log("{0}: parse_result: {1}".format(self.indexerid, parse_result))
             logger.log("{0}: No episode number found in {1}, ignoring it".format
-                       (self.indexerid, filepath), logger.WARNING)
+                       (self.indexerid, filepath), logger.INFO)
             return None
 
         # for now lets assume that any episode in the show dir belongs to that show
@@ -900,7 +898,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             'last_update': ''
         }
 
-        i = imdb.IMDb()
+        if sickbeard.PROXY_SETTING:
+            i = imdb.IMDb(proxy=sickbeard.PROXY_SETTING)
+        else:
+            i = imdb.IMDb()
+
         if not self.imdbid:
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
 

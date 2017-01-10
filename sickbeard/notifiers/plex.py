@@ -141,7 +141,8 @@ class Notifier(object):
 
             url = 'http{0}://{1}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host)
             try:
-                xml_response = getURL(url, headers=self.headers, session=self.session, returns='text', verify=False)
+                xml_response = getURL(url, headers=self.headers, session=self.session, returns='text', verify=False,
+                                      allow_proxy=False)
                 if not xml_response:
                     logger.log(u'PLEX: Error while trying to contact Plex Media Server: {0}'.format
                                (cur_host), logger.WARNING)
@@ -200,7 +201,7 @@ class Notifier(object):
 
             url = 'http{0}://{1}/library/sections/{2}/refresh'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key)
             try:
-                getURL(url, headers=self.headers, session=self.session, returns='text', verify=False)
+                getURL(url, headers=self.headers, session=self.session, returns='text', verify=False, allow_proxy=False)
             except Exception as error:
                 logger.log(u'PLEX: Error updating library section for Plex Media Server: {0}'.format
                            (ex(error)), logger.WARNING)
@@ -234,7 +235,8 @@ class Notifier(object):
                               post_data=params,
                               headers=self.headers,
                               session=self.session,
-                              returns='json')
+                              returns='json',
+                              allow_proxy=False)
 
             self.headers['X-Plex-Token'] = response['user']['authentication_token']
 

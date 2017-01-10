@@ -19,13 +19,15 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+
+import validators
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
-from sickrage.helper.exceptions import AuthException, ex
 from sickrage.helper.common import convert_size, try_int
+from sickrage.helper.exceptions import ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -34,40 +36,50 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
+        self.enable_cookies = True
 
         self.username = None
         self.password = None
         self.freeleech = False
         self.minseed = None
         self.minleech = None
+        self.custom_url = None
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {'base_url': 'https://iptorrents.eu',
-                     'login': 'https://iptorrents.eu/torrents/',
+                     'login': 'https://iptorrents.eu/take_login.php',
                      'search': 'https://iptorrents.eu/t?%s%s&q=%s&qf=#torrents'}
 
         self.url = self.urls['base_url']
 
         self.categories = '73=&60='
 
-    def _check_auth(self):
-
-        if not self.username or not self.password:
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
-
-        return True
-
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        cookie_dict = dict_from_cookiejar(self.session.cookies)
+        if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
+
+        if self.cookies:
+            success, status = self.add_cookies_from_ui()
+            if not success:
+                logger.log(status, logger.INFO)
+                return False
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'login': 'submit'}
 
-        self.get_url(self.urls['login'], returns='text')
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        login_url = self.urls['login']
+        if self.custom_url:
+            if not validators.url(self.custom_url):
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                return False
+
+            login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+
+        self.get_url(login_url, returns='text')
+        response = self.get_url(login_url, post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
             return False
@@ -80,6 +92,11 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # You tried too often, please try again after 2 hours!
         if re.search('You tried too often', response):
             logger.log(u"You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
+            return False
+
+        # Captcha!
+        if re.search('Captcha verification failed.', response):
+            logger.log(u"Stupid captcha", logger.WARNING)
             return False
 
         return True
@@ -95,7 +112,6 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             items = []
             logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
-
                 if mode != 'RSS':
                     logger.log(u"Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
@@ -104,12 +120,18 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)
                 search_url += ';o=seeders' if mode != 'RSS' else ''
 
+                if self.custom_url:
+                    if not validators.url(self.custom_url):
+                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        return results
+                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+
                 data = self.get_url(search_url, returns='text')
                 if not data:
                     continue
 
                 try:
-                    data = re.sub(r'(?im)<button.+?<[\/]button>', '', data, 0)
+                    data = re.sub(r'(?im)<button.+?</button>', '', data, 0)
                     with BS4Parser(data, 'html5lib') as html:
                         if not html:
                             logger.log(u"No data returned from provider", logger.DEBUG)
@@ -130,7 +152,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         for result in torrents[1:]:
                             try:
                                 title = result('td')[1].find('a').text
-                                download_url = self.urls['base_url'] + result('td')[3].find('a')['href']
+                                download_url = urljoin(search_url, result('td')[3].find('a')['href'])
                                 seeders = int(result.find('td', class_='ac t_seeders').text)
                                 leechers = int(result.find('td', class_='ac t_leechers').text)
                                 torrent_size = result('td')[5].text

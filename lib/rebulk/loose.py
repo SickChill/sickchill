@@ -192,5 +192,7 @@ def set_defaults(defaults, kwargs):
             kwargs[key] = value
         elif isinstance(value, list) and isinstance(kwargs[key], list):
             kwargs[key] = list(value) + kwargs[key]
+        elif isinstance(value, dict) and isinstance(kwargs[key], dict):
+            set_defaults(value, kwargs[key])
         elif key in kwargs and value is None:
             kwargs[key] = None

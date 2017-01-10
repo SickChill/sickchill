@@ -80,15 +80,15 @@ normal_regexes = [
      # Show_Name.1x02x03x04.Source_Quality_Etc-Group
      # Show Name - 1x02-03-04 - My Ep Name
      r'''
-     ^((?P<series_name>.+?)[\[. _-]+)?           # Show_Name and separator
-     (?P<season_num>\d+)x                        # 1x
-     (?P<ep_num>\d+)                             # 02 and separator
-     (([. _-]*x|-)                               # linking x/- char
+     ^((?!\[.+?\])(?P<series_name>.+?)[\[. _-]+)?  # Show_Name and separator if no brackets group
+     (?P<season_num>\d+)x                          # 1x
+     (?P<ep_num>\d+)                               # 02 and separator
+     (([. _-]*x|-)                                 # linking x/- char
      (?P<extra_ep_num>
-     (?!(1080|720|480)[pi])(?!(?<=x)264)         # ignore obviously wrong multi-eps
-     \d+))*                                      # additional x03/etc
-     [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
-     ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
+     (?!(1080|720|480)[pi])(?!(?<=x)264)           # ignore obviously wrong multi-eps
+     \d+))*                                        # additional x03/etc
+     [\]. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('scene_date_format',
@@ -336,7 +336,7 @@ anime_regexes = [
      e(?P<ep_num>\d+)(\))?                       # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
-     [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     [. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),

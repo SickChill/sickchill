@@ -41,6 +41,12 @@ either::
     # or
     tornado.options.parse_config_file("/etc/server.conf")
 
+.. note:
+
+   When using tornado.options.parse_command_line or
+   tornado.options.parse_config_file, the only options that are set are
+   ones that were previously defined with tornado.options.define.
+
 Command line formats are what you would expect (``--myoption=myvalue``).
 Config files are just Python files. Global names become options, e.g.::
 
@@ -68,6 +74,12 @@ instances to define isolated sets of options, such as for subcommands.
        from tornado.options import options, parse_command_line
        options.logging = None
        parse_command_line()
+
+.. versionchanged:: 4.3
+   Dashes and underscores are fully interchangeable in option names;
+   options can be defined, set, and read with any mix of the two.
+   Dashes are typical for command-line usage while config files require
+   underscores.
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
@@ -103,28 +115,40 @@ class OptionParser(object):
         self.define("help", type=bool, help="show this help information",
                     callback=self._help_callback)
 
+    def _normalize_name(self, name):
+        return name.replace('_', '-')
+
     def __getattr__(self, name):
+        name = self._normalize_name(name)
         if isinstance(self._options.get(name), _Option):
             return self._options[name].value()
         raise AttributeError("Unrecognized option %r" % name)
 
     def __setattr__(self, name, value):
+        name = self._normalize_name(name)
         if isinstance(self._options.get(name), _Option):
             return self._options[name].set(value)
         raise AttributeError("Unrecognized option %r" % name)
 
     def __iter__(self):
-        return iter(self._options)
+        return (opt.name for opt in self._options.values())
 
-    def __getitem__(self, item):
-        return self._options[item].value()
+    def __contains__(self, name):
+        name = self._normalize_name(name)
+        return name in self._options
+
+    def __getitem__(self, name):
+        return self.__getattr__(name)
+
+    def __setitem__(self, name, value):
+        return self.__setattr__(name, value)
 
     def items(self):
         """A sequence of (name, value) pairs.
 
         .. versionadded:: 3.1
         """
-        return [(name, opt.value()) for name, opt in self._options.items()]
+        return [(opt.name, opt.value()) for name, opt in self._options.items()]
 
     def groups(self):
         """The set of option-groups created by ``define``.
@@ -151,7 +175,7 @@ class OptionParser(object):
         .. versionadded:: 3.1
         """
         return dict(
-            (name, opt.value()) for name, opt in self._options.items()
+            (opt.name, opt.value()) for name, opt in self._options.items()
             if not group or group == opt.group_name)
 
     def as_dict(self):
@@ -160,7 +184,7 @@ class OptionParser(object):
         .. versionadded:: 3.1
         """
         return dict(
-            (name, opt.value()) for name, opt in self._options.items())
+            (opt.name, opt.value()) for name, opt in self._options.items())
 
     def define(self, name, default=None, type=None, help=None, metavar=None,
                multiple=False, group=None, callback=None):
@@ -223,11 +247,13 @@ class OptionParser(object):
             group_name = group
         else:
             group_name = file_name
-        self._options[name] = _Option(name, file_name=file_name,
-                                      default=default, type=type, help=help,
-                                      metavar=metavar, multiple=multiple,
-                                      group_name=group_name,
-                                      callback=callback)
+        normalized = self._normalize_name(name)
+        option = _Option(name, file_name=file_name,
+                         default=default, type=type, help=help,
+                         metavar=metavar, multiple=multiple,
+                         group_name=group_name,
+                         callback=callback)
+        self._options[normalized] = option
 
     def parse_command_line(self, args=None, final=True):
         """Parses all options given on the command line (defaults to
@@ -255,7 +281,7 @@ class OptionParser(object):
                 break
             arg = args[i].lstrip("-")
             name, equals, value = arg.partition("=")
-            name = name.replace('-', '_')
+            name = self._normalize_name(name)
             if name not in self._options:
                 self.print_help()
                 raise Error('Unrecognized command line option: %r' % name)
@@ -282,13 +308,18 @@ class OptionParser(object):
         .. versionchanged:: 4.1
            Config files are now always interpreted as utf-8 instead of
            the system default encoding.
+
+        .. versionchanged:: 4.4
+           The special variable ``__file__`` is available inside config
+           files, specifying the absolute path to the config file itself.
         """
-        config = {}
+        config = {'__file__': os.path.abspath(path)}
         with open(path, 'rb') as f:
             exec_in(native_str(f.read()), config, config)
         for name in config:
-            if name in self._options:
-                self._options[name].set(config[name])
+            normalized = self._normalize_name(name)
+            if normalized in self._options:
+                self._options[normalized].set(config[name])
 
         if final:
             self.run_parse_callbacks()
@@ -308,7 +339,8 @@ class OptionParser(object):
                 print("\n%s options:\n" % os.path.normpath(filename), file=file)
             o.sort(key=lambda option: option.name)
             for option in o:
-                prefix = option.name
+                # Always print names with dashes in a CLI context.
+                prefix = self._normalize_name(option.name)
                 if option.metavar:
                     prefix += "=" + option.metavar
                 description = option.help or ""
@@ -467,19 +499,17 @@ class _Option(object):
                 pass
         raise Error('Unrecognized date/time format: %r' % value)
 
-    _TIMEDELTA_ABBREVS = [
-        ('hours', ['h']),
-        ('minutes', ['m', 'min']),
-        ('seconds', ['s', 'sec']),
-        ('milliseconds', ['ms']),
-        ('microseconds', ['us']),
-        ('days', ['d']),
-        ('weeks', ['w']),
-    ]
-
-    _TIMEDELTA_ABBREV_DICT = dict(
-        (abbrev, full) for full, abbrevs in _TIMEDELTA_ABBREVS
-        for abbrev in abbrevs)
+    _TIMEDELTA_ABBREV_DICT = {
+        'h': 'hours',
+        'm': 'minutes',
+        'min': 'minutes',
+        's': 'seconds',
+        'sec': 'seconds',
+        'ms': 'milliseconds',
+        'us': 'microseconds',
+        'd': 'days',
+        'w': 'weeks',
+    }
 
     _FLOAT_PATTERN = r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
 

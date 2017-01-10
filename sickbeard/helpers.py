@@ -21,49 +21,48 @@
 
 from __future__ import unicode_literals
 
-import io
-import os
-import re
 import ast
+import base64
+import ctypes
+import datetime
+import hashlib
+import io
+import operator
+import os
+import platform
+import random
+import rarfile
+import re
+import shutil
+import socket
 import ssl
 import stat
 import time
-import ctypes
-import shutil
-import socket
 import traceback
 import urllib
 import uuid
-import base64
-import zipfile
-import datetime
-import operator
-import platform
-import hashlib
-import random
-from contextlib import closing
-from itertools import izip, cycle
 import xml.etree.ElementTree as ET
+import zipfile
+from contextlib import closing
+from itertools import cycle, izip
 
 import adba
 import certifi
+import cfscrape
 import requests
-from requests.utils import urlparse
 from cachecontrol import CacheControl
-# from httpcache import CachingHTTPAdapter
+from requests.utils import urlparse
 
 import sickbeard
-from sickbeard import logger, classes, db
+from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, pretty_file_size, episode_num
+from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
 
 
-import shutil_custom
 
 
-shutil.copyfile = shutil_custom.copyfile_custom
 
 # pylint: disable=protected-access
 # Access to a protected member of a client class
@@ -185,7 +184,7 @@ def isMediaFile(filename):
             return False
 
         # ignore RARBG release intro
-        if re.search(r'^RARBG\.\w+\.(mp4|avi|txt)$', filename, re.I):
+        if re.search(r'^RARBG\.(\w+\.)?(mp4|avi|txt)$', filename, re.I):
             return False
 
         # ignore MAC OS's retarded "resource fork" files
@@ -203,36 +202,22 @@ def isMediaFile(filename):
         return False
 
 
-def isRarFile(filename):
+def is_rarfile(filename):
     """
     Check if file is a RAR file, or part of a RAR set
 
     :param filename: Filename to check
     :return: True if this is RAR/Part file, False if not
     """
-
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    ret = re.search(archive_regex, filename) is not None
+    try:
+        if ek(os.path.exists, filename) and ek(os.path.isfile, filename):
+            ret = ek(rarfile.is_rarfile, filename)
+    except (IOError, OSError):
+        pass
 
-    if re.search(archive_regex, filename):
-        return True
-
-    return False
-
-
-def isBeingWritten(filepath):
-    """
-    Check if file has been written in last 60 seconds
-
-    :param filepath: Filename to check
-    :return: True if file has been written recently, False if none
-    """
-
-    # Return True if file was modified within 60 seconds. it might still be being written to.
-    ctime = max(ek(os.path.getctime, filepath), ek(os.path.getmtime, filepath))
-    if ctime > time.time() - 60:
-        return True
-
-    return False
+    return ret
 
 
 def remove_file_failed(failed_file):
@@ -826,7 +811,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     # assert isinstance(ssl_cert, unicode)
 
     try:
-        from OpenSSL import crypto  # @UnresolvedImport
+        from OpenSSL import crypto  # noinspection PyUnresolvedReferences
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
     except Exception:
@@ -1079,14 +1064,14 @@ def is_hidden_folder(folder):
     """
     def is_hidden(filepath):
         name = ek(os.path.basename, ek(os.path.abspath, filepath))
-        return name.startswith('.') or has_hidden_attribute(filepath)
+        return name == u'@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(unicode(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
-        except (AttributeError, AssertionError):
+        except (AttributeError, AssertionError, OSError, IOError):
             result = False
         return result
 
@@ -1337,16 +1322,19 @@ def make_session():
 
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
+    session = cfscrape.create_scraper(sess=session)
+
     return CacheControl(sess=session, cache_etags=True)
 
 
 def request_defaults(kwargs):
     hooks = kwargs.pop('hooks', None)
     cookies = kwargs.pop('cookies', None)
+    allow_proxy = kwargs.pop('allow_proxy', True)
     verify = certifi.old_where() if all([sickbeard.SSL_VERIFY, kwargs.pop('verify', True)]) else False
 
     # request session proxies
-    if sickbeard.PROXY_SETTING:
+    if allow_proxy and sickbeard.PROXY_SETTING:
         logger.log("Using global proxy: " + sickbeard.PROXY_SETTING, logger.DEBUG)
         parsed_url = urlparse(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
@@ -1382,7 +1370,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
                     post_data[param] = post_data[param].encode('utf-8')
 
         resp = session.request(
-            'POST' if post_data else 'GET', url, data=post_data, params=params,
+            'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )
@@ -1426,8 +1414,8 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
                             fp.flush()
 
                 chmodAsParent(filename)
-            except Exception:
-                logger.log("Problem setting permissions or writing file to: {0}".format(filename), logger.WARNING)
+            except Exception as error:
+                logger.log("Problem downloading file, setting permissions or writing file to \"{0}\" - ERROR: {1}".format(filename, error), logger.WARNING)
 
     except Exception as error:
         handle_requests_exception(error)
@@ -1571,6 +1559,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
+    if not (ek(os.path.exists, dest) or ek(os.path.exists, ek(os.path.dirname, dest))):
+        logger.log("A path is required for the destination. Check the root dir and show locations are correct for {0} (I got '{1}')".format(
+            oldfile[0].name, dest), logger.WARNING)
+        return False
+
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
     if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
@@ -1586,7 +1579,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     # Lets also do this for symlink and hardlink
-    if method.endswith('link') and diskfree > 1024**2:
+    if 'link' in method and diskfree > 1024**2:
         return True
 
     neededspace = ek(os.path.getsize, src)
@@ -1744,3 +1737,9 @@ def is_ip_private(ip):
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+
+
+def recursive_listdir(path):
+    for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
+        for filename in file_names:
+            yield ek(os.path.join, directory_path, filename)

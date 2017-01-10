@@ -23,7 +23,6 @@ import time
 import traceback
 
 from sickbeard import logger, tvcache
-from sickbeard.common import USER_AGENT
 from sickrage.helper.common import try_int
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -42,15 +41,13 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'https://www.t411.ch/',
-                     'search': 'https://api.t411.ch/torrents/search/%s*?cid=%s&limit=100',
-                     'rss': 'https://api.t411.ch/torrents/top/today',
-                     'login_page': 'https://api.t411.ch/auth',
-                     'download': 'https://api.t411.ch/torrents/download/%s'}
+        self.urls = {'base_url': 'https://www.t411.li/',
+                     'search': 'https://api.t411.li/torrents/search/%s*?cid=%s&limit=100',
+                     'rss': 'https://api.t411.li/torrents/top/today',
+                     'login_page': 'https://api.t411.li/auth',
+                     'download': 'https://api.t411.li/torrents/download/%s'}
 
         self.url = self.urls['base_url']
-
-        self.headers.update({'User-Agent': USER_AGENT})
 
         self.subcategories = [433, 637, 455, 639]
 

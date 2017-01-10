@@ -21,7 +21,7 @@ Methods
     change_NZB_DIR
     change_TORRENT_DIR
     change_TV_DOWNLOAD_DIR
-    change_AUTOPOSTPROCESSER_FREQUENCY
+    change_AUTOPOSTPROCESSOR_FREQUENCY
     change_DAILYSEARCH_FREQUENCY
     change_BACKLOG_FREQUENCY
     change_UPDATE_FREQUENCY
@@ -45,11 +45,11 @@ Methods
 
 # pylint: disable=line-too-long
 
-from collections import namedtuple
 import logging
 import os.path
 import sys
 import unittest
+from collections import namedtuple
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

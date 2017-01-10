@@ -49,8 +49,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         # URLs
         self.url = "https://thepiratebay.se"
         self.urls = {
-            "rss": urljoin(self.url, "browse/200"),
-            "search": urljoin(self.url, "s/"),  # Needs trailing /
+            "rss": [urljoin(self.url, "browse/208/0/4"), urljoin(self.url, "browse/205/0/4")],
+            "search": urljoin(self.url, "search"),
         }
         self.custom_url = None
 
@@ -58,6 +58,16 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
+
+        self.magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
+
+    @staticmethod
+    def convert_url(url, params):
+        # noinspection PyBroadException
+        try:
+            return urljoin(url, '{type}/{q}/{page}/{orderby}/{category}/'.format(**params)), {}
+        except Exception:
+            return url.replace('search', 's/'), params
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
@@ -74,94 +84,104 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         }
 
         # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
+        units = ["B", "KIB", "MIB", "GIB"]
 
         def process_column_header(th):
-            result = ""
+            text = ""
             if th.a:
-                result = th.a.get_text(strip=True)
-            if not result:
-                result = th.get_text(strip=True)
-            return result
+                text = th.a.get_text(strip=True)
+            if not text:
+                text = th.get_text(strip=True)
+            return text
 
         for mode in search_strings:
             items = []
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
-                search_url = self.urls["search"] if mode != "RSS" else self.urls["rss"]
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
-                        return results
-                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                search_urls = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
+                if not isinstance(search_urls, list):
+                    search_urls = [search_urls]
 
-                if mode != "RSS":
-                    search_params["q"] = search_string
-                    logger.log("Search string: {}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                for search_url in search_urls:
+                    if self.custom_url:
+                        if not validators.url(self.custom_url):
+                            logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                            return results
+                        search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                    data = self.get_url(search_url, params=search_params, returns="text")
-                else:
-                    data = self.get_url(search_url, returns="text")
+                    if mode != "RSS":
+                        search_params["q"] = search_string
+                        logger.log("Search string: {}".format
+                                   (search_string.decode("utf-8")), logger.DEBUG)
 
-                if not data:
-                    logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
-                    continue
+                        # Prevents a 302 redirect, since there is always a 301 from .se to the best mirror having an extra
+                        # redirect is excessive on the provider and spams the debug log unnecessarily
+                        search_url, search_params = self.convert_url(search_url, search_params)
 
-                with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("table", id="searchResult")
-                    torrent_rows = torrent_table("tr") if torrent_table else []
+                        data = self.get_url(search_url, params=search_params, returns="text")
+                    else:
+                        data = self.get_url(search_url, returns="text")
 
-                    # Continue only if at least one Release is found
-                    if len(torrent_rows) < 2:
-                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    if not data:
+                        logger.log("URL did not return data, maybe try a custom url, or a different one", logger.DEBUG)
                         continue
 
-                    labels = [process_column_header(label) for label in torrent_rows[0]("th")]
+                    with BS4Parser(data, "html5lib") as html:
+                        torrent_table = html.find("table", id="searchResult")
+                        torrent_rows = torrent_table("tr") if torrent_table else []
 
-                    # Skip column headers
-                    for result in torrent_rows[1:]:
-                        try:
-                            cells = result("td")
-
-                            title = result.find(class_="detName").get_text(strip=True)
-                            download_url = result.find(title="Download this torrent using magnet")["href"] + self._custom_trackers
-                            if "magnet:?" not in download_url:
-                                logger.log("Invalid ThePirateBay proxy please try another one", logger.DEBUG)
-                                continue
-                            if not all([title, download_url]):
-                                continue
-
-                            seeders = try_int(cells[labels.index("SE")].get_text(strip=True))
-                            leechers = try_int(cells[labels.index("LE")].get_text(strip=True))
-
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
-                                if mode != "RSS":
-                                    logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
-                                continue
-
-                            # Convert size after all possible skip scenarios
-                            torrent_size = cells[labels.index("Name")].find(class_="detDesc").get_text(strip=True).split(", ")[1]
-                            torrent_size = re.sub(r"Size ([\d.]+).+([KMGT]iB)", r"\1 \2", torrent_size)
-                            size = convert_size(torrent_size, units=units) or -1
-
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
-                            if mode != "RSS":
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                           (title, seeders, leechers), logger.DEBUG)
-
-                            items.append(item)
-                        except StandardError:
+                        # Continue only if at least one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
+
+                        labels = [process_column_header(label) for label in torrent_rows[0]("th")]
+
+                        # Skip column headers
+                        for result in torrent_rows[1:]:
+                            try:
+                                cells = result("td")
+
+                                # Funky js on page messing up titles, this fixes that
+                                title = result.find(class_="detLink")['title'].split('Details for ', 1)[-1]
+                                download_url = result.find(title="Download this torrent using magnet")["href"] + self._custom_trackers
+                                if not self.magnet_regex.match(download_url):
+                                    logger.log("Got an invalid magnet: {0}".format(download_url))
+                                    logger.log("Invalid ThePirateBay proxy please try another one", logger.DEBUG)
+                                    continue
+
+                                if not all([title, download_url]):
+                                    continue
+
+                                seeders = try_int(cells[labels.index("SE")].get_text(strip=True))
+                                leechers = try_int(cells[labels.index("LE")].get_text(strip=True))
+
+                                # Filter unseeded torrent
+                                if seeders < self.minseed or leechers < self.minleech:
+                                    if mode != "RSS":
+                                        logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                                   (title, seeders, leechers), logger.DEBUG)
+                                    continue
+
+                                # Accept Torrent only from Good People for every Episode Search
+                                if self.confirmed and not result.find(alt=re.compile(r"VIP|Trusted")):
+                                    if mode != "RSS":
+                                        logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                    continue
+
+                                # Convert size after all possible skip scenarios
+                                torrent_size = re.sub(r".*Size ([\d.]+).+([KMGT]iB).*", r"\1 \2", result.find(class_="detDesc").get_text(strip=True))
+                                size = convert_size(torrent_size, units=units) or -1
+
+                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                                if mode != "RSS":
+                                    logger.log("Found result: {0} with {1} seeders and {2} leechers".format
+                                               (title, seeders, leechers), logger.DEBUG)
+
+                                items.append(item)
+                            except StandardError:
+                                continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

@@ -25,8 +25,7 @@ Public Methods:
     indentXML
     remove_non_release_groups
     isMediaFile
-    isRarFile
-    isBeingWritten
+    is_rarfile
     remove_file_failed
     makeDir
     searchIndexerForShowID
@@ -85,6 +84,7 @@ Private Methods:
 """
 
 from __future__ import print_function
+
 import os.path
 import sys
 import unittest
@@ -199,13 +199,17 @@ class HelpersZipTests(unittest.TestCase):
         """
         pass
 
-    @unittest.skip('Not yet implemented')
-    def test_is_rar_file(self):
+    def test_is_rarfile(self):
         """
-        Test isRarFile
+        Test is_rarfile
         """
-        pass
-
+        self.assertTrue(helpers.is_rarfile('lala.rar'))
+        self.assertFalse(helpers.is_rarfile('lala.zip'))
+        self.assertFalse(helpers.is_rarfile('lala.iso'))
+        self.assertFalse(helpers.is_rarfile('lala.wmv'))
+        self.assertFalse(helpers.is_rarfile('lala.avi'))
+        self.assertFalse(helpers.is_rarfile('lala.mkv'))
+        self.assertFalse(helpers.is_rarfile('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """
@@ -282,6 +286,8 @@ class HelpersFileTests(unittest.TestCase):
             'Show.Name.S01E01.HDTV.sample1.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sample12.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sampleA.mkv': True,  # samples should not be indexed alphabetically
+            'RARBG.mp4': False,
+            'rarbg.MP4': False
         }
 
         edge_cases = {
@@ -303,13 +309,6 @@ class HelpersFileTests(unittest.TestCase):
     def test_is_file_locked(self):
         """
         Test isFileLocked
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_is_being_written(self):
-        """
-        Test isBeingWritten
         """
         pass
 

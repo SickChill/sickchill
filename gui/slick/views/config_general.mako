@@ -868,16 +868,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Use proxy for indexers')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
-                                <label for="proxy_indexers">${_('use proxy host for connecting to indexers (thetvdb)')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Skip Remove Detection')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

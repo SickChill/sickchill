@@ -19,15 +19,13 @@
 
 import fnmatch
 import os
-
 import re
 
 import sickbeard
-from sickbeard import common
+from sickbeard import common, logger
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.scene_exceptions import get_scene_exceptions
-from sickbeard import logger
 from sickrage.helper.encoding import ek
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 resultFilters = [
     "sub(bed|ed|pack|s)",

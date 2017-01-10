@@ -14,14 +14,14 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-__all__ = ['Queue', 'PriorityQueue', 'LifoQueue', 'QueueFull', 'QueueEmpty']
-
 import collections
 import heapq
 
 from tornado import gen, ioloop
 from tornado.concurrent import Future
 from tornado.locks import Event
+
+__all__ = ['Queue', 'PriorityQueue', 'LifoQueue', 'QueueFull', 'QueueEmpty']
 
 
 class QueueEmpty(Exception):
@@ -44,6 +44,14 @@ def _set_timeout(future, timeout):
             lambda _: io_loop.remove_timeout(timeout_handle))
 
 
+class _QueueIterator(object):
+    def __init__(self, q):
+        self.q = q
+
+    def __anext__(self):
+        return self.q.get()
+
+
 class Queue(object):
     """Coordinate producer and consumer coroutines.
 
@@ -51,7 +59,11 @@ class Queue(object):
 
     .. testcode::
 
-        q = queues.Queue(maxsize=2)
+        from tornado import gen
+        from tornado.ioloop import IOLoop
+        from tornado.queues import Queue
+
+        q = Queue(maxsize=2)
 
         @gen.coroutine
         def consumer():
@@ -71,19 +83,20 @@ class Queue(object):
 
         @gen.coroutine
         def main():
-            consumer()           # Start consumer.
+            # Start consumer without waiting (since it never finishes).
+            IOLoop.current().spawn_callback(consumer)
             yield producer()     # Wait for producer to put all tasks.
             yield q.join()       # Wait for consumer to finish all tasks.
             print('Done')
 
-        io_loop.run_sync(main)
+        IOLoop.current().run_sync(main)
 
     .. testoutput::
 
         Put 0
         Put 1
-        Put 2
         Doing work on 0
+        Put 2
         Doing work on 1
         Put 3
         Doing work on 2
@@ -91,6 +104,21 @@ class Queue(object):
         Doing work on 3
         Doing work on 4
         Done
+
+    In Python 3.5, `Queue` implements the async iterator protocol, so
+    ``consumer()`` could be rewritten as::
+
+        async def consumer():
+            async for item in q:
+                try:
+                    print('Doing work on %s' % item)
+                    yield gen.sleep(0.01)
+                finally:
+                    q.task_done()
+
+    .. versionchanged:: 4.3
+       Added ``async for`` support in Python 3.5.
+
     """
     def __init__(self, maxsize=0):
         if maxsize is None:
@@ -215,6 +243,10 @@ class Queue(object):
         """
         return self._finished.wait(timeout)
 
+    @gen.coroutine
+    def __aiter__(self):
+        return _QueueIterator(self)
+
     # These three are overridable in subclasses.
     def _init(self):
         self._queue = collections.deque()
@@ -266,7 +298,9 @@ class PriorityQueue(Queue):
 
     .. testcode::
 
-        q = queues.PriorityQueue()
+        from tornado.queues import PriorityQueue
+
+        q = PriorityQueue()
         q.put((1, 'medium-priority item'))
         q.put((0, 'high-priority item'))
         q.put((10, 'low-priority item'))
@@ -296,7 +330,9 @@ class LifoQueue(Queue):
 
     .. testcode::
 
-        q = queues.LifoQueue()
+        from tornado.queues import LifoQueue
+
+        q = LifoQueue()
         q.put(3)
         q.put(2)
         q.put(1)

@@ -1,7 +1,9 @@
 <%inherit file="/layouts/main.mako"/>
 <%block name="scripts">
-<script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
-<script type="text/javascript" src="${srRoot}/js/addShowOptions.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+    <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 </%block>
 <%block name="content">
 <div class="col-md-12">
@@ -23,7 +25,7 @@
 
                 <div id="core-component-group1" class="tab-pane active component-group">
 
-                    <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
+                    <form id="addShowForm" method="post" action="${srRoot}/addShows/addExistingShows" accept-charset="utf-8">
 
                         <div id="tabs">
                             <ul>

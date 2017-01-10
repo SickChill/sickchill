@@ -19,16 +19,19 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import time
 import traceback
 
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.common import cpu_presets
 
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class elitetorrentProvider(TorrentProvider):
+class EliteTorrentProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -87,6 +90,7 @@ class elitetorrentProvider(TorrentProvider):
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
 
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     continue
@@ -106,6 +110,9 @@ class elitetorrentProvider(TorrentProvider):
                                 title = self._processTitle(row.find('a', class_='nombre')['title'])
                                 seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
                                 leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
+                                
+                                #seeders are not well reported. Set 1 in case of 0
+                                seeders = max(1, seeders)
 
                                 # Provider does not provide size
                                 size = -1
@@ -158,4 +165,4 @@ class elitetorrentProvider(TorrentProvider):
 
         return title.strip()
 
-provider = elitetorrentProvider()
+provider = EliteTorrentProvider()

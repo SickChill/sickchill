@@ -21,7 +21,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import collections
 import functools
 import logging
-import pycurl
+import pycurl  # type: ignore
 import threading
 import time
 from io import BytesIO
@@ -221,6 +221,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
                         # _process_queue() is called from
                         # _finish_pending_requests the exceptions have
                         # nowhere to go.
+                        self._free_list.append(curl)
                         callback(HTTPResponse(
                             request=request,
                             code=599,
@@ -387,17 +388,28 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
         else:
             raise KeyError('unknown method ' + request.method)
 
-        # Handle curl's cryptic options for every individual HTTP method
-        if request.method == "GET":
-            if request.body is not None:
-                raise ValueError('Body must be None for GET request')
-        elif request.method in ("POST", "PUT") or request.body:
-            if request.body is None:
+        body_expected = request.method in ("POST", "PATCH", "PUT")
+        body_present = request.body is not None
+        if not request.allow_nonstandard_methods:
+            # Some HTTP methods nearly always have bodies while others
+            # almost never do. Fail in this case unless the user has
+            # opted out of sanity checks with allow_nonstandard_methods.
+            if ((body_expected and not body_present) or
+                    (body_present and not body_expected)):
                 raise ValueError(
-                    'Body must not be None for "%s" request'
-                    % request.method)
+                    'Body must %sbe None for method %s (unless '
+                    'allow_nonstandard_methods is true)' %
+                    ('not ' if body_expected else '', request.method))
 
-            request_buffer = BytesIO(utf8(request.body))
+        if body_expected or body_present:
+            if request.method == "GET":
+                # Even with `allow_nonstandard_methods` we disallow
+                # GET with a body (because libcurl doesn't allow it
+                # unless we use CUSTOMREQUEST). While the spec doesn't
+                # forbid clients from sending a body, it arguably
+                # disallows the server from doing anything with them.
+                raise ValueError('Body must be None for GET request')
+            request_buffer = BytesIO(utf8(request.body or ''))
 
             def ioctl(cmd):
                 if cmd == curl.IOCMD_RESTARTREAD:
@@ -405,10 +417,10 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             curl.setopt(pycurl.READFUNCTION, request_buffer.read)
             curl.setopt(pycurl.IOCTLFUNCTION, ioctl)
             if request.method == "POST":
-                curl.setopt(pycurl.POSTFIELDSIZE, len(request.body))
+                curl.setopt(pycurl.POSTFIELDSIZE, len(request.body or ''))
             else:
                 curl.setopt(pycurl.UPLOAD, True)
-                curl.setopt(pycurl.INFILESIZE, len(request.body))
+                curl.setopt(pycurl.INFILESIZE, len(request.body or ''))
 
         if request.auth_username is not None:
             userpwd = "%s:%s" % (request.auth_username, request.auth_password or '')
@@ -450,11 +462,12 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             request.prepare_curl_callback(curl)
 
     def _curl_header_callback(self, headers, header_callback, header_line):
-        header_line = native_str(header_line)
+        header_line = native_str(header_line.decode('latin1'))
         if header_callback is not None:
             self.io_loop.add_callback(header_callback, header_line)
         # header_line as returned by curl includes the end-of-line characters.
-        header_line = header_line.strip()
+        # whitespace at the start should be preserved to allow multi-line headers
+        header_line = header_line.rstrip()
         if header_line.startswith("HTTP/"):
             headers.clear()
             try:

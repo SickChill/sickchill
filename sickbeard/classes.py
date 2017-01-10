@@ -21,10 +21,10 @@
 import datetime
 import sys
 import urllib
+import re
 
 import sickbeard
-from sickbeard.common import USER_AGENT, Quality
-
+from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
 
 
@@ -158,7 +158,7 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
                     series_names.extend(curShow['aliasnames'].split('|'))
 
                 for name in series_names:
-                    if search_term.lower() in name.lower():
+                    if re.sub(r'[^\w\s]', '', search_term.lower()) in re.sub(r'[^\w\s]', '', name.lower()):
                         if 'firstaired' not in curShow:
                             curShow['firstaired'] = 'Unknown'
 

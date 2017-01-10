@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
+import errno
 import os
 import signal
 import socket
@@ -9,7 +10,7 @@ import time
 
 from tornado.netutil import BlockingResolver, ThreadedResolver, is_valid_ip, bind_sockets
 from tornado.stack_context import ExceptionStackContext
-from tornado.testing import AsyncTestCase, gen_test
+from tornado.testing import AsyncTestCase, gen_test, bind_unused_port
 from tornado.test.util import unittest, skipIfNoNetwork
 
 try:
@@ -18,15 +19,15 @@ except ImportError:
     futures = None
 
 try:
-    import pycares
+    import pycares  # type: ignore
 except ImportError:
     pycares = None
 else:
     from tornado.platform.caresresolver import CaresResolver
 
 try:
-    import twisted
-    import twisted.names
+    import twisted  # type: ignore
+    import twisted.names  # type: ignore
 except ImportError:
     twisted = None
 else:
@@ -63,14 +64,14 @@ class _ResolverErrorTestMixin(object):
 
     @gen_test
     def test_future_interface_bad_host(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(IOError):
             yield self.resolver.resolve('an invalid domain', 80,
                                         socket.AF_UNSPEC)
 
 
 def _failing_getaddrinfo(*args):
     """Dummy implementation of getaddrinfo for use in mocks"""
-    raise socket.gaierror("mock: lookup failed")
+    raise socket.gaierror(errno.EIO, "mock: lookup failed")
 
 
 @skipIfNoNetwork
@@ -198,5 +199,17 @@ class TestPortAllocation(unittest.TestCase):
             self.assertTrue(all(s.getsockname()[1] == port
                                 for s in sockets[1:]))
         finally:
+            for sock in sockets:
+                sock.close()
+
+    @unittest.skipIf(not hasattr(socket, "SO_REUSEPORT"), "SO_REUSEPORT is not supported")
+    def test_reuse_port(self):
+        sockets = []
+        socket, port = bind_unused_port(reuse_port=True)
+        try:
+            sockets = bind_sockets(port, '127.0.0.1', reuse_port=True)
+            self.assertTrue(all(s.getsockname()[1] == port for s in sockets))
+        finally:
+            socket.close()
             for sock in sockets:
                 sock.close()

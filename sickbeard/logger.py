@@ -25,27 +25,25 @@ Custom Logger for SickRage
 from __future__ import unicode_literals
 
 import io
-import os
-import re
-import sys
+import locale
 import logging
 import logging.handlers
-from logging import NullHandler
-import threading
+import os
 import platform
-import locale
+import re
+import sys
+import threading
 import traceback
-
+from logging import NullHandler
 from urllib import quote
+
 from github import InputFileContent
 
 import sickbeard
 from sickbeard import classes
-
-from sickrage.helper.encoding import ss
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
 from sickrage.helper.common import dateTimeFormat
+from sickrage.helper.encoding import ek, ss
+from sickrage.helper.exceptions import ex
 
 # pylint: disable=line-too-long
 
@@ -121,6 +119,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             logging.getLogger('tornado.application'),
             # logging.getLogger('subliminal'),
             # logging.getLogger('tornado.access'),
+            # logging.getLogger('tvdb_api'),
+            # logging.getLogger("requests.packages.urllib3")
         ]
 
         self.console_logging = False
@@ -160,6 +160,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
             logger.setLevel(log_level)
+
+        logging.getLogger("tornado.general").setLevel('ERROR')
 
         # console log handler
         if self.console_logging:
@@ -303,6 +305,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
                 except Exception as err_msg:  # pylint: disable=broad-except
                     self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
+                    title_error = 'UNKNOWN'
 
                 gist = None
                 regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
@@ -416,3 +419,115 @@ class Wrapper(object):
 
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
+
+
+def init_logging(*args, **kwargs):
+    return Wrapper.instance.init_logging(*args, **kwargs)
+
+
+def log(*args, **kwargs):
+    return Wrapper.instance.log(*args, **kwargs)
+
+
+def log_error_and_exit(*args, **kwargs):
+    return Wrapper.instance.log_error_and_exit(*args, **kwargs)
+
+
+def set_level(*args, **kwargs):
+    return Wrapper.instance.set_level(*args, **kwargs)
+
+
+def shutdown():
+    return Wrapper.instance.shutdown()
+
+
+def submit_errors(*args, **kwargs):
+    return Wrapper.instance.submit_errors(*args, **kwargs)
+
+log_file = Wrapper.instance.log_file
+
+LOG_FILTERS = {
+    '<NONE>': _(u'&lt;No Filter&gt;'),
+    'DAILYSEARCHER': _(u'Daily Searcher'),
+    'BACKLOG': _(u'Backlog'),
+    'SHOWUPDATER': _(u'Show Updater'),
+    'CHECKVERSION': _(u'Check Version'),
+    'SHOWQUEUE': _(u'Show Queue'),
+    'SEARCHQUEUE': _(u'Search Queue (All)'),
+    'SEARCHQUEUE-DAILY-SEARCH': _(u'Search Queue (Daily Searcher)'),
+    'SEARCHQUEUE-BACKLOG': _(u'Search Queue (Backlog)'),
+    'SEARCHQUEUE-MANUAL': _(u'Search Queue (Manual)'),
+    'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
+    'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
+    'FINDPROPERS': _(u'Find Propers'),
+    'POSTPROCESSOR': _(u'Postprocessor'),
+    'FINDSUBTITLES': _(u'Find Subtitles'),
+    'TRAKTCHECKER': _(u'Trakt Checker'),
+    'EVENT': _(u'Event'),
+    'ERROR': _(u'Error'),
+    'TORNADO': _(u'Tornado'),
+    'Thread': _(u'Thread'),
+    'MAIN': _(u'Main'),
+}
+
+
+def log_data(min_level, log_filter, log_search, max_lines):
+    regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+    if log_filter not in LOG_FILTERS:
+        log_filter = '<NONE>'
+
+    final_data = []
+
+    log_files = []
+    if ek(os.path.isfile, Wrapper.instance.log_file):
+        log_files.append(Wrapper.instance.log_file)
+
+        for i in range(1, int(sickbeard.LOG_NR)):
+            name = Wrapper.instance.log_file + "." + str(i)
+            if not ek(os.path.isfile, name):
+                break
+            log_files.append(name)
+    else:
+        return final_data
+
+    data = []
+    for log_file in log_files:
+        if len(data) < max_lines:
+            with io.open(log_file, 'r', encoding='utf-8') as f:
+                data += [line for line in reversed(f.readlines())]
+        else:
+            break
+
+    found_lines = 0
+    for x in data:
+        continue_line = False
+        match = re.match(regex, x)
+
+        if match:
+            level = match.group(7)
+            log_name = match.group(8)
+
+            if not sickbeard.DEBUG and level == 'DEBUG':
+                continue
+
+            if not sickbeard.DBDEBUG and level == 'DB':
+                continue
+
+            if level not in LOGGING_LEVELS:
+                continue_line = True
+                continue
+
+            if log_search and log_search.lower() in x.lower():
+                final_data.append(x)
+                found_lines += 1
+            elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == '<NONE>' or log_name.startswith(log_filter)):
+                final_data.append(x)
+                found_lines += 1
+        elif continue_line:
+            final_data.append("AA" + x)
+            found_lines += 1
+
+        if found_lines >= max_lines:
+            return final_data
+
+    return final_data

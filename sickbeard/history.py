@@ -18,10 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import db
 import datetime
 
-from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
+import db
+from sickbeard.common import FAILED, Quality, SNATCHED, SUBTITLED
 from sickrage.helper.encoding import ss
 from sickrage.show.History import History
 

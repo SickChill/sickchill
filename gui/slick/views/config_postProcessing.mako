@@ -106,12 +106,12 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="autopostprocesser_frequency" id="autopostprocesser_frequency" value="${sickbeard.AUTOPOSTPROCESSER_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocesser_frequency"/>
+                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${sickbeard.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocessor_frequency"/>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="autopostprocesser_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
+                                        <label for="autopostprocessor_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -245,44 +245,85 @@
                                 </div>
                             </div>
                         </div>
+                        <fieldset class="component-group-list">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                    <label class="component-title">${_('Unpack')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input id="unpack" class="enabler" type="checkbox" name="unpack"
+                                                ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
+                                            <label for="unpack">${_('Unpack any TV releases in your <i>TV Download Dir</i>?')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="content_unpack">
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                        <label class="component-title">${_('Unrar Location')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" name="unrar_tool" id="unrar_tool" value="${sickbeard.UNRAR_TOOL}" class="form-control
+                                                input-sm input350" autocapitalize="off" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="unrar_tool">${_('Add the path to unrar if it is not in the system path')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Unpack')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input id="unpack" type="checkbox" name="unpack" ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
-                                        <label for="unpack">${_('Unpack any TV releases in your <i>TV Download Dir</i>?')}</label>
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                        <label class="component-title">${_('Alternate Unrar Tool')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" name="alt_unrar_tool" id="alt_unrar_tool" value="${sickbeard.ALT_UNRAR_TOOL}" class="form-control
+                                                input-sm input350" autocapitalize="off" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="alt_unrar_tool">${_('Add the path to an alternate unrar tool if it is not in the system path')}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Delete RAR contents')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
-                                        <label for="del_rar_contents">${_('Delete content of RAR files, even if Process Method not set to move?')}</label>
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                        <label class="component-title">${_('Delete RAR contents')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
+                                                <label for="del_rar_contents">${_('Delete content of RAR files, even if Process Method not set to move?')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
+                        </fieldset>
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -298,6 +339,20 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label><b>${_('Note')}:</b>&nbsp;${_('Can be overridden using manual Post Processing')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <label class="component-title">${_('Use icacls')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(sickbeard.USE_ICACLS)]}/>
+                                        <label for="no_delete">${_('Windows ONLY. Sets video permissions after using the move method in post processing')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -343,10 +398,9 @@
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
 
                     <fieldset class="component-group-list">
-
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Name Pattern')}</label>
+                                <label for="name_presets" class="component-title">${_('Name Pattern')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <select id="name_presets" class="form-control input-sm input350" title="name_presets">
@@ -363,7 +417,7 @@
                             </div>
                         </div>
 
-                        <div id="naming_custom">
+                        <div id="content_name_presets">
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>

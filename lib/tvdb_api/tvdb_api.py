@@ -563,22 +563,15 @@ class Tvdb:
         try:
             log().debug("Retrieving URL %s" % url)
 
-            # get response from TVDB
-            if self.config['cache_enabled']:
-                # Lets try without caching sessions to disk for awhile
-                # session = CacheControl(sess=self.config['session'], cache=caches.FileCache(self.config['cache_location'], use_dir_lock=True), cache_etags=False)
-                session = self.config['session']
-                if self.config['proxy']:
-                    log().debug("Using proxy for URL: %s" % url)
-                    session.proxies = {
-                        "http": self.config['proxy'],
-                        "https": self.config['proxy'],
-                    }
+            session = self.config['session']
+            if self.config['proxy']:
+                log().debug("Using proxy for URL: %s" % url)
+                session.proxies = {
+                    "http": self.config['proxy'],
+                    "https": self.config['proxy'],
+                }
 
-                resp = session.get(url.strip(), params=params)
-            else:
-                resp = requests.get(url.strip(), params=params)
-
+            resp = session.get(url.strip(), params=params)
             resp.raise_for_status()
         except requests.exceptions.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))

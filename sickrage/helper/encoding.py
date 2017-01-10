@@ -50,7 +50,7 @@ def ek(function, *args, **kwargs):
 
 def ss(var):
     """
-    Converts string to Unicode, fallback encoding is forced UTF-8
+    Converts basestring to SYS_ENCODING, fallback encoding is forced UTF-8
 
     :param var: String to convert
     :return: Converted string
