@@ -397,7 +397,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 episode_string += ('|', ' ')[len(self.proper_strings) > 1]
                 episode_string += episode.airdate.strftime('%b')
             elif episode.show.anime:
-                episode_string += '{0:03d}'.format(int(episode.scene_absolute_number))
+                episode_string += '{0:02d}'.format(int(episode.scene_absolute_number))
             else:
                 episode_string += sickbeard.config.naming_ep_type[2] % {
                     'seasonnumber': episode.scene_season,
