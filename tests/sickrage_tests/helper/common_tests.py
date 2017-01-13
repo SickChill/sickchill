@@ -81,7 +81,7 @@ class CommonTests(unittest.TestCase):
         """
         Test is sync file
         """
-        sickbeard.SYNC_FILES = '!sync,lftp-pget-status,part'
+        sickbeard.SYNC_FILES = '!sync,lftp-pget-status'
 
         test_cases = {
             None: False,

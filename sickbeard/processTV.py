@@ -39,7 +39,7 @@ class ProcessResult(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.result = True
         self.output = ''
-        self.missedfiles = []
+        self.missed_files = []
         self.aggresult = True
 
 
@@ -163,26 +163,27 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     path, dirs, files = get_path_dir_files(process_path, release_name, mode)
 
-    files = [x for x in files if not is_torrent_or_nzb_file(x)]
-    SyncFiles = [x for x in files if is_sync_file(x)]
+    files = filter(is_torrent_or_nzb_file, files)
+    sync_files = filter(is_sync_file, files)
+
     original_release_name = release_name
 
     # Don't post process if files are still being synced and option is activated
-    postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
+    postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
 
     if not postpone:
         result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
         result.output += log_helper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
 
-        videoFiles = [x for x in files if helpers.isMediaFile(x)]
-        rarFiles = [x for x in files if helpers.is_rarfile(ek(os.path.join, path, x))]
+        videoFiles = filter(helpers.isMediaFile, files)
+        rarFiles = filter(helpers.isRarFile, files)
         rarContent = []
         if rarFiles:
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
-            videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
+            videoFiles += filter(helpers.isMediaFile, rarContent)
 
-        videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
+        videoInRar = filter(helpers.isMediaFile, rarContent)
 
         result.output += log_helper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
         result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
@@ -211,34 +212,36 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 process_media(path, [video], release_name, process_method, force, is_priority, result)
 
     else:
-        result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(SyncFiles, path))
+        result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(sync_files, path))
         result.output += log_helper(u"Skipping post processing for folder: {0}".format(path))
-        result.missedfiles.append(u"{0} : Syncfiles found".format(path))
+        result.missed_files.append(u"{0} : Sync files found".format(path))
 
     # Process Video File in all TV Subdir
-    for curDir in [x for x in dirs if validate_dir(path, x, original_release_name, failed, result)]:
+    for curDir in dirs:
+        if not validate_dir(path, curDir, original_release_name, failed, result):
+            continue
+
         result.result = True
 
         for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
-
             if not validate_dir(path, current_directory, original_release_name, failed, result):
                 continue
 
-            SyncFiles = [x for x in file_names if is_sync_file(x)]
+            sync_files = filter(is_sync_file, file_names)
 
             # Don't post process if files are still being synced and option is activated
-            postpone = SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES
+            postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
 
             if not postpone:
-                videoFiles = [x for x in file_names if helpers.isMediaFile(x)]
-                rarFiles = [x for x in file_names if helpers.is_rarfile(ek(os.path.join, current_directory, x))]
-                rarContent = []
+                videoFiles = filter(helpers.isMediaFile, file_names)
+                rarFiles = (x for x in file_names if helpers.is_rarfile(ek(os.path.join, current_directory, x)))
+                rarContent = ()
                 if rarFiles:
                     rarContent = unRAR(current_directory, rarFiles, force, result)
                     file_names = set(file_names + rarContent)
-                    videoFiles += [x for x in rarContent if helpers.isMediaFile(x)]
+                    videoFiles += filter(helpers.isMediaFile, rarContent)
 
-                videoInRar = [x for x in rarContent if helpers.isMediaFile(x)] if rarContent else []
+                videoInRar = filter(helpers.isMediaFile, rarContent)
                 unwanted_files = [x for x in file_names if x not in videoFiles]
                 if unwanted_files:
                     result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
@@ -272,20 +275,15 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                             result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
             else:
-                result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(SyncFiles, current_directory))
+                result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(sync_files, current_directory))
                 result.output += log_helper(u"Skipping post processing for folder: {0}".format(current_directory))
-                result.missedfiles.append(u"{0} : Syncfiles found".format(path))
+                result.missed_files.append(u"{0} : Sync files found: {1}".format(path, sync_files))
 
-    if result.aggresult:
-        result.output += log_helper(u"Successfully processed")
-        if result.missedfiles:
-            result.output += log_helper(u"I did encounter some unprocessable items: ")
-            for missedfile in result.missedfiles:
-                result.output += log_helper(u"[{0}]".format(missedfile))
-    else:
-        result.output += log_helper(u"Problem(s) during processing, failed the following files/folders:  ", logger.WARNING)
-        for missedfile in result.missedfiles:
-            result.output += log_helper(u"[{0}]".format(missedfile), logger.WARNING)
+    result.output += log_helper((u"Processing Failed", u"Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
+    if result.missed_files:
+        result.output += log_helper(u"Some items were not processed.")
+        for missed_file in result.missed_files:
+            result.output += log_helper(missed_file)
 
     return result.output
 
@@ -296,7 +294,7 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
 
     :param path: Path to use
     :param process_path: Directory to check
-    :param original_release_name: Original NZB name
+    :param original_release_name: Original NZB/Torrent name
     :param failed: Previously failed objects
     :param result: Previous results
     :return: True if dir is valid for processing, False if not
@@ -314,17 +312,17 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
         failed = True
     elif upper_name.startswith(u'_UNPACK') or upper_name.endswith(u'_UNPACK'):
         result.output += log_helper(u"The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
-        result.missedfiles.append(u"{0} : Being unpacked".format(process_path))
+        result.missed_files.append(u"{0} : Being unpacked".format(process_path))
         return False
 
     if failed:
         process_failed(ek(os.path.join, path, process_path), original_release_name, result)
-        result.missedfiles.append(u"{0} : Failed download".format(process_path))
+        result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
     if helpers.is_hidden_folder(ek(os.path.join, path, process_path)):
         result.output += log_helper(u"Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
-        result.missedfiles.append(u"{0} : Hidden folder".format(process_path))
+        result.missed_files.append(u"{0} : Hidden folder".format(process_path))
         return False
 
     # make sure the dir isn't inside a show dir
@@ -340,41 +338,27 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
                 logger.WARNING)
             return False
 
-    if sickbeard.TV_DOWNLOAD_DIR and process_path and process_path != sickbeard.TV_DOWNLOAD_DIR:
-        try:
-            NameParser().parse(process_path, cache_result=False)
-            return True
-        except (InvalidNameException, InvalidShowException):
-            pass
+    for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, process_path), topdown=False):
+        found_files = filter(helpers.isMediaFile, file_names)
+        if sickbeard.UNPACK:
+            found_files += filter(helpers.is_rarfile, file_names)
 
-    rar_files = []
-    video_files = []
-    for file_name in ek(os.walk, ek(os.path.join, path, process_path), topdown=False):
-        if helpers.is_rarfile(file_name):
-            rar_files += file_name
-        if helpers.isMediaFile(file_name):
-            video_files += file_name
+        for found_file in found_files:
+            if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
+                try:
+                    NameParser().parse(found_file, cache_result=False)
+                except (InvalidNameException, InvalidShowException):
+                    pass
+                else:
+                    return True
 
-    # check if the dir have at least one tv video file
-    found_files = video_files
-    if sickbeard.UNPACK:
-        found_files += rar_files
-
-    for found_file in found_files:
-        try:
-            NameParser().parse(found_file, cache_result=False)
-        except (InvalidNameException, InvalidShowException):
+        if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
             try:
-                # Try the folder name of that video
-                video_path = os.path.dirname(found_file)
-                if sickbeard.TV_DOWNLOAD_DIR and video_path != sickbeard.TV_DOWNLOAD_DIR:
-                    NameParser().parse(os.path.basename(video_path))
-            except (InvalidNameException, InvalidShowException) as error:
-                result.output += log_helper(u"{0}".format(error), logger.DEBUG)
+                NameParser().parse(ek(os.path.basename, current_directory), cache_result=False)
+            except (InvalidNameException, InvalidShowException):
+                pass
             else:
                 return True
-        else:
-            return True
 
     result.output += log_helper(u"{0} : No processable items found in folder".format(process_path), logger.DEBUG)
     return False
@@ -462,7 +446,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
 
             if failure:
                 result.output += log_helper(u'Failed Unrar archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)
-                result.missedfiles.append(u'{0} : Unpacking failed: {1}'.format(archive, failure[1]))
+                result.missed_files.append(u'{0} : Unpacking failed: {1}'.format(archive, failure[1]))
                 result.result = False
                 continue
 
@@ -498,7 +482,7 @@ def already_processed(process_path, videofile, force, result):  # pylint: disabl
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False  # pylint: disable=redefined-variable-type
 
-    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
+    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
@@ -552,7 +536,7 @@ def process_media(process_path, videoFiles, release_name, process_method, force,
             result.output += log_helper(u"Processing succeeded for {0}".format(cur_video_file_path))
         else:
             result.output += log_helper(u"Processing failed for {0}: {1}".format(cur_video_file_path, process_fail_message), logger.WARNING)
-            result.missedfiles.append(u"{0} : Processing failed: {1}".format(cur_video_file_path, process_fail_message))
+            result.missed_files.append(u"{0} : Processing failed: {1}".format(cur_video_file_path, process_fail_message))
             result.aggresult = False
 
 
@@ -566,21 +550,21 @@ def get_path_dir_files(process_path, release_name, mode):
     :return: a tuple of (path,dirs,files)
     """
     path = u""
-    dirs = []
     files = []
+    dirs = []
 
     if process_path == sickbeard.TV_DOWNLOAD_DIR and not release_name or mode == u"manual":  # Scheduled Post Processing Active
         # Get at first all the subdir in the process_path
         for path, dirs, files in ek(os.walk, process_path):
             break
     else:
-        path, dirs = ek(os.path.split, process_path)  # Script Post Processing
+        path, directory = ek(os.path.split, process_path)  # Script Post Processing
         if not (release_name is None or release_name.endswith((u'.nzb', u'.torrent'))) and ek(os.path.isfile, ek(os.path.join, process_path, release_name)):
             # For single torrent file without Dir
             dirs = []
             files = [ek(os.path.join, process_path, release_name)]
         else:
-            dirs = [dirs]
+            dirs = [directory]
             files = []
 
     return path, dirs, files
