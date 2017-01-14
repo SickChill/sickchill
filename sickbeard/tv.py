@@ -405,20 +405,17 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + ": Loading all episodes from the show directory " + self._location, logger.DEBUG)
 
         # get file list
-        mediaFiles = helpers.list_media_files(self._location)
-        logger.log("{0}: Found files: {1}".format(self.indexerid, mediaFiles), logger.DEBUG)
+        media_files = helpers.list_media_files(self._location)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
-        for mediaFile in mediaFiles:
-            parse_result = None
+        for media_file in media_files:
+            logger.log("{tvdbid}: Creating episode from {filename}".format(tvdbid=str(self.indexerid), filename=ek(os.path.basename, media_file)), logger.DEBUG)
             curEpisode = None
-
-            logger.log(str(self.indexerid) + ": Creating episode from " + mediaFile, logger.DEBUG)
             try:
-                curEpisode = self.makeEpFromFile(ek(os.path.join, self._location, mediaFile))
+                curEpisode = self.makeEpFromFile(media_file)
             except (ShowNotFoundException, EpisodeNotFoundException) as error:
-                logger.log("Episode " + mediaFile + " returned an exception: " + ex(error), logger.ERROR)
+                logger.log("Episode {filename} returned an exception: {ex}".format(filename=ek(os.path.basename, media_file), ex=ex(error)), logger.ERROR)
                 continue
             except EpisodeDeletedException:
                 logger.log("The episode deleted itself when I tried making an object for it", logger.DEBUG)
