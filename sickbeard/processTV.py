@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from itertools import ifilterfalse
 import os
 import shutil
 import stat
@@ -163,58 +164,47 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     path, subdirectories, files = get_path_dir_files(process_path, release_name, mode)
 
-    files = filter(is_torrent_or_nzb_file, files)
-    sync_files = filter(is_sync_file, files)
-
+    files = ifilterfalse(is_torrent_or_nzb_file, files)
     original_release_name = release_name
 
-    # Don't post process if files are still being synced and option is activated
-    postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
+    result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
+    result.output += log_helper(u"PostProcessing Directories: {0}".format(str(subdirectories)), logger.DEBUG)
 
-    if not postpone:
-        result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
-        result.output += log_helper(u"PostProcessing Directories: {0}".format(str(subdirectories)), logger.DEBUG)
+    video_files = filter(helpers.is_media_file, files)
+    rar_files = filter(helpers.is_rar_file, files)
+    rar_contents = []
+    if rar_files:
+        rar_contents = unrar(path, rar_files, force, result)
+        files += rar_contents
+        video_files += filter(helpers.is_media_file, rar_contents)
 
-        video_files = filter(helpers.is_media_file, files)
-        rarFiles = filter(helpers.is_rar_file, files)
-        rar_contents = []
-        if rarFiles:
-            rar_contents = unRAR(path, rarFiles, force, result)
-            files += rar_contents
-            video_files += filter(helpers.is_media_file, rar_contents)
+    video_in_rar = filter(helpers.is_media_file, rar_contents)
 
-        video_in_rar = filter(helpers.is_media_file, rar_contents)
+    result.output += log_helper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
+    result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(video_files), logger.DEBUG)
+    result.output += log_helper(u"PostProcessing RarContent: {0}".format(rar_contents), logger.DEBUG)
+    result.output += log_helper(u"PostProcessing VideoInRar: {0}".format(video_in_rar), logger.DEBUG)
 
-        result.output += log_helper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(video_files), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing RarContent: {0}".format(rar_contents), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing VideoInRar: {0}".format(video_in_rar), logger.DEBUG)
+    # If release_name is set and there's more than one video file in the folder, files will be lost (overwritten).
+    release_name = (release_name, None)[len(video_files) >= 2]
 
-        # If release_name is set and there's more than one video file in the folder, files will be lost (overwritten).
-        release_name = (release_name, None)[len(video_files) >= 2]
+    process_method = process_method if process_method else sickbeard.PROCESS_METHOD
+    result.result = True
 
-        process_method = process_method if process_method else sickbeard.PROCESS_METHOD
-        result.result = True
-
-        # Don't Link media when the media is extracted from a rar in the same path
-        if process_method in (u'hardlink', u'symlink') and video_in_rar:
-            process_media(path, video_in_rar, release_name, u'move', force, is_priority, result)
-            delete_files(path, rar_contents, result)
-            for video in set(video_files) - set(video_in_rar):
-                process_media(path, [video], release_name, process_method, force, is_priority, result)
-        elif sickbeard.DELRARCONTENTS and video_in_rar:
-            process_media(path, video_in_rar, release_name, process_method, force, is_priority, result)
-            delete_files(path, rar_contents, result, True)
-            for video in set(video_files) - set(video_in_rar):
-                process_media(path, [video], release_name, process_method, force, is_priority, result)
-        else:
-            for video in video_files:
-                process_media(path, [video], release_name, process_method, force, is_priority, result)
-
+    # Don't Link media when the media is extracted from a rar in the same path
+    if process_method in (u'hardlink', u'symlink') and video_in_rar:
+        process_media(path, video_in_rar, release_name, u'move', force, is_priority, result)
+        delete_files(path, rar_contents, result)
+        for video in set(video_files) - set(video_in_rar):
+            process_media(path, [video], release_name, process_method, force, is_priority, result)
+    elif sickbeard.DELRARCONTENTS and video_in_rar:
+        process_media(path, video_in_rar, release_name, process_method, force, is_priority, result)
+        delete_files(path, rar_contents, result, True)
+        for video in set(video_files) - set(video_in_rar):
+            process_media(path, [video], release_name, process_method, force, is_priority, result)
     else:
-        result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(sync_files, path))
-        result.output += log_helper(u"Skipping post processing for folder: {0}".format(path))
-        result.missed_files.append(u"{0} : Sync files found".format(path))
+        for video in video_files:
+            process_media(path, [video], release_name, process_method, force, is_priority, result)
 
     # Process Video File in all TV Subdir
     for subdirectory in subdirectories:
@@ -227,57 +217,48 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if not validate_dir(path, current_directory, original_release_name, failed, result):
                 continue
 
-            sync_files = filter(is_sync_file, file_names)
+            file_names = ifilterfalse(is_torrent_or_nzb_file, file_names)
 
-            # Don't post process if files are still being synced and option is activated
-            postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
+            video_files = filter(helpers.is_media_file, file_names)
+            rar_files = (x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x)))
+            rar_contents = ()
+            if rar_files:
+                rar_contents = unrar(current_directory, rar_files, force, result)
+                file_names = list(set(file_names + rar_contents))
+                video_files += filter(helpers.is_media_file, rar_contents)
 
-            if not postpone:
-                video_files = filter(helpers.is_media_file, file_names)
-                rarFiles = (x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x)))
-                rar_contents = ()
-                if rarFiles:
-                    rar_contents = unRAR(current_directory, rarFiles, force, result)
-                    file_names = set(file_names + rar_contents)
-                    video_files += filter(helpers.is_media_file, rar_contents)
+            video_in_rar = filter(helpers.is_media_file, rar_contents)
+            unwanted_files = [x for x in file_names if x not in video_files]
+            if unwanted_files:
+                result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
-                video_in_rar = filter(helpers.is_media_file, rar_contents)
-                unwanted_files = [x for x in file_names if x not in video_files]
-                if unwanted_files:
-                    result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
-
-                # Don't Link media when the media is extracted from a rar in the same path
-                if process_method in (u'hardlink', u'symlink') and video_in_rar:
-                    process_media(current_directory, video_in_rar, release_name, u'move', force, is_priority, result)
-                    process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
-                                  is_priority, result)
-                    delete_files(current_directory, rar_contents, result)
-                elif sickbeard.DELRARCONTENTS and video_in_rar:
-                    process_media(current_directory, video_in_rar, release_name, process_method, force, is_priority, result)
-                    process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
-                                  is_priority, result)
-                    delete_files(current_directory, rar_contents, result, True)
-                else:
-                    process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
-
-                    # Delete all file not needed and avoid deleting files if Manual PostProcessing
-                    if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
-                        continue
-
-                    delete_folder(ek(os.path.join, current_directory, u'@eaDir'))
-                    delete_files(current_directory, unwanted_files, result)
-
-                    if all([not sickbeard.NO_DELETE or mode == u"manual",
-                            process_method == u"move",
-                            ek(os.path.normpath, current_directory) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
-
-                        if delete_folder(current_directory, check_empty=True):
-                            result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
-
+            # Don't Link media when the media is extracted from a rar in the same path
+            if process_method in (u'hardlink', u'symlink') and video_in_rar:
+                process_media(current_directory, video_in_rar, release_name, u'move', force, is_priority, result)
+                process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
+                              is_priority, result)
+                delete_files(current_directory, rar_contents, result)
+            elif sickbeard.DELRARCONTENTS and video_in_rar:
+                process_media(current_directory, video_in_rar, release_name, process_method, force, is_priority, result)
+                process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
+                              is_priority, result)
+                delete_files(current_directory, rar_contents, result, True)
             else:
-                result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(sync_files, current_directory))
-                result.output += log_helper(u"Skipping post processing for folder: {0}".format(current_directory))
-                result.missed_files.append(u"{0} : Sync files found: {1}".format(path, sync_files))
+                process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+
+                # Delete all file not needed and avoid deleting files if Manual PostProcessing
+                if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
+                    continue
+
+                delete_folder(ek(os.path.join, current_directory, u'@eaDir'))
+                delete_files(current_directory, unwanted_files, result)
+
+                if all([not sickbeard.NO_DELETE or mode == u"manual",
+                        process_method == u"move",
+                        ek(os.path.normpath, current_directory) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+
+                    if delete_folder(current_directory, check_empty=True):
+                        result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
     result.output += log_helper((u"Processing Failed", u"Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
@@ -338,38 +319,46 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
                 logger.WARNING)
             return False
 
+    name_parser = NameParser()
     for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, process_path), topdown=False):
+        sync_files = filter(is_sync_file, file_names)
+        if sync_files and sickbeard.POSTPONE_IF_SYNC_FILES:
+            result.output += log_helper(u"Found temporary sync files: {0} in path: {1}".format(sync_files, ek(os.path.join, path, process_path, sync_files[0])))
+            result.output += log_helper(u"Skipping post processing for folder: {0}".format(path))
+            result.missed_files.append(u"{0} : Sync files found".format(ek(os.path.join, path, process_path, sync_files[0])))
+            continue
+
         found_files = filter(helpers.is_media_file, file_names)
         if sickbeard.UNPACK:
             found_files += filter(helpers.is_rar_file, file_names)
 
-        for found_file in found_files:
-            if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
-                try:
-                    NameParser().parse(found_file, cache_result=False)
-                except (InvalidNameException, InvalidShowException):
-                    pass
-                else:
-                    return True
-
-        if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
+        if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
             try:
-                NameParser().parse(ek(os.path.basename, current_directory), cache_result=False)
-            except (InvalidNameException, InvalidShowException):
+                name_parser.parse(ek(os.path.basename, current_directory), cache_result=False)
+            except (InvalidNameException, InvalidShowException) as e:
                 pass
             else:
                 return True
+
+        for found_file in found_files:
+            if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
+                try:
+                    name_parser.parse(found_file, cache_result=False)
+                except (InvalidNameException, InvalidShowException) as e:
+                    pass
+                else:
+                    return True
 
     result.output += log_helper(u"{0} : No processable items found in folder".format(process_path), logger.DEBUG)
     return False
 
 
-def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,too-many-statements
+def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,too-many-statements
     """
     Extracts RAR files
 
     :param path: Path to look for files in
-    :param rarFiles: Names of RAR files
+    :param rar_files: Names of RAR files
     :param force: process currently processing items
     :param result: Previous results
     :return: List of unpacked file names
@@ -377,10 +366,10 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
 
     unpacked_files = []
 
-    if sickbeard.UNPACK and rarFiles:
+    if sickbeard.UNPACK and rar_files:
 
-        result.output += log_helper(u"Packed Releases detected: {0}".format(rarFiles), logger.DEBUG)
-        for archive in rarFiles:
+        result.output += log_helper(u"Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
+        for archive in rar_files:
             failure = None
             rar_handle = None
             try:
