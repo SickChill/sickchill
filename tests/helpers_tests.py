@@ -25,7 +25,7 @@ Public Methods:
     indentXML
     remove_non_release_groups
     is_media_file
-    is_rarfile
+    is_rar_file
     remove_file_failed
     makeDir
     searchIndexerForShowID
@@ -199,17 +199,17 @@ class HelpersZipTests(unittest.TestCase):
         """
         pass
 
-    def test_is_rarfile(self):
+    def test_is_rar_file(self):
         """
-        Test is_rarfile
+        Test is_rar_file
         """
-        self.assertTrue(helpers.is_rarfile('lala.rar'))
-        self.assertFalse(helpers.is_rarfile('lala.zip'))
-        self.assertFalse(helpers.is_rarfile('lala.iso'))
-        self.assertFalse(helpers.is_rarfile('lala.wmv'))
-        self.assertFalse(helpers.is_rarfile('lala.avi'))
-        self.assertFalse(helpers.is_rarfile('lala.mkv'))
-        self.assertFalse(helpers.is_rarfile('lala.mp4'))
+        self.assertTrue(helpers.is_rar_file('lala.rar'))
+        self.assertFalse(helpers.is_rar_file('lala.zip'))
+        self.assertFalse(helpers.is_rar_file('lala.iso'))
+        self.assertFalse(helpers.is_rar_file('lala.wmv'))
+        self.assertFalse(helpers.is_rar_file('lala.avi'))
+        self.assertFalse(helpers.is_rar_file('lala.mkv'))
+        self.assertFalse(helpers.is_rar_file('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """

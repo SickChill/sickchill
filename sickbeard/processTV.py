@@ -176,7 +176,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         result.output += log_helper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
 
         videoFiles = filter(helpers.is_media_file, files)
-        rarFiles = filter(helpers.is_rarfile, files)
+        rarFiles = filter(helpers.is_rar_file, files)
         rarContent = []
         if rarFiles:
             rarContent = unRAR(path, rarFiles, force, result)
@@ -234,7 +234,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
             if not postpone:
                 videoFiles = filter(helpers.is_media_file, file_names)
-                rarFiles = (x for x in file_names if helpers.is_rarfile(ek(os.path.join, current_directory, x)))
+                rarFiles = (x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x)))
                 rarContent = ()
                 if rarFiles:
                     rarContent = unRAR(current_directory, rarFiles, force, result)
@@ -341,7 +341,7 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
     for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, process_path), topdown=False):
         found_files = filter(helpers.is_media_file, file_names)
         if sickbeard.UNPACK:
-            found_files += filter(helpers.is_rarfile, file_names)
+            found_files += filter(helpers.is_rar_file, file_names)
 
         for found_file in found_files:
             if sickbeard.TV_DOWNLOAD_DIR and current_directory and current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
@@ -386,7 +386,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
             try:
                 archive_path = ek(os.path.join, path, archive)
                 result.output += log_helper(u"Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
-                if not helpers.is_rarfile(archive_path):
+                if not helpers.is_rar_file(archive_path):
                     continue
 
                 rar_handle = RarFile(archive_path)

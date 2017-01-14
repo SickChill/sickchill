@@ -205,7 +205,7 @@ def is_media_file(filename):
         return False
 
 
-def is_rarfile(filename):
+def is_rar_file(filename):
     """
     Check if file is a RAR file, or part of a RAR set
 
