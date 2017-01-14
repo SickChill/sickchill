@@ -5270,13 +5270,14 @@ class ConfigAnime(Config):
                         controller="config", action="anime")
 
     def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
-                  split_home=None):
+                  split_home=None, split_home_in_tabs=None):
 
         sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
         sickbeard.ANIDB_PASSWORD = anidb_password
         sickbeard.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
         sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
+        sickbeard.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
 
         sickbeard.save_config()
         ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))

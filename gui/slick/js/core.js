@@ -2020,6 +2020,12 @@ var SICKRAGE = {
     },
     home: {
         init: function(){
+            // Reset the layout for the activated tab (when using ui tabs)
+            $('#showTabs').tabs({
+                activate: function() {
+                    $('.show-grid').isotope('layout');
+               }
+            });
 
         },
         index: function(){

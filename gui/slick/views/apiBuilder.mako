@@ -33,6 +33,7 @@
         <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
 
         <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
+        <meta data-var="sickbeard.ANIME_SPLIT_HOME_IN_TABS" data-content="${sickbeard.ANIME_SPLIT_HOME_IN_TABS}">
         <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
         <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
         <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">

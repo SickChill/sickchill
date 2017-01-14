@@ -3092,10 +3092,10 @@ tablesorter.css
     vertical-align: middle;
 }
 
-/* remove extra border from left edge */
-.tablesorter th:first-child,
-.tablesorter td:first-child {
-    border-left: none;
+/* add extra border at right edge */
+.tablesorter th:last-child,
+.tablesorter td:last-child {
+    border-right: #FFFFFF 1px solid;
 }
 
 .tablesorter th {
@@ -3159,6 +3159,16 @@ thead.tablesorter-stickyHeader {
     text-align: center;
     background: #EEEEEE;
     border-bottom: 1px solid #DDDDDD;
+}
+
+/* add extra border at left edge */
+.tablesorter tr.tablesorter-filter-row td:first-child {
+    border-left: #FFFFFF 1px solid;
+}
+
+/* add extra border at right edge */
+.tablesorter tr.tablesorter-filter-row td:last-child {
+    border-right: #FFFFFF 1px solid;
 }
 
 /* hidden filter row */
