@@ -179,6 +179,9 @@ def isMediaFile(filename):
 
     # ignore samples
     try:
+        assert isinstance(filename, (str, unicode)), type(filename)
+        filename = ek(os.path.basename, filename)
+
         if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
             return False
 
@@ -196,7 +199,7 @@ def isMediaFile(filename):
             return False
 
         return filname_parts[-1].lower() in MEDIA_EXTENSIONS
-    except TypeError as error:  # Not a string
+    except (TypeError, AssertionError) as error:  # Not a string
         logger.log('Invalid filename. Filename must be a string. {0}'.format(error), logger.DEBUG)  # pylint: disable=no-member
         return False
 
