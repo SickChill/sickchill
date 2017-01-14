@@ -63,10 +63,11 @@ class TorrentProvider(GenericProvider):
                 for term in self.proper_strings:
                     search_strings = self._get_episode_search_strings(episode, add_string=term)
 
-                    for item in self.search(search_strings[0]):
-                        title, url = self._get_title_and_url(item)
+                    for search_string in search_strings:
+                        for item in self.search(search_string):
+                            title, url = self._get_title_and_url(item)
 
-                        results.append(Proper(title, url, datetime.today(), show))
+                            results.append(Proper(title, url, datetime.today(), show))
 
         return results
 
