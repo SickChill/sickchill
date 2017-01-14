@@ -709,7 +709,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
-            elif not same_file and sickbeard.helpers.isMediaFile(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
+            elif not same_file and sickbeard.helpers.is_media_file(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
 
@@ -1705,7 +1705,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 logger.log("Not touching status [ {0} ] It could be skipped/ignored/snatched/archived".format(statusStrings[self.status]), logger.DEBUG)
 
         # if we have a media file then it's downloaded
-        elif sickbeard.helpers.isMediaFile(self.location):
+        elif sickbeard.helpers.is_media_file(self.location):
             # leave propers alone, you have to either post-process them or manually change them back
             if self.status not in Quality.SNATCHED_PROPER + Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED:
                 logger.log(
@@ -1733,7 +1733,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         if self.location != "":
 
-            if self.status == UNKNOWN and sickbeard.helpers.isMediaFile(self.location):
+            if self.status == UNKNOWN and sickbeard.helpers.is_media_file(self.location):
                 logger.log("7 Status changes from " + str(self.status) + " to " + str(
                     Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
                 self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)

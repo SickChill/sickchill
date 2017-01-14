@@ -170,7 +170,7 @@ def remove_non_release_groups(name):
     return _name
 
 
-def isMediaFile(filename):
+def is_media_file(filename):
     """
     Check if named file may contain media
 
@@ -327,7 +327,7 @@ def listMediaFiles(path):
         if ek(os.path.isdir, fullCurFile) and not curFile.startswith('.') and not curFile == 'Extras':
             files += listMediaFiles(fullCurFile)
 
-        elif isMediaFile(curFile):
+        elif is_media_file(curFile):
             files.append(fullCurFile)
 
     return files

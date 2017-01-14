@@ -175,15 +175,15 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
         result.output += log_helper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
 
-        videoFiles = filter(helpers.isMediaFile, files)
-        rarFiles = filter(helpers.isRarFile, files)
+        videoFiles = filter(helpers.is_media_file, files)
+        rarFiles = filter(helpers.is_rarfile, files)
         rarContent = []
         if rarFiles:
             rarContent = unRAR(path, rarFiles, force, result)
             files += rarContent
-            videoFiles += filter(helpers.isMediaFile, rarContent)
+            videoFiles += filter(helpers.is_media_file, rarContent)
 
-        videoInRar = filter(helpers.isMediaFile, rarContent)
+        videoInRar = filter(helpers.is_media_file, rarContent)
 
         result.output += log_helper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
         result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
@@ -233,15 +233,15 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
 
             if not postpone:
-                videoFiles = filter(helpers.isMediaFile, file_names)
+                videoFiles = filter(helpers.is_media_file, file_names)
                 rarFiles = (x for x in file_names if helpers.is_rarfile(ek(os.path.join, current_directory, x)))
                 rarContent = ()
                 if rarFiles:
                     rarContent = unRAR(current_directory, rarFiles, force, result)
                     file_names = set(file_names + rarContent)
-                    videoFiles += filter(helpers.isMediaFile, rarContent)
+                    videoFiles += filter(helpers.is_media_file, rarContent)
 
-                videoInRar = filter(helpers.isMediaFile, rarContent)
+                videoInRar = filter(helpers.is_media_file, rarContent)
                 unwanted_files = [x for x in file_names if x not in videoFiles]
                 if unwanted_files:
                     result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
@@ -339,7 +339,7 @@ def validate_dir(path, process_path, original_release_name, failed, result):  # 
             return False
 
     for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, process_path), topdown=False):
-        found_files = filter(helpers.isMediaFile, file_names)
+        found_files = filter(helpers.is_media_file, file_names)
         if sickbeard.UNPACK:
             found_files += filter(helpers.is_rarfile, file_names)
 
@@ -398,7 +398,7 @@ def unRAR(path, rarFiles, force, result):  # pylint: disable=too-many-branches,t
                 rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
-                if not filter(helpers.isMediaFile, rar_handle.namelist()):
+                if not filter(helpers.is_media_file, rar_handle.namelist()):
                     continue
 
                 # Skip extraction if any file in archive has previously been extracted

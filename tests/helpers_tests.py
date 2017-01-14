@@ -24,7 +24,7 @@ Test sickbeard.helpers
 Public Methods:
     indentXML
     remove_non_release_groups
-    isMediaFile
+    is_media_file
     is_rarfile
     remove_file_failed
     makeDir
@@ -258,7 +258,7 @@ class HelpersFileTests(unittest.TestCase):
 
     def test_is_media_file(self):
         """
-        Test isMediaFile
+        Test is_media_file
         """
         # TODO: Add unicode tests
         # TODO: Add MAC OS resource fork tests
@@ -304,7 +304,7 @@ class HelpersFileTests(unittest.TestCase):
 
         for cur_test in extension_tests, sample_tests, edge_cases:
             for cur_name, expected_result in cur_test.items():
-                self.assertEqual(helpers.isMediaFile(cur_name), expected_result, cur_name)
+                self.assertEqual(helpers.is_media_file(cur_name), expected_result, cur_name)
 
     @unittest.skip('Not yet implemented')
     def test_is_file_locked(self):
