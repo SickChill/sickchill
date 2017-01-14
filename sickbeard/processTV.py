@@ -161,7 +161,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                                    logger.DEBUG)
         return result.output
 
-    path, dirs, files = get_path_dir_files(process_path, release_name, mode)
+    path, subdirectories, files = get_path_dir_files(process_path, release_name, mode)
 
     files = filter(is_torrent_or_nzb_file, files)
     sync_files = filter(is_sync_file, files)
@@ -173,42 +173,42 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     if not postpone:
         result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
-        result.output += log_helper(u"PostProcessing Dirs: {0}".format(str(dirs)), logger.DEBUG)
+        result.output += log_helper(u"PostProcessing Directories: {0}".format(str(subdirectories)), logger.DEBUG)
 
-        videoFiles = filter(helpers.is_media_file, files)
+        video_files = filter(helpers.is_media_file, files)
         rarFiles = filter(helpers.is_rar_file, files)
-        rarContent = []
+        rar_contents = []
         if rarFiles:
-            rarContent = unRAR(path, rarFiles, force, result)
-            files += rarContent
-            videoFiles += filter(helpers.is_media_file, rarContent)
+            rar_contents = unRAR(path, rarFiles, force, result)
+            files += rar_contents
+            video_files += filter(helpers.is_media_file, rar_contents)
 
-        videoInRar = filter(helpers.is_media_file, rarContent)
+        video_in_rar = filter(helpers.is_media_file, rar_contents)
 
         result.output += log_helper(u"PostProcessing Files: {0}".format(files), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(videoFiles), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing RarContent: {0}".format(rarContent), logger.DEBUG)
-        result.output += log_helper(u"PostProcessing VideoInRar: {0}".format(videoInRar), logger.DEBUG)
+        result.output += log_helper(u"PostProcessing VideoFiles: {0}".format(video_files), logger.DEBUG)
+        result.output += log_helper(u"PostProcessing RarContent: {0}".format(rar_contents), logger.DEBUG)
+        result.output += log_helper(u"PostProcessing VideoInRar: {0}".format(video_in_rar), logger.DEBUG)
 
-        # If release_name is set and there's more than one videofile in the folder, files will be lost (overwritten).
-        release_name = (release_name, None)[len(videoFiles) >= 2]
+        # If release_name is set and there's more than one video file in the folder, files will be lost (overwritten).
+        release_name = (release_name, None)[len(video_files) >= 2]
 
         process_method = process_method if process_method else sickbeard.PROCESS_METHOD
         result.result = True
 
         # Don't Link media when the media is extracted from a rar in the same path
-        if process_method in (u'hardlink', u'symlink') and videoInRar:
-            process_media(path, videoInRar, release_name, u'move', force, is_priority, result)
-            delete_files(path, rarContent, result)
-            for video in set(videoFiles) - set(videoInRar):
+        if process_method in (u'hardlink', u'symlink') and video_in_rar:
+            process_media(path, video_in_rar, release_name, u'move', force, is_priority, result)
+            delete_files(path, rar_contents, result)
+            for video in set(video_files) - set(video_in_rar):
                 process_media(path, [video], release_name, process_method, force, is_priority, result)
-        elif sickbeard.DELRARCONTENTS and videoInRar:
-            process_media(path, videoInRar, release_name, process_method, force, is_priority, result)
-            delete_files(path, rarContent, result, True)
-            for video in set(videoFiles) - set(videoInRar):
+        elif sickbeard.DELRARCONTENTS and video_in_rar:
+            process_media(path, video_in_rar, release_name, process_method, force, is_priority, result)
+            delete_files(path, rar_contents, result, True)
+            for video in set(video_files) - set(video_in_rar):
                 process_media(path, [video], release_name, process_method, force, is_priority, result)
         else:
-            for video in videoFiles:
+            for video in video_files:
                 process_media(path, [video], release_name, process_method, force, is_priority, result)
 
     else:
@@ -217,13 +217,13 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         result.missed_files.append(u"{0} : Sync files found".format(path))
 
     # Process Video File in all TV Subdir
-    for curDir in dirs:
-        if not validate_dir(path, curDir, original_release_name, failed, result):
+    for subdirectory in subdirectories:
+        if not validate_dir(path, subdirectory, original_release_name, failed, result):
             continue
 
         result.result = True
 
-        for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, curDir), topdown=False):
+        for current_directory, directory_names, file_names in ek(os.walk, ek(os.path.join, path, subdirectory), topdown=False):
             if not validate_dir(path, current_directory, original_release_name, failed, result):
                 continue
 
@@ -233,32 +233,32 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             postpone = sync_files and sickbeard.POSTPONE_IF_SYNC_FILES
 
             if not postpone:
-                videoFiles = filter(helpers.is_media_file, file_names)
+                video_files = filter(helpers.is_media_file, file_names)
                 rarFiles = (x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x)))
-                rarContent = ()
+                rar_contents = ()
                 if rarFiles:
-                    rarContent = unRAR(current_directory, rarFiles, force, result)
-                    file_names = set(file_names + rarContent)
-                    videoFiles += filter(helpers.is_media_file, rarContent)
+                    rar_contents = unRAR(current_directory, rarFiles, force, result)
+                    file_names = set(file_names + rar_contents)
+                    video_files += filter(helpers.is_media_file, rar_contents)
 
-                videoInRar = filter(helpers.is_media_file, rarContent)
-                unwanted_files = [x for x in file_names if x not in videoFiles]
+                video_in_rar = filter(helpers.is_media_file, rar_contents)
+                unwanted_files = [x for x in file_names if x not in video_files]
                 if unwanted_files:
                     result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
                 # Don't Link media when the media is extracted from a rar in the same path
-                if process_method in (u'hardlink', u'symlink') and videoInRar:
-                    process_media(current_directory, videoInRar, release_name, u'move', force, is_priority, result)
-                    process_media(current_directory, set(videoFiles) - set(videoInRar), release_name, process_method, force,
+                if process_method in (u'hardlink', u'symlink') and video_in_rar:
+                    process_media(current_directory, video_in_rar, release_name, u'move', force, is_priority, result)
+                    process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
                                   is_priority, result)
-                    delete_files(current_directory, rarContent, result)
-                elif sickbeard.DELRARCONTENTS and videoInRar:
-                    process_media(current_directory, videoInRar, release_name, process_method, force, is_priority, result)
-                    process_media(current_directory, set(videoFiles) - set(videoInRar), release_name, process_method, force,
+                    delete_files(current_directory, rar_contents, result)
+                elif sickbeard.DELRARCONTENTS and video_in_rar:
+                    process_media(current_directory, video_in_rar, release_name, process_method, force, is_priority, result)
+                    process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
                                   is_priority, result)
-                    delete_files(current_directory, rarContent, result, True)
+                    delete_files(current_directory, rar_contents, result, True)
                 else:
-                    process_media(current_directory, videoFiles, release_name, process_method, force, is_priority, result)
+                    process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
 
                     # Delete all file not needed and avoid deleting files if Manual PostProcessing
                     if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
@@ -500,12 +500,12 @@ def already_processed(process_path, videofile, force, result):  # pylint: disabl
     return False
 
 
-def process_media(process_path, videoFiles, release_name, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
+def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
     """
     Postprocess mediafiles
 
     :param process_path: Path to process in
-    :param videoFiles: Filenames to look for and postprocess
+    :param video_files: Filenames to look for and postprocess
     :param release_name: Name of NZB/Torrent file related
     :param process_method: auto/manual
     :param force: Postprocess currently postprocessing file
@@ -514,7 +514,7 @@ def process_media(process_path, videoFiles, release_name, process_method, force,
     """
 
     processor = None
-    for cur_video_file in videoFiles:
+    for cur_video_file in video_files:
         cur_video_file_path = ek(os.path.join, process_path, cur_video_file)
 
         if already_processed(process_path, cur_video_file, force, result):
@@ -547,27 +547,27 @@ def get_path_dir_files(process_path, release_name, mode):
     :param process_path: Directory to start in
     :param release_name: NZB/Torrent file, if present
     :param mode: auto/manual
-    :return: a tuple of (path,dirs,files)
+    :return: a tuple of (path,subdirectories,files)
     """
     path = u""
+    subdirectories = []
     files = []
-    dirs = []
 
     if process_path == sickbeard.TV_DOWNLOAD_DIR and not release_name or mode == u"manual":  # Scheduled Post Processing Active
         # Get at first all the subdir in the process_path
-        for path, dirs, files in ek(os.walk, process_path):
+        for path, subdirectories, files in ek(os.walk, process_path):
             break
     else:
         path, directory = ek(os.path.split, process_path)  # Script Post Processing
         if not (release_name is None or release_name.endswith((u'.nzb', u'.torrent'))) and ek(os.path.isfile, ek(os.path.join, process_path, release_name)):
             # For single torrent file without Dir
-            dirs = []
+            subdirectories = []
             files = [ek(os.path.join, process_path, release_name)]
         else:
-            dirs = [directory]
+            subdirectories = [directory]
             files = []
 
-    return path, dirs, files
+    return path, subdirectories, files
 
 
 def process_failed(process_path, release_name, result):

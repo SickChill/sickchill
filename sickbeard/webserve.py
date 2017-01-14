@@ -1150,7 +1150,7 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def status(self):
-        tvdirFree = helpers.getDiskSpaceUsage(sickbeard.TV_DOWNLOAD_DIR)
+        tvdirFree = helpers.disk_usage(sickbeard.TV_DOWNLOAD_DIR)
         rootDir = {}
 
         if sickbeard.ROOT_DIRS:
@@ -1161,7 +1161,7 @@ class Home(WebRoot):
 
         if len(backend_dirs):
             for subject in backend_dirs:
-                rootDir[subject] = helpers.getDiskSpaceUsage(subject)
+                rootDir[subject] = helpers.disk_usage(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
         return t.render(title=_('Status'), header=_('Status'), topmenu='system',
@@ -2712,7 +2712,7 @@ class HomeAddShows(Home):
             configure_show_options=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
+            tvdb_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not tvdb_id:
                 logger.log(u"Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(

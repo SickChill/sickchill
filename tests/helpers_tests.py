@@ -29,7 +29,7 @@ Public Methods:
     remove_file_failed
     makeDir
     searchIndexerForShowID
-    listMediaFiles
+    list_media_files
     copyFile
     moveFile
     link
@@ -76,8 +76,8 @@ Public Methods:
     generateCookieSecret
     verify_freespace
     pretty_time_delta
-    isFileLocked
-    getDiskSpaceUsage
+    is_file_locked
+    disk_usage
 Private Methods:
     _check_against_names
     _setUpSession
@@ -309,7 +309,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_is_file_locked(self):
         """
-        Test isFileLocked
+        Test is_file_locked
         """
         pass
 
@@ -323,7 +323,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_list_media_files(self):
         """
-        Test listMediaFiles
+        Test list_media_files
         """
         pass
 
@@ -386,7 +386,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_get_disk_space_usage(self):
         """
-        Test getDiskSpaceUsage
+        Test disk_usage
         """
         pass
 

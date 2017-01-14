@@ -405,7 +405,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + ": Loading all episodes from the show directory " + self._location, logger.DEBUG)
 
         # get file list
-        mediaFiles = helpers.listMediaFiles(self._location)
+        mediaFiles = helpers.list_media_files(self._location)
         logger.log("{0}: Found files: {1}".format(self.indexerid, mediaFiles), logger.DEBUG)
 
         # create TVEpisodes from each media file (if possible)

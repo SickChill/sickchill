@@ -1039,7 +1039,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # try to find out if we have enough space to perform the copy or move action.
         if sickbeard.USE_FREE_SPACE_CHECK:
-            if not helpers.isFileLocked(self.file_path, False):
+            if not helpers.is_file_locked(self.file_path, False):
                 if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
                     return False
@@ -1151,12 +1151,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         try:
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
-                if helpers.isFileLocked(self.file_path, False):
+                if helpers.is_file_locked(self.file_path, False):
                     raise EpisodePostProcessingFailedException("File is locked for reading")
                 self._copy(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "move":
-                if helpers.isFileLocked(self.file_path, True):
+                if helpers.is_file_locked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
                 self._move(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
@@ -1164,7 +1164,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 self._hardlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "symlink":
-                if helpers.isFileLocked(self.file_path, True):
+                if helpers.is_file_locked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
                 self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
