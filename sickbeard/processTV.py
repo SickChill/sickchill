@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from itertools import ifilterfalse
 import os
 import shutil
 import stat
@@ -164,7 +163,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     path, subdirectories, files = get_path_dir_files(process_path, release_name, mode)
 
-    files = ifilterfalse(is_torrent_or_nzb_file, files)
+    files = [f for f in files if not is_torrent_or_nzb_file]
     original_release_name = release_name
 
     result.output += log_helper(u"PostProcessing Path: {0}".format(path), logger.INFO)
@@ -217,7 +216,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if not validate_dir(path, current_directory, original_release_name, failed, result):
                 continue
 
-            file_names = ifilterfalse(is_torrent_or_nzb_file, file_names)
+            file_names = [f for f in file_names if not is_torrent_or_nzb_file]
 
             video_files = filter(helpers.is_media_file, file_names)
             rar_files = (x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x)))
