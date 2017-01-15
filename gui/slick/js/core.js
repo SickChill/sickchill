@@ -288,7 +288,7 @@ var SICKRAGE = {
         },
         index: function() {
             $('#log_dir').fileBrowser({title: 'Select log file folder location'});
-            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1});
+            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, imagesOnly: 1});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {
