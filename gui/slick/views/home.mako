@@ -10,6 +10,7 @@
 
     <%include file="/inc_home_menu.mako"/>
 
+    % if sickbeard.ANIME_SPLIT_HOME:
     <!-- Nav tabs -->
     <div id="showTabs">
         <ul>
@@ -70,5 +71,23 @@
             </div>
         </div>
     </div>
+    %else:
+        <div class="row home-container">
+            <div class="col-md-12">
+                % if sickbeard.HOME_LAYOUT == 'poster':
+                    <div class="loading-spinner"></div>
+                % endif
+                % for curShowlist in showlists:
+                    <div class="row">
+                        <div class="col-md-12">
+                            <% curListType = curShowlist[0] %>
+                            <% myShowList = list(curShowlist[1]) %>
+                            <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=myShowList"/>
+                        </div>
+                    </div>
+                % endfor
+            </div>
+        </div>
+    %endif
 
 </%block>
