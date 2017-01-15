@@ -377,6 +377,36 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Use a background image')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
+                                    ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
+                            </div>
+                        </div>
+                        <div id="content_sickrage_background">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Background Path')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="sickrage_background_path" id="sickrage_background_path"
+                                                   value="${sickbeard.SICKRAGE_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="sickrage_background_path" class="component-desc">${_('Path to the background image')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Show fanart in the background')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

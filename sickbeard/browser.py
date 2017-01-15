@@ -56,18 +56,16 @@ def getFileList(path, includeFiles):
             continue
 
         full_filename = ek(os.path.join, path, filename)
-        is_dir = ek(os.path.isdir, full_filename)
+        is_file = ek(os.path.isfile, full_filename)
 
-        if not includeFiles and not is_dir:
+        if not includeFiles and is_file:
             continue
 
-        entry = {
+        file_list.append({
             'name': filename,
-            'path': full_filename
-        }
-        if not is_dir:
-            entry['isFile'] = True
-        file_list.append(entry)
+            'path': full_filename,
+            'isFile': is_file
+        })
 
     return file_list
 

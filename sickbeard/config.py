@@ -54,7 +54,7 @@ naming_sep_type = (" - ", " ")
 naming_sep_type_text = (" - ", "space")
 
 
-def change_HTTPS_CERT(https_cert):
+def change_https_cert(https_cert):
     """
     Replace HTTPS Certificate file path
 
@@ -75,14 +75,14 @@ def change_HTTPS_CERT(https_cert):
     return True
 
 
-def change_HTTPS_KEY(https_key):
+def change_https_key(https_key):
     """
     Replace HTTPS Key file path
 
     :param https_key: path to the new key file
     :return: True on success, False on failure
     """
-    if https_key == '':
+    if not https_key:
         sickbeard.HTTPS_KEY = ''
         return True
 
@@ -96,7 +96,28 @@ def change_HTTPS_KEY(https_key):
     return True
 
 
-def change_LOG_DIR(log_dir, web_log):
+def change_sickrage_background(background):
+    """
+    Replace HTTPS Key file path
+
+    :param background: path to the new background image
+    :return: True on success, False on failure
+    """
+    if not background:
+        sickbeard.SICKRAGE_BACKGROUND_PATH = ''
+        return True
+
+    background = ek(os.path.normpath, background)
+    if not ek(os.path.exists, background):
+        logger.log(u"Background image does not exist: {0}".format(background))
+        return False
+
+    sickbeard.SICKRAGE_BACKGROUND_PATH = background
+
+    return True
+
+
+def change_log_dir(log_dir, web_log):
     """
     Change logging directory for application and webserver
 
@@ -126,7 +147,7 @@ def change_LOG_DIR(log_dir, web_log):
     return True
 
 
-def change_NZB_DIR(nzb_dir):
+def change_nzb_dir(nzb_dir):
     """
     Change NZB Folder
 
@@ -147,7 +168,7 @@ def change_NZB_DIR(nzb_dir):
     return True
 
 
-def change_TORRENT_DIR(torrent_dir):
+def change_torrent_dir(torrent_dir):
     """
     Change torrent directory
 
@@ -168,7 +189,7 @@ def change_TORRENT_DIR(torrent_dir):
     return True
 
 
-def change_TV_DOWNLOAD_DIR(tv_download_dir):
+def change_tv_download_dir(tv_download_dir):
     """
     Change TV_DOWNLOAD directory (used by postprocessor)
 
@@ -189,7 +210,7 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
     return True
 
 
-def change_AUTOPOSTPROCESSOR_FREQUENCY(freq):
+def change_postprocessor_frequency(freq):
     """
     Change frequency of automatic postprocessing thread
     TODO: Make all thread frequency changers in config.py return True/False status
@@ -204,7 +225,7 @@ def change_AUTOPOSTPROCESSOR_FREQUENCY(freq):
     sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
 
 
-def change_DAILYSEARCH_FREQUENCY(freq):
+def change_daily_search_frequency(freq):
     """
     Change frequency of daily search thread
 
@@ -218,7 +239,7 @@ def change_DAILYSEARCH_FREQUENCY(freq):
     sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
 
 
-def change_BACKLOG_FREQUENCY(freq):
+def change_backlog_frequency(freq):
     """
     Change frequency of backlog thread
 
@@ -233,7 +254,7 @@ def change_BACKLOG_FREQUENCY(freq):
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
 
 
-def change_UPDATE_FREQUENCY(freq):
+def change_update_frequency(freq):
     """
     Change frequency of daily updater thread
 
@@ -247,7 +268,7 @@ def change_UPDATE_FREQUENCY(freq):
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
 
 
-def change_SHOWUPDATE_HOUR(freq):
+def change_showupdate_hour(freq):
     """
     Change frequency of show updater thread
 
@@ -263,7 +284,7 @@ def change_SHOWUPDATE_HOUR(freq):
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
 
 
-def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
+def change_subtitle_finder_frequency(subtitles_finder_frequency):
     """
     Change frequency of subtitle thread
 
@@ -292,7 +313,7 @@ def change_VERSION_NOTIFY(version_notify):
         sickbeard.versionCheckScheduler.forceRun()
 
 
-def change_DOWNLOAD_PROPERS(download_propers):
+def change_download_propers(download_propers):
     """
     Enable/Disable proper download thread
     TODO: Make this return True/False on success/failure
@@ -318,7 +339,7 @@ def change_DOWNLOAD_PROPERS(download_propers):
         logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
 
 
-def change_USE_TRAKT(use_trakt):
+def change_use_trakt(use_trakt):
     """
     Enable/disable trakt thread
     TODO: Make this return true/false on success/failure
@@ -344,7 +365,7 @@ def change_USE_TRAKT(use_trakt):
         logger.log(u"Stopping TRAKTCHECKER thread", logger.INFO)
 
 
-def change_USE_SUBTITLES(use_subtitles):
+def change_use_subtitles(use_subtitles):
     """
     Enable/Disable subtitle searcher
     TODO: Make this return true/false on success/failure
@@ -370,7 +391,7 @@ def change_USE_SUBTITLES(use_subtitles):
         logger.log(u"Stopping SUBTITLESFINDER thread", logger.INFO)
 
 
-def change_PROCESS_AUTOMATICALLY(process_automatically):
+def change_process_automatically(process_automatically):
     """
     Enable/Disable postprocessor thread
     TODO: Make this return True/False on success/failure

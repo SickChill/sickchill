@@ -59,7 +59,7 @@
                     }
                 }).text(entry.name);
                 if (entry.isFile) {
-                    link.prepend('<span class="ui-icon ui-icon-blank"></span>');
+                    link.prepend('<span class="ui-icon ui-icon-document"></span>');
                 } else {
                     link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
                         .on('mouseenter', function () { $('span', this).addClass('ui-icon-folder-open'); })
@@ -99,7 +99,7 @@
             'class': 'btn',
             click: function () {
                 // store the browsed path to the associated text field
-                callback($(this).find('.fileBrowserField').val(), options);
+                callback(options.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), options);
                 $(this).dialog('close');
             }
         }, {
