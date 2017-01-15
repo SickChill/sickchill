@@ -228,12 +228,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     return result.output
 
 
-def validate_dir(process_path, original_release_name, failed, result):  # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
+def validate_dir(process_path, release_name, failed, result):  # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
     """
     Check if directory is valid for processing
 
     :param process_path: Directory to check
-    :param original_release_name: Original NZB/Torrent name
+    :param release_name: Original NZB/Torrent name
     :param failed: Previously failed objects
     :param result: Previous results
     :return: True if dir is valid for processing, False if not
@@ -254,7 +254,7 @@ def validate_dir(process_path, original_release_name, failed, result):  # pylint
         return False
 
     if failed:
-        process_failed(process_path, original_release_name, result)
+        process_failed(process_path, release_name, result)
         result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
