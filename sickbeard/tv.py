@@ -405,20 +405,17 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + ": Loading all episodes from the show directory " + self._location, logger.DEBUG)
 
         # get file list
-        mediaFiles = helpers.listMediaFiles(self._location)
-        logger.log("{0}: Found files: {1}".format(self.indexerid, mediaFiles), logger.DEBUG)
+        media_files = helpers.list_media_files(self._location)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
-        for mediaFile in mediaFiles:
-            parse_result = None
+        for media_file in media_files:
+            logger.log("{tvdbid}: Creating episode from {filename}".format(tvdbid=str(self.indexerid), filename=ek(os.path.basename, media_file)), logger.DEBUG)
             curEpisode = None
-
-            logger.log(str(self.indexerid) + ": Creating episode from " + mediaFile, logger.DEBUG)
             try:
-                curEpisode = self.makeEpFromFile(ek(os.path.join, self._location, mediaFile))
+                curEpisode = self.makeEpFromFile(media_file)
             except (ShowNotFoundException, EpisodeNotFoundException) as error:
-                logger.log("Episode " + mediaFile + " returned an exception: " + ex(error), logger.ERROR)
+                logger.log("Episode {filename} returned an exception: {ex}".format(filename=ek(os.path.basename, media_file), ex=ex(error)), logger.ERROR)
                 continue
             except EpisodeDeletedException:
                 logger.log("The episode deleted itself when I tried making an object for it", logger.DEBUG)
@@ -709,7 +706,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
-            elif not same_file and sickbeard.helpers.isMediaFile(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
+            elif not same_file and sickbeard.helpers.is_media_file(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
 
@@ -1705,7 +1702,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 logger.log("Not touching status [ {0} ] It could be skipped/ignored/snatched/archived".format(statusStrings[self.status]), logger.DEBUG)
 
         # if we have a media file then it's downloaded
-        elif sickbeard.helpers.isMediaFile(self.location):
+        elif sickbeard.helpers.is_media_file(self.location):
             # leave propers alone, you have to either post-process them or manually change them back
             if self.status not in Quality.SNATCHED_PROPER + Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED:
                 logger.log(
@@ -1733,7 +1730,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         if self.location != "":
 
-            if self.status == UNKNOWN and sickbeard.helpers.isMediaFile(self.location):
+            if self.status == UNKNOWN and sickbeard.helpers.is_media_file(self.location):
                 logger.log("7 Status changes from " + str(self.status) + " to " + str(
                     Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
                 self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)

@@ -603,7 +603,7 @@ TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
-SYNC_FILES = "!sync,lftp-pget-status,part,bts,!qb,!qB"
+SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
 CALENDAR_UNPROTECTED = False
 CALENDAR_ICONS = False
