@@ -824,7 +824,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
         SICKRAGE_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'sickrage_background', 1))
-        SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path', 1)
+        SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path', '')
         FANART_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'fanart_background', 1))
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4)
 
