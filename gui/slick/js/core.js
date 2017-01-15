@@ -1937,7 +1937,7 @@ var SICKRAGE = {
         init: function(){
             // Reset the layout for the activated tab (when using ui tabs)
             $('#showTabs').tabs({
-                activate: function( event, ui ) {
+                activate: function() {
                     $('.show-grid').isotope('layout');
                }
             });
