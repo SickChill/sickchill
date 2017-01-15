@@ -130,7 +130,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     labels = []
 
                     columns = html.find_all("div", class_="colhead")
-                    for column in columns:
+                    for index, column in enumerate(columns):
                         lbl = column.get_text(strip=True)
                         if lbl:
                           labels.append(str(lbl))
@@ -141,7 +141,10 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                               lbl = lbl['alt']
                               labels.append(str(lbl))
                           else:
-                            lbl = "Download"
+                            if index == 3:
+                              lbl = "Download"
+                            else:
+                              lbl = str(index)
                             labels.append(lbl)
 
                     # Skip column headers
