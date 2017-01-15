@@ -239,7 +239,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
         else:
-            self.logger.log(level, message, *args, **kwargs)
+            try:
+                self.logger.log(level, message, *args, **kwargs)
+            except:
+                print msg
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -279,19 +282,19 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         try:
             # read log file
-            log_data = None
+            __log_data = None
 
             if ek(os.path.isfile, self.log_file):
                 with io.open(self.log_file, encoding='utf-8') as log_f:
-                    log_data = log_f.readlines()
+                    __log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
                 f_name = '{0}.{1:d}'.format(self.log_file, i)
-                if ek(os.path.isfile, f_name) and (len(log_data) <= 500):
+                if ek(os.path.isfile, f_name) and (len(__log_data) <= 500):
                     with io.open(f_name, encoding='utf-8') as log_f:
-                        log_data += log_f.readlines()
+                        __log_data += log_f.readlines()
 
-            log_data = [line for line in reversed(log_data)]
+            __log_data = list(reversed(__log_data))
 
             # parse and submit errors to issue tracker
             for cur_error in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
@@ -309,12 +312,12 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
                 gist = None
                 regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
-                for i, data in enumerate(log_data):
+                for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
                         level = match.group(2)
                         if LOGGING_LEVELS[level] == ERROR:
-                            paste_data = ''.join(log_data[i:i + 50])
+                            paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:
                                 gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
@@ -491,16 +494,15 @@ def log_data(min_level, log_filter, log_search, max_lines):
         return final_data
 
     data = []
-    for log_file in log_files:
+    for _log_file in log_files:
         if len(data) < max_lines:
-            with io.open(log_file, 'r', encoding='utf-8') as f:
+            with io.open(_log_file, 'r', encoding='utf-8') as f:
                 data += [line for line in reversed(f.readlines())]
         else:
             break
 
     found_lines = 0
     for x in data:
-        continue_line = False
         match = re.match(regex, x)
 
         if match:
@@ -514,20 +516,19 @@ def log_data(min_level, log_filter, log_search, max_lines):
                 continue
 
             if level not in LOGGING_LEVELS:
-                continue_line = True
-                continue
-
-            if log_search and log_search.lower() in x.lower():
+                final_data.append('AA ' + x)
+                found_lines += 1
+            elif log_search and log_search.lower() in x.lower():
                 final_data.append(x)
                 found_lines += 1
             elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == '<NONE>' or log_name.startswith(log_filter)):
                 final_data.append(x)
                 found_lines += 1
-        elif continue_line:
-            final_data.append("AA" + x)
+        else:
+            final_data.append('AA ' + x)
             found_lines += 1
 
         if found_lines >= max_lines:
-            return final_data
+            break
 
     return final_data

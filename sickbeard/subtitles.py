@@ -34,7 +34,7 @@ from subliminal import Episode, ProviderPool, provider_manager
 import sickbeard
 from sickbeard import db, history, logger
 from sickbeard.common import Quality
-from sickbeard.helpers import isMediaFile
+from sickbeard.helpers import is_media_file
 from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -278,7 +278,7 @@ def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-lo
 
             history.logSubtitle(episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle)
 
-        if sickbeard.SUBTITLES_EXTRA_SCRIPTS and isMediaFile(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
+        if sickbeard.SUBTITLES_EXTRA_SCRIPTS and is_media_file(video_path) and not sickbeard.EMBEDDED_SUBTITLES_ALL:
 
             run_subs_extra_scripts(episode, subtitle, video, single=not sickbeard.SUBTITLES_MULTI)
 
