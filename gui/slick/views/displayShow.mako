@@ -120,10 +120,10 @@
                     </div>
                     <div class="info-container">
                         <div class="row">
-                            <div class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs">
+                            <div class="pull-right col-lg-4 col-md-4 hidden-sm hidden-xs">
                                 <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="max-height:50px;border:1px solid black;" class="pull-right">
                             </div>
-                            <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                            <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 % if 'rating' in show.imdb_info:
                                 <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
                                     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
@@ -152,7 +152,7 @@
                                 % endif
                                 <a href="${anon_url('https://fanart.tv/series/', _show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart" /></a>
                             </div>
-                            <div class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                            <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">
                                     % if show.genre and not show.imdb_info.get('genres'):
                                         % for genre in show.genre[1:-1].split('|'):
