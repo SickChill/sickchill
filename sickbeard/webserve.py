@@ -3918,7 +3918,7 @@ class ConfigGeneral(Config):
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_showupdate_hour(showupdate_hour)
-        config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
+        config.change_version_notify(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
