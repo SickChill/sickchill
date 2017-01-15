@@ -161,12 +161,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                                    logger.DEBUG)
         return result.output
 
-    original_release_name = release_name
-
     process_method = process_method or sickbeard.PROCESS_METHOD
 
     for current_directory, directory_names, file_names in ek(os.walk, process_path):
-        if not validate_dir(current_directory, original_release_name, failed, result):
+        if not validate_dir(current_directory, release_name, failed, result):
             continue
 
         result.result = True
