@@ -239,7 +239,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         if level == ERROR:
             self.logger.exception(message, *args, **kwargs)
         else:
-            self.logger.log(level, message, *args, **kwargs)
+            try:
+                self.logger.log(level, message, *args, **kwargs)
+            except:
+                print msg
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)

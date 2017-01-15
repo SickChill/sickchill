@@ -184,15 +184,15 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             filelist = []
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
-            for filefound in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
-                file_name, dirnames_, file_extension = filefound.rpartition('.')
+            for found_file in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
+                file_name, separator, file_extension = found_file.rpartition('.')
 
                 # Handles subtitles with language code
                 if file_extension in SUBTITLE_EXTENSIONS and file_name.rpartition('.')[0].lower() == base_name.lower():
-                    filelist.append(filefound)
+                    filelist.append(found_file)
                 # Handles all files with same basename, including subtitles without language code
                 elif file_name.lower() == base_name.lower():
-                    filelist.append(filefound)
+                    filelist.append(found_file)
 
         for associated_file_path in filelist:
             # Exclude the video file we are post-processing
@@ -1039,7 +1039,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # try to find out if we have enough space to perform the copy or move action.
         if sickbeard.USE_FREE_SPACE_CHECK:
-            if not helpers.is_file_locked(self.file_path, False):
+            if not helpers.is_file_locked(self.file_path):
                 if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
                     return False

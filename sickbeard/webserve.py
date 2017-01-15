@@ -1150,7 +1150,7 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def status(self):
-        tvdirFree = helpers.disk_usage(sickbeard.TV_DOWNLOAD_DIR)
+        tvdirFree = helpers.disk_usage_hr(sickbeard.TV_DOWNLOAD_DIR)
         rootDir = {}
 
         if sickbeard.ROOT_DIRS:
@@ -1161,7 +1161,7 @@ class Home(WebRoot):
 
         if len(backend_dirs):
             for subject in backend_dirs:
-                rootDir[subject] = helpers.disk_usage(subject)
+                rootDir[subject] = helpers.disk_usage_hr(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
         return t.render(title=_('Status'), header=_('Status'), topmenu='system',
@@ -2323,7 +2323,7 @@ class HomePostProcess(Home):
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="auto", force_next=False, *args_, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
         process_path = ss(kwargs.get('dir', proc_dir))

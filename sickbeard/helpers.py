@@ -1600,7 +1600,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return False
 
 
-def disk_usage(diskPath=None):
+def disk_usage_hr(diskPath=None):
     """
     returns the free space in human readable bytes for a given path or False if no path given
     :param diskPath: the filesystem path being checked
