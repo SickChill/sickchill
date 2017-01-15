@@ -27,7 +27,7 @@ Methods
     change_update_frequency
     change_showupdate_hour
     change_subtitle_finder_frequency
-    change_VERSION_NOTIFY
+    change_version_notify
     change_download_propers
     change_use_trakt
     change_use_subtitles
