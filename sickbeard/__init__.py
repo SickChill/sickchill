@@ -567,6 +567,8 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
+SICKRAGE_BACKGROUND = None
+SICKRAGE_BACKGROUND_PATH = None
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
 
@@ -682,7 +684,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
-            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
             FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
 
         if __INITIALIZED__:
@@ -821,6 +823,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
+        SICKRAGE_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'sickrage_background', 1))
+        SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path', 1)
         FANART_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'fanart_background', 1))
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4)
 
@@ -2260,6 +2264,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'gui_name': GUI_NAME,
             'language': GUI_LANG,
             'theme_name': THEME_NAME,
+            'sickrage_background': int(SICKRAGE_BACKGROUND),
+            'sickrage_background_path': SICKRAGE_BACKGROUND_PATH,
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,

@@ -55,6 +55,10 @@ var SICKRAGE = {
                         imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
                     }
                 }
+                if (metaToBool('sickbeard.SICKRAGE_BACKGROUND')) {
+                    $.backstretch(srRoot + '/ui/sickrage_background');
+                    $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
+                }
             })();
 
             $.confirm.options = {
@@ -283,7 +287,8 @@ var SICKRAGE = {
             });
         },
         index: function() {
-            $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
+            $('#log_dir').fileBrowser({title: 'Select log file folder location'});
+            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, imagesOnly: 1});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {

@@ -60,6 +60,7 @@
         <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
         <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
         <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
+        <meta data-var="sickbeard.SICKRAGE_BACKGROUND" data-content="${sickbeard.SICKRAGE_BACKGROUND}">
         <meta data-var="sickbeard.FANART_BACKGROUND" data-content="${sickbeard.FANART_BACKGROUND}">
         <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />

@@ -337,7 +337,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                     result.output += log_helper('Arcive needs a password, skipping: {0}'.format(archive_path))
                     continue
 
-                rar_handle.testrar()
+                # rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
                 if not filter(helpers.is_media_file, rar_handle.namelist()):
