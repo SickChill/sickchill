@@ -296,7 +296,7 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
     sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
 
 
-def change_VERSION_NOTIFY(version_notify):
+def change_version_notify(version_notify):
     """
     Change frequency of versioncheck thread
 
