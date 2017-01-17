@@ -617,7 +617,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
     if not silent:
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
 
-    return my_val
+    return str(my_val)
 
 
 class ConfigMigrator(object):
