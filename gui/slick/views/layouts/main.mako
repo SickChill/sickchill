@@ -31,7 +31,9 @@
         <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
         <!-- iOS -->
         <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
-
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        
         <title>SickRage - ${title}</title>
 
         <!--[if lt IE 9]>
