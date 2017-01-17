@@ -822,12 +822,12 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     # Create the CA Certificate
-    cakey = createKeyPair(TYPE_RSA, 1024)
+    cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
     cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
     cname = 'SickRage'
-    pkey = createKeyPair(TYPE_RSA, 1024)
+    pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
     cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
