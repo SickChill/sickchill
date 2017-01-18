@@ -398,6 +398,12 @@ TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
 TELEGRAM_ID = ''
 TELEGRAM_APIKEY = ''
 
+USE_GENERICURL = False
+GENERICURL_NOTIFY_ONSNATCH = False
+GENERICURL_NOTIFY_ONDOWNLOAD = False
+GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD = False
+GENERICURL_ID = ''
+
 USE_JOIN = False
 JOIN_NOTIFY_ONSNATCH = False
 JOIN_NOTIFY_ONDOWNLOAD = False
@@ -647,6 +653,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
+            USE_GENERICURL, GENERICURL_ID, GENERICURL_NOTIFY_ONSNATCH, GENERICURL_NOTIFY_ONDOWNLOAD, GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_JOIN, JOIN_ID, JOIN_NOTIFY_ONSNATCH, JOIN_NOTIFY_ONDOWNLOAD, JOIN_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
@@ -1093,6 +1100,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Telegram', 'telegram_notify_onsubtitledownload', 0))
         TELEGRAM_ID = check_setting_str(CFG, 'Telegram', 'telegram_id', '')
         TELEGRAM_APIKEY = check_setting_str(CFG, 'Telegram', 'telegram_apikey', '')
+
+        USE_GENERICURL = bool(check_setting_int(CFG, 'GenericURL', 'use_genericurl', 0))
+        GENERICURL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'GenericURL', 'genericurl_notify_onsnatch', 0))
+        GENERICURL_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'GenericURL', 'genericurl_notify_ondownload', 0))
+        GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'GenericURL', 'genericurl_notify_onsubtitledownload', 0))
+        GENERICURL_ID = check_setting_str(CFG, 'GenericURL', 'genericurl_id', '')
 
         USE_JOIN = bool(check_setting_int(CFG, 'Join', 'use_join', 0))
         JOIN_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Join', 'join_notify_onsnatch', 0))
@@ -2062,6 +2075,14 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'telegram_notify_onsubtitledownload': int(TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD),
             'telegram_id': TELEGRAM_ID,
             'telegram_apikey': TELEGRAM_APIKEY,
+        },
+
+        'GenericURL': {
+            'use_genericurl': int(USE_GENERICURL),
+            'genericurl_notify_onsnatch': int(GENERICURL_NOTIFY_ONSNATCH),
+            'genericurl_notify_ondownload': int(GENERICURL_NOTIFY_ONDOWNLOAD),
+            'genericurl_notify_onsubtitledownload': int(GENERICURL_NOTIFY_ONSUBTITLEDOWNLOAD),
+            'genericurl_id': GENERICURL_ID,
         },
 
         'Join': {
