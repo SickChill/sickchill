@@ -245,11 +245,14 @@ class RTorrent:
         if verify_load:
             for i in range(MAX_RETRIES):
                 time.sleep(1)
-                if self.find_torrent(info_hash):
+                torrent = self.find_torrent(info_hash)
+                if torrent:
+                    torrent.start()
                     break
 
             assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful (load_magnet)."
 
+        time.sleep(3)
         return self.find_torrent(info_hash)
 
     def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8

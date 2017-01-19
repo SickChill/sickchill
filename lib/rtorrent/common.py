@@ -58,8 +58,9 @@ def find_torrent(info_hash, torrent_list):
 
     @return: L{Torrent} instance, or -1 if not found
     """
-    t = filter(lambda x: x.info_hash == info_hash, torrent_list)
-    return t[0] if t else None
+    for t in torrent_list:
+        if t.info_hash == info_hash:
+            return t
 
 
 def is_valid_port(port):
