@@ -269,14 +269,14 @@ class NameParser(object):
                     new_season_numbers.append(s)
 
             elif bestResult.show.is_anime and bestResult.ab_episode_numbers:
-                scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]
+                bestResult.scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]
                 for epAbsNo in bestResult.ab_episode_numbers:
                     a = epAbsNo
 
                     if bestResult.show.is_scene:
                         a = scene_numbering.get_indexer_absolute_numbering(bestResult.show.indexerid,
                                                                            bestResult.show.indexer, epAbsNo,
-                                                                           True, scene_season)
+                                                                           True, bestResult.scene_season)
 
                     (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [a])
 
@@ -442,6 +442,7 @@ class NameParser(object):
         # season and episode numbers
         final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
         final_result.episode_numbers = self._combine_results(file_name_result, dir_name_result, 'episode_numbers')
+        final_result.scene_season = self._combine_results(file_name_result, dir_name_result, 'scene_season')
 
         # if the dirname has a release group/show name I believe it over the filename
         final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
@@ -514,6 +515,8 @@ class ParseResult(object):  # pylint: disable=too-many-instance-attributes
         self.score = score
 
         self.version = version
+
+        self.scene_season = None
 
     def __eq__(self, other):
         return other and all([
