@@ -354,7 +354,7 @@ class TraktChecker(object):
 
             if sickbeard.showList:
                 for show in sickbeard.showList:
-                    if show.status == "Ended":
+                    if show.status in ("Ended", "Canceled"):
                         if not show.imdbid:
                             logger.log(u'Could not check trakt progress for {0} because the imdb id is missing from tvdb data, skipping'.format
                                        (show.name), logger.WARNING)
