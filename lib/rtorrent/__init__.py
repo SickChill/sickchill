@@ -41,7 +41,8 @@ __license__ = "MIT"
 
 MIN_RTORRENT_VERSION = (0, 8, 1)
 MIN_RTORRENT_VERSION_STR = convert_version_tuple_to_str(MIN_RTORRENT_VERSION)
-MAX_RETRIES = 3
+MAX_RETRIES = 5
+
 
 class RTorrent:
 
@@ -243,25 +244,46 @@ class RTorrent:
         getattr(p, func_name)(magneturl)
 
         if verify_load:
+            new_torrent = None
+
+            # Make sure the torrent was added
             for i in range(MAX_RETRIES):
-                time.sleep(1)
-                torrent = self.find_torrent(info_hash)
-                if torrent:
-                    torrent.start()
+                time.sleep(2)
+                new_torrent = self.find_torrent(info_hash)
+                if new_torrent:
                     break
 
-            assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful (load_magnet)."
+            # Make sure torrent was added in time
+            assert new_torrent, "Adding torrent was unsuccessful after {0} seconds (load_magnet).".format(MAX_RETRIES * 2)
 
-        time.sleep(3)
+            # Resolve magnet to torrent, it will stop once has resolution has completed
+            new_torrent.start()
+
+            # Set new_torrent back to None for checks below
+            new_torrent = None
+
+            # Make sure the resolution has finished
+            for i in range(MAX_RETRIES):
+                time.sleep(2)
+                new_torrent = self.find_torrent(info_hash)
+                if new_torrent and str(info_hash) not in str(new_torrent.name):
+                    break
+
+            assert new_torrent and str(info_hash) not in str(new_torrent.name),\
+                "Magnet failed to resolve after {0} seconds (load_magnet).".format(MAX_RETRIES * 2)
+
+            # Skip the find_torrent (slow) below when verify_load
+            return new_torrent
+
         return self.find_torrent(info_hash)
 
-    def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8
+    def load_torrent(self, new_torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8
         """
         Loads torrent into rTorrent (with various enhancements)
 
-        @param torrent: can be a url, a path to a local file, or the raw data
+        @param new_torrent: can be a url, a path to a local file, or the raw data
         of a torrent file
-        @type torrent: str
+        @type new_torrent: str
 
         @param start: start torrent when loaded
         @type start: bool
@@ -290,32 +312,37 @@ class RTorrent:
         looking for, use load_torrent_simple() instead.
         """
         p = self._get_conn()
-        tp = TorrentParser(torrent)
-        torrent = xmlrpclib.Binary(tp._raw_torrent)
+        tp = TorrentParser(new_torrent)
+        new_torrent = xmlrpclib.Binary(tp._raw_torrent)
         info_hash = tp.info_hash
 
         func_name = self._get_load_function("raw", start, verbose)
 
         # load torrent
-        getattr(p, func_name)(torrent)
+        getattr(p, func_name)(new_torrent)
 
         if verify_load:
+            new_torrent = None
             for i in range(MAX_RETRIES):
-                time.sleep(1)
-                if self.find_torrent(info_hash):
+                time.sleep(2)
+                new_torrent = self.find_torrent(info_hash)
+                if new_torrent:
                     break
 
-            assert find_torrent(info_hash, self.torrents), "Adding torrent was unsuccessful. (load_torrent)"
+            assert new_torrent, "Adding torrent was unsuccessful after {0} seconds. (load_torrent)".format(MAX_RETRIES * 2)
+
+            # Skip the find_torrent (slow) below when verify_load
+            return new_torrent
 
         return self.find_torrent(info_hash)
 
-    def load_torrent_simple(self, torrent, file_type,
+    def load_torrent_simple(self, new_torrent, file_type,
                             start=False, verbose=False):
         """Loads torrent into rTorrent
 
-        @param torrent: can be a url, a path to a local file, or the raw data
+        @param new_torrent: can be a url, a path to a local file, or the raw data
         of a torrent file
-        @type torrent: str
+        @type new_torrent: str
 
         @param file_type: valid options: "url", "file", or "raw"
         @type file_type: str
@@ -344,14 +371,14 @@ class RTorrent:
         if file_type == "file":
             # since we have to assume we're connected to a remote rTorrent
             # client, we have to read the file and send it to rT as raw
-            assert os.path.isfile(torrent), \
-                "Invalid path: \"{0}\"".format(torrent)
-            torrent = open(torrent, "rb").read()
+            assert os.path.isfile(new_torrent), \
+                "Invalid path: \"{0}\"".format(new_torrent)
+            new_torrent = open(new_torrent, "rb").read()
 
         if file_type in ["raw", "file"]:
-            finput = xmlrpclib.Binary(torrent)
+            finput = xmlrpclib.Binary(new_torrent)
         elif file_type == "url":
-            finput = torrent
+            finput = new_torrent
 
         getattr(p, func_name)(finput)
 
