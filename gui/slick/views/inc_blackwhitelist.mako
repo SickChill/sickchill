@@ -91,9 +91,18 @@
     </div>
     <div class="row" style="padding-top:10px;">
         <div class="col-md-12">
-            <input type="text" id="addToPoolText" class="form-control form-control-inline input-sm input250" autocapitalize="off"  title="addToPoolText"/>
-            <input class="btn" type="button" value="${_('Add to Whitelist')}" id="addToWhite">
-            <input class="btn" type="button" value="${_('Add to Blacklist')}" id="addToBlack">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>${_('Custom Group')}</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="text" id="addToPoolText" class="form-control input-sm form-control-inline" autocapitalize="off"  title="addToPoolText"/>
+                    <input class="btn" type="button" value="${_('Add to Whitelist')}" id="addToWhite">
+                    <input class="btn" type="button" value="${_('Add to Blacklist')}" id="addToBlack">
+                </div>
+            </div>
         </div>
     </div>
 </div>

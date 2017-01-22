@@ -36,13 +36,13 @@
                     <div id="config-components">
                         <!-- Tabs -->
                         <ul>
-                            <li><a href="#core-component-group1">${_('Main')}</a></li>
-                            <li><a href="#core-component-group2">${_('Format')}</a></li>
-                            <li><a href="#core-component-group3">${_('Advanced')}</a></li>
+                            <li><a href="#main">${_('Main')}</a></li>
+                            <li><a href="#format">${_('Format')}</a></li>
+                            <li><a href="#advanced">${_('Advanced')}</a></li>
                         </ul>
 
                         <!-- Main -->
-                        <div id="core-component-group1">
+                        <div id="main">
                             <div class="row">
                                 <div class="col-md-12">
                                     <h3>${_('Main Settings')}</h3>
@@ -88,7 +88,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="defaultEpStatus">${_('This will set the status for future episodes.')}</label>
+                                                <label for="defaultEpStatus">${_('this will set the status for future episodes.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -110,7 +110,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="indexerLang">${_('This only applies to episode filenames and the contents of metadata files.')}</label>
+                                                <label for="indexerLang">${_('this only applies to episode filenames and the contents of metadata files.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -149,7 +149,7 @@
                         </div>
 
                         <!-- Format -->
-                        <div id="core-component-group2">
+                        <div id="format">
                             <div class="row">
                                 <div class="col-md-12">
                                     <h3>${_('Format Settings')}</h3>
@@ -165,12 +165,12 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="checkbox" id="airbydate" name="air_by_date" ${('', 'checked="checked"')[show.air_by_date == 1]} />
-                                                ${_('check if the show is released as Show.03.02.2010 rather than Show.S02E03.')}
+                                                <label for="airbydate">${_('check if the show is released as Show.03.02.2010 rather than Show.S02E03.')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="airbydate" style="color:red">${_('In case of an air date conflict between regular and special episodes, the later will be ignored.')}</label>
+                                                <label for="airbydate" style="color:red">${_('in case of an air date conflict between regular and special episodes, the later will be ignored.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -205,12 +205,13 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="sports" name="sports" ${('', 'checked="checked"')[show.sports == 1]}/> ${_('check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03')}
+                                                <input type="checkbox" id="sports" name="sports" ${('', 'checked="checked"')[show.sports == 1]}/>
+                                                <label>${_('check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="sports" style="color:red">${_('In case of an air date conflict between regular and special episodes, the later will be ignored.')}</label>
+                                                <label for="sports" style="color:red">${_('in case of an air date conflict between regular and special episodes, the later will be ignored.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -243,7 +244,8 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="dvdorder" name="dvdorder" ${('', 'checked="checked"')[show.dvdorder == 1]} /> ${_('use the DVD order instead of the air order')}
+                                                <input type="checkbox" id="dvdorder" name="dvdorder" ${('', 'checked="checked"')[show.dvdorder == 1]} />
+                                                <label>${_('use the DVD order instead of the air order')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -259,7 +261,7 @@
                         </div>
 
                         <!-- Advanced -->
-                        <div id="core-component-group3">
+                        <div id="advanced">
                             <div class="row">
                                 <div class="col-md-12">
                                     <h3>${_('Advanced Settings')}</h3>
@@ -287,7 +289,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('Search results with one or more words from this list will be ignored.')}</label>
+                                                <label>${_('search results with one or more words from this list will be ignored.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -313,7 +315,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('Search results with no words from this list will be ignored.')}</label>
+                                                <label>${_('search results with no words from this list will be ignored.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -346,7 +348,12 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <p>${_('This will affect episode search on NZB and torrent providers. This list appends to the original show name.')}</p>
+                                                <label>${_('this will affect episode search on NZB and torrent providers.')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('this list appends to the original show name.')}</label>
                                             </div>
                                         </div>
                                     </div>
