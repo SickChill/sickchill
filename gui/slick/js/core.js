@@ -2234,8 +2234,8 @@ var SICKRAGE = {
                 $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
                 $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
             }
-            $('#srRoot').ajaxEpSearch({'colorRow': true});
 
+            $('#srRoot').ajaxEpSearch({'colorRow': true});
             $('#srRoot').ajaxEpSubtitlesSearch();
             $('#srRoot').ajaxRetrySubtitlesSearch();
 
@@ -2518,11 +2518,11 @@ var SICKRAGE = {
 
             $('.imdbstars').generateStars();
 
-            $("#showTable, #animeTable").tablesorter({
+            $(".displayShowTable").tablesorter({
                 widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
                 widgetOptions : {
                     columnSelector_saveColumns: true, // jshint ignore:line
-                    columnSelector_layout : '<br><label><input type="checkbox">{name}</label>', // jshint ignore:line
+                    columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
                     columnSelector_mediaquery: false, // jshint ignore:line
                     columnSelector_cssChecked : 'checked' // jshint ignore:line
                 }
@@ -2535,7 +2535,9 @@ var SICKRAGE = {
             })
             // bootstrap popover event triggered when the popover opens
             .on('shown.bs.popover', function (){
-                $.tablesorter.columnSelector.attachTo($("#showTable, #animeTable"), '#popover-target');
+                $(".displayShowTable").each(function(index, item){
+                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                });
             });
 
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the

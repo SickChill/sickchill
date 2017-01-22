@@ -416,7 +416,7 @@
                             <div class="horizontal-scroll">
                                 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
                                     <thead>
-                                        <tr class="seasoncols" style="display:none;">
+                                        <tr class="seasoncols">
                                             <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
                                             <th data-sorter="false" class="col-metadata">${_('NFO')}</th>
                                             <th data-sorter="false" class="col-metadata">${_('TBN')}</th>
@@ -434,48 +434,6 @@
                                             <th data-sorter="false" class="col-search">${_('Search')}</th>
                                         </tr>
                                     </thead>
-
-                                % if curSeason == -1:
-                                    <tbody class="tablesorter-no-sort">
-                                        <tr id="season-${epResult["season"]}-cols" class="seasoncols">
-                                            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
-                                            <th class="col-metadata">${_('NFO')}</th>
-                                            <th class="col-metadata">${_('TBN')}</th>
-                                            <th class="col-ep">${_('Episode')}</th>
-                                            <th class="col-ep">${_('Absolute')}</th>
-                                            <th class="col-ep">${_('Scene')}</th>
-                                            <th class="col-ep">${_('Scene Absolute')}</th>
-                                            <th class="col-name">${_('Name')}</th>
-                                            <th class="col-name">${_('File Name')}</th>
-                                            <th class="col-ep">${_('Size')}</th>
-                                            <th class="col-airdate">${_('Airdate')}</th>
-                                            <th class="col-ep">${_('Download')}</th>
-                                            <th class="col-ep">${_('Subtitles')}</th>
-                                            <th class="col-status">${_('Status')}</th>
-                                            <th class="col-search">${_('Search')}</th>
-                                        </tr>
-                                    </tbody>
-                                % else:
-                                    <tbody class="tablesorter-no-sort">
-                                        <tr id="season-${epResult["season"]}-cols" class="seasoncols">
-                                            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
-                                            <th class="col-metadata">${_('NFO')}</th>
-                                            <th class="col-metadata">${_('TBN')}</th>
-                                            <th class="col-ep">${_('Episode')}</th>
-                                            <th class="col-ep">${_('Absolute')}</th>
-                                            <th class="col-ep">${_('Scene')}</th>
-                                            <th class="col-ep">${_('Scene Absolute')}</th>
-                                            <th class="col-name">${_('Name')}</th>
-                                            <th class="col-name">${_('File Name')}</th>
-                                            <th class="col-ep">${_('Size')}</th>
-                                            <th class="col-airdate">${_('Airdate')}</th>
-                                            <th class="col-ep">${_('Download')}</th>
-                                            <th class="col-ep">${_('Subtitles')}</th>
-                                            <th class="col-status">${_('Status')}</th>
-                                            <th class="col-search">${_('Search')}</th>
-                                        </tr>
-                                    </tbody>
-                                % endif
 
                                 % if sickbeard.DISPLAY_ALL_SEASONS is False:
                                     <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
