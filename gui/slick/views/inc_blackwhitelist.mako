@@ -51,7 +51,7 @@
                         <div class="col-md-12">
                             <select id="pool" multiple="multiple" size="12" title="pool">
                                 % for group in groups:
-                                    % if group not in whitelist and group['name'] not in blacklist:
+                                    % if group['name'] not in whitelist and group['name'] not in blacklist:
                                         <option value="${group['name']}">${group['name']} | ${group['rating']} | ${group['range']}</option>
                                     % endif
                                 % endfor
