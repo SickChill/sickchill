@@ -141,7 +141,7 @@
                                         % endfor
                                     </select>
                                 % else:
-                                    <label>${_('No providers available to configure.')}</label>
+                                    <label>${_('no providers available to configure.')}</label>
                                 % endif
                             </div>
                         </div>
@@ -361,7 +361,7 @@
                                                    id="${curTorrentProvider.get_id()}_custom_url"
                                                    value="${curTorrentProvider.custom_url}"
                                                    class="form-control input-sm input350" autocapitalize="off"/>
-                                            <label for="${curTorrentProvider.get_id()}_custom_url">${_('The URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
+                                            <label for="${curTorrentProvider.get_id()}_custom_url">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
                                         </div>
                                     </div>
                                 % endif
@@ -467,9 +467,9 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label for="${curTorrentProvider.get_id()}_cookies">
-                                                        ${_('Example: uid=1234;pass=567845439634987<br>' +
-                                                        'Note: uid and pass are not your username/password.<br>' +
-                                                        'Use DevTools or Firebug to get these values after logging in on your browser.')}
+                                                        ${_('example: uid=1234;pass=567845439634987<br>' +
+                                                        'note: uid and pass are not your username/password.<br>' +
+                                                        'use DevTools or Firebug to get these values after logging in on your browser.')}
                                                     </label>
                                                 </div>
                                             </div>

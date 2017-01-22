@@ -249,7 +249,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="file_timestamp_timezone">${_('What timezone should be used to change File Date?')}</label>
+                                        <label for="file_timestamp_timezone">${_('what timezone should be used to change File Date?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -321,12 +321,12 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
-                                                <label for="del_rar_contents">${_('Delete content of RAR files, even if Process Method not set to move?')}</label>
+                                                <label for="del_rar_contents">${_('delete content of RAR files, even if Process Method not set to move?')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
+                                                <label><b>${_('note')}:</b>&nbsp;${_('only working with RAR archive')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -1338,7 +1338,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="metadataType">${_('toggle metadata options that you wish to be created. <b>Multiple targets may be used.</b>')}</label>
+                                        <label for="metadataType">${_('toggle metadata options that you wish to be created')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('multiple targets may be used')}</b></label>
                                     </div>
                                 </div>
                             </div>

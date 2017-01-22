@@ -88,7 +88,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span><b>${_('note')}:</b>&nbsp;${_('Leave empty if you want store subtitle in episode path.')}</span>
+                                            <span><b>${_('note')}:</b>&nbsp;${_('leave empty if you want store subtitle in episode path.')}</span>
                                         </div>
                                     </div>
                                 </div>

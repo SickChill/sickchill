@@ -470,7 +470,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="coming_eps_missed_range">${_('Set the range in days of the missed episodes in the Schedule page')}</label>
+                                        <label for="coming_eps_missed_range">${_('set the range in days of the missed episodes in the Schedule page')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -542,19 +542,27 @@
                                 <label class="component-title">${_('Timezone')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <label for="local" class="space-right">
-                                    <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} >
-                                    <label>${_('Local')}</label>
-                                </label>
-                                <label for="network">
-                                    <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />
-                                    <label>${_('Network')}</label>
-                                </label>
-                                <div class="clear-left">
-                                    <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} >
+                                        <label for="local" class="space-right">${_('Local')}</label>
+                                    </div>
                                 </div>
-                                <div class="clear-left">
-                                    <p><b>${_('note')}:</b>&nbsp;${_('Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />
+                                        <label for="network">${_('Network')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('display dates and times in either your timezone or the shows network timezone')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -595,8 +603,8 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Web Interface')}</h3>
-                        <p>${_('It is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
-                        <p><b>${_('These options require a manual restart to take effect.')}</b></p>
+                        <p>${_('it is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
+                        <p><b>${_('these options require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -749,8 +757,17 @@
                                 <label class="component-title">${_('Reverse proxy headers')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
-                                <label for="handle_reverse_proxy">${_('accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
+                                        <label for="handle_reverse_proxy">${_('accept the following reverse proxy headers (advanced)...')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -978,7 +995,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</label>
+                                        <label>${_('example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1039,9 +1056,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         % if not gh_branch:
-                                            <div class="clear-left" style="color:#FF0000"><p>${_('Error: No branches found.')}</p></div>
+                                            <div class="clear-left" style="color:#FF0000"><label>${_('error: No branches found.')}</label></div>
                                         % else:
-                                            <div class="clear-left"><p>${_('select branch to use (restart required)')}</p></div>
+                                            <div class="clear-left"><label>${_('select branch to use (restart required)')}</label></div>
                                         % endif
                                     </div>
                                 </div>

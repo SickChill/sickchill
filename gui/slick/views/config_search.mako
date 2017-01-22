@@ -267,12 +267,12 @@
                                             <div class="col-md-12">
                                                 <input id="delete_failed" type="checkbox"
                                                        name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
-                                                <label for="delete_failed">${_('Delete files left over from a failed download?')}</label>
+                                                <label for="delete_failed">${_('delete files left over from a failed download?')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('note')}:</b> ${_('This only works if Use Failed Downloads is enabled.')}</label>
+                                                <label><b>${_('note')}:</b> ${_('this only works if Use Failed Downloads is enabled.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -734,7 +734,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="syno_dsm_host">${_('URL to your Synology DS (e.g. http://localhost:5000/)')}</label>
+                                                    <label for="syno_dsm_host">${_('URL to your Synology DSM (e.g. http://localhost:5000/)')}</label>
                                                 </div>
                                             </div>
                                         </div>

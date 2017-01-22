@@ -866,7 +866,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology DSM.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology NAS.')}</label>
                                     </div>
                                 </div>
                             </div>
