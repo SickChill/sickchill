@@ -427,5 +427,22 @@ anime_regexes = [
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3}))?  # E02
      (v(?P<version>[0-9]))?                                                  # v2
      .*?                                                                     # Separator and EOL
-     ''')
+     '''),
+    ('anime SxEE',
+     # Show_Name.1x02.Source_Quality_Etc-Group
+     # Show Name - 1x02 - My Ep Name
+     # Show_Name.1x02x03x04.Source_Quality_Etc-Group
+     # Show Name - 1x02-03-04 - My Ep Name
+     r'''
+     ^((?!\[.+?\])(?P<series_name>.+?)[\[. _-]+)?  # Show_Name and separator if no brackets group
+     (?P<season_num>\d+)x                          # 1x
+     (?P<ep_num>\d+)                               # 02 and separator
+     (([. _-]*x|-)                                 # linking x/- char
+     (?P<extra_ep_num>
+     (?!(1080|720|480)[pi])(?!(?<=x)264)           # ignore obviously wrong multi-eps
+     \d+))*                                        # additional x03/etc
+     [\]. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
+     '''),
 ]
