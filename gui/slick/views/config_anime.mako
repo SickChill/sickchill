@@ -116,7 +116,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="split_home"
                                        id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
-                                <label for="split_home">${_('sseparate anime and normal shows in groups')}</label>
+                                <label for="split_home">${_('separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>
