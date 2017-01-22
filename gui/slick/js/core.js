@@ -2057,10 +2057,10 @@ var SICKRAGE = {
                     7: { filter: 'parsed' }
                 },
                 widgetOptions: {
-                    filter_columnFilters: true,
-                    filter_hideFilters: true,
-                    stickyHeaders_offset: 50,
-                    // 'filter_saveFilters': true,
+                    filter_columnFilters: true, // jshint ignore:line
+                    filter_hideFilters: true, // jshint ignore:line
+                    stickyHeaders_offset: 50, // jshint ignore:line
+                    filter_saveFilters: true, // jshint ignore:line
                     filter_functions: { // jshint ignore:line
                         5: function(e, n, f) {
                             var test = false;
@@ -2526,7 +2526,7 @@ var SICKRAGE = {
                     columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
                     columnSelector_mediaquery: false, // jshint ignore:line
                     columnSelector_cssChecked : 'checked', // jshint ignore:line
-                    stickyHeaders_offset: 50
+                    stickyHeaders_offset: 50 // jshint ignore:line
                 }
             });
 
@@ -2983,11 +2983,11 @@ var SICKRAGE = {
                         9: { sorter: false }
                     },
                     widgetOptions: {
-                        filter_columnFilters: true,
-                        filter_hideFilters: true,
-                        filter_saveFilters: true,
-                        columnSelector_mediaquery: false,
-                        stickyHeaders_offset: 50
+                        filter_columnFilters: true, // jshint ignore:line
+                        filter_hideFilters: true, // jshint ignore:line
+                        filter_saveFilters: true, // jshint ignore:line
+                        columnSelector_mediaquery: false, // jshint ignore:line
+                        stickyHeaders_offset: 50 // jshint ignore:line
                     }
                 });
 
