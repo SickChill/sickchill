@@ -2057,8 +2057,9 @@ var SICKRAGE = {
                     7: { filter: 'parsed' }
                 },
                 widgetOptions: {
-                    'filter_columnFilters': true,
-                    'filter_hideFilters': true,
+                    filter_columnFilters: true,
+                    filter_hideFilters: true,
+                    stickyHeaders_offset: 50,
                     // 'filter_saveFilters': true,
                     filter_functions: { // jshint ignore:line
                         5: function(e, n, f) {
@@ -2524,7 +2525,8 @@ var SICKRAGE = {
                     columnSelector_saveColumns: true, // jshint ignore:line
                     columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
                     columnSelector_mediaquery: false, // jshint ignore:line
-                    columnSelector_cssChecked : 'checked' // jshint ignore:line
+                    columnSelector_cssChecked : 'checked', // jshint ignore:line
+                    stickyHeaders_offset: 50
                 }
             });
 
@@ -2981,10 +2983,11 @@ var SICKRAGE = {
                         9: { sorter: false }
                     },
                     widgetOptions: {
-                        'filter_columnFilters': true,
-                        'filter_hideFilters': true,
-                        'filter_saveFilters': true,
-                        'columnSelector_mediaquery': false
+                        filter_columnFilters: true,
+                        filter_hideFilters: true,
+                        filter_saveFilters: true,
+                        columnSelector_mediaquery: false,
+                        stickyHeaders_offset: 50
                     }
                 });
 
