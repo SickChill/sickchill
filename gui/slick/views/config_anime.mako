@@ -33,7 +33,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="use_anidb"
                                        id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
-                                <label for="use_anidb">${_('Should SickRage use data from AniDB?')}</label>
+                                <label for="use_anidb">${_('should SickRage use data from AniDB?')}</label>
                             </div>
                         </div>
 
@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span class="component-desc">${_('Username of your AniDB account')}</span>
+                                            <span class="component-desc">${_('username of your AniDB account')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -75,7 +75,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span class="component-desc">${_('Password of your AniDB account')}</span>
+                                            <span class="component-desc">${_('password of your AniDB account')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 component-desc">
                                     <input type="checkbox" name="anidb_use_mylist"
                                            id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
-                                    <label for="anidb_use_mylist">${_('Do you want to add the PostProcessed Episodes to the MyList ?')}</label>
+                                    <label for="anidb_use_mylist">${_('do you want to add the PostProcessed episodes to the MyList?')}</label>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="split_home"
                                        id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Splti"/>
-                                <label for="split_home">${_('Separate anime and normal shows in groups')}</label>
+                                <label for="split_home">${_('separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>

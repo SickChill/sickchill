@@ -37,12 +37,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="process_automatically" id="process_automatically" ${('', 'checked="checked"')[bool(sickbeard.PROCESS_AUTOMATICALLY)]}/>
-                                        <label for="process_automatically">${_('Enable the automatic post processor to scan and process any files in your Post Processing Dir')}?</label>
+                                        <label for="process_automatically">${_('enable the automatic post processor to scan and process any files in your Post Processing Dir')}?</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span><b>${_('Note')}:</b>&nbsp;${_('Do not use if you use an external Post Processing script')}</span>
+                                        <span><b>${_('note')}:</b>&nbsp;${_('do not use if you use an external Post Processing script')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -60,12 +60,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span>${_('The folder where your download client puts the completed TV downloads.')}</span>
+                                        <span>${_('the folder where your download client puts the completed TV downloads.')}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span><b>${_('Note')}:</b>&nbsp;${_('Please use seperate downloading and completed folders in your download client if possible.')}</span>
+                                        <span><b>${_('note')}:</b>&nbsp;${_('please use seperate downloading and completed folders in your download client if possible.')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -88,12 +88,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span>${_('What method should be used to put files into the library?')}</span>
+                                        <span>${_('what method should be used to put files into the library?')}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span><b>${_('Note')}:</b>&nbsp;${_('If you keep seeding torrents after they finish, please avoid the \'move\' processing method to prevent errors.')}</span>
+                                        <span><b>${_('note')}:</b>&nbsp;${_('if you keep seeding torrents after they finish, please avoid the \'move\' processing method to prevent errors.')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -111,7 +111,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="autopostprocessor_frequency" class="component-desc">${_('Time in minutes to check for new files to auto post-process (min 10)')}</label>
+                                        <label for="autopostprocessor_frequency" class="component-desc">${_('time in minutes to check for new files to auto post-process (min 10)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${('', 'checked="checked"')[bool(sickbeard.POSTPONE_IF_SYNC_FILES)]}/>
-                                <label for="postpone_if_sync_files">${_('Wait to process a folder if sync files are present.')}</label>
+                                <label for="postpone_if_sync_files">${_('wait to process a folder if sync files are present.')}</label>
                             </div>
                         </div>
 
@@ -151,7 +151,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(sickbeard.RENAME_EPISODES)]}/>
-                                <label for="rename_episodes">${_('Rename episode using the Episode Naming settings?')}</label>
+                                <label for="rename_episodes">${_('rename episode using the Episode Naming settings?')}</label>
                             </div>
                         </div>
 
@@ -161,7 +161,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="create_missing_show_dirs" id="create_missing_show_dirs" ${('', 'checked="checked"')[bool(sickbeard.CREATE_MISSING_SHOW_DIRS)]}/>
-                                <label for="create_missing_show_dirs">${_('Create missing show directories when they get deleted')}</label>
+                                <label for="create_missing_show_dirs">${_('create missing show directories when they get deleted')}</label>
                             </div>
                         </div>
 
@@ -171,7 +171,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="add_shows_wo_dir" id="add_shows_wo_dir" ${('', 'checked="checked"')[bool(sickbeard.ADD_SHOWS_WO_DIR)]}/>
-                                <label for="add_shows_wo_dir">${_('Add shows without creating a directory (not recommended)')}</label>
+                                <label for="add_shows_wo_dir">${_('add shows without creating a directory (not recommended)')}</label>
                             </div>
                         </div>
 
@@ -181,7 +181,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="move_associated_files" id="move_associated_files" ${('', 'checked="checked"')[bool(sickbeard.MOVE_ASSOCIATED_FILES)]}/>
-                                <label for="move_associated_files">${_('Delete srt/srr/sfv/etc files while post processing?')}</label>
+                                <label for="move_associated_files">${_('delete srt/srr/sfv/etc files while post processing?')}</label>
                             </div>
                         </div>
 
@@ -190,8 +190,17 @@
                                 <label class="component-title">${_('Keep associated file extensions')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
-                                <label for="allowed_extensions">${_('Comma seperated list of associated file extensions SickRage should keep while post processing. Leaving it empty means all associated files will be deleted')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
+                                        <label for="allowed_extensions">${_('comma separated list of associated file extensions SickRage should keep while post processing.')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="allowed_extensions">${_('leaving it empty means all associated files will be deleted')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -201,7 +210,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(sickbeard.NFO_RENAME)]}/>
-                                <label for="nfo_rename">${_('Rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
+                                <label for="nfo_rename">${_('rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
                             </div>
                         </div>
 
@@ -213,12 +222,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${('', 'checked="checked"')[bool(sickbeard.AIRDATE_EPISODES)]}/>
-                                        <label for="airdate_episodes">${_('Set last modified filedate to the date that the episode aired?')}</label>
+                                        <label for="airdate_episodes">${_('set last modified filedate to the date that the episode aired?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('Note')}:</b> ${_('Some systems may ignore this feature.')}</label>
+                                        <label><b>${_('note')}:</b> ${_('some systems may ignore this feature.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +249,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="file_timestamp_timezone">${_('What timezone should be used to change File Date?')}</label>
+                                        <label for="file_timestamp_timezone">${_('what timezone should be used to change File Date?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -255,12 +264,12 @@
                                         <div class="col-md-12">
                                             <input id="unpack" class="enabler" type="checkbox" name="unpack"
                                                 ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
-                                            <label for="unpack">${_('Unpack any TV releases in your <i>TV Download Dir</i>?')}</label>
+                                            <label for="unpack">${_('unpack any TV releases in your <i>TV Download Dir</i>?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
+                                            <label><b>${_('note')}:</b>&nbsp;${_('only working with RAR archive')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -279,7 +288,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="unrar_tool">${_('Add the path to unrar if it is not in the system path')}</label>
+                                                <label for="unrar_tool">${_('add the path to unrar if it is not in the system path')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -298,7 +307,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="alt_unrar_tool">${_('Add the path to an alternate unrar tool if it is not in the system path')}</label>
+                                                <label for="alt_unrar_tool">${_('add the path to an alternate unrar tool if it is not in the system path')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -312,12 +321,12 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(sickbeard.DELRARCONTENTS)]}/>
-                                                <label for="del_rar_contents">${_('Delete content of RAR files, even if Process Method not set to move?')}</label>
+                                                <label for="del_rar_contents">${_('delete content of RAR files, even if Process Method not set to move?')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('Note')}:</b>&nbsp;${_('Only working with RAR archive')}</label>
+                                                <label><b>${_('note')}:</b>&nbsp;${_('only working with RAR archive')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -333,12 +342,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="no_delete" id="no_delete" ${('', 'checked="checked"')[bool(sickbeard.NO_DELETE)]}/>
-                                        <label for="no_delete">${_('Leave empty folders when Post Processing?')}</label>
+                                        <label for="no_delete">${_('leave empty folders when Post Processing?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('Note')}:</b>&nbsp;${_('Can be overridden using manual Post Processing')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('can be overridden using manual Post Processing')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -352,7 +361,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(sickbeard.USE_ICACLS)]}/>
-                                        <label for="no_delete">${_('Windows ONLY. Sets video permissions after using the move method in post processing')}</label>
+                                        <label for="no_delete">${_('Windows only')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('sets video permissions after using the move method in post processing')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -371,9 +385,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label>
-                                            ${_('See')}
+                                            ${_('see')}
                                             <a href="https://github.com/SickRage/SickRage/wiki/Post-Processing#extra-scripts">
-                                                <b style="color:red;">Wiki</b>
+                                                <span style="color:red;">Wiki</span>
                                             </a>${_('for script arguments description and usage.')}
                                         </label>
                                     </div>
@@ -430,7 +444,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label><b>${_('NOTE')}:</b>&nbsp;${_('Don\'t forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality')}</label>
+                                            <label><b>${_('note')}:</b>&nbsp;${_('don\'t forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -647,12 +661,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" ${('', 'checked="checked"')[bool(sickbeard.NAMING_STRIP_YEAR)]}/>
-                                        <label for="naming_strip_year">${_('Remove the TV show\'s year when renaming the file?')}</label>
+                                        <label for="naming_strip_year">${_('remove the TV show\'s year when renaming the file?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('Only applies to shows that have year inside parentheses')}</label>
+                                        <label>${_('only applies to shows that have year inside parentheses')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -664,7 +678,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" ${('', 'checked="checked"')[bool(sickbeard.NAMING_CUSTOM_ABD)]}/>
-                                <label for="naming_custom_abd">${_('Name Air-By-Date shows differently than regular shows?')}</label>
+                                <label for="naming_custom_abd">${_('name air-by-date shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
@@ -849,7 +863,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" ${('', 'checked="checked"')[bool(sickbeard.NAMING_CUSTOM_SPORTS)]}/>
-                                <label for="naming_custom_sports" class="component-desc">${_('Name Sports shows differently than regular shows?')}</label>
+                                <label for="naming_custom_sports" class="component-desc">${_('name sports shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
@@ -1034,7 +1048,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" id="naming_custom_anime" name="naming_custom_anime" ${('', 'checked="checked"')[bool(sickbeard.NAMING_CUSTOM_ANIME)]}/>
-                                <label for="naming_custom_anime">${_('Name Anime shows differently than regular shows?')}</label>
+                                <label for="naming_custom_anime">${_('name anime shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
@@ -1238,12 +1252,12 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="radio" name="naming_anime" id="naming_anime" value="1" ${('', 'checked="checked"')[sickbeard.NAMING_ANIME == 1]}/>
-                                            <label for="naming_anime">${_('Add the absolute number to the season/episode format?')}</label>
+                                            <label for="naming_anime">${_('add the absolute number to the season/episode format?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('Only applies to animes. (eg. S15E45 - 310 vs S15E45)')}</label>
+                                            <label>${_('only applies to animes. (eg. S15E45 - 310 vs S15E45)')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1257,12 +1271,12 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${('', 'checked="checked"')[sickbeard.NAMING_ANIME == 2]}/>
-                                            <label for="naming_anime_only">${_('Replace season/episode format with absolute number')}</label>
+                                            <label for="naming_anime_only">${_('replace season/episode format with absolute number')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('Only applies to animes.')}</label>
+                                            <label>${_('only applies to animes.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1276,12 +1290,12 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${('', 'checked="checked"')[sickbeard.NAMING_ANIME == 3]}/>
-                                            <label for="naming_anime_none">${_('Dont include the absolute number')}</label>
+                                            <label for="naming_anime_none">${_('don\'t include the absolute number')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('Only applies to animes.')}</label>
+                                            <label>${_('only applies to animes.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1324,7 +1338,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="metadataType">${_('Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b>')}</label>
+                                        <label for="metadataType">${_('toggle metadata options that you wish to be created')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('multiple targets may be used')}</b></label>
                                     </div>
                                 </div>
                             </div>
