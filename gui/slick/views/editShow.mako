@@ -250,7 +250,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="dvdorder">${_('A "Force Full Update" is necessary, and if you have existing episodes you need to sort them manually.')}</label>
+                                                <label for="dvdorder">${_('a "Force Full Update" is necessary, and if you have existing episodes you need to sort them manually.')}</label>
                                             </div>
                                         </div>
                                     </div>
