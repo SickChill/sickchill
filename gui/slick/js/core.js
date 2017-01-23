@@ -2236,6 +2236,17 @@ var SICKRAGE = {
                 $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
             }
 
+            $(".displayShowTable").tablesorter({
+                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
+                widgetOptions : {
+                    columnSelector_saveColumns: true, // jshint ignore:line
+                    columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
+                    columnSelector_mediaquery: false, // jshint ignore:line
+                    columnSelector_cssChecked : 'checked', // jshint ignore:line
+                    stickyHeaders_offset: 50 // jshint ignore:line
+                }
+            });
+
             $('#srRoot').ajaxEpSearch({'colorRow': true});
             $('#srRoot').ajaxEpSubtitlesSearch();
             $('#srRoot').ajaxRetrySubtitlesSearch();
@@ -2281,13 +2292,9 @@ var SICKRAGE = {
             $('.seasonCheck').on('click', function(){
                 var seasCheck = this;
                 var seasNo = $(seasCheck).attr('id');
-
                 $('#collapseSeason-' + seasNo).collapse('show');
-                $('.epCheck:visible').each(function () {
-                    var epParts = $(this).attr('id').split('x');
-                    if (epParts[0] === seasNo) {
-                        this.checked = seasCheck.checked;
-                    }
+                $('.epCheck:visible[id^="' + seasNo + 'x"]').each(function () {
+                    this.checked = seasCheck.checked;
                 });
             });
 
@@ -2519,16 +2526,6 @@ var SICKRAGE = {
 
             $('.imdbstars').generateStars();
 
-            $(".displayShowTable").tablesorter({
-                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
-                widgetOptions : {
-                    columnSelector_saveColumns: true, // jshint ignore:line
-                    columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
-                    columnSelector_mediaquery: false, // jshint ignore:line
-                    columnSelector_cssChecked : 'checked', // jshint ignore:line
-                    stickyHeaders_offset: 50 // jshint ignore:line
-                }
-            });
 
             $('#popover').popover({
                 placement: 'bottom',

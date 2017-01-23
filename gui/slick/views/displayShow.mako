@@ -417,7 +417,9 @@
                                 <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
                                     <thead>
                                         <tr class="seasoncols">
-                                            <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
+                                            <th data-sorter="false" data-priority="critical" class="col-checkbox">
+                                                <input type="checkbox" class="seasonCheck" id="${epResult["season"]}" />
+                                            </th>
                                             <th data-sorter="false" class="col-metadata">${_('NFO')}</th>
                                             <th data-sorter="false" class="col-metadata">${_('TBN')}</th>
                                             <th data-sorter="false" class="col-ep">${_('Episode')}</th>
