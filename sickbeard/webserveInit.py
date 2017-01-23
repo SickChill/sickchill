@@ -145,7 +145,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
 
         try:
             self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
-                                          xheaders=sickbeard.HANDLE_REVERSE_PROXY)
+                                          xheaders=sickbeard.HANDLE_REVERSE_PROXY, protocol=protocol)
         except Exception:
             if sickbeard.LAUNCH_BROWSER and not self.daemon:
                 sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
