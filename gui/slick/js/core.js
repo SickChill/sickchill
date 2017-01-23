@@ -2640,14 +2640,16 @@ var SICKRAGE = {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
-                    2: function(node) { return $(node).find("span").text().toLowerCase(); },
-                    3: function(node) { return $(node).find("img").attr("alt"); },
-                    4: function(node) { return $(node).find("img").attr("alt"); },
-                    5: function(node) { return $(node).find("img").attr("alt"); },
-                    6: function(node) { return $(node).find("img").attr("alt"); },
-                    7: function(node) { return $(node).find("img").attr("alt"); },
-                    8: function(node) { return $(node).find("img").attr("alt"); },
-                    9: function(node) { return $(node).find("img").attr("alt"); },
+                    2: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Network
+                    3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
+                    4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
+                    5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
+                    6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
+                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
+                    8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
+                    9: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
+                    10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
+                    11: function(node) { return $(node).text().toLowerCase(); }  // Show Status
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
