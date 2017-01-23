@@ -564,6 +564,14 @@ msgstr "Message envoyé sur Slack"
 msgid "Slack message failed"
 msgstr "Échec de l’envoi du message"
 
+#: sickbeard/webserve.py:920
+msgid "Discord message successful"
+msgstr ""
+
+#: sickbeard/webserve.py:922
+msgid "Discord message failed"
+msgstr ""
+
 #: sickbeard/webserve.py:925
 msgid "Test KODI notice sent successfully to {kodi_host}"
 msgstr "La notification de test KODI a été envoyée avec succès vers {kodi_host}"
@@ -3735,6 +3743,23 @@ msgstr "Est-ce que SickRage devrait poster des messages sur Slack ?"
 msgid "Slack Incoming Webhook"
 msgstr "Webhook Slack entrant"
 
+#: gui/slick/views/config_notifications.mako:3170
+msgid "Discord"
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3172
+msgid ""
+"All-in-one voice and text chat for gamers that’s free, secure, and works on both your desktop and phone."
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3186
+msgid "Should SickRage post messages on Discord?"
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3216
+msgid "Discord Incoming Webhook"
+msgstr ""
+
 #: gui/slick/views/config_postProcessing.mako:12
 #: gui/slick/views/config_postProcessing.mako:25
 msgid "Post-Processing"
@@ -6488,4 +6513,3 @@ msgstr "Branche"
 #: gui/slick/views/layouts/main.mako:320
 msgid "Now"
 msgstr "Actuellement"
-
