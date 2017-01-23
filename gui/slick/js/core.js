@@ -2640,16 +2640,13 @@ var SICKRAGE = {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
-                    2: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Network
-                    3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
-                    4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
-                    5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
-                    6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
-                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
-                    8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
-                    9: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
-                    10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
-                    11: function(node) { return $(node).text().toLowerCase(); }  // Show Status
+                    2: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
+                    3: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
+                    4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
+                    5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
+                    6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
+                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
+                    8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); }  // Subtitle
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
