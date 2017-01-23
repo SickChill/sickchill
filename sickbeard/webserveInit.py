@@ -76,7 +76,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             debug=True,
             autoreload=False,
             gzip=sickbeard.WEB_USE_GZIP,
-            xheaders=sickbeard.HANDLE_REVERSE_PROXY,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
         )
@@ -136,16 +135,17 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
     def run(self):
         if self.enable_https:
             protocol = "https"
-            self.server = HTTPServer(self.app, ssl_options={"certfile": self.https_cert, "keyfile": self.https_key})
+            ssl_options = {"certfile": self.https_cert, "keyfile": self.https_key}
         else:
             protocol = "http"
-            self.server = HTTPServer(self.app)
+            ssl_options = None
 
         logger.log(u"Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
         try:
-            self.server.listen(self.options['port'], self.options['host'])
+            self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
+                                          xheaders=sickbeard.HANDLE_REVERSE_PROXY)
         except Exception:
             if sickbeard.LAUNCH_BROWSER and not self.daemon:
                 sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
