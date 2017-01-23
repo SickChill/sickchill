@@ -89,45 +89,42 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log("Expected rss but got something else, is your mirror failing?", logger.INFO)
                     continue
 
-                data = re.sub(r'<!\[CDATA\[\s*|\s*\]\]>', '', data)
-                with BS4Parser(data, "html5lib") as html:
-                    for item in html("item"):
-                        try:
-                            title = item.title.get_text(strip=True)
-                            download_url = item.guid.get_text(strip=True)
-                            if not (title and download_url):
-                                continue
-
-                            download_url += '.torrent'
-
-                            info = self.regex.search(item.description.get_text(strip=True))
-                            if not info:
-                                continue
-
-                            seeders = try_int(info.group("seeders"))
-                            leechers = try_int(info.group("leechers"))
-                            if seeders < self.minseed or leechers < self.minleech:
-                                if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            category = item.category.get_text(strip=True)
-                            if category != 'all':
-                                logger.log('skytorrents.in has added categories! Please report this so it can be updated: Category={cat}, '
-                                           'Title={title}'.format(cat=category, title=title), logger.ERROR)
-
-                            size = convert_size(info.group('size')) or -1
-                            info_hash = download_url.rsplit('/', 2)[1]
-
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
-                            if mode != "RSS":
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
-
-                            items.append(item)
-
-                        except (AttributeError, TypeError, KeyError, ValueError):
+                feed = feedparser.parse(data)
+                for item in feed.entries:
+                    try:
+                        title = item.title
+                        download_url = item.link
+                        if not (title and download_url):
                             continue
+
+                        info = self.regex.search(item.description)
+                        if not info:
+                            continue
+
+                        seeders = try_int(info.group("seeders"))
+                        leechers = try_int(info.group("leechers"))
+                        if seeders < self.minseed or leechers < self.minleech:
+                            if mode != "RSS":
+                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers), logger.DEBUG)
+                            continue
+
+                        category = item.category
+                        if category != 'all':
+                            logger.log('skytorrents.in has added categories! Please report this so it can be updated: Category={cat}, '
+                                       'Title={title}'.format(cat=category, title=title), logger.ERROR)
+
+                        size = convert_size(info.group('size')) or -1
+                        info_hash = download_url.rsplit('/', 2)[1]
+
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
+                        if mode != "RSS":
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+
+                        items.append(item)
+
+                    except (AttributeError, TypeError, KeyError, ValueError):
+                        continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
