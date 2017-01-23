@@ -89,18 +89,19 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log("Expected rss but got something else, is your mirror failing?", logger.INFO)
                     continue
 
-                with BS4Parser(data, "xml") as html:
+                data = re.sub(r'<!\[CDATA\[\s*|\s*\]\]>', '', data)
+                with BS4Parser(data, "html5lib") as html:
                     for item in html("item"):
                         try:
                             title = item.title.get_text(strip=True)
-                            download_url = item.link.get_text(strip=True)
+                            download_url = item.guid.get_text(strip=True)
                             if not (title and download_url):
-                                logger.log('Continue, {title} - {url}'.format(title=title, url=download_url))
                                 continue
+
+                            download_url += '.torrent'
 
                             info = self.regex.search(item.description.get_text(strip=True))
                             if not info:
-                                logger.log('info fails')
                                 continue
 
                             seeders = try_int(info.group("seeders"))
