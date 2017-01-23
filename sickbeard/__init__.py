@@ -483,6 +483,12 @@ SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
 
+USE_DISCORD = False
+DISCORD_NOTIFY_SNATCH = None
+DISCORD_NOTIFY_DOWNLOAD = None
+DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
+DISCORD_WEBHOOK = None
+
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -679,7 +685,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
+            USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -707,6 +714,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
         CheckSection(CFG, 'Slack')
+        CheckSection(CFG, 'Discord')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -1173,6 +1181,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SLACK_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Slack', 'slack_notify_snatch', 0))
         SLACK_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Slack', 'slack_notify_download', 0))
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook', '')
+
+        USE_DISCORD = bool(check_setting_int(CFG, 'Discord', 'use_discord', 0 ))
+        DISCORD_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Discord', 'discord_notify_snatch', 0))
+        DISCORD_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Discord', 'discord_notify_download', 0))
+        DISCORD_WEBHOOK = check_setting_str(CFG, 'Discord', 'discord_webhook', '')
 
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
         TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
@@ -2166,6 +2179,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
             'slack_webhook': SLACK_WEBHOOK
+        },
+
+        'Discord': {
+            'use_discord': int(USE_DISCORD),
+            'discord_notify_snatch': int(DISCORD_NOTIFY_SNATCH),
+            'discord_notify_download': int(DISCORD_NOTIFY_DOWNLOAD),
+            'discord_webhook': DISCORD_WEBHOOK
         },
 
         'Trakt': {
