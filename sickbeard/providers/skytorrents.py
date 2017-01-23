@@ -19,10 +19,10 @@
 
 from __future__ import unicode_literals
 
+import feedparser
 import re
 import validators
 from requests.compat import urljoin
-from sickbeard.bs4_parser import BS4Parser
 
 from sickbeard import logger, tvcache
 
