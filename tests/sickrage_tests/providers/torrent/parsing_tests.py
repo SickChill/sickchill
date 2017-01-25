@@ -42,7 +42,7 @@ sickbeard.CPU_PRESET = 'NORMAL'
 
 import validators
 
-overwrite_cassettes = True
+overwrite_cassettes = False
 
 disabled_provider_tests = {
     # ???
