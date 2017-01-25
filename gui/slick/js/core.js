@@ -2646,7 +2646,7 @@ var SICKRAGE = {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
-                    2: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Network
+                    2: function(node) { return ($(node).find("img").attr("alt") || 'unknown').toLowerCase(); },  // Network
                     3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
                     4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
                     5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
