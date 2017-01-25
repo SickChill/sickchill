@@ -85,8 +85,8 @@
                                             % if hItem["provider"] != "-1":
                                                 <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
                                             % else:
-                                            % endif
                                                 <span style="vertical-align:middle;"><i>${_('Unknown')}</i></span>
+                                            % endif
                                         % else:
                                             % if hItem["provider"] > 0:
                                                 % if curStatus in [SNATCHED, FAILED]:
