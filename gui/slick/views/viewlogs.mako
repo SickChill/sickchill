@@ -8,7 +8,7 @@
         <div class="col-lg-10 col-md-9 col-sm-12 col-xs-12 pull-right">
             <div class="pull-right">
                 <label>
-                    <span>${_('Minimum logging level to display')}:</span>
+                    <span>${_('Level')}:</span>
                     <select name="min_level" id="min_level" class="form-control form-control-inline input-sm" title="Minimum log level">
                         <%
                             levels = LOGGING_LEVELS.keys()
@@ -25,7 +25,7 @@
                     &nbsp;
                 </label>
                 <label>
-                    <span>${_('Filter log by')}:</span>
+                    <span>${_('Filter')}:</span>
                     <select name="log_filter" id="log_filter" class="form-control form-control-inline input-sm" title="filter">
                         % for _log_filter in sorted(LOG_FILTERS):
                             <option value="${_log_filter}" ${('', 'selected="selected"')[log_filter == _log_filter]}>${LOG_FILTERS[_log_filter]}</option>
@@ -33,7 +33,7 @@
                     </select>
                 </label>
                 <label>
-                    <span>${_('Search log by')}:</span>
+                    <span>${_('Search')}:</span>
                     <input type="text" name="log_search" placeholder="clear to reset" id="log_search" value="${log_search}" class="form-control form-control-inline input-sm" autocapitalize="off" />
                 </label>
             </div>

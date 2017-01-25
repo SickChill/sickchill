@@ -42,7 +42,7 @@ sickbeard.CPU_PRESET = 'NORMAL'
 
 import validators
 
-overwrite_cassettes = False
+overwrite_cassettes = True
 
 disabled_provider_tests = {
     # ???
@@ -142,6 +142,7 @@ class BaseParser(type):
             results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
+            self.assertTrue(results, results)
             self.assertTrue(results, self.cassette.requests[-1].url)
             self.assertTrue(len(self.cassette))
 

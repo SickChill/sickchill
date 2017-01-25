@@ -23,10 +23,8 @@ module.exports = function(grunt) {
                     js: './dist/bower.js',
                     css: './dist/bower.css'
                 },
-                exclude: [
-                ],
-                dependencies: {
-                },
+                exclude: [],
+                dependencies: {},
                 mainFiles: {
                     'tablesorter': [
                         'dist/js/jquery.tablesorter.combined.js',

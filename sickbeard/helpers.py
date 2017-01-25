@@ -31,6 +31,7 @@ import operator
 import os
 import platform
 import random
+import rarfile
 import re
 import shutil
 import socket
@@ -169,7 +170,7 @@ def remove_non_release_groups(name):
     return _name
 
 
-def isMediaFile(filename):
+def is_media_file(filename):
     """
     Check if named file may contain media
 
@@ -204,36 +205,22 @@ def isMediaFile(filename):
         return False
 
 
-def isRarFile(filename):
+def is_rar_file(filename):
     """
     Check if file is a RAR file, or part of a RAR set
 
     :param filename: Filename to check
     :return: True if this is RAR/Part file, False if not
     """
-
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    ret = re.search(archive_regex, filename) is not None
+    try:
+        if ek(os.path.exists, filename) and ek(os.path.isfile, filename):
+            ret = ek(rarfile.is_rarfile, filename)
+    except (IOError, OSError):
+        pass
 
-    if re.search(archive_regex, filename):
-        return True
-
-    return False
-
-
-def isBeingWritten(filepath):
-    """
-    Check if file has been written in last 60 seconds
-
-    :param filepath: Filename to check
-    :return: True if file has been written recently, False if none
-    """
-
-    # Return True if file was modified within 60 seconds. it might still be being written to.
-    ctime = max(ek(os.path.getctime, filepath), ek(os.path.getmtime, filepath))
-    if ctime > time.time() - 60:
-        return True
-
-    return False
+    return ret
 
 
 def remove_file_failed(failed_file):
@@ -321,7 +308,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
     return None, None, None
 
 
-def listMediaFiles(path):
+def list_media_files(path):
     """
     Get a list of files possibly containing media in a path
 
@@ -333,15 +320,15 @@ def listMediaFiles(path):
         return []
 
     files = []
-    for curFile in ek(os.listdir, path):
-        fullCurFile = ek(os.path.join, path, curFile)
+    for entry in ek(os.listdir, path):
+        full_entry = ek(os.path.join, path, entry)
 
         # if it's a folder do it recursively
-        if ek(os.path.isdir, fullCurFile) and not curFile.startswith('.') and not curFile == 'Extras':
-            files += listMediaFiles(fullCurFile)
+        if ek(os.path.isdir, full_entry) and not entry.startswith('.') and not entry == 'Extras':
+            files += list_media_files(full_entry)
 
-        elif isMediaFile(curFile):
-            files.append(fullCurFile)
+        elif is_media_file(entry):
+            files.append(full_entry)
 
     return files
 
@@ -827,7 +814,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     # assert isinstance(ssl_cert, unicode)
 
     try:
-        from OpenSSL import crypto  # @UnresolvedImport
+        from OpenSSL import crypto  # noinspection PyUnresolvedReferences
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
     except Exception:
@@ -835,12 +822,12 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     # Create the CA Certificate
-    cakey = createKeyPair(TYPE_RSA, 1024)
+    cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
     cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
     cname = 'SickRage'
-    pkey = createKeyPair(TYPE_RSA, 1024)
+    pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
     cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
 
@@ -1080,14 +1067,14 @@ def is_hidden_folder(folder):
     """
     def is_hidden(filepath):
         name = ek(os.path.basename, ek(os.path.abspath, filepath))
-        return name.startswith('.') or has_hidden_attribute(filepath)
+        return name == u'@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(unicode(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
-        except (AttributeError, AssertionError):
+        except (AttributeError, AssertionError, OSError, IOError):
             result = False
         return result
 
@@ -1587,7 +1574,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     try:
-        diskfree = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
+        disk_free = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)
@@ -1595,25 +1582,25 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     # Lets also do this for symlink and hardlink
-    if 'link' in method and diskfree > 1024**2:
+    if 'link' in method and disk_free > 1024**2:
         return True
 
-    neededspace = ek(os.path.getsize, src)
+    needed_space = ek(os.path.getsize, src)
 
     if oldfile:
         for f in oldfile:
             if ek(os.path.isfile, f.location):
-                diskfree += ek(os.path.getsize, f.location)
+                disk_free += ek(os.path.getsize, f.location)
 
-    if diskfree > neededspace:
+    if disk_free > needed_space:
         return True
     else:
         logger.log("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )".format
-                   (neededspace, pretty_file_size(neededspace), diskfree, pretty_file_size(diskfree)), logger.WARNING)
+                   (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)), logger.WARNING)
         return False
 
 
-def getDiskSpaceUsage(diskPath=None):
+def disk_usage_hr(diskPath=None):
     """
     returns the free space in human readable bytes for a given path or False if no path given
     :param diskPath: the filesystem path being checked
@@ -1652,7 +1639,7 @@ def pretty_time_delta(seconds):
     return time_delta
 
 
-def isFileLocked(checkfile, writeLockCheck=False):
+def is_file_locked(checkfile, write_check=False):
     """
     Checks to see if a file is locked. Performs three checks
         1. Checks if the file even exists
@@ -1661,8 +1648,8 @@ def isFileLocked(checkfile, writeLockCheck=False):
         3. If the readLockCheck parameter is True, attempts to rename the file. If this fails the
             file is open by some other process for reading. The file can be read, but not written to
             or deleted.
-    :param file: the file being checked
-    :param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
+    :param checkfile: the file being checked
+    :param write_check: when true will check if the file is locked for writing (prevents move operations)
     """
 
     checkfile = ek(os.path.abspath, checkfile)
@@ -1675,7 +1662,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
     except IOError:
         return True
 
-    if writeLockCheck:
+    if write_check:
         lockFile = checkfile + ".lckchk"
         if ek(os.path.exists, lockFile):
             ek(os.remove, lockFile)
@@ -1689,7 +1676,7 @@ def isFileLocked(checkfile, writeLockCheck=False):
     return False
 
 
-def getTVDBFromID(indexer_id, indexer):  # pylint:disable=too-many-return-statements
+def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-return-statements
 
     session = make_session()
     tvdb_id = ''
@@ -1753,3 +1740,9 @@ def is_ip_private(ip):
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
     return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+
+
+def recursive_listdir(path):
+    for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
+        for filename in file_names:
+            yield ek(os.path.join, directory_path, filename)

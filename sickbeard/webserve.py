@@ -22,6 +22,7 @@ import ast
 import datetime
 import gettext
 import os
+import rarfile
 import re
 import time
 import traceback
@@ -40,6 +41,8 @@ from mako.lookup import TemplateLookup
 from mako.exceptions import RichTraceback
 from mako.runtime import UNDEFINED
 
+from mimetypes import guess_type
+
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
@@ -50,7 +53,6 @@ from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
 from dateutil import tz
-from unrar2 import RarFile
 import adba
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
@@ -595,24 +597,32 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
+    def sickrage_background(self):
+        if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):
+            self.set_header('Content-Type', guess_type(sickbeard.SICKRAGE_BACKGROUND_PATH)[0])
+            with open(sickbeard.SICKRAGE_BACKGROUND_PATH, 'rb') as content:
+                return content.read()
+        return None
+
+
 
 @route('/browser(/?.*)')
 class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
 
-    def index(self, path='', includeFiles=False):  # pylint: disable=arguments-differ
+    def index(self, path='', includeFiles=False, imagesOnly=False):  # pylint: disable=arguments-differ
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header("Content-Type", "application/json")
 
-        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles))))
+        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), bool(int(imagesOnly))))
 
-    def complete(self, term, includeFiles=0):
+    def complete(self, term, includeFiles=False, imagesOnly=False):
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header("Content-Type", "application/json")
-        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)))
+        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)), imagesOnly=bool(int(imagesOnly)))
                  if 'path' in entry]
 
         return json.dumps(paths)
@@ -1150,7 +1160,7 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def status(self):
-        tvdirFree = helpers.getDiskSpaceUsage(sickbeard.TV_DOWNLOAD_DIR)
+        tvdirFree = helpers.disk_usage_hr(sickbeard.TV_DOWNLOAD_DIR)
         rootDir = {}
 
         if sickbeard.ROOT_DIRS:
@@ -1161,7 +1171,7 @@ class Home(WebRoot):
 
         if len(backend_dirs):
             for subject in backend_dirs:
-                rootDir[subject] = helpers.getDiskSpaceUsage(subject)
+                rootDir[subject] = helpers.disk_usage_hr(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
         return t.render(title=_('Status'), header=_('Status'), topmenu='system',
@@ -2323,32 +2333,22 @@ class HomePostProcess(Home):
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="auto", force_next=False, *args_, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
-        def argToBool(argument):
-            _arg = argument.strip().lower() if isinstance(argument, basestring) else argument
-
-            if _arg in (1, '1', 'on', 'true', True):
-                return True
-            elif _arg in (0, '0', 'off', 'false', False):
-                return False
-
-            return argument
-
-        proc_type = kwargs.get('type', proc_type)
-        proc_dir = kwargs.get('dir', proc_dir)
-        if not proc_dir:
+        mode = kwargs.get('type', proc_type)
+        process_path = ss(kwargs.get('dir', proc_dir))
+        if not process_path:
             return self.redirect("/home/postprocess/")
 
-        nzbName = ss(nzbName) if nzbName else nzbName
+        release_name = ss(nzbName) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
-            ss(proc_dir), nzbName, method=process_method, force=force,
-            is_priority=is_priority, delete=delete_on, failed=failed, mode=proc_type,
+            process_path, release_name, method=process_method, force=force,
+            is_priority=is_priority, delete=delete_on, failed=failed, mode=mode,
             force_next=force_next
         )
 
-        if argToBool(quiet):
+        if config.checkbox_to_value(quiet):
             return result
 
         result = result.replace("\n", "<br>\n")
@@ -2722,7 +2722,7 @@ class HomeAddShows(Home):
             configure_show_options=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.getTVDBFromID(indexer_id, indexer.upper())
+            tvdb_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not tvdb_id:
                 logger.log(u"Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(
@@ -3896,7 +3896,8 @@ class ConfigGeneral(Config):
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
-            git_reset=None, git_username=None, git_password=None, display_all_seasons=None, gui_language=None):
+            sickrage_background=None, sickrage_background_path=None, git_reset=None, git_username=None, git_password=None, display_all_seasons=None,
+            gui_language=None):
 
         results = []
 
@@ -3916,17 +3917,17 @@ class ConfigGeneral(Config):
         sickbeard.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
-        config.change_SHOWUPDATE_HOUR(showupdate_hour)
-        config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
+        config.change_showupdate_hour(showupdate_hour)
+        config.change_version_notify(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
-        # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
+        # sickbeard.LOG_DIR is set in config.change_log_dir()
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = float(log_size)
 
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
-        config.change_UPDATE_FREQUENCY(update_frequency)
+        config.change_update_frequency(update_frequency)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         sickbeard.CPU_PRESET = cpu_preset
@@ -3953,13 +3954,13 @@ class ConfigGeneral(Config):
         logger.set_level()
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
-        # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
+        # sickbeard.LOG_DIR is set in config.change_log_dir()
         sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
-        # sickbeard.WEB_LOG is set in config.change_LOG_DIR()
+        # sickbeard.WEB_LOG is set in config.change_log_dir()
         if config.checkbox_to_value(encryption_version) == 1:
             sickbeard.ENCRYPTION_VERSION = 2
         else:
@@ -3985,7 +3986,7 @@ class ConfigGeneral(Config):
 
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 
-        if not config.change_LOG_DIR(log_dir, web_log):
+        if not config.change_log_dir(log_dir, web_log):
             results += [
                 _("Unable to create directory {directory}, log directory not changed.").format(directory=ek(os.path.normpath, log_dir))]
 
@@ -3993,17 +3994,19 @@ class ConfigGeneral(Config):
 
         sickbeard.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
 
-        if not config.change_HTTPS_CERT(https_cert):
+        if not config.change_https_cert(https_cert):
             results += [
                 _("Unable to create directory {directory}, https cert directory not changed.").format(directory=ek(os.path.normpath, https_cert))]
 
-        if not config.change_HTTPS_KEY(https_key):
+        if not config.change_https_key(https_key):
             results += [
                 _("Unable to create directory {directory}, https key directory not changed.").format(directory=ek(os.path.normpath, https_key))]
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
+        sickbeard.SICKRAGE_BACKGROUND = config.checkbox_to_value(sickrage_background)
+        config.change_sickrage_background(sickrage_background_path)
         sickbeard.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
 
@@ -4112,15 +4115,15 @@ class ConfigSearch(Config):
 
         results = []
 
-        if not config.change_NZB_DIR(nzb_dir):
+        if not config.change_nzb_dir(nzb_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, nzb_dir) + ", dir not changed."]
 
-        if not config.change_TORRENT_DIR(torrent_dir):
+        if not config.change_torrent_dir(torrent_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, torrent_dir) + ", dir not changed."]
 
-        config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
+        config.change_daily_search_frequency(dailysearch_frequency)
 
-        config.change_BACKLOG_FREQUENCY(backlog_frequency)
+        config.change_backlog_frequency(backlog_frequency)
         sickbeard.BACKLOG_DAYS = try_int(backlog_days, 7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
@@ -4137,7 +4140,7 @@ class ConfigSearch(Config):
 
         sickbeard.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
 
-        config.change_DOWNLOAD_PROPERS(download_propers)
+        config.change_download_propers(download_propers)
 
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
@@ -4238,7 +4241,8 @@ class ConfigPostProcessing(Config):
                            keep_processed_dir=None, process_method=None,
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
-                           file_timestamp_timezone=None, unpack=None,
+                           file_timestamp_timezone=None,
+                           unpack=None, unrar_tool=None, alt_unrar_tool=None,
                            move_associated_files=None, sync_files=None,
                            postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
@@ -4254,12 +4258,15 @@ class ConfigPostProcessing(Config):
 
         results = []
 
-        if not config.change_TV_DOWNLOAD_DIR(tv_download_dir):
+        if not config.change_tv_download_dir(tv_download_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, tv_download_dir) + ", dir not changed."]
 
-        config.change_AUTOPOSTPROCESSOR_FREQUENCY(autopostprocessor_frequency)
-        config.change_PROCESS_AUTOMATICALLY(process_automatically)
+        config.change_postprocessor_frequency(autopostprocessor_frequency)
+        config.change_process_automatically(process_automatically)
         sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
+
+        sickbeard.UNRAR_TOOL = unrar_tool
+        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
 
         if unpack:
             if self.isRarSupported() != 'not supported':
@@ -4269,6 +4276,7 @@ class ConfigPostProcessing(Config):
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         else:
             sickbeard.UNPACK = config.checkbox_to_value(unpack)
+
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
         sickbeard.CREATE_MISSING_SHOW_DIRS = config.checkbox_to_value(create_missing_show_dirs)
@@ -4408,17 +4416,10 @@ class ConfigPostProcessing(Config):
         Test Packing Support:
             - Simulating in memory rar extraction on test.rar file
         """
-
-        try:
-            rar_path = ek(os.path.join, sickbeard.PROG_DIR, 'lib', 'unrar2', 'test.rar')
-            testing = RarFile(rar_path).read_files('*test.txt')
-            if testing[0][1] == 'This is only a test.':
-                return 'supported'
-            logger.log(u'Rar Not Supported: Can not read the content of test file', logger.ERROR)
-            return 'not supported'
-        except Exception as e:
-            logger.log(u'Rar Not Supported: ' + ex(e), logger.ERROR)
-            return 'not supported'
+        check = rarfile._check_unrar_tool()
+        if not check:
+            logger.log(u'Looks like unrar is not installed, check failed', logger.WARNING)
+        return ('not supported', 'supported')[check]
 
 
 @route('/config/providers(/?.*)')
@@ -5070,7 +5071,7 @@ class ConfigNotifications(Config):
         sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(
             synologynotifier_notify_onsubtitledownload)
 
-        config.change_USE_TRAKT(use_trakt)
+        config.change_use_trakt(use_trakt)
         sickbeard.TRAKT_USERNAME = trakt_username
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
@@ -5160,8 +5161,8 @@ class ConfigSubtitles(Config):
             addic7ed_user=None, addic7ed_pass=None, itasa_user=None, itasa_pass=None, legendastv_user=None, legendastv_pass=None,
             opensubtitles_user=None, opensubtitles_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
 
-        config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
-        config.change_USE_SUBTITLES(use_subtitles)
+        config.change_subtitle_finder_frequency(subtitles_finder_frequency)
+        config.change_use_subtitles(use_subtitles)
 
         sickbeard.SUBTITLES_LANGUAGES = [code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitle_module.subtitle_code_filter()] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir

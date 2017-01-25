@@ -55,6 +55,10 @@ var SICKRAGE = {
                         imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
                     }
                 }
+                if (metaToBool('sickbeard.SICKRAGE_BACKGROUND')) {
+                    $.backstretch(srRoot + '/ui/sickrage_background');
+                    $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
+                }
             })();
 
             $.confirm.options = {
@@ -283,7 +287,8 @@ var SICKRAGE = {
             });
         },
         index: function() {
-            $('#log_dir').fileBrowser({ title: 'Select log file folder location' });
+            $('#log_dir').fileBrowser({title: 'Select log file folder location'});
+            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, imagesOnly: 1});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {
@@ -2052,9 +2057,10 @@ var SICKRAGE = {
                     7: { filter: 'parsed' }
                 },
                 widgetOptions: {
-                    'filter_columnFilters': true,
-                    'filter_hideFilters': true,
-                    // 'filter_saveFilters': true,
+                    filter_columnFilters: true, // jshint ignore:line
+                    filter_hideFilters: true, // jshint ignore:line
+                    stickyHeaders_offset: 50, // jshint ignore:line
+                    filter_saveFilters: true, // jshint ignore:line
                     filter_functions: { // jshint ignore:line
                         5: function(e, n, f) {
                             var test = false;
@@ -2229,8 +2235,19 @@ var SICKRAGE = {
                 $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
                 $('.backstretch').css("opacity", getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn("500");
             }
-            $('#srRoot').ajaxEpSearch({'colorRow': true});
 
+            $(".displayShowTable").tablesorter({
+                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
+                widgetOptions : {
+                    columnSelector_saveColumns: true, // jshint ignore:line
+                    columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
+                    columnSelector_mediaquery: false, // jshint ignore:line
+                    columnSelector_cssChecked : 'checked', // jshint ignore:line
+                    stickyHeaders_offset: 50 // jshint ignore:line
+                }
+            });
+
+            $('#srRoot').ajaxEpSearch({'colorRow': true});
             $('#srRoot').ajaxEpSubtitlesSearch();
             $('#srRoot').ajaxRetrySubtitlesSearch();
 
@@ -2275,13 +2292,9 @@ var SICKRAGE = {
             $('.seasonCheck').on('click', function(){
                 var seasCheck = this;
                 var seasNo = $(seasCheck).attr('id');
-
                 $('#collapseSeason-' + seasNo).collapse('show');
-                $('.epCheck:visible').each(function () {
-                    var epParts = $(this).attr('id').split('x');
-                    if (epParts[0] === seasNo) {
-                        this.checked = seasCheck.checked;
-                    }
+                $('.epCheck:visible[id^="' + seasNo + 'x"]').each(function () {
+                    this.checked = seasCheck.checked;
                 });
             });
 
@@ -2513,15 +2526,6 @@ var SICKRAGE = {
 
             $('.imdbstars').generateStars();
 
-            $("#showTable, #animeTable").tablesorter({
-                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
-                widgetOptions : {
-                    columnSelector_saveColumns: true, // jshint ignore:line
-                    columnSelector_layout : '<br><label><input type="checkbox">{name}</label>', // jshint ignore:line
-                    columnSelector_mediaquery: false, // jshint ignore:line
-                    columnSelector_cssChecked : 'checked' // jshint ignore:line
-                }
-            });
 
             $('#popover').popover({
                 placement: 'bottom',
@@ -2530,7 +2534,9 @@ var SICKRAGE = {
             })
             // bootstrap popover event triggered when the popover opens
             .on('shown.bs.popover', function (){
-                $.tablesorter.columnSelector.attachTo($("#showTable, #animeTable"), '#popover-target');
+                $(".displayShowTable").each(function(index, item){
+                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                });
             });
 
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the
@@ -2640,36 +2646,37 @@ var SICKRAGE = {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
-                   1: function(node) { return $(node).text().toLowerCase(); },  // Name
-                   2: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
-                   3: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
-                   4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
-                   5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
-                   6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
-                   7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
-                   8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
-                   9: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
-                   10: function(node) { return $(node).text().toLowerCase(); }  // Show Status
+                    2: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Network
+                    3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
+                    4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
+                    5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
+                    6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
+                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
+                    8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
+                    9: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
+                    10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
+                    11: function(node) { return $(node).text().toLowerCase(); }  // Show Status
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
                     0: { sorter: false, filter: false},
                     1: { sorter: 'showNames'},
-                    2: { sorter: 'quality'},
-                    3: { sorter: 'sports'},
-                    4: { sorter: 'scene'},
-                    5: { sorter: 'anime'},
-                    6: { sorter: 'flatfold'},
-                    7: { sorter: 'paused'},
-                    8: { sorter: 'subtitle'},
-                    9: { sorter: 'default_ep_status'},
-                    10: { sorter: 'status'},
-                    11: { sorter: false},
+                    2: { sorter: 'network'},
+                    3: { sorter: 'quality'},
+                    4: { sorter: 'sports'},
+                    5: { sorter: 'scene'},
+                    6: { sorter: 'anime'},
+                    7: { sorter: 'flatfold'},
+                    8: { sorter: 'paused'},
+                    9: { sorter: 'subtitle'},
+                    10: { sorter: 'default_ep_status'},
+                    11: { sorter: 'status'},
                     12: { sorter: false},
                     13: { sorter: false},
                     14: { sorter: false},
                     15: { sorter: false},
-                    16: { sorter: false}
+                    16: { sorter: false},
+                    17: { sorter: false}
                 },
                 widgetOptions: {
                     'columnSelector_mediaquery': false
@@ -2974,10 +2981,11 @@ var SICKRAGE = {
                         9: { sorter: false }
                     },
                     widgetOptions: {
-                        'filter_columnFilters': true,
-                        'filter_hideFilters': true,
-                        'filter_saveFilters': true,
-                        'columnSelector_mediaquery': false
+                        filter_columnFilters: true, // jshint ignore:line
+                        filter_hideFilters: true, // jshint ignore:line
+                        filter_saveFilters: true, // jshint ignore:line
+                        columnSelector_mediaquery: false, // jshint ignore:line
+                        stickyHeaders_offset: 50 // jshint ignore:line
                     }
                 });
 

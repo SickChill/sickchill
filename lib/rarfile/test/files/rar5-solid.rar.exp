@@ -1,0 +1,15 @@
+Archive: test/files/rar5-solid.rar
+R5_FILE: hdrlen=33 datlen=58 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=stest1.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=False
+  os=1:UNIX mode=0100666 cmp=58 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+R5_FILE: hdrlen=33 datlen=13 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=stest2.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=True
+  os=1:UNIX mode=0100666 cmp=13 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)

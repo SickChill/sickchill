@@ -1,0 +1,14 @@
+Archive: test/files/rar15-comment-lock.rar
+  comment='RARcomment -----'
+FILE: hdrlen=72 datlen=7
+  flags=0x8008:COMMENT,LONG,D64
+  os=0:DOS ver=15 mode=0x20 meth=3 cmp=7 dec=7 vol=0
+  crc=0xe27f07a9 (3799975849) date_time=2010-11-03 19:49:32
+  name=FILE1.TXT
+  comment='file1comment -----'
+FILE: hdrlen=72 datlen=8
+  flags=0x8008:COMMENT,LONG,D64
+  os=0:DOS ver=15 mode=0x20 meth=0 cmp=8 dec=8 vol=0
+  crc=0x3c4306f7 (1011025655) date_time=2010-11-03 19:49:38
+  name=FILE2.TXT
+  comment='file2comment -----'

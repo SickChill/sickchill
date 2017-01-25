@@ -1,0 +1,24 @@
+Archive: test/files/rar5-psw.rar
+  comment='RAR5 archive - nohdr-password\n'
+R5_FILE: hdrlen=94 datlen=64 hdr_extra=60
+  block_flags=0x0003:EXTRA,DATA
+  name=stest1.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=3 dict=0 solid=False
+  os=1:UNIX mode=0100644 cmp=64 dec=2048 vol=0
+  crc=0xba28eeea (3123244778)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  algo=0:AES256 enc_flags=0003:CHECKVAL,TWEAKED kdf_lg=15 kdf_count=32768 salt=7e982cdd1ae21c36c7a391da8d088a68 iv=a03aad26f4827b87d54c725ce73b6967 checkval=8151cff63649c16e186a220f
+R5_FILE: hdrlen=110 datlen=2048 hdr_extra=76
+  block_flags=0x0003:EXTRA,DATA
+  name=stest2.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=1:UNIX mode=0100644 cmp=2048 dec=2048 vol=0
+  crc=0xba28eeea (3123244778)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+  ctime=2016-05-22T09:12:33+00:00
+  atime=2016-05-22T09:12:37+00:00
+  algo=0:AES256 enc_flags=0003:CHECKVAL,TWEAKED kdf_lg=15 kdf_count=32768 salt=7e982cdd1ae21c36c7a391da8d088a68 iv=df83fa0cd86e88b8b6f851467d7949d2 checkval=8151cff63649c16e186a220f

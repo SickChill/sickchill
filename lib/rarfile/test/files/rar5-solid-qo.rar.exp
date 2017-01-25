@@ -1,0 +1,37 @@
+Archive: test/files/rar5-solid-qo.rar
+R5_FILE: hdrlen=45 datlen=59 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=somedir/stest1.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=False
+  os=1:UNIX mode=0100644 cmp=59 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2016-05-22 09:48:36
+  mtime=2016-05-22T09:48:36+00:00
+R5_FILE: hdrlen=37 datlen=12 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=stest1.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=True
+  os=1:UNIX mode=0100644 cmp=12 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00
+R5_FILE: hdrlen=45 datlen=12 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=somedir/stest2.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=True
+  os=1:UNIX mode=0100644 cmp=12 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2016-05-22 09:48:36
+  mtime=2016-05-22T09:48:36+00:00
+R5_FILE: hdrlen=37 datlen=12 hdr_extra=0
+  block_flags=0x0002:DATA
+  name=stest2.txt
+  file_flags=0x0006:MTIME,CRC32
+  cmp_algo=0 cmp_meth=3 dict=3 solid=True
+  os=1:UNIX mode=0100644 cmp=12 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682)
+  date_time=2011-06-12 09:53:33
+  mtime=2011-06-12T09:53:33+00:00

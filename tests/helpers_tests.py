@@ -24,13 +24,12 @@ Test sickbeard.helpers
 Public Methods:
     indentXML
     remove_non_release_groups
-    isMediaFile
-    isRarFile
-    isBeingWritten
+    is_media_file
+    is_rar_file
     remove_file_failed
     makeDir
     searchIndexerForShowID
-    listMediaFiles
+    list_media_files
     copyFile
     moveFile
     link
@@ -77,8 +76,8 @@ Public Methods:
     generateCookieSecret
     verify_freespace
     pretty_time_delta
-    isFileLocked
-    getDiskSpaceUsage
+    is_file_locked
+    disk_usage
 Private Methods:
     _check_against_names
     _setUpSession
@@ -202,15 +201,15 @@ class HelpersZipTests(unittest.TestCase):
 
     def test_is_rar_file(self):
         """
-        Test isRarFile
+        Test is_rar_file
         """
-        self.assertTrue(helpers.isRarFile('lala.rar'))
-        self.assertFalse(helpers.isRarFile('lala.zip'))
-        self.assertFalse(helpers.isRarFile('lala.iso'))
-        self.assertFalse(helpers.isRarFile('lala.wmv'))
-        self.assertFalse(helpers.isRarFile('lala.avi'))
-        self.assertFalse(helpers.isRarFile('lala.mkv'))
-        self.assertFalse(helpers.isRarFile('lala.mp4'))
+        self.assertTrue(helpers.is_rar_file('lala.rar'))
+        self.assertFalse(helpers.is_rar_file('lala.zip'))
+        self.assertFalse(helpers.is_rar_file('lala.iso'))
+        self.assertFalse(helpers.is_rar_file('lala.wmv'))
+        self.assertFalse(helpers.is_rar_file('lala.avi'))
+        self.assertFalse(helpers.is_rar_file('lala.mkv'))
+        self.assertFalse(helpers.is_rar_file('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """
@@ -259,7 +258,7 @@ class HelpersFileTests(unittest.TestCase):
 
     def test_is_media_file(self):
         """
-        Test isMediaFile
+        Test is_media_file
         """
         # TODO: Add unicode tests
         # TODO: Add MAC OS resource fork tests
@@ -305,19 +304,12 @@ class HelpersFileTests(unittest.TestCase):
 
         for cur_test in extension_tests, sample_tests, edge_cases:
             for cur_name, expected_result in cur_test.items():
-                self.assertEqual(helpers.isMediaFile(cur_name), expected_result, cur_name)
+                self.assertEqual(helpers.is_media_file(cur_name), expected_result, cur_name)
 
     @unittest.skip('Not yet implemented')
     def test_is_file_locked(self):
         """
-        Test isFileLocked
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_is_being_written(self):
-        """
-        Test isBeingWritten
+        Test is_file_locked
         """
         pass
 
@@ -331,7 +323,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_list_media_files(self):
         """
-        Test listMediaFiles
+        Test list_media_files
         """
         pass
 
@@ -394,7 +386,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_get_disk_space_usage(self):
         """
-        Test getDiskSpaceUsage
+        Test disk_usage
         """
         pass
 

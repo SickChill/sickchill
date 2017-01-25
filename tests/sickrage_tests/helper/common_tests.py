@@ -81,7 +81,7 @@ class CommonTests(unittest.TestCase):
         """
         Test is sync file
         """
-        sickbeard.SYNC_FILES = '!sync,lftp-pget-status,part'
+        sickbeard.SYNC_FILES = '!sync,lftp-pget-status'
 
         test_cases = {
             None: False,
@@ -97,8 +97,8 @@ class CommonTests(unittest.TestCase):
             '.lftp-pget-status': True,
             'file.lftp-pget-status': True,
             'file.lftp-pget-status.ext': False,
-            '.part': True,
-            'file.part': True,
+            '.part': False,
+            'file.part': False,
             'file.part.ext': False,
         }
 
@@ -114,8 +114,8 @@ class CommonTests(unittest.TestCase):
             u'.lftp-pget-status': True,
             u'file.lftp-pget-status': True,
             u'file.lftp-pget-status.ext': False,
-            u'.part': True,
-            u'file.part': True,
+            u'.part': False,
+            u'file.part': False,
             u'file.part.ext': False,
         }
 
