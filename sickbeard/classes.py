@@ -23,6 +23,8 @@ import sys
 import urllib
 import re
 
+from unidecode import unidecode
+
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
@@ -158,7 +160,7 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
                     series_names.extend(curShow['aliasnames'].split('|'))
 
                 for name in series_names:
-                    if re.sub(r'[^\w\s]', '', search_term.lower()) in re.sub(r'[^\w\s]', '', name.lower()):
+                    if re.sub(r'[^\w\s]', '', search_term.lower()) in re.sub(r'[^\w\s]', '', unidecode(name.lower())):
                         if 'firstaired' not in curShow:
                             curShow['firstaired'] = 'Unknown'
 
