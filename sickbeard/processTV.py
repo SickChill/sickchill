@@ -327,14 +327,20 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
             rar_handle = None
             try:
                 archive_path = ek(os.path.join, path, archive)
-                result.output += log_helper(u"Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
+                if already_processed(path, archive, force, result):
+                    result.output += log_helper(
+                        u"Archive file already post-processed, extraction skipped: {0}".format
+                        (archive_path), logger.DEBUG)
+                    continue
+
                 if not helpers.is_rar_file(archive_path):
                     continue
 
+                result.output += log_helper(u"Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
                 rar_handle = RarFile(archive_path)
                 if rar_handle.needs_password():
                     # TODO: Add support in settings for a list of passwords to try here with rar_handle.set_password(x)
-                    result.output += log_helper('Arcive needs a password, skipping: {0}'.format(archive_path))
+                    result.output += log_helper('Archive needs a password, skipping: {0}'.format(archive_path))
                     continue
 
                 # rar_handle.testrar()

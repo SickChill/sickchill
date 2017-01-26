@@ -215,7 +215,7 @@ def is_rar_file(filename):
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
     ret = re.search(archive_regex, filename) is not None
     try:
-        if ek(os.path.exists, filename) and ek(os.path.isfile, filename):
+        if ret and ek(os.path.exists, filename) and ek(os.path.isfile, filename):
             ret = ek(rarfile.is_rarfile, filename)
     except (IOError, OSError):
         pass
