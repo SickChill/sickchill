@@ -189,10 +189,13 @@ class ApiHandler(RequestHandler):
                     try:
                         if cmd in function_mapper:
                             func = function_mapper.get(cmd)  # map function
-                            func.rh = self  # add request handler to function
-                            cur_out_dict = func(cur_args, cur_kwargs).run()  # call function and get response
+                            to_call = func(cur_args, cur_kwargs)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()  # call function and get response
                         elif _is_int(cmd):
-                            cur_out_dict = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd).run()
+                            to_call = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
