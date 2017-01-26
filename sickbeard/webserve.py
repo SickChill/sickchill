@@ -43,6 +43,8 @@ from mako.runtime import UNDEFINED
 
 from mimetypes import guess_type
 
+import platform
+
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
 from tornado.gen import coroutine
@@ -4416,7 +4418,21 @@ class ConfigPostProcessing(Config):
         Test Packing Support:
             - Simulating in memory rar extraction on test.rar file
         """
-        check = rarfile._check_unrar_tool()
+        check = None
+        # noinspection PyBroadException
+        try:
+            # noinspection PyProtectedMember
+            check = rarfile._check_unrar_tool()
+        except Exception:
+            # noinspection PyBroadException
+            try:
+                if platform.system() in ('Windows', 'Microsoft') and ek(os.path.isfile, 'C:\\Program Files\\WinRar\\UnRar.exe'):
+                        sickbeard.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRar\\UnRar.exe'
+                    # noinspection PyProtectedMember
+                    check = rarfile._check_unrar_tool()
+            except Exception:
+                pass
+
         if not check:
             logger.log(u'Looks like unrar is not installed, check failed', logger.WARNING)
         return ('not supported', 'supported')[check]
