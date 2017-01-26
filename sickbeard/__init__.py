@@ -991,7 +991,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_ICACLS = bool(check_setting_int(CFG, 'General', 'use_icacls', 1))
         UNPACK = bool(check_setting_int(CFG, 'General', 'unpack', 0))
         UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
+        if UNRAR_TOOL:
+            rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = UNRAR_TOOL
+
         ALT_UNRAR_TOOL = check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
+        if ALT_UNRAR_TOOL:
+            rarfile.ALT_TOOL = ALT_UNRAR_TOOL
+
         RENAME_EPISODES = bool(check_setting_int(CFG, 'General', 'rename_episodes', 1))
         AIRDATE_EPISODES = bool(check_setting_int(CFG, 'General', 'airdate_episodes', 0))
         FILE_TIMESTAMP_TIMEZONE = check_setting_str(CFG, 'General', 'file_timestamp_timezone', 'network')

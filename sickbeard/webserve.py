@@ -4265,8 +4265,8 @@ class ConfigPostProcessing(Config):
         config.change_process_automatically(process_automatically)
         sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
-        sickbeard.UNRAR_TOOL = unrar_tool
-        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
+        sickbeard.UNRAR_TOOL= rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = unrar_tool
+        sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
         if unpack:
             if self.isRarSupported() != 'not supported':
