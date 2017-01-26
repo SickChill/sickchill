@@ -4427,7 +4427,7 @@ class ConfigPostProcessing(Config):
             # noinspection PyBroadException
             try:
                 if platform.system() in ('Windows', 'Microsoft') and ek(os.path.isfile, 'C:\\Program Files\\WinRar\\UnRar.exe'):
-                        sickbeard.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRar\\UnRar.exe'
+                    sickbeard.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRar\\UnRar.exe'
                     # noinspection PyProtectedMember
                     check = rarfile._check_unrar_tool()
             except Exception:
