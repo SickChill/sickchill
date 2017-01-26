@@ -345,7 +345,7 @@
                                                     den = cur_total
                                                 else:
                                                     den = 1
-                                                download_stat_tip = _('Unaired')
+                                                    download_stat_tip = _('Unaired')
 
                                                 progressbar_percent = nom * 100 / den
                                             %>
