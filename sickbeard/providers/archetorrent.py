@@ -38,7 +38,6 @@ class ArcheTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         # Provider Init
         TorrentProvider.__init__(self, 'ArcheTorrent')
-        self.enable_cookies = True
 
         # Credentials
         self.username = None
