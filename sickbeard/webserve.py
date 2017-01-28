@@ -2458,10 +2458,12 @@ class HomeAddShows(Home):
                 continue
 
             for cur_file in file_list:
-
                 try:
                     cur_path = ek(os.path.normpath, ek(os.path.join, root_dir, cur_file))
                     if not ek(os.path.isdir, cur_path):
+                        continue
+                    # ignore Synology folders
+                    if cur_file.lower() in ['#recycle', '@eadir']:
                         continue
                 except Exception:
                     continue
