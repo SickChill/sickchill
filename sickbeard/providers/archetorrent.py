@@ -1,5 +1,6 @@
 # coding=utf-8
-# Author: adaur <adaur.underground@gmail.com>
+# Author: ellmout <ellmout@ellmout.net>
+# Inspired from : adaur <adaur.underground@gmail.com> (ABNormal)
 #
 # URL: https://sickrage.github.io
 #
