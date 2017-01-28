@@ -119,7 +119,6 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbHttpsPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
         self.arguments['sbHandleReverseProxy'] = sickbeard.HANDLE_REVERSE_PROXY
-        self.arguments['sbThemeName'] = sickbeard.THEME_NAME
         self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
@@ -2458,10 +2457,12 @@ class HomeAddShows(Home):
                 continue
 
             for cur_file in file_list:
-
                 try:
                     cur_path = ek(os.path.normpath, ek(os.path.join, root_dir, cur_file))
                     if not ek(os.path.isdir, cur_path):
+                        continue
+                    # ignore Synology folders
+                    if cur_file.lower() in ['#recycle', '@eadir']:
                         continue
                 except Exception:
                     continue
