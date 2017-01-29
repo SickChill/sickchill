@@ -11,7 +11,7 @@
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 
     <form name="massUpdateForm" method="post" action="massUpdate">
-
+        ${xsrf_token}
         <div class="row">
             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 pull-right">
                 <input class="btn submitMassEdit pull-right" type="button" value="${_('Edit Selected')}" />

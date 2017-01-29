@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-md-12">
                 <form action="editShow" method="post" accept-charset="utf-8">
-
+                    ${xsrf_token}
                     <div id="config-components">
                         <!-- Tabs -->
                         <ul>

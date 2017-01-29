@@ -12,6 +12,7 @@
             % endif
 
             <form name="processForm" method="post" action="processEpisode" style="line-height: 40px;">
+                ${xsrf_token}
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Enter the folder containing the episode')}</b>

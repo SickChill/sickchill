@@ -10,7 +10,7 @@
 
 <%block name="pages">
     <form method="post" action="backuprestore">
-
+        ${xsrf_token}
         <!-- /component-group1 //-->
         <div id="backup" class="component-group">
             <div class="row">

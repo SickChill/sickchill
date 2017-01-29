@@ -78,6 +78,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
+            xsrf_cookies=True
         )
 
         # Main Handlers

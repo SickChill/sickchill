@@ -13,7 +13,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveNotifications" method="post">
-
+        ${xsrf_token}
         <!-- /HTPC / NAS //-->
         <div id="htpcnas">
 

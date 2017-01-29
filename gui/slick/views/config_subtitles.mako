@@ -34,7 +34,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveSubtitles" method="post">
-
+        ${xsrf_token}
         <!-- /Search //-->
         <div id="subtitles-search">
 

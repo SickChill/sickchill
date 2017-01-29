@@ -26,7 +26,7 @@
                 <div id="core-component-group1" class="tab-pane active component-group">
 
                     <form id="addShowForm" method="post" action="${srRoot}/addShows/addExistingShows" accept-charset="utf-8">
-
+                        ${xsrf_token}
                         <div id="tabs">
                             <ul>
                                 <li><a href="#tabs-1">${_('Manage Directories')}</a></li>

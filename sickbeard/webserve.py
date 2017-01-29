@@ -122,6 +122,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
+        self.arguments['xsrf_token'] = rh.xsrf_form_html()
 
         if rh.request.headers['Host'][0] == '[':
             self.arguments['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
@@ -3275,7 +3276,7 @@ class Manage(Home, WebRoot):
             action='backlogOverview', title=_('Backlog Overview'),
             header=_('Backlog Overview'), topmenu='manage')
 
-    def massEdit(self, toEdit=None):
+    def massEdit(self, toEdit=None, *args, **kwargs):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
         if not toEdit:
@@ -3500,7 +3501,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None,
-                   toSubtitle=None):
+                   toSubtitle=None, *args, **kwargs):
 
         toUpdate = toUpdate.split('|') if toUpdate else []
         toRefresh = toRefresh.split('|') if toRefresh else []

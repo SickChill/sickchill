@@ -47,6 +47,7 @@
         ##Strange that this is used by js but is an input outside of any form?
         <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
         <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
+            ${xsrf_token}
             % if sickbeard.SUBTITLES_MULTI:
                 <h2>${_('Episodes without {subsLanguage} subtitles.').format(subsLanguage=subsLanguage)}</h2>
             % else:

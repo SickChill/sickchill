@@ -23,6 +23,7 @@
 
 <%block name="pages">
     <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
+        ${xsrf_token}
         <input type="hidden" name="toEdit" value="${showList}" />
 
         <div id="main">

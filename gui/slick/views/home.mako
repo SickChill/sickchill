@@ -30,6 +30,7 @@
                     <span class="show-option">${_('Root')}:</span>
                     <label>
                         <form method="post" action="" id="rootDirForm">
+                            ${xsrf_token}
                             <select id="rootDirSelect" name="root" class="form-control form-control-inline input200" title="Root Select">
                             <option value="-1" ${('', 'selected="selected"')[selected_root == '-1']}>${_('All')}</option>
                             % for root_dir in sickbeard.ROOT_DIRS.split('|')[1:]:

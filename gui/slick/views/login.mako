@@ -4,6 +4,7 @@
         <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="login">
                 <form action="" method="post">
+                    ${xsrf_token}
                     <div class="row">
                         <div class="col-md-12">
                             <h1>SickRage</h1>
