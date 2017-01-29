@@ -98,7 +98,7 @@ class NameParser(object):
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
-    def _parse_string(self, name):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _parse_string(self, name, skip_scene_detection=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         if not name:
             return
 
@@ -273,7 +273,7 @@ class NameParser(object):
                 for epAbsNo in bestResult.ab_episode_numbers:
                     a = epAbsNo
 
-                    if bestResult.show.is_scene:
+                    if bestResult.show.is_scene and not skip_scene_detection:
                         a = scene_numbering.get_indexer_absolute_numbering(bestResult.show.indexerid,
                                                                            bestResult.show.indexer, epAbsNo,
                                                                            True, bestResult.scene_season)
@@ -289,7 +289,7 @@ class NameParser(object):
                     s = bestResult.season_number
                     e = epNo
 
-                    if bestResult.show.is_scene:
+                    if bestResult.show.is_scene and not skip_scene_detection:
                         (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
                                                                        bestResult.show.indexer,
                                                                        bestResult.season_number,
@@ -328,7 +328,7 @@ class NameParser(object):
                 bestResult.episode_numbers = new_episode_numbers
                 bestResult.season_number = new_season_numbers[0]
 
-            if bestResult.show.is_scene:
+            if bestResult.show.is_scene and not skip_scene_detection:
                 logger.log(
                     u"Converted parsed result " + bestResult.original_name + " into " + str(bestResult).decode('utf-8',
                                                                                                                'xmlcharrefreplace'),
@@ -403,7 +403,7 @@ class NameParser(object):
 
         return number
 
-    def parse(self, name, cache_result=True):
+    def parse(self, name, cache_result=True, skip_scene_detection=False):
         name = self._unicodify(name)
 
         if self.naming_pattern:
@@ -425,13 +425,13 @@ class NameParser(object):
         final_result = ParseResult(name)
 
         # try parsing the file name
-        file_name_result = self._parse_string(base_file_name)
+        file_name_result = self._parse_string(base_file_name, skip_scene_detection)
 
         # use only the direct parent dir
         dir_name = ek(os.path.basename, dir_name)
 
         # parse the dirname for extra info if needed
-        dir_name_result = self._parse_string(dir_name)
+        dir_name_result = self._parse_string(dir_name, skip_scene_detection)
 
         # build the ParseResult object
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
