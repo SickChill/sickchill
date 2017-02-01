@@ -44,6 +44,7 @@ from mako.runtime import UNDEFINED
 from mimetypes import guess_type
 
 import platform
+from threading import Lock
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -250,7 +251,7 @@ class WebHandler(BaseHandler):
     def get(self, _route, *args, **kwargs):
         try:
             # route -> method obj
-            _route = _route.strip('/').replace('.', '_') or 'index'
+            _route = _route.strip('/').replace('.', '_').replace('-', '_') or 'index'
             method = getattr(self, _route)
 
             results = yield self.async_call(method)
@@ -577,6 +578,7 @@ class CalendarHandler(BaseHandler):
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
         super(UI, self).__init__(*args, **kwargs)
+        self.messages_lock = Lock()
 
     @staticmethod
     def add_message():
@@ -598,13 +600,36 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
+    def set_site_message(self, message, level):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            if message:
+                helpers.add_site_message(message, level)
+            else:
+                if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.rh.get_current_user():
+                    message=_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                    helpers.add_site_message(message, 'danger')
+
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
+    def get_site_messages(self):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
+    def dismiss_site_message(self, index):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            if len(sickbeard.SITE_MESSAGES) >= int(index):
+                sickbeard.SITE_MESSAGES.pop(int(index))
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
     def sickrage_background(self):
         if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):
             self.set_header('Content-Type', guess_type(sickbeard.SICKRAGE_BACKGROUND_PATH)[0])
             with open(sickbeard.SICKRAGE_BACKGROUND_PATH, 'rb') as content:
                 return content.read()
         return None
-
 
 
 @route('/browser(/?.*)')
