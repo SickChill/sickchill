@@ -61,7 +61,7 @@ class qbittorrentAPI(GenericClient):
         self.session.cookies = self.response.cookies
         self.auth = self.response.content
 
-        return self.auth if not self.response.status_code == 404 else None
+        return (None, self.auth)[self.response.status_code != 404]
 
     def _add_torrent_uri(self, result):
 
