@@ -63,7 +63,7 @@ def getFileList(path, includeFiles, imagesOnly):
 
         is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
 
-        if imagesOnly and not is_image:
+        if is_file and imagesOnly and not is_image:
             continue
 
         file_list.append({
