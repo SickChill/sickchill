@@ -181,7 +181,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             directories_from_rars += extracted_directories
 
         video_files = filter(helpers.is_media_file, file_names)
-        unwanted_files = [x for x in file_names if x not in video_files]
+        unwanted_files = [x for x in file_names if x not in video_files and x != '.stfolder']
         if unwanted_files:
             result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
