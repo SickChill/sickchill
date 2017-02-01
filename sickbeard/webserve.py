@@ -3457,13 +3457,13 @@ class Manage(Home, WebRoot):
                 new_air_by_date = show_obj.air_by_date
             else:
                 new_air_by_date = True if air_by_date == 'enable' else False
-            new_air_by_date = 'off' if new_air_by_date else 'on'
+            new_air_by_date = 'on' if new_air_by_date else 'off'
 
             if flatten_folders == 'keep':
                 new_flatten_folders = show_obj.flatten_folders
             else:
                 new_flatten_folders = True if flatten_folders == 'enable' else False
-            new_flatten_folders = 'on' if new_flatten_folders else 'off'
+            new_flatten_folders = 'off' if new_flatten_folders else 'on'
 
             if subtitles == 'keep':
                 new_subtitles = show_obj.subtitles
