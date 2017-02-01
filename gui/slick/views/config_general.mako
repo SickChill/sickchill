@@ -938,6 +938,13 @@
                                         <label for="proxy_setting">${_('blank to disable or proxy to use when connecting to providers')}</label>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
+                                        <label for="proxy_indexers">${_('also use global proxy setting for indexers (tvdb, xem, anidb, etc.)')}</label>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 

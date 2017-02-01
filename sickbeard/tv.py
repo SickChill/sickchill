@@ -895,7 +895,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             'last_update': ''
         }
 
-        if sickbeard.PROXY_SETTING:
+        if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
             i = imdb.IMDb(proxy=sickbeard.PROXY_SETTING)
         else:
             i = imdb.IMDb()
