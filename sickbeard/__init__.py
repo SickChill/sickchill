@@ -131,7 +131,6 @@ newznabProviderList = []
 torrentRssProviderList = []
 metadata_provider_dict = {}
 
-NEWEST_VERSION = None
 VERSION_NOTIFY = False
 AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
