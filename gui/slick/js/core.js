@@ -60,15 +60,15 @@ function addSiteMessage(level, message){
             siteMessages.messages.forEach(function (message, i) {
                 messagesDiv.append('<div class="alert alert-' + message.level + ' upgrade-notification hidden-print" id="site-message-' + i +'" role="alert">' +
                     '<span>' + message.message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + i + '"/>' +
-                '</div>')
+                '</div>');
             });
         }
     });
 
     $('#site-messages').on('click', '.site-message-dismiss', function () {
-        var message_id = $(this).data('id');
-        $('#site-message-' + message_id).hide();
-        $.post(srRoot + '/ui/dismiss-site-message', {index: message_id})
+        var messageID = $(this).data('id');
+        $('#site-message-' + messageID).hide();
+        $.post(srRoot + '/ui/dismiss-site-message', {index: messageID});
     });
 }
 
@@ -299,14 +299,16 @@ var SICKRAGE = {
                 $.getJSON(checkDBversion, function(data){
                     if (data.status === "success") {
                         if (data.message === "downgrade") {
-                            notifyModal("Can't switch branch as this will result in a database downgrade.")
+                            notifyModal("Can't switch branch as this will result in a database downgrade.");
                         }
                         else {
-                            var do_upgrade = true;
-                            if (data.message === "upgrade")
-                                do_upgrade = confirm("Changing branch will upgrade your database.\nYou won't be able to downgrade afterward.\nDo you want to continue?");
-                            if (do_upgrade)
+                            var doUpgrade = true;
+                            if (data.message === "upgrade") {
+                                doUpgrade = confirm("Changing branch will upgrade your database.\nYou won't be able to downgrade afterward.\nDo you want to continue?");
+                            }
+                            if (doUpgrade) {
                                 window.location.href = url;
+                            }
                         }
                     }
                 });
