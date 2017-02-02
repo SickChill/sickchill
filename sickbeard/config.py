@@ -306,9 +306,6 @@ def change_version_notify(version_notify):
 
     sickbeard.VERSION_NOTIFY = version_notify
 
-    if not version_notify:
-        sickbeard.NEWEST_VERSION_STRING = None
-
     if oldSetting is False and version_notify is True:
         sickbeard.versionCheckScheduler.forceRun()
 
