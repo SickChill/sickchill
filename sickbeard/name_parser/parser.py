@@ -18,17 +18,20 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import time
-import re
 import os.path
-import sickbeard
-from sickbeard.name_parser import regexes
+import re
+import time
+from collections import OrderedDict
+from threading import Lock
 
-from sickbeard import logger, helpers, scene_numbering, common, scene_exceptions, db
+import dateutil
+
+import sickbeard
+from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
+from sickbeard.name_parser import regexes
 from sickrage.helper.common import remove_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-import dateutil
 
 
 class NameParser(object):
@@ -574,19 +577,24 @@ class ParseResult(object):  # pylint: disable=too-many-instance-attributes
 
 
 class NameParserCache(object):
-    _previous_parsed = {}
-    _cache_size = 100
 
-    def add(self, name, parse_result):
-        self._previous_parsed[name] = parse_result
-        while len(self._previous_parsed) > self._cache_size:
-            del self._previous_parsed[self._previous_parsed.keys()[0]]
+    def __init__(self):
+        self.lock = Lock()
+        self.data = OrderedDict()
+        self.max_size = 200
 
-    def get(self, name):
-        if name in self._previous_parsed:
-            logger.log(u"Using cached parse result for: " + name, logger.DEBUG)
-            return self._previous_parsed[name]
+    def get(self, key):
+        with self.lock:
+            value = self.data.get(key, None)
+            if value:
+                logger.log(u"Using cached parse result for: {name}".format(name=key), logger.DEBUG)
+            return value
 
+    def add(self, key, value):
+        with self.lock:
+            self.data.update({key: value})
+            while len(self.data) > self.max_size:
+                self.data.pop(self.data.keys()[0], None)
 
 name_parser_cache = NameParserCache()
 

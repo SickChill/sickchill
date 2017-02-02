@@ -1746,3 +1746,9 @@ def recursive_listdir(path):
     for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
         for filename in file_names:
             yield ek(os.path.join, directory_path, filename)
+
+
+def add_site_message(message, level='danger'):
+    to_add = dict(level=level, message=message)
+    if to_add not in sickbeard.SITE_MESSAGES:
+        sickbeard.SITE_MESSAGES.append(to_add)

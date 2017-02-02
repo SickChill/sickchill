@@ -44,6 +44,7 @@ from mako.runtime import UNDEFINED
 from mimetypes import guess_type
 
 import platform
+from threading import Lock
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -251,7 +252,7 @@ class WebHandler(BaseHandler):
     def get(self, _route, *args, **kwargs):
         try:
             # route -> method obj
-            _route = _route.strip('/').replace('.', '_') or 'index'
+            _route = _route.strip('/').replace('.', '_').replace('-', '_') or 'index'
             method = getattr(self, _route)
 
             results = yield self.async_call(method)
@@ -578,6 +579,7 @@ class CalendarHandler(BaseHandler):
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
         super(UI, self).__init__(*args, **kwargs)
+        self.messages_lock = Lock()
 
     @staticmethod
     def add_message():
@@ -599,13 +601,36 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
+    def set_site_message(self, message, level):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            if message:
+                helpers.add_site_message(message, level)
+            else:
+                if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.rh.get_current_user():
+                    message=_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                    helpers.add_site_message(message, 'danger')
+
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
+    def get_site_messages(self):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
+    def dismiss_site_message(self, index):
+        with self.messages_lock:
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            if len(sickbeard.SITE_MESSAGES) >= int(index):
+                sickbeard.SITE_MESSAGES.pop(int(index))
+            return dict(messages=sickbeard.SITE_MESSAGES)
+
     def sickrage_background(self):
         if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):
             self.set_header('Content-Type', guess_type(sickbeard.SICKRAGE_BACKGROUND_PATH)[0])
             with open(sickbeard.SICKRAGE_BACKGROUND_PATH, 'rb') as content:
                 return content.read()
         return None
-
 
 
 @route('/browser(/?.*)')
@@ -3896,7 +3921,7 @@ class ConfigGeneral(Config):
             api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
             web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
             handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-            proxy_setting=None, anon_redirect=None, git_path=None, git_remote=None,
+            proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
@@ -3937,6 +3962,7 @@ class ConfigGeneral(Config):
         sickbeard.CPU_PRESET = cpu_preset
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
+        sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
         git_credentials_changed = sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD != git_username, git_password
         sickbeard.GIT_USERNAME = git_username

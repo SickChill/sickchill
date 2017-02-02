@@ -63,6 +63,9 @@ def getFileList(path, includeFiles, imagesOnly):
 
         is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
 
+        if is_file and imagesOnly and not is_image:
+            continue
+
         file_list.append({
             'name': filename,
             'path': full_filename,
@@ -116,7 +119,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
         file_list = getFileList(path, includeFiles, imagesOnly)
     except OSError as e:
         logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
-        file_list = getFileList(parent_path, includeFiles)
+        file_list = getFileList(parent_path, includeFiles, imagesOnly)
 
     file_list = sorted(file_list,
                        lambda x, y: cmp(ek(os.path.basename, x['name']).lower(), ek(os.path.basename, y['path']).lower()))

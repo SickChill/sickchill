@@ -369,7 +369,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(sickbeard.USE_ICACLS)]}/>
-                                        <label for="no_delete">${_('Windows only')}</label>
+                                        <label for="use_icacls">${_('Windows only')}</label>
                                     </div>
                                 </div>
                                 <div class="row">

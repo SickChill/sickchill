@@ -181,7 +181,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             directories_from_rars += extracted_directories
 
         video_files = filter(helpers.is_media_file, file_names)
-        unwanted_files = [x for x in file_names if x not in video_files]
+        unwanted_files = [x for x in file_names if x not in video_files and x != '.stfolder']
         if unwanted_files:
             result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
@@ -255,7 +255,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
         result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
-    if helpers.is_hidden_folder(process_path):
+    if process_path.strip('/\\') != sickbeard.TV_DOWNLOAD_DIR.strip('/\\') and helpers.is_hidden_folder(process_path):
         result.output += log_helper(u"Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
         result.missed_files.append(u"{0} : Hidden folder".format(process_path))
         return False
