@@ -255,7 +255,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
         result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
-    if helpers.is_hidden_folder(process_path):
+    if process_path.strip('/\\') != sickbeard.TV_DOWNLOAD_DIR.strip('/\\') and helpers.is_hidden_folder(process_path):
         result.output += log_helper(u"Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
         result.missed_files.append(u"{0} : Hidden folder".format(process_path))
         return False
