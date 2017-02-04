@@ -209,7 +209,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         parse_result.season_number is not None,
                         parse_result.episode_numbers,
                         [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
-                         parse_result.season_number and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                        (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
+                        (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
                     ]):
 
                         logger.log(
@@ -335,11 +336,12 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
     @staticmethod
     def get_url_hook(response, **kwargs_):
-        logger.log(u'{0} URL: {1} [Status: {2}]'.format
-                   (response.request.method, response.request.url, response.status_code), logger.DEBUG)
+        if response:
+            logger.log(u'{0} URL: {1} [Status: {2}]'.format
+                       (response.request.method, response.request.url, response.status_code), logger.DEBUG)
 
-        if response.request.method == 'POST':
-            logger.log(u'With post data: {0}'.format(response.request.body), logger.DEBUG)
+            if response.request.method == 'POST':
+                logger.log(u'With post data: {0}'.format(response.request.body), logger.DEBUG)
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments,
         kwargs['hooks'] = {'response': self.get_url_hook}

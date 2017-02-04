@@ -77,7 +77,7 @@ class imdbPopular(object):
 
     @staticmethod
     def change_size(image_url, factor=3):
-        match = re.search("^(.*)V1._(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.*?)_.jpg$", image_url)
+        match = re.search("^(.*)V1_(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.\d?)_(.*?)_.jpg$", image_url)
 
         if match:
             matches = match.groups()

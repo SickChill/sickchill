@@ -21,6 +21,7 @@ import datetime
 import gettext
 import os
 import random
+import rarfile
 import re
 import shutil
 import socket
@@ -99,6 +100,8 @@ DATA_DIR = ''
 CREATEPID = False
 PIDFILE = ''
 
+SITE_MESSAGES = []
+
 DAEMON = None
 NO_RESIZE = False
 
@@ -128,8 +131,6 @@ newznabProviderList = []
 torrentRssProviderList = []
 metadata_provider_dict = {}
 
-NEWEST_VERSION = None
-NEWEST_VERSION_STRING = None
 VERSION_NOTIFY = False
 AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
@@ -178,6 +179,7 @@ DOWNLOAD_URL = None
 
 HANDLE_REVERSE_PROXY = False
 PROXY_SETTING = None
+PROXY_INDEXERS = False
 SSL_VERIFY = True
 
 LOCALHOST_IP = None
@@ -292,6 +294,9 @@ POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
 UNPACK = False
+UNRAR_TOOL = rarfile.UNRAR_TOOL
+ALT_UNRAR_TOOL = rarfile.ALT_TOOL
+
 SKIP_REMOVED_FILES = False
 ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
 USE_FREE_SPACE_CHECK = True
@@ -569,6 +574,8 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
+SICKRAGE_BACKGROUND = None
+SICKRAGE_BACKGROUND_PATH = None
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
 
@@ -605,7 +612,7 @@ TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
-SYNC_FILES = "!sync,lftp-pget-status,part,bts,!qb,!qB"
+SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
 CALENDAR_UNPROTECTED = False
 CALENDAR_ICONS = False
@@ -647,7 +654,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
-            USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
+            USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, \
             showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
@@ -660,7 +667,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, PUSHBULLET_CHANNEL,\
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, CPU_PRESET, \
-            KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
+            UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, AIRDATE_EPISODES, FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, \
@@ -679,14 +686,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, \
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
-            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
-            USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
+            SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -825,6 +831,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
+        SICKRAGE_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'sickrage_background', 0))
+        SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path', '')
         FANART_BACKGROUND = bool(check_setting_int(CFG, 'GUI', 'fanart_background', 1))
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4)
 
@@ -873,6 +881,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         ANON_REDIRECT = check_setting_str(CFG, 'General', 'anon_redirect', 'http://dereferer.org/?')
         PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting', '')
+        PROXY_INDEXERS = check_setting_int(CFG, 'General', 'proxy_indexers', 1)
 
         # attempt to help prevent users from breaking links by using a bad url
         if not ANON_REDIRECT.endswith('?'):
@@ -990,6 +999,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NO_DELETE = bool(check_setting_int(CFG, 'General', 'no_delete', 0))
         USE_ICACLS = bool(check_setting_int(CFG, 'General', 'use_icacls', 1))
         UNPACK = bool(check_setting_int(CFG, 'General', 'unpack', 0))
+        UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
+        if UNRAR_TOOL:
+            rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = UNRAR_TOOL
+
+        ALT_UNRAR_TOOL = check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
+        if ALT_UNRAR_TOOL:
+            rarfile.ALT_TOOL = ALT_UNRAR_TOOL
+
         RENAME_EPISODES = bool(check_setting_int(CFG, 'General', 'rename_episodes', 1))
         AIRDATE_EPISODES = bool(check_setting_int(CFG, 'General', 'airdate_episodes', 0))
         FILE_TIMESTAMP_TIMEZONE = check_setting_str(CFG, 'General', 'file_timestamp_timezone', 'network')
@@ -1908,6 +1925,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'trash_rotate_logs': int(TRASH_ROTATE_LOGS),
             'sort_article': int(SORT_ARTICLE),
             'proxy_setting': PROXY_SETTING,
+            'proxy_indexers': int(PROXY_INDEXERS),
             'use_listview': int(USE_LISTVIEW),
 
             'metadata_kodi': METADATA_KODI,
@@ -1934,6 +1952,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'no_delete': int(NO_DELETE),
             'use_icacls': int(USE_ICACLS),
             'unpack': int(UNPACK),
+            'unrar_tool': UNRAR_TOOL,
+            'alt_unrar_tool': ALT_UNRAR_TOOL,
             'rename_episodes': int(RENAME_EPISODES),
             'airdate_episodes': int(AIRDATE_EPISODES),
             'file_timestamp_timezone': FILE_TIMESTAMP_TIMEZONE,
@@ -2272,6 +2292,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'gui_name': GUI_NAME,
             'language': GUI_LANG,
             'theme_name': THEME_NAME,
+            'sickrage_background': int(SICKRAGE_BACKGROUND),
+            'sickrage_background_path': SICKRAGE_BACKGROUND_PATH,
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'home_layout': HOME_LAYOUT,

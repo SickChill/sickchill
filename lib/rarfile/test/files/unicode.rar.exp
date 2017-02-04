@@ -1,0 +1,11 @@
+Archive: test/files/unicode.rar
+FILE: hdrlen=54 datlen=17
+  flags=0x8080:LONG,D1024
+  os=3:UNIX ver=29 mode=0100644 meth=5 cmp=17 dec=2 vol=0
+  crc=0x6751fc53 (1733426259) date_time=2011-07-06 16:48:04
+  name=уииоотивл.txt
+FILE: hdrlen=52 datlen=13
+  flags=0x8090:SOLID,LONG,D1024
+  os=3:UNIX ver=29 mode=0100644 meth=5 cmp=13 dec=2 vol=0
+  crc=0x6751fc53 (1733426259) date_time=2011-07-06 16:48:04
+  name=𝐀𝐁𝐁𝐂.txt

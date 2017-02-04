@@ -45,8 +45,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="checkbox" class="seriesCheck" id="${_('SelectAll')}" title="Check"/>
-            <label for="Check">${_('Select All')}</label>
+            <input type="checkbox" class="seriesCheck" id="select-all" title="Check"/>
+            <label for="select-all">${_('select all')}</label>
         </div>
     </div>
     <div class="row">

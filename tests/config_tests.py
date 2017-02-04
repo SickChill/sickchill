@@ -15,23 +15,23 @@ Classes:
         _migrate_v7
 
 Methods
-    change_HTTPS_CERT
-    change_HTTPS_KEY
-    change_LOG_DIR
-    change_NZB_DIR
-    change_TORRENT_DIR
-    change_TV_DOWNLOAD_DIR
-    change_AUTOPOSTPROCESSOR_FREQUENCY
-    change_DAILYSEARCH_FREQUENCY
-    change_BACKLOG_FREQUENCY
-    change_UPDATE_FREQUENCY
-    change_SHOWUPDATE_HOUR
-    change_SUBTITLES_FINDER_FREQUENCY
-    change_VERSION_NOTIFY
-    change_DOWNLOAD_PROPERS
-    change_USE_TRAKT
-    change_USE_SUBTITLES
-    change_PROCESS_AUTOMATICALLY
+    change_https_cert
+    change_https_key
+    change_log_dir
+    change_nzb_dir
+    change_torrent_dir
+    change_tv_download_dir
+    change_postprocessor_frequency
+    change_daily_search_frequency
+    change_backlog_frequency
+    change_update_frequency
+    change_showupdate_hour
+    change_subtitle_finder_frequency
+    change_version_notify
+    change_download_propers
+    change_use_trakt
+    change_use_subtitles
+    change_process_automatically
     CheckSection
     checkbox_to_value
     clean_host

@@ -1,0 +1,8 @@
+Archive: test/files/ctime4.rar
+FILE: hdrlen=53 datlen=0
+  flags=0x9020:EXTTIME,LONG,D128
+  os=2:WIN ver=29 mode=0x20 meth=0 cmp=0 dec=0 vol=0
+  crc=0x00000000 (0) date_time=2011-05-10 21:28:47
+  name=afile.txt
+  mtime=2011-05-10T21:28:47.899345
+  ctime=2011-05-10T21:28:47.899345

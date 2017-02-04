@@ -88,7 +88,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
 
             response = self.get_url(login_url, post_data=login_params, returns='response')
-            if response.status_code not in [200]:
+            if not response or response.status_code != 200:
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
 

@@ -1,0 +1,10 @@
+Archive: test/files/rar5-times2.rar
+R5_FILE: hdrlen=42 datlen=0 hdr_extra=11
+  block_flags=0x0003:EXTRA,DATA
+  name=afile.txt
+  file_flags=0x0004:CRC32
+  cmp_algo=0 cmp_meth=0 dict=0 solid=False
+  os=0:WINDOWS mode=0x20 cmp=0 dec=0 vol=0
+  crc=0x00000000 (0)
+  date_time=2011-05-10 18:28:47
+  mtime=2011-05-10T18:28:47.899345+00:00

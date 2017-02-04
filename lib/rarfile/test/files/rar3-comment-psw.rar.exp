@@ -1,0 +1,16 @@
+Archive: test/files/rar3-comment-psw.rar
+  comment='RARcomment\n'
+FILE: hdrlen=51 datlen=16
+  flags=0x9424:PASSWORD,SALT,EXTTIME,LONG,D128
+  os=3:UNIX ver=29 mode=0100644 meth=3 cmp=16 dec=0 vol=0
+  crc=0x00000000 (0) date_time=2010-11-02 10:03:25
+  name=file1.txt
+  mtime=2010-11-02T10:03:25
+  comment='Comment1v2\n'
+FILE: hdrlen=51 datlen=16
+  flags=0x9424:PASSWORD,SALT,EXTTIME,LONG,D128
+  os=3:UNIX ver=29 mode=0100644 meth=3 cmp=16 dec=0 vol=0
+  crc=0x00000000 (0) date_time=2010-11-02 10:03:25
+  name=file2.txt
+  mtime=2010-11-02T10:03:25
+  comment='Comment2v2\n'

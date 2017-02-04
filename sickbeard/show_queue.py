@@ -146,6 +146,9 @@ class ShowQueue(generic_queue.GenericQueue):
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
+        if default_status_after is None:
+            default_status_after = sickbeard.STATUS_DEFAULT_AFTER
+
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
                                     subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
                                     default_status_after, root_dir)

@@ -101,7 +101,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('Note: minutes are randomized each time SickRage is started')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickRage is started')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -377,6 +377,37 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Use a background image')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
+                                    ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
+                                <label for="fanart_background">${_('use a custom image as background for SickRage')}</label>
+                            </div>
+                        </div>
+                        <div id="content_sickrage_background">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Background Path')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="sickrage_background_path" id="sickrage_background_path"
+                                                   value="${sickbeard.SICKRAGE_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="sickrage_background_path" class="component-desc">${_('Path to the background image')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Show fanart in the background')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -399,7 +430,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="fanart_background_opacity" class="component-desc">${_('Transparency of the fanart in the background')}</label>
+                                            <label for="fanart_background_opacity" class="component-desc">${_('transparency of the fanart in the background')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -439,7 +470,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="coming_eps_missed_range">${_('Set the range in days of the missed episodes in the Schedule page')}</label>
+                                        <label for="coming_eps_missed_range">${_('set the range in days of the missed episodes in the Schedule page')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -500,7 +531,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="time_presets"><b>${_('Note')}:</b> ${_('seconds are only shown on the History page')}</label>
+                                        <label for="time_presets"><b>${_('note')}:</b>&nbsp;${_('seconds are only shown on the History page')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -511,17 +542,27 @@
                                 <label class="component-title">${_('Timezone')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <label for="local" class="space-right">
-                                    <input type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} />${_('Local')}
-                                </label>
-                                <label for="network">
-                                    <input type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />${_('Network')}
-                                </label>
-                                <div class="clear-left">
-                                    <p>${_('display dates and times in either your timezone or the shows network timezone')}</p>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "local"]} >
+                                        <label for="local" class="space-right">${_('Local')}</label>
+                                    </div>
                                 </div>
-                                <div class="clear-left">
-                                    <p><b>${_('Note')}:</b> ${_('Use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</p>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[sickbeard.TIMEZONE_DISPLAY == "network"]} />
+                                        <label for="network">${_('Network')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('display dates and times in either your timezone or the shows network timezone')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)')}</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -562,8 +603,8 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Web Interface')}</h3>
-                        <p>${_('It is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
-                        <p><b>${_('These options require a manual restart to take effect.')}</b></p>
+                        <p>${_('it is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
+                        <p><b>${_('these options require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -599,7 +640,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
-                                <p>${_('enable logs from the internal Tornado web server')}</p>
+                                <label>${_('enable logs from the internal Tornado web server')}</label>
                             </div>
                         </div>
 
@@ -716,8 +757,17 @@
                                 <label class="component-title">${_('Reverse proxy headers')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
-                                <label for="handle_reverse_proxy">${_('accept the following reverse proxy headers (advanced)...<br>(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(sickbeard.HANDLE_REVERSE_PROXY)]}/>
+                                        <label for="handle_reverse_proxy">${_('accept the following reverse proxy headers (advanced)...')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -791,7 +841,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[bool(sickbeard.DEBUG)]}/>
-                                <label for="debug">${_('Enable debug logs')}</label>
+                                <label for="debug">${_('enable debug logs')}</label>
                             </div>
                         </div>
 
@@ -801,7 +851,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[bool(sickbeard.SSL_VERIFY)]}/>
-                                <label for="ssl_verify">${_('Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))')}</label>
+                                <label for="ssl_verify">${_('verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))')}</label>
                             </div>
                         </div>
 
@@ -810,8 +860,17 @@
                                 <label class="component-title">${_('No Restart')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(sickbeard.NO_RESTART)]}/>
-                                <label for="no_restart">${_('''Only shutdown when restarting SR. Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)''')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(sickbeard.NO_RESTART)]}/>
+                                        <label for="no_restart">${_('only shutdown when restarting SR')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('only select this when you have external software restarting SR automatically when it stops (like FireDaemon)')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -820,11 +879,18 @@
                                 <label class="component-title">${_('Encrypt passwords')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
-                                <label for="encryption_version">${_('in the <code>config.ini</code> file.')}
-                                    <b>${_('Warning')}:</b> ${_('Passwords must only contain')}
-                                    <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a>
-                                </label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(sickbeard.ENCRYPTION_VERSION)]}/>
+                                        <label for="encryption_version">${_('in the <code>config.ini</code> file')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>${_('warning')}:</b>&nbsp;${_('passwords must only contain')}
+                                        <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -833,8 +899,17 @@
                                 <label class="component-title">${_('Unprotected calendar')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_UNPROTECTED)]}/>
-                                <label for="calendar_unprotected">${_('''allow subscribing to the calendar without user and password. Some services like Google Calendar only work this way''')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_UNPROTECTED)]}/>
+                                        <label for="calendar_unprotected">${_('allow subscribing to the calendar without user and password')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('some services like Google Calendar only work this way')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -844,7 +919,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="calendar_icons" id="calendar_icons" ${('', 'checked="checked"')[bool(sickbeard.CALENDAR_ICONS)]}/>
-                                <label for="calendar_icons">${_('show an icon next to exported calendar events in Google Calendar.')}</label>
+                                <label for="calendar_icons">${_('show an icon next to exported calendar events in Google Calendar')}</label>
                             </div>
                         </div>
 
@@ -863,6 +938,13 @@
                                         <label for="proxy_setting">${_('blank to disable or proxy to use when connecting to providers')}</label>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
+                                        <label for="proxy_indexers">${_('also use global proxy setting for indexers (tvdb, xem, anidb, etc.)')}</label>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
@@ -871,8 +953,17 @@
                                 <label class="component-title">${_('Skip Remove Detection')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
-                                <label for="skip_removed_files">${_('Skip detection of removed files. If disabled the episode will be set to the default deleted status')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(sickbeard.SKIP_REMOVED_FILES)]}/>
+                                        <label for="skip_removed_files">${_('skip detection of removed files')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>${_('if disabled the episode will be set to the default deleted status')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -901,17 +992,17 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="ep_default_deleted_status">${_('Define the status to be set for media file that has been deleted.')}</label>
+                                        <label for="ep_default_deleted_status">${_('define the status to be set for media file that has been deleted.')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('Note')}:</b> ${_('Archived option will keep previous downloaded quality')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('Archived option will keep previous downloaded quality')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('Example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</label>
+                                        <label>${_('example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -972,9 +1063,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         % if not gh_branch:
-                                            <div class="clear-left" style="color:#FF0000"><p>${_('Error: No branches found.')}</p></div>
+                                            <div class="clear-left" style="color:#FF0000"><label>${_('error: No branches found.')}</label></div>
                                         % else:
-                                            <div class="clear-left"><p>${_('select branch to use (restart required)')}</p></div>
+                                            <div class="clear-left"><label>${_('select branch to use (restart required)')}</label></div>
                                         % endif
                                     </div>
                                 </div>
@@ -1029,7 +1120,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="git_remote">${_('default:origin. Access repo configured remotes (save then refresh browser)')}</label>
+                                        <label for="git_remote">${_('access repo configured remotes (save then refresh browser)')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_remote"><b>${_('default')}:</b>&nbsp;${_('origin')}</label>
                                     </div>
                                 </div>
                             </div>

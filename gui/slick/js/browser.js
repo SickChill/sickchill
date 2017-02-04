@@ -7,13 +7,14 @@
             url:               srRoot + '/browser/',
             autocompleteURL:   srRoot + '/browser/complete',
             includeFiles:      0,
+            imagesOnly:        0,
             showBrowseButton:  true
         }
     };
 
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
-    function browse(path, endpoint, includeFiles) {
+    function browse(path, endpoint, includeFiles, imagesOnly) {
         if (currentBrowserPath === path) {
             return;
         }
@@ -26,7 +27,7 @@
 
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
-        currentRequest = $.getJSON(endpoint, { path: path, includeFiles: includeFiles }, function (data) {
+        currentRequest = $.getJSON(endpoint, {path: path, includeFiles: includeFiles, imagesOnly: imagesOnly}, function (data) {
             fileBrowserDialog.empty();
             var firstVal = data[0];
             var i = 0;
@@ -39,27 +40,32 @@
                 .val(firstVal.currentPath)
                 .on('keypress', function (e) {
                     if (e.which === 13) {
-                        browse(e.target.value, endpoint, includeFiles);
+                        browse(e.target.value, endpoint, includeFiles, imagesOnly);
                     }
                 })
                 .appendTo(fileBrowserDialog)
                 .fileBrowser({showBrowseButton: false})
                 .on('autocompleteselect', function (e, ui) {
-                    browse(ui.item.value, endpoint, includeFiles);
+                    browse(ui.item.value, endpoint, includeFiles, imagesOnly);
                 });
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
+                if (imagesOnly && entry.isFile && !entry.isImage) {
+                    return true;
+                }
                 link = $('<a href="javascript:void(0)">').on('click', function () {
                     if (entry.isFile) {
                         currentBrowserPath = entry.path;
                         $('.browserDialog .ui-button:contains("Ok")').click();
                     } else {
-                        browse(entry.path, endpoint, includeFiles);
+                        browse(entry.path, endpoint, includeFiles, imagesOnly);
                     }
                 }).text(entry.name);
-                if (entry.isFile) {
-                    link.prepend('<span class="ui-icon ui-icon-blank"></span>');
+                if (entry.isImage) {
+                    link.prepend('<span class="ui-icon ui-icon-image"></span>');
+                } else if (entry.isFile) {
+                    link.prepend('<span class="ui-icon ui-icon-document"></span>');
                 } else {
                     link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
                         .on('mouseenter', function () { $('span', this).addClass('ui-icon-folder-open'); })
@@ -99,7 +105,7 @@
             'class': 'btn',
             click: function () {
                 // store the browsed path to the associated text field
-                callback($(this).find('.fileBrowserField').val(), options);
+                callback(options.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), options);
                 $(this).dialog('close');
             }
         }, {
@@ -116,7 +122,7 @@
             initialDir = options.initialDir;
         }
 
-        browse(initialDir, options.url, options.includeFiles);
+        browse(initialDir, options.url, options.includeFiles, options.imagesOnly);
         fileBrowserDialog.dialog('open');
 
         return false;

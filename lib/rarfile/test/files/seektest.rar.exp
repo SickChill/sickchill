@@ -1,0 +1,13 @@
+Archive: test/files/seektest.rar
+FILE: hdrlen=44 datlen=90
+  flags=0x9020:EXTTIME,LONG,D128
+  os=3:UNIX ver=29 mode=0100644 meth=5 cmp=90 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682) date_time=2011-06-12 12:53:33
+  name=stest1.txt
+  mtime=2011-06-12T12:53:33
+FILE: hdrlen=44 datlen=2048
+  flags=0x9020:EXTTIME,LONG,D128
+  os=3:UNIX ver=20 mode=0100644 meth=0 cmp=2048 dec=2048 vol=0
+  crc=0xc5b7e6a2 (3317163682) date_time=2011-06-12 12:53:33
+  name=stest2.txt
+  mtime=2011-06-12T12:53:33

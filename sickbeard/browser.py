@@ -43,7 +43,7 @@ def getWinDrives():
     return drives
 
 
-def getFileList(path, includeFiles):
+def getFileList(path, includeFiles, imagesOnly):
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hide_list = ['boot', 'bootmgr', 'cache', 'config.msi', 'msocache', 'recovery', '$recycle.bin',
                  'recycler', 'system volume information', 'temporary internet files']  # windows specific
@@ -56,23 +56,27 @@ def getFileList(path, includeFiles):
             continue
 
         full_filename = ek(os.path.join, path, filename)
-        is_dir = ek(os.path.isdir, full_filename)
+        is_file = ek(os.path.isfile, full_filename)
 
-        if not includeFiles and not is_dir:
+        if not includeFiles and is_file:
             continue
 
-        entry = {
+        is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
+
+        if is_file and imagesOnly and not is_image:
+            continue
+
+        file_list.append({
             'name': filename,
-            'path': full_filename
-        }
-        if not is_dir:
-            entry['isFile'] = True
-        file_list.append(entry)
+            'path': full_filename,
+            'isFile': is_file,
+            'isImage': is_image
+        })
 
     return file_list
 
 
-def foldersAtPath(path, includeParent=False, includeFiles=False):
+def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None):
     """
     Returns a list of dictionaries with the folders contained at the given path.
 
@@ -112,10 +116,10 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
         parent_path = ''
 
     try:
-        file_list = getFileList(path, includeFiles)
+        file_list = getFileList(path, includeFiles, imagesOnly)
     except OSError as e:
         logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
-        file_list = getFileList(parent_path, includeFiles)
+        file_list = getFileList(parent_path, includeFiles, imagesOnly)
 
     file_list = sorted(file_list,
                        lambda x, y: cmp(ek(os.path.basename, x['name']).lower(), ek(os.path.basename, y['path']).lower()))
