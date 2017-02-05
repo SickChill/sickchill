@@ -593,6 +593,12 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testDiscord').on('click', function() {
+                $.get(srRoot + '/home/testDiscord', function(data) {
+                    $('#testDiscord-result').html(data);
+                });
+            });
+
             $('#settingsNMJ').on('click', function() {
                 var nmj = {};
                 if (!$('#nmj_host').val()) {

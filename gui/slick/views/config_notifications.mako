@@ -3165,6 +3165,82 @@
                 </div>
             </div>
 
+            <div class="config-group-divider"></div>
+
+            <!-- /Discord component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-discord" title="${_('Discord')}"></span>
+                        <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Discord</a></h3>
+                        <p>${_('All-in-one voice and text chat for gammers that\'s free, secure, and works on both your desktop and phone.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(sickbeard.USE_DISCORD)]}/>
+                                        <label for="use_discord">${_('Should SickRage post messages on Discord?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_discord">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_SNATCH)]}/>
+                                    <label for="discord_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_DOWNLOAD)]}/>
+                                    <label for="discord_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Discord Incoming Webhook')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="discord_webhook" id="discord_webhook" value="${sickbeard.DISCORD_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testDiscord-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Discord" id="testDiscord" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
 
             <!-- end component groups -->
         </div>

@@ -950,6 +950,14 @@ class Home(WebRoot):
             return _("Slack message failed")
 
     @staticmethod
+    def testDiscord():
+        result = notifiers.discord_notifier.test_notify()
+        if result:
+            return _("Discord message successful")
+        else:
+            return _("Discord message failed")
+
+    @staticmethod
     def testKODI(host=None, username=None, password=None):
 
         host = config.clean_hosts(host)
@@ -4981,7 +4989,8 @@ class ConfigNotifications(Config):
             use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
-            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_webhook=None):
+            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_webhook=None,
+            use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None):
 
         results = []
 
@@ -5074,6 +5083,11 @@ class ConfigNotifications(Config):
         sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
         sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
         sickbeard.SLACK_WEBHOOK = slack_webhook
+
+        sickbeard.USE_DISCORD = config.checkbox_to_value(use_discord)
+        sickbeard.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
+        sickbeard.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
+        sickbeard.DISCORD_WEBHOOK = discord_webhook
 
         sickbeard.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
         sickbeard.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)
