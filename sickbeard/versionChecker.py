@@ -165,10 +165,10 @@ class CheckVersion(object):
                 if result in message:
                     logger.log(message[result]['text'], message[result]['type'])  # unpack the result message into a log entry
                 else:
-                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result), logger.ERROR)
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result), logger.WARNING)
                 return result in ['equal']  # add future True results to the list
             except Exception as error:
-                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)), logger.ERROR)
+                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)), logger.WARNING)
                 return False
 
         def postprocessor_safe():
