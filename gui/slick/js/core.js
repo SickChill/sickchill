@@ -2203,13 +2203,14 @@ var SICKRAGE = {
                             position: 'absolute',
                             margin: 0,
                             top: origTop,
-                            left: origLeft
+                            left: origLeft,
+                            zIndex: 9999
                         });
+
                         popup.find('.show-details').show();
                         popup.on('mouseleave', function () {
                             $(this).remove();
                         });
-                        popup.zIndex(9999);
                         popup.appendTo('body');
 
                         var height = 438, width = 250;
