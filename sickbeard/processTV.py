@@ -57,9 +57,8 @@ def delete_folder(folder, check_empty=True):
         return False
 
     # check if it isn't TV_DOWNLOAD_DIR
-    if sickbeard.TV_DOWNLOAD_DIR:
-        if helpers.real_path(folder) == helpers.real_path(sickbeard.TV_DOWNLOAD_DIR):
-            return False
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(sickbeard.TV_DOWNLOAD_DIR):
+        return False
 
     # check if it's empty folder when wanted checked
     if check_empty:
@@ -191,12 +190,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
             continue
 
-        delete_folder(ek(os.path.join, current_directory, u'@eaDir'))
+        delete_folder(ek(os.path.join, current_directory, u'@eaDir'), False)
         delete_files(current_directory, unwanted_files, result)
 
         if all([not sickbeard.NO_DELETE or mode == u"manual",
                 process_method == u"move",
-                ek(os.path.normpath, current_directory) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+                sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(current_directory) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR)]):
 
             if delete_folder(current_directory, check_empty=True):
                 result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
@@ -255,7 +254,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
         result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
-    if process_path.strip('/\\') != sickbeard.TV_DOWNLOAD_DIR.strip('/\\') and helpers.is_hidden_folder(process_path):
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
         result.output += log_helper(u"Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
         result.missed_files.append(u"{0} : Hidden folder".format(process_path))
         return False
