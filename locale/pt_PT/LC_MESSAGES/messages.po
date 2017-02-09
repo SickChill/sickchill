@@ -909,7 +909,7 @@ msgstr "Status inválido"
 
 #: sickbeard/webserve.py:1880
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
-msgstr "Lista pendente começou automaticamente para as temporadas seguintes <b>{nome_do_programa}</b>"
+msgstr "Lista pendente começou automaticamente para as temporadas seguintes <b>{show_name}</b>"
 
 #: gui/slick/views/displayShow.mako:78 gui/slick/views/displayShow.mako:83
 #: gui/slick/views/displayShow.mako:408 sickbeard/webserve.py:1887
