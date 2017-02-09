@@ -586,12 +586,10 @@ def _map_quality(show_quality):
     best_qualities = []
 
     i_quality_id, a_quality_id = Quality.splitQuality(int(show_quality))
-    if i_quality_id:
-        for quality in i_quality_id:
-            any_qualities.append(QUALITY_MAP[quality])
-    if a_quality_id:
-        for quality in a_quality_id:
-            best_qualities.append(QUALITY_MAP[quality])
+    for quality in i_quality_id:
+        any_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
+    for quality in a_quality_id:
+        best_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
     return any_qualities, best_qualities
 
 
