@@ -2625,9 +2625,7 @@ class CMDShowStats(ApiCall):
                 episode_qualities_counts_snatch["total"] += 1
                 # noinspection PyTypeChecker
                 episode_qualities_counts_snatch[int(row["status"])] += 1
-            elif status == 0:  # we don't count NONE = 0 = N/A
-                pass
-            else:
+            elif status > 0:  # we don't count NONE = 0 = N/A
                 episode_status_counts_total[status] += 1
 
         # the outgoing container
