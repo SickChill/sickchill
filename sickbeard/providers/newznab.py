@@ -133,8 +133,11 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return
 
         def _parse_cap(tag):
+            result = ''
             elm = data.find(tag)
-            return elm.get('supportedparams', 'True') if elm and elm.get('available') else ''
+            if elm and elm.get('available') == 'yes':
+                result = elm.get('supportedparams', 'tvdbid,season,ep')
+            return result
 
         self.cap_tv_search = _parse_cap('tv-search')
         # self.cap_search = _parse_cap('search')
