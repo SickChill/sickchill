@@ -2259,18 +2259,23 @@ class CMDShowGetPoster(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {
+                "normal": "Normal size poster",
+                "thumb": "Thumbnail size poster",
+            },
         }
     }
 
     def __init__(self, args, kwargs):
         super(CMDShowGetPoster, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the poster a show """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid),
+            'image': ShowPoster(self.indexerid, self.media_format),
         }
 
 
