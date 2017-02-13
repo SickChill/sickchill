@@ -2929,13 +2929,15 @@ var SICKRAGE = {
                     if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
                         return {
                             0: { sorter: 'realISODate' },
-                            4: { sorter: 'quality' }
+                            4: { sorter: 'quality' },
+							5: { sorter: false, filter: false}
                         };
                     } else {
                         return {
                             0: { sorter: 'realISODate' },
                             4: { sorter: false },
-                            5: { sorter: 'quality' }
+                            5: { sorter: 'quality' },
+							6: { sorter: false, filter: false}
                         };
                     }
                 }())

@@ -30,6 +30,24 @@ class History(object):
     def __init__(self):
         self.db = DBConnection()
 
+    def remove(self, toRemove):
+        """
+        Removes selected the history
+        :param toRemove: Contains the properties of the log entries to remove
+        """
+        query = ''
+        
+        for item in toRemove:
+            query = query + ' OR ' if query != '' else ''
+            query = query + '(date IN ({0}) AND showid = {1} ' \
+                            'AND season = {2} AND episode = {3})' \
+                            .format(','.join(item['dates']), item['show_id'], \
+                                    item['season'], item['episode'])
+
+        self.db.action(
+            'DELETE FROM history WHERE ' + query
+        )
+
     def clear(self):
         """
         Clear all the history

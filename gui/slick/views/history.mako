@@ -13,6 +13,9 @@
     from sickrage.helper.encoding import ek
     from sickrage.providers.GenericProvider import GenericProvider
 %>
+<%block name="scripts">
+    <script type="text/javascript" src="${srRoot}/js/history.js?${sbPID}"></script>
+</%block>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
@@ -62,6 +65,7 @@
                                 <th>${_('Action')}</th>
                                 <th>${_('Provider')}</th>
                                 <th>${_('Quality')}</th>
+								<th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -106,12 +110,16 @@
                                         <span style="display: none;">${curQuality}</span>
                                         ${renderQualityPill(curQuality)}
                                     </td>
+									<td align="center">
+                                        <% uniqueid = '-'.join([str(hItem["date"]), str(hItem["show_id"]), str(hItem['season']), str(hItem['episode'])]) %>
+                                        <input type="checkbox" class="removeCheck" id="remove-${uniqueid}" />
+                                    </td>
                                 </tr>
                             % endfor
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="nowrap" colspan="5">&nbsp;</th>
+                                <th class="nowrap" colspan="6">&nbsp;</th>
                             </tr>
                         </tfoot>
                     % else:
@@ -125,6 +133,7 @@
                                     <th>${_('Subtitled')}</th>
                                 % endif
                                 <th>${_('Quality')}</th>
+								<th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -177,12 +186,20 @@
                                         </td>
                                     % endif
                                     <td align="center" width="14%" quality="${curQuality}">${renderQualityPill(curQuality)}</td>
+									<%
+                                        dates = str(hItem["actions"][0]["time"])
+                                        for action in hItem["actions"][1:]:
+                                            dates = '$'.join([dates, str(action["time"])])
+                                            
+                                        uniqueid = '-'.join([dates, str(hItem["show_id"]), str(hItem['season']), str(hItem['episode'])])
+                                    %>
+									<td align="center"><input type="checkbox" class="removeCheck" id="remove-${uniqueid}" /></td>
                                 </tr>
                             % endfor
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="nowrap" colspan="6">&nbsp;</th>
+                                <th class="nowrap" colspan="7">&nbsp;</th>
                             </tr>
                         </tfoot>
                     % endif

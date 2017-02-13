@@ -3788,6 +3788,7 @@ class History(WebRoot):
 
         t = PageTemplate(rh=self, filename="history.mako")
         submenu = [
+            {'title': _('Remove Selected'), 'path': 'history/removeHistory', 'icon': 'fa fa-eraser', 'class': 'removehistory', 'confirm': False},
             {'title': _('Clear History'), 'path': 'history/clearHistory', 'icon': 'fa fa-trash', 'class': 'clearhistory', 'confirm': True},
             {'title': _('Trim History'), 'path': 'history/trimHistory', 'icon': 'fa fa-scissors', 'class': 'trimhistory', 'confirm': True},
         ]
@@ -3795,6 +3796,23 @@ class History(WebRoot):
         return t.render(historyResults=data, compactResults=compact, limit=limit,
                         submenu=submenu, title=_('History'), header=_('History'),
                         topmenu="history", controller="history", action="index")
+
+    def removeHistory(self, toRemove=None):
+        logsToRemove = []
+        for logItem in toRemove.split('|'):
+            info = logItem.split(',')
+            logsToRemove.append({
+                'dates': info[0].split('$'),
+                'show_id': info[1],
+                'season': info[2],
+                'episode': info[3]
+            })
+
+        self.history.remove(logsToRemove)
+
+        ui.notifications.message(_('Selected history entries removed'))
+
+        return self.redirect("/history/")
 
     def clearHistory(self):
         self.history.clear()
