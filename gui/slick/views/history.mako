@@ -13,9 +13,6 @@
     from sickrage.helper.encoding import ek
     from sickrage.providers.GenericProvider import GenericProvider
 %>
-<%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/history.js?${sbPID}"></script>
-</%block>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
