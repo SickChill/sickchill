@@ -32,11 +32,11 @@ class History(object):
 
     def remove(self, toRemove):
         """
-        Removes selected the history
+        Removes the selected history
         :param toRemove: Contains the properties of the log entries to remove
         """
         query = ''
-        
+
         for item in toRemove:
             query = query + ' OR ' if query != '' else ''
             query = query + '(date IN ({0}) AND showid = {1} ' \

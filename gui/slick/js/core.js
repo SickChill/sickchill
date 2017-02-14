@@ -2938,14 +2938,14 @@ var SICKRAGE = {
                         return {
                             0: { sorter: 'realISODate' },
                             4: { sorter: 'quality' },
-							5: { sorter: false, filter: false}
+                            5: { sorter: false, filter: false}
                         };
                     } else {
                         return {
                             0: { sorter: 'realISODate' },
                             4: { sorter: false },
                             5: { sorter: 'quality' },
-							6: { sorter: false, filter: false}
+                            6: { sorter: false, filter: false}
                         };
                     }
                 }())
@@ -2963,10 +2963,13 @@ var SICKRAGE = {
                 $('.removeCheck').each(function() {
                     if(this.checked === true) {
                         removeArr.push(shiftReturn($(this).attr('id').split('-')));
-                        removeCount++; }
+                        removeCount++;
+                    }
                 });
 
-                if(removeCount < 1) { return false; }
+                if(removeCount < 1) {
+                    return false;
+                }
 
                 $.confirm({
                     title: "Remove Logs",
@@ -2977,7 +2980,7 @@ var SICKRAGE = {
                     post: false,
                     confirm: function() {
                         var url = srRoot + '/history/removeHistory';
-                        var params = 'toRemove='+removeArr.join('|');
+                        var params = 'toRemove=' + removeArr.join('|');
                         $.post(url, params, function() { location.reload(true); });
                     }
                 });
@@ -2998,11 +3001,15 @@ var SICKRAGE = {
                     var found = 0;
 
                     $(name).each(function() {
-                        switch (found) {
-                            case 2: return false;
-                            case 1: if(!this.disabled) { this.checked = lastCheck.checked; }
+                        if(found === 1 && !this.disabled) {
+                            this.checked = lastCheck.checked;
+                        } else if (found === 2) {
+                            return false;
                         }
-                        if(this === check || this === lastCheck) { found++; }
+
+                        if(this === check || this === lastCheck) {
+                            found++;
+                        }
                     });
                 });
             });

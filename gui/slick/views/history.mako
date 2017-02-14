@@ -62,7 +62,7 @@
                                 <th>${_('Action')}</th>
                                 <th>${_('Provider')}</th>
                                 <th>${_('Quality')}</th>
-								<th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+                                <th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,7 +107,7 @@
                                         <span style="display: none;">${curQuality}</span>
                                         ${renderQualityPill(curQuality)}
                                     </td>
-									<td align="center">
+                                    <td align="center">
                                         <% uniqueid = '-'.join([str(hItem["date"]), str(hItem["show_id"]), str(hItem['season']), str(hItem['episode'])]) %>
                                         <input type="checkbox" class="removeCheck" id="remove-${uniqueid}" />
                                     </td>
@@ -130,7 +130,7 @@
                                     <th>${_('Subtitled')}</th>
                                 % endif
                                 <th>${_('Quality')}</th>
-								<th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+                                <th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -183,14 +183,13 @@
                                         </td>
                                     % endif
                                     <td align="center" width="14%" quality="${curQuality}">${renderQualityPill(curQuality)}</td>
-									<%
+                                    <%
                                         dates = str(hItem["actions"][0]["time"])
                                         for action in hItem["actions"][1:]:
                                             dates = '$'.join([dates, str(action["time"])])
-                                            
                                         uniqueid = '-'.join([dates, str(hItem["show_id"]), str(hItem['season']), str(hItem['episode'])])
                                     %>
-									<td align="center"><input type="checkbox" class="removeCheck" id="remove-${uniqueid}" /></td>
+                                    <td align="center"><input type="checkbox" class="removeCheck" id="remove-${uniqueid}" /></td>
                                 </tr>
                             % endfor
                         </tbody>
