@@ -406,8 +406,12 @@
                         <div class="col-md-12">
                             <br/>
                             <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
-                            % if sickbeard.DISPLAY_ALL_SEASONS is False:
-                                <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">${_('Show Episodes')}</button>
+                            % if not sickbeard.DISPLAY_ALL_SEASONS:
+                                % if curSeason == -1:
+                                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}" aria-expanded="true">${_('Hide Episodes')}</button>
+                                %else:
+                                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">${_('Show Episodes')}</button>
+                                %endif
                             % endif
                         </div>
                     </div>
@@ -437,7 +441,7 @@
                                         </tr>
                                     </thead>
 
-                                % if sickbeard.DISPLAY_ALL_SEASONS is False:
+                                % if not sickbeard.DISPLAY_ALL_SEASONS:
                                     <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
                                 % else:
                                     <tbody>

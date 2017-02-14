@@ -382,7 +382,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
                                     ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
-                                <label for="fanart_background">${_('use a custom image as background for SickRage')}</label>
+                                <label for="sickrage_background">${_('use a custom image as background for SickRage')}</label>
                             </div>
                         </div>
                         <div id="content_sickrage_background">
