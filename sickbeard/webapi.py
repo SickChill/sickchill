@@ -2285,18 +2285,20 @@ class CMDShowGetBanner(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {"desc": '"normal" for normal size banner (default), "thumb" for small size banner'},
         }
     }
 
     def __init__(self, args, kwargs):
         super(CMDShowGetBanner, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the banner of a show """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid),
+            'image': ShowBanner(self.indexerid, self.media_format),
         }
 
 
