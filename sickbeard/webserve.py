@@ -606,8 +606,8 @@ class UI(WebRoot):
             if message:
                 helpers.add_site_message(message, level)
             else:
-                if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.rh.get_current_user():
-                    message=_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.get_current_user():
+                    message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
                     helpers.add_site_message(message, 'danger')
 
             return dict(messages=sickbeard.SITE_MESSAGES)
