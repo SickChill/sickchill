@@ -671,14 +671,14 @@ class Home(WebRoot):
         show_obj = Show.find(sickbeard.showList, int(show))
 
         if not show_obj:
-            return None, _("Invalid show paramaters")
+            return None, _("Invalid show parameters")
 
         if absolute:
             ep_obj = show_obj.getEpisode(absolute_number=absolute)
         elif season and episode:
             ep_obj = show_obj.getEpisode(season, episode)
         else:
-            return None, _("Invalid paramaters")
+            return None, _("Invalid parameters")
 
         if not ep_obj:
             return None, _("Episode couldn't be retrieved")
