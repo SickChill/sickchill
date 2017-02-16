@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 tex-center">
             <div class="text-center">
-                % if sickbeard.HOME_LAYOUT:
+                % if sickbeard.HOME_LAYOUT == 'poster':
                     <span class="show-option">
                         <input id="filterShowName" class="form-control form-control-inline input-sm input200" type="search" placeholder="${_('Filter Show Name')}">
                     </span>
