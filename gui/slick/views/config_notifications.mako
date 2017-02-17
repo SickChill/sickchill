@@ -3220,7 +3220,56 @@
                                     <label class="component-title">${_('Discord Incoming Webhook')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="discord_webhook" id="discord_webhook" value="${sickbeard.DISCORD_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <input type="text" name="discord_webhook" id="discord_webhook" value="${sickbeard.DISCORD_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                    </div>
+                                    <div class="col-md-12">
+                                      <label for="discord_webhook">${_('Create webhook under channel settings.')}</label>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Discord Bot Name')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <input type="text" name="discord_name" id="discord_name" value="${sickbeard.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
+                                    </div>
+                                    <div class="col-md-12">
+                                      <label for="discord_name">${_('Blank will use webhook default Name.')}</label>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Discord Avatar URL')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <input type="text" name="discord_avatar_url" id="discord_avatar_url" value="${sickbeard.DISCORD_AVATAR_URL}" class="form-control input-sm input350" autocapitalize="off" />
+                                    </div>
+                                    <div class="col-md-12">
+                                      <label for="discord_avatar_url">${_('Blank will use webhook default Avatar.')}</label>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Discord TTS')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_TTS)]}/>
+                                    <label for="discord_tts">${_('Send notifications using text-to-speech')}</label>
                                 </div>
                             </div>
 

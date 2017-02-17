@@ -493,6 +493,9 @@ DISCORD_NOTIFY_SNATCH = None
 DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
 DISCORD_WEBHOOK = None
+DISCORD_NAME = 'SickRage'
+DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
+DISCORD_TTS = False
 
 USE_TRAKT = False
 TRAKT_USERNAME = None
