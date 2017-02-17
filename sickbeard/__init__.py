@@ -100,6 +100,8 @@ DATA_DIR = ''
 CREATEPID = False
 PIDFILE = ''
 
+SITE_MESSAGES = []
+
 DAEMON = None
 NO_RESIZE = False
 
@@ -129,8 +131,6 @@ newznabProviderList = []
 torrentRssProviderList = []
 metadata_provider_dict = {}
 
-NEWEST_VERSION = None
-NEWEST_VERSION_STRING = None
 VERSION_NOTIFY = False
 AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
@@ -179,6 +179,7 @@ DOWNLOAD_URL = None
 
 HANDLE_REVERSE_PROXY = False
 PROXY_SETTING = None
+PROXY_INDEXERS = False
 SSL_VERIFY = True
 
 LOCALHOST_IP = None
@@ -487,6 +488,12 @@ SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
 
+USE_DISCORD = False
+DISCORD_NOTIFY_SNATCH = None
+DISCORD_NOTIFY_DOWNLOAD = None
+DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
+DISCORD_WEBHOOK = None
+
 USE_TRAKT = False
 TRAKT_USERNAME = None
 TRAKT_ACCESS_TOKEN = None
@@ -647,7 +654,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, \
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
-            USE_EMBY, EMBY_HOST, EMBY_APIKEY, \
+            USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, \
             showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
@@ -679,13 +686,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
             SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, \
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_PASSWORD, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
+            USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -713,6 +721,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CheckSection(CFG, 'Subtitles')
         CheckSection(CFG, 'pyTivo')
         CheckSection(CFG, 'Slack')
+        CheckSection(CFG, 'Discord')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
@@ -873,6 +882,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         ANON_REDIRECT = check_setting_str(CFG, 'General', 'anon_redirect', 'http://dereferer.org/?')
         PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting', '')
+        PROXY_INDEXERS = check_setting_int(CFG, 'General', 'proxy_indexers', 1)
 
         # attempt to help prevent users from breaking links by using a bad url
         if not ANON_REDIRECT.endswith('?'):
@@ -991,7 +1001,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_ICACLS = bool(check_setting_int(CFG, 'General', 'use_icacls', 1))
         UNPACK = bool(check_setting_int(CFG, 'General', 'unpack', 0))
         UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
+        if UNRAR_TOOL:
+            rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = UNRAR_TOOL
+
         ALT_UNRAR_TOOL = check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
+        if ALT_UNRAR_TOOL:
+            rarfile.ALT_TOOL = ALT_UNRAR_TOOL
+
         RENAME_EPISODES = bool(check_setting_int(CFG, 'General', 'rename_episodes', 1))
         AIRDATE_EPISODES = bool(check_setting_int(CFG, 'General', 'airdate_episodes', 0))
         FILE_TIMESTAMP_TIMEZONE = check_setting_str(CFG, 'General', 'file_timestamp_timezone', 'network')
@@ -1183,6 +1199,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SLACK_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Slack', 'slack_notify_snatch', 0))
         SLACK_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Slack', 'slack_notify_download', 0))
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook', '')
+
+        USE_DISCORD = bool(check_setting_int(CFG, 'Discord', 'use_discord', 0 ))
+        DISCORD_NOTIFY_SNATCH = bool(check_setting_int(CFG, 'Discord', 'discord_notify_snatch', 0))
+        DISCORD_NOTIFY_DOWNLOAD = bool(check_setting_int(CFG, 'Discord', 'discord_notify_download', 0))
+        DISCORD_WEBHOOK = check_setting_str(CFG, 'Discord', 'discord_webhook', '')
 
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
         TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
@@ -1905,6 +1926,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'trash_rotate_logs': int(TRASH_ROTATE_LOGS),
             'sort_article': int(SORT_ARTICLE),
             'proxy_setting': PROXY_SETTING,
+            'proxy_indexers': int(PROXY_INDEXERS),
             'use_listview': int(USE_LISTVIEW),
 
             'metadata_kodi': METADATA_KODI,
@@ -2178,6 +2200,13 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
             'slack_webhook': SLACK_WEBHOOK
+        },
+
+        'Discord': {
+            'use_discord': int(USE_DISCORD),
+            'discord_notify_snatch': int(DISCORD_NOTIFY_SNATCH),
+            'discord_notify_download': int(DISCORD_NOTIFY_DOWNLOAD),
+            'discord_webhook': DISCORD_WEBHOOK
         },
 
         'Trakt': {

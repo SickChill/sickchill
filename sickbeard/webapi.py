@@ -189,10 +189,13 @@ class ApiHandler(RequestHandler):
                     try:
                         if cmd in function_mapper:
                             func = function_mapper.get(cmd)  # map function
-                            func.rh = self  # add request handler to function
-                            cur_out_dict = func(cur_args, cur_kwargs).run()  # call function and get response
+                            to_call = func(cur_args, cur_kwargs)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()  # call function and get response
                         elif _is_int(cmd):
-                            cur_out_dict = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd).run()
+                            to_call = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
@@ -583,12 +586,10 @@ def _map_quality(show_quality):
     best_qualities = []
 
     i_quality_id, a_quality_id = Quality.splitQuality(int(show_quality))
-    if i_quality_id:
-        for quality in i_quality_id:
-            any_qualities.append(QUALITY_MAP[quality])
-    if a_quality_id:
-        for quality in a_quality_id:
-            best_qualities.append(QUALITY_MAP[quality])
+    for quality in i_quality_id:
+        any_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
+    for quality in a_quality_id:
+        best_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
     return any_qualities, best_qualities
 
 
@@ -2258,18 +2259,20 @@ class CMDShowGetPoster(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {"desc": '"normal" for normal size poster (default), "thumb" for small size poster'},
         }
     }
 
     def __init__(self, args, kwargs):
         super(CMDShowGetPoster, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the poster a show """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid),
+            'image': ShowPoster(self.indexerid, self.media_format),
         }
 
 
@@ -2282,18 +2285,20 @@ class CMDShowGetBanner(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {"desc": '"normal" for normal size banner (default), "thumb" for small size banner'},
         }
     }
 
     def __init__(self, args, kwargs):
         super(CMDShowGetBanner, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the banner of a show """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid),
+            'image': ShowBanner(self.indexerid, self.media_format),
         }
 
 
@@ -2624,9 +2629,7 @@ class CMDShowStats(ApiCall):
                 episode_qualities_counts_snatch["total"] += 1
                 # noinspection PyTypeChecker
                 episode_qualities_counts_snatch[int(row["status"])] += 1
-            elif status == 0:  # we don't count NONE = 0 = N/A
-                pass
-            else:
+            elif status > 0:  # we don't count NONE = 0 = N/A
                 episode_status_counts_total[status] += 1
 
         # the outgoing container

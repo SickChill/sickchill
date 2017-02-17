@@ -382,7 +382,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
                                     ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
-                                <label for="fanart_background">${_('use a custom image as background for SickRage')}</label>
+                                <label for="sickrage_background">${_('use a custom image as background for SickRage')}</label>
                             </div>
                         </div>
                         <div id="content_sickrage_background">
@@ -937,6 +937,13 @@
                                     <div class="col-md-12">
                                         <label for="proxy_setting">${_('blank to disable or proxy to use when connecting to providers')}</label>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(sickbeard.PROXY_INDEXERS)]}/>
+                                        <label for="proxy_indexers">${_('also use global proxy setting for indexers (tvdb, xem, anidb, etc.)')}</label>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

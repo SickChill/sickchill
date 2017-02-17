@@ -1997,6 +1997,11 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-discord {
+    background: url("../images/32px_discord_notifier.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-kodi {
     background-position: 0 0;
 }

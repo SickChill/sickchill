@@ -634,7 +634,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                    (self.indexerid, filepath), logger.DEBUG)
 
         try:
-            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime]).parse(filepath)
+            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=('normal', 'anime')[self.is_anime]).parse(filepath, True, True)
         except (InvalidNameException, InvalidShowException) as error:
             logger.log("{0}: {1}".format(self.indexerid, error), logger.DEBUG)
             return None
@@ -895,7 +895,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             'last_update': ''
         }
 
-        if sickbeard.PROXY_SETTING:
+        if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
             i = imdb.IMDb(proxy=sickbeard.PROXY_SETTING)
         else:
             i = imdb.IMDb()

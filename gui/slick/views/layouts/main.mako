@@ -33,7 +33,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
-        
+
         <title>SickRage - ${title}</title>
 
         <!--[if lt IE 9]>
@@ -102,7 +102,7 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapsible-navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -111,7 +111,7 @@
                     <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;padding: 3px;" class="img-responsive pull-left" /></a>
                 </div>
                 % if srLogin:
-                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
                             <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
                                 <a href="${srRoot}/home/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
@@ -269,16 +269,8 @@
                     </div>
                 % endif
                 <div class="clearfix"></div>
-                % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and srLogin:
-                    <div class="alert alert-danger upgrade-notification hidden-print" role="alert">
-                        <span>${_('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)}</span>
-                    </div>
-                % endif
-
-                % if sickbeard.NEWEST_VERSION_STRING and srLogin:
-                    <div class="alert alert-success upgrade-notification hidden-print" role="alert">
-                        <span>${sickbeard.NEWEST_VERSION_STRING}</span>
-                    </div>
+                % if srLogin:
+                    <div id="site-messages"/>
                 % endif
             </div>
             <div class="row">
@@ -286,6 +278,22 @@
                     <%block name="content" />
                 </div>
             </div>
+
+            <div class="modal fade" id="site-notification-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                            <h4 class="modal-title">Notice</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             % if srLogin:
                 <div class="row">
                     <div class="footer clearfix col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">

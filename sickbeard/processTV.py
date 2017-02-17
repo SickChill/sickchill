@@ -57,9 +57,8 @@ def delete_folder(folder, check_empty=True):
         return False
 
     # check if it isn't TV_DOWNLOAD_DIR
-    if sickbeard.TV_DOWNLOAD_DIR:
-        if helpers.real_path(folder) == helpers.real_path(sickbeard.TV_DOWNLOAD_DIR):
-            return False
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(sickbeard.TV_DOWNLOAD_DIR):
+        return False
 
     # check if it's empty folder when wanted checked
     if check_empty:
@@ -163,6 +162,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     process_method = process_method or sickbeard.PROCESS_METHOD
 
+    directories_from_rars = []
     for current_directory, directory_names, file_names in ek(os.walk, process_path):
         if not validate_dir(current_directory, release_name, failed, result):
             continue
@@ -172,50 +172,48 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
 
         rar_files = [x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x))]
-        extracted_files = []
         if rar_files:
-            extracted_files, extracted_directories = unrar(current_directory, rar_files, force, result)
+            extracted_directories = unrar(current_directory, rar_files, force, result)
 
             # Add the directories to the walk directories
             result.output += log_helper(u"Adding extracted directories to the list of directories to process: {0}".format(extracted_directories), logger.DEBUG)
-            directory_names += extracted_directories
-
-            file_names = list(set(file_names + extracted_files))
+            directories_from_rars += extracted_directories
 
         video_files = filter(helpers.is_media_file, file_names)
-
-        video_in_rar = filter(helpers.is_media_file, extracted_files)
-        unwanted_files = [x for x in file_names if x not in video_files]
+        unwanted_files = [x for x in file_names if x not in video_files and x != '.stfolder']
         if unwanted_files:
             result.output += log_helper(u"Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
-        # Don't Link media when the media is extracted from a rar in the same path
-        if process_method in (u'hardlink', u'symlink') and video_in_rar:
-            process_media(current_directory, video_in_rar, release_name, u'move', force, is_priority, result)
-            process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
-                          is_priority, result)
-            delete_files(current_directory, extracted_files, result)
-        elif sickbeard.DELRARCONTENTS and video_in_rar:
-            process_media(current_directory, video_in_rar, release_name, process_method, force, is_priority, result)
-            process_media(current_directory, set(video_files) - set(video_in_rar), release_name, process_method, force,
-                          is_priority, result)
-            delete_files(current_directory, extracted_files, result, True)
-        else:
-            process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+        process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
 
-            # Delete all file not needed and avoid deleting files if Manual PostProcessing
-            if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
-                continue
+        # Delete all file not needed and avoid deleting files if Manual PostProcessing
+        if not(process_method == u"move" and result.result) or (mode == u"manual" and not delete_on):
+            continue
 
-            delete_folder(ek(os.path.join, current_directory, u'@eaDir'))
-            delete_files(current_directory, unwanted_files, result)
+        delete_folder(ek(os.path.join, current_directory, u'@eaDir'), False)
+        delete_files(current_directory, unwanted_files, result)
 
-            if all([not sickbeard.NO_DELETE or mode == u"manual",
-                    process_method == u"move",
-                    ek(os.path.normpath, current_directory) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+        if all([not sickbeard.NO_DELETE or mode == u"manual",
+                process_method == u"move",
+                sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(current_directory) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR)]):
 
-                if delete_folder(current_directory, check_empty=True):
-                    result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
+            if delete_folder(current_directory, check_empty=True):
+                result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
+
+    for directory_from_rar in directories_from_rars:
+        process_dir(
+            process_path=directory_from_rar,
+            release_name=ek(os.path.basename, directory_from_rar),
+            process_method=('move', process_method)[process_method in ('move', 'copy')],
+            force=force,
+            is_priority=is_priority,
+            delete_on=sickbeard.DELRARCONTENTS,
+            failed=failed,
+            mode=mode
+        )
+
+        if sickbeard.DELRARCONTENTS:
+            delete_folder(directory_from_rar, False)
 
     result.output += log_helper((u"Processing Failed", u"Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
@@ -256,7 +254,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
         result.missed_files.append(u"{0} : Failed download".format(process_path))
         return False
 
-    if helpers.is_hidden_folder(process_path):
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
         result.output += log_helper(u"Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
         result.missed_files.append(u"{0} : Hidden folder".format(process_path))
         return False
@@ -317,54 +315,60 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
     :return: List of unpacked file names
     """
 
-    unpacked_files, unpacked_dirs = [], []
+    unpacked_dirs = []
 
     if sickbeard.UNPACK and rar_files:
-
         result.output += log_helper(u"Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
         for archive in rar_files:
             failure = None
             rar_handle = None
             try:
                 archive_path = ek(os.path.join, path, archive)
-                result.output += log_helper(u"Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
+                if already_processed(path, archive, force, result):
+                    result.output += log_helper(
+                        u"Archive file already post-processed, extraction skipped: {0}".format
+                        (archive_path), logger.DEBUG)
+                    continue
+
                 if not helpers.is_rar_file(archive_path):
                     continue
 
+                result.output += log_helper(u"Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
                 rar_handle = RarFile(archive_path)
                 if rar_handle.needs_password():
                     # TODO: Add support in settings for a list of passwords to try here with rar_handle.set_password(x)
-                    result.output += log_helper('Arcive needs a password, skipping: {0}'.format(archive_path))
+                    result.output += log_helper('Archive needs a password, skipping: {0}'.format(archive_path))
                     continue
 
                 # rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
-                if not filter(helpers.is_media_file, rar_handle.namelist()):
+                rar_media_files = filter(helpers.is_media_file, rar_handle.namelist())
+                if not rar_media_files:
                     continue
 
-                # Skip extraction if any file in archive has previously been extracted
-                skip_file = False
-                for file_in_archive in [ek(os.path.basename, x.filename) for x in rar_handle.infolist() if not x.isdir]:
-                    if already_processed(path, file_in_archive, force, result):
+                rar_release_name = archive.rpartition('.')[0]
+
+                # Fix up the list for checking if already processed
+                rar_media_files = [os.path.join(path, rar_release_name, rar_media_file) for rar_media_file in rar_media_files]
+
+                skip_rar = False
+                for rar_media_file in rar_media_files:
+                    check_path, check_file = os.path.split(rar_media_file)
+                    if already_processed(check_path, check_file, force, result):
                         result.output += log_helper(
                             u"Archive file already post-processed, extraction skipped: {0}".format
-                            (file_in_archive), logger.DEBUG)
-
-                        skip_file = True
+                            (rar_media_file), logger.DEBUG)
+                        skip_rar = True
                         break
 
-                if skip_file:
+                if skip_rar:
                     continue
 
+                rar_extract_path = ek(os.path.join, path, rar_release_name)
                 result.output += log_helper(u"Unpacking archive: {0}".format(archive), logger.DEBUG)
-                rar_handle.extractall(path=path)
-                for x in rar_handle.infolist():
-                    if not ek(os.path.dirname, x.filename):
-                        if not (x.isdir() or x.filename in unpacked_files):
-                            unpacked_files.append(x.filename)
-                        elif x.filename not in unpacked_dirs:
-                            unpacked_dirs.append(x.filename)
+                rar_handle.extractall(path=rar_extract_path)
+                unpacked_dirs.append(rar_extract_path)
 
             except RarCRCError:
                 failure = (u'Archive Broken', u'Unpacking failed because of a CRC error')
@@ -376,7 +380,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                 failure = (u'Rar Open Error, check the parent folder and destination file permissions.',
                            u'Unpacking failed with a File Open Error (file permissions?)')
             except RarExecError:
-                failure = (u'Invalid Rar Archive Usage', u'Unpacking Failed with Invalid Rar Archive Usage')
+                failure = (u'Invalid Rar Archive Usage', u'Unpacking Failed with Invalid Rar Archive Usage. Is unrar installed and on the system PATH?')
             except BadRarFile:
                 failure = (u'Invalid Rar Archive', u'Unpacking Failed with an Invalid Rar Archive Error')
             except NeedFirstVolume:
@@ -393,7 +397,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                 result.result = False
                 continue
 
-    return unpacked_files, unpacked_dirs
+    return unpacked_dirs
 
 
 def already_processed(process_path, video_file, force, result):  # pylint: disable=unused-argument

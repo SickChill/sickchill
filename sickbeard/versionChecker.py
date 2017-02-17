@@ -165,10 +165,10 @@ class CheckVersion(object):
                 if result in message:
                     logger.log(message[result]['text'], message[result]['type'])  # unpack the result message into a log entry
                 else:
-                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result), logger.ERROR)
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result), logger.WARNING)
                 return result in ['equal']  # add future True results to the list
             except Exception as error:
-                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)), logger.ERROR)
+                logger.log(u"We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)), logger.WARNING)
                 return False
 
         def postprocessor_safe():
@@ -260,8 +260,6 @@ class CheckVersion(object):
             logger.log(u"Checking for updates using " + self.install_type.upper())
 
         if not self.updater.need_update():
-            sickbeard.NEWEST_VERSION_STRING = None
-
             if force:
                 ui.notifications.message(_('No update needed'))
                 logger.log(u"No update needed")
@@ -369,7 +367,7 @@ class GitUpdateManager(UpdateManager):
     @staticmethod
     def _git_error():
         error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
-        sickbeard.NEWEST_VERSION_STRING = error_message
+        helpers.add_site_message(error_message, 'danger')
 
     def _find_working_git(self):
         test_cmd = 'version'
@@ -415,7 +413,7 @@ class GitUpdateManager(UpdateManager):
 
         # Still haven't found a working git
         error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
-        sickbeard.NEWEST_VERSION_STRING = error_message
+        helpers.add_site_message(error_message, 'danger')
 
         return None
 
@@ -552,10 +550,6 @@ class GitUpdateManager(UpdateManager):
                    (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead), logger.DEBUG)
 
     def set_newest_text(self):
-
-        # if we're up to date then don't set this
-        sickbeard.NEWEST_VERSION_STRING = None
-
         if self._num_commits_ahead:
             logger.log(u"Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.WARNING)
             newest_text = "Local branch is ahead of " + self.branch + ". Automatic update not possible."
@@ -577,7 +571,7 @@ class GitUpdateManager(UpdateManager):
         else:
             return
 
-        sickbeard.NEWEST_VERSION_STRING = newest_text
+        helpers.add_site_message(newest_text, 'success')
 
     def need_update(self):
 
@@ -761,10 +755,6 @@ class SourceUpdateManager(UpdateManager):
                    u", num_commits_behind = " + str(self._num_commits_behind), logger.DEBUG)
 
     def set_newest_text(self):
-
-        # if we're up to date then don't set this
-        sickbeard.NEWEST_VERSION_STRING = None
-
         if not self._cur_commit_hash:
             logger.log(u"Unknown current version number, don't know if we should update or not", logger.DEBUG)
 
@@ -786,7 +776,7 @@ class SourceUpdateManager(UpdateManager):
         else:
             return
 
-        sickbeard.NEWEST_VERSION_STRING = newest_text
+        helpers.add_site_message(newest_text, 'success')
 
     def update(self):  # pylint: disable=too-many-statements
         """

@@ -21,7 +21,6 @@
 import datetime
 import sys
 import urllib
-import re
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
@@ -140,30 +139,33 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
         self.config = config
         self.log = log
 
-    def selectSeries(self, allSeries):
+    def selectSeries(self, all_results):
         search_results = []
-        series_names = []
 
         # get all available shows
-        if allSeries and 'searchterm' in self.config:
-            search_term = self.config['searchterm']
-            # try to pick a show that's in my show list
-            for curShow in allSeries:
+        if all_results and 'searchterm' in self.config:
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
+            for curShow in all_results:
                 if curShow in search_results:
                     continue
 
-                if 'seriesname' in curShow:
-                    series_names.append(curShow['seriesname'])
-                if 'aliasnames' in curShow:
-                    series_names.extend(curShow['aliasnames'].split('|'))
+                if 'seriesname' not in curShow:
+                    continue
 
-                for name in series_names:
-                    if re.sub(r'[^\w\s]', '', search_term.lower()) in re.sub(r'[^\w\s]', '', name.lower()):
-                        if 'firstaired' not in curShow:
-                            curShow['firstaired'] = 'Unknown'
+                try:
+                    # Skip it if its in our show list already
+                    if int(curShow.get('id')) in show_id_list:
+                        sickbeard.logger.log('Skipping {show_name} in the search results because it\'s already in your show list'.format(show_name=curShow.get(
+                            'seriesname')))
+                        continue
+                except Exception:  # If it doesnt have an id, we cant use it anyways.
+                    continue
 
-                        if curShow not in search_results:
-                            search_results += [curShow]
+                if 'firstaired' not in curShow:
+                    curShow['firstaired'] = 'Unknown'
+
+                if curShow not in search_results:
+                    search_results += [curShow]
 
         return search_results
 
@@ -182,19 +184,18 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
         self.log = log
 
     @staticmethod
-    def selectSeries(allSeries):
-        try:
-            # try to pick a show that's in my show list
-            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
-            for curShow in allSeries:
-                if int(curShow['id']) in show_id_list:
+    def selectSeries(all_results):
+        # try to pick a show that's in my show list
+        show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
+        for curShow in all_results:
+            try:
+                if int(curShow.get('id')) in show_id_list:
                     return curShow
-        except Exception:
-            # Maybe curShow doesnt have id? Ignore it
-            pass
+            except Exception:
+                pass
 
         # if nothing matches then return first result
-        return allSeries[0]
+        return all_results[0]
 
 
 class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes

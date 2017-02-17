@@ -215,7 +215,7 @@ def is_rar_file(filename):
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
     ret = re.search(archive_regex, filename) is not None
     try:
-        if ek(os.path.exists, filename) and ek(os.path.isfile, filename):
+        if ret and ek(os.path.exists, filename) and ek(os.path.isfile, filename):
             ret = ek(rarfile.is_rarfile, filename)
     except (IOError, OSError):
         pass
@@ -1746,3 +1746,9 @@ def recursive_listdir(path):
     for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
         for filename in file_names:
             yield ek(os.path.join, directory_path, filename)
+
+
+def add_site_message(message, level='danger'):
+    to_add = dict(level=level, message=message)
+    if to_add not in sickbeard.SITE_MESSAGES:
+        sickbeard.SITE_MESSAGES.append(to_add)

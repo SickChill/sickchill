@@ -199,7 +199,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
         session = sickbeard.indexerApi(INDEXER_TVDB).session
         proxy = sickbeard.PROXY_SETTING
-        if proxy:
+        if proxy and sickbeard.PROXY_INDEXERS:
             session.proxies = {
                 "http": proxy,
                 "https": proxy,

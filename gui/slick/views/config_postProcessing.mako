@@ -2,6 +2,7 @@
 <%!
     import os.path
     import datetime
+    import platform
     import sickbeard
     from sickbeard.common import MULTI_EP_STRINGS
     from sickbeard import naming
@@ -272,6 +273,13 @@
                                             <label><b>${_('note')}:</b>&nbsp;${_('only working with RAR archive')}</label>
                                         </div>
                                     </div>
+                                    % if platform.system() in ('Windows', 'Microsoft'):
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label><b>${_('Windows')}:</b>&nbsp;${_('WinRar is required on windows')}</label>
+                                            </div>
+                                        </div>
+                                    % endif
                                 </div>
                             </div>
                             <div id="content_unpack">
@@ -361,7 +369,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(sickbeard.USE_ICACLS)]}/>
-                                        <label for="no_delete">${_('Windows only')}</label>
+                                        <label for="use_icacls">${_('Windows only')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
