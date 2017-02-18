@@ -91,7 +91,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._runtime = 0
         self._imdb_info = {}
         self._quality = int(sickbeard.QUALITY_DEFAULT)
-        self._flatten_folders = int(sickbeard.FLATTEN_FOLDERS_DEFAULT)
+        self._season_folders = int(sickbeard.SEASON_FOLDERS_DEFAULT)
         self._status = "Unknown"
         self._airs = ""
         self._startyear = 0
@@ -133,7 +133,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     runtime = property(lambda self: self._runtime, dirty_setter("_runtime"))
     imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
     quality = property(lambda self: self._quality, dirty_setter("_quality"))
-    flatten_folders = property(lambda self: self._flatten_folders, dirty_setter("_flatten_folders"))
+    season_folders = property(lambda self: self._season_folders, dirty_setter("_season_folders"))
     status = property(lambda self: self._status, dirty_setter("_status"))
     airs = property(lambda self: self._airs, dirty_setter("_airs"))
     startyear = property(lambda self: self._startyear, dirty_setter("_startyear"))
@@ -789,7 +789,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.subtitles = int(sql_results[0][b"subtitles"] or 0)
             self.dvdorder = int(sql_results[0][b"dvdorder"] or 0)
             self.quality = int(sql_results[0][b"quality"] or UNKNOWN)
-            self.flatten_folders = int(sql_results[0][b"flatten_folders"] or 0)
+            self.season_folders = int(not int(sql_results[0][b"flatten_folders"] or 0))# FIXME: inverted until next database version
             self.paused = int(sql_results[0][b"paused"] or 0)
 
             try:
@@ -1141,7 +1141,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "quality": self.quality,
                         "airs": self.airs,
                         "status": self.status,
-                        "flatten_folders": self.flatten_folders,
+                        "flatten_folders": int(not self.season_folders),# FIXME: inverted until next database version
                         "paused": self.paused,
                         "air_by_date": self.air_by_date,
                         "anime": self.anime,
@@ -2359,7 +2359,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         result = self.formatted_filename(anime_type=anime_type)
 
         # if they want us to flatten it and we're allowed to flatten it then we will
-        if self.show.flatten_folders and not sickbeard.NAMING_FORCE_FOLDERS:
+        if not (self.show.season_folders or sickbeard.NAMING_FORCE_FOLDERS):
             return result
 
         # if not we append the folder on and use that

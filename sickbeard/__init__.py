@@ -224,7 +224,7 @@ METADATA_MEDE8ER = None
 QUALITY_DEFAULT = None
 STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
-FLATTEN_FOLDERS_DEFAULT = False
+SEASON_FOLDERS_DEFAULT = False
 SUBTITLES_DEFAULT = False
 INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
@@ -660,7 +660,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, \
             showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
-            QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
+            QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_JOIN, JOIN_ID, JOIN_NOTIFY_ONSNATCH, JOIN_NOTIFY_ONDOWNLOAD, JOIN_NOTIFY_ONSUBTITLEDOWNLOAD, \
@@ -917,7 +917,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         VERSION_NOTIFY = bool(check_setting_int(CFG, 'General', 'version_notify', 1))
         AUTO_UPDATE = bool(check_setting_int(CFG, 'General', 'auto_update', 0))
         NOTIFY_ON_UPDATE = bool(check_setting_int(CFG, 'General', 'notify_on_update', 1))
-        FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
+        SEASON_FOLDERS_DEFAULT = not bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))# FIXME: inverted until next config version
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20)
         ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
@@ -1902,7 +1902,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'quality_default': int(QUALITY_DEFAULT),
             'status_default': int(STATUS_DEFAULT),
             'status_default_after': int(STATUS_DEFAULT_AFTER),
-            'flatten_folders_default': int(FLATTEN_FOLDERS_DEFAULT),
+            'flatten_folders_default': int(not int(SEASON_FOLDERS_DEFAULT)),# FIXME: inverted until next config version
             'indexer_default': int(INDEXER_DEFAULT),
             'indexer_timeout': int(INDEXER_TIMEOUT),
             'anime_default': int(ANIME_DEFAULT),

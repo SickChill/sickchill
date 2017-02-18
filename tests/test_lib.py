@@ -103,7 +103,7 @@ sickbeard.SYS_ENCODING = 'UTF-8'
 
 sickbeard.showList = []
 sickbeard.QUALITY_DEFAULT = 4  # hdtv
-sickbeard.FLATTEN_FOLDERS_DEFAULT = 0
+sickbeard.SEASON_FOLDERS_DEFAULT = 0
 
 sickbeard.NAMING_PATTERN = ''
 sickbeard.NAMING_ABD_PATTERN = ''

@@ -271,7 +271,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Season Folders')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(not show.flatten_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td>
+                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Paused')}: </td>

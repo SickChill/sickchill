@@ -476,7 +476,7 @@ class TraktChecker(object):
                 sickbeard.showQueueScheduler.action.addShow(int(indexer), int(indexer_id), showPath,
                                                             default_status=status,
                                                             quality=int(sickbeard.QUALITY_DEFAULT),
-                                                            flatten_folders=int(sickbeard.FLATTEN_FOLDERS_DEFAULT),
+                                                            season_folders=int(sickbeard.SEASON_FOLDERS_DEFAULT),
                                                             paused=sickbeard.TRAKT_START_PAUSED,
                                                             default_status_after=status)
             else:
