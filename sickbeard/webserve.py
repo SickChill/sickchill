@@ -3496,7 +3496,7 @@ class Manage(Home, WebRoot):
                 new_flatten_folders = show_obj.flatten_folders
             else:
                 new_flatten_folders = True if flatten_folders == 'enable' else False
-            new_flatten_folders = 'on' if new_flatten_folders else 'off'
+            new_flatten_folders = 'off' if new_flatten_folders else 'on'
 
             if subtitles == 'keep':
                 new_subtitles = show_obj.subtitles
