@@ -1204,7 +1204,7 @@ var SICKRAGE = {
                         $('#naming_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
@@ -1248,7 +1248,7 @@ var SICKRAGE = {
                         $('#naming_abd_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
                         $('#naming_abd_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_abd_pattern').qtip('toggle', true);
@@ -1292,7 +1292,7 @@ var SICKRAGE = {
                         $('#naming_sports_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
                         $('#naming_sports_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
@@ -1353,7 +1353,7 @@ var SICKRAGE = {
                         $('#naming_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
@@ -2694,7 +2694,7 @@ var SICKRAGE = {
                     4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
                     5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
                     6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
-                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Flatten
+                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Season Folders
                     8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
                     9: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
                     10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
@@ -3202,7 +3202,7 @@ var SICKRAGE = {
                     defaultStatus: $('#statusSelect').val(),
                     anyQualities: anyQualArray.join(','),
                     bestQualities: bestQualArray.join(','),
-                    defaultFlattenFolders: $('#flatten_folders').prop('checked'),
+                    defaultSeasonFolders: $('#season_folders').prop('checked'),
                     subtitles: $('#subtitles').prop('checked'),
                     anime: $('#anime').prop('checked'),
                     scene: $('#scene').prop('checked'),
@@ -3212,7 +3212,7 @@ var SICKRAGE = {
                 $(this).attr('disabled', true);
             });
 
-            $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
+            $('#statusSelect, #qualityPreset, #season_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
                 $('#saveDefaultsButton').attr('disabled', false);
             });
 

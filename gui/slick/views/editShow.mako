@@ -222,7 +222,7 @@
                                         <span class="component-title">${_('Season folders')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="season_folders" name="flatten_folders" ${('checked="checked"', '')[show.flatten_folders == 1 and not sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(sickbeard.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
+                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(sickbeard.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
                                         <label for="season_folders">${_('group episodes by season folder (uncheck to store in a single folder)')}</label>
                                     </div>
                                 </div>

@@ -1467,7 +1467,7 @@ class Home(WebRoot):
         return "<br>".join(out)
 
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
-                 exceptions_list=None, flatten_folders=None, paused=None, directCall=False,
+                 exceptions_list=None, season_folders=None, paused=None, directCall=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
@@ -1495,7 +1495,7 @@ class Home(WebRoot):
         if try_int(quality_preset, None):
             bestQualities = []
 
-        if not (location or anyQualities or bestQualities or flatten_folders):
+        if not (location or anyQualities or bestQualities or season_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
 
             if show_obj.is_anime:
@@ -1523,7 +1523,7 @@ class Home(WebRoot):
                 return t.render(show=show, scene_exceptions=scene_exceptions, title=_('Edit Show'), header=_('Edit Show'),
                                 controller="home", action="editShow")
 
-        flatten_folders = not config.checkbox_to_value(flatten_folders)  # UI inverts this value
+        season_folders = config.checkbox_to_value(season_folders)
         dvdorder = config.checkbox_to_value(dvdorder)
         paused = config.checkbox_to_value(paused)
         air_by_date = config.checkbox_to_value(air_by_date)
@@ -1599,8 +1599,8 @@ class Home(WebRoot):
             show_obj.quality = newQuality
 
             # reversed for now
-            if bool(show_obj.flatten_folders) != bool(flatten_folders):
-                show_obj.flatten_folders = flatten_folders
+            if bool(show_obj.season_folders) != bool(season_folders):
+                show_obj.season_folders = season_folders
                 try:
                     sickbeard.showQueueScheduler.action.refreshShow(show_obj)
                 except CantRefreshShowException as e:
@@ -2751,10 +2751,10 @@ class HomeAddShows(Home):
             self, indexer_id, show_name, indexer="TVDB", which_series=None,
             indexer_lang=None, root_dir=None, default_status=None,
             quality_preset=None, any_qualities=None, best_qualities=None,
-            flatten_folders=None, subtitles=None, full_show_path=None,
+            season_folders=None, subtitles=None, full_show_path=None,
             other_shows=None, skip_show=None, provided_indexer=None,
             anime=None, scene=None, blacklist=None, whitelist=None,
-            default_status_after=None, default_flatten_folders=None,
+            default_status_after=None, default_season_folders=None,
             configure_show_options=None):
 
         if indexer != "TVDB":
@@ -2783,7 +2783,7 @@ class HomeAddShows(Home):
             # prepare the inputs for passing along
             scene = config.checkbox_to_value(scene)
             anime = config.checkbox_to_value(anime)
-            flatten_folders = config.checkbox_to_value(flatten_folders)
+            season_folders = config.checkbox_to_value(season_folders)
             subtitles = config.checkbox_to_value(subtitles)
 
             if whitelist:
@@ -2810,7 +2810,7 @@ class HomeAddShows(Home):
         else:
             default_status = sickbeard.STATUS_DEFAULT
             quality = sickbeard.QUALITY_DEFAULT
-            flatten_folders = sickbeard.FLATTEN_FOLDERS_DEFAULT
+            season_folders = sickbeard.SEASON_FOLDERS_DEFAULT
             subtitles = sickbeard.SUBTITLES_DEFAULT
             anime = sickbeard.ANIME_DEFAULT
             scene = sickbeard.SCENE_DEFAULT
@@ -2830,7 +2830,7 @@ class HomeAddShows(Home):
         show_dir = None
 
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, flatten_folders,
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, season_folders,
                                                     indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
                                                     int(default_status_after), root_dir=location)
 
@@ -2840,7 +2840,7 @@ class HomeAddShows(Home):
         return self.redirect('/home/')
 
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-                   quality_preset=None, anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
+                   quality_preset=None, anyQualities=None, bestQualities=None, season_folders=None, subtitles=None,
                    subtitles_sr_metadata=None, fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None,
                    anime=None, scene=None, blacklist=None, whitelist=None, defaultStatusAfter=None):
         """
@@ -2928,7 +2928,7 @@ class HomeAddShows(Home):
         # prepare the inputs for passing along
         scene = config.checkbox_to_value(scene)
         anime = config.checkbox_to_value(anime)
-        flatten_folders = config.checkbox_to_value(flatten_folders)
+        season_folders = config.checkbox_to_value(season_folders)
         subtitles = config.checkbox_to_value(subtitles)
         subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
@@ -2949,7 +2949,7 @@ class HomeAddShows(Home):
 
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    flatten_folders, indexerLang, subtitles, subtitles_sr_metadata,
+                                                    season_folders, indexerLang, subtitles, subtitles_sr_metadata,
                                                     anime, scene, None, blacklist, whitelist, int(defaultStatusAfter))
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
@@ -3020,7 +3020,7 @@ class HomeAddShows(Home):
                     indexer, indexer_id, show_dir,
                     default_status=sickbeard.STATUS_DEFAULT,
                     quality=sickbeard.QUALITY_DEFAULT,
-                    flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                    season_folders=sickbeard.SEASON_FOLDERS_DEFAULT,
                     subtitles=sickbeard.SUBTITLES_DEFAULT,
                     anime=sickbeard.ANIME_DEFAULT,
                     scene=sickbeard.SCENE_DEFAULT,
@@ -3324,8 +3324,8 @@ class Manage(Home, WebRoot):
                 showList.append(show_obj)
                 showNames.append(show_obj.name)
 
-        flatten_folders_all_same = True
-        last_flatten_folders = None
+        season_folders_all_same = True
+        last_season_folders = None
 
         paused_all_same = True
         last_paused = None
@@ -3380,11 +3380,11 @@ class Manage(Home, WebRoot):
                 else:
                     last_anime = curShow.anime
 
-            if flatten_folders_all_same:
-                if last_flatten_folders not in (None, curShow.flatten_folders):
-                    flatten_folders_all_same = False
+            if season_folders_all_same:
+                if last_season_folders not in (None, curShow.season_folders):
+                    season_folders_all_same = False
                 else:
-                    last_flatten_folders = curShow.flatten_folders
+                    last_season_folders = curShow.season_folders
 
             if quality_all_same:
                 if last_quality not in (None, curShow.quality):
@@ -3419,7 +3419,7 @@ class Manage(Home, WebRoot):
         default_ep_status_value = last_default_ep_status if default_ep_status_all_same else None
         paused_value = last_paused if paused_all_same else None
         anime_value = last_anime if anime_all_same else None
-        flatten_folders_value = last_flatten_folders if flatten_folders_all_same else None
+        season_folders_value = last_season_folders if season_folders_all_same else None
         quality_value = last_quality if quality_all_same else None
         subtitles_value = last_subtitles if subtitles_all_same else None
         scene_value = last_scene if scene_all_same else None
@@ -3428,12 +3428,12 @@ class Manage(Home, WebRoot):
         root_dir_list = root_dir_list
 
         return t.render(showList=toEdit, showNames=showNames, default_ep_status_value=default_ep_status_value,
-                        paused_value=paused_value, anime_value=anime_value, flatten_folders_value=flatten_folders_value,
+                        paused_value=paused_value, anime_value=anime_value, season_folders_value=season_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
                         air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title=_('Mass Edit'), header=_('Mass Edit'), topmenu='manage')
 
     def massEditSubmit(self, paused=None, default_ep_status=None,
-                       anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=None,
+                       anime=None, sports=None, scene=None, season_folders=None, quality_preset=None,
                        subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args_,
                        **kwargs):
         dir_map = {}
@@ -3492,11 +3492,11 @@ class Manage(Home, WebRoot):
                 new_air_by_date = True if air_by_date == 'enable' else False
             new_air_by_date = 'on' if new_air_by_date else 'off'
 
-            if flatten_folders == 'keep':
-                new_flatten_folders = show_obj.flatten_folders
+            if season_folders == 'keep':
+                new_season_folders = show_obj.season_folders
             else:
-                new_flatten_folders = True if flatten_folders == 'enable' else False
-            new_flatten_folders = 'on' if new_flatten_folders else 'off'
+                new_season_folders = True if season_folders == 'enable' else False
+            new_season_folders = 'on' if new_season_folders else 'off'
 
             if subtitles == 'keep':
                 new_subtitles = show_obj.subtitles
@@ -3515,7 +3515,7 @@ class Manage(Home, WebRoot):
             curErrors += self.editShow(curShow, new_show_dir, anyQualities,
                                        bestQualities, exceptions_list,
                                        defaultEpStatus=new_default_ep_status,
-                                       flatten_folders=new_flatten_folders,
+                                       season_folders=new_season_folders,
                                        paused=new_paused, sports=new_sports,
                                        subtitles=new_subtitles, anime=new_anime,
                                        scene=new_scene, air_by_date=new_air_by_date,
@@ -3910,7 +3910,7 @@ class ConfigGeneral(Config):
         sickbeard.ROOT_DIRS = rootDirString
 
     @staticmethod
-    def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
+    def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultSeasonFolders, subtitles=False,
                             anime=False, scene=False, defaultStatusAfter=WANTED):
 
         if anyQualities:
@@ -3929,7 +3929,7 @@ class ConfigGeneral(Config):
         sickbeard.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
         sickbeard.QUALITY_DEFAULT = int(newQuality)
 
-        sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(defaultFlattenFolders)
+        sickbeard.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
         sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)

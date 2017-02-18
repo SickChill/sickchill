@@ -64,11 +64,11 @@
 
     <div class="field-pair row">
         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-            <span class="component-title">${_('Flatten Folders')}</span>
+            <span class="component-title">${_('Season Folders')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <input class="cb" type="checkbox" name="flatten_folders" id="flatten_folders" ${('', 'checked="checked"')[bool(sickbeard.FLATTEN_FOLDERS_DEFAULT)]}/>
-            <label for="flatten_folders">${_('Disregard sub-folders?')}</label>
+            <input type="checkbox" name="season_folders" id="season_folders" ${('', 'checked="checked"')[bool(sickbeard.SEASON_FOLDERS_DEFAULT)]}/>
+            <label for="season_folders">${_('Group episodes by season folder?')}</label>
         </div>
     </div>
     <br>
