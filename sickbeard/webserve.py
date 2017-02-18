@@ -1630,8 +1630,7 @@ class Home(WebRoot):
                 if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
 
-                # don't bother if we're going to update anyway
-                elif not do_update:
+                else:
                     # change it
                     try:
                         show_obj.location = location
@@ -3444,7 +3443,7 @@ class Manage(Home, WebRoot):
         errors = []
         for curShow in showIDs:
             curErrors = []
-            show_obj = Show.find(sickbeard.showList, int(curShow))
+            show_obj = Show.find(sickbeard.showList, int(curShow or 0))
             if not show_obj:
                 continue
 
@@ -3457,53 +3456,14 @@ class Manage(Home, WebRoot):
             else:
                 new_show_dir = show_obj._location  # pylint: disable=protected-access
 
-            if paused == 'keep':
-                new_paused = show_obj.paused
-            else:
-                new_paused = True if paused == 'enable' else False
-            new_paused = 'on' if new_paused else 'off'
-
-            if default_ep_status == 'keep':
-                new_default_ep_status = show_obj.default_ep_status
-            else:
-                new_default_ep_status = default_ep_status
-
-            if anime == 'keep':
-                new_anime = show_obj.anime
-            else:
-                new_anime = True if anime == 'enable' else False
-            new_anime = 'on' if new_anime else 'off'
-
-            if sports == 'keep':
-                new_sports = show_obj.sports
-            else:
-                new_sports = True if sports == 'enable' else False
-            new_sports = 'on' if new_sports else 'off'
-
-            if scene == 'keep':
-                new_scene = show_obj.is_scene
-            else:
-                new_scene = True if scene == 'enable' else False
-            new_scene = 'on' if new_scene else 'off'
-
-            if air_by_date == 'keep':
-                new_air_by_date = show_obj.air_by_date
-            else:
-                new_air_by_date = True if air_by_date == 'enable' else False
-            new_air_by_date = 'on' if new_air_by_date else 'off'
-
-            if season_folders == 'keep':
-                new_season_folders = show_obj.season_folders
-            else:
-                new_season_folders = True if season_folders == 'enable' else False
-            new_season_folders = 'on' if new_season_folders else 'off'
-
-            if subtitles == 'keep':
-                new_subtitles = show_obj.subtitles
-            else:
-                new_subtitles = True if subtitles == 'enable' else False
-
-            new_subtitles = 'on' if new_subtitles else 'off'
+            new_paused = ('off', 'on')[(paused == 'enable', show_obj.paused)[paused == 'keep']]
+            new_default_ep_status = (default_ep_status, show_obj.default_ep_status)[default_ep_status == 'keep']
+            new_anime = ('off', 'on')[(anime == 'enable', show_obj.anime)[anime == 'keep']]
+            new_sports = ('off', 'on')[(sports == 'enable', show_obj.sports)[sports == 'keep']]
+            new_scene = ('off', 'on')[(scene == 'enable', show_obj.scene)[scene == 'keep']]
+            new_air_by_date = ('off', 'on')[(air_by_date == 'enable', show_obj.air_by_date)[air_by_date == 'keep']]
+            new_season_folders = ('off', 'on')[(season_folders == 'enable', show_obj.season_folders)[season_folders == 'keep']]
+            new_subtitles = ('off', 'on')[(subtitles == 'enable', show_obj.subtitles)[subtitles == 'keep']]
 
             if quality_preset == 'keep':
                 anyQualities, bestQualities = Quality.splitQuality(show_obj.quality)
