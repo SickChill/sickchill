@@ -2359,7 +2359,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         result = self.formatted_filename(anime_type=anime_type)
 
         # if they want us to flatten it and we're allowed to flatten it then we will
-        if not self.show.season_folders and not sickbeard.NAMING_FORCE_FOLDERS:
+        if not (self.show.season_folders or sickbeard.NAMING_FORCE_FOLDERS):
             return result
 
         # if not we append the folder on and use that

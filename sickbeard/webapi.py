@@ -1519,8 +1519,10 @@ class CMDSickBeardGetDefaults(ApiCall):
         any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
         data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-                "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT), "initial": any_qualities,
-                "archive": best_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
+                "flatten_folders": int(not sickbeard.SEASON_FOLDERS_DEFAULT),
+                "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT),
+                "initial": any_qualities, "archive": best_qualities,
+                "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1750,7 +1752,8 @@ class CMDSickBeardSetDefaults(ApiCall):
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
-        self.season_folders, args = self.check_params(args, kwargs, "season_folders", None, True, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders", not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "season_folders", self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
 
@@ -1944,8 +1947,10 @@ class CMDShowAddExisting(ApiCall):
 
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
-                                                       bool(sickbeard.SEASON_FOLDERS_DEFAULT), True, "bool", [])
+                                                      self.season_folders, False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
                                                  False, "int", [])
 
@@ -2031,8 +2036,10 @@ class CMDShowAddNew(ApiCall):
             args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(
             args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
-                                                       bool(sickbeard.SEASON_FOLDERS_DEFAULT), True, "bool", [])
+                                                      self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
