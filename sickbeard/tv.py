@@ -789,7 +789,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.subtitles = int(sql_results[0][b"subtitles"] or 0)
             self.dvdorder = int(sql_results[0][b"dvdorder"] or 0)
             self.quality = int(sql_results[0][b"quality"] or UNKNOWN)
-            self.season_folders = int(not int(sql_results[0][b"flatten_folders"] or 0))# FIXME: inverted until next database version
+            self.season_folders = int(not int(sql_results[0][b"flatten_folders"] or 0))  # FIXME: inverted until next database version
             self.paused = int(sql_results[0][b"paused"] or 0)
 
             try:
@@ -1141,7 +1141,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "quality": self.quality,
                         "airs": self.airs,
                         "status": self.status,
-                        "flatten_folders": int(not self.season_folders),# FIXME: inverted until next database version
+                        "flatten_folders": int(not self.season_folders),  # FIXME: inverted until next database version
                         "paused": self.paused,
                         "air_by_date": self.air_by_date,
                         "anime": self.anime,
@@ -1524,8 +1524,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.status = int(sql_results[0][b"status"] or -1)
 
             # don't overwrite my location
-            if sql_results[0][b"location"] and sql_results[0][b"location"]:
+            if sql_results[0][b"location"] and not self._location:
                 self.location = ek(os.path.normpath, sql_results[0][b"location"])
+
             if sql_results[0][b"file_size"]:
                 self.file_size = int(sql_results[0][b"file_size"])
             else:

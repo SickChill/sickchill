@@ -116,8 +116,8 @@ class ShowQueue(generic_queue.GenericQueue):
                 logger.DEBUG)
             return
 
-        if force == False and show.paused:
-            logger.log('Skipping show [{0}] because is paused.'.format(show.name), logger.DEBUG)
+        if show.paused and not force:
+            logger.log('Skipping show [{0}] because it is paused.'.format(show.name), logger.DEBUG)
             return
 
         logger.log('Queueing show refresh for {0}'.format(show.name), logger.DEBUG)

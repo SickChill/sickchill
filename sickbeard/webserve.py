@@ -1624,10 +1624,12 @@ class Home(WebRoot):
             if not isinstance(location, unicode):
                 location = ek(unicode, location, 'utf-8')
 
+            location = ek(os.path.normpath, location)
+            old_location = ek(os.path.normpath, show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
-            if ek(os.path.normpath, show_obj._location) != ek(os.path.normpath, location):  # pylint: disable=protected-access
-                logger.log(ek(os.path.normpath, show_obj._location) + " != " + ek(os.path.normpath, location), logger.DEBUG)  # pylint: disable=protected-access
-                if not ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+            if old_location != location:  # pylint: disable=protected-access
+                logger.log(old_location + " != " + location, logger.DEBUG)  # pylint: disable=protected-access
+                if not (ek(os.path.isdir, location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
 
                 else:

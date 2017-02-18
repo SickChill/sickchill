@@ -917,7 +917,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         VERSION_NOTIFY = bool(check_setting_int(CFG, 'General', 'version_notify', 1))
         AUTO_UPDATE = bool(check_setting_int(CFG, 'General', 'auto_update', 0))
         NOTIFY_ON_UPDATE = bool(check_setting_int(CFG, 'General', 'notify_on_update', 1))
-        SEASON_FOLDERS_DEFAULT = not bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))# FIXME: inverted until next config version
+        SEASON_FOLDERS_DEFAULT = not bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))  # FIXME: inverted until next config version
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20)
         ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
@@ -1902,7 +1902,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'quality_default': int(QUALITY_DEFAULT),
             'status_default': int(STATUS_DEFAULT),
             'status_default_after': int(STATUS_DEFAULT_AFTER),
-            'flatten_folders_default': int(not int(SEASON_FOLDERS_DEFAULT)),# FIXME: inverted until next config version
+            'flatten_folders_default': int(not int(SEASON_FOLDERS_DEFAULT)),  # FIXME: inverted until next config version
             'indexer_default': int(INDEXER_DEFAULT),
             'indexer_timeout': int(INDEXER_TIMEOUT),
             'anime_default': int(ANIME_DEFAULT),
