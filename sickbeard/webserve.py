@@ -5008,7 +5008,8 @@ class ConfigNotifications(Config):
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
             email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_webhook=None,
-            use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None):
+            use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None, discord_name=None,
+            discord_avatar_url=None, discord_tts=False):
 
         results = []
 
@@ -5106,6 +5107,9 @@ class ConfigNotifications(Config):
         sickbeard.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
         sickbeard.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
         sickbeard.DISCORD_WEBHOOK = discord_webhook
+        sickbeard.DISCORD_NAME = discord_name
+        sickbeard.DISCORD_AVATAR_URL = discord_avatar_url
+        sickbeard.DISCORD_TTS = discord_tts
 
         sickbeard.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
         sickbeard.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)

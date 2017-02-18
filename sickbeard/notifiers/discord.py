@@ -57,7 +57,9 @@ class Notifier(object):
 
     def _send_discord(self, message=None):
         discord_webhook = sickbeard.DISCORD_WEBHOOK
-        avatar_icon = "https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png"
+        discord_name = sickbeard.DISCORD_NAME
+        avatar_icon = sickbeard.DISCORD_AVATAR_URL
+        discord_tts = bool(sickbeard.DISCORD_TTS)
 
         logger.log("Sending discord message: " + message, logger.INFO)
         logger.log("Sending discord message  to url: " + discord_webhook, logger.INFO)
@@ -67,7 +69,7 @@ class Notifier(object):
 
         headers = {b"Content-Type": b"application/json"}
         try:
-            r = requests.post(discord_webhook, data=json.dumps(dict(content=message, username="SickRage", avatar_url=avatar_icon)), headers=headers)
+            r = requests.post(discord_webhook, data=json.dumps(dict(content=message, username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers)
             r.raise_for_status()
         except Exception as e:
             logger.log("Error Sending Discord message: " + ex(e), logger.ERROR)

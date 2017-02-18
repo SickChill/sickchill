@@ -3944,6 +3944,34 @@ msgstr ""
 msgid "Discord Incoming Webhook"
 msgstr ""
 
+#: gui/slick/views/config_notifications.mako:3228
+msgid "Create webhook under channel settings."
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3236
+msgid "Discord Bot Name"
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3244
+msgid "Blank will use webhook default Name."
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3252
+msgid "Discord Avatar URL"
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3260
+msgid "Blank will use webhook default Avatar."
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3268
+msgid "Discord TTS"
+msgstr ""
+
+#: gui/slick/views/config_notifications.mako:3260
+msgid "Send notifications using text-to-speech"
+msgstr ""
+
 #: gui/slick/views/config_postProcessing.mako:13
 #: gui/slick/views/config_postProcessing.mako:26
 msgid "Post-Processing"
