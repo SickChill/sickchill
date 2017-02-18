@@ -113,9 +113,9 @@ class ProcessingQueue(generic_queue.GenericQueue):
             return log_helper(u"{mode} post-processing attempted but directory is not set: {directory}".format(
                 **replacements), logger.WARNING)
 
-        if not ek(os.path.isdir, directory):
-            return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {directory}".format(
-                **replacements), logger.WARNING)
+        # if not ek(os.path.isdir, directory):
+        #     return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {directory}".format(
+        #         **replacements), logger.WARNING)
 
         if not ek(os.path.isabs, directory):
             return log_helper(
