@@ -2369,7 +2369,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         return result
 
-    def formatted_dir(self, pattern=None, multi=None):
+    def formatted_dir(self, pattern=None, multi=None, anime_type=None):
         """
         Just the folder name of the episode
         """
@@ -2391,7 +2391,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if len(name_groups) == 1:
             return ''
         else:
-            return self._format_pattern(os.sep.join(name_groups[:-1]), multi)
+            if not self.show.anime:
+                anime_type = 3
+            return self._format_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
 
     def formatted_filename(self, pattern=None, multi=None, anime_type=None):
         """
