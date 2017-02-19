@@ -107,7 +107,20 @@ class EliteTorrentProvider(TorrentProvider):
                         for row in torrent_rows[1:]:
                             try:
                                 download_url = self.urls['base_url'] + row.find('a')['href']
-                                title = self._processTitle(row.find('a', class_='nombre')['title'])
+                                """
+                                Trick for accents for this provider.
+                                
+                                I realised that - data = self.get_url(self.urls['search'], params=search_params, returns='text') - 
+                                returns latin1 coded text and this makes that the title used for the search 
+                                and the title retrieved from the parsed web page doesn't match so I get 
+                                "No needed episodes found during backlog search for: XXXX"
+                                
+                                This is not a proper solution but I don't know how is sickbeard 
+                                made and this fix works for me
+                                """
+                                rowTitle = row.find('a', class_='nombre')['title']
+                                title = self._processTitle(rowTitle.decode('utf8').encode('latin1'))
+                                
                                 seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
                                 leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
                                 
