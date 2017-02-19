@@ -205,7 +205,7 @@ def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-m
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
     new_name = ep.formatted_filename(pattern, multi, anime_type) + '.ext'
-    new_path = ep.formatted_dir(pattern, multi)
+    new_path = ep.formatted_dir(pattern, multi, anime_type)
     if not file_only:
         new_name = ek(os.path.join, new_path, new_name)
 
