@@ -141,6 +141,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param database_logging: True if logging database access
         """
         self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
+
+        global log_file
+        log_file = self.log_file
+
         self.debug_logging = debug_logging
         self.console_logging = console_logging
         self.file_logging = file_logging
@@ -447,7 +451,7 @@ def shutdown():
 def submit_errors(*args, **kwargs):
     return Wrapper.instance.submit_errors(*args, **kwargs)
 
-log_file = Wrapper.instance.log_file
+log_file = None
 
 LOG_FILTERS = {
     '<NONE>': _(u'&lt;No Filter&gt;'),
