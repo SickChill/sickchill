@@ -2365,11 +2365,11 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # if not we append the folder on and use that
         else:
-            result = ek(os.path.join, self.formatted_dir(), result)
+            result = ek(os.path.join, self.formatted_dir(anime_type=anime_type), result)
 
         return result
 
-    def formatted_dir(self, pattern=None, multi=None):
+    def formatted_dir(self, pattern=None, multi=None, anime_type=None):
         """
         Just the folder name of the episode
         """
@@ -2391,7 +2391,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if len(name_groups) == 1:
             return ''
         else:
-            return self._format_pattern(os.sep.join(name_groups[:-1]), multi)
+            return self._format_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
 
     def formatted_filename(self, pattern=None, multi=None, anime_type=None):
         """
