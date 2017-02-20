@@ -1041,11 +1041,13 @@
                                     <div class="col-md-12">
                                         <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
                                             <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
+                                            <% gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
+                                                                  or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN) %>
                                             % if gh_branch:
                                                 % for cur_branch in gh_branch:
-                                                    % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1:
+                                                    % if gh_credentials and sickbeard.DEVELOPER == 1:
                                                         <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % elif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']:
+                                                    % elif gh_credentials and cur_branch in ['master', 'develop']:
                                                         <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
                                                     % elif cur_branch == 'master':
                                                         <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
@@ -1074,35 +1076,87 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub username')}</label>
+                                <label class="component-title">${_('Authorization Type')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+                                        <input type="radio" name="git_auth_type" id="git_auth_type_basic" value="0" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 0]}/>
+                                        <label for="git_auth_type_basic">${_('Username and password')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                                        <input type="radio" name="git_auth_type" id="git_auth_type_token" value="1" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 1]}/>
+                                        <label for="git_auth_type_token">${_('Personal access token')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('You must use a personal access token if you\'re using "two-factor authentication" on GitHub.')}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub password')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+                        <div name="content_github_auth_type">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('GitHub username')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('GitHub password')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div name="content_github_auth_type">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('GitHub personal access token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
+                                            % if not sickbeard.GIT_TOKEN:
+                                                <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
+                                            % else:
+                                                <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
+                                            % endif
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
