@@ -46,7 +46,7 @@ class BTNProvider(TorrentProvider):
 
         self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
 
-        self.urls = {'base_url': u'http://api.btnapps.net',
+        self.urls = {'base_url': u'http://api.broadcasthe.net',
                      'website': u'http://broadcasthe.net/', }
 
         self.url = self.urls['website']
