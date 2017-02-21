@@ -57,11 +57,13 @@ function addSiteMessage(level, message){
         var messagesDiv = $('#site-messages');
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
-            siteMessages.messages.forEach(function (message, i) {
-                messagesDiv.append('<div class="alert alert-' + message.level + ' upgrade-notification hidden-print" id="site-message-' + i +'" role="alert">' +
-                    '<span>' + message.message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + i + '"/>' +
-                '</div>');
-            });
+            for (var key in siteMessages) {
+                if (siteMessages.hasOwnProperty(key)) {
+                    messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key +'" role="alert">' +
+                        '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>' +
+                        '</div>');
+                }
+            }
         }
     });
 
@@ -1202,7 +1204,7 @@ var SICKRAGE = {
 
                 $.post(srRoot + '/config/postProcessing/testNaming', {
                     'pattern': example.pattern,
-                    'anime_type': 3 // jshint ignore:line
+                    'anime_type': 3
                 }, function (data) {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -2134,11 +2136,11 @@ var SICKRAGE = {
                     7: { filter: 'parsed' }
                 },
                 widgetOptions: {
-                    filter_columnFilters: true, // jshint ignore:line
-                    filter_hideFilters: true, // jshint ignore:line
-                    stickyHeaders_offset: 50, // jshint ignore:line
-                    filter_saveFilters: true, // jshint ignore:line
-                    filter_functions: { // jshint ignore:line
+                    'filter_columnFilters': true,
+                    'filter_hideFilters': true,
+                    'stickyHeaders_offset': 50,
+                    'filter_saveFilters': true,
+                    'filter_functions': {
                         5: function(e, n, f) {
                             var test = false;
                             var pct = Math.floor((n % 1) * 1000);
@@ -2317,11 +2319,11 @@ var SICKRAGE = {
             $(".displayShowTable").tablesorter({
                 widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
                 widgetOptions : {
-                    columnSelector_saveColumns: true, // jshint ignore:line
-                    columnSelector_layout : '<label><input type="checkbox"/>{name}</label>', // jshint ignore:line
-                    columnSelector_mediaquery: false, // jshint ignore:line
-                    columnSelector_cssChecked : 'checked', // jshint ignore:line
-                    stickyHeaders_offset: 50 // jshint ignore:line
+                    'columnSelector_saveColumns': true,
+                    'columnSelector_layout' : '<label><input type="checkbox"/>{name}</label>',
+                    'columnSelector_mediaquery': false,
+                    'columnSelector_cssChecked' : 'checked',
+                    'stickyHeaders_offset': 50
                 }
             });
 
@@ -2964,7 +2966,7 @@ var SICKRAGE = {
                             0: function(node) { return $(node).find('time').attr('datetime'); },
                             1: function(node) { return $(node).find("span").text().toLowerCase(); },
                             2: function(node) { return $(node).attr("provider").toLowerCase(); },
-                            5: function(node) { return $(node).attr("quality").toLowerCase(); }
+                            4: function(node) { return $(node).attr("quality").toLowerCase(); }
                         };
                     }
                 }()),
@@ -3119,11 +3121,11 @@ var SICKRAGE = {
                         9: { sorter: false }
                     },
                     widgetOptions: {
-                        filter_columnFilters: true, // jshint ignore:line
-                        filter_hideFilters: true, // jshint ignore:line
-                        filter_saveFilters: true, // jshint ignore:line
-                        columnSelector_mediaquery: false, // jshint ignore:line
-                        stickyHeaders_offset: 50 // jshint ignore:line
+                        'filter_columnFilters': true,
+                        'filter_hideFilters': true,
+                        'filter_saveFilters': true,
+                        'columnSelector_mediaquery': false,
+                        'stickyHeaders_offset': 50
                     }
                 });
 

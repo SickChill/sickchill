@@ -610,19 +610,19 @@ class UI(WebRoot):
                     message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
                     helpers.add_site_message(message, 'danger')
 
-            return dict(messages=sickbeard.SITE_MESSAGES)
+            return sickbeard.SITE_MESSAGES
 
     def get_site_messages(self):
         with self.messages_lock:
             self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            return dict(messages=sickbeard.SITE_MESSAGES)
+            return sickbeard.SITE_MESSAGES
 
     def dismiss_site_message(self, index):
         with self.messages_lock:
             self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            if len(sickbeard.SITE_MESSAGES) >= int(index):
-                sickbeard.SITE_MESSAGES.pop(int(index))
-            return dict(messages=sickbeard.SITE_MESSAGES)
+            if index in sickbeard.SITE_MESSAGES:
+                del sickbeard.SITE_MESSAGES[index]
+            return sickbeard.SITE_MESSAGES
 
     def sickrage_background(self):
         if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):

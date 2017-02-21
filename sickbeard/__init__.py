@@ -100,7 +100,7 @@ DATA_DIR = ''
 CREATEPID = False
 PIDFILE = ''
 
-SITE_MESSAGES = []
+SITE_MESSAGES = {}
 
 DAEMON = None
 NO_RESIZE = False

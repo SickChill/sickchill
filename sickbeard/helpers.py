@@ -1749,7 +1749,22 @@ def recursive_listdir(path):
             yield ek(os.path.join, directory_path, filename)
 
 
+MESSAGE_COUNTER = 0
+
+
 def add_site_message(message, level='danger'):
     to_add = dict(level=level, message=message)
-    if to_add not in sickbeard.SITE_MESSAGES:
-        sickbeard.SITE_MESSAGES.append(to_add)
+
+    for index, existing in sickbeard.SITE_MESSAGES.iteritems():
+        if re.sub(r'\d+', '#', existing['message']) == re.sub(r'\d+', '#', message):
+            sickbeard.SITE_MESSAGES[index] = to_add
+            return
+
+        if message.endswith('Please use \'master\' unless specifically asked') and \
+                existing['message'].endswith('Please use \'master\' unless specifically asked'):
+            sickbeard.SITE_MESSAGES[index] = to_add
+            return
+
+    global MESSAGE_COUNTER
+    MESSAGE_COUNTER += 1
+    sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
