@@ -22,14 +22,14 @@ from os import sys
 from random import shuffle
 
 import sickbeard
-from sickbeard.providers import btn, womble, thepiratebay, torrentleech, iptorrents, torrentz, \
+from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, torrentz, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien,\
     torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents, \
     norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it
 
 __all__ = [
-    'womble', 'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
+    'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
     'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
     'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
