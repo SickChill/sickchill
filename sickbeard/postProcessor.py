@@ -162,8 +162,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return []
 
         file_path_list = []
-        extensions_to_allow = []
-        extensions_to_delete = []
+        file_path_list_to_allow = []
+        file_path_list_to_delete = []
 
         if subfolders:
             base_name = ek(os.path.basename, file_path).rpartition('.')[0]
@@ -208,33 +208,25 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
                 continue
 
-            # Add the extensions that the user allows to the 'extensions_to_allow' list
-            if sickbeard.MOVE_ASSOCIATED_FILES:
-                allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if associated_file_path.rpartition('.')[2] in allowed_extensions:
-                    if ek(os.path.isfile, associated_file_path):
-                        extensions_to_allow.append(associated_file_path)
-
-            # Add the extensions that the user doesn't allow to the 'extensions_to_delete' list
-            if sickbeard.DELETE_NON_ASSOCIATED_FILES:
-                allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
-                if not associated_file_path.rpartition('.')[2] in allowed_extensions:
-                    if ek(os.path.isfile, associated_file_path):
-                        extensions_to_delete.append(associated_file_path)
-
+            # Define associated files (all, allowed and non allowed)
+            allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
             if ek(os.path.isfile, associated_file_path):
+                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.rpartition('.')[2] in allowed_extensions:
+                    file_path_list_to_allow.append(associated_file_path)
+                elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
+                    file_path_list_to_delete.append(associated_file_path)
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
             self._log(u"Found the following associated files for {0}: {1}".format(file_path, file_path_list), logger.DEBUG)
-            if extensions_to_allow:
-                self._log(u"Associated files to allow for {0}: {1}".format(file_path, extensions_to_allow), logger.DEBUG)
+            if file_path_list_to_allow:
+                self._log(u"Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
                 # Rebuild the 'file_path_list' list only with the extensions the user allows
-                file_path_list = extensions_to_allow
-            if extensions_to_delete:
-                self._log(u"Associated files to delete for {0}: {1}".format(file_path, extensions_to_delete), logger.DEBUG)
+                file_path_list = file_path_list_to_allow
+            if file_path_list_to_delete:
+                self._log(u"Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
-                self._delete(extensions_to_delete)
+                self._delete(file_path_list_to_delete)
         else:
             self._log(u"No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 
