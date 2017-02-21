@@ -326,7 +326,7 @@ var SICKRAGE = {
 
             // GitHub Auth Types
             function setupGithubAuthTypes() {
-                var selected = $('input[name="git_auth_type"]').filter(':checked').val();
+                var selected = parseInt( $('input[name="git_auth_type"]').filter(':checked').val() );
 
                 $('div[name="content_github_auth_type"]').each(function(index) {
                     if (index === selected) {
