@@ -207,7 +207,7 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Delete leftover files')}</label>
+                                <label class="component-title">${_('Delete non associated files')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" name="delete_non_associated_files" id="delete_non_associated_files" ${('', 'checked="checked"')[bool(sickbeard.DELETE_NON_ASSOCIATED_FILES)]}/>
