@@ -323,23 +323,23 @@ var SICKRAGE = {
             });
 
             // GitHub Auth Types
-            setupGithubAuthTypes();
-
-            $('input[name="git_auth_type"]').on('click', function(){
-                setupGithubAuthTypes();
-            });
-
             function setupGithubAuthTypes() {
                 var selected = $('input[name="git_auth_type"]').filter(':checked').val();
 
                 $('div[name="content_github_auth_type"]').each(function(index) {
-                    if (index == selected) {
+                    if (index === selected) {
                         $(this).show();
                     } else {
                         $(this).hide();
                     }
                 });
             }
+
+            setupGithubAuthTypes();
+
+            $('input[name="git_auth_type"]').on('click', function(){
+                setupGithubAuthTypes();
+            });
 
             $('#git_token').on('click', function() {
                 $('#git_token').select();
