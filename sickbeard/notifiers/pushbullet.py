@@ -77,10 +77,6 @@ class Notifier(object):
             )
 
     def notify_git_update(self, new_version='??'):
-        # link = re.match(r'.*href="(.*?)" .*', sickbeard.NEWEST_VERSION_STRING)
-        # if link:
-        #     link = link.group(1)
-
         self._sendPushbullet(
             pushbullet_api=None,
             event=common.notifyStrings[common.NOTIFY_GIT_UPDATE],

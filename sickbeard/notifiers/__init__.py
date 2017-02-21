@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+import traceback
 import sickbeard
 
 from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
@@ -101,7 +102,11 @@ def notify_snatch(ep_name):
 def notify_git_update(new_version=""):
     for n in notifiers:
         if sickbeard.NOTIFY_ON_UPDATE:
-            n.notify_git_update(new_version)
+            try:
+                n.notify_git_update(new_version)
+            except Exception:
+                sickbeard.logger.log(u"Unable to send update notification. Continuing the update process", sickbeard.logger.DEBUG)
+                sickbeard.logger.log(traceback.format_exc(), sickbeard.logger.DEBUG)
 
 
 def notify_login(ipaddress):
