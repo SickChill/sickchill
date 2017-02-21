@@ -1023,7 +1023,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROCESS_METHOD = check_setting_str(CFG, 'General', 'process_method', 'copy' if KEEP_PROCESSED_DIR else 'move')
         DELRARCONTENTS = bool(check_setting_int(CFG, 'General', 'del_rar_contents', 0))
         MOVE_ASSOCIATED_FILES = bool(check_setting_int(CFG, 'General', 'move_associated_files', 0))
-        DELETE_NON_ASSOCIATED_FILES = bool(check_setting_int(CFG, 'General', 'delete_non_associated_files', 0))
+        DELETE_NON_ASSOCIATED_FILES = bool(check_setting_int(CFG, 'General', 'delete_non_associated_files', 1))
         POSTPONE_IF_SYNC_FILES = bool(check_setting_int(CFG, 'General', 'postpone_if_sync_files', 1))
         SYNC_FILES = check_setting_str(CFG, 'General', 'sync_files', SYNC_FILES)
         NFO_RENAME = bool(check_setting_int(CFG, 'General', 'nfo_rename', 1))
