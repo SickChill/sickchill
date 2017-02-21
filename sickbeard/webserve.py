@@ -3912,8 +3912,8 @@ class ConfigGeneral(Config):
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
-            sickrage_background=None, sickrage_background_path=None, git_reset=None, git_username=None, git_password=None, display_all_seasons=None,
-            gui_language=None):
+            sickrage_background=None, sickrage_background_path=None, git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
+            display_all_seasons=None, gui_language=None):
 
         results = []
 
@@ -3951,9 +3951,11 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
-        git_credentials_changed = sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD != git_username, git_password
+        git_credentials_changed = sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN != git_auth_type, git_username, git_password, git_token
+        sickbeard.GIT_AUTH_TYPE = int(git_auth_type)
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
+        sickbeard.GIT_TOKEN = git_token
 
         if git_credentials_changed:
             # Re-Initializes sickbeard.gh, so a restart isn't necessary

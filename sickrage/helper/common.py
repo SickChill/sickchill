@@ -28,7 +28,7 @@ import re
 import glob
 from fnmatch import fnmatch
 
-from github import Github, BadCredentialsException
+from github import Github, BadCredentialsException, TwoFactorException
 
 import sickbeard
 
@@ -365,14 +365,30 @@ def setup_github():
     """
 
     try:
-        if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+        if sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+            # Basic Username/Password Auth
             sickbeard.gh = Github(
                 login_or_token=sickbeard.GIT_USERNAME,
                 password=sickbeard.GIT_PASSWORD, user_agent="SickRage")
             # This will trigger BadCredentialsException if user/pass are wrong
             sickbeard.gh.get_organization(sickbeard.GIT_ORG)
 
-    except (Exception, BadCredentialsException) as error:
+        elif sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN:
+            # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on Github to connect their account.
+            sickbeard.gh = Github(
+                login_or_token=sickbeard.GIT_TOKEN, user_agent="SickRage")
+            # This will trigger:
+            # * BadCredentialsException if token is invalid
+            # * TwoFactorException if user has enabled Github-2FA
+            #   but didn't set a personal token in the configuration.
+            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
+
+            # Set GIT_USERNAME so we don't run into problems
+            # when we auth with a token:
+            if sickbeard.GIT_USERNAME and sickbeard.GIT_USERNAME != sickbeard.gh.get_user().login:
+                sickbeard.GIT_USERNAME = sickbeard.gh.get_user().login()
+
+    except (Exception, BadCredentialsException, TwoFactorException) as error:
         sickbeard.gh = None
         sickbeard.logger.log(u'Unable to setup GitHub properly with your github login. Please'
                              ' check your credentials. Error: {0}'.format(error), sickbeard.logger.WARNING)
