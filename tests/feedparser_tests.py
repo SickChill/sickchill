@@ -11,22 +11,22 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.providers.womble import provider as womble
+from sickbeard.providers.binsearch import provider as binsearch
 
 
 class FeedParserTests(unittest.TestCase):
     """
     Test feed parser
     """
-    def test_womble(self):
+    def test_binsearch(self):
         """
-        Test womble
+        Test BinSearch
         """
-        result = womble.cache.getRSSFeed(womble.urls['rss'], params={'sec': 'tv-sd', 'fr': 'false'})
+        result = binsearch.cache.getRSSFeed(binsearch.urls['rss'], params={'max': 50, 'g': 'alt.binaries.hdtv'})
         self.assertTrue('entries' in result)
         self.assertTrue('feed' in result)
         for item in result['entries'] or []:
-            title, url = womble._get_title_and_url(item)     # pylint: disable=protected-access
+            title, url = binsearch._get_title_and_url(item)     # pylint: disable=protected-access
             self.assertTrue(title and url)
 
 if __name__ == "__main__":
