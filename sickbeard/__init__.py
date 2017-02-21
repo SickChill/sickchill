@@ -1852,7 +1852,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'git_auth_type': int(GIT_AUTH_TYPE),
             'git_username': GIT_USERNAME,
             'git_password': helpers.encrypt(GIT_PASSWORD, ENCRYPTION_VERSION),
-            'git_token': helpers.encrypt(GIT_TOKEN, ENCRYPTION_VERSION),
+            'git_token_password': helpers.encrypt(GIT_TOKEN, ENCRYPTION_VERSION),
             'git_reset': int(GIT_RESET),
             'branch': BRANCH,
             'git_remote': GIT_REMOTE,
