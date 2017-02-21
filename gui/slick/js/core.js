@@ -2956,18 +2956,25 @@ var SICKRAGE = {
                 widgets: ['zebra', 'filter'],
                 sortList: [[0,1]],
                 textExtraction: (function(){
-                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])){
+                    if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])) {
                         return {
-                            0: function(node) { return $(node).find('time').attr('datetime'); },
-                            4: function(node) { return $(node).find("span").text().toLowerCase(); }
+                            0: function(node) { return $(node).find('time').attr('datetime'); }, // Time
+                            4: function(node) { return $(node).find("span").text().toLowerCase(); } // Quality
                         };
                     } else {
-                        return {
-                            0: function(node) { return $(node).find('time').attr('datetime'); },
-                            1: function(node) { return $(node).find("span").text().toLowerCase(); },
-                            2: function(node) { return $(node).attr("provider").toLowerCase(); },
-                            4: function(node) { return $(node).attr("quality").toLowerCase(); }
+                        var compactExtract = {
+                            0: function(node) { return $(node).find('time').attr('datetime'); }, // Time
+                            2: function(node) { return $(node).attr("provider").toLowerCase(); }
                         };
+
+                        if(isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
+                            compactExtract[4] = function (node) { return $(node).find("img").attr('title'); };  // Subtitles
+                            compactExtract[5] = function (node) { return $(node).find("span").text().toLowerCase(); }; // Quality
+                        } else {
+                            compactExtract[4] = function (node) { return $(node).find("span").text().toLowerCase(); }; // Quality
+                        }
+
+                        return compactExtract;
                     }
                 }()),
                 headers: (function(){
@@ -2978,12 +2985,20 @@ var SICKRAGE = {
                             5: { sorter: false, filter: false}
                         };
                     } else {
-                        return {
-                            0: { sorter: 'realISODate' },
-                            4: { sorter: false },
-                            5: { sorter: 'quality' },
-                            6: { sorter: false, filter: false}
-                        };
+                        if(isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
+                            return {
+                                0: { sorter: 'realISODate' },
+                                4: { sorter: false },
+                                5: { sorter: 'quality' },
+                                6: { sorter: false, filter: false }
+                            };
+                        } else {
+                            return {
+                                0: { sorter: 'realISODate' },
+                                4: { sorter: 'quality' },
+                                5: { sorter: false, filter: false }
+                            };
+                        }
                     }
                 }())
             });
