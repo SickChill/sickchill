@@ -620,8 +620,8 @@ class UI(WebRoot):
     def dismiss_site_message(self, index):
         with self.messages_lock:
             self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            if index in sickbeard.SITE_MESSAGES:
-                del sickbeard.SITE_MESSAGES[index]
+            if int(index) in sickbeard.SITE_MESSAGES:
+                del sickbeard.SITE_MESSAGES[int(index)]
             return sickbeard.SITE_MESSAGES
 
     def sickrage_background(self):
