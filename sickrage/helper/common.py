@@ -383,10 +383,9 @@ def setup_github():
             #   but didn't set a personal token in the configuration.
             sickbeard.gh.get_organization(sickbeard.GIT_ORG)
 
-            # Set GIT_USERNAME so we don't run into problems
-            # when we auth with a token:
-            if sickbeard.GIT_USERNAME and sickbeard.GIT_USERNAME != sickbeard.gh.get_user().login:
-                sickbeard.GIT_USERNAME = sickbeard.gh.get_user().login()
+            # Update GIT_USERNAME if it's not the same, so we don't run into problems later on.
+            gh_user = sickbeard.gh.get_user().login
+            sickbeard.GIT_USERNAME = gh_user if sickbeard.GIT_USERNAME != gh_user else sickbeard.GIT_USERNAME
 
     except (Exception, BadCredentialsException, TwoFactorException) as error:
         sickbeard.gh = None
