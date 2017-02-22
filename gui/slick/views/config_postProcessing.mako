@@ -295,6 +295,25 @@
                             <div id="content_unpack">
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                        <label class="component-title">${_('Unpack Directory')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" name="unpack_dir" id="unpack_dir" value="${sickbeard.UNPACK_DIR}" class="form-control
+                                                input-sm input350" autocapitalize="off" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="unpack_dir">${_('Choose a path to unpack files, leave blank to unpack in download dir')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                         <label class="component-title">${_('Unrar Location')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">

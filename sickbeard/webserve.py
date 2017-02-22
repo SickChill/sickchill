@@ -4261,7 +4261,7 @@ class ConfigPostProcessing(Config):
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None,
-                           unpack=None, unrar_tool=None, alt_unrar_tool=None,
+                           unpack=None, unpack_dir=None, unrar_tool=None, alt_unrar_tool=None,
                            move_associated_files=None, delete_non_associated_files=None, sync_files=None,
                            postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
@@ -4295,6 +4295,9 @@ class ConfigPostProcessing(Config):
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         else:
             sickbeard.UNPACK = config.checkbox_to_value(unpack)
+
+        if not config.change_unpack_dir(unpack_dir):
+            results += ["Unable to create directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed."]
 
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
