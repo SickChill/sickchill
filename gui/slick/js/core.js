@@ -1172,6 +1172,7 @@ var SICKRAGE = {
         postProcessing: function() {
             $('#config-components').tabs();
             $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+            $('#unpack_dir').fileBrowser({ title: 'Select Unpack Directory' });
 
             // http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
             var typewatch = (function () {

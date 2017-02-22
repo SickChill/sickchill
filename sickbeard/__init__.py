@@ -297,6 +297,7 @@ POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
 UNPACK = False
+UNPACK_DIR = ''
 UNRAR_TOOL = rarfile.UNRAR_TOOL
 ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
@@ -673,7 +674,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, PUSHBULLET_CHANNEL,\
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, CPU_PRESET, \
-            UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
+            UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, AIRDATE_EPISODES, FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, \
@@ -1008,6 +1009,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NO_DELETE = bool(check_setting_int(CFG, 'General', 'no_delete', 0))
         USE_ICACLS = bool(check_setting_int(CFG, 'General', 'use_icacls', 1))
         UNPACK = bool(check_setting_int(CFG, 'General', 'unpack', 0))
+        UNPACK_DIR = check_setting_str(CFG, 'General', 'unpack_dir', '')
         UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
         if UNRAR_TOOL:
             rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = UNRAR_TOOL
@@ -1965,6 +1967,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'no_delete': int(NO_DELETE),
             'use_icacls': int(USE_ICACLS),
             'unpack': int(UNPACK),
+            'unpack_dir': UNPACK_DIR,
             'unrar_tool': UNRAR_TOOL,
             'alt_unrar_tool': ALT_UNRAR_TOOL,
             'rename_episodes': int(RENAME_EPISODES),

@@ -209,6 +209,26 @@ def change_tv_download_dir(tv_download_dir):
 
     return True
 
+def change_unpack_dir(unpack_dir):
+    """
+    Change TV_DOWNLOAD directory (used by postprocessor)
+
+    :param unpack_dir: New unpack directory
+    :return: True on success, False on failure
+    """
+    if unpack_dir == '':
+        sickbeard.UNPACK_DIR = ''
+        return True
+
+    if ek(os.path.normpath, sickbeard.UNPACK_DIR) != ek(os.path.normpath, unpack_dir):
+        if helpers.makeDir(unpack_dir):
+            sickbeard.UNPACK_DIR = ek(os.path.normpath, unpack_dir)
+            logger.log(u"Changed unpack directory to " + unpack_dir)
+        else:
+            return False
+
+    return True
+
 
 def change_postprocessor_frequency(freq):
     """

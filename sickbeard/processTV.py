@@ -349,8 +349,16 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
 
                 rar_release_name = archive.rpartition('.')[0]
 
+                # Choose the directory we'll unpack to:
+                if sickbeard.UNPACK_DIR and os.path.isdir(sickbeard.UNPACK_DIR): # verify the unpack dir exists
+                    unpack_base_dir = sickbeard.UNPACK_DIR
+                else:
+                    unpack_base_dir = path
+                    if sickbeard.UNPACK_DIR: # Let user know if
+                        result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
+
                 # Fix up the list for checking if already processed
-                rar_media_files = [os.path.join(path, rar_release_name, rar_media_file) for rar_media_file in rar_media_files]
+                rar_media_files = [os.path.join(unpack_base_dir, rar_release_name, rar_media_file) for rar_media_file in rar_media_files]
 
                 skip_rar = False
                 for rar_media_file in rar_media_files:
@@ -365,7 +373,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                 if skip_rar:
                     continue
 
-                rar_extract_path = ek(os.path.join, path, rar_release_name)
+                rar_extract_path = ek(os.path.join, unpack_base_dir, rar_release_name)
                 result.output += log_helper(u"Unpacking archive: {0}".format(archive), logger.DEBUG)
                 rar_handle.extractall(path=rar_extract_path)
                 unpacked_dirs.append(rar_extract_path)
