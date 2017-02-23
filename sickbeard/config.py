@@ -542,7 +542,7 @@ def minimax(val, default, low, high):
 ################################################################################
 # Check_setting_int                                                            #
 ################################################################################
-def check_setting_int(config, cfg_name, item_name, def_val, silent=True):
+def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
     try:
         my_val = config[cfg_name][item_name]
         if str(my_val).lower() == "true":
@@ -593,7 +593,7 @@ def check_setting_float(config, cfg_name, item_name, def_val, silent=True):
 ################################################################################
 # Check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_log=False):
+def check_setting_str(config, cfg_name, item_name, def_val='', silent=True, censor_log=False):
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     if bool(item_name.find('password') + 1):
         encryption_version = sickbeard.ENCRYPTION_VERSION
@@ -624,7 +624,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
 ################################################################################
 # Check_setting_bool                                                           #
 ################################################################################
-def check_setting_bool(config, cfg_name, item_name, def_val, silent=True):
+def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     try:
         my_val = checkbox_to_value(config[cfg_name][item_name])
         assert my_val
@@ -716,7 +716,7 @@ class ConfigMigrator(object):
         sickbeard.NAMING_PATTERN = self._name_to_pattern()
         logger.log(u"Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
 
-        sickbeard.NAMING_CUSTOM_ABD = bool(check_setting_int(self.config_obj, 'General', 'naming_dates', 0))
+        sickbeard.NAMING_CUSTOM_ABD = check_setting_bool(self.config_obj, 'General', 'naming_dates')
 
         if sickbeard.NAMING_CUSTOM_ABD:
             sickbeard.NAMING_ABD_PATTERN = self._name_to_pattern(True)
@@ -761,13 +761,13 @@ class ConfigMigrator(object):
     def _name_to_pattern(self, abd=False):
 
         # get the old settings from the file
-        use_periods = bool(check_setting_int(self.config_obj, 'General', 'naming_use_periods', 0))
-        ep_type = check_setting_int(self.config_obj, 'General', 'naming_ep_type', 0)
-        sep_type = check_setting_int(self.config_obj, 'General', 'naming_sep_type', 0)
-        use_quality = bool(check_setting_int(self.config_obj, 'General', 'naming_quality', 0))
+        use_periods = check_setting_bool(self.config_obj, 'General', 'naming_use_periods')
+        ep_type = check_setting_int(self.config_obj, 'General', 'naming_ep_type')
+        sep_type = check_setting_int(self.config_obj, 'General', 'naming_sep_type')
+        use_quality = check_setting_bool(self.config_obj, 'General', 'naming_quality')
 
-        use_show_name = bool(check_setting_int(self.config_obj, 'General', 'naming_show_name', 1))
-        use_ep_name = bool(check_setting_int(self.config_obj, 'General', 'naming_ep_name', 1))
+        use_show_name = check_setting_bool(self.config_obj, 'General', 'naming_show_name', True)
+        use_ep_name = check_setting_bool(self.config_obj, 'General', 'naming_ep_name', True)
 
         # make the presets into templates
         _naming_ep_type = (
@@ -827,15 +827,15 @@ class ConfigMigrator(object):
         Reads in the old naming settings from your config and generates a new config template from them.
         """
         # get the old settings from the file and store them in the new variable names
-        sickbeard.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_uid', '')
-        sickbeard.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_key', '')
+        sickbeard.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_uid')
+        sickbeard.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_key')
 
     # Migration v4: Add default newznab catIDs
     def _migrate_v4(self):
         """ Update newznab providers so that the category IDs can be set independently via the config """
 
         new_newznab_data = []
-        old_newznab_data = check_setting_str(self.config_obj, 'Newznab', 'newznab_data', '')
+        old_newznab_data = check_setting_str(self.config_obj, 'Newznab', 'newznab_data')
 
         if old_newznab_data:
             old_newznab_data_list = old_newznab_data.split("!!!")
@@ -896,7 +896,7 @@ class ConfigMigrator(object):
         metadata_tivo = check_setting_str(self.config_obj, 'General', 'metadata_tivo', '0|0|0|0|0|0')
         metadata_mede8er = check_setting_str(self.config_obj, 'General', 'metadata_mede8er', '0|0|0|0|0|0')
 
-        use_banner = bool(check_setting_int(self.config_obj, 'General', 'use_banner', 0))
+        use_banner = check_setting_bool(self.config_obj, 'General', 'use_banner')
 
         def _migrate_metadata(metadata, metadata_name, use_banner):
             cur_metadata = metadata.split('|')
@@ -939,17 +939,17 @@ class ConfigMigrator(object):
 
     # Migration v6: Convert from XBMC to KODI variables
     def _migrate_v6(self):
-        sickbeard.USE_KODI = bool(check_setting_int(self.config_obj, 'XBMC', 'use_xbmc', 0))
-        sickbeard.KODI_ALWAYS_ON = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_always_on', 1))
-        sickbeard.KODI_NOTIFY_ONSNATCH = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch', 0))
-        sickbeard.KODI_NOTIFY_ONDOWNLOAD = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_ondownload', 0))
-        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload', 0))
-        sickbeard.KODI_UPDATE_LIBRARY = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_library', 0))
-        sickbeard.KODI_UPDATE_FULL = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_full', 0))
-        sickbeard.KODI_UPDATE_ONLYFIRST = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst', 0))
-        sickbeard.KODI_HOST = check_setting_str(self.config_obj, 'XBMC', 'xbmc_host', '')
-        sickbeard.KODI_USERNAME = check_setting_str(self.config_obj, 'XBMC', 'xbmc_username', '', censor_log=True)
-        sickbeard.KODI_PASSWORD = check_setting_str(self.config_obj, 'XBMC', 'xbmc_password', '', censor_log=True)
+        sickbeard.USE_KODI = check_setting_bool(self.config_obj, 'XBMC', 'use_xbmc')
+        sickbeard.KODI_ALWAYS_ON = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_always_on', True)
+        sickbeard.KODI_NOTIFY_ONSNATCH = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch')
+        sickbeard.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_ondownload')
+        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload')
+        sickbeard.KODI_UPDATE_LIBRARY = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_library')
+        sickbeard.KODI_UPDATE_FULL = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_full')
+        sickbeard.KODI_UPDATE_ONLYFIRST = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst')
+        sickbeard.KODI_HOST = check_setting_str(self.config_obj, 'XBMC', 'xbmc_host')
+        sickbeard.KODI_USERNAME = check_setting_str(self.config_obj, 'XBMC', 'xbmc_username', censor_log=True)
+        sickbeard.KODI_PASSWORD = check_setting_str(self.config_obj, 'XBMC', 'xbmc_password', censor_log=True)
         sickbeard.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
         sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
@@ -959,10 +959,10 @@ class ConfigMigrator(object):
         sickbeard.ENCRYPTION_VERSION = 2
 
     def _migrate_v8(self):
-        sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host', '')
-        sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', '', censor_log=True)
-        sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', '', censor_log=True)
-        sickbeard.USE_PLEX_SERVER = bool(check_setting_int(self.config_obj, 'Plex', 'use_plex', 0))
+        sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host')
+        sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', censor_log=True)
+        sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', censor_log=True)
+        sickbeard.USE_PLEX_SERVER = check_setting_bool(self.config_obj, 'Plex', 'use_plex')
 
     def _migrate_v9(self):
-        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency', '')
+        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
