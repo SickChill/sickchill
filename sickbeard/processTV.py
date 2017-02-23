@@ -200,7 +200,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if delete_folder(current_directory, check_empty=True):
                 result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
-	for directory_from_rar in directories_from_rars:
+    for directory_from_rar in directories_from_rars:
         # Only allow methods 'move' and 'copy'. On different method fall back to 'move'.
         method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
 
