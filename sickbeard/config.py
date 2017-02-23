@@ -312,15 +312,27 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
 
 def change_version_notify(version_notify):
     """
-    Change frequency of versioncheck thread
+    Enable/Disable versioncheck thread
+    TODO: Make this return True/False on success/failure
 
-    :param version_notify: New frequency
+    :param version_notify: New desired state
     """
-    previous = sickbeard.VERSION_NOTIFY
-    sickbeard.VERSION_NOTIFY = checkbox_to_value(version_notify)
+    version_notify = checkbox_to_value(version_notify)
 
-    if sickbeard.VERSION_NOTIFY and not previous:
-        sickbeard.versionCheckScheduler.forceRun()
+    if sickbeard.VERSION_NOTIFY == version_notify:
+        return
+
+    sickbeard.VERSION_NOTIFY = version_notify
+    if sickbeard.VERSION_NOTIFY:
+        if not sickbeard.versionCheckScheduler.enable:
+            logger.log(u"Starting VERSIONCHECK thread", logger.INFO)
+            sickbeard.versionCheckScheduler.silent = False
+            sickbeard.versionCheckScheduler.enable = True
+            sickbeard.versionCheckScheduler.forceRun()
+    else:
+        sickbeard.versionCheckScheduler.enable = False
+        sickbeard.versionCheckScheduler.silent = True
+        logger.log(u"Stopping VERSIONCHECK thread", logger.INFO)
 
 
 def change_download_propers(download_propers):
@@ -430,8 +442,8 @@ def CheckSection(CFG, sec):
 
 def checkbox_to_value(option, value_on=True, value_off=False):
     """
-    Turns checkbox option 'on' or 'true' to value_on (1)
-    any other value returns value_off (0)
+    Turns checkbox option 'on' or 'true' to value_on (True)
+    any other value returns value_off (False)
     """
 
     if isinstance(option, list):

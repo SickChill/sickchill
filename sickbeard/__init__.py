@@ -1437,7 +1437,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                                          curTorrentProvider.get_id() + '_enable_daily', True)
 
             if hasattr(curTorrentProvider, 'enable_backlog'):
-                curTorrentProvider.enable_backlog = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
+                curTorrentProvider.enable_backlog = check_setting_bool(CFG, curTorrentProvider.get_id().upper(),
                                                                            curTorrentProvider.get_id() + '_enable_backlog',
                                                                            curTorrentProvider.supports_backlog)
 
@@ -1453,7 +1453,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                                curProvider.provider_type == GenericProvider.NZB]:
-            curNzbProvider.enabled = check_setting_int(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id())
+            curNzbProvider.enabled = check_setting_bool(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id())
 
             if hasattr(curNzbProvider, 'api_key'):
                 curNzbProvider.api_key = check_setting_str(CFG, curNzbProvider.get_id().upper(),
@@ -1471,7 +1471,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                 curNzbProvider.enable_daily = check_setting_bool(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id() + '_enable_daily', True)
 
             if hasattr(curNzbProvider, 'enable_backlog'):
-                curNzbProvider.enable_backlog = check_setting_int(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id() + '_enable_backlog',
+                curNzbProvider.enable_backlog = check_setting_bool(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id() + '_enable_backlog',
                                                                   curNzbProvider.supports_backlog)
 
         if not ek(os.path.isfile, CONFIG_FILE):

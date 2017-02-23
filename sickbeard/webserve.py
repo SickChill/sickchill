@@ -1591,7 +1591,6 @@ class Home(WebRoot):
             newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
             show_obj.quality = newQuality
 
-            # reversed for now
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
                 try:
