@@ -1539,15 +1539,8 @@ class Home(WebRoot):
             indexer_lang = show_obj.lang
 
         # if we changed the language then kick off an update
-        if indexer_lang == show_obj.lang:
-            do_update = False
-        else:
-            do_update = True
-
-        if scene == show_obj.scene and anime == show_obj.anime:
-            do_update_scene_numbering = False
-        else:
-            do_update_scene_numbering = True
+        do_update = indexer_lang != show_obj.lang
+        do_update_scene_numbering = scene != show_obj.scene or anime != show_obj.anime
 
         if not anyQualities:
             anyQualities = []
@@ -1599,7 +1592,7 @@ class Home(WebRoot):
             show_obj.quality = newQuality
 
             # reversed for now
-            if bool(show_obj.season_folders) != bool(season_folders):
+            if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
                 try:
                     sickbeard.showQueueScheduler.action.refreshShow(show_obj)
@@ -1701,7 +1694,7 @@ class Home(WebRoot):
             ui.notifications.message(
                 _('{show_name} has been {deleted_trashed} {was_deleted}').format(
                     show_name=show.name,
-                    deleted_trashed=(_('deleted'), _('trashed'))[bool(sickbeard.TRASH_REMOVE_SHOW)],
+                    deleted_trashed=(_('deleted'), _('trashed'))[sickbeard.TRASH_REMOVE_SHOW],
                     was_deleted=(_('(media untouched)'), _('(with all related media)'))[bool(full)]
                 )
             )
@@ -2773,14 +2766,12 @@ class HomeAddShows(Home):
         if Show.find(sickbeard.showList, int(indexer_id)):
             return
 
-        # Sanitize the paramater anyQualities and bestQualities. As these would normally be passed as lists
+        # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
         any_qualities = any_qualities.split(',') if any_qualities else []
         best_qualities = best_qualities.split(',') if best_qualities else []
 
         # If configure_show_options is enabled let's use the provided settings
-        configure_show_options = config.checkbox_to_value(configure_show_options)
-
-        if configure_show_options:
+        if config.checkbox_to_value(configure_show_options):
             # prepare the inputs for passing along
             scene = config.checkbox_to_value(scene)
             anime = config.checkbox_to_value(anime)
@@ -2986,8 +2977,6 @@ class HomeAddShows(Home):
 
         shows_to_add = [urllib.unquote_plus(x) for x in shows_to_add]
 
-        promptForSettings = config.checkbox_to_value(promptForSettings)
-
         indexer_id_given = []
         dirs_only = []
         # separate all the ones with Indexer IDs
@@ -3007,7 +2996,7 @@ class HomeAddShows(Home):
                 indexer_id_given.append((int(indexer), show_dir, int(indexer_id), show_name))
 
         # if they want me to prompt for settings then I will just carry on to the newShow page
-        if promptForSettings and shows_to_add:
+        if shows_to_add and config.checkbox_to_value(promptForSettings):
             return self.newShow(shows_to_add[0], shows_to_add[1:])
 
         # if they don't want me to prompt for settings then I can just add all the nfo shows now
@@ -3934,7 +3923,7 @@ class ConfigGeneral(Config):
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_showupdate_hour(showupdate_hour)
-        config.change_version_notify(config.checkbox_to_value(version_notify))
+        config.change_version_notify(version_notify)
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
@@ -3980,10 +3969,7 @@ class ConfigGeneral(Config):
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_log_dir()
-        if config.checkbox_to_value(encryption_version) == 1:
-            sickbeard.ENCRYPTION_VERSION = 2
-        else:
-            sickbeard.ENCRYPTION_VERSION = 0
+        sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = web_password
 
@@ -4675,12 +4661,12 @@ class ConfigProviders(Config):
         # do the enable/disable
         for curProviderStr in provider_str_list:
             curProvider, curEnabled = curProviderStr.split(':')
-            curEnabled = try_int(curEnabled)
+            curEnabled = bool(try_int(curEnabled))
 
             curProvObj = [x for x in sickbeard.providers.sortedProviderList() if
                           x.get_id() == curProvider and hasattr(x, 'enabled')]
             if curProvObj:
-                curProvObj[0].enabled = bool(curEnabled)
+                curProvObj[0].enabled = curEnabled
 
             if curEnabled:
                 provider_list.append(curProvider)
@@ -4688,9 +4674,9 @@ class ConfigProviders(Config):
                 disabled_list.append(curProvider)
 
             if curProvider in newznabProviderDict:
-                newznabProviderDict[curProvider].enabled = bool(curEnabled)
+                newznabProviderDict[curProvider].enabled = curEnabled
             elif curProvider in torrentRssProviderDict:
-                torrentRssProviderDict[curProvider].enabled = bool(curEnabled)
+                torrentRssProviderDict[curProvider].enabled = curEnabled
 
         provider_list = provider_list + disabled_list
 

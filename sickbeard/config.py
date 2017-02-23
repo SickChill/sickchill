@@ -125,24 +125,18 @@ def change_log_dir(log_dir, web_log):
     :param web_log: Enable/disable web logging
     :return: True on success, False on failure
     """
-    log_dir_changed = False
     abs_log_dir = ek(os.path.normpath, ek(os.path.join, sickbeard.DATA_DIR, log_dir))
-    web_log_value = checkbox_to_value(web_log)
+    sickbeard.WEB_LOG = checkbox_to_value(web_log)
 
     if ek(os.path.normpath, sickbeard.LOG_DIR) != abs_log_dir:
-        if helpers.makeDir(abs_log_dir):
-            sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
-            sickbeard.LOG_DIR = abs_log_dir
-
-            logger.init_logging()
-            logger.log(u"Initialized new log file in " + sickbeard.LOG_DIR)
-            log_dir_changed = True
-
-        else:
+        if not helpers.makeDir(abs_log_dir):
             return False
 
-    if sickbeard.WEB_LOG != web_log_value or log_dir_changed is True:
-        sickbeard.WEB_LOG = web_log_value
+        sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
+        sickbeard.LOG_DIR = abs_log_dir
+
+        logger.init_logging()
+        logger.log(u"Initialized new log file in " + sickbeard.LOG_DIR)
 
     return True
 
@@ -322,11 +316,10 @@ def change_version_notify(version_notify):
 
     :param version_notify: New frequency
     """
-    oldSetting = sickbeard.VERSION_NOTIFY
+    previous = sickbeard.VERSION_NOTIFY
+    sickbeard.VERSION_NOTIFY = checkbox_to_value(version_notify)
 
-    sickbeard.VERSION_NOTIFY = version_notify
-
-    if oldSetting is False and version_notify is True:
+    if sickbeard.VERSION_NOTIFY and not previous:
         sickbeard.versionCheckScheduler.forceRun()
 
 
@@ -348,8 +341,6 @@ def change_download_propers(download_propers):
             logger.log(u"Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
-        else:
-            logger.log(u"Unable to start PROPERFINDER thread. Already running", logger.INFO)
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
@@ -374,8 +365,6 @@ def change_use_trakt(use_trakt):
             logger.log(u"Starting TRAKTCHECKER thread", logger.INFO)
             sickbeard.traktCheckerScheduler.silent = False
             sickbeard.traktCheckerScheduler.enable = True
-        else:
-            logger.log(u"Unable to start TRAKTCHECKER thread. Already running", logger.INFO)
     else:
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
@@ -389,8 +378,7 @@ def change_use_subtitles(use_subtitles):
 
     :param use_subtitles: New desired state
     """
-    use_subtitles = bool(checkbox_to_value(use_subtitles))
-
+    use_subtitles = checkbox_to_value(use_subtitles)
     if sickbeard.USE_SUBTITLES == use_subtitles:
         return
 
@@ -400,8 +388,6 @@ def change_use_subtitles(use_subtitles):
             logger.log(u"Starting SUBTITLESFINDER thread", logger.INFO)
             sickbeard.subtitlesFinderScheduler.silent = False
             sickbeard.subtitlesFinderScheduler.enable = True
-        else:
-            logger.log(u"Unable to start SUBTITLESFINDER thread. Already running", logger.INFO)
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
@@ -426,8 +412,6 @@ def change_process_automatically(process_automatically):
             logger.log(u"Starting POSTPROCESSOR thread", logger.INFO)
             sickbeard.autoPostProcessorScheduler.silent = False
             sickbeard.autoPostProcessorScheduler.enable = True
-        else:
-            logger.log(u"Unable to start POSTPROCESSOR thread. Already running", logger.INFO)
     else:
         logger.log(u"Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
@@ -444,7 +428,7 @@ def CheckSection(CFG, sec):
     return False
 
 
-def checkbox_to_value(option, value_on=1, value_off=0):
+def checkbox_to_value(option, value_on=True, value_off=False):
     """
     Turns checkbox option 'on' or 'true' to value_on (1)
     any other value returns value_off (0)
@@ -455,7 +439,7 @@ def checkbox_to_value(option, value_on=1, value_off=0):
     if isinstance(option, (str, unicode)):
         option = str(option).strip().lower()
 
-    if option in (True, 'on', 'true', '1', value_on):
+    if option in (True, 'on', 'true', value_on) or try_int(option) > 0:
         return value_on
 
     return value_off
@@ -635,6 +619,32 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
 
     return str(my_val)
+
+
+################################################################################
+# Check_setting_bool                                                           #
+################################################################################
+def check_setting_bool(config, cfg_name, item_name, def_val, silent=True):
+    try:
+        my_val = checkbox_to_value(config[cfg_name][item_name])
+        assert my_val
+    except (KeyError, AssertionError, IndexError):
+        if not isinstance(def_val, bool):
+            logger.log(
+                "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
+                    dom=cfg_name, key=item_name, t='bool', dt=type(def_val)), logger.ERROR)
+
+        my_val = bool(def_val)
+
+        if cfg_name not in config:
+            config[cfg_name] = {}
+
+        config[cfg_name][item_name] = my_val
+
+    if not silent:
+        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+
+    return my_val
 
 
 class ConfigMigrator(object):
