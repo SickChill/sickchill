@@ -451,7 +451,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
         search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(
             parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
 
-    search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
+    search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
     sql_result = main_db_con.select(search_sql, ['%' + video_file])
     if sql_result:
