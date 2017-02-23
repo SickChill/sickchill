@@ -8,9 +8,6 @@
     from sickbeard.helpers import anon_url
 %>
 
-<%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
-</%block>
 <%block name="content">
     <div class="row">
         <div class="col-md-12">

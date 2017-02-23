@@ -877,12 +877,16 @@ home_trendingShows.mako
     border-radius: 6px;
 }
 
-.trakt-image {
+.trakt-image, .trakt-image img {
     height: 273px;
     width: 186px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom: 1px solid #111111;
+}
+
+.trakt-image img {
+    background-image: url(../images/trakt-placeholder.png);
 }
 
 /* =======================================================================
@@ -3346,12 +3350,6 @@ span.token-input-delete-token {
 
 .nextline-block {
     display: block
-}
-
-.trakt-image {
-    display: block;
-    z-index: 0;
-    background-image: url(../images/poster-dark.jpg)
 }
 
 /* =======================================================================

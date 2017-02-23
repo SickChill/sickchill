@@ -437,6 +437,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     "Name " + ep_file_name + " gave release group of " + parse_result.release_group + ", seems valid",
                     logger.DEBUG)
                 curEpisode.release_name = ep_file_name
+                curEpisode.release_group = parse_result.release_group
 
             # store the reference in the show
             if curEpisode is not None:
@@ -695,6 +696,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if not same_file:
                 with curEp.lock:
                     curEp.release_name = ''
+                    curEp.release_group = ''
 
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
@@ -1095,6 +1097,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         curEp.hasnfo = False
                         curEp.hastbn = False
                         curEp.release_name = ''
+                        curEp.release_group = ''
 
                         sql_l.append(curEp.get_sql())
 
