@@ -389,7 +389,7 @@ def change_use_subtitles(use_subtitles):
 
     :param use_subtitles: New desired state
     """
-    use_subtitles = checkbox_to_value(use_subtitles)
+    use_subtitles = bool(checkbox_to_value(use_subtitles))
 
     if sickbeard.USE_SUBTITLES == use_subtitles:
         return
