@@ -211,7 +211,7 @@ def change_tv_download_dir(tv_download_dir):
 
 def change_unpack_dir(unpack_dir):
     """
-    Change TV_DOWNLOAD directory (used by postprocessor)
+    Change UNPACK directory (used by postprocessor)
 
     :param unpack_dir: New unpack directory
     :return: True on success, False on failure
