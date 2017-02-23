@@ -246,7 +246,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             try:
                 self.logger.log(level, message, *args, **kwargs)
             except:
-                if len(msg) > 0: # Otherwise creates empty messages in log...
+                if msg: # Otherwise creates empty messages in log...
                     print msg
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
@@ -505,7 +505,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     for _log_file in log_files:
         if len(data) < max_lines:
             with io.open(_log_file, 'r', encoding='utf-8') as f:
-                data += [line for line in reversed(f.readlines())]
+                data += [line for line in reversed(f.readlines()) if line]
         else:
             break
 
