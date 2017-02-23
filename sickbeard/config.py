@@ -966,3 +966,6 @@ class ConfigMigrator(object):
 
     def _migrate_v9(self):
         sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
+
+    def _migrate_v10(self):
+        sickbeard.SEASON_FOLDERS_DEFAULT = check_setting_str(self.config_obj, 'General', 'flatten_folders_default')
