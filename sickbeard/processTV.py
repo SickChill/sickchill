@@ -201,10 +201,13 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 result.output += log_helper(u"Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
     for directory_from_rar in directories_from_rars:
+        # Only allow methods 'move' and 'copy'. On different method fall back to 'move'.
+        method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
+
         process_dir(
             process_path=directory_from_rar,
             release_name=ek(os.path.basename, directory_from_rar),
-            process_method=('move', process_method)[process_method in ('move', 'copy')],
+            process_method=method_fallback,
             force=force,
             is_priority=is_priority,
             delete_on=sickbeard.DELRARCONTENTS,
@@ -212,7 +215,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             mode=mode
         )
 
-        if sickbeard.DELRARCONTENTS:
+        # auto post-processing deletes rar content by default if method is 'move',
+        # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
+        # manual post-processing will only delete when prompted by delete_on
+        if sickbeard.DELRARCONTENTS \
+            or not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move' \
+            or mode == 'manual' and delete_on:
             delete_folder(directory_from_rar, False)
 
     result.output += log_helper((u"Processing Failed", u"Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
