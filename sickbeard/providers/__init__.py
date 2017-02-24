@@ -26,7 +26,7 @@ from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, tor
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien,\
     torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, bitsnoop, danishbits, hd4free, limetorrents, \
-    norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it
+    norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it, immortalseed
 
 __all__ = [
     'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
@@ -37,7 +37,8 @@ __all__ = [
     'xthor', 'abnormal', 'scenetime', 'transmitthenet', 'tvchaosuk',
     'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'bitsnoop', 'danishbits', 'hd4free', 'limetorrents',
-    'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it'
+    'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it',
+    'immortalseed'
 ]
 
 
