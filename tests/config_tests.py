@@ -13,6 +13,9 @@ Classes:
         _migrate_v5
         _migrate_v6
         _migrate_v7
+        _migrate_v8
+        _migrate_v9
+        _migrate_v10
 
 Methods
     change_https_cert
@@ -301,7 +304,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_unpack_dir
         """
-        sickbeard.TV_DOWNLOAD_DIR = ''
+        sickbeard.UNPACK_DIR = ''
         self.assertTrue(config.change_unpack_dir('cache'))
         self.assertFalse(config.change_unpack_dir('/:/Extract')) # INVALID
         self.assertTrue(config.change_unpack_dir(''))
@@ -464,12 +467,21 @@ class ConfigTestMigrator(unittest.TestCase):
     """
     Test the sickbeard.config.ConfigMigrator class
     """
-    @unittest.skip('Not yet implemented')
+    @unittest.expectedFailure # Not fully implemented
     def test_config_migrator(self):
         """
-        Test config_migrator
+        Test migrate_config
         """
-        pass
+        # TODO: Assert the 'too-advanced-config-version' error
+
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        config.CheckSection(CFG, 'General')
+        CFG['General']['config_version'] = 0
+        sickbeard.CONFIG_VERSION = 11
+        sickbeard.CONFIG_FILE = 'config.ini'
+
+        migrator = config.ConfigMigrator(CFG)
+        migrator.migrate_config()
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr)
