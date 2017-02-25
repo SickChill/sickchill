@@ -536,7 +536,7 @@ def clean_url(url):
 
 
 ################################################################################
-# Check_setting_int                                                            #
+# Minimax                                                                      #
 ################################################################################
 def minimax(val, default, low, high):
     """ Return value forced within range """

@@ -41,6 +41,7 @@ Methods
     check_setting_int
     check_setting_float
     check_setting_str
+    check_setting_bool
 """
 
 # pylint: disable=line-too-long
@@ -55,39 +56,51 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import config
+from configobj import ConfigObj
 
 
 class ConfigTestBasic(unittest.TestCase):
     """
     Test basic methods in sickbeard.config
     """
-    @unittest.skip('Test not implemented')
+
     def test_check_section(self):
         """
-        Test check_section
+        Test CheckSection
         """
-        pass
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        self.assertFalse(config.CheckSection(CFG, 'General'))
+        self.assertTrue(config.CheckSection(CFG, 'General'))
 
-    @unittest.skip('Test not implemented')
     def test_checkbox_to_value(self):
         """
         Test checkbox_to_value
         """
-        pass
+        self.assertTrue(config.checkbox_to_value(1))
+        self.assertTrue(config.checkbox_to_value(['option', 'True']))
+        self.assertEqual(config.checkbox_to_value('0', 'yes', 'no'), 'no')
 
-    @unittest.skip('Test not implemented')
     def test_clean_host(self):
         """
         Test clean_host
         """
-        pass
+        self.assertEqual(config.clean_host('http://127.0.0.1:8080'), '127.0.0.1:8080')
+        self.assertEqual(config.clean_host('https://mail.google.com/mail'), 'mail.google.com')
+        self.assertEqual(config.clean_host('http://localhost:8081/home/displayShow?show=80379#season-10'),
+                         'localhost:8081')
+        self.assertEqual(config.clean_host('http://testme.co.uk', 9000), 'testme.co.uk:9000')  # default port
+        self.assertEqual(config.clean_host('www.google.com/search'), 'www.google.com')
+        self.assertEqual(config.clean_host(''), '') # empty host
 
-    @unittest.skip('Test not implemented')
     def test_clean_hosts(self):
         """
         Test clean_hosts
         """
-        pass
+        dirty_hosts = 'http://127.0.0.1:8080,https://mail.google.com/mail,' \
+                      'http://localhost:8081/home/displayShow?show=80379#season-10,' \
+                      'www.google.com/search,'
+        clean_result = '127.0.0.1:8080,mail.google.com:5050,localhost:8081,www.google.com:5050'
+        self.assertEqual(config.clean_hosts(dirty_hosts, '5050'), clean_result)
 
     def test_clean_url(self):
         """
@@ -123,33 +136,90 @@ class ConfigTestBasic(unittest.TestCase):
             else:
                 log.error('Test not defined for %s', test_url)
 
-    @unittest.skip('Test not implemented')
     def test_mini_max(self):
         """
-        Test mini_max
+        Test minimax
         """
-        pass
 
-    @unittest.skip('Test not implemented')
+        self.assertEqual(config.minimax('100', default=50, low=50, high=200), 100)
+        self.assertEqual(config.minimax('25', default=50, low=50, high=200), 50)
+        self.assertEqual(config.minimax('250', default=50, low=50, high=200), 200)
+
     def test_check_setting_int(self):
         """
         Test check_setting_int
         """
-        pass
+        # setup
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        config.CheckSection(CFG, 'General')
+        CFG['General']['indexer_timeout'] = 60
+        CFG['General']['use_icacls'] = 'True'
+        CFG['General']['use_nzbs'] = 'False'
+        CFG['General']['status_default'] = None
+        # normal
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 30), 60)
+        # true/false => int
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'use_icacls', 1), 1)
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'use_nzbs', 0), 0)
+        # None value type + silent off
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'status_default', 5, silent=False), 5)
+        # unmatched section
+        self.assertEqual(config.check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1), 1)
 
-    @unittest.skip('Test not implemented')
     def test_check_setting_float(self):
         """
         Test check_setting_float
         """
-        pass
+        # setup
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        config.CheckSection(CFG, 'General')
+        CFG['General']['fanart_background_opacity'] = 0.2
+        CFG['General']['log_size'] = None
+        # normal
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.4), 0.2)
+        # None value type + silent off
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'log_size', 10.0, silent=False), 10.0)
+        # unmatched section
+        self.assertEqual(config.check_setting_float(CFG, 'Kodi', 'log_size', 2.5), 2.5)
 
-    @unittest.skip('Test not implemented')
     def test_check_setting_str(self):
         """
         Test check_setting_str
         """
-        pass
+        # setup
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        config.CheckSection(CFG, 'General')
+        CFG['General']['process_method'] = "copy"
+        CFG['General']['git_password'] = "SFa342FHb_"
+        CFG['General']['extra_scripts'] = None
+        # normal
+        self.assertEqual(config.check_setting_str(CFG, 'General', 'process_method', 'move'), 'copy')
+        self.assertEqual(config.check_setting_str(CFG, 'General', 'git_password', '', silent=False, censor_log=True),
+                         'SFa342FHb_')
+        # None value type
+        self.assertEqual(config.check_setting_str(CFG, 'General', 'extra_scripts', ''), '')
+        # unmatched section
+        self.assertEqual(config.check_setting_str(CFG, 'Subtitles', 'subtitles_languages', 'eng'), 'eng')
+
+    def test_check_setting_bool(self):
+        """
+        Test check_setting_bool
+        """
+        # setup
+        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        config.CheckSection(CFG, 'General')
+        CFG['General']['debug'] = True
+        CFG['General']['season_folders_default'] = False
+        # normal
+        self.assertTrue(config.check_setting_bool(CFG, 'General', 'debug'))
+        self.assertFalse(config.check_setting_bool(CFG, 'General', 'season_folders_default', def_val=True))
+        # unmatched item
+        self.assertTrue(config.check_setting_bool(CFG, 'General', 'git_reset', def_val=True))
+        # unmatched section
+        self.assertFalse(config.check_setting_bool(CFG, 'Subtitles', 'use_subtitles', def_val=False))
+        # wrong def_val type, silent = off
+        self.assertTrue(config.check_setting_bool(
+            CFG, 'General', 'debug', def_val=0, silent=False))
 
 
 class ConfigTestChanges(unittest.TestCase):
