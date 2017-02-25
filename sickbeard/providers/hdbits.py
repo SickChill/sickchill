@@ -185,7 +185,7 @@ class HDBitsCache(tvcache.TVCache):
         results = []
 
         try:
-            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
+            parsedJSON = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
             if self.provider._checkAuthFromData(parsedJSON):
                 results = parsedJSON['data']
