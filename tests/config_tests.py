@@ -17,10 +17,12 @@ Classes:
 Methods
     change_https_cert
     change_https_key
+    change_sickrage_background
     change_log_dir
     change_nzb_dir
     change_torrent_dir
     change_tv_download_dir
+    change_unpack_dir
     change_postprocessor_frequency
     change_daily_search_frequency
     change_backlog_frequency
@@ -55,9 +57,9 @@ from collections import namedtuple
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import config
+from sickbeard import config, scheduler
 from configobj import ConfigObj
-
+import sickbeard
 
 class ConfigTestBasic(unittest.TestCase):
     """
@@ -226,124 +228,236 @@ class ConfigTestChanges(unittest.TestCase):
     """
     Test change methods in sickbeard.config
     """
-    @unittest.skip('Test not implemented')
+
     def test_change_https_cert(self):
         """
         Test change_https_cert
         """
-        pass
+        sickbeard.HTTPS_CERT = 'server.crt' # Initialize
+        self.assertTrue(config.change_https_cert(''))
+        self.assertTrue(config.change_https_cert('server.crt'))
+        self.assertFalse(config.change_https_cert('XYZ:\\server.crt'))
+        sickbeard.HTTPS_CERT = ''
 
-    @unittest.skip('Test not implemented')
     def test_change_https_key(self):
         """
         Test change_https_key
         """
-        pass
+        sickbeard.HTTPS_KEY = 'server.key'  # Initialize
+        self.assertTrue(config.change_https_key(''))
+        self.assertTrue(config.change_https_key('server.key'))
+        self.assertFalse(config.change_https_key('XYZ:\\server.key'))
+        sickbeard.HTTPS_KEY = ''
 
-    @unittest.skip('Test not implemented')
+    def test_change_sickrage_background(self):
+        """
+        Test change_sickrage_background
+        """
+        sickbeard.SICKRAGE_BACKGROUND_PATH = ''  # Initialize
+        self.assertTrue(config.change_sickrage_background(__file__))
+        self.assertFalse(config.change_sickrage_background('not_real.jpg'))
+        self.assertTrue(config.change_sickrage_background(''))
+
     def test_change_log_dir(self):
         """
         Test change_log_dir
         """
-        pass
+        sickbeard.DATA_DIR = os.path.dirname(__file__)
+        sickbeard.ACTUAL_LOG_DIR = ''
+        sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
+        sickbeard.WEB_LOG = False
 
-    @unittest.skip('Test not implemented')
+        self.assertFalse(config.change_log_dir('XYZ:\\Logs', True))
+        self.assertTrue(config.change_log_dir('Logs', True))
+
     def test_change_nzb_dir(self):
         """
         Test change_nzb_dir
         """
-        pass
+        sickbeard.NZB_DIR = ''
+        self.assertTrue(config.change_nzb_dir('cache'))
+        self.assertFalse(config.change_nzb_dir('XYZ:\\NZB_Downloads'))
+        self.assertTrue(config.change_nzb_dir(''))
 
-    @unittest.skip('Test not implemented')
     def test_change_torrent_dir(self):
         """
         Test change_torrent_dir
         """
-        pass
+        sickbeard.TORRENT_DIR = ''
+        self.assertTrue(config.change_torrent_dir('cache'))
+        self.assertFalse(config.change_torrent_dir('XYZ:\\Downloads'))
+        self.assertTrue(config.change_torrent_dir(''))
 
-    @unittest.skip('Test not implemented')
     def test_change_tv_download_dir(self):
         """
         Test change_tv_download_dir
         """
-        pass
+        sickbeard.TV_DOWNLOAD_DIR = ''
+        self.assertTrue(config.change_tv_download_dir('cache'))
+        self.assertFalse(config.change_tv_download_dir('XYZ:\\Downloads\\Completed'))
+        self.assertTrue(config.change_tv_download_dir(''))
 
-    @unittest.skip('Test not implemented')
+    def test_change_unpack_dir(self):
+        """
+        Test change_unpack_dir
+        """
+        sickbeard.TV_DOWNLOAD_DIR = ''
+        self.assertTrue(config.change_unpack_dir('cache'))
+        self.assertFalse(config.change_unpack_dir('XYZ:\\Extract'))
+        self.assertTrue(config.change_unpack_dir(''))
+
     def test_change_auto_pp_freq(self):
         """
-        Test change_auto_pp_freq
+        Test change_postprocessor_frequency
         """
-        pass
+        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
 
-    @unittest.skip('Test not implemented')
+        config.change_postprocessor_frequency(0)
+        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY)
+        config.change_postprocessor_frequency('s')
+        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
+        config.change_postprocessor_frequency(60)
+        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, 60)
+
     def test_change_daily_search_freq(self):
         """
-        Test change_daily_search_freq
+        Test change_daily_search_frequency
         """
-        pass
+        sickbeard.dailySearchScheduler = scheduler.Scheduler(lambda:None) # dummy
 
-    @unittest.skip('Test not implemented')
+        config.change_daily_search_frequency(0)
+        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, sickbeard.MIN_DAILYSEARCH_FREQUENCY)
+        config.change_daily_search_frequency('s')
+        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
+        config.change_daily_search_frequency(60)
+        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, 60)
+
     def test_change_backlog_freq(self):
         """
-        Test change_backlog_freq
+        Test change_backlog_frequency
         """
-        pass
+        sickbeard.backlogSearchScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY # needed
 
-    @unittest.skip('Test not implemented')
+        config.change_backlog_frequency(0)
+        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, sickbeard.MIN_BACKLOG_FREQUENCY)
+        config.change_backlog_frequency('s')
+        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, sickbeard.MIN_BACKLOG_FREQUENCY)
+        config.change_backlog_frequency(1440)
+        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, 1440)
+
     def test_change_update_freq(self):
         """
-        Test change_update_freq
+        Test change_update_frequency
         """
-        pass
+        sickbeard.versionCheckScheduler = scheduler.Scheduler(lambda:None) # dummy
 
-    @unittest.skip('Test not implemented')
+        config.change_update_frequency(0)
+        self.assertEqual(sickbeard.UPDATE_FREQUENCY, sickbeard.MIN_UPDATE_FREQUENCY)
+        config.change_update_frequency('s')
+        self.assertEqual(sickbeard.UPDATE_FREQUENCY, sickbeard.DEFAULT_UPDATE_FREQUENCY)
+        config.change_update_frequency(60)
+        self.assertEqual(sickbeard.UPDATE_FREQUENCY, 60)
+
     def test_change_show_update_hour(self):
         """
-        Test change_show_update_hour
+        Test change_showupdate_hour
         """
-        pass
+        sickbeard.showUpdateScheduler = scheduler.Scheduler(lambda:None) # dummy
 
-    @unittest.skip('Test not implemented')
+        config.change_showupdate_hour(-2)
+        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 0)
+        config.change_showupdate_hour('s')
+        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
+        config.change_showupdate_hour(60)
+        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 0)
+        config.change_showupdate_hour(12)
+        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 12)
+
     def test_change_sub_finder_freq(self):
         """
-        Test change_sub_finder_freq
+        Test change_subtitle_finder_frequency
         """
-        pass
+        config.change_subtitle_finder_frequency('')
+        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 1)
+        config.change_subtitle_finder_frequency('s')
+        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 1)
+        config.change_subtitle_finder_frequency(8)
+        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 8)
 
-    @unittest.skip('Test not implemented')
     def test_change_version_notify(self):
         """
         Test change_version_notify
         """
-        pass
+        class dummy_action(object): # needed for *scheduler.action.forceRun()
+            def __init__(self):
+                self.amActive = False
 
-    @unittest.skip('Test not implemented')
+        sickbeard.versionCheckScheduler = scheduler.Scheduler(dummy_action()) # dummy
+        sickbeard.VERSION_NOTIFY = True
+
+        config.change_version_notify(True) # no change
+        self.assertTrue(sickbeard.VERSION_NOTIFY)
+        config.change_version_notify('stop') # = defaults to False
+        self.assertFalse(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+        config.change_version_notify('on')
+        self.assertTrue(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+
     def test_change_download_propers(self):
         """
         Test change_download_propers
         """
-        pass
+        sickbeard.properFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.DOWNLOAD_PROPERS = True
 
-    @unittest.skip('Test not implemented')
+        config.change_download_propers(True) # no change
+        self.assertTrue(sickbeard.DOWNLOAD_PROPERS)
+        config.change_download_propers('stop') # = defaults to False
+        self.assertFalse(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+        config.change_download_propers('on')
+        self.assertTrue(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+
     def test_change_use_trakt(self):
         """
         Test change_use_trakt
         """
-        pass
+        sickbeard.traktCheckerScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.USE_TRAKT = True
 
-    @unittest.skip('Test not implemented')
+        config.change_use_trakt(True) # no change
+        self.assertTrue(sickbeard.USE_TRAKT)
+        config.change_use_trakt('stop') # = defaults to False
+        self.assertFalse(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+        config.change_use_trakt('on')
+        self.assertTrue(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+
     def test_change_use_subtitles(self):
         """
         Test change_use_subtitles
         """
-        pass
+        sickbeard.subtitlesFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.USE_SUBTITLES = True
 
-    @unittest.skip('Test not implemented')
+        config.change_use_subtitles(True) # no change
+        self.assertTrue(sickbeard.USE_SUBTITLES)
+        config.change_use_subtitles('stop') # = defaults to False
+        self.assertFalse(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+        config.change_use_subtitles('on')
+        self.assertTrue(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+
     def test_change_process_auto(self):
         """
-        Test change_process_auto
+        Test change_process_automatically
         """
-        pass
+        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.PROCESS_AUTOMATICALLY = True
+
+        config.change_process_automatically(True) # no change
+        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY)
+        config.change_process_automatically('stop') # = defaults to False
+        self.assertFalse(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
+        config.change_process_automatically('on')
+        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
 
 
 class ConfigTestMigrator(unittest.TestCase):

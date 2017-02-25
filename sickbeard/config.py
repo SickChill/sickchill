@@ -98,7 +98,7 @@ def change_https_key(https_key):
 
 def change_sickrage_background(background):
     """
-    Replace HTTPS Key file path
+    Replace background image file path
 
     :param background: path to the new background image
     :return: True on success, False on failure
@@ -355,7 +355,7 @@ def change_download_propers(download_propers):
             sickbeard.properFinderScheduler.enable = True
     else:
         sickbeard.properFinderScheduler.enable = False
-        sickbeard.traktCheckerScheduler.silent = True
+        sickbeard.properFinderScheduler.silent = True
         logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
 
 
