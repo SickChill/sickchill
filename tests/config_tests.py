@@ -236,7 +236,7 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.HTTPS_CERT = 'server.crt' # Initialize
         self.assertTrue(config.change_https_cert(''))
         self.assertTrue(config.change_https_cert('server.crt'))
-        self.assertFalse(config.change_https_cert('XYZ:\\server.crt'))
+        self.assertFalse(config.change_https_cert('/:/server.crt')) # INVALID
         sickbeard.HTTPS_CERT = ''
 
     def test_change_https_key(self):
@@ -246,7 +246,7 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.HTTPS_KEY = 'server.key'  # Initialize
         self.assertTrue(config.change_https_key(''))
         self.assertTrue(config.change_https_key('server.key'))
-        self.assertFalse(config.change_https_key('XYZ:\\server.key'))
+        self.assertFalse(config.change_https_key('/:/server.key')) # INVALID
         sickbeard.HTTPS_KEY = ''
 
     def test_change_sickrage_background(self):
@@ -276,7 +276,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         sickbeard.NZB_DIR = ''
         self.assertTrue(config.change_nzb_dir('cache'))
-        self.assertFalse(config.change_nzb_dir('XYZ:\\NZB_Downloads'))
+        self.assertFalse(config.change_nzb_dir('/:/NZB_Downloads')) # INVALID
         self.assertTrue(config.change_nzb_dir(''))
 
     def test_change_torrent_dir(self):
@@ -285,7 +285,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         sickbeard.TORRENT_DIR = ''
         self.assertTrue(config.change_torrent_dir('cache'))
-        self.assertFalse(config.change_torrent_dir('XYZ:\\Downloads'))
+        self.assertFalse(config.change_torrent_dir('/:/Downloads')) # INVALID
         self.assertTrue(config.change_torrent_dir(''))
 
     def test_change_tv_download_dir(self):
@@ -294,7 +294,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         sickbeard.TV_DOWNLOAD_DIR = ''
         self.assertTrue(config.change_tv_download_dir('cache'))
-        self.assertFalse(config.change_tv_download_dir('XYZ:\\Downloads\\Completed'))
+        self.assertFalse(config.change_tv_download_dir('/:/Downloads/Completed')) # INVALID
         self.assertTrue(config.change_tv_download_dir(''))
 
     def test_change_unpack_dir(self):
@@ -303,7 +303,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         sickbeard.TV_DOWNLOAD_DIR = ''
         self.assertTrue(config.change_unpack_dir('cache'))
-        self.assertFalse(config.change_unpack_dir('XYZ:\\Extract'))
+        self.assertFalse(config.change_unpack_dir('/:/Extract')) # INVALID
         self.assertTrue(config.change_unpack_dir(''))
 
     def test_change_auto_pp_freq(self):
@@ -470,7 +470,6 @@ class ConfigTestMigrator(unittest.TestCase):
         Test config_migrator
         """
         pass
-
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr)
