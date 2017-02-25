@@ -267,7 +267,7 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
         sickbeard.WEB_LOG = False
 
-        self.assertFalse(config.change_log_dir('XYZ:\\Logs', True))
+        self.assertFalse(config.change_log_dir('/:/Logs', True))
         self.assertTrue(config.change_log_dir('Logs', True))
 
     def test_change_nzb_dir(self):
