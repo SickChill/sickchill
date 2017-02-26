@@ -580,9 +580,6 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
             my_val = 0
 
         my_val = int(my_val)
-
-        if six.text_type(my_val) == six.text_type(None):
-            raise ValueError
     except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
 
@@ -612,8 +609,6 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, silent=True):
             raise ValueError
 
         my_val = float(config[cfg_name][item_name])
-        if six.text_type(my_val) == six.text_type(None):
-            raise ValueError
     except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
 
