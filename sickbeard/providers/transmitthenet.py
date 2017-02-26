@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 import traceback
 from requests.utils import dict_from_cookiejar
@@ -78,11 +80,11 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Username Incorrect', response) or re.search('Password Incorrect', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -97,7 +99,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params = {
@@ -112,14 +114,14 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', {'id': 'torrent_table'})
                         if not torrent_table:
-                            logger.log(u"Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
+                            logger.log("Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
                         labels = [x.get_text(strip=True) or x.a.img.get('alt') for x in torrent_table.find('tr', class_='colhead').find_all('td')]
@@ -127,7 +129,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                         # Continue only if one Release is found
                         if not torrent_rows:
-                            logger.log(u"Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
+                            logger.log("Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
                             continue
 
                         for torrent_row in torrent_rows:
@@ -165,8 +167,8 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the"
-                                               u" minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                    logger.log("Discarding torrent because it doesn't meet the"
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -174,12 +176,12 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

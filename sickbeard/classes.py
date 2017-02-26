@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import sys
 
@@ -45,7 +47,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         self.show = None
 
         # URL to the NZB/torrent file
-        self.url = u''
+        self.url = ''
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -57,13 +59,13 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         self.quality = Quality.UNKNOWN
 
         # release name
-        self.name = u''
+        self.name = ''
 
         # size of the release (-1 = n/a)
         self.size = -1
 
         # release group
-        self.release_group = u''
+        self.release_group = ''
 
         # version
         self.version = -1
@@ -74,31 +76,31 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         # content
         self.content = None
 
-        self.resultType = u''
+        self.resultType = ''
 
     def __str__(self):
 
         if self.provider is None:
-            return u'Invalid provider, unable to print self'
+            return 'Invalid provider, unable to print self'
 
-        my_string = u'{0} @ {1}\n'.format(self.provider.name, self.url)
-        my_string += u'Extra Info:\n'
+        my_string = '{0} @ {1}\n'.format(self.provider.name, self.url)
+        my_string += 'Extra Info:\n'
         for extra in self.extraInfo:
-            my_string += u' {0}\n'.format(extra)
+            my_string += ' {0}\n'.format(extra)
 
-        my_string += u'Episodes:\n'
+        my_string += 'Episodes:\n'
         for ep in self.episodes:
-            my_string += u' {0}\n'.format(ep)
+            my_string += ' {0}\n'.format(ep)
 
-        my_string += u'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
-        my_string += u'Name: {0}\n'.format(self.name)
-        my_string += u'Size: {0}\n'.format(self.size)
-        my_string += u'Release Group: {0}\n'.format(self.release_group)
+        my_string += 'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += 'Name: {0}\n'.format(self.name)
+        my_string += 'Size: {0}\n'.format(self.size)
+        my_string += 'Release Group: {0}\n'.format(self.release_group)
 
         return my_string
 
     def fileName(self):
-        return u'{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
+        return '{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
 class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -107,7 +109,7 @@ class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     def __init__(self, episodes):
         super(NZBSearchResult, self).__init__(episodes)
-        self.resultType = u'nzb'
+        self.resultType = 'nzb'
 
 
 class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -116,7 +118,7 @@ class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
     """
     def __init__(self, episodes):
         super(NZBDataSearchResult, self).__init__(episodes)
-        self.resultType = u'nzbdata'
+        self.resultType = 'nzbdata'
 
 
 class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -125,7 +127,7 @@ class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
     """
     def __init__(self, episodes):
         super(TorrentSearchResult, self).__init__(episodes)
-        self.resultType = u'torrent'
+        self.resultType = 'torrent'
 
 
 class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
@@ -219,7 +221,7 @@ class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instan
         self.scene_episode = -1
 
     def __str__(self):
-        return u'{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
+        return '{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
             date=self.date, name=self.name, season=self.season, episode=self.episode,
             series_id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name)
 

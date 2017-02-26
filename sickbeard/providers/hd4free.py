@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 from requests.compat import urljoin
 from sickbeard import logger, tvcache
 
@@ -62,7 +64,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if self.freeleech:
                     search_params['fl'] = 'true'
@@ -70,7 +72,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     search_params.pop('fl', '')
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: " + search_string.strip(), logger.DEBUG)
+                    logger.log("Search string: " + search_string.strip(), logger.DEBUG)
                     search_params['search'] = search_string
                 else:
                     search_params.pop('search', '')
@@ -80,19 +82,19 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 except ValueError:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
-                
+
                 if not jdata:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
-                
+
                 error = jdata.get('error')
                 if error:
-                    logger.log(u"{}".format(error), logger.DEBUG)
+                    logger.log("{}".format(error), logger.DEBUG)
                     return results
 
                 try:
                     if jdata['0']['total_results'] == 0:
-                        logger.log(u"Provider has no results for this search", logger.DEBUG)
+                        logger.log("Provider has no results for this search", logger.DEBUG)
                         continue
                 except StandardError:
                     continue
@@ -108,7 +110,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         leechers = jdata[i]["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
@@ -117,7 +119,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
                     except StandardError:

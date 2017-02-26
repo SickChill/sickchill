@@ -23,6 +23,8 @@
 # @copyright: Dermot Buckley
 #
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import time
 import traceback
@@ -479,7 +481,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     if refresh or force:
         logger.log(
-            u'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
             logger.DEBUG)
 
         # mark refreshed
@@ -502,7 +504,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
-                logger.log(u'No XEM data for show "{0} on {1}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
+                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
                 return
 
             cl = []
@@ -536,7 +538,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         except Exception as e:
             logger.log(
-                u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
+                "Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
                     indexer).name + ": " + ex(e), logger.WARNING)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -569,7 +571,7 @@ def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, t
     update_scene_absolute_number = False
 
     logger.log(
-        u'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
         logger.DEBUG)
 
     cl = []

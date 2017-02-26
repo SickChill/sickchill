@@ -57,7 +57,7 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         """
         Test exception returns args ustring
         """
-        self.assertEqual(ex(Exception('\xc3\xa4h')), u'äh')
+        self.assertEqual(ex(Exception('\xc3\xa4h')), 'äh')
 
     def test_ex_ret_concat_args_strings(self):
         """

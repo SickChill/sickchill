@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-
-import threading
+from __future__ import print_function, unicode_literals
 import time
 import traceback
 
@@ -118,7 +117,7 @@ class SearchQueue(generic_queue.GenericQueue):
             # manual and failed searches
             add_item = not self.is_ep_in_queue(item.segment)
         else:
-            logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
+            logger.log("Not adding item, it's already in the queue", logger.DEBUG)
 
         if add_item:
             super(SearchQueue, self).add_item(item)
@@ -126,22 +125,22 @@ class SearchQueue(generic_queue.GenericQueue):
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
-        super(DailySearchQueueItem, self).__init__(u'Daily Search', DAILY_SEARCH)
+        super(DailySearchQueueItem, self).__init__('Daily Search', DAILY_SEARCH)
         self.success = None
 
     def run(self):
         super(DailySearchQueueItem, self).run()
 
         try:
-            logger.log(u"Beginning daily search for new episodes")
+            logger.log("Beginning daily search for new episodes")
             found_results = search.searchForNeededEpisodes()
 
             if not found_results:
-                logger.log(u"No needed episodes found")
+                logger.log("No needed episodes found")
             else:
                 for result in found_results:
                     # just use the first result for now
-                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                    logger.log("Downloading " + result.name + " from " + result.provider.name)
                     self.success = search.snatchEpisode(result)
 
                     # give the CPU a break
@@ -158,7 +157,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super(ManualSearchQueueItem, self).__init__(u'Manual Search', MANUAL_SEARCH)
+        super(ManualSearchQueueItem, self).__init__('Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'MANUAL-' + str(show.indexerid)
         self.success = None
@@ -171,14 +170,14 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         super(ManualSearchQueueItem, self).run()
 
         try:
-            logger.log(u"Beginning manual search for: [" + self.segment.prettyName() + "]")
+            logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
 
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
 
             if searchResult:
                 # just use the first result for now
-                logger.log(u"Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
+                logger.log("Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
                 self.success = search.snatchEpisode(searchResult[0])
 
                 # give the CPU a break
@@ -188,7 +187,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 ui.notifications.message('No downloads were found',
                                          "Couldn't find a download for <i>{0}</i>".format(self.segment.prettyName()))
 
-                logger.log(u"Unable to find a download for: [" + self.segment.prettyName() + "]")
+                logger.log("Unable to find a download for: [" + self.segment.prettyName() + "]")
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
@@ -205,7 +204,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
-        super(BacklogQueueItem, self).__init__(u'Backlog', BACKLOG_SEARCH)
+        super(BacklogQueueItem, self).__init__('Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
@@ -217,19 +216,19 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         if not self.show.paused:
             try:
-                logger.log(u"Beginning backlog search for: [" + self.show.name + "]")
+                logger.log("Beginning backlog search for: [" + self.show.name + "]")
                 searchResult = search.searchProviders(self.show, self.segment, False)
 
                 if searchResult:
                     for result in searchResult:
                         # just use the first result for now
-                        logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                        logger.log("Downloading " + result.name + " from " + result.provider.name)
                         search.snatchEpisode(result)
 
                         # give the CPU a break
                         time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
                 else:
-                    logger.log(u"No needed episodes found during backlog search for: [" + self.show.name + "]")
+                    logger.log("No needed episodes found during backlog search for: [" + self.show.name + "]")
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -239,7 +238,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super(FailedQueueItem, self).__init__(u'Retry', FAILED_SEARCH)
+        super(FailedQueueItem, self).__init__('Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'RETRY-' + str(show.indexerid)
         self.show = show
@@ -255,7 +254,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         try:
             for epObj in self.segment:
 
-                logger.log(u"Marking episode as bad: [" + epObj.prettyName() + "]")
+                logger.log("Marking episode as bad: [" + epObj.prettyName() + "]")
 
                 failed_history.markFailed(epObj)
 
@@ -265,7 +264,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     history.logFailed(epObj, release, provider)
 
                 failed_history.revertEpisode(epObj)
-                logger.log(u"Beginning failed download search for: [" + epObj.prettyName() + "]")
+                logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
@@ -274,7 +273,7 @@ class FailedQueueItem(generic_queue.QueueItem):
             if searchResult:
                 for result in searchResult:
                     # just use the first result for now
-                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                    logger.log("Downloading " + result.name + " from " + result.provider.name)
                     search.snatchEpisode(result)
 
                     # give the CPU a break

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import os
 import cgi
 import warnings
@@ -52,14 +54,14 @@ class Notifier(object):
         user-readable message indicating possible issues.
         """
         if not Notify:
-            return (u"<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
-                    u"<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "
-                    u"<a href=\"apt:gir1.0-notify-0.4\">gir1.0-notify-0.4</a> package.")
+            return ("<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
+                    "<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "
+                    "<a href=\"apt:gir1.0-notify-0.4\">gir1.0-notify-0.4</a> package.")
 
         if 'DISPLAY' not in os.environ and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-            return (u"<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
-                    u"aren't set.  libnotify will only work when you run SickRage "
-                    u"from a desktop login.")
+            return ("<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
+                    "aren't set.  libnotify will only work when you run SickRage "
+                    "from a desktop login.")
 
         try:
             import dbus
@@ -70,16 +72,16 @@ class Notifier(object):
             try:
                 bus = dbus.SessionBus()
             except dbus.DBusException as e:
-                return (u"<p>Error: unable to connect to D-Bus session bus: <code>%s</code>."
-                        u"<p>Are you running SickRage in a desktop session?") % (cgi.escape(e),)
+                return ("<p>Error: unable to connect to D-Bus session bus: <code>%s</code>."
+                        "<p>Are you running SickRage in a desktop session?") % (cgi.escape(e),)
             try:
                 bus.get_object('org.freedesktop.Notifications',
                                '/org/freedesktop/Notifications')
             except dbus.DBusException as e:
-                return (u"<p>Error: there doesn't seem to be a notification daemon available: <code>%s</code> "
-                        u"<p>Try installing notification-daemon or notify-osd.") % (cgi.escape(e),)
+                return ("<p>Error: there doesn't seem to be a notification daemon available: <code>%s</code> "
+                        "<p>Try installing notification-daemon or notify-osd.") % (cgi.escape(e),)
 
-        return u"<p>Error: Unable to send notification."
+        return "<p>Error: Unable to send notification."
 
     def notify_snatch(self, ep_name):
         if sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH:

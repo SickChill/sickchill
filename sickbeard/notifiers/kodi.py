@@ -227,7 +227,7 @@ class Notifier(object):
                 command[key] = command[key].encode('utf-8')
 
         enc_command = urllib.parse.urlencode(command)
-        logger.log(u"{0} encoded API command: {1!r}".format(dest_app, enc_command), logger.DEBUG)
+        logger.log("{0} encoded API command: {1!r}".format(dest_app, enc_command), logger.DEBUG)
 
         # url = 'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)  # maybe need for old plex?
         url = 'http://{0}/kodiCmds/kodiHttp/?{1}'.format(host, enc_command)
@@ -251,7 +251,7 @@ class Notifier(object):
             result = response.read().decode(sickbeard.SYS_ENCODING)
             response.close()
 
-            logger.log(u"{0} HTTP response: {1}".format(dest_app, result.replace('\n', '')), logger.DEBUG)
+            logger.log("{0} HTTP response: {1}".format(dest_app, result.replace('\n', '')), logger.DEBUG)
             return result
 
         except Exception as e:
@@ -374,7 +374,7 @@ class Notifier(object):
             return False
 
         command = command.encode('utf-8')
-        logger.log(u"{0} JSON command: {1}".format(dest_app, command), logger.DEBUG)
+        logger.log("{0} JSON command: {1}".format(dest_app, command), logger.DEBUG)
 
         url = 'http://{0}/jsonrpc'.format(host)
         try:
@@ -400,7 +400,7 @@ class Notifier(object):
             try:
                 result = json.load(response)
                 response.close()
-                logger.log(u"{0} JSON response: {1}".format(dest_app, result), logger.DEBUG)
+                logger.log("{0} JSON response: {1}".format(dest_app, result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError as e:
                 logger.log("Unable to decode JSON: " + str(response.read()), logger.WARNING)

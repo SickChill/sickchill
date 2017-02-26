@@ -20,10 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT
-
 
 import six
 from six.moves import urllib
@@ -49,7 +50,7 @@ class Notifier(object):
         if apiKey is None:
             apiKey = sickbeard.FREEMOBILE_APIKEY
 
-        logger.log(u"Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
+        logger.log("Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
 
         # build up the URL and parameters
         msg = msg.strip()
@@ -79,7 +80,7 @@ class Notifier(object):
                     logger.log(message, logger.ERROR)
                     return False, message
         except Exception as e:
-            message = u"Error while sending SMS: {0}".format(e)
+            message = "Error while sending SMS: {0}".format(e)
             logger.log(message, logger.ERROR)
             return False, message
 
@@ -123,9 +124,9 @@ class Notifier(object):
         """
 
         if not sickbeard.USE_FREEMOBILE and not force:
-            logger.log(u"Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
+            logger.log("Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
             return False, "Disabled"
 
-        logger.log(u"Sending a SMS for " + message, logger.DEBUG)
+        logger.log("Sending a SMS for " + message, logger.DEBUG)
 
         return self._sendFreeMobileSMS(title, message, cust_id, apiKey)

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 import time
@@ -59,7 +61,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -76,7 +78,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
             response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
             if not response:
-                logger.log(u"Unable to connect to provider", logger.WARNING)
+                logger.log("Unable to connect to provider", logger.WARNING)
                 return False
 
             if re.search('/logout.php', response):
@@ -90,15 +92,15 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                         'pass': self._hash}
                         return True
                 except Exception:
-                    logger.log(u"Unable to login to provider (cookie)", logger.WARNING)
+                    logger.log("Unable to login to provider (cookie)", logger.WARNING)
                     return False
 
             else:
                 if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response):
-                    logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+                    logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
                 if re.search('DDoS protection by CloudFlare', response):
-                    logger.log(u"Unable to login to provider due to CloudFlare DDoS javascript check", logger.WARNING)
+                    logger.log("Unable to login to provider due to CloudFlare DDoS javascript check", logger.WARNING)
 
                     return False
 
@@ -111,11 +113,11 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         for mode in search_params:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls['search'] % (freeleech, search_string)
@@ -123,7 +125,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 max_page_number = 0
 
                 if not init_html:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 try:
@@ -147,7 +149,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                         if max_page_number > 3 and mode == 'RSS':
                             max_page_number = 3
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
                     continue
 
                 data_response_list = [init_html]
@@ -176,7 +178,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                             # Continue only if a Release is found
                             if not torrent_rows:
-                                logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                                logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                                 continue
 
                             for individual_torrent in torrent_rows:
@@ -188,7 +190,7 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                 try:
                                     title = individual_torrent.find('a', {'class': 'torrent_name_link'})['title']
                                 except Exception:
-                                    logger.log(u"Unable to parse torrent title. Traceback: {0} ".format(traceback.format_exc()), logger.WARNING)
+                                    logger.log("Unable to parse torrent title. Traceback: {0} ".format(traceback.format_exc()), logger.WARNING)
                                     continue
 
                                 try:
@@ -208,18 +210,18 @@ class FreshOnTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
-                                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                        logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                    (title, seeders, leechers), logger.DEBUG)
                                     continue
 
                                 item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                                 if mode != 'RSS':
-                                    logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                                 items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

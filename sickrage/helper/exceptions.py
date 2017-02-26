@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 from sickrage.helper.encoding import ss
 
 
@@ -29,7 +31,7 @@ def ex(e):
     :return: A six.text_type string from the exception text if it exists
     """
 
-    message = u''
+    message = ''
 
     if not e or not e.args:
         return message
@@ -40,7 +42,7 @@ def ex(e):
                 fixed_arg = ss(arg)
             else:
                 try:
-                    fixed_arg = u'error {0}'.format(ss(str(arg)))
+                    fixed_arg = 'error {0}'.format(ss(str(arg)))
                 except Exception:
                     fixed_arg = None
 
@@ -49,9 +51,9 @@ def ex(e):
                     message = fixed_arg
                 else:
                     try:
-                        message = u'{0} : {1}'.format(message, fixed_arg)
+                        message = '{0} : {1}'.format(message, fixed_arg)
                     except UnicodeError:
-                        message = u'{0} : {1}'.format(
+                        message = '{0} : {1}'.format(
                             six.text_type(message, errors='replace'),
                             six.text_type(fixed_arg, errors='replace'))
 

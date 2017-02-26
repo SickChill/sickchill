@@ -20,6 +20,8 @@
 
 # pylint: disable=line-too-long
 
+from __future__ import print_function, unicode_literals
+
 import re
 
 try:
@@ -56,7 +58,7 @@ def get_season_nzbs(name, url_data, season):
     try:
         show_xml = ETree.ElementTree(ETree.XML(url_data))
     except SyntaxError:
-        logger.log(u"Unable to parse the XML of " + name + ", not splitting it", logger.ERROR)  # pylint: disable=no-member
+        logger.log("Unable to parse the XML of " + name + ", not splitting it", logger.ERROR)  # pylint: disable=no-member
         return {}, ''
 
     nzb_element = show_xml.getroot()
@@ -66,7 +68,7 @@ def get_season_nzbs(name, url_data, season):
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection
         # Most of these will likely be invalid shows
-        logger.log(u"Unable to parse " + name + " into a scene name.", logger.DEBUG)   # pylint: disable=no-member
+        logger.log("Unable to parse " + name + " into a scene name.", logger.DEBUG)   # pylint: disable=no-member
         return {}, ''
 
     regex = '(' + re.escape(show_name) + regex_string['episode'] % season + ')'
@@ -124,7 +126,7 @@ def save_nzb(nzb_name, nzb_string):
             nzb_fh.write(nzb_string)
 
     except EnvironmentError as error:
-        logger.log(u"Unable to save NZB: " + ex(error), logger.ERROR)  # pylint: disable=no-member
+        logger.log("Unable to save NZB: " + ex(error), logger.ERROR)  # pylint: disable=no-member
 
 
 def strip_xmlns(element, xmlns):
@@ -151,14 +153,14 @@ def split_result(obj):
     """
     url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns='content')
     if url_data is None:
-        logger.log(u"Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
+        logger.log("Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
         return []
 
     # parse the season ep name
     try:
         parsed_obj = NameParser(False, showObj=obj.show).parse(obj.name)
     except (InvalidNameException, InvalidShowException) as error:
-        logger.log(u"{0}".format(error), logger.DEBUG)
+        logger.log("{0}".format(error), logger.DEBUG)
         return []
 
     # bust it up
@@ -173,31 +175,31 @@ def split_result(obj):
     #   Maybe we should return the results found or possibly continue with the next iteration of the loop
     #   Also maybe turn this into a function and generate the results_list with a list comprehension instead
     for new_nzb in separate_nzbs:
-        logger.log(u"Split out " + new_nzb + " from " + obj.name, logger.DEBUG)  # pylint: disable=no-member
+        logger.log("Split out " + new_nzb + " from " + obj.name, logger.DEBUG)  # pylint: disable=no-member
 
         # parse the name
         try:
             parsed_obj = NameParser(False, showObj=obj.show).parse(new_nzb)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{0}".format(error), logger.DEBUG)
+            logger.log("{0}".format(error), logger.DEBUG)
             return []
 
         # make sure the result is sane
         if (parsed_obj.season_number != season) or (parsed_obj.season_number is None and season != 1):
             # pylint: disable=no-member
-            logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it",
+            logger.log("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it",
                        logger.WARNING)
             continue
         elif not parsed_obj.episode_numbers:
             # pylint: disable=no-member
-            logger.log(u"Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
+            logger.log("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
                        logger.WARNING)
             continue
 
         want_ep = True
         for ep_num in parsed_obj.episode_numbers:
             if not obj.extraInfo[0].wantEpisode(season, ep_num, obj.quality):
-                logger.log(u"Ignoring result: " + new_nzb, logger.DEBUG)
+                logger.log("Ignoring result: " + new_nzb, logger.DEBUG)
                 want_ep = False
                 break
         if not want_ep:
