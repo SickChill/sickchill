@@ -21,6 +21,7 @@
 Test exception logging
 """
 
+from __future__ import print_function, unicode_literals
 import os.path
 import sys
 import unittest
@@ -38,7 +39,7 @@ def exception_generator():
     try:
         raise Exception('FAKE EXCEPTION')
     except Exception as error:
-        logger.log(u"FAKE ERROR: " + ex(error), logger.ERROR)  # pylint: disable=no-member
+        logger.log("FAKE ERROR: " + ex(error), logger.ERROR)  # pylint: disable=no-member
         logger.submit_errors()  # pylint: disable=no-member
         raise
 

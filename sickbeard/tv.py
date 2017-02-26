@@ -756,7 +756,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # logger.log(str(self.indexerid) + ": Loading show info from database", logger.DEBUG)
 
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type='dict')
         sql_results = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
 
         if len(sql_results) > 1:

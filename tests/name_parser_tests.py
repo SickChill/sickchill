@@ -5,7 +5,7 @@ Test name parsing
 
 # pylint: disable=line-too-long
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import datetime
 import os.path
@@ -163,10 +163,10 @@ COMBINATION_TEST_CASES = [
 ]
 
 UNICODE_TEST_CASES = [
-    (u'The.Big.Bang.Theory.2x07.The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
-     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON')),
-    ('The.Big.Bang.Theory.2x07.The.Panty.Pi\xc3\xb1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
-     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON'))
+    ('The.Big.Bang.Theory.2x07.The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
+     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], 'The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3', 'SHELDON')),
+    ('The.Big.Bang.Theory.2x07.The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
+     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], 'The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3', 'SHELDON'))
 ]
 
 FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']

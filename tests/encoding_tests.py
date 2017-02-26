@@ -5,6 +5,7 @@ Test encoding
 """
 
 # pylint: disable=line-too-long
+from __future__ import print_function, unicode_literals
 
 import locale
 import os.path
@@ -31,7 +32,7 @@ class EncodingTests(unittest.TestCase):
         Test encoding
         """
         root_dir = 'C:\\Temp\\TV'
-        strings = [u'Les Enfants De La T\xe9l\xe9', u'RT� One']
+        strings = ['Les Enfants De La T\xe9l\xe9', 'RT� One']
 
         sickbeard.SYS_ENCODING = None
 

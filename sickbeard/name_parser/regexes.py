@@ -19,6 +19,8 @@
 
 # all regexes are case insensitive
 
+from __future__ import print_function, unicode_literals
+
 normal_regexes = [
     ('standard_repeat',
      # Show.Name.S01E02.S01E03.Source.Quality.Etc-Group

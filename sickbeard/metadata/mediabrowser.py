@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import os
 import re
@@ -124,7 +126,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), 'metadata')
             xml_file_path = ek(os.path.join, metadata_dir_name, xml_file_name)
         else:
-            logger.log(u"Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
+            logger.log("Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
             return ''
 
         return xml_file_path
@@ -181,10 +183,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.log(u"Unable to find a season dir for season " + str(season), logger.DEBUG)
+            logger.log("Unable to find a season dir for season " + str(season), logger.DEBUG)
             return None
 
-        logger.log(u"Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season), logger.DEBUG)
+        logger.log("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season), logger.DEBUG)
 
         return ek(os.path.join, show_obj.location, season_dir, 'folder.jpg')
 
@@ -222,10 +224,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.log(u"Unable to find a season dir for season " + str(season), logger.DEBUG)
+            logger.log("Unable to find a season dir for season " + str(season), logger.DEBUG)
             return None
 
-        logger.log(u"Using " + str(season_dir) + "/banner.jpg as season dir for season " + str(season), logger.DEBUG)
+        logger.log("Using " + str(season_dir) + "/banner.jpg as season dir for season " + str(season), logger.DEBUG)
 
         return ek(os.path.join, show_obj.location, season_dir, 'banner.jpg')
 
@@ -256,19 +258,19 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         try:
             myShow = t[int(show_obj.indexerid)]
         except sickbeard.indexer_shownotfound:
-            logger.log(u"Unable to find show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
+            logger.log("Unable to find show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it", logger.ERROR)
             raise
 
         except sickbeard.indexer_error:
             logger.log(
-                u"" + sickbeard.indexerApi(show_obj.indexer).name + " is down, can't use its data to make the NFO",
+                "" + sickbeard.indexerApi(show_obj.indexer).name + " is down, can't use its data to make the NFO",
                 logger.ERROR)
             raise
 
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
-            logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
+            logger.log("Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it")
             return False
 
@@ -428,7 +430,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error as e:
-            logger.log(u"Unable to connect to " + sickbeard.indexerApi(
+            logger.log("Unable to connect to " + sickbeard.indexerApi(
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)
             return False
 
@@ -440,7 +442,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log("Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:

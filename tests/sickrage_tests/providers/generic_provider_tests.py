@@ -21,7 +21,7 @@
 Test GenericProvider
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -76,26 +76,26 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '',
+            '': '',
             u' ': '',
-            u'123': '123',
+            '123': '123',
             u' 123 ': '123',
-            u'12.3': '12_3',
+            '12.3': '12_3',
             u' 12.3 ': '12_3',
-            u'0': '0',
+            '0': '0',
             u' 0 ': '0',
-            u'-123': '_123',
+            '-123': '_123',
             u' -123 ': '_123',
-            u'-12.3': '_12_3',
+            '-12.3': '_12_3',
             u' -12.3 ': '_12_3',
-            u'abc': 'abc',
+            'abc': 'abc',
             u' abc ': 'abc',
-            u'ABC': 'abc',
+            'ABC': 'abc',
             u' ABC ': 'abc',
             u'.def': '_def',
-            u'g,hi': 'g_hi',
-            u'jk!l': 'jk_l',
-            u'mno?': 'mno_',
+            'g,hi': 'g_hi',
+            'jk!l': 'jk_l',
+            'mno?': 'mno_',
             u'_pqr$': '_pqr_',
         }
 
@@ -138,26 +138,26 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '.png',
+            '': '.png',
             u' ': '.png',
-            u'123': '123.png',
+            '123': '123.png',
             u' 123 ': '123.png',
-            u'12.3': '12_3.png',
+            '12.3': '12_3.png',
             u' 12.3 ': '12_3.png',
-            u'0': '0.png',
+            '0': '0.png',
             u' 0 ': '0.png',
-            u'-123': '_123.png',
+            '-123': '_123.png',
             u' -123 ': '_123.png',
-            u'-12.3': '_12_3.png',
+            '-12.3': '_12_3.png',
             u' -12.3 ': '_12_3.png',
-            u'abc': 'abc.png',
+            'abc': 'abc.png',
             u' abc ': 'abc.png',
-            u'ABC': 'abc.png',
+            'ABC': 'abc.png',
             u' ABC ': 'abc.png',
             u'.def': '_def.png',
-            u'g,hi': 'g_hi.png',
-            u'jk!l': 'jk_l.png',
-            u'mno?': 'mno_.png',
+            'g,hi': 'g_hi.png',
+            'jk!l': 'jk_l.png',
+            'mno?': 'mno_.png',
             u'_pqr$': '_pqr_.png',
         }
 
@@ -212,26 +212,26 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '',
+            '': '',
             u' ': '',
-            u'123': '123',
+            '123': '123',
             u' 123 ': '123',
-            u'12.3': '12_3',
+            '12.3': '12_3',
             u' 12.3 ': '12_3',
-            u'0': '0',
+            '0': '0',
             u' 0 ': '0',
-            u'-123': '_123',
+            '-123': '_123',
             u' -123 ': '_123',
-            u'-12.3': '_12_3',
+            '-12.3': '_12_3',
             u' -12.3 ': '_12_3',
-            u'abc': 'abc',
+            'abc': 'abc',
             u' abc ': 'abc',
-            u'ABC': 'abc',
+            'ABC': 'abc',
             u' ABC ': 'abc',
             u'.def': '_def',
-            u'g,hi': 'g_hi',
-            u'jk!l': 'jk_l',
-            u'mno?': 'mno_',
+            'g,hi': 'g_hi',
+            'jk!l': 'jk_l',
+            'mno?': 'mno_',
             u'_pqr$': '_pqr_',
         }
 
@@ -275,11 +275,11 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': [],
-            u'123': [],
-            u'12.3': [],
-            u'-123': [],
-            u'-12.3': [],
+            '': [],
+            '123': [],
+            '12.3': [],
+            '-123': [],
+            '-12.3': [],
         }
 
         for test in test_cases, unicode_test_cases:
@@ -311,8 +311,8 @@ class GenericProviderTests(unittest.TestCase):
         ]
 
         unicode_items_list = [
-            {'link': u'', 'title': u''},
-            {'link': u'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': u'Some Title'}
+            {'link': '', 'title': ''},
+            {'link': 'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': 'Some Title'}
         ]
         unicode_results_list = [
             ('', ''), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test')

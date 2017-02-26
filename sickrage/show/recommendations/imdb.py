@@ -1,4 +1,7 @@
 # coding=utf-8
+
+from __future__ import print_function, unicode_literals
+
 import re
 import os
 import posixpath
@@ -80,7 +83,7 @@ class imdbPopular(object):
                 if outline:
                     show['outline'] = outline.contents[0]
                 else:
-                    show['outline'] = u''
+                    show['outline'] = ''
 
                 popular_shows.append(show)
 

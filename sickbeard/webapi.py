@@ -754,7 +754,7 @@ class CMDEpisode(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        main_db_con = db.DBConnection(row_type="dict")
+        main_db_con = db.DBConnection()
         # noinspection PyPep8
         sql_results = main_db_con.select(
             "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
@@ -771,23 +771,23 @@ class CMDEpisode(ApiCall):
             pass
 
         if not show_path:  # show dir is broken ... episode path will be empty
-            episode["location"] = ""
+            episode[b"location"] = ""
         elif not self.fullPath:
             # using the length because lstrip() removes to much
             show_path_length = len(show_path) + 1  # the / or \ yeah not that nice i know
-            episode["location"] = episode["location"][show_path_length:]
+            episode[b"location"] = episode[b"location"][show_path_length:]
 
         # convert stuff to human form
-        if try_int(episode['airdate'], 1) > 693595:  # 1900
-            episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
-                network_timezones.parse_date_time(int(episode['airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
+        if try_int(episode[b'airdate'], 1) > 693595:  # 1900
+            episode[b'airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
+                network_timezones.parse_date_time(int(episode[b'airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
         else:
-            episode['airdate'] = 'Never'
+            episode[b'airdate'] = 'Never'
 
-        status, quality = Quality.splitCompositeStatus(int(episode["status"]))
-        episode["status"] = _get_status_strings(status)
-        episode["quality"] = get_quality_string(quality)
-        episode["file_size_human"] = pretty_file_size(episode["file_size"])
+        status, quality = Quality.splitCompositeStatus(int(episode[b"status"]))
+        episode[b"status"] = _get_status_strings(status)
+        episode[b"quality"] = get_quality_string(quality)
+        episode[b"file_size_human"] = pretty_file_size(episode[b"file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 
@@ -2440,7 +2440,7 @@ class CMDShowSeasonList(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        main_db_con = db.DBConnection(row_type="dict")
+        main_db_con = db.DBConnection()
         if self.sort == "asc":
             sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
                                              [self.indexerid])
@@ -2449,7 +2449,7 @@ class CMDShowSeasonList(ApiCall):
                                              [self.indexerid])
         season_list = []  # a list with all season numbers
         for row in sql_results:
-            season_list.append(int(row["season"]))
+            season_list.append(int(row[b"season"]))
 
         return _responds(RESULT_SUCCESS, season_list)
 

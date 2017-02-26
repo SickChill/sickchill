@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import socket
 import base64
 import time
@@ -123,17 +125,17 @@ class Notifier(object):
 
         # suppress notifications if the notifier is disabled but the notify options are checked
         if not sickbeard.USE_KODI and not force:
-            logger.log(u"Notification for {0} not enabled, skipping this notification".format(dest_app), logger.DEBUG)
+            logger.log("Notification for {0} not enabled, skipping this notification".format(dest_app), logger.DEBUG)
             return False
 
         result = ''
         for curHost in [x.strip() for x in host.split(",") if x.strip()]:
-            logger.log(u"Sending {0} notification to '{1}' - {2}".format(dest_app, curHost, message), logger.DEBUG)
+            logger.log("Sending {0} notification to '{1}' - {2}".format(dest_app, curHost, message), logger.DEBUG)
 
             kodiapi = self._get_kodi_version(curHost, username, password, dest_app)
             if kodiapi:
                 if kodiapi <= 4:
-                    logger.log(u"Detected {0} version <= 11, using {1} HTTP API".format(dest_app, dest_app), logger.DEBUG)
+                    logger.log("Detected {0} version <= 11, using {1} HTTP API".format(dest_app, dest_app), logger.DEBUG)
                     command = {'command': 'ExecBuiltIn',
                                'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode(
                                    "utf-8") + ')'}
@@ -141,7 +143,7 @@ class Notifier(object):
                     if notifyResult:
                         result += curHost + ':' + str(notifyResult)
                 else:
-                    logger.log(u"Detected {0} version >= 12, using {1} JSON API".format(dest_app, dest_app), logger.DEBUG)
+                    logger.log("Detected {0} version >= 12, using {1} JSON API".format(dest_app, dest_app), logger.DEBUG)
                     command = '{{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{{"title":"{0}","message":"{1}", "image": "{2}"}},"id":1}}'.format(
                         title.encode("utf-8"), message.encode("utf-8"), sickbeard.LOGO_URL)
                     notifyResult = self._send_to_kodi_json(command, curHost, username, password, dest_app)
@@ -149,7 +151,7 @@ class Notifier(object):
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
-                    logger.log(u"Failed to detect {0} version for '{1}', check configuration and try again.".format(dest_app, curHost), logger.WARNING)
+                    logger.log("Failed to detect {0} version for '{1}', check configuration and try again.".format(dest_app, curHost), logger.WARNING)
                 result += curHost + ':False'
 
         return result
@@ -168,26 +170,26 @@ class Notifier(object):
 
         """
 
-        logger.log(u"Sending request to update library for KODI host: '{0}'".format(host), logger.DEBUG)
+        logger.log("Sending request to update library for KODI host: '{0}'".format(host), logger.DEBUG)
 
         kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
         if kodiapi:
             if kodiapi <= 4:
                 # try to update for just the show, if it fails, do full update if enabled
                 if not self._update_library(host, showName) and sickbeard.KODI_UPDATE_FULL:
-                    logger.log(u"Single show update failed, falling back to full update", logger.DEBUG)
+                    logger.log("Single show update failed, falling back to full update", logger.DEBUG)
                     return self._update_library(host)
                 else:
                     return True
             else:
                 # try to update for just the show, if it fails, do full update if enabled
                 if not self._update_library_json(host, showName) and sickbeard.KODI_UPDATE_FULL:
-                    logger.log(u"Single show update failed, falling back to full update", logger.DEBUG)
+                    logger.log("Single show update failed, falling back to full update", logger.DEBUG)
                     return self._update_library_json(host)
                 else:
                     return True
         elif sickbeard.KODI_ALWAYS_ON:
-            logger.log(u"Failed to detect KODI version for '" + host + "', check configuration and try again.", logger.WARNING)
+            logger.log("Failed to detect KODI version for '" + host + "', check configuration and try again.", logger.WARNING)
 
         return False
 
@@ -217,7 +219,7 @@ class Notifier(object):
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No {0} host passed, aborting update'.format(dest_app), logger.WARNING)
+            logger.log('No {0} host passed, aborting update'.format(dest_app), logger.WARNING)
             return False
 
         for key in command:
@@ -236,14 +238,14 @@ class Notifier(object):
                 base64string = base64.encodestring('{0}:{1}'.format(username, password))[:-1]
                 authheader = "Basic {0}".format(base64string)
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting {0} (with auth header) via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
+                logger.log("Contacting {0} (with auth header) via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
             else:
-                logger.log(u"Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
+                logger.log("Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
                 response = urllib.request.urlopen(req)
             except (http_client.BadStatusLine, urllib.error.URLError) as e:
-                logger.log(u"Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
+                logger.log("Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
                 return False
 
             result = response.read().decode(sickbeard.SYS_ENCODING)
@@ -253,7 +255,7 @@ class Notifier(object):
             return result
 
         except Exception as e:
-            logger.log(u"Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
+            logger.log("Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
             return False
 
     def _update_library(self, host=None, showName=None):  # pylint: disable=too-many-locals, too-many-return-statements
@@ -272,14 +274,14 @@ class Notifier(object):
         """
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
+            logger.log('No KODI host passed, aborting update', logger.WARNING)
             return False
 
-        logger.log(u"Updating KODI library via HTTP method for host: " + host, logger.DEBUG)
+        logger.log("Updating KODI library via HTTP method for host: " + host, logger.DEBUG)
 
         # if we're doing per-show
         if showName:
-            logger.log(u"Updating library in KODI via HTTP method for show " + showName, logger.DEBUG)
+            logger.log("Updating library in KODI via HTTP method for show " + showName, logger.DEBUG)
 
             pathSql = 'select path.strPath from path, tvshow, tvshowlinkpath where ' \
                       'tvshow.c00 = "%s" and tvshowlinkpath.idShow = tvshow.idShow ' \
@@ -302,42 +304,42 @@ class Notifier(object):
             request = self._send_to_kodi(resetCommand, host)
 
             if not sqlXML:
-                logger.log(u"Invalid response for " + showName + " on " + host, logger.DEBUG)
+                logger.log("Invalid response for " + showName + " on " + host, logger.DEBUG)
                 return False
 
             encSqlXML = urllib.parse.quote(sqlXML, ':\\/<>')
             try:
                 et = etree.fromstring(encSqlXML)
             except SyntaxError as e:
-                logger.log(u"Unable to parse XML returned from KODI: " + ex(e), logger.ERROR)
+                logger.log("Unable to parse XML returned from KODI: " + ex(e), logger.ERROR)
                 return False
 
             paths = et.findall('.//field')
 
             if not paths:
-                logger.log(u"No valid paths found for " + showName + " on " + host, logger.DEBUG)
+                logger.log("No valid paths found for " + showName + " on " + host, logger.DEBUG)
                 return False
 
             for path in paths:
                 # we do not need it double-encoded, gawd this is dumb
                 unEncPath = urllib.parse.unquote(path.text).decode(sickbeard.SYS_ENCODING)
-                logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
+                logger.log("KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
                 updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, {0})'.format(unEncPath)}
                 request = self._send_to_kodi(updateCommand, host)
                 if not request:
-                    logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + unEncPath, logger.WARNING)
+                    logger.log("Update of show directory failed on " + showName + " on " + host + " at " + unEncPath, logger.WARNING)
                     return False
                 # sleep for a few seconds just to be sure kodi has a chance to finish each directory
                 if len(paths) > 1:
                     time.sleep(5)
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.DEBUG)
+            logger.log("Doing Full Library KODI update on host: " + host, logger.DEBUG)
             updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video)'}
             request = self._send_to_kodi(updateCommand, host)
 
             if not request:
-                logger.log(u"KODI Full Library update failed on: " + host, logger.WARNING)
+                logger.log("KODI Full Library update failed on: " + host, logger.WARNING)
                 return False
 
         return True
@@ -368,7 +370,7 @@ class Notifier(object):
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No {0} host passed, aborting update'.format(dest_app), logger.WARNING)
+            logger.log('No {0} host passed, aborting update'.format(dest_app), logger.WARNING)
             return False
 
         command = command.encode('utf-8')
@@ -383,15 +385,15 @@ class Notifier(object):
                 base64string = base64.encodestring('{0}:{1}'.format(username, password))[:-1]
                 authheader = "Basic {0}".format(base64string)
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting {0} (with auth header) via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
+                logger.log("Contacting {0} (with auth header) via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
             else:
-                logger.log(u"Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
+                logger.log("Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
                 response = urllib.request.urlopen(req)
             except (http_client.BadStatusLine, urllib.error.URLError) as e:
                 if sickbeard.KODI_ALWAYS_ON:
-                    logger.log(u"Error while trying to retrieve {0} API version for {1}: {2!r}".format(dest_app, host, ex(e)), logger.WARNING)
+                    logger.log("Error while trying to retrieve {0} API version for {1}: {2!r}".format(dest_app, host, ex(e)), logger.WARNING)
                 return False
 
             # parse the json result
@@ -401,12 +403,12 @@ class Notifier(object):
                 logger.log(u"{0} JSON response: {1}".format(dest_app, result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError as e:
-                logger.log(u"Unable to decode JSON: " + str(response.read()), logger.WARNING)
+                logger.log("Unable to decode JSON: " + str(response.read()), logger.WARNING)
                 return False
 
         except IOError as e:
             if sickbeard.KODI_ALWAYS_ON:
-                logger.log(u"Warning: Couldn't contact {0} JSON API at {1}: {2!r}".format(dest_app, ss(url), ex(e)), logger.WARNING)
+                logger.log("Warning: Couldn't contact {0} JSON API at {1}: {2!r}".format(dest_app, ss(url), ex(e)), logger.WARNING)
             return False
 
     def _update_library_json(self, host=None, showName=None):  # pylint: disable=too-many-return-statements, too-many-branches
@@ -425,10 +427,10 @@ class Notifier(object):
         """
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
+            logger.log('No KODI host passed, aborting update', logger.WARNING)
             return False
 
-        logger.log(u"Updating KODI library via JSON method for host: " + host, logger.DEBUG)
+        logger.log("Updating KODI library via JSON method for host: " + host, logger.DEBUG)
 
         # if we're doing per-show
         if showName:
@@ -436,7 +438,7 @@ class Notifier(object):
             tvshowid = -1
             path = ''
 
-            logger.log(u"Updating library in KODI via JSON method for show " + showName, logger.DEBUG)
+            logger.log("Updating library in KODI via JSON method for show " + showName, logger.DEBUG)
 
             # let's try letting kodi filter the shows
             showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"filter":{"field":"title","operator":"is","value":"%s"},"properties":["title"]},"id":"SickRage"}'
@@ -454,7 +456,7 @@ class Notifier(object):
                 if showsResponse and "result" in showsResponse and "tvshows" in showsResponse["result"]:
                     shows = showsResponse["result"]["tvshows"]
                 else:
-                    logger.log(u"KODI: No tvshows in KODI TV show list", logger.DEBUG)
+                    logger.log("KODI: No tvshows in KODI TV show list", logger.DEBUG)
                     return False
 
             for show in shows:
@@ -471,7 +473,7 @@ class Notifier(object):
 
             # we didn't find the show (exact match), thus revert to just doing a full update if enabled
             if tvshowid == -1:
-                logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
+                logger.log('Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
             # lookup tv-show path if we don't already know it
@@ -481,33 +483,33 @@ class Notifier(object):
 
                 path = pathResponse["result"]["tvshowdetails"]["file"]
 
-            logger.log(u"Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path, logger.DEBUG)
+            logger.log("Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path, logger.DEBUG)
 
             if not path:
-                logger.log(u"No valid path found for " + showName + " with ID: " + str(tvshowid) + " on " + host, logger.WARNING)
+                logger.log("No valid path found for " + showName + " with ID: " + str(tvshowid) + " on " + host, logger.WARNING)
                 return False
 
-            logger.log(u"KODI Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
+            logger.log("KODI Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
             updateCommand = '{{"jsonrpc":"2.0","method":"VideoLibrary.Scan","params":{{"directory":{0}}},"id":1}}'.format((json.dumps(path)))
             request = self._send_to_kodi_json(updateCommand, host)
             if not request:
-                logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + path, logger.WARNING)
+                logger.log("Update of show directory failed on " + showName + " on " + host + " at " + path, logger.WARNING)
                 return False
 
             # catch if there was an error in the returned request
             for r in request:
                 if 'error' in r:
-                    logger.log(u"Error while attempting to update show directory for " + showName + " on " + host + " at " + path, logger.WARNING)
+                    logger.log("Error while attempting to update show directory for " + showName + " on " + host + " at " + path, logger.WARNING)
                     return False
 
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.DEBUG)
+            logger.log("Doing Full Library KODI update on host: " + host, logger.DEBUG)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}'
             request = self._send_to_kodi_json(updateCommand, host)
 
             if not request:
-                logger.log(u"KODI Full Library update failed on: " + host, logger.WARNING)
+                logger.log("KODI Full Library update failed on: " + host, logger.WARNING)
                 return False
 
         return True
@@ -561,7 +563,7 @@ class Notifier(object):
 
         if sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY:
             if not sickbeard.KODI_HOST:
-                logger.log(u"No KODI hosts specified, check your settings", logger.DEBUG)
+                logger.log("No KODI hosts specified, check your settings", logger.DEBUG)
                 return False
 
             # either update each host, or only attempt to update until one successful result
@@ -569,11 +571,11 @@ class Notifier(object):
             for host in [x.strip() for x in sickbeard.KODI_HOST.split(",")]:
                 if self._send_update_library(host, showName):
                     if sickbeard.KODI_UPDATE_ONLYFIRST:
-                        logger.log(u"Successfully updated '" + host + "', stopped sending update library commands.", logger.DEBUG)
+                        logger.log("Successfully updated '" + host + "', stopped sending update library commands.", logger.DEBUG)
                         return True
                 else:
                     if sickbeard.KODI_ALWAYS_ON:
-                        logger.log(u"Failed to detect KODI version for '" + host + "', check configuration and try again.", logger.WARNING)
+                        logger.log("Failed to detect KODI version for '" + host + "', check configuration and try again.", logger.WARNING)
                     result += 1
 
             # needed for the 'update kodi' submenu command

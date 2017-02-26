@@ -24,6 +24,7 @@
 Test searches
 """
 
+from __future__ import print_function, unicode_literals
 import os.path
 import sys
 import unittest
@@ -43,8 +44,8 @@ import six
 TESTS = {
     "Game of Thrones": {
         "tvdbid": 121361, "s": 5, "e": [10],
-        "s_strings": [{"Season": [u"Game of Thrones S05"]}],
-        "e_strings": [{"Episode": [u"Game of Thrones S05E10"]}]
+        "s_strings": [{"Season": ["Game of Thrones S05"]}],
+        "e_strings": [{"Episode": ["Game of Thrones S05E10"]}]
     }
 }
 
@@ -95,7 +96,7 @@ def generator(cur_data, cur_name, cur_provider):
             cur_string = ''
             for cur_string in season_strings, episode_strings:
                 if not all([isinstance(cur_string, list), isinstance(cur_string[0], dict)]):
-                    print " {0} is using a wrong string format!".format(cur_provider.name)
+                    print("{0} is using a wrong string format!".format(cur_provider.name))
                     print(cur_string)
                     fail = True
                     continue
@@ -107,7 +108,7 @@ def generator(cur_data, cur_name, cur_provider):
                 assert season_strings == cur_data["s_strings"]
                 assert episode_strings == cur_data["e_strings"]
             except AssertionError:
-                print " {0} is using a wrong string format!".format(cur_provider.name)
+                print("{0} is using a wrong string format!".format(cur_provider.name))
                 print(cur_string)
                 continue
 
@@ -128,7 +129,7 @@ def generator(cur_data, cur_name, cur_provider):
             title, url = cur_provider._get_title_and_url(items[0])  # pylint: disable=protected-access
             for word in show.name.split(" "):
                 if not word.lower() in title.lower():
-                    print "Show cur_name not in title: {0}. URL: {1}".format(title, url)
+                    print("Show cur_name not in title: {0}. URL: {1}".format(title, url))
                     continue
 
             if not url:
@@ -139,7 +140,7 @@ def generator(cur_data, cur_name, cur_provider):
             size = cur_provider._get_size(items[0])  # pylint: disable=protected-access
 
             if not show.quality & quality:
-                print "Quality not in common.ANY, {0!r} {1}".format(quality, size)
+                print("Quality not in common.ANY, {0!r} {1}".format(quality, size))
                 continue
 
     return do_test

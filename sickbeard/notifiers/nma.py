@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from __future__ import print_function, unicode_literals
+
 import sickbeard
 
 from sickbeard import logger, common
@@ -60,12 +62,12 @@ class Notifier(object):
         if len(keys) > 1:
             batch = True
 
-        logger.log(u"NMA: Sending notice with details: event=\"{0}\", message=\"{1}\", priority={2}, batch={3}".format(event, message, nma_priority, batch), logger.DEBUG)
+        logger.log("NMA: Sending notice with details: event=\"{0}\", message=\"{1}\", priority={2}, batch={3}".format(event, message, nma_priority, batch), logger.DEBUG)
         response = p.push(application=title, event=event, description=message, priority=nma_priority, batch_mode=batch)
 
-        if not response[nma_api][u'code'] == u'200':
-            logger.log(u'Could not send notification to NotifyMyAndroid', logger.ERROR)
+        if not response[nma_api]['code'] == '200':
+            logger.log('Could not send notification to NotifyMyAndroid', logger.ERROR)
             return False
         else:
-            logger.log(u"NMA: Notification sent to NotifyMyAndroid", logger.INFO)
+            logger.log("NMA: Notification sent to NotifyMyAndroid", logger.INFO)
             return True

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import io
 import os
 import datetime
@@ -122,16 +124,16 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         try:
             myShow = t[int(show_obj.indexerid)]
         except sickbeard.indexer_shownotfound:
-            logger.log(u"Unable to find show with id " + str(show_obj.indexerid) + " on tvdb, skipping it", logger.ERROR)
+            logger.log("Unable to find show with id " + str(show_obj.indexerid) + " on tvdb, skipping it", logger.ERROR)
             raise
 
         except sickbeard.indexer_error:
-            logger.log(u"TVDB is down, can't use its data to make the NFO", logger.ERROR)
+            logger.log("TVDB is down, can't use its data to make the NFO", logger.ERROR)
             raise
 
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
-            logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
+            logger.log("Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it")
             return False
 
@@ -233,7 +235,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error as e:
-            logger.log(u"Unable to connect to TVDB while creating meta files - skipping - " + ex(e), logger.ERROR)
+            logger.log("Unable to connect to TVDB while creating meta files - skipping - " + ex(e), logger.ERROR)
             return False
 
         rootNode = etree.Element("details")
@@ -249,7 +251,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log("Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if curEpToWrite == ep_obj:
@@ -357,7 +359,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 the file name will be the default show_file_name.
 
         Note that this method expects that _show_data will return an ElementTree
-        object. If your _show_data returns data in another format you'll need to
+        object. If your _show_data returns data in another format yo'll need to
         override this method.
         """
 
@@ -371,11 +373,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         try:
             if not ek(os.path.isdir, nfo_file_dir):
-                logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
                 ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
-            logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
+            logger.log("Writing show nfo file to " + nfo_file_path, logger.DEBUG)
 
             nfo_file = io.open(nfo_file_path, 'wb')
 
@@ -383,7 +385,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
                        logger.ERROR)
             return False
 
@@ -402,7 +404,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 include an absolute path.
 
         Note that this method expects that _ep_data will return an ElementTree
-        object. If your _ep_data returns data in another format you'll need to
+        object. If your _ep_data returns data in another format yo'll need to
         override this method.
         """
 
@@ -416,11 +418,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         try:
             if not ek(os.path.isdir, nfo_file_dir):
-                logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
                 ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
-            logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
+            logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
             nfo_file = io.open(nfo_file_path, 'wb')
 
@@ -428,7 +430,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
                        logger.ERROR)
             return False
 
