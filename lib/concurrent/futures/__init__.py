@@ -16,8 +16,8 @@ from concurrent.futures._base import (FIRST_COMPLETED,
                                       as_completed)
 from concurrent.futures.thread import ThreadPoolExecutor
 
-# Jython doesn't have multiprocessing
 try:
     from concurrent.futures.process import ProcessPoolExecutor
 except ImportError:
+    # some platforms don't have multiprocessing
     pass
