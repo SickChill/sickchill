@@ -474,7 +474,7 @@ def xem_refresh(indexer_id, indexer, force=False):
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
                               [indexer, indexer_id])
     if rows:
-        lastRefresh = int(rows[0]['last_refreshed'])
+        lastRefresh = int(rows[0][b'last_refreshed'])
         refresh = int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         refresh = True

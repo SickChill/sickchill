@@ -53,7 +53,7 @@ def shouldRefresh(exList):
     cache_db_con = db.DBConnection('cache.db')
     rows = cache_db_con.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [exList])
     if rows:
-        lastRefresh = int(rows[0]['last_refreshed'])
+        lastRefresh = int(rows[0][b'last_refreshed'])
         return int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         return True

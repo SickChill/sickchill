@@ -614,7 +614,7 @@ def _get_root_dirs():
         return {}
 
     # clean up the list - replace %xx escapes by their single-character equivalent
-    root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+    root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
 
     default_dir = root_dirs[default_index]
 
@@ -1177,7 +1177,7 @@ class CMDBacklog(ApiCall):
 
             for curResult in sql_results:
 
-                cur_ep_cat = curShow.getOverview(curResult["status"])
+                cur_ep_cat = curShow.getOverview(curResult[b"status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(curResult)
 
@@ -1372,7 +1372,7 @@ class CMDSickBeardAddRootDir(ApiCall):
     def run(self):
         """ Add a new root (parent) directory to SickRage """
 
-        self.location = urllib.unquote_plus(self.location)
+        self.location = urllib.parse.unquote_plus(self.location)
         location_matched = 0
         index = 0
 
@@ -1389,7 +1389,7 @@ class CMDSickBeardAddRootDir(ApiCall):
             index = int(sickbeard.ROOT_DIRS.split('|')[0])
             root_dirs.pop(0)
             # clean up the list - replace %xx escapes by their single-character equivalent
-            root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+            root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
             for x in root_dirs:
                 if x == self.location:
                     location_matched = 1
@@ -1403,7 +1403,7 @@ class CMDSickBeardAddRootDir(ApiCall):
             else:
                 root_dirs.append(self.location)
 
-        root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs]
+        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs]
         root_dirs_new.insert(0, index)
         # noinspection PyCompatibility
         root_dirs_new = '|'.join(six.text_type(x) for x in root_dirs_new)
@@ -1487,7 +1487,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         index = int(root_dirs[0])
         root_dirs.pop(0)
         # clean up the list - replace %xx escapes by their single-character equivalent
-        root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+        root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
         old_root_dir = root_dirs[index]
         for curRootDir in root_dirs:
             if not curRootDir == self.location:
@@ -1500,7 +1500,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
                 new_index = curIndex
                 break
 
-        root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs_new]
+        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
         if len(root_dirs_new) > 0:
             root_dirs_new.insert(0, new_index)
         # noinspection PyCompatibility
