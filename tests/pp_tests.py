@@ -146,20 +146,20 @@ class ListAssociatedFiles(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - PostProcessor TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - PostProcessor TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PPInitTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    print "######################################################################"
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PPBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    print "######################################################################"
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ListAssociatedFiles)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

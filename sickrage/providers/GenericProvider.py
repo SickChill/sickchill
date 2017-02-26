@@ -24,6 +24,7 @@ from base64 import b16encode, b32decode
 from itertools import chain
 from os.path import join
 from random import shuffle
+import six
 
 import sickbeard
 from sickbeard import logger
@@ -168,7 +169,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         items[quality] = []
                     items[quality].append(item)
 
-            items_list = list(chain(*[v for (k_, v) in sorted(items.iteritems(), reverse=True)]))
+            items_list = list(chain(*[v for (k_, v) in sorted(six.iteritems(items), reverse=True)]))
             items_list += unknown_items
 
         cl = []

@@ -26,6 +26,9 @@ from sickbeard import logger, common
 from sickrage.helper.exceptions import ex
 
 
+import six
+
+
 class Notifier(object):
 
     def notify_snatch(self, ep_name):
@@ -64,7 +67,7 @@ class Notifier(object):
         logger.log("Sending discord message: " + message, logger.INFO)
         logger.log("Sending discord message  to url: " + discord_webhook, logger.INFO)
 
-        if isinstance(message, unicode):
+        if isinstance(message, six.text_type):
             message = message.encode('utf-8')
 
         headers = {b"Content-Type": b"application/json"}

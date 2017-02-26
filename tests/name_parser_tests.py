@@ -5,6 +5,8 @@ Test name parsing
 
 # pylint: disable=line-too-long
 
+from __future__ import print_function
+
 import datetime
 import os.path
 import sys
@@ -16,6 +18,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import tv
 from sickbeard.name_parser import parser
 import tests.test_lib as test
+
+import six
+
 
 SYS_ENCODING = 'UTF-8'
 
@@ -169,7 +174,7 @@ FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
 
 class UnicodeTests(test.SickbeardTestDBCase):
     """
-    Test unicode
+    Test six.text_type
     """
     def __init__(self, something):
         super(UnicodeTests, self).__init__(something)
@@ -179,7 +184,7 @@ class UnicodeTests(test.SickbeardTestDBCase):
 
     def _test_unicode(self, name, result):
         """
-        Test unicode
+        Test six.text_type
 
         :param name:
         :param result:
@@ -189,12 +194,12 @@ class UnicodeTests(test.SickbeardTestDBCase):
         parse_result = name_parser.parse(name)
 
         # this shouldn't raise an exception
-        repr(str(parse_result))
+        repr(six.text_type(parse_result))
         self.assertEqual(parse_result.extra_info, result.extra_info)
 
     def test_unicode(self):
         """
-        Test unicode
+        Test six.text_type
         """
         for (name, result) in UNICODE_TEST_CASES:
             self._test_unicode(name, result)
@@ -219,7 +224,7 @@ class FailureCaseTests(test.SickbeardTestDBCase):
             return True
 
         if VERBOSE:
-            print 'Actual: ', parse_result.which_regex, parse_result
+            print('Actual: ', parse_result.which_regex, parse_result)
         return False
 
     def test_failures(self):
@@ -246,8 +251,8 @@ class ComboTests(test.SickbeardTestDBCase):
         """
 
         if VERBOSE:
-            print
-            print 'Testing', name
+            print()
+            print('Testing', name)
 
         name_parser = parser.NameParser(True)
 
@@ -257,8 +262,8 @@ class ComboTests(test.SickbeardTestDBCase):
             return False
 
         if DEBUG:
-            print test_result, test_result.which_regex
-            print result, which_regexes
+            print(test_result, test_result.which_regex)
+            print(result, which_regexes)
 
         self.assertEqual(test_result, result)
         for cur_regex in which_regexes:
@@ -296,8 +301,8 @@ class BasicTests(test.SickbeardTestDBCase):
         """
 
         if VERBOSE or verbose:
-            print
-            print 'Running', section, 'tests'
+            print()
+            print('Running', section, 'tests')
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
@@ -305,7 +310,7 @@ class BasicTests(test.SickbeardTestDBCase):
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
-                print 'Testing', cur_test
+                print('Testing', cur_test)
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
@@ -319,12 +324,12 @@ class BasicTests(test.SickbeardTestDBCase):
                 test_result = name_parser.parse(cur_test)
 
             if DEBUG or verbose:
-                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
-                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
-                print test_result
-                print result
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
 
     def test_standard_names(self):
         """
@@ -460,8 +465,8 @@ class BasicFailedTests(test.SickbeardTestDBCase):
         :return:
         """
         if VERBOSE or verbose:
-            print
-            print 'Running', section, 'tests'
+            print()
+            print('Running', section, 'tests')
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
@@ -469,7 +474,7 @@ class BasicFailedTests(test.SickbeardTestDBCase):
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
-                print 'Testing', cur_test
+                print('Testing', cur_test)
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
@@ -483,12 +488,12 @@ class BasicFailedTests(test.SickbeardTestDBCase):
                 test_result = name_parser.parse(cur_test)
 
             if DEBUG or verbose:
-                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
-                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
-                print test_result
-                print result
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
 
     def test_no_s_names(self):
         """

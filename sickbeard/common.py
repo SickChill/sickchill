@@ -33,6 +33,8 @@ import uuid
 from os import path
 
 from fake_useragent import UserAgent, settings as UA_SETTINGS
+import six
+from six.moves import reduce
 
 from sickbeard.numdict import NumDict
 from sickrage.helper import video_screen_size

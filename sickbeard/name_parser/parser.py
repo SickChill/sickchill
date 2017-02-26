@@ -25,6 +25,7 @@ from collections import OrderedDict
 from threading import Lock
 
 import dateutil
+import six
 
 import sickbeard
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
@@ -96,7 +97,7 @@ class NameParser(object):
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
-                except re.error, errormsg:
+                except re.error as errormsg:
                     logger.log(u"WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
@@ -368,14 +369,14 @@ class NameParser(object):
     @staticmethod
     def _unicodify(obj, encoding="utf-8"):
         if isinstance(obj, bytes):
-            obj = unicode(obj, encoding, 'replace')
+            obj = six.text_type(obj, encoding, 'replace')
         return obj
 
     @staticmethod
     def _convert_number(org_number):
         """
          Convert org_number into an integer
-         org_number: integer or representation of a number: string or unicode
+         org_number: integer or representation of a number: string or six.text_type
          Try force converting to int first, on error try converting from Roman numerals
          returns integer or 0
          """
@@ -594,7 +595,7 @@ class NameParserCache(object):
         with self.lock:
             self.data.update({key: value})
             while len(self.data) > self.max_size:
-                self.data.pop(self.data.keys()[0], None)
+                self.data.pop(list(self.data.keys())[0], None)
 
 name_parser_cache = NameParserCache()
 

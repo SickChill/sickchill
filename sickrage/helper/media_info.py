@@ -27,6 +27,9 @@ from enzyme import MKV
 from pkg_resources import get_distribution, DistributionNotFound
 import sickbeard
 
+import six
+
+
 try:
     get_distribution('pymediainfo')
     from pymediainfo import MediaInfo as mediainfo
@@ -38,7 +41,7 @@ def _avi_screen_size(filename):
     """
     Parses avi file header for width and height
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -65,7 +68,7 @@ def _mkv_screen_size(filename):
     """
     Parses mkv file for width and height
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -84,7 +87,7 @@ def _mediainfo_screen_size(filename):
     """
     Attempts to read the width and height of a video file, using mediainfo
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -109,7 +112,7 @@ def video_screen_size(filename):
     first using mediainfo and then enzyme, and then a custom avi reader
 
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
 

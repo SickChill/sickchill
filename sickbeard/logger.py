@@ -35,9 +35,10 @@ import sys
 import threading
 import traceback
 from logging import NullHandler
-from urllib import quote
 
 from github import InputFileContent
+import six
+from six.moves.urllib.parse import quote
 
 import sickbeard
 from sickbeard import classes
@@ -81,17 +82,17 @@ class CensoredFormatter(logging.Formatter, object):
         """
         msg = super(CensoredFormatter, self).format(record)
 
-        if not isinstance(msg, unicode):
+        if not isinstance(msg, six.text_type):
             msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
 
         # set of censored items
-        censored = {item for _, item in censored_items.iteritems() if item}
+        censored = {item for _, item in six.iteritems(censored_items) if item}
         # set of censored items and urlencoded counterparts
         censored = censored | {quote(item) for item in censored}
         # convert set items to unicode and typecast to list
         censored = list({
             item.decode(self.encoding, 'replace')
-            if not isinstance(item, unicode) else item
+            if not isinstance(item, six.text_type) else item
             for item in censored
         })
         # sort the list in order of descending length so that entire item is censored
@@ -247,7 +248,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 self.logger.log(level, message, *args, **kwargs)
             except:
                 if msg: # Otherwise creates empty messages in log...
-                    print msg
+                    print(msg)
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)

@@ -25,6 +25,9 @@ import sickbeard
 from sickbeard import common, db, logger, scheduler, search_queue, ui
 
 
+import six
+
+
 class BacklogSearchScheduler(scheduler.Scheduler):
     def forceSearch(self):
         self.action._set_lastBacklog(1)
@@ -95,7 +98,7 @@ class BacklogSearcher(object):
 
             segments = self._get_segments(curShow, fromDate)
 
-            for season, segment in segments.iteritems():
+            for season, segment in six.iteritems(segments):
                 self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)

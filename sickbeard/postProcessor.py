@@ -39,6 +39,9 @@ from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProc
 from sickrage.show.Show import Show
 
 
+import six
+
+
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
     """
     A class which will process a media file according to the post processing settings in the config.
@@ -95,7 +98,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
-        :param message: The string to log (unicode)
+        :param message: The string to log (six.text_type)
         :param level: The log level to use (optional)
         """
         logger.log(message, level)
@@ -556,7 +559,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         Takes a name and tries to figure out a show, season, and episode from it.
 
-        :param name: A string which we want to analyze to determine show info from (unicode)
+        :param name: A string which we want to analyze to determine show info from (six.text_type)
 
         :return: A (indexer_id, season, [episodes]) tuple. The first two may be None and episodes may be []
         if none were found.
@@ -842,7 +845,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return
 
         file_path = self.file_path
-        if isinstance(file_path, unicode):
+        if isinstance(file_path, six.text_type):
             try:
                 file_path = file_path.encode(sickbeard.SYS_ENCODING)
             except UnicodeEncodeError:
@@ -850,7 +853,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 pass
 
         ep_location = ep_obj.location
-        if isinstance(ep_location, unicode):
+        if isinstance(ep_location, six.text_type):
             try:
                 ep_location = ep_location.encode(sickbeard.SYS_ENCODING)
             except UnicodeEncodeError:
@@ -858,7 +861,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 pass
 
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
-            if isinstance(curScriptName, unicode):
+            if isinstance(curScriptName, six.text_type):
                 try:
                     curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
                 except UnicodeEncodeError:

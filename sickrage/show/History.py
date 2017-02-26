@@ -24,6 +24,9 @@ from sickbeard.db import DBConnection
 from sickrage.helper.common import try_int
 
 
+import six
+
+
 class History(object):
     date_format = '%Y%m%d%H%M%S'
 
@@ -116,7 +119,7 @@ class History(object):
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, (str, unicode)) else ''
+        action = action.lower() if isinstance(action, six.string_types) else ''
 
         if action == 'downloaded':
             return Quality.DOWNLOADED

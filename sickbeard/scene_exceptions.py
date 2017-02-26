@@ -23,6 +23,7 @@ import threading
 import time
 
 import adba
+import six
 
 import sickbeard
 from sickbeard import db, helpers, logger
@@ -252,7 +253,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             continue
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
-            for ex in cur_exception_dict.iteritems():
+            for ex in six.iteritems(cur_exception_dict):
                 cur_exception, curSeason = ex
                 if cur_exception not in existing_exceptions:
                     queries.append(
@@ -322,7 +323,7 @@ def _xem_exceptions_fetcher():
             if parsedJSON['result'] == 'failure':
                 continue
 
-            for indexerid, names in parsedJSON['data'].iteritems():
+            for indexerid, names in six.iteritems(parsedJSON['data']):
                 try:
                     xem_exception_dict[int(indexerid)] = names
                 except Exception as error:

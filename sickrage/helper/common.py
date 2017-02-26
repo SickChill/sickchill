@@ -29,6 +29,7 @@ import glob
 from fnmatch import fnmatch
 
 from github import Github, BadCredentialsException, TwoFactorException
+import six
 
 import sickbeard
 
@@ -144,7 +145,7 @@ def is_sync_file(filename):
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
 
-    if isinstance(filename, (str, unicode)):
+    if isinstance(filename, six.string_types):
         extension = filename.rpartition('.')[2].lower()
 
         return extension in sickbeard.SYNC_FILES.split(',') or \
@@ -161,7 +162,7 @@ def is_torrent_or_nzb_file(filename):
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
 
-    if not isinstance(filename, (str, unicode)):
+    if not isinstance(filename, six.string_types):
         return False
 
     return filename.rpartition('.')[2].lower() in ['nzb', 'torrent']
@@ -258,7 +259,7 @@ def remove_extension(filename):
     :return: The ``filename`` without its extension.
     """
 
-    if isinstance(filename, (str, unicode)) and '.' in filename:
+    if isinstance(filename, six.string_types) and '.' in filename:
         basename, _, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
@@ -275,7 +276,7 @@ def replace_extension(filename, new_extension):
     :return: The ``filename`` with the new extension
     """
 
-    if isinstance(filename, (str, unicode)) and '.' in filename:
+    if isinstance(filename, six.string_types) and '.' in filename:
         basename, _, _ = filename.rpartition('.')
 
         if basename:
@@ -291,7 +292,7 @@ def sanitize_filename(filename):
     :return: The ``filename``cleaned
     """
 
-    if isinstance(filename, (str, unicode)):
+    if isinstance(filename, six.string_types):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
         filename = re.sub(r'™', '', filename)  # Trade Mark Sign unicode: \u2122

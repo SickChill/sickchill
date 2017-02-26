@@ -16,6 +16,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import ex
 
 
+import six
+
+
 class ExceptionsHelperTestCase(unittest.TestCase):
     """
     Test exceptions helper
@@ -47,7 +50,7 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         self.assertEqual(ex(Exception('hi')), 'hi')
 
     # TODO why doesn't this work?@
-    @unittest.skip('Errors with unicode conversion')
+    @unittest.skip('Errors with six.text_type conversion')
     def test_ex_ret_args_ustring(self):
         """
         Test exception returns args ustring

@@ -18,13 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
-import urllib2
 
 import sickbeard
 
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
+
+from six.moves import urllib
+
 
 try:
     import json
@@ -52,18 +53,18 @@ class Notifier(object):
         values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': sickbeard.LOGO_URL}
         data = json.dumps(values)
         try:
-            req = urllib2.Request(url, data)
+            req = urllib.request.Request(url, data)
             req.add_header('X-MediaBrowser-Token', emby_apikey)
             req.add_header('Content-Type', 'application/json')
 
-            response = urllib2.urlopen(req)
+            response = urllib.request.urlopen(req)
             result = response.read()
             response.close()
 
             logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
             return True
 
-        except (urllib2.URLError, IOError) as e:
+        except (urllib.error.URLError, IOError) as e:
             logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
             return False
 
@@ -104,18 +105,18 @@ class Notifier(object):
 
             url = 'http://{0}/emby/Library/Series/Updated{1}'.format(sickbeard.EMBY_HOST, query)
             values = {}
-            data = urllib.urlencode(values)
+            data = urllib.parse.urlencode(values)
             try:
-                req = urllib2.Request(url, data)
+                req = urllib.request.Request(url, data)
                 req.add_header('X-MediaBrowser-Token', sickbeard.EMBY_APIKEY)
 
-                response = urllib2.urlopen(req)
+                response = urllib.request.urlopen(req)
                 result = response.read()
                 response.close()
 
                 logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
                 return True
 
-            except (urllib2.URLError, IOError) as e:
+            except (urllib.error.URLError, IOError) as e:
                 logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
                 return False

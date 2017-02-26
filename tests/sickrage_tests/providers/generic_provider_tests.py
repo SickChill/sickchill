@@ -28,6 +28,7 @@ import sys
 import unittest
 
 from mock import patch, MagicMock
+import six
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -99,7 +100,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider(name).get_id(), result)
 
     def test_image_name(self):
@@ -161,7 +162,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider(name).image_name(), result)
 
     def test_is_active(self):
@@ -235,7 +236,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider.make_id(name), result)
 
     def test_seed_ratio(self):
@@ -282,7 +283,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (search_params, result) in test.iteritems():
+            for (search_params, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider('Test Provider').search(search_params), result)
 
     def test__get_size(self):

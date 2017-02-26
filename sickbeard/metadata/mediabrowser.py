@@ -32,6 +32,9 @@ from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
+import six
+
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -352,7 +355,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             Zap2ItId = etree.SubElement(tv_node, "Zap2ItId")
             Zap2ItId.text = myShow['zap2it_id']
 
-        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], basestring):
+        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], six.string_types):
             Genres = etree.SubElement(tv_node, "Genres")
             for genre in myShow['genre'].split('|'):
                 if genre.strip():
@@ -557,7 +560,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 persons_dict['Writer'] += [x.strip() for x in myEp['writer'].split('|') if x.strip()]
 
         # fill in Persons section with collected directors, guest starts and writers
-        for person_type, names in persons_dict.iteritems():
+        for person_type, names in six.iteritems(persons_dict):
             # remove doubles
             names = list(set(names))
             for cur_name in names:

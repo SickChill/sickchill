@@ -26,6 +26,7 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
+import six
 
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -117,7 +118,7 @@ class EliteTorrentProvider(TorrentProvider):
                                 
                                 This is not the best solution but it works.
                                 
-                                First encode latin1 and then decode utf8 to remains unicode
+                                First encode latin1 and then decode utf8 to remains six.text_type
                                 """
                                 row_title = row.find('a', class_='nombre')['title']
                                 title = self._processTitle(row_title.encode('latin-1').decode('utf8'))

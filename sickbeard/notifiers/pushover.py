@@ -19,15 +19,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import httplib
-import urllib
-import urllib2
 import time
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN_TEXT, NOTIFY_LOGIN
 from sickrage.helper.exceptions import ex
+import six
+from six.moves import urllib
+
+from six.moves import http_client
+
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
@@ -43,7 +45,7 @@ class Notifier(object):
         """
         Sends a pushover notification to the address provided
 
-        msg: The message to send (unicode)
+        msg: The message to send (six.text_type)
         title: The title of the message
         sound: The notification sound to use
         userKey: The pushover user id to send the message to (or to subscribe with)
@@ -98,11 +100,11 @@ class Notifier(object):
             if sickbeard.PUSHOVER_DEVICE:
                 args["device"] = sickbeard.PUSHOVER_DEVICE
 
-            conn = httplib.HTTPSConnection("api.pushover.net:443")
+            conn = http_client.HTTPSConnection("api.pushover.net:443")
             conn.request("POST", "/1/messages.json",
-                         urllib.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
+                         urllib.parse.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
 
-        except urllib2.HTTPError as e:
+        except urllib.error.HTTPError as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
                 logger.log(u"Pushover notification failed." + ex(e), logger.ERROR)

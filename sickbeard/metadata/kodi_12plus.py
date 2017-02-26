@@ -27,6 +27,9 @@ from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
 from sickrage.helper.exceptions import ex, ShowNotFoundException
 
+import six
+
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -173,7 +176,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = str(myShow["id"])
 
-        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], basestring):
+        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], six.string_types):
             for genre in self._split_info(myShow["genre"]):
                 cur_genre = etree.SubElement(tv_node, "genre")
                 cur_genre.text = genre
@@ -196,12 +199,12 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             studio = etree.SubElement(tv_node, "studio")
             studio.text = myShow["network"].strip()
 
-        if getattr(myShow, 'writer', None) and isinstance(myShow['writer'], basestring):
+        if getattr(myShow, 'writer', None) and isinstance(myShow['writer'], six.string_types):
             for writer in self._split_info(myShow['writer']):
                 cur_writer = etree.SubElement(tv_node, "credits")
                 cur_writer.text = writer
 
-        if getattr(myShow, 'director', None) and isinstance(myShow['director'], basestring):
+        if getattr(myShow, 'director', None) and isinstance(myShow['director'], six.string_types):
             for director in self._split_info(myShow['director']):
                 cur_director = etree.SubElement(tv_node, "director")
                 cur_director.text = director
@@ -338,17 +341,17 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 rating = etree.SubElement(episode, "rating")
                 rating.text = myEp['rating']
 
-            if getattr(myEp, 'writer', None) and isinstance(myEp['writer'], basestring):
+            if getattr(myEp, 'writer', None) and isinstance(myEp['writer'], six.string_types):
                 for writer in self._split_info(myEp['writer']):
                     cur_writer = etree.SubElement(episode, "credits")
                     cur_writer.text = writer
 
-            if getattr(myEp, 'director', None) and isinstance(myEp['director'], basestring):
+            if getattr(myEp, 'director', None) and isinstance(myEp['director'], six.string_types):
                 for director in self._split_info(myEp['director']):
                     cur_director = etree.SubElement(episode, "director")
                     cur_director.text = director
 
-            if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
+            if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], six.string_types):
                 for actor in self._split_info(myEp['gueststars']):
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")

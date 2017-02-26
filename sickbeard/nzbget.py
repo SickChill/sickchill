@@ -21,14 +21,16 @@
 from __future__ import unicode_literals
 
 import datetime
-import httplib
-import xmlrpclib
 from base64 import standard_b64encode
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickrage.helper.common import try_int
+from six.moves import xmlrpc_client
+
+
+from six.moves import http_client
 
 
 def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements
@@ -54,20 +56,20 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
         sickbeard.NZBGET_PASSWORD,
         sickbeard.NZBGET_HOST)
 
-    nzbGetRPC = xmlrpclib.ServerProxy(url)
+    nzbGetRPC = xmlrpc_client.ServerProxy(url)
     try:
         if nzbGetRPC.writelog('INFO', 'SickRage connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
             logger.log('Successful connected to NZBget', logger.DEBUG)
         else:
             logger.log('Successful connected to NZBget, but unable to send a message', logger.WARNING)
 
-    except httplib.socket.error:
+    except http_client.socket.error:
         logger.log(
             'Please check your NZBget host and port (if it is running). NZBget is not responding to this combination',
             logger.WARNING)
         return False
 
-    except xmlrpclib.ProtocolError as e:
+    except xmlrpc_client.ProtocolError as e:
         if e.errmsg == 'Unauthorized':
             logger.log('NZBget username or password is incorrect.', logger.WARNING)
         else:

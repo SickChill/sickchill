@@ -19,11 +19,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-import urllib2
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT
+
+
+import six
+from six.moves import urllib
 
 
 class Notifier(object):
@@ -34,7 +37,7 @@ class Notifier(object):
         """
         Sends a SMS notification
 
-        msg: The message to send (unicode)
+        msg: The message to send (six.text_type)
         title: The title of the message
         userKey: The pushover user id to send the message to (or to subscribe with)
 
@@ -50,13 +53,13 @@ class Notifier(object):
 
         # build up the URL and parameters
         msg = msg.strip()
-        msg_quoted = urllib2.quote(title.encode('utf-8') + ": " + msg.encode('utf-8'))
+        msg_quoted = urllib.parse.quote(title.encode('utf-8') + ": " + msg.encode('utf-8'))
         URL = "https://smsapi.free-mobile.fr/sendmsg?user=" + cust_id + "&pass=" + apiKey + "&msg=" + msg_quoted
 
-        req = urllib2.Request(URL)
+        req = urllib.request.Request(URL)
         # send the request to Free Mobile
         try:
-            urllib2.urlopen(req)
+            urllib.request.urlopen(req)
         except IOError as e:
             if hasattr(e, 'code'):
                 if e.code == 400:

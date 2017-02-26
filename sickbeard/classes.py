@@ -20,14 +20,16 @@
 
 import datetime
 import sys
-import urllib
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
 
 
-class SickBeardURLopener(urllib.FancyURLopener, object):
+from six.moves import urllib
+
+
+class SickBeardURLopener(urllib.request.FancyURLopener, object):
     version = USER_AGENT
 
 

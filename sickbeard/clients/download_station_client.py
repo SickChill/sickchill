@@ -28,6 +28,9 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
+import six
+
+
 class DownloadStationAPI(GenericClient):
     """
     Class to send torrents/NZBs or links to them to DownloadStation
@@ -138,8 +141,8 @@ class DownloadStationAPI(GenericClient):
             'api': 'SYNO.API.Auth',
             'version': 2,
             'method': 'login',
-            'account': self.username.encode('utf-8') if isinstance(self.username, unicode) else self.username,
-            'passwd': self.password.encode('utf-8') if isinstance(self.password, unicode) else self.password,
+            'account': self.username.encode('utf-8') if isinstance(self.username, six.text_type) else self.username,
+            'passwd': self.password.encode('utf-8') if isinstance(self.password, six.text_type) else self.password,
             'session': 'DownloadStation',
             'format': 'cookie'
         }

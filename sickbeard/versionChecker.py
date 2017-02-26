@@ -34,6 +34,9 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
 
+import six
+
+
 class CheckVersion(object):
     """
     Version check class meant to run as a thread object with the sr scheduler.
@@ -275,7 +278,7 @@ class CheckVersion(object):
         """
         Checks GitHub for the latest news.
 
-        returns: unicode, a copy of the news
+        returns: six.text_type, a copy of the news
 
         force: ignored
         """

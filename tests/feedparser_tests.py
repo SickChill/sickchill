@@ -30,10 +30,10 @@ class FeedParserTests(unittest.TestCase):
             self.assertTrue(title and url)
 
 if __name__ == "__main__":
-    print "=================="
-    print "STARTING - FEED PARSER TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - FEED PARSER TESTS")
+    print("==================")
+    print("######################################################################")
     SUITE = unittest.TestLoader().loadTestsFromTestCase(FeedParserTests)
     TEST_RESULTS = unittest.TextTestRunner(verbosity=2).run(SUITE)
 

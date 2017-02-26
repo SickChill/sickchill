@@ -15,6 +15,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sickbeard.numdict import NumDict
 
+import six
+
+
 PY3 = sys.version_info >= (3, )
 
 if PY3:
@@ -335,9 +338,9 @@ class NumDictTest(unittest.TestCase):
         self.assertNotEqual(my_num_dict_a, my_num_dict)
 
         # Test keys, items, values
-        self.assertEqual(sorted(num_dict_2.keys()), sorted(dict_2.keys()))
-        self.assertEqual(sorted(num_dict_2.items()), sorted(dict_2.items()))
-        self.assertEqual(sorted(num_dict_2.values()), sorted(dict_2.values()))
+        self.assertEqual(sorted(six.iterkeys(num_dict_2)), sorted(six.iterkeys(dict_2)))
+        self.assertEqual(sorted(six.iteritems(num_dict_2)), sorted(six.iteritems(dict_2)))
+        self.assertEqual(sorted(six.itervalues(num_dict_2)), sorted(six.itervalues(dict_2)))
 
         # Test "in".
         for i in num_dict_2:

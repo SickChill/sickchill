@@ -18,14 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
-import urllib2
 import sickbeard
 import telnetlib
 import re
 
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
+
+from six.moves import urllib
+
 
 try:
     import xml.etree.cElementTree as etree
@@ -121,9 +122,9 @@ class Notifier(object):
         # if a mount URL is provided then attempt to open a handle to that URL
         if mount:
             try:
-                req = urllib2.Request(mount)
+                req = urllib.request.Request(mount)
                 logger.log(u"Try to mount network drive via url: {0}".format(mount), logger.DEBUG)
-                handle = urllib2.urlopen(req)
+                handle = urllib.request.urlopen(req)
             except IOError as e:
                 if hasattr(e, 'reason'):
                     logger.log(u"NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason), logger.WARNING)
@@ -142,14 +143,14 @@ class Notifier(object):
             "arg2": "background",
             "arg3": ""
         }
-        params = urllib.urlencode(params)
+        params = urllib.parse.urlencode(params)
         updateUrl = UPDATE_URL % {"host": host, "params": params}
 
         # send the request to the server
         try:
-            req = urllib2.Request(updateUrl)
+            req = urllib.request.Request(updateUrl)
             logger.log(u"Sending NMJ scan update command via url: {0}".format(updateUrl), logger.DEBUG)
-            handle = urllib2.urlopen(req)
+            handle = urllib.request.urlopen(req)
             response = handle.read()
         except IOError as e:
             if hasattr(e, 'reason'):

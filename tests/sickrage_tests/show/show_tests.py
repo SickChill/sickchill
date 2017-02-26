@@ -33,6 +33,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
@@ -82,7 +83,7 @@ class ShowTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((use_shows, indexer_id), result) in tests.iteritems():
+            for ((use_shows, indexer_id), result) in six.iteritems(tests):
                 if use_shows:
                     self.assertEqual(Show.find(shows, indexer_id), result)
                 else:

@@ -62,7 +62,7 @@ def generator(_provider):
                 print 'SSLError on {0}: {1}'.format(_provider.name, ex(error.message))
                 raise
         except requests.exceptions.Timeout:
-            print 'Provider timed out'
+            print('Provider timed out')
 
     return _connectivity_test
 
@@ -71,10 +71,10 @@ class SniTests(unittest.TestCase):
     pass
 
 if __name__ == "__main__":
-    print "=================="
-    print "STARTING - Provider Connectivity TESTS and SSL/SNI"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - Provider Connectivity TESTS and SSL/SNI")
+    print("==================")
+    print("######################################################################")
     # Just checking all providers - we should make this error on non-existent urls.
     for provider in [p for p in providers.makeProviderList()]:
         test_name = 'test_{0}'.format(provider.name)

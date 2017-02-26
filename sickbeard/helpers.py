@@ -39,7 +39,6 @@ import ssl
 import stat
 import time
 import traceback
-import urllib
 import uuid
 import xml.etree.ElementTree as ET
 import zipfile
@@ -52,6 +51,8 @@ import cfscrape
 import requests
 from cachecontrol import CacheControl
 from requests.utils import urlparse
+import six
+from six.moves import urllib
 
 import sickbeard
 from sickbeard import classes, db, logger
@@ -163,7 +164,7 @@ def remove_non_release_groups(name):
     }
 
     _name = name
-    for remove_string, remove_type in removeWordsList.iteritems():
+    for remove_string, remove_type in six.iteritems(removeWordsList):
         if remove_type == 'search':
             _name = _name.replace(remove_string, '')
         elif remove_type == 'searchre':
@@ -182,7 +183,7 @@ def is_media_file(filename):
 
     # ignore samples
     try:
-        assert isinstance(filename, (str, unicode)), type(filename)
+        assert isinstance(filename, six.string_types), type(filename)
         filename = ek(os.path.basename, filename)
 
         if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
@@ -381,14 +382,14 @@ def moveFile(srcFile, destFile):
 def link(src, dst):
     """
     Create a file link from source to destination.
-    TODO: Make this unicode proof
+    TODO: Make this six.text_type proof
 
     :param src: Source file
     :param dst: Destination file
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(unicode(dst)), ctypes.c_wchar_p(unicode(src)), None) == 0:
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
@@ -420,7 +421,7 @@ def symlink(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(unicode(dst)), ctypes.c_wchar_p(unicode(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
             raise ctypes.WinError()
     else:
         ek(os.symlink, src, dst)
@@ -1073,7 +1074,7 @@ def is_hidden_folder(folder):
 
     def has_hidden_attribute(filepath):
         try:
-            attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(unicode(filepath)))
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(six.text_type(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
         except (AttributeError, AssertionError, OSError, IOError):
@@ -1366,12 +1367,12 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
 
         if params and isinstance(params, (list, dict)):
             for param in params:
-                if isinstance(params[param], unicode):
+                if isinstance(params[param], six.text_type):
                     params[param] = params[param].encode('utf-8')
 
         if post_data and isinstance(post_data, (list, dict)):
             for param in post_data:
-                if isinstance(post_data[param], unicode):
+                if isinstance(post_data[param], six.text_type):
                     post_data[param] = post_data[param].encode('utf-8')
 
         resp = session.request(
@@ -1524,7 +1525,7 @@ def generateCookieSecret():
 def disk_usage(path):
     if platform.system() == 'Windows':
         free = ctypes.c_ulonglong(0)
-        if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(unicode(path)), None, None, ctypes.pointer(free)) == 0:
+        if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(six.text_type(path)), None, None, ctypes.pointer(free)) == 0:
             raise ctypes.WinError()
         return free.value
 
@@ -1756,7 +1757,7 @@ MESSAGE_COUNTER = 0
 def add_site_message(message, level='danger'):
     to_add = dict(level=level, message=message)
 
-    for index, existing in sickbeard.SITE_MESSAGES.iteritems():
+    for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
         if re.sub(r'\d+', '#', existing['message']) == re.sub(r'\d+', '#', message):
             sickbeard.SITE_MESSAGES[index] = to_add
             return

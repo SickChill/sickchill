@@ -26,8 +26,6 @@ import rarfile
 import re
 import time
 import traceback
-import urllib
-
 try:
     import json
 except ImportError:
@@ -93,6 +91,10 @@ from sickrage.show.History import History as HistoryTool
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
+
+import six
+from six.moves import urllib
+
 
 mako_lookup = {}
 
@@ -266,7 +268,7 @@ class WebHandler(BaseHandler):
     def async_call(self, function):
         try:
             kwargs = self.request.arguments
-            for arg, value in kwargs.iteritems():
+            for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
                     kwargs[arg] = value[0]
 
@@ -1460,7 +1462,7 @@ class Home(WebRoot):
             return _("No scene exceptions")
 
         out = []
-        for season, names in iter(sorted(exceptionsList.iteritems())):
+        for season, names in iter(sorted(six.iteritems(exceptionsList))):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(names))
@@ -1613,8 +1615,8 @@ class Home(WebRoot):
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
 
-            if not isinstance(location, unicode):
-                location = ek(unicode, location, 'utf-8')
+            if not isinstance(location, six.text_type):
+                location = ek(six.text_type, location, 'utf-8')
 
             location = ek(os.path.normpath, location)
             old_location = ek(os.path.normpath, show_obj._location)
@@ -1766,7 +1768,7 @@ class Home(WebRoot):
         if show:
             show_obj = Show.find(sickbeard.showList, int(show))
             if show_obj:
-                showName = urllib.quote_plus(show_obj.name.encode('utf-8'))
+                showName = urllib.parse.quote_plus(show_obj.name.encode('utf-8'))
 
         if sickbeard.KODI_UPDATE_ONLYFIRST:
             host = sickbeard.KODI_HOST.split(",")[0].strip()
@@ -1916,7 +1918,7 @@ class Home(WebRoot):
             msg = _("Backlog was automatically started for the following seasons of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in segments.iteritems():
+            for season, segment in six.iteritems(segments):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
@@ -1935,7 +1937,7 @@ class Home(WebRoot):
             msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in segments.iteritems():
+            for season, segment in six.iteritems(segments):
                 cur_failed_queue_item = search_queue.FailedQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
@@ -2443,7 +2445,7 @@ class HomeAddShows(Home):
                 # add search results
                 results.setdefault(indexer, []).extend(indexerResults)
 
-        for i, shows in results.iteritems():
+        for i, shows in six.iteritems(results):
             final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
                                    show['seriesname'], show['firstaired']) for show in shows})
 
@@ -2713,7 +2715,7 @@ class HomeAddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
-            # print traceback.format_exc()
+            # print(traceback.format_exc())
             popular_shows = None
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
@@ -3427,7 +3429,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            dir_map[kwargs[cur_arg]] = ek(unicode, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
