@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import re
 
@@ -51,7 +51,7 @@ class CpasbienProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode == 'Season':
-                    search_string = re.sub(ur'(.*)S0?', ur'\1Saison ', search_string)
+                    search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
                 if mode != 'RSS':
                     logger.log(u"Search string: {0}".format

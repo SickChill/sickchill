@@ -1188,7 +1188,7 @@ def extractZip(archive, targetDir):
 
             # copy file (taken from zipfile's extract)
             source = zip_file.open(member)
-            target = file(ek(os.path.join, targetDir, filename), "wb")
+            target = open(ek(os.path.join, targetDir, filename), "wb")
             shutil.copyfileobj(source, target)
             source.close()
             target.close()
@@ -1199,7 +1199,7 @@ def extractZip(archive, targetDir):
         return False
 
 
-def backupConfigZip(fileList, archive, arcname=None):
+def backup_config_zip(fileList, archive, arcname=None):
     """
     Store the config file as a ZIP
 
@@ -1220,7 +1220,7 @@ def backupConfigZip(fileList, archive, arcname=None):
         return False
 
 
-def restoreConfigZip(archive, targetDir):
+def restore_config_zip(archive, targetDir):
     """
     Restores a Config ZIP file back in place
 

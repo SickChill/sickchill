@@ -12,7 +12,7 @@
                     <select name="min_level" id="min_level" class="form-control form-control-inline input-sm" title="Minimum log level">
                         <%
                             levels = LOGGING_LEVELS.keys()
-                            levels.sort(lambda x, y: cmp(LOGGING_LEVELS[x], LOGGING_LEVELS[y]))
+                            levels.sort(key=lambda x: LOGGING_LEVELS[x])
                             if not sickbeard.DEBUG:
                                 levels.remove('DEBUG')
                             if not sickbeard.DBDEBUG:

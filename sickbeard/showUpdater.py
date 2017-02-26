@@ -52,9 +52,9 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', ['theTVDB'])
         if result:
-            last_update = long(result[0][0])
+            last_update = int(result[0][0])
         else:
-            last_update = long(time.mktime(datetime.datetime.min.timetuple()))
+            last_update = int(time.mktime(datetime.datetime.min.timetuple()))
             cache_db_con.action('INSERT INTO lastUpdate (provider, `time`) VALUES (?, ?)', ['theTVDB', last_update])
 
         network_timezones.update_network_dict()

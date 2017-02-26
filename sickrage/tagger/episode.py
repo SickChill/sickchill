@@ -249,7 +249,7 @@ class EpisodeTags(object):
         attr = 'hrws'
         match = None
         if self.avc and self.tv == 'pd':
-            regex = re.compile(ur'(hr.ws.pdtv).{0}'.format(self.avc), re.I)
+            regex = re.compile(r'(hr.ws.pdtv).{0}'.format(self.avc), re.I)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
 
@@ -263,7 +263,7 @@ class EpisodeTags(object):
         attr = 'raw'
         match = None
         if self.res and self.tv == 'hd':
-            regex = re.compile(ur'({0}.hdtv)'.format(self.res), re.I)
+            regex = re.compile(r'({0}.hdtv)'.format(self.res), re.I)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
 

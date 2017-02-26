@@ -243,8 +243,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     finally:
         try:
             if result != default:
-                result = long(result)
-                result = max(result, 0)
+                result = max(int(result), 0)
         except (TypeError, ValueError):
             pass
 

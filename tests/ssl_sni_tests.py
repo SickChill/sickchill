@@ -23,6 +23,8 @@
 Test SNI and SSL
 """
 
+from __future__ import print_function, unicode_literals
+
 import os.path
 import sys
 import unittest
@@ -50,16 +52,16 @@ def generator(_provider):
         :return: test to run
         """
         if not _provider.url:
-            print '{0} has no url set, skipping'.format(_provider.name)
+            print('{0} has no url set, skipping'.format(_provider.name))
             return
 
         try:
             requests.head(_provider.url, verify=certifi.old_where(), timeout=10)
         except requests.exceptions.SSLError as error:
             if 'certificate verify failed' in str(error):
-                print 'Cannot verify certificate for {0}'.format(_provider.name)
+                print('Cannot verify certificate for {0}'.format(_provider.name))
             else:
-                print 'SSLError on {0}: {1}'.format(_provider.name, ex(error.message))
+                print('SSLError on {0}: {1}'.format(_provider.name, ex(error.message)))
                 raise
         except requests.exceptions.Timeout:
             print('Provider timed out')

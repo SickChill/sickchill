@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 from requests.compat import urljoin
 import re
 
@@ -203,7 +203,7 @@ class newpctProvider(TorrentProvider):
         title = re.sub(r'\[BLuRay[^\[]*]', '720p BluRay x264', title, flags=re.I)
         title = re.sub(r'\[BRrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
         title = re.sub(r'\[BDrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
-        
+
         #detect hdtv/bluray by url
         #hdtv 1080p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-610/hdtv-1080p-ac3-5-1/
         #hdtv 720p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
@@ -219,7 +219,7 @@ class newpctProvider(TorrentProvider):
         url_720p = re.search(r'720p', url, flags=re.I)
         url_1080p = re.search(r'1080p', url, flags=re.I)
         url_bluray = re.search(r'bluray', url, flags=re.I)
-        
+
         if not title_hdtv and url_hdtv:
             title += ' HDTV'
             if not title_x264:
@@ -240,8 +240,8 @@ class newpctProvider(TorrentProvider):
         # Language
         title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
         title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
-        title = re.sub(ur'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
-        title = re.sub(ur'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        title = re.sub(r'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        title = re.sub(r'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
 
         if re.search(r'\[V.O.[^\[]*]', title, flags=re.I):
             title += '-NEWPCTVO'

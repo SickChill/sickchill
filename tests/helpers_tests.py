@@ -64,8 +64,8 @@ Public Methods:
     set_up_anidb_connection
     makeZip
     extractZip
-    backupConfigZip
-    restoreConfigZip
+    backup_config_zip
+    restore_config_zip
     mapIndexersToShow
     touchFile
     getURL
@@ -191,14 +191,14 @@ class HelpersZipTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_backup_config_zip(self):
         """
-        Test backupConfigZip
+        Test backup_config_zip
         """
         pass
 
     @unittest.skip('Not yet implemented')
     def test_restore_config_zip(self):
         """
-        Test restoreConfigZip
+        Test restore_config_zip
         """
         pass
 

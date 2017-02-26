@@ -147,7 +147,7 @@ class CheckVersion(object):
             for filename in files:
                 source.append(ek(os.path.join, path, filename))
 
-        return helpers.backupConfigZip(source, target, sickbeard.DATA_DIR)
+        return helpers.backup_config_zip(source, target, sickbeard.DATA_DIR)
 
     def safe_to_update(self):
 

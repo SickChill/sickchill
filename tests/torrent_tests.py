@@ -50,7 +50,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         show = TVShow(1, 121361)
         show.name = "Italian Works"
         show.episodes = []
-        episode = TVEpisode(show, 05, 10)
+        episode = TVEpisode(show, 5, 10)
         episode.name = "Pines of Rome"
         episode.scene_season = 5
         episode.scene_episode = 10

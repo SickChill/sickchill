@@ -209,7 +209,7 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
         setup_test_show_dir()
         setup_test_processing_dir()
 
-        show = TVShow(1, 0001, 'en')
+        show = TVShow(1, 1, 'en')
         show.name = SHOW_NAME
         show.location = FILE_DIR
 
