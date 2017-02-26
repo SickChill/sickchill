@@ -1,4 +1,7 @@
 # coding=utf-8
+
+from __future__ import print_function, unicode_literals
+
 import os
 import posixpath
 import re
@@ -69,7 +72,7 @@ class imdbPopular(object):
                 if outline and len(outline) >= 2:
                     show['outline'] = outline[1].contents[0].strip("\"")
                 else:
-                    show['outline'] = u''
+                    show['outline'] = ''
 
                 popular_shows.append(show)
 

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 
 from requests.compat import urljoin
@@ -86,11 +88,11 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Username or password incorrect!', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -122,17 +124,17 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
                     search_params['keywords'] = search_string
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -141,7 +143,7 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     labels = [process_column_header(label) for label in torrent_rows[0]('td')]
@@ -165,8 +167,8 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the"
-                                               u" minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                    logger.log("Discarding torrent because it doesn't meet the"
+                                               " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
@@ -176,7 +178,7 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders,
                                     'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)

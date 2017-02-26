@@ -231,9 +231,9 @@ class TIVOMetadata(generic.GenericMetadata):
             # Micrsoft Word's smartquotes can die in a fire.
             sanitizedDescription = curEpToWrite.description
             # Replace double curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u201c", "\"").replace(u"\u201d", "\"")
+            sanitizedDescription = sanitizedDescription.replace("\u201c", "\"").replace("\u201d", "\"")
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(u"\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02BC", "'")
 
             data += ("description : " + sanitizedDescription + "\n")
 

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 import traceback
 from requests.utils import dict_from_cookiejar
@@ -59,7 +61,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
     def _check_auth(self):
 
         if not self.username or not self.password or not self.pin:
-            logger.log(u"Invalid username or password or pin. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password or pin. Check your settings", logger.WARNING)
 
         return True
 
@@ -73,11 +75,11 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Username or password incorrect', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -89,11 +91,11 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         for mode in search_params:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_url = self.urls['search'] % (quote(search_string), self.categories)
@@ -107,12 +109,12 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         # Continue only if one Release is found
                         empty = html.find('h2', text="No .torrents fit this filter criteria")
                         if empty:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         torrent_table = html.find('table', style='border: none; width: 100%;')
                         if not torrent_table:
-                            logger.log(u"Could not find table of torrents", logger.ERROR)
+                            logger.log("Could not find table of torrents", logger.ERROR)
                             continue
 
                         torrent_rows = torrent_table('tr', class_='browse')
@@ -148,18 +150,18 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

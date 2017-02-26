@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import os
 import time
 import traceback
@@ -110,7 +112,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         """
         replacements = dict(mode=mode.title(), directory=directory)
         if not directory:
-            return log_helper(u"{mode} post-processing attempted but directory is not set: {directory}".format(
+            return log_helper("{mode} post-processing attempted but directory is not set: {directory}".format(
                 **replacements), logger.WARNING)
 
         # if not ek(os.path.isdir, directory):
@@ -119,7 +121,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
         if not ek(os.path.isabs, directory):
             return log_helper(
-                u"{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {directory}".format(
+                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {directory}".format(
                     **replacements), logger.WARNING)
 
         item = self.find_in_queue(directory, mode)
@@ -160,7 +162,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param mode: processing type: auto/manual
         :return: None
         """
-        super(PostProcessorTask, self).__init__(u'{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+        super(PostProcessorTask, self).__init__('{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
         self.directory = directory
         self.filename = filename
@@ -206,7 +208,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.log(u"Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.directory))
+            logger.log("Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.directory))
             self.last_result = process_dir(
                 process_path=self.directory,
                 release_name=self.filename,
@@ -217,7 +219,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 failed=self.failed,
                 mode=self.mode
             )
-            logger.log(u"{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.directory))
+            logger.log("{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.directory))
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])

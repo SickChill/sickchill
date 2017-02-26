@@ -19,7 +19,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import ast
 import base64
@@ -60,9 +60,6 @@ from sickbeard.common import USER_AGENT
 from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
 from sickrage.helper.encoding import ek
 from sickrage.show.Show import Show
-
-
-
 
 
 # pylint: disable=protected-access
@@ -1070,7 +1067,7 @@ def is_hidden_folder(folder):
     """
     def is_hidden(filepath):
         name = ek(os.path.basename, ek(os.path.abspath, filepath))
-        return name == u'@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
+        return name == '@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
         try:

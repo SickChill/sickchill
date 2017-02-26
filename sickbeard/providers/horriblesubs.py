@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 
@@ -54,7 +56,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 next_id = 0
@@ -63,7 +65,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 }
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {0}".format(search_string.decode("utf-8")), logger.DEBUG)
                     search_params["value"] = search_string
                     target_url = self.urls['search']
                 else:
@@ -83,7 +85,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 1:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     for torrent_row in torrent_rows:
@@ -104,7 +106,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0}".format(title), logger.DEBUG)
+                            logger.log("Found result: {0}".format(title), logger.DEBUG)
 
                         items.append(item)
 

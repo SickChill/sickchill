@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import threading
 import time
@@ -103,7 +105,7 @@ class Scheduler(threading.Thread):
                     if should_run:
                         self.lastRun = current_time
                         if not self.silent:
-                            logger.log(u"Starting new thread: " + self.name, logger.DEBUG)
+                            logger.log("Starting new thread: " + self.name, logger.DEBUG)
                         self.action.run(self.force)
 
                     if self.force:
@@ -113,5 +115,5 @@ class Scheduler(threading.Thread):
             # exiting thread
             self.stop.clear()
         except Exception as e:
-            logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
+            logger.log("Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
             logger.log(repr(traceback.format_exc()), logger.DEBUG)

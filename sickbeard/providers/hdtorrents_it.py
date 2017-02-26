@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 from requests.utils import dict_from_cookiejar
 
@@ -57,7 +59,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -71,11 +73,11 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Lei non e registrato in sistema.', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -87,26 +89,26 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: %s" % mode, logger.DEBUG)
+            logger.log("Search Mode: %s" % mode, logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % quote_plus(search_string)
-                    logger.log(u"Search string: %s" % search_string, logger.DEBUG)
+                    logger.log("Search string: %s" % search_string, logger.DEBUG)
                 else:
                     search_url = self.urls['rss']
 
                 if self.freeleech:
                     search_url = search_url.replace('active=1', 'active=5')
 
-                logger.log(u"Search URL: %s" % search_url, logger.DEBUG)
+                logger.log("Search URL: %s" % search_url, logger.DEBUG)
 
                 data = self.get_url(search_url)
                 if not data or 'Error' in data:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 if data.find('Non abbiamo trovato nulla') != -1:
-                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
 
                 # Search result page contains some invalid html that prevents html parser from returning all data.
@@ -115,7 +117,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
                 try:
                     index = data.lower().index('<tbody id="highlighted"')
                 except ValueError:
-                    logger.log(u"Could not find table of torrents highlighted", logger.DEBUG)
+                    logger.log("Could not find table of torrents highlighted", logger.DEBUG)
                     continue
 
                 # data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
@@ -123,7 +125,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
                 with BS4Parser(data, 'html5lib') as html:
                     if not html:
-                        logger.log(u"No html data parsed from provider", logger.DEBUG)
+                        logger.log("No html data parsed from provider", logger.DEBUG)
                         continue
 
                     torrent_rows = []
@@ -132,7 +134,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
                         torrent_rows = torrent_table.find_all('tr')
 
                     if not torrent_rows:
-                        logger.log(u"Could not find results in returned data", logger.DEBUG)
+                        logger.log("Could not find results in returned data", logger.DEBUG)
                         continue
 
                     # Cat., Active, Filename, Dl, Wl, Added, Size, Uploader, S, L, C
@@ -168,12 +170,13 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log(
+                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log(u"Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

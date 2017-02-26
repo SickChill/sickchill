@@ -96,7 +96,7 @@ class GenericMetadata(object):
         config_list = [self.show_metadata, self.episode_metadata, self.fanart, self.poster, self.banner,
                        self.episode_thumbnails, self.season_posters, self.season_banners, self.season_all_poster,
                        self.season_all_banner]
-        return u'|'.join([str(int(x)) for x in config_list])
+        return '|'.join([str(int(x)) for x in config_list])
 
     def get_id(self):
         return GenericMetadata.makeID(self.name)
@@ -750,7 +750,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log("Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
@@ -819,7 +819,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log("Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return result
 
         # if we have no season banners then just finish
@@ -873,7 +873,7 @@ class GenericMetadata(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log("Unable to look up show on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log(u"{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
             return result
 
         # if we have no season banners then just finish

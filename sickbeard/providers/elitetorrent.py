@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 import time
 import traceback
@@ -76,16 +78,16 @@ class EliteTorrentProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
-                logger.log(u"Show info is not spanish, skipping provider search", logger.DEBUG)
+                logger.log("Show info is not spanish, skipping provider search", logger.DEBUG)
                 continue
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
@@ -102,7 +104,7 @@ class EliteTorrentProvider(TorrentProvider):
                         torrent_rows = torrent_table('tr') if torrent_table else []
 
                         if len(torrent_rows) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for row in torrent_rows[1:]:
@@ -110,22 +112,22 @@ class EliteTorrentProvider(TorrentProvider):
                                 download_url = self.urls['base_url'] + row.find('a')['href']
                                 """
                                 Trick for accents for this provider.
-                                
-                                - data = self.get_url(self.urls['search'], params=search_params, returns='text') - 
-                                returns latin1 coded text and this makes that the title used for the search 
-                                and the title retrieved from the parsed web page doesn't match so I get 
+
+                                - data = self.get_url(self.urls['search'], params=search_params, returns='text') -
+                                returns latin1 coded text and this makes that the title used for the search
+                                and the title retrieved from the parsed web page doesn't match so I get
                                 "No needed episodes found during backlog search for: XXXX"
-                                
+
                                 This is not the best solution but it works.
-                                
+
                                 First encode latin1 and then decode utf8 to remains six.text_type
                                 """
                                 row_title = row.find('a', class_='nombre')['title']
                                 title = self._processTitle(row_title.encode('latin-1').decode('utf8'))
-                                
+
                                 seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
                                 leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
-                                
+
                                 #seeders are not well reported. Set 1 in case of 0
                                 seeders = max(1, seeders)
 
@@ -141,18 +143,18 @@ class EliteTorrentProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
                 except Exception:
-                    logger.log(u"Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.WARNING)
+                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

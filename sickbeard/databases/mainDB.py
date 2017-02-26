@@ -139,7 +139,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for cur_duplicate in sql_results:
 
-            logger.log("Duplicate show detected! " + column + ": " + str(cur_duplicate[column]) + u" count: " + str(
+            logger.log("Duplicate show detected! " + column + ": " + str(cur_duplicate[column]) + " count: " + str(
                 cur_duplicate["count"]), logger.DEBUG)
 
             cur_dupe_results = self.connection.select(
@@ -149,7 +149,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
             for cur_dupe_id in cur_dupe_results:
                 logger.log(
-                    "Deleting duplicate show with " + column + ": " + str(cur_dupe_id[column]) + u" show_id: " + str(
+                    "Deleting duplicate show with " + column + ": " + str(cur_dupe_id[column]) + " show_id: " + str(
                         cur_dupe_id["show_id"]))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
@@ -571,7 +571,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
              common.Quality.UNKNOWN], [])
 
         # update qualities (including templates)
-        logger.log(u"[1/4] Updating pre-defined templates and the quality for each show...", logger.INFO)
+        logger.log("[1/4] Updating pre-defined templates and the quality for each show...", logger.INFO)
         cl = []
         shows = self.connection.select("SELECT * FROM tv_shows")
         for cur_show in shows:
@@ -585,7 +585,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         self.connection.mass_action(cl)
 
         # update status that are are within the old hdwebdl (1<<3 which is 8) and better -- exclude unknown (1<<15 which is 32768)
-        logger.log(u"[2/4] Updating the status for the episodes within each show...", logger.INFO)
+        logger.log("[2/4] Updating the status for the episodes within each show...", logger.INFO)
         cl = []
         episodes = self.connection.select("SELECT * FROM tv_episodes WHERE status < 3276800 AND status >= 800")
         for cur_episode in episodes:
@@ -596,7 +596,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         # make two seperate passes through the history since snatched and downloaded (action & quality) may not always coordinate together
 
         # update previous history so it shows the correct action
-        logger.log(u"[3/4] Updating history to reflect the correct action...", logger.INFO)
+        logger.log("[3/4] Updating history to reflect the correct action...", logger.INFO)
         cl = []
         historyAction = self.connection.select("SELECT * FROM history WHERE action < 3276800 AND action >= 800")
         for cur_entry in historyAction:
@@ -605,7 +605,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         self.connection.mass_action(cl)
 
         # update previous history so it shows the correct quality
-        logger.log(u"[4/4] Updating history to reflect the correct quality...", logger.INFO)
+        logger.log("[4/4] Updating history to reflect the correct quality...", logger.INFO)
         cl = []
         historyQuality = self.connection.select("SELECT * FROM history WHERE quality < 32768 AND quality >= 8")
         for cur_entry in historyQuality:
@@ -932,7 +932,7 @@ class AddSportsOption(AddRequireAndIgnoreWords):
 
         if self.hasColumn("tv_shows", "air_by_date") and self.hasColumn("tv_shows", "sports"):
             # update sports column
-            logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.INFO)
+            logger.log("[4/4] Updating tv_shows to reflect the correct sports value...", logger.INFO)
             cl = []
             historyQuality = self.connection.select(
                 "SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")

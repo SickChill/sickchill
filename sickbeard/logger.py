@@ -459,7 +459,7 @@ def submit_errors(*args, **kwargs):
 log_file = None
 
 LOG_FILTERS = {
-    '<NONE>': _(u'&lt;No Filter&gt;'),
+    '<NONE>': _('&lt;No Filter&gt;'),
     'DAILYSEARCHER': _('Daily Searcher'),
     'BACKLOG': _('Backlog'),
     'SHOWUPDATER': _('Show Updater'),

@@ -22,6 +22,8 @@
 # pylint: disable=line-too-long,too-many-lines,abstract-method
 # pylint: disable=no-member,method-hidden,missing-docstring,invalid-name
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import io
 import os
@@ -109,7 +111,7 @@ class ApiHandler(RequestHandler):
             'image': self._out_as_image,
         }
 
-        access_msg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
+        access_msg = "API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
         logger.log(access_msg, logger.DEBUG)
 
         # set the original call_dispatcher as the local _call_dispatcher
@@ -124,7 +126,7 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
-            logger.log(u"API :: " + ex(e), logger.ERROR)
+            logger.log("API :: " + ex(e), logger.ERROR)
             error_data = {
                 "error_msg": ex(e),
                 "args": args,
@@ -156,7 +158,7 @@ class ApiHandler(RequestHandler):
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
-            logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
+            logger.log("API :: " + traceback.format_exc(), logger.DEBUG)
             out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
         return out
 
@@ -166,8 +168,8 @@ class ApiHandler(RequestHandler):
             or calls the TVDBShorthandWrapper when the first args element is a number
             or returns an error that there is no such cmd
         """
-        logger.log(u"API :: all args: '" + str(args) + "'", logger.DEBUG)
-        logger.log(u"API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
+        logger.log("API :: all args: '" + str(args) + "'", logger.DEBUG)
+        logger.log("API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
 
         commands = None
         if args:
@@ -186,7 +188,7 @@ class ApiHandler(RequestHandler):
                 else:
                     cmd_index = None
 
-                logger.log(u"API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
+                logger.log("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
                         multi_commands):  # skip these cmd while chaining
                     try:
@@ -408,11 +410,11 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.log(u'API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
+            logger.log('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(u'param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
+            raise ApiError('param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
 
         return value
 
@@ -434,7 +436,7 @@ class ApiCall(ApiHandler):
 
             if error:
                 # this is kinda a ApiError but raising an error is the only way of quitting here
-                raise ApiError(u"param: '" + str(name) + "' with given value: '" + str(
+                raise ApiError("param: '" + str(name) + "' with given value: '" + str(
                     value) + "' is out of allowed range '" + str(allowed_values) + "'")
 
 
@@ -947,7 +949,7 @@ class CMDEpisodeSetStatus(ApiCall):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
-                logger.log(u"API :: Starting backlog for " + show_obj.name + " season " + str(
+                logger.log("API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
 
             extra_msg = " Backlog started"
@@ -1651,7 +1653,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
                 try:
                     api_data = t[str(self.name).encode()]
                 except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     continue
 
                 for curSeries in api_data:
@@ -1675,12 +1677,12 @@ class CMDSickBeardSearchIndexers(ApiCall):
                 try:
                     my_show = t[int(self.indexerid)]
                 except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
                 if not my_show.data['seriesname']:
                     logger.log(
-                        u"API :: Found show with indexerid: " + str(
+                        "API :: Found show with indexerid: " + str(
                             self.indexerid) + ", however it contained no show name", logger.DEBUG)
                     return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
@@ -2145,11 +2147,11 @@ class CMDShowAddNew(ApiCall):
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
-            logger.log(u"Skipping initial creation of " + show_path + " due to config.ini setting")
+            logger.log("Skipping initial creation of " + show_path + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_path)
             if not dir_exists:
-                logger.log(u"API :: Unable to create the folder " + show_path + ", can't add the show", logger.ERROR)
+                logger.log("API :: Unable to create the folder " + show_path + ", can't add the show", logger.ERROR)
                 return _responds(RESULT_FAILURE, {"path": show_path},
                                  "Unable to create the folder " + show_path + ", can't add the show")
             else:
@@ -2705,7 +2707,7 @@ class CMDShowUpdate(ApiCall):
             sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log(u"API::Unable to update show: {0}".format(e), logger.DEBUG)
+            logger.log("API::Unable to update show: {0}".format(e), logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 

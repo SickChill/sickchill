@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 
+from __future__ import print_function, unicode_literals
 
 import sickbeard
 from sickbeard import logger, search_queue, show_name_helpers
@@ -43,26 +44,26 @@ class FailedProcessor(object):
 
         :return: True
         """
-        self._log(u"Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
+        self._log("Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
 
         releaseName = show_name_helpers.determineReleaseName(self.dir_name, self.nzb_name)
         if not releaseName:
-            self._log(u"Warning: unable to find a valid release name.", logger.WARNING)
+            self._log("Warning: unable to find a valid release name.", logger.WARNING)
             raise FailedPostProcessingFailedException()
 
         try:
             parsed = NameParser(False).parse(releaseName)
         except (InvalidNameException, InvalidShowException) as error:
-            self._log(u"{0}".format(error), logger.DEBUG)
+            self._log("{0}".format(error), logger.DEBUG)
             raise FailedPostProcessingFailedException()
 
-        self._log(u"name_parser info: ", logger.DEBUG)
-        self._log(u" - " + str(parsed.series_name), logger.DEBUG)
-        self._log(u" - " + str(parsed.season_number), logger.DEBUG)
-        self._log(u" - " + str(parsed.episode_numbers), logger.DEBUG)
-        self._log(u" - " + str(parsed.extra_info), logger.DEBUG)
-        self._log(u" - " + str(parsed.release_group), logger.DEBUG)
-        self._log(u" - " + str(parsed.air_date), logger.DEBUG)
+        self._log("name_parser info: ", logger.DEBUG)
+        self._log(" - " + str(parsed.series_name), logger.DEBUG)
+        self._log(" - " + str(parsed.season_number), logger.DEBUG)
+        self._log(" - " + str(parsed.episode_numbers), logger.DEBUG)
+        self._log(" - " + str(parsed.extra_info), logger.DEBUG)
+        self._log(" - " + str(parsed.release_group), logger.DEBUG)
+        self._log(" - " + str(parsed.air_date), logger.DEBUG)
 
         for episode in parsed.episode_numbers:
             segment = parsed.show.getEpisode(parsed.season_number, episode)
