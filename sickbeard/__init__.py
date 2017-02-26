@@ -32,6 +32,7 @@ import rarfile
 try:
     import pytz  # pylint: disable=unused-import
 except ImportError:
+    pytz = None
     from pkg_resources import require
     require('pytz')
 
@@ -41,7 +42,7 @@ from sickbeard.common import SD, SKIPPED, WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, \
+from sickbeard.config import check_section, check_setting_int, check_setting_str, \
     check_setting_float, check_setting_bool, ConfigMigrator
 from sickbeard import db, helpers, scheduler, search_queue, show_queue, logger, \
     naming, dailysearcher, metadata, providers
@@ -706,30 +707,30 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         if __INITIALIZED__:
             return False
 
-        CheckSection(CFG, 'General')
-        CheckSection(CFG, 'Blackhole')
-        CheckSection(CFG, 'Newzbin')
-        CheckSection(CFG, 'SABnzbd')
-        CheckSection(CFG, 'NZBget')
-        CheckSection(CFG, 'KODI')
-        CheckSection(CFG, 'PLEX')
-        CheckSection(CFG, 'Emby')
-        CheckSection(CFG, 'Growl')
-        CheckSection(CFG, 'Prowl')
-        CheckSection(CFG, 'Twitter')
-        CheckSection(CFG, 'Boxcar2')
-        CheckSection(CFG, 'NMJ')
-        CheckSection(CFG, 'NMJv2')
-        CheckSection(CFG, 'Synology')
-        CheckSection(CFG, 'SynologyNotifier')
-        CheckSection(CFG, 'pyTivo')
-        CheckSection(CFG, 'NMA')
-        CheckSection(CFG, 'Pushalot')
-        CheckSection(CFG, 'Pushbullet')
-        CheckSection(CFG, 'Subtitles')
-        CheckSection(CFG, 'pyTivo')
-        CheckSection(CFG, 'Slack')
-        CheckSection(CFG, 'Discord')
+        check_section(CFG, 'General')
+        check_section(CFG, 'Blackhole')
+        check_section(CFG, 'Newzbin')
+        check_section(CFG, 'SABnzbd')
+        check_section(CFG, 'NZBget')
+        check_section(CFG, 'KODI')
+        check_section(CFG, 'PLEX')
+        check_section(CFG, 'Emby')
+        check_section(CFG, 'Growl')
+        check_section(CFG, 'Prowl')
+        check_section(CFG, 'Twitter')
+        check_section(CFG, 'Boxcar2')
+        check_section(CFG, 'NMJ')
+        check_section(CFG, 'NMJv2')
+        check_section(CFG, 'Synology')
+        check_section(CFG, 'SynologyNotifier')
+        check_section(CFG, 'pyTivo')
+        check_section(CFG, 'NMA')
+        check_section(CFG, 'Pushalot')
+        check_section(CFG, 'Pushbullet')
+        check_section(CFG, 'Subtitles')
+        check_section(CFG, 'pyTivo')
+        check_section(CFG, 'Slack')
+        check_section(CFG, 'Discord')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version')

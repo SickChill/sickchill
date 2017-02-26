@@ -18,10 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import os.path
 import re
-import urlparse
+
+import six
+
+# noinspection PyUnresolvedReferences
+from six.moves.urllib import parse
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
@@ -31,7 +37,7 @@ from sickrage.helper.encoding import ek
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
 # http://bugs.python.org/issue23636
-urlparse.uses_netloc.append('scgi')
+parse.uses_netloc.append('scgi')
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
@@ -202,6 +208,7 @@ def change_tv_download_dir(tv_download_dir):
             return False
 
     return True
+
 
 def change_unpack_dir(unpack_dir):
     """
@@ -430,13 +437,13 @@ def change_process_automatically(process_automatically):
         sickbeard.autoPostProcessorScheduler.silent = True
 
 
-def CheckSection(CFG, sec):
+def check_section(cfg, sec):
     """ Check if INI section exists, if not create it """
 
-    if sec in CFG:
+    if sec in cfg:
         return True
 
-    CFG[sec] = {}
+    cfg[sec] = {}
     return False
 
 
@@ -448,8 +455,8 @@ def checkbox_to_value(option, value_on=True, value_off=False):
 
     if isinstance(option, list):
         option = option[-1]
-    if isinstance(option, (str, unicode)):
-        option = str(option).strip().lower()
+    if isinstance(option, six.string_types):
+        option = six.text_type(option).strip().lower()
 
     if option in (True, 'on', 'true', value_on) or try_int(option) > 0:
         return value_on
@@ -478,7 +485,7 @@ def clean_host(host, default_port=None):
                 host = cleaned_host + ':' + cleaned_port
 
             elif default_port:
-                host = cleaned_host + ':' + str(default_port)
+                host = cleaned_host + ':' + six.text_type(default_port)
 
             else:
                 host = cleaned_host
@@ -522,12 +529,12 @@ def clean_url(url):
         if '://' not in url:
             url = '//' + url
 
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(url, 'http')
+        scheme, netloc, path, query, fragment = parse.urlsplit(url, 'http')
 
         if not path:
             path += '/'
 
-        cleaned_url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+        cleaned_url = parse.urlunsplit((scheme, netloc, path, query, fragment))
 
     else:
         cleaned_url = ''
@@ -536,9 +543,9 @@ def clean_url(url):
 
 
 ################################################################################
-# Minimax                                                                      #
+# min_max                                                                      #
 ################################################################################
-def minimax(val, default, low, high):
+def min_max(val, default, low, high):
     """ Return value forced within range """
 
     val = try_int(val, default)
@@ -552,89 +559,114 @@ def minimax(val, default, low, high):
 
 
 ################################################################################
-# Check_setting_int                                                            #
+# check_setting_int                                                            #
 ################################################################################
 def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
+
+    if not isinstance(def_val, int):
+        logger.log(
+            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='int', dt=type(def_val)), logger.ERROR)
+
     try:
+        if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
+            raise ValueError
+
         my_val = config[cfg_name][item_name]
-        if str(my_val).lower() == "true":
+
+        if six.text_type(my_val).lower() == "true":
             my_val = 1
-        elif str(my_val).lower() == "false":
+        elif six.text_type(my_val).lower() == "false":
             my_val = 0
 
         my_val = int(my_val)
 
-        if str(my_val) == str(None):
-            raise
-    except Exception:
+        if six.text_type(my_val) == six.text_type(None):
+            raise ValueError
+    except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
-        try:
-            config[cfg_name][item_name] = my_val
-        except Exception:
+
+        if cfg_name not in config:
             config[cfg_name] = {}
-            config[cfg_name][item_name] = my_val
+
+        config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+        logger.log(item_name + " -> " + six.text_type(my_val), logger.DEBUG)
 
     return my_val
 
 
 ################################################################################
-# Check_setting_float                                                          #
+# check_setting_float                                                          #
 ################################################################################
-def check_setting_float(config, cfg_name, item_name, def_val, silent=True):
+def check_setting_float(config, cfg_name, item_name, def_val=0.0, silent=True):
+
+    if not isinstance(def_val, float):
+        logger.log(
+            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='float', dt=type(def_val)), logger.ERROR)
+
     try:
+        if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
+            raise ValueError
+
         my_val = float(config[cfg_name][item_name])
-        if str(my_val) == str(None):
-            raise
-    except Exception:
+        if six.text_type(my_val) == six.text_type(None):
+            raise ValueError
+    except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
-        try:
-            config[cfg_name][item_name] = my_val
-        except Exception:
+
+        if cfg_name not in config:
             config[cfg_name] = {}
-            config[cfg_name][item_name] = my_val
+
+        config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+        logger.log(item_name + " -> " + six.text_type(my_val), logger.DEBUG)
 
     return my_val
 
 
 ################################################################################
-# Check_setting_str                                                            #
+# check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val='', silent=True, censor_log=False):
+def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), silent=True, censor_log=False):
+
+    if not isinstance(def_val, six.string_types):
+        logger.log(
+            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='string', dt=type(def_val)), logger.ERROR)
+
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
-    if bool(item_name.find('password') + 1):
-        encryption_version = sickbeard.ENCRYPTION_VERSION
-    else:
-        encryption_version = 0
+    encryption_version = (0, sickbeard.ENCRYPTION_VERSION)['password' in item_name]
 
     try:
-        my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
-        if str(my_val) == str(None):
-            raise
-    except Exception:
-        my_val = def_val
-        try:
-            config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
-        except Exception:
-            config[cfg_name] = {}
-            config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
+        if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
+            raise ValueError
 
-    if (censor_log or (cfg_name, item_name) in logger.censored_items.iteritems()) and not item_name.endswith('custom_url'):
+        my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
+        if six.text_type(my_val) == six.text_type(None) or not six.text_type(my_val):
+            raise ValueError
+    except (ValueError, IndexError, KeyError):
+        my_val = def_val
+
+        if cfg_name not in config:
+            config[cfg_name] = {}
+
+        config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
+
+    if (censor_log or (cfg_name, item_name) in six.iteritems(logger.censored_items)) and not item_name.endswith('custom_url'):
         logger.censored_items[cfg_name, item_name] = my_val
 
     if not silent:
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
 
-    return str(my_val)
+    return six.text_type(my_val)
 
 
 ################################################################################
-# Check_setting_bool                                                           #
+# check_setting_bool                                                           #
 ################################################################################
 def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     try:
@@ -643,8 +675,16 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
                 "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
                     dom=cfg_name, key=item_name, t='bool', dt=type(def_val)), logger.ERROR)
 
-        my_val = checkbox_to_value(config[cfg_name][item_name])
-    except (KeyError, IndexError):
+        if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
+            raise ValueError
+
+        my_val = config[cfg_name][item_name]
+        my_val = six.text_type(my_val)
+        if my_val == six.text_type(None) or not my_val:
+            raise ValueError
+
+        my_val = checkbox_to_value(my_val)
+    except (KeyError, IndexError, ValueError):
         my_val = bool(def_val)
 
         if cfg_name not in config:
@@ -653,7 +693,7 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+        logger.log(item_name + " -> " + six.text_type(my_val), logger.DEBUG)
 
     return my_val
 
@@ -689,7 +729,9 @@ class ConfigMigrator(object):
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
                 u"""Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
-                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(self.config_version, self.expected_config_version)
+                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(
+                    self.config_version, self.expected_config_version
+                )
             )
 
         sickbeard.CONFIG_VERSION = self.config_version
@@ -709,8 +751,8 @@ class ConfigMigrator(object):
                 logger.log(u"Proceeding with upgrade")
 
             # do the migration, expect a method named _migrate_v<num>
-            logger.log(u"Migrating config up to version " + str(next_version) + migration_name)
-            getattr(self, '_migrate_v' + str(next_version))()
+            logger.log(u"Migrating config up to version " + six.text_type(next_version) + migration_name)
+            getattr(self, '_migrate_v' + six.text_type(next_version))()
             self.config_version = next_version
 
             # save new config after migration
@@ -749,7 +791,7 @@ class ConfigMigrator(object):
             if old_season_format:
                 try:
                     new_season_format = old_season_format % 9
-                    new_season_format = str(new_season_format).replace('09', '%0S')
+                    new_season_format = six.text_type(new_season_format).replace('09', '%0S')
                     new_season_format = new_season_format.replace('9', '%S')
 
                     logger.log(
@@ -832,7 +874,7 @@ class ConfigMigrator(object):
     def _migrate_v2():
         return
 
-    # Migration v2: Rename omgwtfnzb variables
+    # Migration v3: Rename omgwtfnzb variables
     def _migrate_v3(self):
         """
         Reads in the old naming settings from your config and generates a new config template from them.
@@ -909,7 +951,7 @@ class ConfigMigrator(object):
 
         use_banner = check_setting_bool(self.config_obj, 'General', 'use_banner')
 
-        def _migrate_metadata(metadata, metadata_name, use_banner):
+        def _migrate_metadata(metadata, metadata_name, _use_banner):
             cur_metadata = metadata.split('|')
             # if target has the old number of values, do upgrade
             if len(cur_metadata) == 6:
@@ -920,8 +962,8 @@ class ConfigMigrator(object):
                 cur_metadata.append('0')
                 # swap show fanart, show poster
                 cur_metadata[3], cur_metadata[2] = cur_metadata[2], cur_metadata[3]
-                # if user was using use_banner to override the poster, instead enable the banner option and deactivate poster
-                if metadata_name == 'XBMC' and use_banner:
+                # if user was using _use_banner to override the poster, instead enable the banner option and deactivate poster
+                if metadata_name == 'XBMC' and _use_banner:
                     cur_metadata[4], cur_metadata[3] = cur_metadata[3], '0'
                 # write new format
                 metadata = '|'.join(cur_metadata)
@@ -964,19 +1006,22 @@ class ConfigMigrator(object):
         sickbeard.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
         sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
-    # Migration v6: Use version 2 for password encryption
+    # Migration v7: Use version 2 for password encryption
     @staticmethod
     def _migrate_v7():
         sickbeard.ENCRYPTION_VERSION = 2
 
+    # Migration v8: Rename plex settings
     def _migrate_v8(self):
         sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host')
         sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', censor_log=True)
         sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', censor_log=True)
         sickbeard.USE_PLEX_SERVER = check_setting_bool(self.config_obj, 'Plex', 'use_plex')
 
+    # Migration v9: Rename autopostprocesser to autopostprocessor
     def _migrate_v9(self):
         sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
 
+    # Migration v10: Change flatten_folders_default to season_folders_default (inverted)
     def _migrate_v10(self):
-        sickbeard.SEASON_FOLDERS_DEFAULT = check_setting_str(self.config_obj, 'General', 'flatten_folders_default')
+        sickbeard.SEASON_FOLDERS_DEFAULT = not check_setting_str(self.config_obj, 'General', 'flatten_folders_default')

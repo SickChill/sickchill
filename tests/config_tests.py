@@ -37,12 +37,12 @@ Methods
     change_use_trakt
     change_use_subtitles
     change_process_automatically
-    CheckSection
+    check_section
     checkbox_to_value
     clean_host
     clean_hosts
     clean_url
-    minimax
+    min_max
     check_setting_int
     check_setting_float
     check_setting_str
@@ -71,11 +71,11 @@ class ConfigTestBasic(unittest.TestCase):
 
     def test_check_section(self):
         """
-        Test CheckSection
+        Test check_section
         """
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        self.assertFalse(config.CheckSection(CFG, 'General'))
-        self.assertTrue(config.CheckSection(CFG, 'General'))
+        self.assertFalse(config.check_section(CFG, 'General'))
+        self.assertTrue(config.check_section(CFG, 'General'))
 
     def test_checkbox_to_value(self):
         """
@@ -143,12 +143,12 @@ class ConfigTestBasic(unittest.TestCase):
 
     def test_mini_max(self):
         """
-        Test minimax
+        Test min_max
         """
 
-        self.assertEqual(config.minimax('100', default=50, low=50, high=200), 100)
-        self.assertEqual(config.minimax('25', default=50, low=50, high=200), 50)
-        self.assertEqual(config.minimax('250', default=50, low=50, high=200), 200)
+        self.assertEqual(config.min_max('100', default=50, low=50, high=200), 100)
+        self.assertEqual(config.min_max('25', default=50, low=50, high=200), 50)
+        self.assertEqual(config.min_max('250', default=50, low=50, high=200), 200)
 
     def test_check_setting_int(self):
         """
@@ -156,7 +156,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         # setup
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        config.CheckSection(CFG, 'General')
+        config.check_section(CFG, 'General')
         CFG['General']['indexer_timeout'] = 60
         CFG['General']['use_icacls'] = 'True'
         CFG['General']['use_nzbs'] = 'False'
@@ -177,7 +177,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         # setup
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        config.CheckSection(CFG, 'General')
+        config.check_section(CFG, 'General')
         CFG['General']['fanart_background_opacity'] = 0.2
         CFG['General']['log_size'] = None
         # normal
@@ -193,7 +193,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         # setup
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        config.CheckSection(CFG, 'General')
+        config.check_section(CFG, 'General')
         CFG['General']['process_method'] = "copy"
         CFG['General']['git_password'] = "SFa342FHb_"
         CFG['General']['extra_scripts'] = None
@@ -212,7 +212,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         # setup
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        config.CheckSection(CFG, 'General')
+        config.check_section(CFG, 'General')
         CFG['General']['debug'] = True
         CFG['General']['season_folders_default'] = False
         # normal
@@ -475,7 +475,7 @@ class ConfigTestMigrator(unittest.TestCase):
         # TODO: Assert the 'too-advanced-config-version' error
 
         CFG = ConfigObj('config.ini', encoding='UTF-8')
-        config.CheckSection(CFG, 'General')
+        config.check_section(CFG, 'General')
         CFG['General']['config_version'] = 0
         sickbeard.CONFIG_VERSION = 11
         sickbeard.CONFIG_FILE = 'config.ini'
