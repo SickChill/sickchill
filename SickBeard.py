@@ -366,10 +366,11 @@ class SickRage(object):
         sys.stdout.flush()
         sys.stderr.flush()
 
+
         devnull = getattr(os, 'devnull', '/dev/null')
-        stdin = file(devnull)
-        stdout = file(devnull, 'a+')
-        stderr = file(devnull, 'a+')
+        stdin = open(devnull)
+        stdout = open(devnull, 'a+')
+        stderr = open(devnull, 'a+')
 
         os.dup2(stdin.fileno(), getattr(sys.stdin, 'device', sys.stdin).fileno())
         os.dup2(stdout.fileno(), getattr(sys.stdout, 'device', sys.stdout).fileno())

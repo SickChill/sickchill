@@ -122,7 +122,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
         file_list = getFileList(parent_path, includeFiles, imagesOnly)
 
     file_list = sorted(file_list,
-                       lambda x, y: cmp(ek(os.path.basename, x['name']).lower(), ek(os.path.basename, y['path']).lower()))
+                       lambda x, y: ek(os.path.basename, x['name']).lower() < ek(os.path.basename, y['path']).lower())
 
     entries = [{'currentPath': path}]
     if includeParent and parent_path != path:

@@ -433,7 +433,7 @@ class Quality(object):
         :param status: to split
         :returns: a tuple containing (status, quality)
         """
-        status = long(status)
+        status = int(status)
         if status == UNKNOWN:
             return UNKNOWN, Quality.UNKNOWN
 

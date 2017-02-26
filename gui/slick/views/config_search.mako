@@ -1,5 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
+    import six
     import sickbeard
 %>
 
@@ -950,7 +951,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm input150" title="torrent_auth_type">
                                                 <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
-                                                % for authvalue, authname in http_authtype.iteritems():
+                                                % for authvalue, authname in six.iteritems(http_authtype):
                                                     <option id="torrent_auth_type_value"
                                                             value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                                 % endfor

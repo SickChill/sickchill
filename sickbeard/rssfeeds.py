@@ -9,7 +9,7 @@ def getFeed(url, params=None, request_hook=None):
     try:
         data = request_hook(url, params=params, returns='text', timeout=30)
         if not data:
-            raise
+            raise Exception
 
         feed = parse(data, response_headers={'content-type': 'application/xml'})
         if feed:

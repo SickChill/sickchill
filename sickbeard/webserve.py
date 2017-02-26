@@ -51,6 +51,7 @@ from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.concurrent import run_on_executor
 
+# noinspection PyCompatibility
 from concurrent.futures import ThreadPoolExecutor
 
 from dateutil import tz
@@ -358,7 +359,7 @@ class WebRoot(WebHandler):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         main_db_con = db.DBConnection(row_type='dict')
-        shows = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+        shows = sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())
         episodes = {}
 
         results = main_db_con.select(
@@ -1402,12 +1403,12 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             sortedShowLists = [
-                ["Shows", sorted(shows, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))],
-                ["Anime", sorted(anime, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
+                ["Shows", sorted(shows, lambda x, y: titler(x.name).lower() < titler(y.name).lower())],
+                ["Anime", sorted(anime, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name).lower(), titler(y.name).lower()))]
+                ["Shows", sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
             ]
 
         bwl = None
@@ -4061,7 +4062,7 @@ class ConfigBackupRestore(Config):
                 for filename in files:
                     source.append(ek(os.path.join, path, filename))
 
-            if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
+            if helpers.backup_config_zip(source, target, sickbeard.DATA_DIR):
                 finalResult += "Successful backup to " + target
             else:
                 finalResult += "Backup FAILED"
@@ -4081,7 +4082,7 @@ class ConfigBackupRestore(Config):
             source = backupFile
             target_dir = ek(os.path.join, sickbeard.DATA_DIR, 'restore')
 
-            if helpers.restoreConfigZip(source, target_dir):
+            if helpers.restore_config_zip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir
                 finalResult += "<br>Restart sickrage to complete the restore."
             else:

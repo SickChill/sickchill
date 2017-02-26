@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import traceback
 import sickbeard
 
@@ -105,7 +107,7 @@ def notify_git_update(new_version=""):
             try:
                 n.notify_git_update(new_version)
             except Exception:
-                sickbeard.logger.log(u"Unable to send update notification. Continuing the update process", sickbeard.logger.DEBUG)
+                sickbeard.logger.log("Unable to send update notification. Continuing the update process", sickbeard.logger.DEBUG)
                 sickbeard.logger.log(traceback.format_exc(), sickbeard.logger.DEBUG)
 
 

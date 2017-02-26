@@ -1525,7 +1525,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.subtitles = sql_results[0][b"subtitles"].split(",")
             self.subtitles_searchcount = sql_results[0][b"subtitles_searchcount"]
             self.subtitles_lastsearch = sql_results[0][b"subtitles_lastsearch"]
-            self.airdate = datetime.date.fromordinal(long(sql_results[0][b"airdate"]))
+            self.airdate = datetime.date.fromordinal(int(sql_results[0][b"airdate"]))
             # logger.log("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]), logger.DEBUG)
             self.status = int(sql_results[0][b"status"] or -1)
 

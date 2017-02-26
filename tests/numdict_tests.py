@@ -18,14 +18,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard.numdict import NumDict
 
 import six
-
-
-PY3 = sys.version_info >= (3, )
-
-if PY3:
-    from collections import UserDict  # pylint: disable=no-name-in-module
-else:
-    from UserDict import UserDict
+from six.moves import UserDict
 
 
 class NumDictTest(unittest.TestCase):
