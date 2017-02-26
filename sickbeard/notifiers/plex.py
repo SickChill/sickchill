@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 try:
     import xml.etree.cElementTree as etree
@@ -126,11 +128,11 @@ class Notifier(object):
 
         host = host or sickbeard.PLEX_SERVER_HOST
         if not host:
-            logger.log(u'PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
+            logger.log('PLEX: No Plex Media Server host specified, check your settings', logger.DEBUG)
             return False
 
         if not self.get_token(username, password, plex_server_token):
-            logger.log(u'PLEX: Error getting auth token for Plex Media Server, check your settings', logger.WARNING)
+            logger.log('PLEX: Error getting auth token for Plex Media Server, check your settings', logger.WARNING)
             return False
 
         file_location = '' if not ep_obj else ep_obj.location
@@ -145,29 +147,29 @@ class Notifier(object):
                 xml_response = getURL(url, headers=self.headers, session=self.session, returns='text', verify=False,
                                       allow_proxy=False)
                 if not xml_response:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {0}'.format
+                    logger.log('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                                (cur_host), logger.WARNING)
                     hosts_failed.add(cur_host)
                     continue
 
                 media_container = etree.fromstring(xml_response)
             except IOError as error:
-                logger.log(u'PLEX: Error while trying to contact Plex Media Server: {0}'.format
+                logger.log('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                            (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
             except Exception as error:
                 if 'invalid token' in str(error):
-                    logger.log(u'PLEX: Please set TOKEN in Plex settings: ', logger.WARNING)
+                    logger.log('PLEX: Please set TOKEN in Plex settings: ', logger.WARNING)
                 else:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: {0}'.format
+                    logger.log('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                                (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
 
             sections = media_container.findall('.//Directory')
             if not sections:
-                logger.log(u'PLEX: Plex Media Server not running on: {0}'.format
+                logger.log('PLEX: Plex Media Server not running on: {0}'.format
                            (cur_host), logger.DEBUG)
                 hosts_failed.add(cur_host)
                 continue
@@ -193,9 +195,9 @@ class Notifier(object):
             return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
 
         if hosts_match:
-            logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(hosts_match)), logger.DEBUG)
+            logger.log('PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(hosts_match)), logger.DEBUG)
         else:
-            logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(hosts_all)), logger.DEBUG)
+            logger.log('PLEX: Updating all hosts with TV sections: ' + ', '.join(set(hosts_all)), logger.DEBUG)
 
         hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
         for section_key, cur_host in six.iteritems(hosts_try):
@@ -204,7 +206,7 @@ class Notifier(object):
             try:
                 getURL(url, headers=self.headers, session=self.session, returns='text', verify=False, allow_proxy=False)
             except Exception as error:
-                logger.log(u'PLEX: Error updating library section for Plex Media Server: {0}'.format
+                logger.log('PLEX: Error updating library section for Plex Media Server: {0}'.format
                            (ex(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
 
@@ -224,7 +226,7 @@ class Notifier(object):
         if not (username and password):
             return True
 
-        logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
+        logger.log('PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
 
         params = {
             'user[login]': username,
@@ -243,7 +245,7 @@ class Notifier(object):
 
         except Exception as error:
             self.headers.pop('X-Plex-Token', '')
-            logger.log(u'PLEX: Error fetching credentials from from plex.tv for user {0}: {1}'.format
+            logger.log('PLEX: Error fetching credentials from from plex.tv for user {0}: {1}'.format
                        (username, error), logger.DEBUG)
 
         return 'X-Plex-Token' in self.headers

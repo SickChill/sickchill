@@ -21,7 +21,7 @@
 Common helper functions
 """
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import os
 import re
@@ -295,7 +295,7 @@ def sanitize_filename(filename):
     if isinstance(filename, six.string_types):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
-        filename = re.sub(r'™', '', filename)  # Trade Mark Sign unicode: \u2122
+        filename = re.sub(r'™|-u2122', '', filename)  # Trade Mark Sign unicode: \u2122
         filename = filename.strip(' .')
 
         return filename
@@ -390,7 +390,7 @@ def setup_github():
 
     except (Exception, BadCredentialsException, TwoFactorException) as error:
         sickbeard.gh = None
-        sickbeard.logger.log(u'Unable to setup GitHub properly with your github login. Please'
+        sickbeard.logger.log('Unable to setup GitHub properly with your github login. Please'
                              ' check your credentials. Error: {0}'.format(error), sickbeard.logger.WARNING)
 
     if not sickbeard.gh:
@@ -398,5 +398,5 @@ def setup_github():
             sickbeard.gh = Github(user_agent="SickRage")
         except Exception as error:
             sickbeard.gh = None
-            sickbeard.logger.log(u'Unable to setup GitHub properly. GitHub will not be '
+            sickbeard.logger.log('Unable to setup GitHub properly. GitHub will not be '
                                  'available. Error: {0}'.format(error), sickbeard.logger.WARNING)

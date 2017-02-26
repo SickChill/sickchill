@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 import datetime
 from babelfish import Country
@@ -79,22 +81,22 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                                          season_all_poster,
                                          season_all_banner)
 
-        self.name = u'KODI 12+'
+        self.name = 'KODI 12+'
 
-        self.poster_name = u"poster.jpg"
-        self.season_all_poster_name = u"season-all-poster.jpg"
+        self.poster_name = "poster.jpg"
+        self.season_all_poster_name = "season-all-poster.jpg"
 
         # web-ui metadata template
-        self.eg_show_metadata = u"tvshow.nfo"
-        self.eg_episode_metadata = u"Season##\\<i>filename</i>.nfo"
-        self.eg_fanart = u"fanart.jpg"
-        self.eg_poster = u"poster.jpg"
-        self.eg_banner = u"banner.jpg"
-        self.eg_episode_thumbnails = u"Season##\\<i>filename</i>-thumb.jpg"
-        self.eg_season_posters = u"season##-poster.jpg"
-        self.eg_season_banners = u"season##-banner.jpg"
-        self.eg_season_all_poster = u"season-all-poster.jpg"
-        self.eg_season_all_banner = u"season-all-banner.jpg"
+        self.eg_show_metadata = "tvshow.nfo"
+        self.eg_episode_metadata = "Season##\\<i>filename</i>.nfo"
+        self.eg_fanart = "fanart.jpg"
+        self.eg_poster = "poster.jpg"
+        self.eg_banner = "banner.jpg"
+        self.eg_episode_thumbnails = "Season##\\<i>filename</i>-thumb.jpg"
+        self.eg_season_posters = "season##-poster.jpg"
+        self.eg_season_banners = "season##-banner.jpg"
+        self.eg_season_all_poster = "season-all-poster.jpg"
+        self.eg_season_all_banner = "season-all-banner.jpg"
 
     @staticmethod
     def _split_info(info_string):
@@ -127,19 +129,19 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         try:
             myShow = t[int(show_ID)]
         except sickbeard.indexer_shownotfound:
-            logger.log(u"Unable to find show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
+            logger.log("Unable to find show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it", logger.ERROR)
             raise
 
         except sickbeard.indexer_error:
             logger.log(
-                u"" + sickbeard.indexerApi(show_obj.indexer).name + " is down, can't use its data to add this show",
+                "" + sickbeard.indexerApi(show_obj.indexer).name + " is down, can't use its data to add this show",
                 logger.ERROR)
             raise
 
         # check for title and id
         if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
-            logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
+            logger.log("Incomplete info for show with id " + str(show_ID) + " on " + sickbeard.indexerApi(
                 show_obj.indexer).name + ", skipping it")
             return False
 
@@ -260,7 +262,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(e.message)
         except sickbeard.indexer_error as e:
-            logger.log(u"Unable to connect to " + sickbeard.indexerApi(
+            logger.log("Unable to connect to " + sickbeard.indexerApi(
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)
             return
 
@@ -275,7 +277,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log("Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
 
                 return None
 
@@ -283,10 +285,10 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 myEp["firstaired"] = str(datetime.date.fromordinal(1))
 
             if not getattr(myEp, 'episodename', None):
-                logger.log(u"Not generating nfo because the ep has no title", logger.DEBUG)
+                logger.log("Not generating nfo because the ep has no title", logger.DEBUG)
                 return None
 
-            logger.log(u"Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode), logger.DEBUG)
+            logger.log("Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode), logger.DEBUG)
 
             if len(eps_to_write) > 1:
                 episode = etree.SubElement(rootNode, "episodedetails")

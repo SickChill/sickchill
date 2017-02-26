@@ -21,7 +21,7 @@
 Test history
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -56,12 +56,12 @@ class HistoryTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': [],
-            u'wrong': [],
-            u'downloaded': Quality.DOWNLOADED,
-            u'Downloaded': Quality.DOWNLOADED,
-            u'snatched': Quality.SNATCHED,
-            u'Snatched': Quality.SNATCHED,
+            '': [],
+            'wrong': [],
+            'downloaded': Quality.DOWNLOADED,
+            'Downloaded': Quality.DOWNLOADED,
+            'snatched': Quality.SNATCHED,
+            'Snatched': Quality.SNATCHED,
         }
 
         for tests in test_cases, unicode_test_cases:
@@ -87,12 +87,12 @@ class HistoryTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': 0,
-            u'0': 0,
-            u'5': 5,
-            u'-5': 0,
-            u'1.5': 0,
-            u'-1.5': 0,
+            '': 0,
+            '0': 0,
+            '5': 5,
+            '-5': 0,
+            '1.5': 0,
+            '-1.5': 0,
         }
 
         for tests in test_cases, unicode_test_cases:

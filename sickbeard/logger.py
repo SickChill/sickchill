@@ -22,7 +22,7 @@
 Custom Logger for SickRage
 """
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import io
 import locale
@@ -224,7 +224,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             thread=cur_thread, hash=cur_hash, message=msg)
 
         # Change the SSL error to a warning with a link to information about how to fix it.
-        # Check for u'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
+        # Check for 'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
 
         ssl_errors = [
             r'error \[Errno \d+\] _ssl.c:\d+: error:\d+\s*:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error',
@@ -460,26 +460,26 @@ log_file = None
 
 LOG_FILTERS = {
     '<NONE>': _(u'&lt;No Filter&gt;'),
-    'DAILYSEARCHER': _(u'Daily Searcher'),
-    'BACKLOG': _(u'Backlog'),
-    'SHOWUPDATER': _(u'Show Updater'),
-    'CHECKVERSION': _(u'Check Version'),
-    'SHOWQUEUE': _(u'Show Queue'),
-    'SEARCHQUEUE': _(u'Search Queue (All)'),
-    'SEARCHQUEUE-DAILY-SEARCH': _(u'Search Queue (Daily Searcher)'),
-    'SEARCHQUEUE-BACKLOG': _(u'Search Queue (Backlog)'),
-    'SEARCHQUEUE-MANUAL': _(u'Search Queue (Manual)'),
-    'SEARCHQUEUE-RETRY': _(u'Search Queue (Retry/Failed)'),
-    'SEARCHQUEUE-RSS': _(u'Search Queue (RSS)'),
-    'FINDPROPERS': _(u'Find Propers'),
-    'POSTPROCESSOR': _(u'Postprocessor'),
-    'FINDSUBTITLES': _(u'Find Subtitles'),
-    'TRAKTCHECKER': _(u'Trakt Checker'),
-    'EVENT': _(u'Event'),
-    'ERROR': _(u'Error'),
-    'TORNADO': _(u'Tornado'),
-    'Thread': _(u'Thread'),
-    'MAIN': _(u'Main'),
+    'DAILYSEARCHER': _('Daily Searcher'),
+    'BACKLOG': _('Backlog'),
+    'SHOWUPDATER': _('Show Updater'),
+    'CHECKVERSION': _('Check Version'),
+    'SHOWQUEUE': _('Show Queue'),
+    'SEARCHQUEUE': _('Search Queue (All)'),
+    'SEARCHQUEUE-DAILY-SEARCH': _('Search Queue (Daily Searcher)'),
+    'SEARCHQUEUE-BACKLOG': _('Search Queue (Backlog)'),
+    'SEARCHQUEUE-MANUAL': _('Search Queue (Manual)'),
+    'SEARCHQUEUE-RETRY': _('Search Queue (Retry/Failed)'),
+    'SEARCHQUEUE-RSS': _('Search Queue (RSS)'),
+    'FINDPROPERS': _('Find Propers'),
+    'POSTPROCESSOR': _('Postprocessor'),
+    'FINDSUBTITLES': _('Find Subtitles'),
+    'TRAKTCHECKER': _('Trakt Checker'),
+    'EVENT': _('Event'),
+    'ERROR': _('Error'),
+    'TORNADO': _('Tornado'),
+    'Thread': _('Thread'),
+    'MAIN': _('Main'),
 }
 
 

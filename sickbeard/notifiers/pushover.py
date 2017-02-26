@@ -19,16 +19,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import time
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN_TEXT, NOTIFY_LOGIN
 from sickrage.helper.exceptions import ex
-import six
-from six.moves import urllib
 
-from six.moves import http_client
+from six.moves import urllib, http_client
 
 
 API_URL = "https://api.pushover.net/1/messages.json"
@@ -65,7 +65,7 @@ class Notifier(object):
         if priority is None:
             priority = sickbeard.PUSHOVER_PRIORITY
 
-        logger.log(u"Pushover API KEY in use: " + apiKey, logger.DEBUG)
+        logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
 
         # build up the URL and parameters
         msg = msg.strip()
@@ -107,14 +107,14 @@ class Notifier(object):
         except urllib.error.HTTPError as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
-                logger.log(u"Pushover notification failed." + ex(e), logger.ERROR)
+                logger.log("Pushover notification failed." + ex(e), logger.ERROR)
                 return False
             else:
-                logger.log(u"Pushover notification failed. Error code: " + str(e.code), logger.ERROR)
+                logger.log("Pushover notification failed. Error code: " + str(e.code), logger.ERROR)
 
             # HTTP status 404 if the provided email address isn't a Pushover user.
             if e.code == 404:
-                logger.log(u"Username is wrong/not a pushover email. Pushover will send an email to it", logger.WARNING)
+                logger.log("Username is wrong/not a pushover email. Pushover will send an email to it", logger.WARNING)
                 return False
 
             # For HTTP status code 401's, it is because you are passing in either an invalid token, or the user has not added your service.
@@ -123,23 +123,23 @@ class Notifier(object):
                 # HTTP status 401 if the user doesn't have the service added
                 subscribeNote = self._sendPushover(msg, title, sound=sound, userKey=userKey, apiKey=apiKey)
                 if subscribeNote:
-                    logger.log(u"Subscription sent", logger.DEBUG)
+                    logger.log("Subscription sent", logger.DEBUG)
                     return True
                 else:
-                    logger.log(u"Subscription could not be sent", logger.ERROR)
+                    logger.log("Subscription could not be sent", logger.ERROR)
                     return False
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
             elif e.code == 400:
-                logger.log(u"Wrong data sent to pushover", logger.ERROR)
+                logger.log("Wrong data sent to pushover", logger.ERROR)
                 return False
 
             # If you receive a HTTP status code of 429, it is because the message limit has been reached (free limit is 7,500)
             elif e.code == 429:
-                logger.log(u"Pushover API message limit reached - try a different API key", logger.ERROR)
+                logger.log("Pushover API message limit reached - try a different API key", logger.ERROR)
                 return False
 
-        logger.log(u"Pushover notification successful.", logger.INFO)
+        logger.log("Pushover notification successful.", logger.INFO)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -179,9 +179,9 @@ class Notifier(object):
         """
 
         if not sickbeard.USE_PUSHOVER and not force:
-            logger.log(u"Notification for Pushover not enabled, skipping this notification", logger.DEBUG)
+            logger.log("Notification for Pushover not enabled, skipping this notification", logger.DEBUG)
             return False
 
-        logger.log(u"Sending notification for " + message, logger.DEBUG)
+        logger.log("Sending notification for " + message, logger.DEBUG)
 
         return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey)

@@ -74,7 +74,7 @@ def change_https_cert(https_cert):
     if ek(os.path.normpath, sickbeard.HTTPS_CERT) != ek(os.path.normpath, https_cert):
         if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_cert))):
             sickbeard.HTTPS_CERT = ek(os.path.normpath, https_cert)
-            logger.log(u"Changed https cert path to " + https_cert)
+            logger.log("Changed https cert path to " + https_cert)
         else:
             return False
 
@@ -95,7 +95,7 @@ def change_https_key(https_key):
     if ek(os.path.normpath, sickbeard.HTTPS_KEY) != ek(os.path.normpath, https_key):
         if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_key))):
             sickbeard.HTTPS_KEY = ek(os.path.normpath, https_key)
-            logger.log(u"Changed https key path to " + https_key)
+            logger.log("Changed https key path to " + https_key)
         else:
             return False
 
@@ -115,7 +115,7 @@ def change_sickrage_background(background):
 
     background = ek(os.path.normpath, background)
     if not ek(os.path.exists, background):
-        logger.log(u"Background image does not exist: {0}".format(background))
+        logger.log("Background image does not exist: {0}".format(background))
         return False
 
     sickbeard.SICKRAGE_BACKGROUND_PATH = background
@@ -142,7 +142,7 @@ def change_log_dir(log_dir, web_log):
         sickbeard.LOG_DIR = abs_log_dir
 
         logger.init_logging()
-        logger.log(u"Initialized new log file in " + sickbeard.LOG_DIR)
+        logger.log("Initialized new log file in " + sickbeard.LOG_DIR)
 
     return True
 
@@ -161,7 +161,7 @@ def change_nzb_dir(nzb_dir):
     if ek(os.path.normpath, sickbeard.NZB_DIR) != ek(os.path.normpath, nzb_dir):
         if helpers.makeDir(nzb_dir):
             sickbeard.NZB_DIR = ek(os.path.normpath, nzb_dir)
-            logger.log(u"Changed NZB folder to " + nzb_dir)
+            logger.log("Changed NZB folder to " + nzb_dir)
         else:
             return False
 
@@ -182,7 +182,7 @@ def change_torrent_dir(torrent_dir):
     if ek(os.path.normpath, sickbeard.TORRENT_DIR) != ek(os.path.normpath, torrent_dir):
         if helpers.makeDir(torrent_dir):
             sickbeard.TORRENT_DIR = ek(os.path.normpath, torrent_dir)
-            logger.log(u"Changed torrent folder to " + torrent_dir)
+            logger.log("Changed torrent folder to " + torrent_dir)
         else:
             return False
 
@@ -203,7 +203,7 @@ def change_tv_download_dir(tv_download_dir):
     if ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR) != ek(os.path.normpath, tv_download_dir):
         if helpers.makeDir(tv_download_dir):
             sickbeard.TV_DOWNLOAD_DIR = ek(os.path.normpath, tv_download_dir)
-            logger.log(u"Changed TV download folder to " + tv_download_dir)
+            logger.log("Changed TV download folder to " + tv_download_dir)
         else:
             return False
 
@@ -224,7 +224,7 @@ def change_unpack_dir(unpack_dir):
     if ek(os.path.normpath, sickbeard.UNPACK_DIR) != ek(os.path.normpath, unpack_dir):
         if helpers.makeDir(unpack_dir):
             sickbeard.UNPACK_DIR = ek(os.path.normpath, unpack_dir)
-            logger.log(u"Changed unpack directory to " + unpack_dir)
+            logger.log("Changed unpack directory to " + unpack_dir)
         else:
             return False
 
@@ -332,14 +332,14 @@ def change_version_notify(version_notify):
     sickbeard.VERSION_NOTIFY = version_notify
     if sickbeard.VERSION_NOTIFY:
         if not sickbeard.versionCheckScheduler.enable:
-            logger.log(u"Starting VERSIONCHECK thread", logger.INFO)
+            logger.log("Starting VERSIONCHECK thread", logger.INFO)
             sickbeard.versionCheckScheduler.silent = False
             sickbeard.versionCheckScheduler.enable = True
             sickbeard.versionCheckScheduler.forceRun()
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
-        logger.log(u"Stopping VERSIONCHECK thread", logger.INFO)
+        logger.log("Stopping VERSIONCHECK thread", logger.INFO)
 
 
 def change_download_propers(download_propers):
@@ -357,13 +357,13 @@ def change_download_propers(download_propers):
     sickbeard.DOWNLOAD_PROPERS = download_propers
     if sickbeard.DOWNLOAD_PROPERS:
         if not sickbeard.properFinderScheduler.enable:
-            logger.log(u"Starting PROPERFINDER thread", logger.INFO)
+            logger.log("Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
-        logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
+        logger.log("Stopping PROPERFINDER thread", logger.INFO)
 
 
 def change_use_trakt(use_trakt):
@@ -381,13 +381,13 @@ def change_use_trakt(use_trakt):
     sickbeard.USE_TRAKT = use_trakt
     if sickbeard.USE_TRAKT:
         if not sickbeard.traktCheckerScheduler.enable:
-            logger.log(u"Starting TRAKTCHECKER thread", logger.INFO)
+            logger.log("Starting TRAKTCHECKER thread", logger.INFO)
             sickbeard.traktCheckerScheduler.silent = False
             sickbeard.traktCheckerScheduler.enable = True
     else:
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
-        logger.log(u"Stopping TRAKTCHECKER thread", logger.INFO)
+        logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
 
 
 def change_use_subtitles(use_subtitles):
@@ -404,13 +404,13 @@ def change_use_subtitles(use_subtitles):
     sickbeard.USE_SUBTITLES = use_subtitles
     if sickbeard.USE_SUBTITLES:
         if not sickbeard.subtitlesFinderScheduler.enable:
-            logger.log(u"Starting SUBTITLESFINDER thread", logger.INFO)
+            logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
             sickbeard.subtitlesFinderScheduler.silent = False
             sickbeard.subtitlesFinderScheduler.enable = True
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
-        logger.log(u"Stopping SUBTITLESFINDER thread", logger.INFO)
+        logger.log("Stopping SUBTITLESFINDER thread", logger.INFO)
 
 
 def change_process_automatically(process_automatically):
@@ -428,11 +428,11 @@ def change_process_automatically(process_automatically):
     sickbeard.PROCESS_AUTOMATICALLY = process_automatically
     if sickbeard.PROCESS_AUTOMATICALLY:
         if not sickbeard.autoPostProcessorScheduler.enable:
-            logger.log(u"Starting POSTPROCESSOR thread", logger.INFO)
+            logger.log("Starting POSTPROCESSOR thread", logger.INFO)
             sickbeard.autoPostProcessorScheduler.silent = False
             sickbeard.autoPostProcessorScheduler.enable = True
     else:
-        logger.log(u"Stopping POSTPROCESSOR thread", logger.INFO)
+        logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
         sickbeard.autoPostProcessorScheduler.silent = True
 
@@ -728,7 +728,7 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                u"""Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
+                """Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
                 If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(
                     self.config_version, self.expected_config_version
                 )
@@ -744,20 +744,20 @@ class ConfigMigrator(object):
             else:
                 migration_name = ''
 
-            logger.log(u"Backing up config before upgrade")
+            logger.log("Backing up config before upgrade")
             if not helpers.backupVersionedFile(sickbeard.CONFIG_FILE, self.config_version):
-                logger.log_error_and_exit(u"Config backup failed, abort upgrading config")
+                logger.log_error_and_exit("Config backup failed, abort upgrading config")
             else:
-                logger.log(u"Proceeding with upgrade")
+                logger.log("Proceeding with upgrade")
 
             # do the migration, expect a method named _migrate_v<num>
-            logger.log(u"Migrating config up to version " + six.text_type(next_version) + migration_name)
+            logger.log("Migrating config up to version " + six.text_type(next_version) + migration_name)
             getattr(self, '_migrate_v' + six.text_type(next_version))()
             self.config_version = next_version
 
             # save new config after migration
             sickbeard.CONFIG_VERSION = self.config_version
-            logger.log(u"Saving config file to disk")
+            logger.log("Saving config file to disk")
             sickbeard.save_config()
 
     # Migration v1: Custom naming
@@ -767,13 +767,13 @@ class ConfigMigrator(object):
         """
 
         sickbeard.NAMING_PATTERN = self._name_to_pattern()
-        logger.log(u"Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
+        logger.log("Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
 
         sickbeard.NAMING_CUSTOM_ABD = check_setting_bool(self.config_obj, 'General', 'naming_dates')
 
         if sickbeard.NAMING_CUSTOM_ABD:
             sickbeard.NAMING_ABD_PATTERN = self._name_to_pattern(True)
-            logger.log(u"Adding a custom air-by-date naming pattern to your config: " + sickbeard.NAMING_ABD_PATTERN)
+            logger.log("Adding a custom air-by-date naming pattern to your config: " + sickbeard.NAMING_ABD_PATTERN)
         else:
             sickbeard.NAMING_ABD_PATTERN = naming.name_abd_presets[0]
 
@@ -795,16 +795,16 @@ class ConfigMigrator(object):
                     new_season_format = new_season_format.replace('9', '%S')
 
                     logger.log(
-                        u"Changed season folder format from " + old_season_format + " to " + new_season_format + ", prepending it to your naming config")
+                        "Changed season folder format from " + old_season_format + " to " + new_season_format + ", prepending it to your naming config")
                     sickbeard.NAMING_PATTERN = new_season_format + os.sep + sickbeard.NAMING_PATTERN
 
                 except (TypeError, ValueError):
-                    logger.log(u"Can't change " + old_season_format + " to new season format", logger.ERROR)
+                    logger.log("Can't change " + old_season_format + " to new season format", logger.ERROR)
 
         # if no shows had it on then don't flatten any shows and don't put season folders in the config
         else:
 
-            logger.log(u"No shows were using season folders before so I'm disabling flattening on all shows")
+            logger.log("No shows were using season folders before so I'm disabling flattening on all shows")
 
             # don't flatten any shows at all
             main_db_con.action("UPDATE tv_shows SET flatten_folders = 0")
@@ -897,7 +897,7 @@ class ConfigMigrator(object):
                 try:
                     name, url, key, enabled = cur_provider_data.split("|")
                 except ValueError:
-                    logger.log(u"Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format",
+                    logger.log("Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format",
                                logger.ERROR)
                     continue
 
@@ -955,7 +955,7 @@ class ConfigMigrator(object):
             cur_metadata = metadata.split('|')
             # if target has the old number of values, do upgrade
             if len(cur_metadata) == 6:
-                logger.log(u"Upgrading " + metadata_name + " metadata, old value: " + metadata)
+                logger.log("Upgrading " + metadata_name + " metadata, old value: " + metadata)
                 cur_metadata.insert(4, '0')
                 cur_metadata.append('0')
                 cur_metadata.append('0')
@@ -967,18 +967,18 @@ class ConfigMigrator(object):
                     cur_metadata[4], cur_metadata[3] = cur_metadata[3], '0'
                 # write new format
                 metadata = '|'.join(cur_metadata)
-                logger.log(u"Upgrading " + metadata_name + " metadata, new value: " + metadata)
+                logger.log("Upgrading " + metadata_name + " metadata, new value: " + metadata)
 
             elif len(cur_metadata) == 10:
 
                 metadata = '|'.join(cur_metadata)
-                logger.log(u"Keeping " + metadata_name + " metadata, value: " + metadata)
+                logger.log("Keeping " + metadata_name + " metadata, value: " + metadata)
 
             else:
-                logger.log(u"Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format",
+                logger.log("Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format",
                            logger.ERROR)
                 metadata = '0|0|0|0|0|0|0|0|0|0'
-                logger.log(u"Setting " + metadata_name + " metadata, new value: " + metadata)
+                logger.log("Setting " + metadata_name + " metadata, new value: " + metadata)
 
             return metadata
 

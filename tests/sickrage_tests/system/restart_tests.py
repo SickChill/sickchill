@@ -21,7 +21,7 @@
 Test restart
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -59,9 +59,9 @@ class RestartTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'0': False,
-            u'123': False,
-            u'123456': True,
+            '0': False,
+            '123': False,
+            '123456': True,
         }
 
         for tests in test_cases, unicode_test_cases:
