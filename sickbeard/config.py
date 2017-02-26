@@ -718,7 +718,9 @@ class ConfigMigrator(object):
             5: 'Metadata update',
             6: 'Convert from XBMC to new KODI variables',
             7: 'Use version 2 for password encryption',
-            8: 'Convert Plex setting keys'
+            8: 'Convert Plex setting keys',
+            9: 'Add Auto Post-Processer Frequency variable',
+            10: 'Refactor flatten_folders_default to season_folders_default'
         }
 
     def migrate_config(self):
@@ -1018,7 +1020,7 @@ class ConfigMigrator(object):
         sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', censor_log=True)
         sickbeard.USE_PLEX_SERVER = check_setting_bool(self.config_obj, 'Plex', 'use_plex')
 
-    # Migration v9: Rename autopostprocesser to autopostprocessor
+    # Migration v9: Rename autopostprocesser to autopostprocesser_frequency
     def _migrate_v9(self):
         sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
 
