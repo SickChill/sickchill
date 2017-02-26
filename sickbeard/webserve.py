@@ -97,6 +97,7 @@ from sickrage.system.Shutdown import Shutdown
 
 import six
 from six.moves import urllib
+from six.moves.urllib.parse import unquote_plus
 
 
 mako_lookup = {}
@@ -755,9 +756,9 @@ class Home(WebRoot):
         show_stat = {}
         max_download_count = 1000
         for cur_result in sql_result:
-            show_stat[cur_result['showid']] = cur_result
-            if cur_result['ep_total'] > max_download_count:
-                max_download_count = cur_result['ep_total']
+            show_stat[cur_result[b'showid']] = cur_result
+            if cur_result[b'ep_total'] > max_download_count:
+                max_download_count = cur_result[b'ep_total']
 
         max_download_count *= 100
 
@@ -867,9 +868,9 @@ class Home(WebRoot):
 
         pw_append = _(" with password") + ": " + password if password else ''
         if result:
-            return _("Registered and Tested growl successfully {growl_host}").format(growl_host=urllib.unquote_plus(host)) + pw_append
+            return _("Registered and Tested growl successfully {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
         else:
-            return _("Registration and Testing of growl failed {growl_host}").format(growl_host=urllib.unquote_plus(host)) + pw_append
+            return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
 
     @staticmethod
     def testProwl(prowl_api=None, prowl_priority=0):
@@ -968,11 +969,11 @@ class Home(WebRoot):
         host = config.clean_hosts(host)
         finalResult = ''
         for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.kodi_notifier.test_notify(urllib.unquote_plus(curHost), username, password)
+            curResult = notifiers.kodi_notifier.test_notify(unquote_plus(curHost), username, password)
             if len(curResult.split(":")) > 2 and 'OK' in curResult.split(":")[2]:
-                finalResult += _("Test KODI notice sent successfully to {kodi_host}").format(kodi_host=urllib.unquote_plus(curHost))
+                finalResult += _("Test KODI notice sent successfully to {kodi_host}").format(kodi_host=unquote_plus(curHost))
             else:
-                finalResult += _("Test KODI notice failed to {kodi_host}").format(kodi_host=urllib.unquote_plus(curHost))
+                finalResult += _("Test KODI notice failed to {kodi_host}").format(kodi_host=unquote_plus(curHost))
             finalResult += "<br>\n"
 
         return finalResult
@@ -985,14 +986,14 @@ class Home(WebRoot):
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
-            curResult = notifiers.plex_notifier.test_notify_pht(urllib.unquote_plus(curHost), username, password)
+            curResult = notifiers.plex_notifier.test_notify_pht(unquote_plus(curHost), username, password)
             if len(curResult.split(':')) > 2 and 'OK' in curResult.split(':')[2]:
-                finalResult += _('Successful test notice sent to Plex Home Theater ... {plex_clients}').format(plex_clients=urllib.unquote_plus(curHost))
+                finalResult += _('Successful test notice sent to Plex Home Theater ... {plex_clients}').format(plex_clients=unquote_plus(curHost))
             else:
-                finalResult += _('Test failed for Plex Home Theater ... {plex_clients}').format(plex_clients=urllib.unquote_plus(curHost))
+                finalResult += _('Test failed for Plex Home Theater ... {plex_clients}').format(plex_clients=unquote_plus(curHost))
             finalResult += '<br>' + '\n'
 
-        ui.notifications.message(_('Tested Plex Home Theater(s)') + ':', urllib.unquote_plus(host.replace(',', ', ')))
+        ui.notifications.message(_('Tested Plex Home Theater(s)') + ':', unquote_plus(host.replace(',', ', ')))
 
         return finalResult
 
@@ -1004,16 +1005,16 @@ class Home(WebRoot):
 
         finalResult = ''
 
-        curResult = notifiers.plex_notifier.test_notify_pms(urllib.unquote_plus(host), username, password, plex_server_token)
+        curResult = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
         if curResult is None:
-            finalResult += _('Successful test of Plex Media Server(s) ... {plex_servers}').format(plex_servers=urllib.unquote_plus(host.replace(',', ', ')))
+            finalResult += _('Successful test of Plex Media Server(s) ... {plex_servers}').format(plex_servers=unquote_plus(host.replace(',', ', ')))
         elif curResult is False:
             finalResult += _('Test failed, No Plex Media Server host specified')
         else:
-            finalResult += _('Test failed for Plex Media Server(s) ... {plex_servers}').format(plex_servers=urllib.unquote_plus(str(curResult).replace(',', ', ')))
+            finalResult += _('Test failed for Plex Media Server(s) ... {plex_servers}').format(plex_servers=unquote_plus(str(curResult).replace(',', ', ')))
         finalResult += '<br>' + '\n'
 
-        ui.notifications.message(_('Tested Plex Media Server host(s)') + ':', urllib.unquote_plus(host.replace(',', ', ')))
+        ui.notifications.message(_('Tested Plex Media Server host(s)') + ':', unquote_plus(host.replace(',', ', ')))
 
         return finalResult
 
@@ -1028,17 +1029,17 @@ class Home(WebRoot):
     def testEMBY(host=None, emby_apikey=None):
 
         host = config.clean_host(host)
-        result = notifiers.emby_notifier.test_notify(urllib.unquote_plus(host), emby_apikey)
+        result = notifiers.emby_notifier.test_notify(unquote_plus(host), emby_apikey)
         if result:
-            return _("Test notice sent successfully to {emby_host}").format(emby_host=urllib.unquote_plus(host))
+            return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
         else:
-            return _("Test notice failed to {emby_host}").format(emby_host=urllib.unquote_plus(host))
+            return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
 
     @staticmethod
     def testNMJ(host=None, database=None, mount=None):
 
         host = config.clean_host(host)
-        result = notifiers.nmj_notifier.test_notify(urllib.unquote_plus(host), database, mount)
+        result = notifiers.nmj_notifier.test_notify(unquote_plus(host), database, mount)
         if result:
             return _("Successfully started the scan update")
         else:
@@ -1048,7 +1049,7 @@ class Home(WebRoot):
     def settingsNMJ(host=None):
 
         host = config.clean_host(host)
-        result = notifiers.nmj_notifier.notify_settings(urllib.unquote_plus(host))
+        result = notifiers.nmj_notifier.notify_settings(unquote_plus(host))
         if result:
             return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(**{
                 "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT})
@@ -1059,17 +1060,17 @@ class Home(WebRoot):
     def testNMJv2(host=None):
 
         host = config.clean_host(host)
-        result = notifiers.nmjv2_notifier.test_notify(urllib.unquote_plus(host))
+        result = notifiers.nmjv2_notifier.test_notify(unquote_plus(host))
         if result:
-            return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=urllib.unquote_plus(host))
+            return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=unquote_plus(host))
         else:
-            return _("Test notice failed to {nmj2_host}").format(nmj2_host=urllib.unquote_plus(host))
+            return _("Test notice failed to {nmj2_host}").format(nmj2_host=unquote_plus(host))
 
     @staticmethod
     def settingsNMJv2(host=None, dbloc=None, instance=None):
 
         host = config.clean_host(host)
-        result = notifiers.nmjv2_notifier.notify_settings(urllib.unquote_plus(host), dbloc, instance)
+        result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
         if result:
             return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(
                 **{"host": host, "database": sickbeard.NMJv2_DATABASE})
@@ -1100,16 +1101,16 @@ class Home(WebRoot):
         size = 0
         for r in rows:
             NotifyList = {'emails': '', 'prowlAPIs': ''}
-            if r['notify_list'] and len(r['notify_list']) > 0:
+            if r[b'notify_list'] and len(r[b'notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not r['notify_list'][0] == '{':
-                    NotifyList['emails'] = r['notify_list']
+                if not r[b'notify_list'][0] == '{':
+                    NotifyList['emails'] = r[b'notify_list']
                 else:
-                    NotifyList = dict(ast.literal_eval(r['notify_list']))
+                    NotifyList = dict(ast.literal_eval(r[b'notify_list']))
 
-            data[r['show_id']] = {
-                'id': r['show_id'],
-                'name': r['show_name'],
+            data[r[b'show_id']] = {
+                'id': r[b'show_id'],
+                'name': r[b'show_name'],
                 'list': NotifyList['emails'],
                 'prowl_notify_list': NotifyList['prowlAPIs']
             }
@@ -1125,12 +1126,12 @@ class Home(WebRoot):
 
         # Get current data
         for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if subs['notify_list'] and len(subs['notify_list']) > 0:
+            if subs[b'notify_list'] and len(subs[b'notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not subs['notify_list'][0] == '{':
-                    entries['emails'] = subs['notify_list']
+                if not subs[b'notify_list'][0] == '{':
+                    entries['emails'] = subs[b'notify_list']
                 else:
-                    entries = dict(ast.literal_eval(subs['notify_list']))
+                    entries = dict(ast.literal_eval(subs[b'notify_list']))
 
         if emails:
             entries['emails'] = emails
@@ -1314,7 +1315,7 @@ class Home(WebRoot):
             [show_obj.indexerid]
         )
 
-        min_season = 0 if sickbeard.DISPLAY_SHOW_SPECIALS else 1
+        min_season = (1, 0)[sickbeard.DISPLAY_SHOW_SPECIALS]
 
         sql_results = main_db_con.select(
             "SELECT * FROM tv_episodes WHERE showid = ? and season >= ? ORDER BY season DESC, episode DESC",
@@ -1364,7 +1365,7 @@ class Home(WebRoot):
                 submenu.append({'title': _('Force Full Update'), 'path': 'home/updateShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-exchange'})
                 submenu.append({'title': _('Update show in KODI'), 'path': 'home/updateKODI?show={0:d}'.format(show_obj.indexerid), 'requires': self.haveKODI(), 'icon': 'menu-icon-kodi'})
                 submenu.append({'title': _('Update show in Emby'), 'path': 'home/updateEMBY?show={0:d}'.format(show_obj.indexerid), 'requires': self.haveEMBY(), 'icon': 'menu-icon-emby'})
-                if seasonResults and int(seasonResults[-1]["season"]) == 0:
+                if seasonResults and int(seasonResults[-1][b"season"]) == 0:
                     if sickbeard.DISPLAY_SHOW_SPECIALS:
                         submenu.append({'title': _('Hide specials'), 'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid), 'confirm': True, 'icon': 'fa fa-times'})
                     else:
@@ -1388,9 +1389,9 @@ class Home(WebRoot):
         epCats = {}
 
         for curResult in sql_results:
-            curEpCat = show_obj.getOverview(curResult["status"])
+            curEpCat = show_obj.getOverview(curResult[b"status"])
             if curEpCat:
-                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
+                epCats[str(curResult[b"season"]) + "x" + str(curResult[b"episode"])] = curEpCat
                 epCounts[curEpCat] += 1
 
         def titler(x):
@@ -1422,7 +1423,7 @@ class Home(WebRoot):
         indexerid = int(show_obj.indexerid)
         indexer = int(show_obj.indexer)
 
-        # Delete any previous occurrances
+        # Delete any previous occurrences
         for index, recentShow in enumerate(sickbeard.SHOWS_RECENT):
             if recentShow['indexerid'] == indexerid:
                 del sickbeard.SHOWS_RECENT[index]
@@ -2466,7 +2467,7 @@ class HomeAddShows(Home):
         else:
             root_dirs = rootDir
 
-        root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+        root_dirs = [unquote_plus(x) for x in root_dirs]
 
         if sickbeard.ROOT_DIRS:
             default_index = int(sickbeard.ROOT_DIRS.split('|')[0])
@@ -2980,7 +2981,7 @@ class HomeAddShows(Home):
         elif not isinstance(shows_to_add, list):
             shows_to_add = [shows_to_add]
 
-        shows_to_add = [urllib.unquote_plus(x) for x in shows_to_add]
+        shows_to_add = [unquote_plus(x) for x in shows_to_add]
 
         indexer_id_given = []
         dirs_only = []
@@ -3057,13 +3058,13 @@ class Manage(Home, WebRoot):
 
         result = {}
         for cur_result in cur_show_results:
-            cur_season = int(cur_result["season"])
-            cur_episode = int(cur_result["episode"])
+            cur_season = int(cur_result[b"season"])
+            cur_episode = int(cur_result[b"episode"])
 
             if cur_season not in result:
                 result[cur_season] = {}
 
-            result[cur_season][cur_episode] = cur_result["name"]
+            result[cur_season][cur_episode] = cur_result[b"name"]
 
         return json.dumps(result)
 
@@ -3096,13 +3097,13 @@ class Manage(Home, WebRoot):
         show_names = {}
         sorted_show_ids = []
         for cur_status_result in status_results:
-            cur_indexer_id = int(cur_status_result["indexer_id"])
+            cur_indexer_id = int(cur_status_result[b"indexer_id"])
             if cur_indexer_id not in ep_counts:
                 ep_counts[cur_indexer_id] = 1
             else:
                 ep_counts[cur_indexer_id] += 1
 
-            show_names[cur_indexer_id] = cur_status_result["show_name"]
+            show_names[cur_indexer_id] = cur_status_result[b"show_name"]
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
@@ -3141,7 +3142,7 @@ class Manage(Home, WebRoot):
                     "SELECT season, episode FROM tv_episodes WHERE status IN (" + ','.join(
                         ['?'] * len(status_list)) + ") AND season != 0 AND showid = ?",
                     status_list + [cur_indexer_id])
-                all_eps = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
+                all_eps = [str(x[b"season"]) + 'x' + str(x[b"episode"]) for x in all_eps_results]
                 to_change[cur_indexer_id] = all_eps
 
             self.setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]), newStatus, direct=True)
@@ -3158,13 +3159,13 @@ class Manage(Home, WebRoot):
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
-                if not frozenset(subtitle_module.wanted_languages()).difference(cur_result["subtitles"].split(',')):
+                if not frozenset(subtitle_module.wanted_languages()).difference(cur_result[b"subtitles"].split(',')):
                     continue
-            elif whichSubs in cur_result["subtitles"]:
+            elif whichSubs in cur_result[b"subtitles"]:
                 continue
 
-            cur_season = int(cur_result["season"])
-            cur_episode = int(cur_result["episode"])
+            cur_season = int(cur_result[b"season"])
+            cur_episode = int(cur_result[b"episode"])
 
             if cur_season not in result:
                 result[cur_season] = {}
@@ -3172,9 +3173,9 @@ class Manage(Home, WebRoot):
             if cur_episode not in result[cur_season]:
                 result[cur_season][cur_episode] = {}
 
-            result[cur_season][cur_episode]["name"] = cur_result["name"]
+            result[cur_season][cur_episode]["name"] = cur_result[b"name"]
 
-            result[cur_season][cur_episode]["subtitles"] = cur_result["subtitles"]
+            result[cur_season][cur_episode]["subtitles"] = cur_result[b"subtitles"]
 
         return json.dumps(result)
 
@@ -3199,18 +3200,18 @@ class Manage(Home, WebRoot):
         sorted_show_ids = []
         for cur_status_result in status_results:
             if whichSubs == 'all':
-                if not frozenset(subtitle_module.wanted_languages()).difference(cur_status_result["subtitles"].split(',')):
+                if not frozenset(subtitle_module.wanted_languages()).difference(cur_status_result[b"subtitles"].split(',')):
                     continue
-            elif whichSubs in cur_status_result["subtitles"]:
+            elif whichSubs in cur_status_result[b"subtitles"]:
                 continue
 
-            cur_indexer_id = int(cur_status_result["indexer_id"])
+            cur_indexer_id = int(cur_status_result[b"indexer_id"])
             if cur_indexer_id not in ep_counts:
                 ep_counts[cur_indexer_id] = 1
             else:
                 ep_counts[cur_indexer_id] += 1
 
-            show_names[cur_indexer_id] = cur_status_result["show_name"]
+            show_names[cur_indexer_id] = cur_status_result[b"show_name"]
             if cur_indexer_id not in sorted_show_ids:
                 sorted_show_ids.append(cur_indexer_id)
 
@@ -3288,9 +3289,9 @@ class Manage(Home, WebRoot):
                 [curShow.indexerid])
 
             for curResult in sql_results:
-                curEpCat = curShow.getOverview(curResult["status"])
+                curEpCat = curShow.getOverview(curResult[b"status"])
                 if curEpCat:
-                    epCats['{ep}'.format(ep=episode_num(curResult['season'], curResult['episode']))] = curEpCat
+                    epCats['{ep}'.format(ep=episode_num(curResult[b'season'], curResult[b'episode']))] = curEpCat
                     epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts

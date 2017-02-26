@@ -30,7 +30,6 @@ from sickrage.helper.exceptions import ex
 from sickrage.helper.encoding import ss
 import six
 from six.moves import urllib
-
 from six.moves import http_client
 
 
@@ -434,7 +433,7 @@ class Notifier(object):
 
         # if we're doing per-show
         if showName:
-            showName = urllib.unquote_plus(showName)
+            showName = urllib.parse.unquote_plus(showName)
             tvshowid = -1
             path = ''
 
