@@ -200,8 +200,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
-            # Exlude non-subtitle files with the 'only subtitles' option (not implemented yet)
-            if subtitles_only and not associated_file_path[-3:] in SUBTITLE_EXTENSIONS:
+            # Exclude non-subtitle files with the 'subtitles_only' option
+            if subtitles_only and associated_file_path[-3:] not in SUBTITLE_EXTENSIONS:
                 continue
 
             # Exclude .rar files from associated list
@@ -296,10 +296,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return
 
         file_list = [file_path]
+        subfolders = ek(os.path.normpath, ek(os.path.dirname, file_path)) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path)
+            file_list = file_list + self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
-            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True)
+            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:
             self._log(u"There were no files associated with " + file_path + ", not moving anything", logger.DEBUG)
@@ -315,10 +316,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             cur_file_name = ek(os.path.basename, cur_file_path)
 
             # get the extension without .
-            cur_extension = cur_file_path[old_base_name_length + 1:]
+            cur_extension = ek(os.path.splitext, cur_file_path)[1][1:]
 
             # check if file have subtitles language
-            if ek(os.path.splitext, cur_extension)[1][1:] in SUBTITLE_EXTENSIONS:
+            if cur_extension in SUBTITLE_EXTENSIONS:
                 cur_lang = ek(os.path.splitext, cur_extension)[0]
                 if cur_lang:
                     cur_lang = cur_lang.lower()
