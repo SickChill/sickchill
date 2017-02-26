@@ -3,18 +3,19 @@
 
 """Implements ThreadPoolExecutor."""
 
-from __future__ import with_statement
 import atexit
+from concurrent.futures import _base
+import Queue as queue
 import threading
 import weakref
 import sys
 
-from concurrent.futures import _base
-
 try:
-    import queue
+    from multiprocessing import cpu_count
 except ImportError:
-    import Queue as queue
+    # some platforms don't have multiprocessing
+    def cpu_count():
+        return None
 
 __author__ = 'Brian Quinlan (brian@sweetapp.com)'
 
@@ -38,11 +39,11 @@ _shutdown = False
 def _python_exit():
     global _shutdown
     _shutdown = True
-    items = list(_threads_queues.items())
+    items = list(_threads_queues.items()) if _threads_queues else ()
     for t, q in items:
         q.put(None)
     for t, q in items:
-        t.join()
+        t.join(sys.maxint)
 
 atexit.register(_python_exit)
 
@@ -59,7 +60,7 @@ class _WorkItem(object):
 
         try:
             result = self.fn(*self.args, **self.kwargs)
-        except BaseException:
+        except:
             e, tb = sys.exc_info()[1:]
             self.future.set_exception_info(e, tb)
         else:
@@ -71,6 +72,8 @@ def _worker(executor_reference, work_queue):
             work_item = work_queue.get(block=True)
             if work_item is not None:
                 work_item.run()
+                # Delete references to object. See issue16284
+                del work_item
                 continue
             executor = executor_reference()
             # Exit if:
@@ -82,17 +85,25 @@ def _worker(executor_reference, work_queue):
                 work_queue.put(None)
                 return
             del executor
-    except BaseException:
+    except:
         _base.LOGGER.critical('Exception in worker', exc_info=True)
 
+
 class ThreadPoolExecutor(_base.Executor):
-    def __init__(self, max_workers):
+    def __init__(self, max_workers=None):
         """Initializes a new ThreadPoolExecutor instance.
 
         Args:
             max_workers: The maximum number of threads that can be used to
                 execute the given calls.
         """
+        if max_workers is None:
+            # Use this number because ThreadPoolExecutor is often
+            # used to overlap I/O instead of CPU work.
+            max_workers = (cpu_count() or 1) * 5
+        if max_workers <= 0:
+            raise ValueError("max_workers must be greater than 0")
+
         self._max_workers = max_workers
         self._work_queue = queue.Queue()
         self._threads = set()
@@ -134,5 +145,5 @@ class ThreadPoolExecutor(_base.Executor):
             self._work_queue.put(None)
         if wait:
             for t in self._threads:
-                t.join()
+                t.join(sys.maxint)
     shutdown.__doc__ = _base.Executor.shutdown.__doc__
