@@ -20,7 +20,6 @@
 
 import datetime
 import re
-import urllib
 
 from sickbeard import db, logger
 from sickbeard.common import FAILED, Quality, WANTED
@@ -29,10 +28,13 @@ from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History
 
 
+from six.moves import urllib
+
+
 def prepareFailedName(release):
     """Standardizes release name for failed DB"""
 
-    fixed = urllib.unquote(release)
+    fixed = urllib.parse.unquote(release)
     if fixed.endswith(".nzb"):
         fixed = fixed.rpartition(".")[0]
 

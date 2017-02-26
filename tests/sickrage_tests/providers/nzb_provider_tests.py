@@ -31,6 +31,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
@@ -64,7 +65,7 @@ class NZBProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_nzb, enabled), result) in test_cases.iteritems():
+        for ((use_nzb, enabled), result) in six.iteritems(test_cases):
             sickbeard.USE_NZBS = use_nzb
 
             provider = NZBProvider('Test Provider')

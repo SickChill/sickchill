@@ -38,6 +38,9 @@ from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowE
 from sickrage.show.Show import Show
 
 
+import six
+
+
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
         generic_queue.GenericQueue.__init__(self)
@@ -290,7 +293,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
         if self.showDir:
             try:
-                assert isinstance(self.showDir, unicode)
+                assert isinstance(self.showDir, six.text_type)
             except AssertionError:
                 logger.log(traceback.format_exc(), logger.WARNING)
                 self._finishEarly()

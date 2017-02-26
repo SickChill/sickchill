@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import logger, tvcache
+import six
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -80,7 +81,7 @@ class BitSnoopProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                                 continue
 
                             title = item.title.text
-                            assert isinstance(title, unicode)
+                            assert isinstance(title, six.text_type)
                             # Use the torcache link bitsnoop provides,
                             # unless it is not torcache or we are not using blackhole
                             # because we want to use magnets if connecting direct to client

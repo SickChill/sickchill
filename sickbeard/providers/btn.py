@@ -28,6 +28,7 @@ import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
+import six
 
 from sickrage.helper.common import episode_num
 from sickrage.helper.exceptions import AuthException, ex
@@ -118,7 +119,7 @@ class BTNProvider(TorrentProvider):
                     if 'torrents' in parsedJSON:
                         found_torrents.update(parsedJSON['torrents'])
 
-            for _, torrent_info in found_torrents.iteritems():
+            for _, torrent_info in six.iteritems(found_torrents):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
@@ -137,7 +138,7 @@ class BTNProvider(TorrentProvider):
             parsedJSON = server.getTorrents(apikey, params or {}, int(results_per_page), int(offset))
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        except jsonrpclib.jsonrpc.ProtocolError, error:
+        except jsonrpclib.jsonrpc.ProtocolError as error:
             if error.message == 'Call Limit Exceeded':
                 logger.log(u"You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
             else:
@@ -148,11 +149,11 @@ class BTNProvider(TorrentProvider):
         except socket.timeout:
             logger.log(u"Timeout while accessing provider", logger.WARNING)
 
-        except socket.error, error:
+        except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors
             logger.log(u"Socket error while accessing provider. Error: {0} ".format(error[1]), logger.WARNING)
 
-        except Exception, error:
+        except Exception as error:
             errorstring = str(error)
             if errorstring.startswith('<') and errorstring.endswith('>'):
                 errorstring = errorstring[1:-1]

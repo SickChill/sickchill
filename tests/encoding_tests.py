@@ -19,6 +19,9 @@ from sickbeard import ek, ex
 from sickrage.helper.common import sanitize_filename
 
 
+import six
+
+
 class EncodingTests(unittest.TestCase):
     """
     Test encodings
@@ -45,15 +48,15 @@ class EncodingTests(unittest.TestCase):
         for test in strings:
             try:
                 show_dir = ek(os.path.join, root_dir, sanitize_filename(test))
-                self.assertTrue(isinstance(show_dir, unicode))
+                self.assertTrue(isinstance(show_dir, six.text_type))
             except Exception as error:  # pylint: disable=broad-except
                 ex(error)
 
 if __name__ == "__main__":
-    print "=================="
-    print "STARTING - ENCODING TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - ENCODING TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(EncodingTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

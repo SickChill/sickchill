@@ -25,6 +25,7 @@ import datetime
 import sickbeard
 from sickbeard import logger, helpers
 from sickbeard.metadata import mediabrowser
+import six
 
 from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
@@ -314,7 +315,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(myShow, '_actors', None) or getattr(myEp, 'gueststars', None):
                     cast = etree.SubElement(episode, "cast")
-                    if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], basestring):
+                    if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], six.string_types):
                         for actor in (x.strip() for x in myEp['gueststars'].split('|') if x.strip()):
                             cur_actor = etree.SubElement(cast, "actor")
                             cur_actor.text = actor

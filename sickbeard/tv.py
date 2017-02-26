@@ -70,6 +70,9 @@ import shutil
 
 
 
+import six
+
+
 def dirty_setter(attr_name):
     def wrapper(self, val):
         if getattr(self, attr_name) != val:
@@ -915,7 +918,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
             # Store only the first value for string type
-            if isinstance(imdb_info[key], basestring) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
+            if isinstance(imdb_info[key], six.string_types) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
                 imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
             else:
                 imdb_info[key] = imdbTv.get(key.replace('_', ' '))
@@ -960,7 +963,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # Rename dict keys without spaces for DB upsert
         self.imdb_info = dict(
-            (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.iteritems())
+            (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in six.iteritems(imdb_info))
         logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):

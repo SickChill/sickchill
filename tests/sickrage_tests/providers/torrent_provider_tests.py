@@ -31,6 +31,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
@@ -64,7 +65,7 @@ class TorrentProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_torrents, enabled), result) in test_cases.iteritems():
+        for ((use_torrents, enabled), result) in six.iteritems(test_cases):
             sickbeard.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider('Test Provider')

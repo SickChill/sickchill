@@ -63,6 +63,9 @@ from configobj import ConfigObj
 
 import requests
 
+import six
+
+
 gettext.install('messages', unicode=1, codeset='UTF-8')
 
 # Some strings come from metadata or libraries or 3rd party sites,

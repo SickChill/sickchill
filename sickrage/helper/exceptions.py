@@ -20,10 +20,13 @@
 from sickrage.helper.encoding import ss
 
 
+import six
+
+
 def ex(e):
     """
-    :param e: The exception to convert into a unicode string
-    :return: A unicode string from the exception text if it exists
+    :param e: The exception to convert into a six.text_type string
+    :return: A six.text_type string from the exception text if it exists
     """
 
     message = u''
@@ -33,7 +36,7 @@ def ex(e):
 
     for arg in e.args:
         if arg is not None:
-            if isinstance(arg, (str, unicode)):
+            if isinstance(arg, six.string_types):
                 fixed_arg = ss(arg)
             else:
                 try:
@@ -49,8 +52,8 @@ def ex(e):
                         message = u'{0} : {1}'.format(message, fixed_arg)
                     except UnicodeError:
                         message = u'{0} : {1}'.format(
-                            unicode(message, errors='replace'),
-                            unicode(fixed_arg, errors='replace'))
+                            six.text_type(message, errors='replace'),
+                            six.text_type(fixed_arg, errors='replace'))
 
     return message
 

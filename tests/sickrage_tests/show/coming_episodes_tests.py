@@ -35,6 +35,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from sickrage.show.ComingEpisodes import ComingEpisodes
 
 
+import six
+
+
 class ComingEpisodesTests(unittest.TestCase):
     """
     Test comping episodes
@@ -105,7 +108,7 @@ class ComingEpisodesTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (sort, result) in tests.iteritems():
+            for (sort, result) in six.iteritems(tests):
                 self.assertEqual(ComingEpisodes._get_sort(sort), result)  # pylint: disable=protected-access
 
 

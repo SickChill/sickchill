@@ -24,9 +24,12 @@ from chardet import detect
 from os import name
 
 
+import six
+
+
 def ek(function, *args, **kwargs):
     """
-    Encoding Kludge: Call function with arguments and unicode-encode output
+    Encoding Kludge: Call function with arguments and six.text_type-encode output
 
     :param function:  Function to call
     :param args:  Arguments for function
@@ -37,7 +40,7 @@ def ek(function, *args, **kwargs):
     if name == 'nt':
         result = function(*args, **kwargs)
     else:
-        result = function(*[ss(x) if isinstance(x, (str, unicode)) else x for x in args], **kwargs)
+        result = function(*[ss(x) if isinstance(x, six.string_types) else x for x in args], **kwargs)
 
     if isinstance(result, (list, tuple)):
         return _fix_list_encoding(result)
@@ -50,7 +53,7 @@ def ek(function, *args, **kwargs):
 
 def ss(var):
     """
-    Converts basestring to SYS_ENCODING, fallback encoding is forced UTF-8
+    Converts six.string_types to SYS_ENCODING, fallback encoding is forced UTF-8
 
     :param var: String to convert
     :return: Converted string
@@ -91,26 +94,26 @@ def _to_unicode(var):
     Converts string to Unicode, using in order: UTF-8, Latin-1, System encoding or finally what chardet wants
 
     :param var: String to convert
-    :return: Converted string as unicode, fallback is System encoding
+    :return: Converted string as six.text_type, fallback is System encoding
     """
 
     if isinstance(var, str):
         try:
-            var = unicode(var)
+            var = six.text_type(var)
         except Exception:
             try:
-                var = unicode(var, 'utf-8')
+                var = six.text_type(var, 'utf-8')
             except Exception:
                 try:
-                    var = unicode(var, 'latin-1')
+                    var = six.text_type(var, 'latin-1')
                 except Exception:
                     try:
-                        var = unicode(var, sickbeard.SYS_ENCODING)
+                        var = six.text_type(var, sickbeard.SYS_ENCODING)
                     except Exception:
                         try:
                             # Chardet can be wrong, so try it last
-                            var = unicode(var, detect(var).get('encoding'))
+                            var = six.text_type(var, detect(var).get('encoding'))
                         except Exception:
-                            var = unicode(var, sickbeard.SYS_ENCODING, 'replace')
+                            var = six.text_type(var, sickbeard.SYS_ENCODING, 'replace')
 
     return var

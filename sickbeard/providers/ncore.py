@@ -77,7 +77,7 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
                 
                 try:
                   parsed_json = json.loads(data)
-                except ValueError, e:
+                except ValueError as e:
                   continue
                 
                 if not isinstance(parsed_json, dict):

@@ -27,6 +27,9 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickrage.helper.encoding import ek
 
+import six
+
+
 resultFilters = [
     "sub(bed|ed|pack|s)",
     "(dir|sub|nfo)fix",
@@ -48,7 +51,7 @@ def containsAtLeastOneWord(name, words):
 
     Returns: False if the name doesn't contain any word of words list, or the found word from the list.
     """
-    if isinstance(words, basestring):
+    if isinstance(words, six.string_types):
         words = words.split(',')
 
     items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]

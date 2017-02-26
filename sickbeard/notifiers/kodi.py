@@ -18,9 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import httplib
-import urllib
-import urllib2
 import socket
 import base64
 import time
@@ -29,6 +26,11 @@ import sickbeard
 from sickbeard import logger, common
 from sickrage.helper.exceptions import ex
 from sickrage.helper.encoding import ss
+import six
+from six.moves import urllib
+
+from six.moves import http_client
+
 
 try:
     import xml.etree.cElementTree as etree
@@ -219,16 +221,16 @@ class Notifier(object):
             return False
 
         for key in command:
-            if isinstance(command[key], unicode):
+            if isinstance(command[key], six.text_type):
                 command[key] = command[key].encode('utf-8')
 
-        enc_command = urllib.urlencode(command)
+        enc_command = urllib.parse.urlencode(command)
         logger.log(u"{0} encoded API command: {1!r}".format(dest_app, enc_command), logger.DEBUG)
 
         # url = 'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)  # maybe need for old plex?
         url = 'http://{0}/kodiCmds/kodiHttp/?{1}'.format(host, enc_command)
         try:
-            req = urllib2.Request(url)
+            req = urllib.request.Request(url)
             # if we have a password, use authentication
             if password:
                 base64string = base64.encodestring('{0}:{1}'.format(username, password))[:-1]
@@ -239,8 +241,8 @@ class Notifier(object):
                 logger.log(u"Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
-                response = urllib2.urlopen(req)
-            except (httplib.BadStatusLine, urllib2.URLError) as e:
+                response = urllib.request.urlopen(req)
+            except (http_client.BadStatusLine, urllib.error.URLError) as e:
                 logger.log(u"Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
                 return False
 
@@ -303,7 +305,7 @@ class Notifier(object):
                 logger.log(u"Invalid response for " + showName + " on " + host, logger.DEBUG)
                 return False
 
-            encSqlXML = urllib.quote(sqlXML, ':\\/<>')
+            encSqlXML = urllib.parse.quote(sqlXML, ':\\/<>')
             try:
                 et = etree.fromstring(encSqlXML)
             except SyntaxError as e:
@@ -318,7 +320,7 @@ class Notifier(object):
 
             for path in paths:
                 # we do not need it double-encoded, gawd this is dumb
-                unEncPath = urllib.unquote(path.text).decode(sickbeard.SYS_ENCODING)
+                unEncPath = urllib.parse.unquote(path.text).decode(sickbeard.SYS_ENCODING)
                 logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
                 updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, {0})'.format(unEncPath)}
                 request = self._send_to_kodi(updateCommand, host)
@@ -374,7 +376,7 @@ class Notifier(object):
 
         url = 'http://{0}/jsonrpc'.format(host)
         try:
-            req = urllib2.Request(url, command)
+            req = urllib.request.Request(url, command)
             req.add_header("Content-type", "application/json")
             # if we have a password, use authentication
             if password:
@@ -386,8 +388,8 @@ class Notifier(object):
                 logger.log(u"Contacting {0} via url: {1}".format(dest_app, ss(url)), logger.DEBUG)
 
             try:
-                response = urllib2.urlopen(req)
-            except (httplib.BadStatusLine, urllib2.URLError) as e:
+                response = urllib.request.urlopen(req)
+            except (http_client.BadStatusLine, urllib.error.URLError) as e:
                 if sickbeard.KODI_ALWAYS_ON:
                     logger.log(u"Error while trying to retrieve {0} API version for {1}: {2!r}".format(dest_app, host, ex(e)), logger.WARNING)
                 return False

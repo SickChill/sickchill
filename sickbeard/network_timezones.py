@@ -22,6 +22,7 @@ import datetime
 import re
 
 from dateutil import tz
+import six
 
 from sickbeard import db, helpers, logger
 from sickrage.helper.common import try_int
@@ -68,7 +69,7 @@ def update_network_dict():
     network_list = dict(cache_db_con.select('SELECT * FROM network_timezones;'))
 
     queries = []
-    for network, timezone in d.iteritems():
+    for network, timezone in six.iteritems(d):
         existing = network in network_list
         if not existing:
             queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])

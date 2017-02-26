@@ -21,10 +21,10 @@
 
 import re
 from requests.utils import dict_from_cookiejar
-from urllib import quote_plus
 from bs4 import BeautifulSoup
 
 from sickbeard import logger, tvcache
+from six.moves.urllib.parse import quote_plus
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider

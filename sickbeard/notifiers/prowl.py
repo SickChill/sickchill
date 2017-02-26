@@ -21,7 +21,6 @@
 ##############################################################################
 
 import socket
-from httplib import HTTPSConnection, HTTPException
 from requests.compat import urlencode
 
 try:
@@ -33,6 +32,7 @@ except ImportError:
         pass
 
 import sickbeard
+from six.moves.http_client import HTTPSConnection, HTTPException
 import time
 import ast
 

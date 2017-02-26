@@ -22,7 +22,8 @@ import os
 import sickbeard
 
 from requests.compat import urlencode
-from urllib2 import Request, urlopen, HTTPError
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.request import Request, urlopen
 
 from sickbeard import logger
 from sickrage.helper.encoding import ek

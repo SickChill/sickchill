@@ -26,6 +26,7 @@ import subprocess
 import threading
 import traceback
 
+import six
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
@@ -155,7 +156,7 @@ def needs_subtitles(subtitles, force_lang=None):
     if not wanted_languages():
         return False
 
-    if isinstance(subtitles, basestring):
+    if isinstance(subtitles, six.string_types):
         subtitles = {subtitle.strip() for subtitle in subtitles.split(',') if subtitle.strip()}
 
     # if force language is set, we remove it from already downloaded subtitles

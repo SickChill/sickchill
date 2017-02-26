@@ -29,6 +29,9 @@ from sickrage.helper.exceptions import AuthException, ex
 from sickrage.show.Show import Show
 
 
+import six
+
+
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
         db.DBConnection.__init__(self, 'cache.db')
@@ -260,7 +263,7 @@ class TVCache(object):
             # get quality of release
             quality = parse_result.quality
 
-            assert isinstance(name, unicode)
+            assert isinstance(name, six.text_type)
 
             # get release group
             release_group = parse_result.release_group

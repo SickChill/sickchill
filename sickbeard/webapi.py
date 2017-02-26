@@ -28,7 +28,6 @@ import os
 import re
 import time
 import traceback
-import urllib
 
 import sickbeard
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, \
@@ -58,6 +57,10 @@ except ImportError:
 
 # pylint: disable=import-error
 from tornado.web import RequestHandler
+
+import six
+from six.moves import urllib
+
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -93,7 +96,7 @@ class ApiHandler(RequestHandler):
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
         # noinspection PyCompatibility
-        for arg, value in kwargs.iteritems():
+        for arg, value in six.iteritems(kwargs):
             if len(value) == 1:
                 kwargs[arg] = value[0]
 
@@ -699,7 +702,7 @@ class CMDComingEpisodes(ApiCall):
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
         # noinspection PyCompatibility
-        for section, coming_episodes in grouped_coming_episodes.iteritems():
+        for section, coming_episodes in six.iteritems(grouped_coming_episodes):
             for coming_episode in coming_episodes:
                 data[section].append({
                     'airdate': coming_episode['airdate'],
@@ -940,7 +943,7 @@ class CMDEpisodeSetStatus(ApiCall):
         extra_msg = ""
         if start_backlog:
             # noinspection PyCompatibility
-            for season, segment in segments.iteritems():
+            for season, segment in six.iteritems(segments):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
@@ -1401,7 +1404,7 @@ class CMDSickBeardAddRootDir(ApiCall):
         root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs]
         root_dirs_new.insert(0, index)
         # noinspection PyCompatibility
-        root_dirs_new = '|'.join(unicode(x) for x in root_dirs_new)
+        root_dirs_new = '|'.join(six.text_type(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directories updated")
@@ -1499,7 +1502,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         if len(root_dirs_new) > 0:
             root_dirs_new.insert(0, new_index)
         # noinspection PyCompatibility
-        root_dirs_new = "|".join(unicode(x) for x in root_dirs_new)
+        root_dirs_new = "|".join(six.text_type(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         # what if the root dir was not found?
@@ -1684,7 +1687,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
                 # found show
                 # noinspection PyCompatibility
                 results = [{indexer_ids[_indexer]: int(my_show.data['id']),
-                            "name": unicode(my_show.data['seriesname']),
+                            "name": six.text_type(my_show.data['seriesname']),
                             "first_aired": my_show.data['firstaired'],
                             "indexer": int(_indexer)}]
                 break

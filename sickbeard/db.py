@@ -31,6 +31,9 @@ from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
+import six
+
+
 db_cons = {}
 db_locks = {}
 
@@ -323,12 +326,12 @@ class DBConnection(object):
         query = "UPDATE [" + tableName + "] SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
             genParams(keyDict))
 
-        self.action(query, valueDict.values() + keyDict.values())
+        self.action(query, list(valueDict.values()) + keyDict.values())
 
         if self.connection.total_changes == changesBefore:
-            query = "INSERT INTO [" + tableName + "] (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
-                    " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
-            self.action(query, valueDict.values() + keyDict.values())
+            query = "INSERT INTO [" + tableName + "] (" + ", ".join(list(valueDict.keys()) + keyDict.keys()) + ")" + \
+                    " VALUES (" + ", ".join(["?"] * len(list(valueDict.keys()) + keyDict.keys())) + ")"
+            self.action(query, list(valueDict.values()) + keyDict.values())
 
     def tableInfo(self, tableName):
         """
@@ -346,16 +349,16 @@ class DBConnection(object):
     @staticmethod
     def _unicode_text_factory(x):
         """
-        Convert text to unicode
+        Convert text to six.text_type
 
         :param x: text to parse
-        :return: unicode result
+        :return: six.text_type result
         """
         try:
             # Just revert to the old code for now, until we can fix unicode
-            return unicode(x, 'utf-8')
+            return six.text_type(x, 'utf-8')
         except Exception:
-            return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
+            return six.text_type(x, sickbeard.SYS_ENCODING, errors="ignore")
 
     @staticmethod
     def _dict_factory(cursor, row):

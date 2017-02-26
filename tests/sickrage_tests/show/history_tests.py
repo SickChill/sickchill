@@ -34,6 +34,9 @@ from sickbeard.common import Quality
 from sickrage.show.History import History
 
 
+import six
+
+
 class HistoryTests(unittest.TestCase):
     """
     Test history
@@ -62,7 +65,7 @@ class HistoryTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (action, result) in tests.iteritems():
+            for (action, result) in six.iteritems(tests):
                 self.assertEqual(History._get_actions(action), result)  # pylint: disable=protected-access
 
     def test_get_limit(self):
@@ -93,7 +96,7 @@ class HistoryTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (action, result) in tests.iteritems():
+            for (action, result) in six.iteritems(tests):
                 self.assertEqual(History._get_limit(action), result)  # pylint: disable=protected-access
 
 

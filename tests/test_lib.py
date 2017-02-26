@@ -318,7 +318,7 @@ def teardown_test_db():
     #            os.remove(file_name)
     #        except Exception as e:
     #            print 'ERROR: Failed to remove ' + file_name
-    #            print exception(e)
+    #            print(exception(e))
 
 
 def setup_test_episode_file():
@@ -335,7 +335,7 @@ def setup_test_episode_file():
     # pylint: disable=broad-except
     # Catching too general exception
     except Exception:
-        print "Unable to set up test episode"
+        print("Unable to set up test episode")
         raise
 
 
