@@ -1168,8 +1168,8 @@ def extractZip(archive, targetDir):
     """
     Unzip a file to a directory
 
-    :param fileList: A list of file names - full path each name
-    :param archive: The file name for the archive with a full path
+    :param archive: The file name of the archive to extract with a full path
+    :param targetDir: The full path to the extraction target directory
     """
 
     try:

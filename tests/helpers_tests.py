@@ -85,9 +85,11 @@ Private Methods:
 
 from __future__ import print_function
 
-import os.path
+import os
 import sys
 import unittest
+
+from shutil import rmtree
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -174,33 +176,76 @@ class HelpersZipTests(unittest.TestCase):
     """
     Test zip methods
     """
-    @unittest.skip('Not yet implemented')
     def test_make_zip(self):
         """
         Test makeZip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] == ".py"]
+        zip_path = os.path.join(here, '_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        self.assertTrue(helpers.makeZip(files, zip_path))
+        self.assertFalse(helpers.makeZip(files, '/:/_test.zip'))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+
     def test_extract_zip(self):
         """
         Test extractZip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] == ".py"]
+        zip_path = os.path.join(here, '_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        helpers.makeZip(files, zip_path)
+        extract_path = os.path.join(here, '_extract_test')
+        self.assertTrue(helpers.extractZip(zip_path, extract_path))
+        self.assertFalse(helpers.extractZip(zip_path, '/:/_extract'))
+        # Test skip directories:
+        files += [os.path.join(here, 'Logs')]
+        helpers.makeZip(files, zip_path)
+        self.assertTrue(helpers.extractZip(zip_path, extract_path))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+        if os.path.isdir(extract_path):
+            rmtree(extract_path)
+
     def test_backup_config_zip(self):
         """
         Test backup_config_zip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_backup_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        self.assertTrue(helpers.backup_config_zip(files, zip_path, here))
+        self.assertFalse(helpers.backup_config_zip(files, '/:/_backup_test.zip'))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+
     def test_restore_config_zip(self):
         """
         Test restore_config_zip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_restore_test.zip')
+
+        helpers.backup_config_zip(files, zip_path, here)
+        restore_container = os.path.join(here, '_restore_tests')
+        os.mkdir(restore_container)
+        restore_path = os.path.join(restore_container, 'test')
+        self.assertFalse(helpers.restore_config_zip(os.path.abspath(files[1]), restore_path))  # test invalid zip
+        self.assertTrue(helpers.restore_config_zip(zip_path, restore_path))
+        self.assertTrue(helpers.restore_config_zip(zip_path, restore_path)) # test extractDir exists
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+        if os.path.isdir(restore_container):
+            rmtree(restore_container)
 
     def test_is_rar_file(self):
         """

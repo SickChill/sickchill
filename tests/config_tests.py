@@ -141,7 +141,7 @@ class ConfigTestBasic(unittest.TestCase):
             else:
                 log.error('Test not defined for %s', test_url)
 
-    def test_mini_max(self):
+    def test_min_max(self):
         """
         Test min_max
         """
@@ -170,6 +170,8 @@ class ConfigTestBasic(unittest.TestCase):
         self.assertEqual(config.check_setting_int(CFG, 'General', 'status_default', 5, silent=False), 5)
         # unmatched section
         self.assertEqual(config.check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1), 1)
+        # wrong def_val type
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 'ba'), 60)
 
     def test_check_setting_float(self):
         """
@@ -186,6 +188,8 @@ class ConfigTestBasic(unittest.TestCase):
         self.assertEqual(config.check_setting_float(CFG, 'General', 'log_size', 10.0, silent=False), 10.0)
         # unmatched section
         self.assertEqual(config.check_setting_float(CFG, 'Kodi', 'log_size', 2.5), 2.5)
+        # wrong def_val type
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 'ba'), 0.2)
 
     def test_check_setting_str(self):
         """
@@ -205,6 +209,8 @@ class ConfigTestBasic(unittest.TestCase):
         self.assertEqual(config.check_setting_str(CFG, 'General', 'extra_scripts', ''), '')
         # unmatched section
         self.assertEqual(config.check_setting_str(CFG, 'Subtitles', 'subtitles_languages', 'eng'), 'eng')
+        # wrong def_val type
+        self.assertEqual(config.check_setting_str(CFG, 'General', 'process_method', ['fail']), 'copy')
 
     def test_check_setting_bool(self):
         """
@@ -215,16 +221,20 @@ class ConfigTestBasic(unittest.TestCase):
         config.check_section(CFG, 'General')
         CFG['General']['debug'] = True
         CFG['General']['season_folders_default'] = False
+        CFG['General']['dbdebug'] = None
         # normal
         self.assertTrue(config.check_setting_bool(CFG, 'General', 'debug'))
         self.assertFalse(config.check_setting_bool(CFG, 'General', 'season_folders_default', def_val=True))
+        # None value type
+        self.assertFalse(config.check_setting_bool(
+            CFG, 'General', 'dbdebug', False))
         # unmatched item
         self.assertTrue(config.check_setting_bool(CFG, 'General', 'git_reset', def_val=True))
         # unmatched section
         self.assertFalse(config.check_setting_bool(CFG, 'Subtitles', 'use_subtitles', def_val=False))
         # wrong def_val type, silent = off
         self.assertTrue(config.check_setting_bool(
-            CFG, 'General', 'debug', def_val=0, silent=False))
+            CFG, 'General', 'debug', def_val=['fail'], silent=False))
 
 
 class ConfigTestChanges(unittest.TestCase):
