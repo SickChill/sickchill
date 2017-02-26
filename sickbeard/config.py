@@ -638,14 +638,13 @@ def check_setting_str(config, cfg_name, item_name, def_val='', silent=True, cens
 ################################################################################
 def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     try:
-        my_val = checkbox_to_value(config[cfg_name][item_name])
-        assert my_val
-    except (KeyError, AssertionError, IndexError):
         if not isinstance(def_val, bool):
             logger.log(
                 "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
                     dom=cfg_name, key=item_name, t='bool', dt=type(def_val)), logger.ERROR)
 
+        my_val = checkbox_to_value(config[cfg_name][item_name])
+    except (KeyError, IndexError):
         my_val = bool(def_val)
 
         if cfg_name not in config:
