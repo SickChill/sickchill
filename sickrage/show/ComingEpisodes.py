@@ -37,9 +37,9 @@ class ComingEpisodes(object):
     """
     categories = ['later', 'missed', 'soon', 'today']
     sorts = {
-        'date': (lambda a, b: cmp(a['localtime'], b['localtime'])),
-        'network': (lambda a, b: cmp((a['network'], a['localtime']), (b['network'], b['localtime']))),
-        'show': (lambda a, b: cmp((a['show_name'], a['localtime']), (b['show_name'], b['localtime']))),
+        'date': (lambda a, b: a['localtime'] < b['localtime']),
+        'network': (lambda a, b: (a['network'], a['localtime']) < (b['network'], b['localtime'])),
+        'show': (lambda a, b: (a['show_name'], a['localtime']) < (b['show_name'], b['localtime'])),
     }
 
     def __init__(self):
@@ -79,7 +79,7 @@ class ComingEpisodes(object):
             [today, next_week] + qualities_list
         )
 
-        done_shows_list = [int(result['showid']) for result in results]
+        done_shows_list = [int(result[b'showid']) for result in results]
         placeholder = ','.join(['?'] * len(done_shows_list))
         placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
 
@@ -125,17 +125,17 @@ class ComingEpisodes(object):
         grouped_results = ComingEpisodes._get_categories_map(categories)
 
         for result in results:
-            if result['paused'] and not paused:
+            if result[b'paused'] and not paused:
                 continue
 
-            result['airs'] = str(result['airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-            result['airdate'] = result['localtime'].toordinal()
+            result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+            result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result['airdate'] < today:
+            if result[b'airdate'] < today:
                 category = 'missed'
-            elif result['airdate'] >= next_week:
+            elif result[b'airdate'] >= next_week:
                 category = 'later'
-            elif result['airdate'] == today:
+            elif result[b'airdate'] == today:
                 category = 'today'
             else:
                 category = 'soon'
@@ -143,15 +143,15 @@ class ComingEpisodes(object):
             if len(categories) > 0 and category not in categories:
                 continue
 
-            if not result['network']:
-                result['network'] = ''
+            if not result[b'network']:
+                result[b'network'] = ''
 
-            result['quality'] = get_quality_string(result['quality'])
-            result['airs'] = sbdatetime.sbftime(result['localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
-            result['weekday'] = 1 + date.fromordinal(result['airdate']).weekday()
-            result['tvdbid'] = result['indexer_id']
-            result['airdate'] = sbdatetime.sbfdate(result['localtime'], d_preset=dateFormat)
-            result['localtime'] = result['localtime'].toordinal()
+            result[b'quality'] = get_quality_string(result[b'quality'])
+            result[b'airs'] = sbdatetime.sbftime(result[b'localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
+            result[b'weekday'] = 1 + date.fromordinal(result[b'airdate']).weekday()
+            result[b'tvdbid'] = result[b'indexer_id']
+            result[b'airdate'] = sbdatetime.sbfdate(result[b'localtime'], d_preset=dateFormat)
+            result[b'localtime'] = result[b'localtime'].toordinal()
 
             grouped_results[category].append(result)
 

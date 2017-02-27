@@ -19,6 +19,8 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
+from __future__ import print_function, unicode_literals
+
 import fnmatch
 import os
 import re
@@ -37,6 +39,9 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, \
     ShowDirectoryNotFoundException, ex
 from sickrage.show.Show import Show
+
+
+import six
 
 
 class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
@@ -95,7 +100,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
-        :param message: The string to log (unicode)
+        :param message: The string to log (six.text_type)
         :param level: The log level to use (optional)
         """
         logger.log(message, level)
@@ -116,7 +121,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
 
         if not existing_file:
-            self._log(u"There is no existing file so there's no worries about replacing it", logger.DEBUG)
+            self._log("There is no existing file so there's no worries about replacing it", logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
         # if the new file exists, return the appropriate code depending on the size
@@ -124,19 +129,19 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # see if it's bigger than our old file
             if ek(os.path.getsize, existing_file) > ek(os.path.getsize, self.file_path):
-                self._log(u"File " + existing_file + " is larger than " + self.file_path, logger.DEBUG)
+                self._log("File " + existing_file + " is larger than " + self.file_path, logger.DEBUG)
                 return PostProcessor.EXISTS_LARGER
 
             elif ek(os.path.getsize, existing_file) == ek(os.path.getsize, self.file_path):
-                self._log(u"File " + existing_file + " is the same size as " + self.file_path, logger.DEBUG)
+                self._log("File " + existing_file + " is the same size as " + self.file_path, logger.DEBUG)
                 return PostProcessor.EXISTS_SAME
 
             else:
-                self._log(u"File " + existing_file + " is smaller than " + self.file_path, logger.DEBUG)
+                self._log("File " + existing_file + " is smaller than " + self.file_path, logger.DEBUG)
                 return PostProcessor.EXISTS_SMALLER
 
         else:
-            self._log(u"File " + existing_file + " doesn't exist so there's no worries about replacing it",
+            self._log("File " + existing_file + " doesn't exist so there's no worries about replacing it",
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
@@ -200,35 +205,34 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
-            # Exlude non-subtitle files with the 'only subtitles' option (not implemented yet)
-            if subtitles_only and not associated_file_path[-3:] in SUBTITLE_EXTENSIONS:
+            # Exclude non-subtitle files with the 'subtitles_only' option
+            if subtitles_only and not associated_file_path.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 continue
 
             # Exclude .rar files from associated list
-            if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
+            if helpers.is_rar_file(associated_file_path):
                 continue
 
             # Define associated files (all, allowed and non allowed)
-            allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
             if ek(os.path.isfile, associated_file_path):
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.rpartition('.')[2] in allowed_extensions:
+                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
                     file_path_list_to_allow.append(associated_file_path)
                 elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
                 file_path_list.append(associated_file_path)
 
         if file_path_list:
-            self._log(u"Found the following associated files for {0}: {1}".format(file_path, file_path_list), logger.DEBUG)
+            self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list), logger.DEBUG)
             if file_path_list_to_allow:
-                self._log(u"Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
+                self._log("Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
                 # Rebuild the 'file_path_list' list only with the extensions the user allows
                 file_path_list = file_path_list_to_allow
             if file_path_list_to_delete:
-                self._log(u"Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
+                self._log("Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
         else:
-            self._log(u"No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
+            self._log("No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 
         return file_path_list
 
@@ -254,13 +258,13 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             file_list = file_list + self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
-            self._log(u"There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)
+            self._log("There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)
             return
 
         # delete the file and any other files which we want to delete
         for cur_file in file_list:
             if ek(os.path.isfile, cur_file):
-                self._log(u"Deleting file " + cur_file, logger.DEBUG)
+                self._log("Deleting file " + cur_file, logger.DEBUG)
                 # check first the read-only attribute
                 file_attribute = ek(os.stat, cur_file)[0]
                 if not file_attribute & stat.S_IWRITE:
@@ -269,7 +273,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     try:
                         ek(os.chmod, cur_file, stat.S_IWRITE)
                     except Exception:
-                        self._log(u'Cannot change permissions of ' + cur_file, logger.WARNING)
+                        self._log('Cannot change permissions of ' + cur_file, logger.WARNING)
 
                 ek(os.remove, cur_file)
 
@@ -292,42 +296,35 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
 
         if not action:
-            self._log(u"Must provide an action for the combined file operation", logger.ERROR)
+            self._log("Must provide an action for the combined file operation", logger.ERROR)
             return
 
         file_list = [file_path]
+        subfolders = ek(os.path.normpath, ek(os.path.dirname, file_path)) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path)
+            file_list = file_list + self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
-            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True)
+            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:
-            self._log(u"There were no files associated with " + file_path + ", not moving anything", logger.DEBUG)
+            self._log("There were no files associated with " + file_path + ", not moving anything", logger.DEBUG)
             return
-
-        # create base name with file_path (media_file without .extension)
-        old_base_name = file_path.rpartition('.')[0]
-        old_base_name_length = len(old_base_name)
 
         # deal with all files
         for cur_file_path in file_list:
-
-            cur_file_name = ek(os.path.basename, cur_file_path)
-
-            # get the extension without .
-            cur_extension = cur_file_path[old_base_name_length + 1:]
+            cur_file_name, cur_extension = cur_file_path.rpartition('.')[0:3:2]
 
             # check if file have subtitles language
-            if ek(os.path.splitext, cur_extension)[1][1:] in SUBTITLE_EXTENSIONS:
-                cur_lang = ek(os.path.splitext, cur_extension)[0]
-                if cur_lang:
-                    cur_lang = cur_lang.lower()
-                    if cur_lang == 'pt-br':
-                        cur_lang = 'pt-BR'
-                    if new_base_name:
-                        cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
-                    else:
-                        cur_extension = cur_extension.rpartition('.')[2]
+            if cur_extension in SUBTITLE_EXTENSIONS and '.' in cur_file_name:
+                cur_lang = cur_file_name.rpartition('.')[-1].lower()
+                # pt_BR is a special case, subliminal does not handle it well
+                if cur_lang == 'pt-br':
+                    cur_lang = 'pt-BR'
+
+                # Check that this is a valid subtitle language for this subtitle, and if so prepend the extension with it so it is retained
+                cur_lang_name = sickbeard.subtitles.from_code(cur_lang).name
+                if new_base_name and cur_lang == 'pt-BR' or cur_lang_name != 'Undetermined':
+                    cur_extension = '.'.join((cur_lang, cur_extension))
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -335,16 +332,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # If new base name then convert name
             if new_base_name:
-                new_file_name = new_base_name + '.' + cur_extension
+                new_file_name = '.'.join((new_base_name, cur_extension))
             # if we're not renaming we still want to change extensions sometimes
             else:
-                new_file_name = replace_extension(cur_file_name, cur_extension)
+                new_file_name = replace_extension(cur_file_path, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in SUBTITLE_EXTENSIONS:
+            if sickbeard.SUBTITLES_DIR and cur_extension.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
-                    logger.log(u"Unable to create subtitles folder " + subs_new_path, logger.ERROR)
+                    logger.log("Unable to create subtitles folder " + subs_new_path, logger.ERROR)
                 else:
                     helpers.chmodAsParent(subs_new_path)
                 new_file_path = ek(os.path.join, subs_new_path, new_file_name)
@@ -365,7 +362,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         def _int_move(cur_file_path, new_file_path):
 
-            self._log(u"Moving file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
+            self._log("Moving file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
             try:
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
@@ -388,12 +385,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         def _int_copy(cur_file_path, new_file_path):
 
-            self._log(u"Copying file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
+            self._log("Copying file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
             try:
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as e:
-                self._log(u"Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
+                self._log("Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
@@ -411,7 +408,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         def _int_hard_link(cur_file_path, new_file_path):
 
-            self._log(u"Hard linking file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
+            self._log("Hard linking file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
             try:
                 helpers.hardlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
@@ -433,7 +430,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         def _int_move_and_sym_link(cur_file_path, new_file_path):
 
-            self._log(u"Moving then symbolic linking file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
+            self._log("Moving then symbolic linking file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
             try:
                 helpers.moveAndSymlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
@@ -456,7 +453,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         def _int_sym_link(cur_file_path, new_file_path):
 
-            self._log(u"Creating then symbolic linking file from " + new_file_path + " to " + cur_file_path, logger.DEBUG)
+            self._log("Creating then symbolic linking file from " + new_file_path + " to " + cur_file_path, logger.DEBUG)
             try:
                 helpers.symlink(cur_file_path, new_file_path)
                 helpers.chmodAsParent(cur_file_path)
@@ -500,10 +497,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if not sql_results:
                 continue
 
-            indexer_id = int(sql_results[0]["showid"])
-            season = int(sql_results[0]["season"])
-            quality = int(sql_results[0]["quality"])
-            version = int(sql_results[0]["version"])
+            indexer_id = int(sql_results[0][b"showid"])
+            season = int(sql_results[0][b"season"])
+            quality = int(sql_results[0][b"quality"])
+            version = int(sql_results[0][b"version"])
 
             if quality == common.Quality.UNKNOWN:
                 quality = None
@@ -544,19 +541,19 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 self.release_name = helpers.remove_non_release_groups(remove_extension(ek(os.path.basename, parse_result.original_name)))
 
         else:
-            logger.log(u"Parse result not sufficient (all following have to be set). will not save release name",
+            logger.log("Parse result not sufficient (all following have to be set). will not save release name",
                        logger.DEBUG)
-            logger.log(u"Parse result(series_name): " + str(parse_result.series_name), logger.DEBUG)
-            logger.log(u"Parse result(season_number): " + str(parse_result.season_number), logger.DEBUG)
-            logger.log(u"Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
-            logger.log(u" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
-            logger.log(u"Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
+            logger.log("Parse result(series_name): " + str(parse_result.series_name), logger.DEBUG)
+            logger.log("Parse result(season_number): " + str(parse_result.season_number), logger.DEBUG)
+            logger.log("Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
+            logger.log(" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
+            logger.log("Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
 
     def _analyze_name(self, name):
         """
         Takes a name and tries to figure out a show, season, and episode from it.
 
-        :param name: A string which we want to analyze to determine show info from (unicode)
+        :param name: A string which we want to analyze to determine show info from (six.text_type)
 
         :return: A (indexer_id, season, [episodes]) tuple. The first two may be None and episodes may be []
         if none were found.
@@ -567,7 +564,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if not name:
             return to_return
 
-        logger.log(u"Analyzing name " + name, logger.DEBUG)
+        logger.log("Analyzing name " + name, logger.DEBUG)
 
         name = helpers.remove_non_release_groups(remove_extension(name))
 
@@ -575,7 +572,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         try:
             parse_result = NameParser(True, tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log(u"{0}".format(error), logger.DEBUG)
+            logger.log("{0}".format(error), logger.DEBUG)
             return to_return
 
         # show object
@@ -618,11 +615,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if not self.anidbEpisode:  # seems like we could parse the name before, now lets build the anidb object
                 self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
 
-            self._log(u"Adding the file to the anidb mylist", logger.DEBUG)
+            self._log("Adding the file to the anidb mylist", logger.DEBUG)
             try:
                 self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
             except Exception as e:
-                self._log(u"exception msg: " + str(e))
+                self._log("exception msg: " + str(e))
 
     def _find_info(self):  # pylint: disable=too-many-locals, too-many-branches
         """
@@ -651,7 +648,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             lambda: self._analyze_name(self.file_path),
 
             # try to analyze the dir + file name together as one name
-            lambda: self._analyze_name(self.folder_name + u' ' + self.file_name)
+            lambda: self._analyze_name(self.folder_name + ' ' + self.file_name)
         ]
 
         # attempt every possible method to get our info
@@ -660,7 +657,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             try:
                 cur_show, cur_season, cur_episodes, cur_quality, cur_version = cur_attempt()
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log(u"{0}".format(error), logger.DEBUG)
+                logger.log("{0}".format(error), logger.DEBUG)
                 continue
 
             if not cur_show:
@@ -683,13 +680,13 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             # for air-by-date shows we need to look up the season/episode from database
             if season == -1 and show and episodes:
                 self._log(
-                    u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
+                    "Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)
 
                 try:
                     airdate = episodes[0].toordinal()
                 except AttributeError:
-                    self._log(u"Could not convert to a valid airdate: {0}".format(episodes[0]), logger.DEBUG)
+                    self._log("Could not convert to a valid airdate: {0}".format(episodes[0]), logger.DEBUG)
                     episodes = []
                     continue
 
@@ -712,8 +709,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                         episodes = [int(sql_result[0]['episode'])]
                     else:
                         self._log(
-                            u"Unable to find episode with date " +
-                            str(episodes[0]) + u" for show " + str(show.indexerid) + u", skipping", logger.DEBUG)
+                            "Unable to find episode with date " +
+                            str(episodes[0]) + " for show " + str(show.indexerid) + ", skipping", logger.DEBUG)
                         # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
                         episodes = []
                         continue
@@ -726,7 +723,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     [show.indexerid, show.indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season is None:
                     self._log(
-                        u"Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
+                        "Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
                         logger.DEBUG)
                     season = 1
 
@@ -749,7 +746,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         root_ep = None
         for cur_episode in episodes:
-            self._log(u"Retrieving episode object for " + str(season) + "x" + str(cur_episode), logger.DEBUG)
+            self._log("Retrieving episode object for " + str(season) + "x" + str(cur_episode), logger.DEBUG)
 
             # now that we've figured out which episode this file is just load it manually
             try:
@@ -757,7 +754,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 if not curEp:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as e:
-                self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
+                self._log("Unable to create episode: " + ex(e), logger.DEBUG)
                 raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
@@ -785,7 +782,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
-                    u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
+                    "The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
                     logger.DEBUG)
                 return ep_quality
 
@@ -801,12 +798,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             ep_quality = common.Quality.nameQuality(cur_name, ep_obj.show.is_anime)
             self._log(
-                u"Looking up quality for name " + cur_name + u", got " + common.Quality.qualityStrings[ep_quality],
+                "Looking up quality for name " + cur_name + ", got " + common.Quality.qualityStrings[ep_quality],
                 logger.DEBUG)
 
             # if we find a good one then use it
             if ep_quality != common.Quality.UNKNOWN:
-                logger.log(cur_name + u" looks like it has quality " + common.Quality.qualityStrings[
+                logger.log(cur_name + " looks like it has quality " + common.Quality.qualityStrings[
                     ep_quality] + ", using that", logger.DEBUG)
                 return ep_quality
 
@@ -815,17 +812,17 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
-                    u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
+                    "The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
                     logger.DEBUG)
                 return ep_quality
 
         # Try guessing quality from the file name
         ep_quality = common.Quality.nameQuality(self.file_path)
         self._log(
-            u"Guessing quality for name " + self.file_name + u", got " + common.Quality.qualityStrings[ep_quality],
+            "Guessing quality for name " + self.file_name + ", got " + common.Quality.qualityStrings[ep_quality],
             logger.DEBUG)
         if ep_quality != common.Quality.UNKNOWN:
-            logger.log(self.file_name + u" looks like it has quality " + common.Quality.qualityStrings[
+            logger.log(self.file_name + " looks like it has quality " + common.Quality.qualityStrings[
                 ep_quality] + ", using that", logger.DEBUG)
             return ep_quality
 
@@ -842,7 +839,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return
 
         file_path = self.file_path
-        if isinstance(file_path, unicode):
+        if isinstance(file_path, six.text_type):
             try:
                 file_path = file_path.encode(sickbeard.SYS_ENCODING)
             except UnicodeEncodeError:
@@ -850,7 +847,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 pass
 
         ep_location = ep_obj.location
-        if isinstance(ep_location, unicode):
+        if isinstance(ep_location, six.text_type):
             try:
                 ep_location = ep_location.encode(sickbeard.SYS_ENCODING)
             except UnicodeEncodeError:
@@ -858,7 +855,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 pass
 
         for curScriptName in sickbeard.EXTRA_SCRIPTS:
-            if isinstance(curScriptName, unicode):
+            if isinstance(curScriptName, six.text_type):
                 try:
                     curScriptName = curScriptName.encode(sickbeard.SYS_ENCODING)
                 except UnicodeEncodeError:
@@ -868,7 +865,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             # generate a safe command line string to execute the script and provide all the parameters
             script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
             script_cmd[0] = ek(os.path.abspath, script_cmd[0])
-            self._log(u"Absolute path to script: {0}".format(script_cmd[0]), logger.DEBUG)
+            self._log("Absolute path to script: {0}".format(script_cmd[0]), logger.DEBUG)
 
             script_cmd += [
                 ep_location, file_path, str(ep_obj.show.indexerid),
@@ -876,7 +873,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             ]
 
             # use subprocess to run the command and capture output
-            self._log(u"Executing command: {0}".format(script_cmd))
+            self._log("Executing command: {0}".format(script_cmd))
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -884,10 +881,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 )
                 out, err_ = p.communicate()
 
-                self._log(u"Script result: {0}".format(out), logger.DEBUG)
+                self._log("Script result: {0}".format(out), logger.DEBUG)
 
             except Exception as e:
-                self._log(u"Unable to run extra_script: {0}".format(ex(e)))
+                self._log("Unable to run extra_script: {0}".format(ex(e)))
 
     def _is_priority(self, ep_obj, new_ep_quality):  # pylint: disable=too-many-return-statements
         """
@@ -908,28 +905,28 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             # if the episode is still in a snatched status, then we can assume we want this
             if not self.in_history:
-                self._log(u"SR snatched this episode and it is not processed before", logger.DEBUG)
+                self._log("SR snatched this episode and it is not processed before", logger.DEBUG)
                 return True
 
             # if it's in history, we only want it if the new quality is higher or if it's a proper of equal or higher quality
             if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-                self._log(u"SR snatched this episode and it is a higher quality so I'm marking it as priority", logger.DEBUG)
+                self._log("SR snatched this episode and it is a higher quality so I'm marking it as priority", logger.DEBUG)
                 return True
 
             if self.is_proper and new_ep_quality >= old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-                self._log(u"SR snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
+                self._log("SR snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
                 return True
 
             return False
 
         # if the user downloaded it manually and it's higher quality than the existing episode then it's priority
         if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-            self._log(u"This was manually downloaded but it appears to be better quality than what we have so I'm marking it as priority", logger.DEBUG)
+            self._log("This was manually downloaded but it appears to be better quality than what we have so I'm marking it as priority", logger.DEBUG)
             return True
 
         # if the user downloaded it manually and it appears to be a PROPER/REPACK then it's priority
         if self.is_proper and new_ep_quality >= old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-            self._log(u"This was manually downloaded but it appears to be a proper so I'm marking it as priority", logger.DEBUG)
+            self._log("This was manually downloaded but it appears to be a proper so I'm marking it as priority", logger.DEBUG)
             return True
 
         return False
@@ -941,19 +938,19 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         :return: True on success, False on failure
         """
 
-        self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
+        self._log("Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
 
         if ek(os.path.isdir, self.file_path):
-            self._log(u"File {0} seems to be a directory".format(self.file_path))
+            self._log("File {0} seems to be a directory".format(self.file_path))
             return False
 
         if not ek(os.path.exists, self.file_path):
-            self._log(u"File {0} doesn't exist, did unrar fail?".format(self.file_path))
+            self._log("File {0} doesn't exist, did unrar fail?".format(self.file_path))
             return False
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.file_path:
-                self._log(u"File {0} is ignored type, skipping".format(self.file_path))
+                self._log("File {0} is ignored type, skipping".format(self.file_path))
                 return False
 
         # reset per-file stuff
@@ -965,10 +962,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         # try to find the file info
         (show, season, episodes, quality, version) = self._find_info()
         if not show:
-            self._log(u"This show isn't in your list, you need to add it to SR before post-processing an episode")
+            self._log("This show isn't in your list, you need to add it to SR before post-processing an episode")
             raise EpisodePostProcessingFailedException()
         elif season is None or not episodes:
-            self._log(u"Not enough information to determine what episode this is. Quitting post-processing")
+            self._log("Not enough information to determine what episode this is. Quitting post-processing")
             return False
 
         # retrieve/create the corresponding TVEpisode objects
@@ -977,21 +974,21 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # get the quality of the episode we're processing
         if quality and not common.Quality.qualityStrings[quality] == 'Unknown':
-            self._log(u"Snatch history had a quality in it, using that: " + common.Quality.qualityStrings[quality],
+            self._log("Snatch history had a quality in it, using that: " + common.Quality.qualityStrings[quality],
                       logger.DEBUG)
             new_ep_quality = quality
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log(u"Quality of the episode we're processing: {0}".format(common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
+        logger.log("Quality of the episode we're processing: {0}".format(common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
-        self._log(u"Is ep a priority download: " + str(priority_download), logger.DEBUG)
+        self._log("Is ep a priority download: " + str(priority_download), logger.DEBUG)
 
         # get the version of the episode we're processing
         if version:
-            self._log(u"Snatch history had a version in it, using that: v" + str(version),
+            self._log("Snatch history had a version in it, using that: v" + str(version),
                       logger.DEBUG)
             new_ep_version = version
         else:
@@ -1002,16 +999,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         if not priority_download:
             if existing_file_status == PostProcessor.EXISTS_SAME:
-                self._log(u"File exists and new file is same size, pretending we did something")
+                self._log("File exists and new file is same size, pretending we did something")
                 return True
 
             if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
                 if self.is_proper and new_ep_quality == old_ep_quality:
-                    self._log(u"New file is a proper/repack, marking it safe to replace")
+                    self._log("New file is a proper/repack, marking it safe to replace")
                 else:
                     allowed_qualities_, preferred_qualities = common.Quality.splitQuality(int(show.quality))
                     if new_ep_quality not in preferred_qualities:
-                        self._log(u"File exists and new file quality is not in a preferred quality list, marking it unsafe to replace")
+                        self._log("File exists and new file quality is not in a preferred quality list, marking it unsafe to replace")
                         return False
 
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
@@ -1023,23 +1020,23 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
                 if not isinstance(max_season[0][0], int) or max_season[0][0] < 0:
                     self._log(
-                        u"File has season {0}, while the database does not have any known seasons yet. "
-                        u"Try forcing a full update on the show and process this file again. "
-                        u"The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season)
+                        "File has season {0}, while the database does not have any known seasons yet. "
+                        "Try forcing a full update on the show and process this file again. "
+                        "The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season)
                     )
                     return False
 
                 # If the file season (ep_obj.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 if int(ep_obj.season) > max_season[0][0]:
-                    self._log(u"File has season {0}, while the indexer is on season {1}. "
-                              u"Try forcing a full update on the show and process this file again. "
-                              u"The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season, max_season[0][0]))
+                    self._log("File has season {0}, while the indexer is on season {1}. "
+                              "Try forcing a full update on the show and process this file again. "
+                              "The file may be incorrectly labeled or fake, aborting.".format(ep_obj.season, max_season[0][0]))
                     return False
 
         # if the file is priority then we're going to replace it even if it exists
         else:
             self._log(
-                u"This download is marked a priority download so I'm going to replace an existing file if I find one")
+                "This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
         if sickbeard.USE_FREE_SPACE_CHECK:
@@ -1067,7 +1064,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # if the show directory doesn't exist then make it if allowed
         if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:  # pylint: disable=protected-access
-            self._log(u"Show directory doesn't exist, creating it", logger.DEBUG)
+            self._log("Show directory doesn't exist, creating it", logger.DEBUG)
             try:
                 ek(os.mkdir, ep_obj.show._location)  # pylint: disable=protected-access
                 helpers.chmodAsParent(ep_obj.show._location)  # pylint: disable=protected-access
@@ -1094,11 +1091,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     self._log("Using original release name " + self.file_name, logger.DEBUG)
                     cur_ep.release_name = self.file_name
                 else:
-                    cur_ep.release_name = u""
+                    cur_ep.release_name = ""
 
                 cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
-                cur_ep.subtitles = u''
+                cur_ep.subtitles = ''
 
                 cur_ep.subtitles_searchcount = 0
 
@@ -1120,7 +1117,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if releaseName is not None:
             failed_history.logSuccess(releaseName)
         else:
-            self._log(u"Couldn't find release in snatch history", logger.WARNING)
+            self._log("Couldn't find release in snatch history", logger.WARNING)
 
         # find the destination folder
         try:
@@ -1130,9 +1127,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             dest_path = ek(os.path.dirname, proper_absolute_path)
         except ShowDirectoryNotFoundException:
             raise EpisodePostProcessingFailedException(
-                u"Unable to post-process an episode if the show dir doesn't exist, quitting")
+                "Unable to post-process an episode if the show dir doesn't exist, quitting")
 
-        self._log(u"Destination folder for this episode: " + dest_path, logger.DEBUG)
+        self._log("Destination folder for this episode: " + dest_path, logger.DEBUG)
 
         # create any folders we need
         helpers.make_dirs(dest_path)
@@ -1176,7 +1173,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
-                logger.log(u"Unknown process method: " + str(self.process_method), logger.ERROR)
+                logger.log("Unknown process method: " + str(self.process_method), logger.ERROR)
                 raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
@@ -1204,7 +1201,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         try:
             ep_obj.createMetaFiles()
         except Exception:
-            logger.log(u"Could not create/update meta files. Continuing with postProcessing...")
+            logger.log("Could not create/update meta files. Continuing with postProcessing...")
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
@@ -1235,7 +1232,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             # do the library update for Trakt
             notifiers.trakt_notifier.update_library(ep_obj)
         except Exception:
-            logger.log(u"Some notifications could not be sent. Continuing with postProcessing...")
+            logger.log("Some notifications could not be sent. Continuing with postProcessing...")
 
         self._run_extra_scripts(ep_obj)
 

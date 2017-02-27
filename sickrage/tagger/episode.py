@@ -4,7 +4,7 @@
 Episode tagger to extract information from episodes
 """
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import re
 from sickrage.recompiled import tags
@@ -18,17 +18,17 @@ class EpisodeTags(object):
     def __init__(self, name):
         self.name = name
         self.rex = {
-            u'res': tags.resolution,
-            u'bluray': tags.bluray,
-            u'web': tags.web,
-            u'itunes': tags.itunes,
-            u'dvd': tags.dvd,
-            u'sat': tags.sat,
-            u'tv': tags.tv,
-            u'avc': tags.avc,
-            u'mpeg': tags.mpeg,
-            u'xvid': tags.xvid,
-            u'netflix': tags.netflix,
+            'res': tags.resolution,
+            'bluray': tags.bluray,
+            'web': tags.web,
+            'itunes': tags.itunes,
+            'dvd': tags.dvd,
+            'sat': tags.sat,
+            'tv': tags.tv,
+            'avc': tags.avc,
+            'mpeg': tags.mpeg,
+            'xvid': tags.xvid,
+            'netflix': tags.netflix,
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
@@ -125,7 +125,7 @@ class EpisodeTags(object):
         """
         if 'dlmux' in self.name.lower():
             return 'dlmux'
-        if self.netflix: 
+        if self.netflix:
             return self.netflix
         else:
             attr = 'web'
@@ -200,7 +200,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return u'' if not self.avc.lower().startswith('x') else self.avc
+        return '' if not self.avc.lower().startswith('x') else self.avc
 
     @property
     def avc_non_free(self):
@@ -210,7 +210,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return u'' if not self.avc.lower().startswith('h') else self.avc
+        return '' if not self.avc.lower().startswith('h') else self.avc
 
     @property
     def mpeg(self):
@@ -249,7 +249,7 @@ class EpisodeTags(object):
         attr = 'hrws'
         match = None
         if self.avc and self.tv == 'pd':
-            regex = re.compile(ur'(hr.ws.pdtv).{0}'.format(self.avc), re.I)
+            regex = re.compile(r'(hr.ws.pdtv).{0}'.format(self.avc), re.I)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
 
@@ -263,7 +263,7 @@ class EpisodeTags(object):
         attr = 'raw'
         match = None
         if self.res and self.tv == 'hd':
-            regex = re.compile(ur'({0}.hdtv)'.format(self.res), re.I)
+            regex = re.compile(r'({0}.hdtv)'.format(self.res), re.I)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
 

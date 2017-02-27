@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 from sickbeard import helpers
 from sickbeard import logger
 
@@ -34,11 +36,11 @@ def getShowImage(url, imgNum=None):
     else:
         tempURL = url
 
-    logger.log(u"Fetching image from " + tempURL, logger.DEBUG)
+    logger.log("Fetching image from " + tempURL, logger.DEBUG)
 
     image_data = helpers.getURL(tempURL, session=meta_session, returns='content')
     if image_data is None:
-        logger.log(u"There was an error trying to retrieve the image, aborting", logger.WARNING)
+        logger.log("There was an error trying to retrieve the image, aborting", logger.WARNING)
         return
 
     return image_data

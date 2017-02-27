@@ -21,7 +21,7 @@
 Test history
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -32,6 +32,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from sickbeard.common import Quality
 from sickrage.show.History import History
+
+
+import six
 
 
 class HistoryTests(unittest.TestCase):
@@ -53,16 +56,16 @@ class HistoryTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': [],
-            u'wrong': [],
-            u'downloaded': Quality.DOWNLOADED,
-            u'Downloaded': Quality.DOWNLOADED,
-            u'snatched': Quality.SNATCHED,
-            u'Snatched': Quality.SNATCHED,
+            '': [],
+            'wrong': [],
+            'downloaded': Quality.DOWNLOADED,
+            'Downloaded': Quality.DOWNLOADED,
+            'snatched': Quality.SNATCHED,
+            'Snatched': Quality.SNATCHED,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (action, result) in tests.iteritems():
+            for (action, result) in six.iteritems(tests):
                 self.assertEqual(History._get_actions(action), result)  # pylint: disable=protected-access
 
     def test_get_limit(self):
@@ -84,16 +87,16 @@ class HistoryTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': 0,
-            u'0': 0,
-            u'5': 5,
-            u'-5': 0,
-            u'1.5': 0,
-            u'-1.5': 0,
+            '': 0,
+            '0': 0,
+            '5': 5,
+            '-5': 0,
+            '1.5': 0,
+            '-1.5': 0,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (action, result) in tests.iteritems():
+            for (action, result) in six.iteritems(tests):
                 self.assertEqual(History._get_limit(action), result)  # pylint: disable=protected-access
 
 

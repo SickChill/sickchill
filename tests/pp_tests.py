@@ -21,6 +21,8 @@
 Test post processing
 """
 
+from __future__ import print_function, unicode_literals
+
 import os.path
 import shutil
 import sys
@@ -89,20 +91,20 @@ class PPBasicTests(test.SickbeardTestDBCase):
 class ListAssociatedFiles(unittest.TestCase):
     def __init__(self, test_case):
         super(ListAssociatedFiles, self).__init__(test_case)
-        self.test_tree = os.path.join(u'Show Name', u'associated_files', u'random', u'recursive', u'subdir')
+        self.test_tree = os.path.join('Show Name', 'associated_files', 'random', 'recursive', 'subdir')
 
         file_names = [
-            u'Show Name [SickRage].avi',
-            u'Show Name [SickRage].srt',
-            u'Show Name [SickRage].nfo',
-            u'Show Name [SickRage].en.srt',
-            u'Non-Associated Show [SickRage].srt',
-            u'Non-Associated Show [SickRage].en.srt',
-            u'Show [SickRage] Non-Associated.en.srt',
-            u'Show [SickRage] Non-Associated.srt',
+            'Show Name [SickRage].avi',
+            'Show Name [SickRage].srt',
+            'Show Name [SickRage].nfo',
+            'Show Name [SickRage].en.srt',
+            'Non-Associated Show [SickRage].srt',
+            'Non-Associated Show [SickRage].en.srt',
+            'Show [SickRage] Non-Associated.en.srt',
+            'Show [SickRage] Non-Associated.srt',
         ]
-        self.file_list = [os.path.join(u'Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
-        self.post_processor = PostProcessor(u'Show Name')
+        self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
+        self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
 
     def setUp(self):
@@ -111,7 +113,7 @@ class ListAssociatedFiles(unittest.TestCase):
             open(test_file, 'a').close()
 
     def tearDown(self):
-        shutil.rmtree(u'Show Name')
+        shutil.rmtree('Show Name')
 
     def test_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=True)
@@ -146,20 +148,20 @@ class ListAssociatedFiles(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - PostProcessor TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - PostProcessor TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PPInitTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    print "######################################################################"
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PPBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
-    print "######################################################################"
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ListAssociatedFiles)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -70,6 +70,9 @@ import shutil
 
 
 
+import six
+
+
 def dirty_setter(attr_name):
     def wrapper(self, val):
         if getattr(self, attr_name) != val:
@@ -753,7 +756,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # logger.log(str(self.indexerid) + ": Loading show info from database", logger.DEBUG)
 
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type='dict')
         sql_results = main_db_con.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
 
         if len(sql_results) > 1:
@@ -915,7 +918,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
             # Store only the first value for string type
-            if isinstance(imdb_info[key], basestring) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
+            if isinstance(imdb_info[key], six.string_types) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
                 imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
             else:
                 imdb_info[key] = imdbTv.get(key.replace('_', ' '))
@@ -960,7 +963,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         # Rename dict keys without spaces for DB upsert
         self.imdb_info = dict(
-            (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.iteritems())
+            (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in six.iteritems(imdb_info))
         logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
@@ -1522,7 +1525,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.subtitles = sql_results[0][b"subtitles"].split(",")
             self.subtitles_searchcount = sql_results[0][b"subtitles_searchcount"]
             self.subtitles_lastsearch = sql_results[0][b"subtitles_lastsearch"]
-            self.airdate = datetime.date.fromordinal(long(sql_results[0][b"airdate"]))
+            self.airdate = datetime.date.fromordinal(int(sql_results[0][b"airdate"]))
             # logger.log("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]), logger.DEBUG)
             self.status = int(sql_results[0][b"status"] or -1)
 

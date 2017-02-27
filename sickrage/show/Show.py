@@ -109,13 +109,13 @@ class Show(object):
         }
 
         for result in results:
-            if result['status'] in downloaded_status:
+            if result[b'status'] in downloaded_status:
                 stats['episodes']['downloaded'] += 1
                 stats['episodes']['total'] += 1
-            elif result['status'] in snatched_status:
+            elif result[b'status'] in snatched_status:
                 stats['episodes']['snatched'] += 1
                 stats['episodes']['total'] += 1
-            elif result['airdate'] <= today and result['status'] in total_status:
+            elif result[b'airdate'] <= today and result[b'status'] in total_status:
                 stats['episodes']['total'] += 1
 
         return stats

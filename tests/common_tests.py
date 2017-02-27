@@ -36,6 +36,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import common
 
 
+import six
+
+
 class QualityStringTests(unittest.TestCase):
     """
     Test Case for strings in common.Quality
@@ -127,7 +130,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'sd_tv'
         cur_qual = common.Quality.SDTV
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -141,7 +144,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'sd_dvd'
         cur_qual = common.Quality.SDDVD
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -155,7 +158,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'hd_tv'
         cur_qual = common.Quality.HDTV
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -169,7 +172,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'raw_hd_tv'
         cur_qual = common.Quality.RAWHDTV
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -183,7 +186,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'full_hd_tv'
         cur_qual = common.Quality.FULLHDTV
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -197,7 +200,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'hd_web_dl'
         cur_qual = common.Quality.HDWEBDL
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -211,7 +214,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'full_hd_web_dl'
         cur_qual = common.Quality.FULLHDWEBDL
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -225,7 +228,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'hd_bluray'
         cur_qual = common.Quality.HDBLURAY
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -239,7 +242,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'full_hd_bluray'
         cur_qual = common.Quality.FULLHDBLURAY
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -253,7 +256,7 @@ class QualityStringTests(unittest.TestCase):
         cur_test = 'unknown'
         cur_qual = common.Quality.UNKNOWN
 
-        for name, tests in self.test_cases.items():
+        for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
                     self.assertEqual(cur_qual, common.Quality.nameQuality(test))
@@ -284,8 +287,8 @@ class QualityStringTests(unittest.TestCase):
             'full_hd_bluray': common.Quality.FULLHDBLURAY,
             'unknown': common.Quality.UNKNOWN,
         }
-        for cur_test, expected_qual in test_quality.items():
-            for qual, tests in test_cases.items():
+        for cur_test, expected_qual in six.iteritems(test_quality):
+            for qual, tests in six.iteritems(test_cases):
                 for name in tests:
                     if qual == cur_test:
                         self.assertEqual(expected_qual, common.Quality.nameQuality(name, anime=True),
@@ -466,9 +469,9 @@ class OverviewTests(unittest.TestCase):
         self.assertEqual(overview.overviewStrings[overview.SNATCHED], "snatched")
 
 if __name__ == '__main__':
-    print "======================="
-    print "STARTING - COMMON TESTS"
-    print "======================="
+    print("=======================")
+    print("STARTING - COMMON TESTS")
+    print("=======================")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(QualityStringTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

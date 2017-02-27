@@ -21,7 +21,7 @@
 Test restart
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -33,6 +33,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 import sickbeard
 from sickbeard.event_queue import Events
 from sickrage.system.Restart import Restart
+
+
+import six
 
 
 class RestartTests(unittest.TestCase):
@@ -56,13 +59,13 @@ class RestartTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'0': False,
-            u'123': False,
-            u'123456': True,
+            '0': False,
+            '123': False,
+            '123456': True,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (pid, result) in tests.iteritems():
+            for (pid, result) in six.iteritems(tests):
                 self.assertEqual(Restart.restart(pid), result)
 
 

@@ -72,6 +72,9 @@ from configobj import ConfigObj  # pylint: disable=import-error
 from sickrage.helper.encoding import ek
 from sickrage.helper.argument_parser import SickRageArgumentParser
 
+from six.moves import reload_module
+
+
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -154,7 +157,7 @@ class SickRage(object):
 
         # TODO: Continue working on making this unnecessary, this hack creates all sorts of hellish problems
         if not hasattr(sys, 'setdefaultencoding'):
-            reload(sys)
+            reload_module(sys)
 
         try:
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
@@ -363,10 +366,11 @@ class SickRage(object):
         sys.stdout.flush()
         sys.stderr.flush()
 
+
         devnull = getattr(os, 'devnull', '/dev/null')
-        stdin = file(devnull)
-        stdout = file(devnull, 'a+')
-        stderr = file(devnull, 'a+')
+        stdin = open(devnull)
+        stdout = open(devnull, 'a+')
+        stderr = open(devnull, 'a+')
 
         os.dup2(stdin.fileno(), getattr(sys.stdin, 'device', sys.stdin).fileno())
         os.dup2(stdout.fileno(), getattr(sys.stdout, 'device', sys.stdout).fileno())

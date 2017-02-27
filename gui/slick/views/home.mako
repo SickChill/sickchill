@@ -121,7 +121,7 @@
                                         % endif
                                     % endfor
 
-                                    <% myShowList.sort(lambda x, y: cmp(x.name, y.name)) %>
+                                    <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
                                     % for curShow in myShowList:
                                         <%
                                             cur_airs_next = ''
@@ -301,7 +301,7 @@
                                         </tbody>
                                     % endif
                                     <tbody>
-                                        <% myShowList.sort(lambda x, y: cmp(x.name, y.name)) %>
+                                        <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
                                         % for curShow in myShowList:
                                             <%
                                                 cur_airs_next = ''

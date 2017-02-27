@@ -48,14 +48,14 @@ class TVShowTests(test.SickbeardTestDBCase):
         """
         test init indexer id
         """
-        show = TVShow(1, 0001, "en")
-        self.assertEqual(show.indexerid, 0001)
+        show = TVShow(1, 1, "en")
+        self.assertEqual(show.indexerid, 1)
 
     def test_change_indexerid(self):
         """
         test change indexer id
         """
-        show = TVShow(1, 0001, "en")
+        show = TVShow(1, 1, "en")
         show.name = "show name"
         show.network = "cbs"
         show.genre = "crime"
@@ -68,17 +68,17 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.saveToDB()
         show.loadFromDB()
 
-        show.indexerid = 0002
+        show.indexerid = 2
         show.saveToDB()
         show.loadFromDB()
 
-        self.assertEqual(show.indexerid, 0002)
+        self.assertEqual(show.indexerid, 2)
 
     def test_set_name(self):
         """
         test set name
         """
-        show = TVShow(1, 0001, "en")
+        show = TVShow(1, 1, "en")
         show.name = "newName"
         show.saveToDB()
         show.loadFromDB()
@@ -100,7 +100,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         """
         test init empty db
         """
-        show = TVShow(1, 0001, "en")
+        show = TVShow(1, 1, "en")
         episode = TVEpisode(show, 1, 1)
         episode.name = "asdasdasdajkaj"
         episode.saveToDB()
@@ -124,7 +124,7 @@ class TVTests(test.SickbeardTestDBCase):
         """
         Test get episodes
         """
-        show = TVShow(1, 0001, "en")
+        show = TVShow(1, 1, "en")
         show.name = "show name"
         show.network = "cbs"
         show.genre = "crime"
@@ -139,15 +139,15 @@ class TVTests(test.SickbeardTestDBCase):
 
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - TV TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - TV TESTS")
+    print("==================")
+    print("######################################################################")
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TVShowTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
-    print "######################################################################"
+    print("######################################################################")
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TVEpisodeTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
-    print "######################################################################"
+    print("######################################################################")
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TVTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

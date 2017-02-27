@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import os
 import os.path
 import re
@@ -25,6 +27,7 @@ from collections import OrderedDict
 from threading import Lock
 
 import dateutil
+import six
 
 import sickbeard
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
@@ -82,13 +85,13 @@ class NameParser(object):
 
     def _compile_regexes(self, regexMode):
         if regexMode == self.ANIME_REGEX:
-            dbg_str = u"ANIME"
+            dbg_str = "ANIME"
             uncompiled_regex = [regexes.anime_regexes]
         elif regexMode == self.NORMAL_REGEX:
-            dbg_str = u"NORMAL"
+            dbg_str = "NORMAL"
             uncompiled_regex = [regexes.normal_regexes]
         else:
-            dbg_str = u"ALL"
+            dbg_str = "ALL"
             uncompiled_regex = [regexes.normal_regexes, regexes.anime_regexes]
 
         self.compiled_regexes = []
@@ -96,8 +99,8 @@ class NameParser(object):
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
-                except re.error, errormsg:
-                    logger.log(u"WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
+                except re.error as errormsg:
+                    logger.log("WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
@@ -253,10 +256,10 @@ class NameParser(object):
                         season_number = int(epObj["seasonnumber"])
                         episode_numbers = [int(epObj["episodenumber"])]
                     except sickbeard.indexer_episodenotfound:
-                        logger.log(u"Unable to find episode with date " + str(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
+                        logger.log("Unable to find episode with date " + six.text_type(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
                         episode_numbers = []
                     except sickbeard.indexer_error as e:
-                        logger.log(u"Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
+                        logger.log("Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
                         episode_numbers = []
 
                 for epNo in episode_numbers:
@@ -313,7 +316,7 @@ class NameParser(object):
                 raise InvalidNameException("Scene numbering results episodes from "
                                            "seasons %s, (i.e. more than one) and "
                                            "sickrage does not support this.  "
-                                           "Sorry." % (str(new_season_numbers)))
+                                           "Sorry." % (six.text_type(new_season_numbers)))
 
             # I guess it's possible that we'd have duplicate episodes too, so lets
             # eliminate them
@@ -333,9 +336,7 @@ class NameParser(object):
 
             if bestResult.show.is_scene and not skip_scene_detection:
                 logger.log(
-                    u"Converted parsed result " + bestResult.original_name + " into " + str(bestResult).decode('utf-8',
-                                                                                                               'xmlcharrefreplace'),
-                    logger.DEBUG)
+                    "Converted parsed result " + bestResult.original_name + " into " + six.text_type(bestResult), logger.DEBUG)
 
         # CPU sleep
         time.sleep(0.02)
@@ -368,14 +369,14 @@ class NameParser(object):
     @staticmethod
     def _unicodify(obj, encoding="utf-8"):
         if isinstance(obj, bytes):
-            obj = unicode(obj, encoding, 'replace')
+            obj = six.text_type(obj, encoding, 'replace')
         return obj
 
     @staticmethod
     def _convert_number(org_number):
         """
          Convert org_number into an integer
-         org_number: integer or representation of a number: string or unicode
+         org_number: integer or representation of a number: string or six.text_type
          Try force converting to int first, on error try converting from Roman numerals
          returns integer or 0
          """
@@ -395,7 +396,7 @@ class NameParser(object):
                 ('IX', 9), ('V', 5), ('IV', 4), ('I', 1)
             )
 
-            roman_numeral = str(org_number).upper()
+            roman_numeral = six.text_type(org_number).upper()
             number = 0
             index = 0
 
@@ -468,18 +469,18 @@ class NameParser(object):
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         if not final_result.show:
-            raise InvalidShowException(u"Unable to match {0} to a show in your database. Parser result: {1}".format(
-                name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
+            raise InvalidShowException("Unable to match {0} to a show in your database. Parser result: {1}".format(
+                name, six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
-            raise InvalidNameException(u"Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
-                name, final_result.show.name, str(final_result).decode('utf-8', 'xmlcharrefreplace')))
+            raise InvalidNameException("Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
+                name, final_result.show.name, six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace')))
 
         if cache_result:
             name_parser_cache.add(name, final_result)
 
-        logger.log(u"Parsed " + name + " into " + str(final_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
+        logger.log("Parsed " + name + " into " + six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
         return final_result
 
 
@@ -536,32 +537,35 @@ class ParseResult(object):  # pylint: disable=too-many-instance-attributes
             self.version == other.version
         ])
 
-    def __str__(self):
+    def __unicode__(self):
         if self.series_name is not None:
-            to_return = self.series_name + u' - '
+            to_return = self.series_name + ' - '
         else:
-            to_return = u''
+            to_return = ''
         if self.season_number is not None:
-            to_return += 'S' + str(self.season_number).zfill(2)
+            to_return += 'S' + six.text_type(self.season_number).zfill(2)
         if self.episode_numbers:
             for e in self.episode_numbers:
-                to_return += 'E' + str(e).zfill(2)
+                to_return += 'E' + six.text_type(e).zfill(2)
 
         if self.is_air_by_date:
-            to_return += str(self.air_date)
+            to_return += six.text_type(self.air_date)
         if self.ab_episode_numbers:
-            to_return += ' [ABS: ' + str(self.ab_episode_numbers) + ']'
+            to_return += ' [ABS: ' + six.text_type(self.ab_episode_numbers) + ']'
         if self.version and self.is_anime is True:
-            to_return += ' [ANIME VER: ' + str(self.version) + ']'
+            to_return += ' [ANIME VER: ' + six.text_type(self.version) + ']'
 
         if self.release_group:
             to_return += ' [GROUP: ' + self.release_group + ']'
 
-        to_return += ' [ABD: ' + str(self.is_air_by_date) + ']'
-        to_return += ' [ANIME: ' + str(self.is_anime) + ']'
-        to_return += ' [whichReg: ' + str(self.which_regex) + ']'
+        to_return += ' [ABD: ' + six.text_type(self.is_air_by_date) + ']'
+        to_return += ' [ANIME: ' + six.text_type(self.is_anime) + ']'
+        to_return += ' [whichReg: ' + six.text_type(self.which_regex) + ']'
 
-        return to_return.encode('utf-8')
+        return to_return
+
+    def __str__(self):
+        return self.__unicode__().encode('utf-8', errors='replace')
 
     @property
     def is_air_by_date(self):
@@ -587,14 +591,14 @@ class NameParserCache(object):
         with self.lock:
             value = self.data.get(key, None)
             if value:
-                logger.log(u"Using cached parse result for: {name}".format(name=key), logger.DEBUG)
+                logger.log("Using cached parse result for: {name}".format(name=key), logger.DEBUG)
             return value
 
     def add(self, key, value):
         with self.lock:
             self.data.update({key: value})
             while len(self.data) > self.max_size:
-                self.data.pop(self.data.keys()[0], None)
+                self.data.pop(list(self.data.keys())[0], None)
 
 name_parser_cache = NameParserCache()
 

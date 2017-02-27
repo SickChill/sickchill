@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import six
     import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
@@ -50,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        % for schedulerName, scheduler in schedulerList.iteritems():
+                        % for schedulerName, scheduler in six.iteritems(schedulerList):
                         <% service = getattr(sickbeard, scheduler) %>
                             <tr>
                                 <td>${schedulerName}</td>

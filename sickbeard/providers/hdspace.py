@@ -19,12 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 from requests.utils import dict_from_cookiejar
-from urllib import quote_plus
 from bs4 import BeautifulSoup
 
 from sickbeard import logger, tvcache
+from six.moves.urllib.parse import quote_plus
 
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -43,10 +45,11 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
 
-        self.urls = {'base_url': u'https://hd-space.org/',
-                     'login': u'https://hd-space.org/index.php?page=login',
-                     'search': u'https://hd-space.org/index.php?page=torrents&search=%s&active=1&options=0',
-                     'rss': u'https://hd-space.org/rss_torrents.php?feed=dl'}
+        self.urls = {'base_url': 'https://hd-space.org/',
+                     'login': 'https://hd-space.org/index.php?page=login',
+                     'search': 'https://hd-space.org/index.php?page=torrents&search=%s&active=1&options=0',
+                     'rss': 'https://hd-space.org/rss_torrents.php?feed=dl'
+                     }
 
         self.categories = [15, 21, 22, 24, 25, 40]  # HDTV/DOC 1080/720, bluray, remux
         self.urls['search'] += '&category='
@@ -60,7 +63,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -76,11 +79,11 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('Password Incorrect', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
@@ -92,7 +95,7 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % (quote_plus(search_string.replace('.', ' ')),)
@@ -100,12 +103,12 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     search_url = self.urls['search'] % ''
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 data = self.get_url(search_url, returns='text')
                 if not data or 'please try later' in data:
-                    logger.log(u"No data returned from provider", logger.DEBUG)
+                    logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
                 # Search result page contains some invalid html that prevents html parser from returning all data.
@@ -115,12 +118,12 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     data = data.split('<div id="information"></div>')[1]
                     index = data.index('<table')
                 except ValueError:
-                    logger.log(u"Could not find main torrent table", logger.ERROR)
+                    logger.log("Could not find main torrent table", logger.ERROR)
                     continue
 
                 html = BeautifulSoup(data[index:], 'html5lib')
                 if not html:
-                    logger.log(u"No html data parsed from provider", logger.DEBUG)
+                    logger.log("No html data parsed from provider", logger.DEBUG)
                     continue
 
                 torrents = html('tr')
@@ -148,13 +151,13 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

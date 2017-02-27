@@ -1,17 +1,12 @@
 # Copyright 2009 Brian Quinlan. All Rights Reserved.
 # Licensed to PSF under a Contributor Agreement.
 
-from __future__ import with_statement
+import collections
 import logging
 import threading
+import itertools
 import time
-
-from concurrent.futures._compat import reraise
-
-try:
-    from collections import namedtuple
-except ImportError:
-    from concurrent.futures._compat import namedtuple
+import types
 
 __author__ = 'Brian Quinlan (brian@sweetapp.com)'
 
@@ -188,7 +183,8 @@ def as_completed(fs, timeout=None):
 
     Returns:
         An iterator that yields the given Futures as they complete (finished or
-        cancelled).
+        cancelled). If any given Futures are duplicated, they will be returned
+        once.
 
     Raises:
         TimeoutError: If the entire result iterator could not be generated
@@ -197,11 +193,12 @@ def as_completed(fs, timeout=None):
     if timeout is not None:
         end_time = timeout + time.time()
 
+    fs = set(fs)
     with _AcquireFutures(fs):
         finished = set(
                 f for f in fs
                 if f._state in [CANCELLED_AND_NOTIFIED, FINISHED])
-        pending = set(fs) - finished
+        pending = fs - finished
         waiter = _create_and_install_waiters(fs, _AS_COMPLETED)
 
     try:
@@ -231,9 +228,10 @@ def as_completed(fs, timeout=None):
 
     finally:
         for f in fs:
-            f._waiters.remove(waiter)
+            with f._condition:
+                f._waiters.remove(waiter)
 
-DoneAndNotDoneFutures = namedtuple(
+DoneAndNotDoneFutures = collections.namedtuple(
         'DoneAndNotDoneFutures', 'done not_done')
 def wait(fs, timeout=None, return_when=ALL_COMPLETED):
     """Wait for the futures in the given sequence to complete.
@@ -278,7 +276,8 @@ def wait(fs, timeout=None, return_when=ALL_COMPLETED):
 
     waiter.event.wait(timeout)
     for f in fs:
-        f._waiters.remove(waiter)
+        with f._condition:
+            f._waiters.remove(waiter)
 
     done.update(waiter.finished_futures)
     return DoneAndNotDoneFutures(done, set(fs) - done)
@@ -301,6 +300,22 @@ class Future(object):
             try:
                 callback(self)
             except Exception:
+                LOGGER.exception('exception calling callback for %r', self)
+            except BaseException:
+                # Explicitly let all other new-style exceptions through so
+                # that we can catch all old-style exceptions with a simple
+                # "except:" clause below.
+                #
+                # All old-style exception objects are instances of
+                # types.InstanceType, but "except types.InstanceType:" does
+                # not catch old-style exceptions for some reason.  Thus, the
+                # only way to catch all old-style exceptions without catching
+                # any new-style exceptions is to filter out the new-style
+                # exceptions, which all derive from BaseException.
+                raise
+            except:
+                # Because of the BaseException clause above, this handler only
+                # executes for old-style exception objects.
                 LOGGER.exception('exception calling callback for %r', self)
 
     def __repr__(self):
@@ -356,7 +371,14 @@ class Future(object):
 
     def __get_result(self):
         if self._exception:
-            reraise(self._exception, self._traceback)
+            if isinstance(self._exception, types.InstanceType):
+                # The exception is an instance of an old-style class, which
+                # means type(self._exception) returns types.ClassType instead
+                # of the exception's actual class type.
+                exception_type = self._exception.__class__
+            else:
+                exception_type = type(self._exception)
+            raise exception_type, self._exception, self._traceback
         else:
             return self._result
 
@@ -497,8 +519,8 @@ class Future(object):
                 return True
             else:
                 LOGGER.critical('Future %s in unexpected state: %s',
-                                id(self.future),
-                                self.future._state)
+                                id(self),
+                                self._state)
                 raise RuntimeError('Future in unexpected state')
 
     def set_result(self, result):
@@ -572,17 +594,21 @@ class Executor(object):
         if timeout is not None:
             end_time = timeout + time.time()
 
-        fs = [self.submit(fn, *args) for args in zip(*iterables)]
+        fs = [self.submit(fn, *args) for args in itertools.izip(*iterables)]
 
-        try:
-            for future in fs:
-                if timeout is None:
-                    yield future.result()
-                else:
-                    yield future.result(end_time - time.time())
-        finally:
-            for future in fs:
-                future.cancel()
+        # Yield must be hidden in closure so that the futures are submitted
+        # before the first iterator value is required.
+        def result_iterator():
+            try:
+                for future in fs:
+                    if timeout is None:
+                        yield future.result()
+                    else:
+                        yield future.result(end_time - time.time())
+            finally:
+                for future in fs:
+                    future.cancel()
+        return result_iterator()
 
     def shutdown(self, wait=True):
         """Clean-up the resources associated with the Executor.

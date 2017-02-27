@@ -4,7 +4,9 @@
 class NumDict - A dict with numeric keys
 """
 
+from __future__ import print_function, unicode_literals
 from collections import MutableMapping
+import six
 
 
 class NumDict(MutableMapping):

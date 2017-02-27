@@ -33,6 +33,8 @@ import uuid
 from os import path
 
 from fake_useragent import UserAgent, settings as UA_SETTINGS
+import six
+from six.moves import reduce
 
 from sickbeard.numdict import NumDict
 from sickrage.helper import video_screen_size
@@ -431,7 +433,7 @@ class Quality(object):
         :param status: to split
         :returns: a tuple containing (status, quality)
         """
-        status = long(status)
+        status = int(status)
         if status == UNKNOWN:
             return UNKNOWN, Quality.UNKNOWN
 

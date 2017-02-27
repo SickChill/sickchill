@@ -30,7 +30,8 @@ setup(
     install_requires=[
         'pytz',
         'requests',
-        'mako'
+        'mako',
+        'configobj'
     ],
 
     test_suite="tests",

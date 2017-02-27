@@ -24,6 +24,9 @@ from sickbeard.db import DBConnection
 from sickrage.helper.common import try_int
 
 
+import six
+
+
 class History(object):
     date_format = '%Y%m%d%H%M%S'
 
@@ -89,15 +92,15 @@ class History(object):
         data = []
         for result in results:
             data.append({
-                'action': result['action'],
-                'date': result['date'],
-                'episode': result['episode'],
-                'provider': result['provider'],
-                'quality': result['quality'],
-                'resource': result['resource'],
-                'season': result['season'],
-                'show_id': result['showid'],
-                'show_name': result['show_name']
+                'action': result[b'action'],
+                'date': result[b'date'],
+                'episode': result[b'episode'],
+                'provider': result[b'provider'],
+                'quality': result[b'quality'],
+                'resource': result[b'resource'],
+                'season': result[b'season'],
+                'show_id': result[b'showid'],
+                'show_name': result[b'show_name']
             })
 
         return data
@@ -116,7 +119,7 @@ class History(object):
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, (str, unicode)) else ''
+        action = action.lower() if isinstance(action, six.string_types) else ''
 
         if action == 'downloaded':
             return Quality.DOWNLOADED

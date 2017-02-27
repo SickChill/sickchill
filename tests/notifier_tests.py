@@ -297,7 +297,7 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         :return:
         """
         if __name__ == '__main__' and text is not None:
-            print text
+            print(text)
 
     def _get_showid_by_showname(self, showname):
         """
@@ -313,10 +313,10 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         return -1
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - NOTIFIER TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - NOTIFIER TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(NotifierTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

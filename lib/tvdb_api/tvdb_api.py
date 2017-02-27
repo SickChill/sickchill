@@ -172,7 +172,7 @@ class Show(dict):
         match, and so on.
 
         Each array index is an Episode() instance, so doing
-        search_results[0]['episodename'] will retrieve the episode name of the
+        search_results[0][b'episodename'] will retrieve the episode name of the
         first match.
 
         Search terms are converted to lower case (unicode) strings.
@@ -206,7 +206,7 @@ class Show(dict):
         # Using search results
 
         >>> results = t['Scrubs'].search("my first")
-        >>> print results[0]['episodename']
+        >>> print results[0][b'episodename']
         My First Day
         >>> for x in results: print x['episodename']
         My First Day

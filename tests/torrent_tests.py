@@ -35,7 +35,8 @@ from sickbeard.helpers import getURL, make_session
 from sickbeard.providers.bitcannon import BitCannonProvider
 from sickbeard.tv import TVEpisode, TVShow
 import tests.test_lib as test
-import urlparse
+
+from six.moves import urllib
 
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
@@ -49,7 +50,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         show = TVShow(1, 121361)
         show.name = "Italian Works"
         show.episodes = []
-        episode = TVEpisode(show, 05, 10)
+        episode = TVEpisode(show, 5, 10)
         episode.name = "Pines of Rome"
         episode.scene_season = 5
         episode.scene_episode = 10
@@ -94,12 +95,12 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
         # Continue only if one Release is found
         if len(torrent_rows) < 2:
-            print "The data returned does not contain any torrents"
+            print("The data returned does not contain any torrents")
             return
 
         for row in torrent_rows[1:]:
             try:
-                link = urlparse.urljoin(url, (row.find('div', {'class': 'torrentname'})('a')[1])['href'])
+                link = urllib.parse.urljoin(url, (row.find('div', {'class': 'torrentname'})('a')[1])['href'])
                 _id = row.get('id')[-7:]
                 title = (row.find('div', {'class': 'torrentname'})('a')[1]).text \
                     or (row.find('div', {'class': 'torrentname'})('a')[2]).text
@@ -112,12 +113,12 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
             except (AttributeError, TypeError):
                 continue
 
-            print title
+            print(title)
 
 if __name__ == "__main__":
-    print "=================="
-    print "STARTING - Torrent Basic TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - Torrent Basic TESTS")
+    print("==================")
+    print("######################################################################")
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

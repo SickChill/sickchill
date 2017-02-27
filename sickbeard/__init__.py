@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
+
+from __future__ import print_function, unicode_literals
+
 import datetime
 import gettext
 import os
@@ -32,6 +35,7 @@ import rarfile
 try:
     import pytz  # pylint: disable=unused-import
 except ImportError:
+    pytz = None
     from pkg_resources import require
     require('pytz')
 
@@ -41,7 +45,7 @@ from sickbeard.common import SD, SKIPPED, WANTED
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, \
+from sickbeard.config import check_section, check_setting_int, check_setting_str, \
     check_setting_float, check_setting_bool, ConfigMigrator
 from sickbeard import db, helpers, scheduler, search_queue, show_queue, logger, \
     naming, dailysearcher, metadata, providers
@@ -61,6 +65,9 @@ from sickrage.system.Shutdown import Shutdown
 from configobj import ConfigObj
 
 import requests
+
+import six
+
 
 gettext.install('messages', unicode=1, codeset='UTF-8')
 
@@ -706,30 +713,30 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         if __INITIALIZED__:
             return False
 
-        CheckSection(CFG, 'General')
-        CheckSection(CFG, 'Blackhole')
-        CheckSection(CFG, 'Newzbin')
-        CheckSection(CFG, 'SABnzbd')
-        CheckSection(CFG, 'NZBget')
-        CheckSection(CFG, 'KODI')
-        CheckSection(CFG, 'PLEX')
-        CheckSection(CFG, 'Emby')
-        CheckSection(CFG, 'Growl')
-        CheckSection(CFG, 'Prowl')
-        CheckSection(CFG, 'Twitter')
-        CheckSection(CFG, 'Boxcar2')
-        CheckSection(CFG, 'NMJ')
-        CheckSection(CFG, 'NMJv2')
-        CheckSection(CFG, 'Synology')
-        CheckSection(CFG, 'SynologyNotifier')
-        CheckSection(CFG, 'pyTivo')
-        CheckSection(CFG, 'NMA')
-        CheckSection(CFG, 'Pushalot')
-        CheckSection(CFG, 'Pushbullet')
-        CheckSection(CFG, 'Subtitles')
-        CheckSection(CFG, 'pyTivo')
-        CheckSection(CFG, 'Slack')
-        CheckSection(CFG, 'Discord')
+        check_section(CFG, 'General')
+        check_section(CFG, 'Blackhole')
+        check_section(CFG, 'Newzbin')
+        check_section(CFG, 'SABnzbd')
+        check_section(CFG, 'NZBget')
+        check_section(CFG, 'KODI')
+        check_section(CFG, 'PLEX')
+        check_section(CFG, 'Emby')
+        check_section(CFG, 'Growl')
+        check_section(CFG, 'Prowl')
+        check_section(CFG, 'Twitter')
+        check_section(CFG, 'Boxcar2')
+        check_section(CFG, 'NMJ')
+        check_section(CFG, 'NMJv2')
+        check_section(CFG, 'Synology')
+        check_section(CFG, 'SynologyNotifier')
+        check_section(CFG, 'pyTivo')
+        check_section(CFG, 'NMA')
+        check_section(CFG, 'Pushalot')
+        check_section(CFG, 'Pushbullet')
+        check_section(CFG, 'Subtitles')
+        check_section(CFG, 'pyTivo')
+        check_section(CFG, 'Slack')
+        check_section(CFG, 'Discord')
 
         # Need to be before any passwords
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version')
@@ -802,7 +809,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             CACHE_DIR = ACTUAL_CACHE_DIR
 
         if not helpers.makeDir(CACHE_DIR):
-            logger.log(u"!!! Creating local cache dir failed, using system default", logger.ERROR)
+            logger.log("!!! Creating local cache dir failed, using system default", logger.ERROR)
             CACHE_DIR = None
 
         # Check if we need to perform a restore of the cache folder
@@ -820,26 +827,26 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             shutil.move(dstDir, ek(os.path.join, ek(os.path.dirname, dstDir), bakFilename))
 
                         shutil.move(srcDir, dstDir)
-                        logger.log(u"Restore: restoring cache successful", logger.INFO)
+                        logger.log("Restore: restoring cache successful", logger.INFO)
                     except Exception as e:
-                        logger.log(u"Restore: restoring cache failed: {0}".format(e), logger.ERROR)
+                        logger.log("Restore: restoring cache failed: {0}".format(e), logger.ERROR)
 
                 restoreCache(ek(os.path.join, restoreDir, 'cache'), CACHE_DIR)
         except Exception as e:
-            logger.log(u"Restore: restoring cache failed: {0}".format(ex(e)), logger.ERROR)
+            logger.log("Restore: restoring cache failed: {0}".format(ex(e)), logger.ERROR)
         finally:
             if ek(os.path.exists, ek(os.path.join, DATA_DIR, 'restore')):
                 try:
                     shutil.rmtree(ek(os.path.join, DATA_DIR, 'restore'))
                 except Exception as e:
-                    logger.log(u"Restore: Unable to remove the restore directory: {0}".format(ex(e)), logger.ERROR)
+                    logger.log("Restore: Unable to remove the restore directory: {0}".format(ex(e)), logger.ERROR)
 
                 for cleanupDir in ['mako', 'sessions', 'indexers', 'rss']:
                     try:
                         shutil.rmtree(ek(os.path.join, CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
-                            logger.log(u"Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
+                            logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
         SICKRAGE_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickrage_background')
@@ -1351,7 +1358,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRIM_ZERO = check_setting_bool(CFG, 'GUI', 'trim_zero')
         DATE_PRESET = check_setting_str(CFG, 'GUI', 'date_preset', '%x')
         TIME_PRESET_W_SECONDS = check_setting_str(CFG, 'GUI', 'time_preset', '%I:%M:%S %p')
-        TIME_PRESET = TIME_PRESET_W_SECONDS.replace(u":%S", u"")
+        TIME_PRESET = TIME_PRESET_W_SECONDS.replace(":%S", "")
         TIMEZONE_DISPLAY = check_setting_str(CFG, 'GUI', 'timezone_display', 'local')
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1)
@@ -1475,7 +1482,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                                   curNzbProvider.supports_backlog)
 
         if not ek(os.path.isfile, CONFIG_FILE):
-            logger.log(u"Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
+            logger.log("Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
             save_config()
 
         # initialize the main SB database
@@ -1667,7 +1674,7 @@ def start():
 def halt():
     with INIT_LOCK:
         if __INITIALIZED__:
-            logger.log(u"Aborting all threads")
+            logger.log("Aborting all threads")
 
             threads = [
                 dailySearchScheduler,
@@ -1689,7 +1696,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.log(u"Waiting for the {0} thread to exit".format(t.name))
+                logger.log("Waiting for the {0} thread to exit".format(t.name))
                 try:
                     t.join(10)
                 except Exception:
@@ -1697,7 +1704,7 @@ def halt():
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
-                logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
+                logger.log("Waiting for the ANIDB CONNECTION thread to exit")
                 try:
                     ADBA_CONNECTION.join(10)
                 except Exception:
@@ -1710,18 +1717,18 @@ def halt():
 def sig_handler(signum=None, frame=None):
     frame_ = frame
     if not isinstance(signum, type(None)):
-        logger.log(u"Signal {0:d} caught, saving and exiting...".format(int(signum)))
+        logger.log("Signal {0:d} caught, saving and exiting...".format(int(signum)))
         Shutdown.stop(PID)
 
 
 def saveAll():
     # write all shows
-    logger.log(u"Saving all shows to the database")
+    logger.log("Saving all shows to the database")
     for show in showList:
         show.saveToDB()
 
     # save config
-    logger.log(u"Saving config file to disk")
+    logger.log("Saving config file to disk")
     save_config()
 
 
@@ -2363,7 +2370,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
     try:
         import webbrowser
     except ImportError:
-        logger.log(u"Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
+        logger.log("Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
         return
 
     if not startPort:
@@ -2377,4 +2384,4 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
         try:
             webbrowser.open(browserURL, 1, 1)
         except Exception:
-            logger.log(u"Unable to launch a browser", logger.ERROR)
+            logger.log("Unable to launch a browser", logger.ERROR)

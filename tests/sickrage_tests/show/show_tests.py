@@ -23,7 +23,7 @@ Test shows
 
 # pylint: disable=line-too-long
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -33,6 +33,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
@@ -75,14 +76,14 @@ class ShowTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            (False, u''): None,
-            (False, u'123'): None,
-            (True, u''): None,
-            (True, u'123'): None,
+            (False, ''): None,
+            (False, '123'): None,
+            (True, ''): None,
+            (True, '123'): None,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((use_shows, indexer_id), result) in tests.iteritems():
+            for ((use_shows, indexer_id), result) in six.iteritems(tests):
                 if use_shows:
                     self.assertEqual(Show.find(shows, indexer_id), result)
                 else:
@@ -111,7 +112,7 @@ class ShowTests(unittest.TestCase):
         invalid_show_id = ('Invalid show ID', None)
 
         indexer_id_list = [
-            None, '', u'', '123', u'123', '456', u'456', '789', u'789', 123, 456, 789, ['123', '456'], [u'123', u'456'],
+            None, '', '', '123', '123', '456', '456', '789', '789', 123, 456, 789, ['123', '456'], ['123', '456'],
             [123, 456]
         ]
         results_list = [

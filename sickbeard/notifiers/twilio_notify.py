@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import sickbeard
 import re
 
@@ -58,7 +60,7 @@ class Notifier(object):
                 return False
 
             # pylint: disable=undefined-variable
-            return self._notifyTwilio(_(u'This is a test notification from SickRage'), force=True, allow_raise=True)
+            return self._notifyTwilio(_('This is a test notification from SickRage'), force=True, allow_raise=True)
         except twilio.TwilioRestException:
             return False
 
@@ -74,7 +76,7 @@ class Notifier(object):
         if not (sickbeard.USE_TWILIO or force or self.number_regex.match(sickbeard.TWILIO_TO_NUMBER)):
             return False
 
-        logger.log(u'Sending Twilio SMS: ' + message, logger.DEBUG)
+        logger.log('Sending Twilio SMS: ' + message, logger.DEBUG)
 
         try:
             self.client.messages.create(
@@ -83,7 +85,7 @@ class Notifier(object):
                 from_=self.number.phone_number,
             )
         except twilio.TwilioRestException as e:
-            logger.log(u'Twilio notification failed:' + ex(e), logger.ERROR)
+            logger.log('Twilio notification failed:' + ex(e), logger.ERROR)
 
             if allow_raise:
                 raise e
