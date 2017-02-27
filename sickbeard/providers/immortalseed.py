@@ -193,7 +193,7 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 class ImmortalseedCache(tvcache.TVCache):
     def _getRSSData(self):
         params = {
-            'passkey': self.provider.passkey,
+            'secret_key': self.provider.passkey,
             'feedtype': 'downloadssl',
             'timezone': '-5',
             'categories': '44,32,7,47,8,48,9',
