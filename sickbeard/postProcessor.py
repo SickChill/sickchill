@@ -206,7 +206,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 continue
 
             # Exclude non-subtitle files with the 'subtitles_only' option
-            if subtitles_only and associated_file_path.endswith(SUBTITLE_EXTENSIONS):
+            if subtitles_only and not associated_file_path.endswith(SUBTITLE_EXTENSIONS):
                 continue
 
             # Exclude .rar files from associated list
