@@ -206,17 +206,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 continue
 
             # Exclude non-subtitle files with the 'subtitles_only' option
-            if subtitles_only and associated_file_path[-3:] not in SUBTITLE_EXTENSIONS:
+            if subtitles_only and associated_file_path.endswith(SUBTITLE_EXTENSIONS):
                 continue
 
             # Exclude .rar files from associated list
-            if re.search(r'(^.+\.(rar|r\d+)$)', associated_file_path):
+            if helpers.is_rar_file(associated_file_path):
                 continue
 
             # Define associated files (all, allowed and non allowed)
-            allowed_extensions = sickbeard.ALLOWED_EXTENSIONS.split(",")
             if ek(os.path.isfile, associated_file_path):
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.rpartition('.')[2] in allowed_extensions:
+                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(sickbeard.ALLOWED_EXTENSIONS.split(",")):
                     file_path_list_to_allow.append(associated_file_path)
                 elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
