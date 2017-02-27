@@ -233,7 +233,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 continue
 
-            if re.search("ita", name.split(sub)[0], re.I):
+            if re.search("[ -_.|]ita[ -_.|]", name.lower().split(sub)[0], re.I):
                 logger.log("Found Italian release:  " + name, logger.DEBUG)
                 italian = True
                 break
