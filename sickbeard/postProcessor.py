@@ -308,7 +308,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # deal with all files
         for cur_file_path in file_list:
-            cur_file_name, cur_extension = cur_file_name.rpartition('.')[0:3:2]
+            cur_file_name, cur_extension = cur_file_path.rpartition('.')[0:3:2]
 
             # check if file have subtitles language
             if cur_extension in SUBTITLE_EXTENSIONS and '.' in cur_file_name:
