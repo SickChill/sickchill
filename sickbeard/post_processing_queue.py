@@ -96,7 +96,8 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     length['manual'] += 1
         return length
 
-    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto", force_next=False):
+    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None,
+                 delete=None, failed=False, mode="auto", force_next=False):
         """
         Adds a processing task to the queue
         :param directory: directory to process
@@ -125,6 +126,10 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     **replacements), logger.WARNING)
 
         item = self.find_in_queue(directory, mode)
+
+        if not delete:
+            delete = (False, (not sickbeard.NO_DELETE, True)[method == u"move"])[mode == u"auto"]
+
         if item:
             if self.currentItem == item:
                 return log_helper(

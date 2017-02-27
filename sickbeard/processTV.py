@@ -135,7 +135,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     :param process_path: The folder name to look in
     :param release_name: The NZB/Torrent name which resulted in this folder being downloaded
+    :param process_method: processing method, copy/move/symlink/link
     :param force: True to process previously processed files
+    :param is_priority: whether to replace the file even if it exists at higher quality
+    :param delete_on: delete files and folders after they are processed (always happens with move and auto combination)
     :param failed: Boolean for whether or not the download failed
     :param mode: Type of postprocessing auto or manual
     """
@@ -178,8 +181,11 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             extracted_directories = unrar(current_directory, rar_files, force, result)
 
             # Add the directories to the walk directories
-            result.output += log_helper("Adding extracted directories to the list of directories to process: {0}".format(extracted_directories), logger.DEBUG)
-            directories_from_rars += extracted_directories
+            # but only if they're not already in the list (prevents duplicates)
+            if extracted_directories and \
+                ek(os.path.basename, extracted_directories[0]) not in directory_names:
+                result.output += log_helper("Adding extracted directories to the list of directories to process: {0}".format(extracted_directories), logger.DEBUG)
+                directories_from_rars += extracted_directories
 
         video_files = filter(helpers.is_media_file, file_names)
         unwanted_files = [x for x in file_names if x not in video_files and x != '.stfolder']
@@ -194,36 +200,30 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         delete_folder(ek(os.path.join, current_directory, '@eaDir'), False)
         delete_files(current_directory, unwanted_files, result)
+        if delete_folder(current_directory, check_empty=not delete_on):
+            result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
-        if all([not sickbeard.NO_DELETE or mode == "manual",
-                process_method == "move",
-                sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(current_directory) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR)]):
+    # Only allow methods 'move' and 'copy'. On different method fall back to 'move'.
+    method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
 
-            if delete_folder(current_directory, check_empty=True):
-                result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
+    # auto post-processing deletes rar content by default if method is 'move',
+    # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
+    # manual post-processing will only delete when prompted by delete_on
+    delete_rar_contents = any([sickbeard.DELRARCONTENTS,
+                               not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
+                               mode == 'manual' and delete_on])
 
     for directory_from_rar in directories_from_rars:
-        # Only allow methods 'move' and 'copy'. On different method fall back to 'move'.
-        method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
-
         process_dir(
             process_path=directory_from_rar,
             release_name=ek(os.path.basename, directory_from_rar),
             process_method=method_fallback,
             force=force,
             is_priority=is_priority,
-            delete_on=sickbeard.DELRARCONTENTS,
+            delete_on=delete_rar_contents,
             failed=failed,
             mode=mode
         )
-
-        # auto post-processing deletes rar content by default if method is 'move',
-        # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
-        # manual post-processing will only delete when prompted by delete_on
-        if sickbeard.DELRARCONTENTS \
-            or not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move' \
-            or mode == 'manual' and delete_on:
-            delete_folder(directory_from_rar, False)
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:

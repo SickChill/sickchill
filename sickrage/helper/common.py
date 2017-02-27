@@ -276,8 +276,7 @@ def replace_extension(filename, new_extension):
     """
 
     if isinstance(filename, six.string_types) and '.' in filename:
-        basename, _, _ = filename.rpartition('.')
-
+        basename = filename.rpartition('.')[0]
         if basename:
             return '{0}.{1}'.format(basename, new_extension)
 

@@ -205,8 +205,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
-            # Exlude non-subtitle files with the 'only subtitles' option (not implemented yet)
-            if subtitles_only and not associated_file_path[-3:] in SUBTITLE_EXTENSIONS:
+            # Exclude non-subtitle files with the 'subtitles_only' option
+            if subtitles_only and associated_file_path[-3:] not in SUBTITLE_EXTENSIONS:
                 continue
 
             # Exclude .rar files from associated list
@@ -301,38 +301,31 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return
 
         file_list = [file_path]
+        subfolders = ek(os.path.normpath, ek(os.path.dirname, file_path)) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path)
+            file_list = file_list + self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
-            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True)
+            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:
             self._log("There were no files associated with " + file_path + ", not moving anything", logger.DEBUG)
             return
 
-        # create base name with file_path (media_file without .extension)
-        old_base_name = file_path.rpartition('.')[0]
-        old_base_name_length = len(old_base_name)
-
         # deal with all files
         for cur_file_path in file_list:
-
-            cur_file_name = ek(os.path.basename, cur_file_path)
-
-            # get the extension without .
-            cur_extension = cur_file_path[old_base_name_length + 1:]
+            cur_file_name, cur_extension = cur_file_name.rpartition('.')[0:3:2]
 
             # check if file have subtitles language
-            if ek(os.path.splitext, cur_extension)[1][1:] in SUBTITLE_EXTENSIONS:
-                cur_lang = ek(os.path.splitext, cur_extension)[0]
-                if cur_lang:
-                    cur_lang = cur_lang.lower()
-                    if cur_lang == 'pt-br':
-                        cur_lang = 'pt-BR'
-                    if new_base_name:
-                        cur_extension = cur_lang + ek(os.path.splitext, cur_extension)[1]
-                    else:
-                        cur_extension = cur_extension.rpartition('.')[2]
+            if cur_extension in SUBTITLE_EXTENSIONS and '.' in cur_file_name:
+                cur_lang = cur_file_name.rpartition('.')[-1].lower()
+                # pt_BR is a special case, subliminal does not handle it well
+                if cur_lang == 'pt-br':
+                    cur_lang = 'pt-BR'
+
+                # Check that this is a valid subtitle language for this subtitle, and if so prepend the extension with it so it is retained
+                cur_lang_name = sickbeard.subtitles.from_code(cur_lang).name
+                if new_base_name and cur_lang == 'pt-BR' or cur_lang_name != 'Undetermined':
+                    cur_extension = '.'.join(cur_lang, cur_extension)
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -340,12 +333,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # If new base name then convert name
             if new_base_name:
-                new_file_name = new_base_name + '.' + cur_extension
+                new_file_name = '.'.join(new_base_name, cur_extension)
             # if we're not renaming we still want to change extensions sometimes
             else:
-                new_file_name = replace_extension(cur_file_name, cur_extension)
+                new_file_name = replace_extension(cur_file_path, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension[-3:] in SUBTITLE_EXTENSIONS:
+            if sickbeard.SUBTITLES_DIR and cur_extension.endswith(SUBTITLE_EXTENSIONS):
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
