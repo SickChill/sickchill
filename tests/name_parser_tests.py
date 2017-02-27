@@ -508,7 +508,7 @@ class AnimeTests(test.SickbeardTestDBCase):
         Test anime SxxExx file names
         """
         name_parser = parser.NameParser(parse_method='anime')
-        self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi', True)
+        self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi')
 
 
 # TODO: Make these work or document why they shouldn't
