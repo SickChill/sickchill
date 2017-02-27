@@ -274,8 +274,8 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
     sql_results = main_db_con.select("SELECT location FROM tv_shows")
 
     for sqlShow in sql_results:
-        if process_path.lower().startswith(ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or \
-                process_path.lower() == ek(os.path.realpath, sqlShow["location"]).lower():
+        if process_path.lower().startswith(ek(os.path.realpath, sqlShow[b"location"]).lower() + os.sep) or \
+                process_path.lower() == ek(os.path.realpath, sqlShow[b"location"]).lower():
 
             result.output += log_helper(
                 "Cannot process an episode that's already been moved to its show dir, skipping " + process_path,

@@ -66,20 +66,20 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
         for sqlEp in sql_results:
             try:
-                if not show or int(sqlEp["showid"]) != show.indexerid:
-                    show = Show.find(sickbeard.showList, int(sqlEp["showid"]))
+                if not show or int(sqlEp[b"showid"]) != show.indexerid:
+                    show = Show.find(sickbeard.showList, int(sqlEp[b"showid"]))
 
                 # for when there is orphaned series in the database but not loaded into our showlist
                 if not show or show.paused:
                     continue
 
             except MultipleShowObjectsException:
-                logger.log("ERROR: expected to find a single show matching " + str(sqlEp['showid']))
+                logger.log("ERROR: expected to find a single show matching " + str(sqlEp[b'showid']))
                 continue
 
             if show.airs and show.network:
                 # This is how you assure it is always converted to local time
-                air_time = network_timezones.parse_date_time(sqlEp['airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
+                air_time = network_timezones.parse_date_time(sqlEp[b'airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
                 # but set them to the default status while they are airing
@@ -87,7 +87,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                 if air_time > curTime:
                     continue
 
-            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
+            ep = show.getEpisode(sqlEp[b"season"], sqlEp[b"episode"])
             with ep.lock:
                 if ep.season == 0:
                     logger.log("New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
