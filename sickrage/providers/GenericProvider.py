@@ -241,13 +241,13 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     )
 
                     if len(sql_results) == 2:
-                        if int(sql_results[0]['season']) == 0 and int(sql_results[1]['season']) != 0:
+                        if int(sql_results[0][b'season']) == 0 and int(sql_results[1]['season']) != 0:
                             actual_season = int(sql_results[1]['season'])
                             actual_episodes = [int(sql_results[1]['episode'])]
                             same_day_special = True
-                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0]['season']) != 0:
-                            actual_season = int(sql_results[0]['season'])
-                            actual_episodes = [int(sql_results[0]['episode'])]
+                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0][b'season']) != 0:
+                            actual_season = int(sql_results[0][b'season'])
+                            actual_episodes = [int(sql_results[0][b'episode'])]
                             same_day_special = True
                     elif len(sql_results) != 1:
                         logger.log(
@@ -256,8 +256,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         add_cache_entry = True
 
                 if not add_cache_entry and not same_day_special:
-                    actual_season = int(sql_results[0]['season'])
-                    actual_episodes = [int(sql_results[0]['episode'])]
+                    actual_season = int(sql_results[0][b'season'])
+                    actual_episodes = [int(sql_results[0][b'episode'])]
 
             if add_cache_entry:
                 logger.log('Adding item from search to cache: {0}'.format(title), logger.DEBUG)

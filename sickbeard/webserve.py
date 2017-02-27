@@ -372,13 +372,13 @@ class WebRoot(WebHandler):
         )
 
         for result in results:
-            if result['showid'] not in episodes:
-                episodes[result['showid']] = {}
+            if result[b'showid'] not in episodes:
+                episodes[result[b'showid']] = {}
 
-            if result['season'] not in episodes[result['showid']]:
-                episodes[result['showid']][result['season']] = []
+            if result[b'season'] not in episodes[result[b'showid']]:
+                episodes[result[b'showid']][result[b'season']] = []
 
-            episodes[result['showid']][result['season']].append(result['episode'])
+            episodes[result[b'showid']][result[b'season']].append(result[b'episode'])
 
         if len(sickbeard.API_KEY) == 32:
             apikey = sickbeard.API_KEY
@@ -1457,7 +1457,7 @@ class Home(WebRoot):
         result = main_db_con.selectOne(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
             (int(show), int(season), int(episode)))
-        return result['description'] if result else 'Episode not found.'
+        return result[b'description'] if result else 'Episode not found.'
 
     @staticmethod
     def sceneExceptions(show):
@@ -2231,8 +2231,8 @@ class Home(WebRoot):
             ep_obj, error_msg = self._getEpisode(show, forSeason, forEpisode)
 
         if error_msg or not ep_obj:
-            result['success'] = False
-            result['errorMessage'] = error_msg
+            result[b'success'] = False
+            result[b'errorMessage'] = error_msg
         elif show_obj.is_anime:
             logger.log("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute), logger.DEBUG)
 
@@ -2261,15 +2261,15 @@ class Home(WebRoot):
         if show_obj.is_anime:
             sn = get_scene_absolute_numbering(show, indexer, forAbsolute)
             if sn:
-                result['sceneAbsolute'] = sn
+                result[b'sceneAbsolute'] = sn
             else:
-                result['sceneAbsolute'] = None
+                result[b'sceneAbsolute'] = None
         else:
             sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
             if sn:
-                (result['sceneSeason'], result['sceneEpisode']) = sn
+                (result[b'sceneSeason'], result[b'sceneEpisode']) = sn
             else:
-                (result['sceneSeason'], result['sceneEpisode']) = (None, None)
+                (result[b'sceneSeason'], result[b'sceneEpisode']) = (None, None)
 
         return json.dumps(result)
 
@@ -4386,7 +4386,7 @@ class ConfigPostProcessing(Config):
 
         result = naming.test_name(pattern, multi, abd, sports, anime_type)
 
-        result = ek(os.path.join, result['dir'], result['name'])
+        result = ek(os.path.join, result[b'dir'], result[b'name'])
 
         return result
 

@@ -1458,7 +1458,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
         next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         data = {"backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
-                "last_backlog": _ordinal_to_date_form(sql_results[0]["last_backlog"]),
+                "last_backlog": _ordinal_to_date_form(sql_results[0][b"last_backlog"]),
                 "next_backlog": next_backlog}
         return _responds(RESULT_SUCCESS, data)
 
@@ -1971,17 +1971,17 @@ class CMDShowAddExisting(ApiCall):
         indexer_name = None
         indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
-        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result['data']['results']:
+        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result[b'data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
-                indexer_name = indexer_result['data']['results'][0]['name']
+            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
+                indexer_name = indexer_result[b'data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer so we can pass it along when adding show to SR
-        indexer = indexer_result['data']['results'][0]['indexer']
+        indexer = indexer_result[b'data']['results'][0]['indexer']
 
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
@@ -2130,17 +2130,17 @@ class CMDShowAddNew(ApiCall):
         indexer_name = None
         indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
-        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result['data']['results']:
+        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result[b'data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
-                indexer_name = indexer_result['data']['results'][0]['name']
+            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
+                indexer_name = indexer_result[b'data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer for found show so we can pass it along
-        indexer = indexer_result['data']['results'][0]['indexer']
+        indexer = indexer_result[b'data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
         show_path = ek(os.path.join, self.location, sanitize_filename(indexer_name))

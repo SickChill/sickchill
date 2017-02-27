@@ -170,7 +170,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 continue
 
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
-            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
+            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sql_results[0][b"status"]))
             if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != bestResult.quality:
                 continue
 
@@ -181,8 +181,8 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                     [bestResult.indexerid, bestResult.season, bestResult.episode])
 
-                oldVersion = int(sql_results[0]["version"])
-                oldRelease_group = (sql_results[0]["release_group"])
+                oldVersion = int(sql_results[0][b"version"])
+                oldRelease_group = (sql_results[0][b"release_group"])
 
                 if -1 < oldVersion < bestResult.version:
                     logger.log("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
@@ -234,7 +234,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                 isSame = False
                 for curResult in historyResults:
                     # if the result exists in history already we need to skip it
-                    if self._genericName(helpers.remove_non_release_groups(curResult["resource"])) == clean_proper_name:
+                    if self._genericName(helpers.remove_non_release_groups(curResult[b"resource"])) == clean_proper_name:
                         isSame = True
                         break
                 if isSame:
@@ -291,7 +291,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         sql_results = main_db_con.select("SELECT last_proper_search FROM info")
 
         try:
-            last_proper_search = datetime.date.fromordinal(int(sql_results[0]["last_proper_search"]))
+            last_proper_search = datetime.date.fromordinal(int(sql_results[0][b"last_proper_search"]))
         except Exception:
             return datetime.date.fromordinal(1)
 

@@ -313,7 +313,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # deal with all files
         for cur_file_path in file_list:
-            cur_file_name, cur_extension = cur_file_name.rpartition('.')[0:3:2]
+            cur_file_name, cur_extension = cur_file_path.rpartition('.')[0:3:2]
 
             # check if file have subtitles language
             if cur_extension in SUBTITLE_EXTENSIONS and '.' in cur_file_name:
@@ -325,7 +325,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 # Check that this is a valid subtitle language for this subtitle, and if so prepend the extension with it so it is retained
                 cur_lang_name = sickbeard.subtitles.from_code(cur_lang).name
                 if new_base_name and cur_lang == 'pt-BR' or cur_lang_name != 'Undetermined':
-                    cur_extension = '.'.join(cur_lang, cur_extension)
+                    cur_extension = '.'.join((cur_lang, cur_extension))
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
@@ -333,7 +333,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # If new base name then convert name
             if new_base_name:
-                new_file_name = '.'.join(new_base_name, cur_extension)
+                new_file_name = '.'.join((new_base_name, cur_extension))
             # if we're not renaming we still want to change extensions sometimes
             else:
                 new_file_name = replace_extension(cur_file_path, cur_extension)
@@ -498,10 +498,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if not sql_results:
                 continue
 
-            indexer_id = int(sql_results[0]["showid"])
-            season = int(sql_results[0]["season"])
-            quality = int(sql_results[0]["quality"])
-            version = int(sql_results[0]["version"])
+            indexer_id = int(sql_results[0][b"showid"])
+            season = int(sql_results[0][b"season"])
+            quality = int(sql_results[0][b"quality"])
+            version = int(sql_results[0][b"version"])
 
             if quality == common.Quality.UNKNOWN:
                 quality = None

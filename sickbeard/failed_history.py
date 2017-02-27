@@ -65,20 +65,20 @@ def logFailed(release):
         providers = len(set(x["provider"] for x in sql_results))
         if sizes == 1:
             logger.log("However, they're all the same size. Continuing with found size.", logger.WARNING)
-            size = sql_results[0]["size"]
+            size = sql_results[0][b"size"]
         else:
             logger.log(
                 "They also vary in size. Deleting the logged snatches and recording this release with no size/provider",
                 logger.WARNING)
             for result in sql_results:
-                deleteLoggedSnatch(result["release"], result["size"], result["provider"])
+                deleteLoggedSnatch(result[b"release"], result[b"size"], result[b"provider"])
 
         if providers == 1:
             logger.log("They're also from the same provider. Using it as well.")
-            provider = sql_results[0]["provider"]
+            provider = sql_results[0][b"provider"]
     else:
-        size = sql_results[0]["size"]
-        provider = sql_results[0]["provider"]
+        size = sql_results[0][b"size"]
+        provider = sql_results[0][b"provider"]
 
     if not hasFailed(release, size, provider):
         failed_db_con = db.DBConnection('failed.db')

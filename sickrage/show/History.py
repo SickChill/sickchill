@@ -92,15 +92,15 @@ class History(object):
         data = []
         for result in results:
             data.append({
-                'action': result['action'],
-                'date': result['date'],
-                'episode': result['episode'],
-                'provider': result['provider'],
-                'quality': result['quality'],
-                'resource': result['resource'],
-                'season': result['season'],
-                'show_id': result['showid'],
-                'show_name': result['show_name']
+                'action': result[b'action'],
+                'date': result[b'date'],
+                'episode': result[b'episode'],
+                'provider': result[b'provider'],
+                'quality': result[b'quality'],
+                'resource': result[b'resource'],
+                'season': result[b'season'],
+                'show_id': result[b'showid'],
+                'show_name': result[b'show_name']
             })
 
         return data

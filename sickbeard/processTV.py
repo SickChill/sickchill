@@ -546,7 +546,7 @@ def subtitles_enabled(video):
     if parse_result.show.indexerid:
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
-        return bool(sql_results[0]["subtitles"]) if sql_results else False
+        return bool(sql_results[0][b"subtitles"]) if sql_results else False
     else:
         logger.log('Empty indexer ID for: {0}'.format(video), logger.WARNING)
         return False

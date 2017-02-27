@@ -25,7 +25,7 @@ class FeedParserTests(unittest.TestCase):
         result = binsearch.cache.getRSSFeed(binsearch.urls['rss'], params={'max': 50, 'g': 'alt.binaries.hdtv'})
         self.assertTrue('entries' in result)
         self.assertTrue('feed' in result)
-        for item in result['entries'] or []:
+        for item in result[b'entries'] or []:
             title, url = binsearch._get_title_and_url(item)     # pylint: disable=protected-access
             self.assertTrue(title and url)
 

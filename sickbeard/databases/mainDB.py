@@ -278,17 +278,17 @@ class MainSanityCheck(db.DBSanityCheck):
         for sql_result in sql_results:
             langs = []
 
-            logger.log("Checking subtitle codes for episode_id: {0}, codes: {1}".format(sql_result['episode_id'], sql_result['subtitles']), logger.DEBUG)
+            logger.log("Checking subtitle codes for episode_id: {0}, codes: {1}".format(sql_result[b'episode_id'], sql_result[b'subtitles']), logger.DEBUG)
 
-            for subcode in sql_result['subtitles'].split(','):
+            for subcode in sql_result[b'subtitles'].split(','):
                 if not len(subcode) == 3 or subcode not in subtitles.subtitle_code_filter():
-                    logger.log("Fixing subtitle codes for episode_id: {0}, invalid code: {1}".format(sql_result['episode_id'], subcode), logger.DEBUG)
+                    logger.log("Fixing subtitle codes for episode_id: {0}, invalid code: {1}".format(sql_result[b'episode_id'], subcode), logger.DEBUG)
                     continue
 
                 langs.append(subcode)
 
             self.connection.action("UPDATE tv_episodes SET subtitles = ?, subtitles_lastsearch = ? WHERE episode_id = ?;",
-                                   [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sql_result['episode_id']])
+                                   [','.join(langs), datetime.datetime.now().strftime(dateTimeFormat), sql_result[b'episode_id']])
 
     def fix_show_nfo_lang(self):
         self.connection.action("UPDATE tv_shows SET lang = '' WHERE lang = 0 or lang = '0'")
@@ -370,14 +370,14 @@ class AddSizeAndSceneNameFields(InitialSchema):
 
         logger.log("Adding file size to all episodes in DB, please be patient")
         for cur_ep in ep_results:
-            if not cur_ep["location"]:
+            if not cur_ep[b"location"]:
                 continue
 
             # if there is no size yet then populate it for us
-            if (not cur_ep["file_size"] or not int(cur_ep["file_size"])) and ek(os.path.isfile, cur_ep["location"]):
-                cur_size = ek(os.path.getsize, cur_ep["location"])
+            if (not cur_ep[b"file_size"] or not int(cur_ep[b"file_size"])) and ek(os.path.isfile, cur_ep[b"location"]):
+                cur_size = ek(os.path.getsize, cur_ep[b"location"])
                 self.connection.action("UPDATE tv_episodes SET file_size = ? WHERE episode_id = ?",
-                                       [cur_size, int(cur_ep["episode_id"])])
+                                       [cur_size, int(cur_ep[b"episode_id"])])
 
         # check each snatch to see if we can use it to get a release name from
         history_results = self.connection.select("SELECT * FROM history WHERE provider != -1 ORDER BY date ASC")
@@ -387,14 +387,16 @@ class AddSizeAndSceneNameFields(InitialSchema):
             # find the associated download, if there isn't one then ignore it
             download_results = self.connection.select(
                 "SELECT resource FROM history WHERE provider = -1 AND showid = ? AND season = ? AND episode = ? AND date > ?",
-                [cur_result["showid"], cur_result["season"], cur_result["episode"], cur_result["date"]])
+                [cur_result[b"showid"], cur_result[b"season"], cur_result[b"episode"], cur_result[b"date"]])
             if not download_results:
-                logger.log("Found a snatch in the history for " + cur_result[
-                    "resource"] + " but couldn't find the associated download, skipping it", logger.DEBUG)
+                logger.log(
+                    "Found a snatch in the history for " + cur_result[b"resource"] + " but couldn't find the associated download, skipping it",
+                    logger.DEBUG
+                )
                 continue
 
-            nzb_name = cur_result["resource"]
-            file_name = ek(os.path.basename, download_results[0]["resource"])
+            nzb_name = cur_result[b"resource"]
+            file_name = ek(os.path.basename, download_results[0][b"resource"])
 
             # take the extension off the filename, it's not needed
             if '.' in file_name:
@@ -403,7 +405,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
             # find the associated episode on disk
             ep_results = self.connection.select(
                 "SELECT episode_id, status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND location != ''",
-                [cur_result["showid"], cur_result["season"], cur_result["episode"]])
+                [cur_result[b"showid"], cur_result[b"season"], cur_result[b"episode"]])
             if not ep_results:
                 logger.log(
                     "The episode " + nzb_name + " was found in history but doesn't exist on disk anymore, skipping",
@@ -411,11 +413,11 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 continue
 
             # get the status/quality of the existing ep and make sure it's what we expect
-            ep_status, ep_quality = common.Quality.splitCompositeStatus(int(ep_results[0]["status"]))
+            ep_status, ep_quality = common.Quality.splitCompositeStatus(int(ep_results[0][b"status"]))
             if ep_status != common.DOWNLOADED:
                 continue
 
-            if ep_quality != int(cur_result["quality"]):
+            if ep_quality != int(cur_result[b"quality"]):
                 continue
 
             # make sure this is actually a real release name and not a season pack or something
@@ -429,7 +431,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 if parse_result.series_name and parse_result.season_number is not None and parse_result.episode_numbers and parse_result.release_group:
                     # if all is well by this point we'll just put the release name into the database
                     self.connection.action("UPDATE tv_episodes SET release_name = ? WHERE episode_id = ?",
-                                           [cur_name, ep_results[0]["episode_id"]])
+                                           [cur_name, ep_results[0][b"episode_id"]])
                     break
 
         # check each snatch to see if we can use it to get a release name from
@@ -438,7 +440,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
         logger.log("Adding release name to all episodes with obvious scene filenames")
         for cur_result in empty_results:
 
-            ep_file_name = ek(os.path.basename, cur_result["location"])
+            ep_file_name = ek(os.path.basename, cur_result[b"location"])
             ep_file_name = ek(os.path.splitext, ep_file_name)[0]
 
             # only want to find real scene names here so anything with a space in it is out
@@ -457,7 +459,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 "Name " + ep_file_name + " gave release group of " + parse_result.release_group + ", seems valid",
                 logger.DEBUG)
             self.connection.action("UPDATE tv_episodes SET release_name = ? WHERE episode_id = ?",
-                                   [ep_file_name, cur_result["episode_id"]])
+                                   [ep_file_name, cur_result[b"episode_id"]])
 
         self.incDBVersion()
 

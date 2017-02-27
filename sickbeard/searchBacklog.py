@@ -125,10 +125,10 @@ class BacklogSearcher(object):
 
         if not sql_results:
             lastBacklog = 1
-        elif sql_results[0]["last_backlog"] is None or sql_results[0]["last_backlog"] == "":
+        elif sql_results[0][b"last_backlog"] is None or sql_results[0][b"last_backlog"] == "":
             lastBacklog = 1
         else:
-            lastBacklog = int(sql_results[0]["last_backlog"])
+            lastBacklog = int(sql_results[0][b"last_backlog"])
             if lastBacklog > datetime.date.today().toordinal():
                 lastBacklog = 1
 
@@ -154,7 +154,7 @@ class BacklogSearcher(object):
 
         # check through the list of statuses to see if we want any
         for sql_result in sql_results:
-            cur_status, cur_quality = common.Quality.splitCompositeStatus(int(sql_result["status"] or -1))
+            cur_status, cur_quality = common.Quality.splitCompositeStatus(int(sql_result[b"status"] or -1))
 
             if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
                 continue
@@ -166,7 +166,7 @@ class BacklogSearcher(object):
                 elif cur_quality in allowed_qualities:
                     continue
 
-            ep_obj = show.getEpisode(sql_result["season"], sql_result["episode"])
+            ep_obj = show.getEpisode(sql_result[b"season"], sql_result[b"episode"])
 
             if ep_obj.season not in wanted:
                 wanted[ep_obj.season] = [ep_obj]

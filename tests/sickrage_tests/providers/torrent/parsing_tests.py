@@ -170,25 +170,25 @@ class BaseParser(type):
                 self.assertIsInstance(result, dict)
                 self.assertEqual(sorted(result.keys()), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
 
-                self.assertIsInstance(result['title'], six.text_type)
-                self.assertIsInstance(result['link'], six.text_type)
-                self.assertIsInstance(result['hash'], six.string_types)
-                self.assertIsInstance(result['seeders'], six.integer_types)
-                self.assertIsInstance(result['leechers'], six.integer_types)
-                self.assertIsInstance(result['size'], six.integer_types)
+                self.assertIsInstance(result[b'title'], six.text_type)
+                self.assertIsInstance(result[b'link'], six.text_type)
+                self.assertIsInstance(result[b'hash'], six.string_types)
+                self.assertIsInstance(result[b'seeders'], six.integer_types)
+                self.assertIsInstance(result[b'leechers'], six.integer_types)
+                self.assertIsInstance(result[b'size'], six.integer_types)
 
-                self.assertTrue(len(result['title']))
-                self.assertTrue(len(result['link']))
-                self.assertTrue(len(result['hash']) in (0, 32, 40))
-                self.assertTrue(result['seeders'] >= 0)
-                self.assertTrue(result['leechers'] >= 0)
+                self.assertTrue(len(result[b'title']))
+                self.assertTrue(len(result[b'link']))
+                self.assertTrue(len(result[b'hash']) in (0, 32, 40))
+                self.assertTrue(result[b'seeders'] >= 0)
+                self.assertTrue(result[b'leechers'] >= 0)
 
-                self.assertTrue(result['size'] >= -1)
+                self.assertTrue(result[b'size'] >= -1)
 
-                if result['link'].startswith('magnet'):
-                    self.assertTrue(magnet_regex.match(result['link']))
+                if result[b'link'].startswith('magnet'):
+                    self.assertTrue(magnet_regex.match(result[b'link']))
                 else:
-                    self.assertTrue(validators.url(result['link'], require_tld=False))
+                    self.assertTrue(validators.url(result[b'link'], require_tld=False))
 
                 self.assertIsInstance(self.provider._get_size(result), six.integer_types)  # pylint: disable=protected-access
                 self.assertTrue(all(self.provider._get_title_and_url(result)))  # pylint: disable=protected-access
