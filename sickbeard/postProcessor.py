@@ -206,7 +206,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 continue
 
             # Exclude non-subtitle files with the 'subtitles_only' option
-            if subtitles_only and not associated_file_path.endswith(SUBTITLE_EXTENSIONS):
+            if subtitles_only and not associated_file_path.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 continue
 
             # Exclude .rar files from associated list
@@ -215,7 +215,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # Define associated files (all, allowed and non allowed)
             if ek(os.path.isfile, associated_file_path):
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(sickbeard.ALLOWED_EXTENSIONS.split(",")):
+                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
                     file_path_list_to_allow.append(associated_file_path)
                 elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
@@ -337,7 +337,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             else:
                 new_file_name = replace_extension(cur_file_path, cur_extension)
 
-            if sickbeard.SUBTITLES_DIR and cur_extension.endswith(SUBTITLE_EXTENSIONS):
+            if sickbeard.SUBTITLES_DIR and cur_extension.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
