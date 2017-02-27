@@ -166,7 +166,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if not file_path:
             return []
 
-        file_path_list = []
         file_path_list_to_allow = []
         file_path_list_to_delete = []
 
@@ -219,14 +218,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     file_path_list_to_allow.append(associated_file_path)
                 elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
-                file_path_list.append(associated_file_path)
 
-        if file_path_list:
-            self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list), logger.DEBUG)
+        if file_path_list_to_allow or file_path_list_to_delete:
+            self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list_to_allow + file_path_list_to_delete), logger.DEBUG)
             if file_path_list_to_allow:
                 self._log("Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
                 # Rebuild the 'file_path_list' list only with the extensions the user allows
-                file_path_list = file_path_list_to_allow
             if file_path_list_to_delete:
                 self._log("Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
@@ -234,7 +231,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         else:
             self._log("No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 
-        return file_path_list
+        return file_path_list_to_allow
 
     def _delete(self, file_path, associated_files=False):
         """
