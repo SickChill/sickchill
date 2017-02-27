@@ -128,6 +128,15 @@ SIMPLE_TEST_CASES = {
     },
 }
 
+ANIME_TEST_CASES = {
+    'anime_SxxExx': {
+        'Show Name - S01E02 - Ep Name': parser.ParseResult(None, 'Show Name', 1, [2], 'Ep Name'),
+        'Show Name - S01E02-03 - My Ep Name': parser.ParseResult(None, 'Show Name', 1, [2, 3]),
+        'Show Name - S01E02': parser.ParseResult(None, 'Show Name', 1, [2]),
+        'Show Name - S01E02-03': parser.ParseResult(None, 'Show Name', 1, [2, 3]),
+    },
+}
+
 COMBINATION_TEST_CASES = [
     ('/test/path/to/Season 02/03 - Ep Name.avi',
      parser.ParseResult(None, None, 2, [3], 'Ep Name'),
@@ -442,6 +451,64 @@ class BasicTests(test.SickbeardTestDBCase):
         """
         name_parser = parser.NameParser()
         self._test_names(name_parser, 'season_only', lambda x: x + '.avi')
+
+
+class AnimeTests(test.SickbeardTestDBCase):
+    """
+    Basic tests for anime
+    """
+    def __init__(self, something):
+        super(AnimeTests, self).__init__(something)
+        super(AnimeTests, self).setUp()
+        self.show = tv.TVShow(1, 1, 'en')
+
+    def _test_names(self, name_parser, section, transform=None, verbose=False):
+        """
+        Performs a test
+
+        :param name_parser: to use for test
+        :param section:
+        :param transform:
+        :param verbose:
+        :return:
+        """
+        if VERBOSE or verbose:
+            print()
+            print('Running', section, 'tests')
+        for cur_test_base in ANIME_TEST_CASES[section]:
+            if transform:
+                cur_test = transform(cur_test_base)
+                name_parser.file_name = cur_test
+            else:
+                cur_test = cur_test_base
+            if VERBOSE or verbose:
+                print('Testing', cur_test)
+
+            result = ANIME_TEST_CASES[section][cur_test_base]
+
+            self.show.name = result.series_name if result else None
+            name_parser.showObj = self.show
+            if not result:
+                self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
+                return
+            else:
+                result.which_regex = [section]
+                test_result = name_parser.parse(cur_test)
+
+            if DEBUG or verbose:
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
+            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
+
+    def test_anime_sxxexx_file_names(self):
+        """
+        Test anime SxxExx file names
+        """
+        name_parser = parser.NameParser(parse_method='anime')
+        self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi', True)
 
 
 # TODO: Make these work or document why they shouldn't
