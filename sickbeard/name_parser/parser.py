@@ -470,17 +470,17 @@ class NameParser(object):
 
         if not final_result.show:
             raise InvalidShowException("Unable to match {0} to a show in your database. Parser result: {1}".format(
-                name, six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace')))
+                name, six.text_type(final_result))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
             raise InvalidNameException("Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
-                name, final_result.show.name, six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace')))
+                name, final_result.show.name, six.text_type(final_result))
 
         if cache_result:
             name_parser_cache.add(name, final_result)
 
-        logger.log("Parsed " + name + " into " + six.text_type(final_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
+        logger.log("Parsed " + name + " into " + six.text_type(final_result), logger.DEBUG)
         return final_result
 
 
