@@ -20,12 +20,12 @@
 import sickbeard
 
 from datetime import date, timedelta
-from sickbeard.common import IGNORED, Quality, WANTED, UNAIRED
+from sickbeard.common import WANTED, UNAIRED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
-from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
+from operator import itemgetter
 
 
 class ComingEpisodes(object):
@@ -59,64 +59,44 @@ class ComingEpisodes(object):
         sort = ComingEpisodes._get_sort(sort)
 
         today = date.today().toordinal()
-        next_week = (date.today() + timedelta(days=7)).toordinal()
-        recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
-        qualities_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER + Quality.ARCHIVED + [IGNORED]
 
-        db = DBConnection()
+        next_week = (date.today() + timedelta(days=7)).toordinal()
+
+        db = DBConnection(row_type='dict')
         fields_to_select = ', '.join(
             ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
              'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
         )
-        results = db.select(
-            'SELECT {0} '.format(fields_to_select) +
-            'FROM tv_episodes e, tv_shows s '
-            'WHERE season != 0 '
-            'AND airdate >= ? '
-            'AND airdate < ? '
-            'AND s.indexer_id = e.showid '
-            'AND e.status NOT IN (' + ','.join(['?'] * len(qualities_list)) + ')',
-            [today, next_week] + qualities_list
-        )
 
-        done_shows_list = [int(result[b'showid']) for result in results]
-        placeholder = ','.join(['?'] * len(done_shows_list))
-        placeholder2 = ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER))
+        sql_l = []
+        for show_obj in sickbeard.showList:
+            next_air_date = show_obj.nextEpisode()
+            if next_air_date:
+                sql_l.append(
+                    [
+                        'SELECT DISTINCT {0} '.format(fields_to_select) +
+                        'FROM tv_episodes e, tv_shows s '
+                        'WHERE showid = ? '
+                        'AND airdate = ? '
+                        'AND s.indexer_id = e.showid '
+                        'AND e.status IN (' + ','.join(['?'] * 2) + ') LIMIT 1',
+                        [show_obj.indexerid, next_air_date, WANTED, UNAIRED]
+                    ]
+                )
 
-        results += db.select(
-            'SELECT {0} '.format(fields_to_select) +
-            'FROM tv_episodes e, tv_shows s '
-            'WHERE season != 0 '
-            'AND showid NOT IN (' + placeholder + ') '
-                                                  'AND s.indexer_id = e.showid '
-                                                  'AND airdate = (SELECT airdate '
-                                                  'FROM tv_episodes inner_e '
-                                                  'WHERE inner_e.season != 0 '
-                                                  'AND inner_e.showid = e.showid '
-                                                  'AND inner_e.airdate >= ? '
-                                                  'ORDER BY inner_e.airdate ASC LIMIT 1) '
-                                                  'AND e.status NOT IN (' + placeholder2 + ')',
-            done_shows_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST + Quality.SNATCHED_PROPER
-        )
-
-        results += db.select(
-            'SELECT {0} '.format(fields_to_select) +
-            'FROM tv_episodes e, tv_shows s '
-            'WHERE season != 0 '
-            'AND s.indexer_id = e.showid '
-            'AND airdate < ? '
-            'AND airdate >= ? '
-            'AND e.status IN (?,?) '
-            'AND e.status NOT IN (' + ','.join(['?'] * len(qualities_list)) + ')',
-            [today, recently, WANTED, UNAIRED] + qualities_list
-        )
-
-        results = [dict(result) for result in results]
+        results = None
+        for sql_i in sql_l:
+            if results:
+                results += db.select(*sql_i)
+            else:
+                results = db.select(*sql_i)
 
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
+            print(item[b'show_name'])
 
+        results.sort(key=itemgetter(b'localtime'))
         results.sort(ComingEpisodes.sorts[sort])
 
         if not group:
@@ -129,13 +109,12 @@ class ComingEpisodes(object):
                 continue
 
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-            result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result[b'airdate'] < today:
+            if result[b'localtime'] < today:
                 category = 'missed'
-            elif result[b'airdate'] >= next_week:
+            elif result[b'localtime'] >= next_week:
                 category = 'later'
-            elif result[b'airdate'] == today:
+            elif result[b'localtime'] == today:
                 category = 'today'
             else:
                 category = 'soon'
@@ -147,11 +126,8 @@ class ComingEpisodes(object):
                 result[b'network'] = ''
 
             result[b'quality'] = get_quality_string(result[b'quality'])
-            result[b'airs'] = sbdatetime.sbftime(result[b'localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
-            result[b'weekday'] = 1 + date.fromordinal(result[b'airdate']).weekday()
+            result[b'weekday'] = 1 + date.fromordinal(result[b'localtime']).weekday()
             result[b'tvdbid'] = result[b'indexer_id']
-            result[b'airdate'] = sbdatetime.sbfdate(result[b'localtime'], d_preset=dateFormat)
-            result[b'localtime'] = result[b'localtime'].toordinal()
 
             grouped_results[category].append(result)
 
