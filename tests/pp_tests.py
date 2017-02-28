@@ -106,6 +106,8 @@ class ListAssociatedFiles(unittest.TestCase):
         self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
         self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
+        sickbeard.MOVE_ASSOCIATED_FILES = True
+        sickbeard.ALLOWED_EXTENSIONS = u''
 
     def setUp(self):
         make_dirs(self.test_tree)
@@ -116,12 +118,21 @@ class ListAssociatedFiles(unittest.TestCase):
         shutil.rmtree('Show Name')
 
     def test_subfolders(self):
+        # Test edge cases first:
+        self.assertEqual([], # empty file_path
+            self.post_processor.list_associated_files('', subfolders=True))
+        self.assertEqual([], # no file name
+                         self.post_processor.list_associated_files('\\Show Name\\.nomedia', subfolders=True))
+
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=True)
 
         associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
         out_list = sorted(file_name for file_name in self.file_list[1:] if 'Non-Associated' not in file_name)
 
         self.assertEqual(out_list, associated_files)
+
+        # Test no associated files:
+        associated_files = self.post_processor.list_associated_files('Fools Quest.avi', subfolders=True)
 
     def test_no_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=False)
