@@ -693,16 +693,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                     [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
-                    season = int(sql_result[0]['season'])
-                    episodes = [int(sql_result[0]['episode'])]
+                    season = int(sql_result[0][b'season'])
+                    episodes = [int(sql_result[0][b'episode'])]
                 else:
                     # Found no result, try with season 0
                     sql_result = main_db_con.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                         [show.indexerid, show.indexer, airdate])
                     if sql_result:
-                        season = int(sql_result[0]['season'])
-                        episodes = [int(sql_result[0]['episode'])]
+                        season = int(sql_result[0][b'season'])
+                        episodes = [int(sql_result[0][b'episode'])]
                     else:
                         self._log(
                             "Unable to find episode with date " +
@@ -770,8 +770,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         :param ep_obj: The TVEpisode object related to the file we are post processing
         :return: A quality value found in common.Quality
         """
-
-        ep_quality = common.Quality.UNKNOWN
 
         # if there is a quality available in the status then we don't need to bother guessing from the filename
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:

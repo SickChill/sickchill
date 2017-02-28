@@ -536,7 +536,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
                     seasonQual], logger.DEBUG)
 
             main_db_con = db.DBConnection()
-            allEps = [int(x["episode"])
+            allEps = [int(x[b"episode"])
                       for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                                   [show.indexerid])]
 

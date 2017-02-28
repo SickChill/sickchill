@@ -270,7 +270,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         main_db_con = db.DBConnection()
         sql_selection = "select count(*) as count from tv_episodes where showid = ? and season = ?"
         episodes = main_db_con.select(sql_selection, [parse_result.show.indexerid, parse_result.season_number])
-        if int(episodes[0]['count']) == len(parse_result.episode_numbers):
+        if int(episodes[0][b'count']) == len(parse_result.episode_numbers):
             return True
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements

@@ -536,16 +536,16 @@ class CalendarHandler(BaseHandler):
             # Get all episodes of this show airing between today and next month
             episode_list = main_db_con.select(
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
-                (past_date, future_date, int(show["indexer_id"])))
+                (past_date, future_date, int(show[b"indexer_id"])))
 
             utc = tz.gettz('GMT')
 
             for episode in episode_list:
 
-                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
-                                                                  show['network']).astimezone(utc)
+                air_date_time = network_timezones.parse_date_time(episode[b'airdate'], show[b"airs"],
+                                                                  show[b'network']).astimezone(utc)
                 air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=try_int(show["runtime"], 60))
+                    minutes=try_int(show[b"runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
@@ -558,19 +558,19 @@ class CalendarHandler(BaseHandler):
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickRage.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
                 ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
-                    show['show_name'], episode['season'], episode['episode'], episode['name']
+                    show[b'show_name'], episode[b'season'], episode[b'episode'], episode[b'name']
                 )
                 ical += 'UID:SickRage-' + str(datetime.date.today().isoformat()) + '-' + \
-                    show['show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + \
-                    'S' + str(episode['season']) + '\r\n'
-                if episode['description']:
+                    show[b'show_name'].replace(" ", "-") + '-E' + str(episode[b'episode']) + \
+                    'S' + str(episode[b'season']) + '\r\n'
+                if episode[b'description']:
                     ical += 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
-                        (show['airs'] or '(Unknown airs)'),
-                        (show['network'] or 'Unknown network'),
-                        episode['description'].splitlines()[0])
+                        (show[b'airs'] or '(Unknown airs)'),
+                        (show[b'network'] or 'Unknown network'),
+                        episode[b'description'].splitlines()[0])
                 else:
-                    ical += 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
-                        show['network'] or 'Unknown network') + '\r\n'
+                    ical += 'DESCRIPTION:' + (show[b'airs'] or '(Unknown airs)') + ' on ' + (
+                        show[b'network'] or 'Unknown network') + '\r\n'
 
                 ical += 'END:VEVENT\r\n'
 
@@ -2030,14 +2030,14 @@ class Home(WebRoot):
                 continue
             related_eps_result = main_db_con.select(
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
-                [ep_result[0]["location"], epInfo[1]]
+                [ep_result[0][b"location"], epInfo[1]]
             )
 
             root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
+                related_ep_obj = show_obj.getEpisode(cur_related_ep[b"season"], cur_related_ep[b"episode"])
                 if related_ep_obj not in root_ep_obj.relatedEps:
                     root_ep_obj.relatedEps.append(related_ep_obj)
 
@@ -3712,38 +3712,38 @@ class History(WebRoot):
 
         for row in data:
             action = {
-                'action': row['action'],
-                'provider': row['provider'],
-                'resource': row['resource'],
-                'time': row['date']
+                'action': row[b'action'],
+                'provider': row[b'provider'],
+                'resource': row[b'resource'],
+                'time': row[b'date']
             }
 
-            if not any((history['show_id'] == row['show_id'] and
-                        history['season'] == row['season'] and
-                        history['episode'] == row['episode'] and
-                        history['quality'] == row['quality']) for history in compact):
+            if not any((history[b'show_id'] == row[b'show_id'] and
+                        history[b'season'] == row[b'season'] and
+                        history[b'episode'] == row[b'episode'] and
+                        history[b'quality'] == row[b'quality']) for history in compact):
                 history = {
                     'actions': [action],
-                    'episode': row['episode'],
-                    'quality': row['quality'],
-                    'resource': row['resource'],
-                    'season': row['season'],
-                    'show_id': row['show_id'],
-                    'show_name': row['show_name']
+                    'episode': row[b'episode'],
+                    'quality': row[b'quality'],
+                    'resource': row[b'resource'],
+                    'season': row[b'season'],
+                    'show_id': row[b'show_id'],
+                    'show_name': row[b'show_name']
                 }
 
                 compact.append(history)
             else:
                 index = [
                     i for i, item in enumerate(compact)
-                    if item['show_id'] == row['show_id'] and
-                    item['season'] == row['season'] and
-                    item['episode'] == row['episode'] and
-                    item['quality'] == row['quality']
+                    if item[b'show_id'] == row[b'show_id'] and
+                    item[b'season'] == row[b'season'] and
+                    item[b'episode'] == row[b'episode'] and
+                    item[b'quality'] == row[b'quality']
                 ][0]
                 history = compact[index]
-                history['actions'].append(action)
-                history['actions'].sort(key=lambda x: x['time'], reverse=True)
+                history[b'actions'].append(action)
+                history[b'actions'].sort(key=lambda x: x[b'time'], reverse=True)
 
         t = PageTemplate(rh=self, filename="history.mako")
         submenu = [
