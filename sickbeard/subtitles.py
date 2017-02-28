@@ -429,7 +429,8 @@ class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
             "FROM tv_episodes AS e INNER JOIN tv_shows AS s "
             "ON (e.showid = s.indexer_id) "
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? "
-            "AND e.location != '' AND e.status IN (%s) ORDER BY age ASC" %
+            + ("AND e.season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS]
+            + "AND e.location != '' AND e.status IN (%s) ORDER BY age ASC" %
             ','.join(['?'] * len(Quality.DOWNLOADED)),
             [datetime.datetime.now().toordinal(), wanted_languages(True)] + Quality.DOWNLOADED
         )

@@ -116,6 +116,22 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <span class="component-title">${_('Include Specials')}</span>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="checkbox"
+                                                   class="enabler" ${('', ' checked="checked"')[bool(sickbeard.SUBTITLES_INCLUDE_SPECIALS)]}
+                                                   id="subtitles_include_specials" name="subtitles_include_specials">
+                                            <label for="subtitles_include_specials">${_('include the show\'s specials when searching for subtitles?')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <span class="component-title">${_('Perfect matches')}</span>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

@@ -556,8 +556,10 @@
                                                     <a class="epSearch" id="${str(show.indexerid)}x${str(epResult[b"season"])}x${str(epResult[b"episode"])}" name="${str(show.indexerid)}x${str(epResult[b"season"])}x${str(epResult[b"episode"])}" href="searchEpisode?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}"><span class="displayshow-icon-search" title="Manual Search" /></a>
                                                 % endif
                                             % endif
-                                            % if int(epResult[b"status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and sickbeard.USE_SUBTITLES and show.subtitles and epResult[b"location"] and subtitles.needs_subtitles(epResult[b'subtitles']):
-                                                <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}"><span class="displayshow-icon-sub" title="Search Subtitles" /></a>
+                                            % if int(epResult[b"status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and sickbeard.USE_SUBTITLES and show.subtitles and epResult[b"location"] and subtitles.needs_subtitles(epResult['subtitles']):
+                                                % if int(epResult[b"season"]) != 0 or (int(epResult[b"season"]) == 0 and sickbeard.SUBTITLES_INCLUDE_SPECIALS):
+                                                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}"><span class="displayshow-icon-sub" title="Search Subtitles" /></a>
+                                                % endif
                                             % endif
                                         </td>
                                     </tr>

@@ -3153,9 +3153,10 @@ class Manage(Home, WebRoot):
     def showSubtitleMissed(indexer_id, whichSubs):
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
-            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND (status LIKE '%4' OR status LIKE '%6') and location != ''",
+            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? "
+            + ("AND season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS]
+            + " AND (status LIKE '%4' OR status LIKE '%6') and location != ''",
             [int(indexer_id)])
-
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
@@ -3240,7 +3241,8 @@ class Manage(Home, WebRoot):
             if 'all' in to_download[cur_indexer_id]:
                 main_db_con = db.DBConnection()
                 all_eps_results = main_db_con.select(
-                    "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') AND season != 0 AND showid = ? AND location != ''",
+                    "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') " +
+                    ("AND e.season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS] + "AND showid = ? AND location != ''",
                     [cur_indexer_id])
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 
@@ -5194,7 +5196,7 @@ class ConfigSubtitles(Config):
                         controller="config", action="subtitles")
 
     def saveSubtitles(  # pylint: disable=unused-argument
-            self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None, subtitles_perfect_match=None,
+            self, use_subtitles=None, subtitles_include_specials=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None, subtitles_perfect_match=None,
             service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
             subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
             addic7ed_user=None, addic7ed_pass=None, itasa_user=None, itasa_pass=None, legendastv_user=None, legendastv_pass=None,
@@ -5203,6 +5205,7 @@ class ConfigSubtitles(Config):
         config.change_subtitle_finder_frequency(subtitles_finder_frequency)
         config.change_use_subtitles(use_subtitles)
 
+        sickbeard.SUBTITLES_INCLUDE_SPECIALS = config.checkbox_to_value(subtitles_include_specials)
         sickbeard.SUBTITLES_LANGUAGES = [code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitle_module.subtitle_code_filter()] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(subtitles_perfect_match)
