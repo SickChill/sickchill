@@ -12,64 +12,63 @@
 
      % if sickbeard.ANIME_SPLIT_HOME:
          %if sickbeard.ANIME_SPLIT_HOME_IN_TABS:
-             <!-- Nav tabs -->
+             <!-- Split in tabs -->
              <div id="showTabs">
+                 <!-- Nav tabs -->
                  <ul>
                      <li>
-                         <a href="#showsTabContent" id="showTab">Shows</a>
+                         <a href="#showsTabContent" id="showsTab">Shows</a>
                      </li>
                      <li>
                          <a href="#animeTabContent" id="animeTab">Anime</a>
                      </li>
                  </ul>
                  <!-- Tab panes -->
-                 <div id="showTabs">
-                     <div>
-                         <div id="showsTabContent">
-                             <div class="row home-container">
-                                 <div class="col-md-12">
-                                     % if sickbeard.HOME_LAYOUT == 'poster':
-                                         <div class="loading-spinner"></div>
-                                     % endif
-                                     % for curShowlist in showlists:
-                                         <div class="row">
-                                             <div class="col-md-12">
-                                                 <% curListType = curShowlist[0] %>
-                                                 <% myShowList = list(curShowlist[1]) %>
-                                                 % if curListType != "Anime":
-                                                     <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=myShowList"/>
-                                                 % endif
-                                             </div>
+                 <div>
+                     <div id="showsTabContent">
+                         <div class="row home-container">
+                             <div class="col-md-12">
+                                 % if sickbeard.HOME_LAYOUT == 'poster':
+                                     <div class="loading-spinner"></div>
+                                 % endif
+                                 % for curShowlist in showlists:
+                                     <div class="row">
+                                         <div class="col-md-12">
+                                             <% curListType = curShowlist[0] %>
+                                             <% myShowList = list(curShowlist[1]) %>
+                                             % if curListType != "Anime":
+                                                 <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=myShowList"/>
+                                             % endif
                                          </div>
-                                     % endfor
-                                 </div>
+                                     </div>
+                                 % endfor
                              </div>
                          </div>
-                         <div id="animeTabContent">
-                             <div class="row home-container">
-                                 <div class="col-md-12">
-                                     % if sickbeard.HOME_LAYOUT == 'poster':
-                                         <div class="loading-spinner"></div>
-                                     % endif
-                                     % for curShowlist in showlists:
-                                         <div class="row">
-                                             <div class="col-md-12">
-                                                 <% curListType = curShowlist[0] %>
-                                                 <% myShowList = list(curShowlist[1]) %>
-                                                 % if curListType == "Anime":
-                                                     <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=myShowList"/>
-                                                 % endif
-                                             </div>
+                     </div>
+                     <div id="animeTabContent">
+                         <div class="row home-container">
+                             <div class="col-md-12">
+                                 % if sickbeard.HOME_LAYOUT == 'poster':
+                                     <div class="loading-spinner"></div>
+                                 % endif
+                                 % for curShowlist in showlists:
+                                     <div class="row">
+                                         <div class="col-md-12">
+                                             <% curListType = curShowlist[0] %>
+                                             <% myShowList = list(curShowlist[1]) %>
+                                             % if curListType == "Anime":
+                                                 <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=myShowList"/>
+                                             % endif
                                          </div>
-                                     % endfor
-                                 </div>
+                                     </div>
+                                 % endfor
                              </div>
                          </div>
                      </div>
                  </div>
              </div>
          %else:
-             <!-- simple table split -->
+             <!-- Simple split in tables -->
              <div class="row home-container">
                  <div class="col-md-12">
                      <h1 class="header">${_('Shows')}</h1>
@@ -111,6 +110,7 @@
              </div>
          %endif
     %else:
+        <!-- no split -->
         <div class="row home-container">
             <div class="col-md-12">
                 % if sickbeard.HOME_LAYOUT == 'poster':
