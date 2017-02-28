@@ -1178,7 +1178,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             with cur_ep.lock:
                 cur_ep.location = ek(os.path.join, dest_path, new_file_name)
                 # download subtitles
-                if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles:
+                if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles \
+                    and (cur_ep.season != 0 or sickbeard.SUBTITLES_INCLUDE_SPECIALS):
                     cur_ep.refreshSubtitles()
                     cur_ep.download_subtitles(force=True)
                 sql_l.append(cur_ep.get_sql())
