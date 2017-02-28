@@ -223,6 +223,63 @@ var SICKRAGE = {
                     $(this).prop('checked', $(bulkCheck).prop('checked'));
                 });
             });
+        },
+        QualityChooser: {
+            setFromPresets: function (preset) {
+                // FIXME: Sometimes when switching too fast betweeb presets,
+                // it stops updating the selection on #anyQualities
+                if (parseInt(preset) === 0) {
+                    $('#customQuality').show();
+                    return;
+                } else {
+                    $('#customQuality').hide();
+                }
+
+                $('#anyQualities').find('option').each(function() {
+                    var result = preset & $(this).val(); // jshint ignore:line
+                    $(this).attr('selected', result > 0 ? 'selected' : false);
+                });
+
+                $('#bestQualities').find('option').each(function() {
+                    var result = preset & ($(this).val() << 16); // jshint ignore:line
+                    $(this).attr('selected', result > 0 ? 'selected' : false);
+                });
+            },
+            init: function() {
+                var selfObj = this;
+                var qualityPresets = $('#qualityPreset');
+
+                qualityPresets.on('change', function() {
+                    selfObj.setFromPresets(qualityPresets.find(':selected').val());
+                });
+
+                selfObj.setFromPresets(qualityPresets.find(':selected').val());
+            }
+        },
+        updateBlackWhiteList: function(showName) {
+            $('#white').children().remove();
+            $('#black').children().remove();
+            $('#pool').children().remove();
+
+            if ($('#anime').prop('checked')) {
+                $('#blackwhitelist').show();
+                if (showName) {
+                    $.getJSON(srRoot + '/home/fetch_releasegroups', {
+                        'show_name': showName
+                    }, function (data) {
+                        if (data.result === 'success') {
+                            $.each(data.groups, function(i, group) {
+                                var option = $("<option>");
+                                option.attr("value", group.name);
+                                option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
+                                option.appendTo('#pool');
+                            });
+                        }
+                    });
+                }
+            } else {
+                $('#blackwhitelist').hide();
+            }
         }
     },
     config: {
@@ -2636,6 +2693,72 @@ var SICKRAGE = {
             });
 
         },
+        editShow: function() {
+            var allExceptions = [];
+
+            $('#location').fileBrowser({ title: 'Select Show Location' });
+
+            SICKRAGE.common.QualityChooser.init();
+
+            // TODO: Make anime button work like in addShow (opens the groups list without a refresh)
+            /*$('#anime').change (function() {
+                SICKRAGE.common.updateBlackWhiteList(getMeta('show.name'));
+            });*/
+
+            $('#submit').click(function() {
+                var allExceptions = [];
+
+                $("#exceptions_list option").each(function() {
+                    allExceptions.push( $(this).val() );
+                });
+
+                $("#exceptions_list").val(allExceptions);
+
+                if(metaToBool('show.is_anime')) { generateBlackWhiteList(); }
+            });
+
+            $('#addSceneName').click(function() {
+                var sceneEx = $('#SceneName').val();
+                var option = $("<option>");
+                allExceptions = [];
+
+                $("#exceptions_list option").each(function() {
+                    allExceptions.push($(this).val());
+                });
+
+                $('#SceneName').val('');
+
+                if ($.inArray(sceneEx, allExceptions) > -1 || (sceneEx === '')) { return; }
+
+                $("#SceneException").show();
+
+                option.attr("value",sceneEx);
+                option.html(sceneEx);
+                return option.appendTo('#exceptions_list');
+            });
+
+            $('#removeSceneName').click(function() {
+                $('#exceptions_list option:selected').remove();
+
+                $(this).toggleSceneException();
+            });
+
+            $.fn.toggleSceneException = function() {
+                allExceptions = [];
+
+                $("#exceptions_list option").each  ( function() {
+                    allExceptions.push( $(this).val() );
+                });
+
+                if (allExceptions === ''){
+                    $("#SceneException").hide();
+                } else {
+                    $("#SceneException").show();
+                }
+            };
+
+            $(this).toggleSceneException();
+        },
         postProcess: function() {
             $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
         },
@@ -2829,7 +2952,34 @@ var SICKRAGE = {
             }
         },
         massEdit: function() {
-            $('#location').fileBrowser({ title: 'Select Show Location' });
+            function findDirIndex(which) {
+                var dirParts = which.split('_');
+                return dirParts[dirParts.length-1];
+            }
+
+            function editRootDir(path, options){
+                $('#new_root_dir_'+options.whichId).val(path);
+                $('#new_root_dir_'+options.whichId).change();
+            }
+
+            $('.new_root_dir').change(function(){
+                var curIndex = findDirIndex($(this).attr('id'));
+                $('#display_new_root_dir_'+curIndex).html('<b>'+$(this).val()+'</b>');
+            });
+
+            $('.edit_root_dir').click(function(){
+                var curIndex = findDirIndex($(this).attr('id'));
+                var initialDir = $("#new_root_dir_"+curIndex).val();
+                $(this).nFileBrowser(editRootDir, {initialDir: initialDir, whichId: curIndex});
+            });
+
+            $('.delete_root_dir').click(function(){
+                var curIndex = findDirIndex($(this).attr('id'));
+                $('#new_root_dir_'+curIndex).val(null);
+                $('#display_new_root_dir_'+curIndex).html('<b>DELETED</b>');
+            });
+
+            SICKRAGE.common.QualityChooser.init();
         },
         episodeStatuses: function() {
             $('.allCheck').on('click', function(){
@@ -3269,42 +3419,12 @@ var SICKRAGE = {
                 $('#saveDefaultsButton').attr('disabled', false);
             });
 
-            $('#qualityPreset').on('change', function() {
-                //fix issue #181 - force re-render to correct the height of the outer div
-                $('span.prev').click();
-                $('span.next').click();
-            });
+            SICKRAGE.common.QualityChooser.init();
         },
         index: function() {
 
         },
         newShow: function() {
-            function updateBlackWhiteList(showName) {
-                $('#white').children().remove();
-                $('#black').children().remove();
-                $('#pool').children().remove();
-
-                if ($('#anime').prop('checked')) {
-                    $('#blackwhitelist').show();
-                    if (showName) {
-                        $.getJSON(srRoot + '/home/fetch_releasegroups', {
-                            'show_name': showName
-                        }, function (data) {
-                            if (data.result === 'success') {
-                                $.each(data.groups, function(i, group) {
-                                    var option = $("<option>");
-                                    option.attr("value", group.name);
-                                    option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
-                                    option.appendTo('#pool');
-                                });
-                            }
-                        });
-                    }
-                } else {
-                    $('#blackwhitelist').hide();
-                }
-            }
-
             function updateSampleText() {
                 // if something's selected then we have some behavior to figure out
 
@@ -3317,7 +3437,7 @@ var SICKRAGE = {
                 } else {
                     showName = '';
                 }
-                updateBlackWhiteList(showName);
+                SICKRAGE.common.updateBlackWhiteList(showName);
                 var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
 
                 // if we have a root dir selected, figure out the path
@@ -3456,10 +3576,6 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            $('#qualityPreset').change(function () {
-                myform.loadsection(2);
-            });
-
             /***********************************************
             * jQuery Form to Form Wizard- (c) Dynamic Drive (www.dynamicdrive.com)
             * This notice MUST stay intact for legal use
@@ -3499,6 +3615,10 @@ var SICKRAGE = {
 
             $('#anime').change (function() {
                 updateSampleText();
+                myform.loadsection(2);
+            });
+
+            $('#qualityPreset').change (function() {
                 myform.loadsection(2);
             });
 

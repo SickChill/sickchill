@@ -4,7 +4,6 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
 </%block>
