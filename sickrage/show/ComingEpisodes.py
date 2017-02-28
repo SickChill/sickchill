@@ -59,7 +59,7 @@ class ComingEpisodes(object):
         sort = ComingEpisodes._get_sort(sort)
 
         today = date.today().toordinal()
-
+        recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type='dict')
@@ -77,10 +77,11 @@ class ComingEpisodes(object):
                         'SELECT DISTINCT {0} '.format(fields_to_select) +
                         'FROM tv_episodes e, tv_shows s '
                         'WHERE showid = ? '
-                        'AND airdate = ? '
+                        'AND airdate <= ? '
+                        'AND airdate >= ? '
                         'AND s.indexer_id = e.showid '
-                        'AND e.status IN (' + ','.join(['?'] * 2) + ') LIMIT 1',
-                        [show_obj.indexerid, next_air_date, WANTED, UNAIRED]
+                        'AND e.status IN (' + ','.join(['?'] * 2) + ')',
+                        [show_obj.indexerid, next_air_date, recently, WANTED, UNAIRED]
                     ]
                 )
 
@@ -94,7 +95,6 @@ class ComingEpisodes(object):
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
-            print(item[b'show_name'])
 
         results.sort(key=itemgetter(b'localtime'))
         results.sort(ComingEpisodes.sorts[sort])
