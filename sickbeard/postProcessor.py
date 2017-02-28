@@ -223,7 +223,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list_to_allow + file_path_list_to_delete), logger.DEBUG)
             if file_path_list_to_allow:
                 self._log("Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
-                # Rebuild the 'file_path_list' list only with the extensions the user allows
             if file_path_list_to_delete:
                 self._log("Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow

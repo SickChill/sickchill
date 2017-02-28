@@ -188,7 +188,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 directories_from_rars += extracted_directories
 
         video_files = filter(helpers.is_media_file, file_names)
-        unwanted_files = [x for x in file_names if x not in video_files and x != '.stfolder']
+        rar_files = filter(helpers.is_rar_file, file_names) # deleted only if processed
+        unwanted_files = [x for x in file_names if x not in video_files and x not in rar_files and x != '.stfolder']
         if unwanted_files:
             result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
@@ -203,13 +204,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if delete_folder(current_directory, check_empty=not delete_on):
             result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
-    # Only allow methods 'move' and 'copy'. On different method fall back to 'move'.
+    # For processing extracted rars, only allow methods 'move' and 'copy'.
+    # On different methods fall back to 'move'.
     method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
 
     # auto post-processing deletes rar content by default if method is 'move',
     # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
     # manual post-processing will only delete when prompted by delete_on
-    delete_rar_contents = any([sickbeard.DELRARCONTENTS,
+    delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
                                not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
                                mode == 'manual' and delete_on])
 
@@ -224,6 +226,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             failed=failed,
             mode=mode
         )
+
+        # Delete rar file only if the extracted dir was successfully processed
+        if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
+            this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
+            delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
+
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
