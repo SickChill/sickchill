@@ -748,10 +748,19 @@ class Home(WebRoot):
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today
         sql_statement += ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev, '
-        sql_statement += ' (SELECT SUM(file_size) FROM (SELECT file_size FROM tv_episodes WHERE showid=tv_eps.showid GROUP BY location)) AS show_size'
+        sql_statement += ' (SELECT SUM(file_size) FROM (SELECT file_size FROM tv_episodes eps_inner WHERE eps_inner.showid=tv_eps.showid GROUP BY location) file_sizes) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-        sql_result = main_db_con.select(sql_statement)
+        try:
+            sql_result = main_db_con.select(sql_statement)
+        except db.OperationalError:
+            # Only for Debugging https://github.com/SickRage/SickRage/issues/3249
+            logger.log("Database selection failed. Using fallback select statement.", logger.WARNING)
+            sql_statement = sql_statement.replace(' (SELECT SUM(file_size) FROM (SELECT file_size FROM tv_episodes eps_inner WHERE eps_inner.showid=tv_eps.showid GROUP BY location) file_sizes) AS show_size',
+                                  ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size',
+                                  True)
+            sql_result = main_db_con.select(sql_statement)
+
 
         show_stat = {}
         max_download_count = 1000
