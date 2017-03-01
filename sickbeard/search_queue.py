@@ -297,4 +297,4 @@ class FailedQueueItem(generic_queue.QueueItem):
 def fifo(my_list, item, max_size=100):
     if len(my_list) >= max_size:
         my_list.pop(0)
-        my_list.append(item)
+    my_list.append(item)
