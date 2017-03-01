@@ -510,7 +510,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     for _log_file in log_files:
         if len(data) < max_lines:
             with io.open(_log_file, 'r', encoding='utf-8') as f:
-                data += [line.strip() for line in reversed(f.readlines()) if line.strip()]
+                data += [line.strip() + '\n' for line in reversed(f.readlines()) if line.strip()]
         else:
             break
 
