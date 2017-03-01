@@ -309,7 +309,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
             continue
 
         found_files = filter(helpers.is_media_file, file_names)
-        if sickbeard.UNPACK:
+        if sickbeard.UNPACK == 1:
             found_files += filter(helpers.is_rar_file, file_names)
 
         if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
@@ -340,7 +340,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
 
     unpacked_dirs = []
 
-    if sickbeard.UNPACK and rar_files:
+    if sickbeard.UNPACK == 1 and rar_files:
         result.output += log_helper("Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
         for archive in rar_files:
             failure = None
@@ -377,7 +377,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                     unpack_base_dir = sickbeard.UNPACK_DIR
                 else:
                     unpack_base_dir = path
-                    if sickbeard.UNPACK_DIR: # Let user know if
+                    if sickbeard.UNPACK_DIR: # Let user know if we can't unpack there
                         result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
