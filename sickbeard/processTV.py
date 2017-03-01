@@ -148,7 +148,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     # if they passed us a real dir then assume it's the one we want
     if ek(os.path.isdir, process_path):
         process_path = ek(os.path.realpath, process_path)
-        result.output += log_helper("Processing folder {0}".format(process_path), logger.DEBUG)
+        result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
     # if the client and SickRage are not on the same machine translate the directory into a network directory
     elif all([sickbeard.TV_DOWNLOAD_DIR,
@@ -167,37 +167,48 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     process_method = process_method or sickbeard.PROCESS_METHOD
 
-    directories_from_rars = []
-    for current_directory, directory_names, file_names in ek(os.walk, process_path):
-        if not validate_dir(current_directory, release_name, failed, result):
-            continue
+    directories_from_rars = set()
 
+    # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
+    if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
+        result.output += log_helper("Processing {}".format(release_name), logger.INFO)
+        generator_to_use = [(process_path, [], [release_name])]
+    else:
+        result.output += log_helper("Processing {}".format(process_path), logger.INFO)
+        generator_to_use = ek(os.walk, process_path)
+
+    for current_directory, directory_names, file_names in generator_to_use:
         result.result = True
 
         file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
-
         rar_files = [x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x))]
         if rar_files:
             extracted_directories = unrar(current_directory, rar_files, force, result)
+            if extracted_directories:
+                for extracted_directory in extracted_directories:
+                    if extracted_directory.split(current_directory)[-1] not in directory_names:
+                        result.output += log_helper(
+                            "Adding extracted directory to the list of directories to process: {0}".format(extracted_directory), logger.DEBUG
+                        )
+                        directories_from_rars.add(extracted_directory)
 
-            # Add the directories to the walk directories
-            # but only if they're not already in the list (prevents duplicates)
-            if extracted_directories and \
-                ek(os.path.basename, extracted_directories[0]) not in directory_names:
-                result.output += log_helper("Adding extracted directories to the list of directories to process: {0}".format(extracted_directories), logger.DEBUG)
-                directories_from_rars += extracted_directories
+        if not validate_dir(current_directory, release_name, failed, result):
+            continue
 
         video_files = filter(helpers.is_media_file, file_names)
-        rar_files = filter(helpers.is_rar_file, file_names) # deleted only if processed
-        unwanted_files = [x for x in file_names if x not in video_files and x not in rar_files and x != '.stfolder']
-        if unwanted_files:
-            result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
-
-        process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+        if video_files:
+            process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+        else:
+            result.result = False
 
         # Delete all file not needed and avoid deleting files if Manual PostProcessing
         if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
             continue
+
+        # noinspection PyTypeChecker
+        unwanted_files = filter(lambda x: x in video_files + rar_files + ['.stfolder'], file_names)
+        if unwanted_files:
+            result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
         delete_folder(ek(os.path.join, current_directory, '@eaDir'), False)
         delete_files(current_directory, unwanted_files, result)
@@ -231,7 +242,6 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
             this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
             delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
-
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
@@ -303,12 +313,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
             found_files += filter(helpers.is_rar_file, file_names)
 
         if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
-            try:
-                NameParser(file_name=False).parse(ek(os.path.basename, current_directory), cache_result=False)
-            except (InvalidNameException, InvalidShowException) as e:
-                pass
-            else:
-                return True
+            found_files.append(ek(os.path.basename, current_directory))
 
         for found_file in found_files:
             try:
@@ -317,6 +322,9 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
                 pass
             else:
                 return True
+
+        # Only check this toplevel dir, because subdirs are checked in the next iteration of the process_dir loop
+        break
 
     result.output += log_helper("{0} : No processable items found in folder".format(process_path), logger.DEBUG)
     return False
@@ -483,10 +491,6 @@ def process_media(process_path, video_files, release_name, process_method, force
     :param is_priority: Boolean, is this a priority download
     :param result: Previous results
     """
-
-    if not video_files:
-        result.result = False
-        return
 
     processor = None
     for cur_video_file in video_files:
