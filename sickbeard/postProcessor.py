@@ -331,7 +331,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 new_file_name = '.'.join((new_base_name, cur_extension))
             # if we're not renaming we still want to change extensions sometimes
             else:
-                new_file_name = replace_extension(cur_file_path, cur_extension)
+                new_file_name = ek(os.path.basename, replace_extension(cur_file_path, cur_extension))
 
             if sickbeard.SUBTITLES_DIR and cur_extension.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 subs_new_path = ek(os.path.join, new_path, sickbeard.SUBTITLES_DIR)
