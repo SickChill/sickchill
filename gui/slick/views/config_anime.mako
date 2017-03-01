@@ -121,19 +121,22 @@
                         </div>
                     </fieldset>
                 </div>
-                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-                    <fieldset class="component-group-list">
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Split in tabs')}</label>
+
+                <div id="content_split_home">
+                    <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                        <fieldset class="component-group-list">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                    <label class="component-title">${_('Split in tabs')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <input type="checkbox" name="split_home_in_tabs"
+                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
+                                    <label for="split_home_in_tabs">${_('use tabs for when splitting show lists')}</label>
+                                </div>
                             </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" name="split_home_in_tabs"
-                                       id="split_home_in_tabs" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
-                                <label for="split_home_in_tabs">${_('use tabs for when splitting show lists')}</label>
-                            </div>
-                        </div>
-                    </fieldset>
+                        </fieldset>
+                    </div>
                 </div>
             </div>
         </div>
