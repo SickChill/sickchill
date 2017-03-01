@@ -630,6 +630,12 @@ tablesorter.css
     vertical-align: middle;
 }
 
+/* add extra border at right edge */
+.tablesorter th:last-child,
+.tablesorter td:last-child {
+    border-right: #222222 1px solid;
+}
+
 .tablesorter th {
     color: #FFFFFF;
     text-align: center;
@@ -666,6 +672,16 @@ thead.tablesorter-stickyHeader {
     text-align: center;
     background: #333333;
     border-bottom: 1px solid #111111;
+}
+
+/* add extra border at left edge */
+.tablesorter tr.tablesorter-filter-row td:first-child {
+    border-left: #222222 1px solid;
+}
+
+/* add extra border at right edge */
+.tablesorter tr.tablesorter-filter-row td:last-child {
+    border-right: #222222 1px solid;
 }
 
 #showListTable tbody {
