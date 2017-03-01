@@ -272,7 +272,7 @@
                                     <label class="component-title">${_('Unpack')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                    <label class="component-desc">
+                                    <label for="unpack" class="component-desc">
                                         ${_('What to do with archived releases found in your <i>TV Download Dir</i>?')}
                                     </label>
                                 </div>
