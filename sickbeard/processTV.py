@@ -26,8 +26,8 @@ import stat
 
 from rarfile import RarFile, RarWarning, RarFatalError, RarCRCError, NoRarEntry, NotRarFile, \
     RarLockedArchiveError, RarWriteError, RarOpenError, RarUserError, RarMemoryError, BadRarName, BadRarFile, \
-    RarCreateError, RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
-    RarUserBreak, RarNoFilesError, RarCreateError, RarExecError, NoCrypto, NeedFirstVolume, PasswordRequired
+    RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
+    RarUserBreak, RarCreateError, RarExecError, NoCrypto, NeedFirstVolume, PasswordRequired
 
 import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
