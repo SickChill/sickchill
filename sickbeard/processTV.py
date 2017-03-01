@@ -148,7 +148,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     # if they passed us a real dir then assume it's the one we want
     if ek(os.path.isdir, process_path):
         process_path = ek(os.path.realpath, process_path)
-        result.output += log_helper("Processing folder {0}".format(process_path), logger.DEBUG)
+        result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
     # if the client and SickRage are not on the same machine translate the directory into a network directory
     elif all([sickbeard.TV_DOWNLOAD_DIR,
@@ -171,11 +171,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
     if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
-        result.output += log_helper(
-            "{}".format(release_name), logger.INFO
-        )
+        result.output += log_helper("Processing {}".format(release_name), logger.INFO)
         generator_to_use = [(process_path, [], [release_name])]
     else:
+        result.output += log_helper("Processing {}".format(process_path), logger.INFO)
         generator_to_use = ek(os.walk, process_path)
 
     for current_directory, directory_names, file_names in generator_to_use:
