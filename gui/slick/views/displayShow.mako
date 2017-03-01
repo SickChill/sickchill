@@ -427,13 +427,13 @@
                                             </th>
                                             <th data-sorter="false" class="col-metadata">${_('NFO')}</th>
                                             <th data-sorter="false" class="col-metadata">${_('TBN')}</th>
-                                            <th data-sorter="false" class="col-ep">${_('Episode')}</th>
+                                            <th data-sorter="false" class="col-ep episode">${_('Episode')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(show.is_anime)]}>${_('Absolute')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene)]}>${_('Scene')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene_anime)]}>${_('Scene Absolute')}</th>
                                             <th data-sorter="false" class="col-name">${_('Name')}</th>
-                                            <th data-sorter="false" class="col-name columnSelector-false">${_('File Name')}</th>
-                                            <th data-sorter="false" class="col-ep columnSelector-false">${_('Size')}</th>
+                                            <th data-sorter="false" class="col-name columnSelector-false location">${_('File Name')}</th>
+                                            <th data-sorter="false" class="col-ep columnSelector-false size">${_('Size')}</th>
                                             <th data-sorter="false" class="col-airdate">${_('Airdate')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>${_('Download')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>${_('Subtitles')}</th>
@@ -457,10 +457,10 @@
                                         </td>
                                         <td align="center"><img src="${srRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult[b"hasnfo"]]}" alt="${("N", "Y")[epResult[b"hasnfo"]]}" width="23" height="11" /></td>
                                         <td align="center"><img src="${srRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult[b"hastbn"]]}" alt="${("N", "Y")[epResult[b"hastbn"]]}" width="23" height="11" /></td>
-                                        <td align="center">
+                                        <td align="center" class="episode">
                                             <%
                                                 text = str(epResult[b'episode'])
-                                                if epLoc != '' and epLoc is not None:
+                                                if epLoc:
                                                     text = '<span title="' + epLoc + '" class="addQTip">' + text + "</span>"
                                             %>
                                         ${text}
@@ -498,8 +498,8 @@
                                             % endif
                                             ${epResult[b"name"]}
                                         </td>
-                                        <td class="col-name">${epLoc}</td>
-                                        <td class="col-ep">
+                                        <td class="col-name location">${epLoc}</td>
+                                        <td class="col-ep size">
                                             % if epResult[b"file_size"]:
                                             ${pretty_file_size(epResult[b"file_size"])}
                                             % endif
