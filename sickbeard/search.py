@@ -421,7 +421,7 @@ def searchForNeededEpisodes():
     if not didSearch:
         logger.log(
             "No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
-            logger.WARNING)
+            logger.INFO)
 
     return foundResults.values()
 
