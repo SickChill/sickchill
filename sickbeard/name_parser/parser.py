@@ -589,7 +589,7 @@ class NameParserCache(object):
 
     def get(self, key):
         with self.lock:
-            value = self.data.get(key, None)
+            value = self.data.get(key)
             if value:
                 logger.log("Using cached parse result for: {name}".format(name=key), logger.DEBUG)
             return value

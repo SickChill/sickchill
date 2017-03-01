@@ -104,8 +104,8 @@ class Notifier(object):
         # Grab the global recipient(s)
         if sickbeard.PROWL_API:
             for api in sickbeard.PROWL_API.split(','):
-                if len(api.strip()) > 0:
-                    apis.append(api)
+                if api.strip():
+                    apis.append(api.strip())
 
         # Grab the per-show-notification recipients
         if show is not None:
@@ -114,8 +114,8 @@ class Notifier(object):
                     if subs['notify_list'] and subs['notify_list'][0] == '{':               # legacy format handling
                         entries = dict(ast.literal_eval(subs['notify_list']))
                         for api in entries['prowlAPIs'].split(','):
-                            if len(api.strip()) > 0:
-                                apis.append(api)
+                            if api.strip():
+                                apis.append(api.strip())
 
         apis = set(apis)
         return apis
