@@ -85,7 +85,7 @@ class ComingEpisodes(object):
                     ]
                 )
 
-        results = None
+        results = []
         for sql_i in sql_l:
             if results:
                 results += db.select(*sql_i)
