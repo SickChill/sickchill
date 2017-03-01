@@ -83,6 +83,7 @@ from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.versionChecker import CheckVersion
 
 from sickrage.helper import setup_github, episode_num, try_int, sanitize_filename
+from sickrage.helper.common import pretty_file_size
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
@@ -2080,6 +2081,7 @@ class Home(WebRoot):
                 return results
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
+                # noinspection PyProtectedMember
                 results.append({
                     'show': searchThread.show.indexerid,
                     'episode': searchThread.segment.episode,
@@ -2088,10 +2090,13 @@ class Home(WebRoot):
                     'searchstatus': searchstatus,
                     'status': statusStrings[searchThread.segment.status],
                     'quality': self.getQualityClass(searchThread.segment),
-                    'overview': Overview.overviewStrings[show_obj.getOverview(searchThread.segment.status)]
+                    'overview': Overview.overviewStrings[show_obj.getOverview(searchThread.segment.status)],
+                    'location': searchThread.segment._location,
+                    'size': pretty_file_size(searchThread.segment.file_size) if searchThread.segment.file_size else ''
                 })
             else:
                 for ep_obj in searchThread.segment:
+                    # noinspection PyProtectedMember
                     results.append({
                         'show': ep_obj.show.indexerid,
                         'episode': ep_obj.episode,
@@ -2100,7 +2105,9 @@ class Home(WebRoot):
                         'searchstatus': searchstatus,
                         'status': statusStrings[ep_obj.status],
                         'quality': self.getQualityClass(ep_obj),
-                        'overview': Overview.overviewStrings[show_obj.getOverview(ep_obj.status)]
+                        'overview': Overview.overviewStrings[show_obj.getOverview(ep_obj.status)],
+                        'location': ep_obj._location,
+                        'size': pretty_file_size(searchThread.segment.file_size) if searchThread.segment.file_size else ''
                     })
 
             return results

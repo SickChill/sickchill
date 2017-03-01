@@ -37,8 +37,6 @@ function updateImages(data) {
                 img.prop('alt','Searching');
                 img.prop('src',srRoot+'/images/' + loadingImage);
                 disableLink(el);
-                // Update Status and Quality
-                rSearchTerm = /(\w+)\s\((.+?)\)/;
                 htmlContent = ep.searchstatus;
 
             } else if (ep.searchstatus.toLowerCase() === 'queued') {
@@ -63,7 +61,14 @@ function updateImages(data) {
             }
             // update the status column if it exists
             parent.siblings('.col-status').html(htmlContent);
-
+            // and location
+            parent.siblings('.location').html(ep.location);
+            // and size
+            parent.siblings('.size').html(ep.size);
+            // and qtip location
+            if (ep.location) {
+                parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + "</span>");
+            }
         }
         var elementCompleteEpisodes = $('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode+']');
         var imageCompleteEpisodes = elementCompleteEpisodes.children('img');

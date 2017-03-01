@@ -323,9 +323,6 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
             else:
                 return True
 
-        # Only check this toplevel dir, because subdirs are checked in the next iteration of the process_dir loop
-        break
-
     result.output += log_helper("{0} : No processable items found in folder".format(process_path), logger.DEBUG)
     return False
 
