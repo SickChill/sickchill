@@ -43,6 +43,8 @@ from mako.runtime import UNDEFINED
 
 from mimetypes import guess_type
 
+from operator import attrgetter
+
 import platform
 from threading import Lock
 
@@ -362,7 +364,7 @@ class WebRoot(WebHandler):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         main_db_con = db.DBConnection(row_type='dict')
-        shows = sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())
+        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())
         episodes = {}
 
         results = main_db_con.select(
@@ -737,30 +739,21 @@ class Home(WebRoot):
         status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ')'
         status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ')'
 
-        sql_statement = 'SELECT showid, '
+        sql_statement = 'SELECT showid,'
 
-        sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_quality + ') AS ep_snatched, '
-        sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download + ') AS ep_downloaded, '
-        sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
-        sql_statement += ' AND ((airdate <= ' + today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + ')) '
-        sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
+        sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_quality + ') AS ep_snatched,'
+        sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download + ') AS ep_downloaded,'
+        sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1'
+        sql_statement += ' AND ((airdate <= ' + today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + '))'
+        sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total,'
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today
-        sql_statement += ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev, '
-        sql_statement += ' (SELECT SUM(file_size) FROM (SELECT file_size FROM tv_episodes eps_inner WHERE eps_inner.showid=tv_eps.showid GROUP BY location) file_sizes) AS show_size'
+        sql_statement += ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next,'
+        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,'
+        sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-        try:
-            sql_result = main_db_con.select(sql_statement)
-        except db.OperationalError:
-            # Only for Debugging https://github.com/SickRage/SickRage/issues/3249
-            logger.log("Database selection failed. Using fallback select statement.", logger.WARNING)
-            sql_statement = sql_statement.replace(' (SELECT SUM(file_size) FROM (SELECT file_size FROM tv_episodes eps_inner WHERE eps_inner.showid=tv_eps.showid GROUP BY location) file_sizes) AS show_size',
-                                  ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size',
-                                  True)
-            sql_result = main_db_con.select(sql_statement)
-
+        sql_result = main_db_con.select(sql_statement)
 
         show_stat = {}
         max_download_count = 1000
@@ -1415,12 +1408,12 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             sortedShowLists = [
-                ["Shows", sorted(shows, lambda x, y: titler(x.name).lower() < titler(y.name).lower())],
-                ["Anime", sorted(anime, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('name')(mbr).lower())],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('name')(mbr).lower())]
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
+                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())]
             ]
 
         bwl = None
@@ -3251,9 +3244,9 @@ class Manage(Home, WebRoot):
                 main_db_con = db.DBConnection()
                 all_eps_results = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') " +
-                    ("AND e.season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS] + "AND showid = ? AND location != ''",
+                    ("AND season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS] + "AND showid = ? AND location != ''",
                     [cur_indexer_id])
-                to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
+                to_download[cur_indexer_id] = [str(x[b"season"]) + 'x' + str(x[b"episode"]) for x in all_eps_results]
 
             for epResult in to_download[cur_indexer_id]:
                 season, episode = epResult.split('x')
@@ -3437,7 +3430,8 @@ class Manage(Home, WebRoot):
         return t.render(showList=toEdit, showNames=showNames, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, season_folders_value=season_folders_value,
                         quality_value=quality_value, subtitles_value=subtitles_value, scene_value=scene_value, sports_value=sports_value,
-                        air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title=_('Mass Edit'), header=_('Mass Edit'), topmenu='manage')
+                        air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title=_('Mass Edit'), header=_('Mass Edit'),
+                        controller='manage', action='massEdit', topmenu='manage')
 
     def massEditSubmit(self, paused=None, default_ep_status=None,
                        anime=None, sports=None, scene=None, season_folders=None, quality_preset=None,
