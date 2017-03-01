@@ -309,6 +309,8 @@ UNPACK_DIR = ''
 UNRAR_TOOL = rarfile.UNRAR_TOOL
 ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
+DONT_UNPACK = False
+
 SKIP_REMOVED_FILES = False
 ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
 USE_FREE_SPACE_CHECK = True
@@ -684,7 +686,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, PUSHBULLET_CHANNEL,\
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, CPU_PRESET, \
-            UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
+            UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, DONT_UNPACK, KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, AIRDATE_EPISODES, FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, \
@@ -1027,6 +1029,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ALT_UNRAR_TOOL = check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
         if ALT_UNRAR_TOOL:
             rarfile.ALT_TOOL = ALT_UNRAR_TOOL
+
+        DONT_UNPACK = check_setting_bool(CFG, 'General', 'dont_unpack')
 
         RENAME_EPISODES = check_setting_bool(CFG, 'General', 'rename_episodes', True)
         AIRDATE_EPISODES = check_setting_bool(CFG, 'General', 'airdate_episodes')
@@ -1963,6 +1967,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'unpack_dir': UNPACK_DIR,
             'unrar_tool': UNRAR_TOOL,
             'alt_unrar_tool': ALT_UNRAR_TOOL,
+            'dont_unpack': int(DONT_UNPACK),
             'rename_episodes': int(RENAME_EPISODES),
             'airdate_episodes': int(AIRDATE_EPISODES),
             'file_timestamp_timezone': FILE_TIMESTAMP_TIMEZONE,
