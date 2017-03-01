@@ -1755,8 +1755,9 @@ MESSAGE_COUNTER = 0
 def add_site_message(message, level='danger'):
     to_add = dict(level=level, message=message)
 
+    basic_update_url = sickbeard.versionChecker.UpdateManager.get_update_url().split('?')[0]
     for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
-        if re.search(r'\d+ commits', existing['message']) is not None and re.search(r'\d+ commits', message) is not None:
+        if basic_update_url in existing['message'] and basic_update_url in message:
             sickbeard.SITE_MESSAGES[index] = to_add
             return
 
