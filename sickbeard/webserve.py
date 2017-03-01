@@ -43,6 +43,8 @@ from mako.runtime import UNDEFINED
 
 from mimetypes import guess_type
 
+from operator import attrgetter
+
 import platform
 from threading import Lock
 
@@ -362,7 +364,7 @@ class WebRoot(WebHandler):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         main_db_con = db.DBConnection(row_type='dict')
-        shows = sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())
+        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())
         episodes = {}
 
         results = main_db_con.select(
@@ -1406,12 +1408,12 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             sortedShowLists = [
-                ["Shows", sorted(shows, lambda x, y: titler(x.name).lower() < titler(y.name).lower())],
-                ["Anime", sorted(anime, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('name')(mbr).lower())],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('name')(mbr).lower())]
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, lambda x, y: titler(x.name).lower() < titler(y.name).lower())]
+                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())]
             ]
 
         bwl = None
