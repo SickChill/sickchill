@@ -110,11 +110,11 @@ class ComingEpisodes(object):
 
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
 
-            if result[b'localtime'] < today:
+            if result[b'localtime'].toordinal() < today:
                 category = 'missed'
-            elif result[b'localtime'] >= next_week:
+            elif result[b'localtime'].toordinal() >= next_week:
                 category = 'later'
-            elif result[b'localtime'] == today:
+            elif result[b'localtime'].toordinal() == today:
                 category = 'today'
             else:
                 category = 'soon'
@@ -126,7 +126,7 @@ class ComingEpisodes(object):
                 result[b'network'] = ''
 
             result[b'quality'] = get_quality_string(result[b'quality'])
-            result[b'weekday'] = 1 + date.fromordinal(result[b'localtime']).weekday()
+            result[b'weekday'] = 1 + result[b'localtime'].weekday()
             result[b'tvdbid'] = result[b'indexer_id']
 
             grouped_results[category].append(result)
