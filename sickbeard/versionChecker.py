@@ -662,7 +662,9 @@ class GitUpdateManager(UpdateManager):
     def update_remote_origin(self):
         self._run_git(self._git_path, 'config remote.{0}.url {1}'.format(sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL))
         if sickbeard.GIT_USERNAME:
-            self._run_git(self._git_path, 'config remote.{0}.pushurl {1}'.format(sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME, 1)))
+            self._run_git(self._git_path, 'config remote.{0}.pushurl {1} --replace-all'.format(
+                sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL.replace(sickbeard.GIT_ORG, sickbeard.GIT_USERNAME, 1)
+            ))
 
 
 class SourceUpdateManager(UpdateManager):
