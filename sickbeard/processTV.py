@@ -423,7 +423,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                     del rar_handle
 
             if failure:
-                result.output += log_helper('Failed to extract the archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)
+                result.output += log_helper('Failed to extract the archive {0}: {1}'.format(archive, failure[0]), logger.WARNING)
                 result.missed_files.append('{0} : Unpacking failed: {1}'.format(archive, failure[1]))
                 result.result = False
                 continue
