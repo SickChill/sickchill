@@ -4291,14 +4291,13 @@ class ConfigPostProcessing(Config):
         sickbeard.UNRAR_TOOL= rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = unrar_tool
         sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
-        if unpack:
-            if self.isRarSupported() != 'not supported':
-                sickbeard.UNPACK = config.checkbox_to_value(unpack)
-            else:
-                sickbeard.UNPACK = 0
+        unpack = try_int(unpack)
+        if unpack == 1:
+            sickbeard.UNPACK = int(self.isRarSupported() != 'not supported')
+            if sickbeard.UNPACK != 1:
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         else:
-            sickbeard.UNPACK = config.checkbox_to_value(unpack)
+            sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed."]
