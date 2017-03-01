@@ -484,6 +484,10 @@ def process_media(process_path, video_files, release_name, process_method, force
     :param result: Previous results
     """
 
+    if not video_files:
+        result.result = False
+        return
+
     processor = None
     for cur_video_file in video_files:
         cur_video_file_path = ek(os.path.join, process_path, cur_video_file)
