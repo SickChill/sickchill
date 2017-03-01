@@ -1755,7 +1755,7 @@ def add_site_message(message, level='danger'):
     to_add = dict(level=level, message=message)
 
     for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
-        if re.sub(r'\d+', '#', existing['message']) == re.sub(r'\d+', '#', message):
+        if re.search(r'\d+ commits', existing['message']) is not None and re.search(r'\d+ commits', message) is not None:
             sickbeard.SITE_MESSAGES[index] = to_add
             return
 
