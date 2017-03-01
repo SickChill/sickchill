@@ -38,6 +38,8 @@ from logging import NullHandler
 
 from github import InputFileContent
 import six
+
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import quote
 
 import sickbeard
@@ -179,7 +181,9 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         # rotating log file handler
         if self.file_logging:
-            rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
+            rfh = logging.handlers.RotatingFileHandler(
+                self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8'
+            )
             rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
             rfh.setLevel(log_level)
 
@@ -241,14 +245,14 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         elif level == WARNING:
             classes.WarningViewer.add(classes.UIError(message))
 
-        if level == ERROR:
-            self.logger.exception(message, *args, **kwargs)
-        else:
-            try:
+        try:
+            if level == ERROR:
+                self.logger.exception(message, *args, **kwargs)
+            else:
                 self.logger.log(level, message, *args, **kwargs)
-            except:
-                if msg: # Otherwise creates empty messages in log...
-                    print(msg)
+        except Exception:
+            if msg and msg.strip():  # Otherwise creates empty messages in log...
+                print(msg.strip())
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -506,7 +510,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     for _log_file in log_files:
         if len(data) < max_lines:
             with io.open(_log_file, 'r', encoding='utf-8') as f:
-                data += [line for line in reversed(f.readlines()) if line]
+                data += [line.strip() for line in reversed(f.readlines()) if line.strip()]
         else:
             break
 
