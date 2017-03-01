@@ -47,6 +47,7 @@
         % endif
     % else:
         <form action="${srRoot}/manage/changeEpisodeStatuses" method="post">
+            ${xsrf_token}
             <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
             <br/>
             <div class="row">

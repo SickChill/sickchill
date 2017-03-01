@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-md-12">
                 <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
-
+                    ${xsrf_token}
                     <fieldset class="sectionwrap">
                         <legend class="legendStep">${_('Find a show on theTVDB')}</legend>
                         <div class="row stepDiv">

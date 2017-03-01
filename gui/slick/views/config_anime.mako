@@ -11,7 +11,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveAnime" method="post">
-
+        ${xsrf_token}
         <!-- /component-group //-->
         <div id="animedb-settings" class="component-group">
             <div class="row">

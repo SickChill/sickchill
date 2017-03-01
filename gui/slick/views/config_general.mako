@@ -16,6 +16,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveGeneral" method="post">
+        ${xsrf_token}
 
         <!-- /misc //-->
         <div id="misc">

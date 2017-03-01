@@ -12,7 +12,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveSearch" method="post">
-
+        ${xsrf_token}
         <div id="config-components">
 
             <!-- Episode search -->

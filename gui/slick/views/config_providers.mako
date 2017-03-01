@@ -40,7 +40,7 @@
 
 <%block name="pages">
     <form id="configForm" action="saveProviders" method="post">
-
+        ${xsrf_token}
         <div id="provider-priorities" class="component-group">
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">

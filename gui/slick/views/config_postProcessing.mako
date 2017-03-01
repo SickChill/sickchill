@@ -18,7 +18,7 @@
 
 <%block name="pages">
     <form id="configForm" action="savePostProcessing" method="post">
-
+        ${xsrf_token}
         <!-- /Post-Processing //-->
         <div id="post-processing" class="component-group">
             <div class="row">
