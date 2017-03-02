@@ -2759,6 +2759,18 @@ var SICKRAGE = {
                 $(this).toggleSceneException();
             });
 
+            $(".enabler").each(function(){
+                if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
+            });
+
+            $(".enabler").on('click', function() {
+                if ($(this).prop('checked')){
+                    $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
+                } else {
+                    $('#content_'+$(this).attr('id')).fadeOut("fast", "linear");
+                }
+            });
+
             $.fn.toggleSceneException = function() {
                 allExceptions = [];
 
