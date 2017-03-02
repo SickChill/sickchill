@@ -657,7 +657,7 @@ def fixSetGroupID(childPath):
         childPath_owner = childStat.st_uid  # pylint: disable=no-member
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
-        if user_id != 0 and user_id != childPath_owner:
+        if user_id not in (childPath_owner, 0):
             logger.log("Not running as root or owner of " + childPath + ", not trying to set the set-group-ID",
                        logger.DEBUG)
             return

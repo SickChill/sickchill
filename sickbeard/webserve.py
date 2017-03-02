@@ -2107,7 +2107,7 @@ class Home(WebRoot):
                         'quality': self.getQualityClass(ep_obj),
                         'overview': Overview.overviewStrings[show_obj.getOverview(ep_obj.status)],
                         'location': ep_obj._location,
-                        'size': pretty_file_size(searchThread.segment.file_size) if searchThread.segment.file_size else ''
+                        'size': pretty_file_size(ep_obj.file_size) if ep_obj.file_size else ''
                     })
 
             return results
