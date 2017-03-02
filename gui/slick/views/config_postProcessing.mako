@@ -415,7 +415,7 @@
                                     <div class="col-md-12">
                                         <input type="checkbox" name="processor_follow_symlinks" id="processor_follow_symlinks"
                                             ${('', 'checked="checked"')[bool(sickbeard.PROCESSOR_FOLLOW_SYMLINKS)]}/>
-                                        <label for="processor_follow_symlinks">${_('follow down symbolic links?')}</label>
+                                        <label for="processor_follow_symlinks">${_('follow down symbolic links in download directory?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
