@@ -24,6 +24,7 @@ from sickbeard.common import WANTED, UNAIRED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
+from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
 from operator import itemgetter
 
@@ -109,12 +110,13 @@ class ComingEpisodes(object):
                 continue
 
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+            result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result[b'localtime'].toordinal() < today:
+            if result[b'airdate'] < today:
                 category = 'missed'
-            elif result[b'localtime'].toordinal() >= next_week:
+            elif result[b'airdate'] >= next_week:
                 category = 'later'
-            elif result[b'localtime'].toordinal() == today:
+            elif result[b'airdate'] == today:
                 category = 'today'
             else:
                 category = 'soon'
@@ -126,8 +128,11 @@ class ComingEpisodes(object):
                 result[b'network'] = ''
 
             result[b'quality'] = get_quality_string(result[b'quality'])
+            result[b'airs'] = sbdatetime.sbftime(result[b'localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
             result[b'weekday'] = 1 + result[b'localtime'].weekday()
             result[b'tvdbid'] = result[b'indexer_id']
+            result[b'airdate'] = sbdatetime.sbfdate(result[b'localtime'], d_preset=dateFormat)
+            result[b'localtime'] = result[b'localtime'].toordinal()
 
             grouped_results[category].append(result)
 
