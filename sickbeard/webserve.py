@@ -4255,7 +4255,7 @@ class ConfigPostProcessing(Config):
     def savePostProcessing(self, kodi_data=None, kodi_12plus_data=None,
                            mediabrowser_data=None, sony_ps3_data=None,
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
-                           keep_processed_dir=None, process_method=None,
+                           keep_processed_dir=None, process_method=None, processor_follow_symlinks=None,
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None,
@@ -4301,6 +4301,7 @@ class ConfigPostProcessing(Config):
         sickbeard.CREATE_MISSING_SHOW_DIRS = config.checkbox_to_value(create_missing_show_dirs)
         sickbeard.ADD_SHOWS_WO_DIR = config.checkbox_to_value(add_shows_wo_dir)
         sickbeard.PROCESS_METHOD = process_method
+        sickbeard.PROCESSOR_FOLLOW_SYMLINKS = config.checkbox_to_value(processor_follow_symlinks)
         sickbeard.DELRARCONTENTS = config.checkbox_to_value(del_rar_contents)
         sickbeard.EXTRA_SCRIPTS = [x.strip() for x in extra_scripts.split('|') if x.strip()]
         sickbeard.RENAME_EPISODES = config.checkbox_to_value(rename_episodes)

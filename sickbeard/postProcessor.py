@@ -155,7 +155,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, dirnames_, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING)):
+            for base, dirnames_, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING), followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
                     found_file = ek(os.path.join, base, f)
