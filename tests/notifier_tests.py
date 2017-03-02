@@ -309,7 +309,7 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         if showname is not None:
             rows = self.mydb.select("SELECT show_id FROM tv_shows WHERE show_name = ?", [showname])
             if len(rows) == 1:
-                return rows[0]['show_id']
+                return rows[0][b'show_id']
         return -1
 
 if __name__ == '__main__':
