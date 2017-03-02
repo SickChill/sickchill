@@ -26,8 +26,8 @@ import stat
 
 from rarfile import RarFile, RarWarning, RarFatalError, RarCRCError, NoRarEntry, NotRarFile, \
     RarLockedArchiveError, RarWriteError, RarOpenError, RarUserError, RarMemoryError, BadRarName, BadRarFile, \
-    RarCreateError, RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
-    RarUserBreak, RarNoFilesError, RarCreateError, RarExecError, NoCrypto, NeedFirstVolume, PasswordRequired
+    RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
+    RarUserBreak, RarCreateError, RarExecError, NoCrypto, NeedFirstVolume, PasswordRequired
 
 import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
@@ -309,7 +309,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
             continue
 
         found_files = filter(helpers.is_media_file, file_names)
-        if sickbeard.UNPACK:
+        if sickbeard.UNPACK == 1:
             found_files += filter(helpers.is_rar_file, file_names)
 
         if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
@@ -340,7 +340,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
 
     unpacked_dirs = []
 
-    if sickbeard.UNPACK and rar_files:
+    if sickbeard.UNPACK == 1 and rar_files:
         result.output += log_helper("Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
         for archive in rar_files:
             failure = None
@@ -377,7 +377,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                     unpack_base_dir = sickbeard.UNPACK_DIR
                 else:
                     unpack_base_dir = path
-                    if sickbeard.UNPACK_DIR: # Let user know if
+                    if sickbeard.UNPACK_DIR: # Let user know if we can't unpack there
                         result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
@@ -423,7 +423,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                     del rar_handle
 
             if failure:
-                result.output += log_helper('Failed to extract the archive {0}: {1}'.format(archive, failure[0]), logger.ERROR)
+                result.output += log_helper('Failed to extract the archive {0}: {1}'.format(archive, failure[0]), logger.WARNING)
                 result.missed_files.append('{0} : Unpacking failed: {1}'.format(archive, failure[1]))
                 result.result = False
                 continue

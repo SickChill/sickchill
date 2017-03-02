@@ -46,7 +46,6 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 import platform
-from threading import Lock
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -587,7 +586,6 @@ class CalendarHandler(BaseHandler):
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
         super(UI, self).__init__(*args, **kwargs)
-        self.messages_lock = Lock()
 
     @staticmethod
     def add_message():
@@ -610,28 +608,24 @@ class UI(WebRoot):
         return json.dumps(messages)
 
     def set_site_message(self, message, level):
-        with self.messages_lock:
-            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            if message:
-                helpers.add_site_message(message, level)
-            else:
-                if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.get_current_user():
-                    message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
-                    helpers.add_site_message(message, 'danger')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        if message:
+            helpers.add_site_message(message, level)
+        else:
+            if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.get_current_user():
+                message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                helpers.add_site_message(message, 'danger')
 
-            return sickbeard.SITE_MESSAGES
+        return sickbeard.SITE_MESSAGES
 
     def get_site_messages(self):
-        with self.messages_lock:
-            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            return sickbeard.SITE_MESSAGES
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        return sickbeard.SITE_MESSAGES
 
     def dismiss_site_message(self, index):
-        with self.messages_lock:
-            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            if int(index) in sickbeard.SITE_MESSAGES:
-                del sickbeard.SITE_MESSAGES[int(index)]
-            return sickbeard.SITE_MESSAGES
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        helpers.remove_site_message(index)
+        return sickbeard.SITE_MESSAGES
 
     def sickrage_background(self):
         if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):
@@ -4291,14 +4285,13 @@ class ConfigPostProcessing(Config):
         sickbeard.UNRAR_TOOL= rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = unrar_tool
         sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
-        if unpack:
-            if self.isRarSupported() != 'not supported':
-                sickbeard.UNPACK = config.checkbox_to_value(unpack)
-            else:
-                sickbeard.UNPACK = 0
+        unpack = try_int(unpack)
+        if unpack == 1:
+            sickbeard.UNPACK = int(self.isRarSupported() != 'not supported')
+            if sickbeard.UNPACK != 1:
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         else:
-            sickbeard.UNPACK = config.checkbox_to_value(unpack)
+            sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):
             results += ["Unable to create directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed."]
@@ -4574,8 +4567,6 @@ class ConfigProviders(Config):
         return '1'
 
     def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
-        results = []
-
         provider_str_list = provider_order.split()
         provider_list = []
 
@@ -4903,13 +4894,10 @@ class ConfigProviders(Config):
 
         sickbeard.save_config()
 
-        if len(results) > 0:
-            for x in results:
-                logger.log(x, logger.ERROR)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
-        else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        # Add a site_message if no providers are enabled for daily and/or backlog
+        sickbeard.providers.check_enabled_providers()
+
+        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/providers/")
 

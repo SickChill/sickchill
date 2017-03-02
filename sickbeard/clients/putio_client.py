@@ -82,7 +82,7 @@ class PutioAPI(GenericClient):
             return False
 
         j = self.response.json()
-        return j.get("transfer", {}).get('save_parent_id', None) == 0
+        return j.get("transfer", {}).get('save_parent_id') == 0
 
     def _add_torrent_file(self, result):
         self.url = 'https://upload.put.io/v2/files/upload'
