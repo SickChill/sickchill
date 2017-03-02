@@ -31,7 +31,7 @@ class NumDict(MutableMapping):
         iterable = kwargs.pop('dict', None) if iterable is None else iterable
         if iterable is not None:
             self.update(iterable)
-        if len(kwargs):
+        if kwargs:
             self.update(kwargs)
 
     def __len__(self):

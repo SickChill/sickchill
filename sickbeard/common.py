@@ -33,7 +33,8 @@ import uuid
 from os import path
 
 from fake_useragent import UserAgent, settings as UA_SETTINGS
-import six
+
+# noinspection PyUnresolvedReferences
 from six.moves import reduce
 
 from sickbeard.numdict import NumDict

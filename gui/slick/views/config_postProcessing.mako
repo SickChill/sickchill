@@ -272,22 +272,36 @@
                                     <label class="component-title">${_('Unpack')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <label for="unpack" class="component-desc">
+                                        ${_('What to do with archived releases found in your <i>TV Download Dir</i>?')}
+                                    </label>
+                                </div>
+
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input id="unpack" class="enabler" type="checkbox" name="unpack"
-                                                ${('', 'checked="checked"')[bool(sickbeard.UNPACK)]} />
-                                            <label for="unpack">${_('unpack any TV releases in your <i>TV Download Dir</i>?')}</label>
+                                            <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
+                                                <option value="0" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 0]}>
+                                                    ${_('Ignore (do not process contents)')}
+                                                </option>
+                                                <option value="1" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 1]}>
+                                                    ${_('Unpack (process contents)')}
+                                                </option>
+                                                <option value="2" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 2]}>
+                                                    ${_('Treat as video (process archive as-is)')}
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label><b>${_('note')}:</b>&nbsp;${_('only working with RAR archive')}</label>
+                                            <span><b>${_('note')}:</b>&nbsp;${_('\'Unpack\' only works with RAR archives')}</span>
                                         </div>
                                     </div>
                                     % if platform.system() in ('Windows', 'Microsoft'):
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('Windows')}:</b>&nbsp;${_('WinRar is required on windows')}</label>
+                                                <span><b>${_('Windows')}:</b>&nbsp;${_('WinRar is required on windows')}</span>
                                             </div>
                                         </div>
                                     % endif

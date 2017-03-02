@@ -166,6 +166,7 @@ NEWS_LATEST = None
 NEWS_UNREAD = 0
 
 INIT_LOCK = Lock()
+MESSAGES_LOCK = Lock()
 started = {}
 
 ACTUAL_LOG_DIR = None
@@ -304,7 +305,7 @@ DELETE_NON_ASSOCIATED_FILES = False
 POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
-UNPACK = False
+UNPACK = 0
 UNPACK_DIR = ''
 UNRAR_TOOL = rarfile.UNRAR_TOOL
 ALT_UNRAR_TOOL = rarfile.ALT_TOOL
@@ -1018,7 +1019,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROCESS_AUTOMATICALLY = check_setting_bool(CFG, 'General', 'process_automatically')
         NO_DELETE = check_setting_bool(CFG, 'General', 'no_delete')
         USE_ICACLS = check_setting_bool(CFG, 'General', 'use_icacls', True)
-        UNPACK = check_setting_bool(CFG, 'General', 'unpack')
+        UNPACK = check_setting_int(CFG, 'General', 'unpack')
         UNPACK_DIR = check_setting_str(CFG, 'General', 'unpack_dir')
         UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
         if UNRAR_TOOL:
@@ -1484,6 +1485,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if hasattr(curNzbProvider, 'enable_backlog'):
                 curNzbProvider.enable_backlog = check_setting_bool(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id() + '_enable_backlog',
                                                                   curNzbProvider.supports_backlog)
+
+        providers.check_enabled_providers()
 
         if not ek(os.path.isfile, CONFIG_FILE):
             logger.log("Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)

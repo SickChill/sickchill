@@ -1510,11 +1510,21 @@ var SICKRAGE = {
                 fillAnimeExamples();
             }
 
-            $('#unpack').on('change', function(){
-                if(this.checked) {
-                    isRarSupported();
-                } else {
-                    $('#unpack').qtip('toggle', false);
+            if (parseInt($('#unpack').val()) !== 1) {
+                $('#content_unpack').hide();
+            }
+
+            $('#unpack').on('change', function() {
+                switch (parseInt(this.value)) {
+                    case 0: // Ignore
+                    case 2: // Treat as video
+                        $('#content_unpack').fadeOut("fast", "linear");
+                        $('#unpack').qtip('toggle', false);
+                        break;
+                    case 1: // Unpack
+                        $('#content_unpack').fadeIn("fast", "linear");
+                        isRarSupported();
+                        break;
                 }
             });
 
