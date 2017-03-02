@@ -405,6 +405,29 @@
                             </div>
                         </div>
 
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <label class="component-title">${_('Follow symbolic-links')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="processor_follow_symlinks" id="processor_follow_symlinks"
+                                            ${('', 'checked="checked"')[bool(sickbeard.PROCESSOR_FOLLOW_SYMLINKS)]}/>
+                                        <label for="processor_follow_symlinks">${_('follow down symbolic links?')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('warning')}:</b>&nbsp;${_('<b>EXPERTS ONLY.</b><br>'
+                                                'Enable only if you know what <b>circular symbolic links</b> are,<br>'
+                                                'and can <b>verify that you have none</b>.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Use icacls')}</label>
