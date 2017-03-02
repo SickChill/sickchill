@@ -175,7 +175,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         generator_to_use = [(process_path, [], [release_name])]
     else:
         result.output += log_helper("Processing {}".format(process_path), logger.INFO)
-        generator_to_use = ek(os.walk, process_path)
+        generator_to_use = ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS)
 
     for current_directory, directory_names, file_names in generator_to_use:
         result.result = True
@@ -300,7 +300,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
                 logger.WARNING)
             return False
 
-    for current_directory, directory_names, file_names in ek(os.walk, process_path, topdown=False):
+    for current_directory, directory_names, file_names in ek(os.walk, process_path, topdown=False, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
         sync_files = filter(is_sync_file, file_names)
         if sync_files and sickbeard.POSTPONE_IF_SYNC_FILES:
             result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, ek(os.path.join, process_path, sync_files[0])))
