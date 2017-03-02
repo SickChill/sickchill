@@ -195,7 +195,10 @@ class TIVOMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log("Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
+                           "has it been removed? Should I delete from db?".format(
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
+                    sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
