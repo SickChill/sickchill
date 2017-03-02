@@ -245,7 +245,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                             actual_season = int(sql_results[1][b'season'])
                             actual_episodes = [int(sql_results[1][b'episode'])]
                             same_day_special = True
-                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0][b'season']) != 0:
+                        elif int(sql_results[1][b'season']) == 0 and int(sql_results[0][b'season']) != 0:
                             actual_season = int(sql_results[0][b'season'])
                             actual_episodes = [int(sql_results[0][b'episode'])]
                             same_day_special = True
