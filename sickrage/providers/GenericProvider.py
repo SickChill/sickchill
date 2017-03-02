@@ -118,7 +118,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def find_propers(self, search_date=None):
         results = self.cache.listPropers(search_date)
 
-        return [Proper(x['name'], x['url'], datetime.fromtimestamp(x['time']), self.show) for x in results]
+        return [Proper(x[b'name'], x[b'url'], datetime.fromtimestamp(x[b'time']), self.show) for x in results]
 
     def find_search_results(self, show, episodes, search_mode,  # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-statements
                             manual_search=False, download_current_quality=False):
@@ -241,9 +241,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                     )
 
                     if len(sql_results) == 2:
-                        if int(sql_results[0][b'season']) == 0 and int(sql_results[1]['season']) != 0:
-                            actual_season = int(sql_results[1]['season'])
-                            actual_episodes = [int(sql_results[1]['episode'])]
+                        if int(sql_results[0][b'season']) == 0 and int(sql_results[1][b'season']) != 0:
+                            actual_season = int(sql_results[1][b'season'])
+                            actual_episodes = [int(sql_results[1][b'episode'])]
                             same_day_special = True
                         elif int(sql_results[1]['season']) == 0 and int(sql_results[0][b'season']) != 0:
                             actual_season = int(sql_results[0][b'season'])
