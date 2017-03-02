@@ -1485,6 +1485,21 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                 curNzbProvider.enable_backlog = check_setting_bool(CFG, curNzbProvider.get_id().upper(), curNzbProvider.get_id() + '_enable_backlog',
                                                                   curNzbProvider.supports_backlog)
 
+        if not DEVELOPER:
+            daily_enabled_providers = 0
+            backlog_enabled_providers = 0
+            for x in providers.sortedProviderList():
+                if x.is_active():
+                    daily_enabled_providers += 1 if x.enable_daily else 0
+                    backlog_enabled_providers += 1 if x.enable_backlog else 0
+
+            if not (daily_enabled_providers and backlog_enabled_providers):
+                helpers.add_site_message(
+                    "No NZB/Torrent providers found or enabled for {0}.<br/>"
+                    "Please <a href=\"" + WEB_ROOT + "/config/providers/\">check your settings</a>.".format(
+                    (("daily searches and backlog searches", "daily searches")[backlog_enabled_providers],
+                     "backlog searches")[daily_enabled_providers]), 'danger')
+
         if not ek(os.path.isfile, CONFIG_FILE):
             logger.log("Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
             save_config()
