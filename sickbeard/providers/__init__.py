@@ -91,3 +91,26 @@ def getProviderClass(provider_id):
         return None
     else:
         return providerMatch[0]
+
+
+def check_enabled_providers():
+    if not sickbeard.DEVELOPER:
+        backlog_enabled, daily_enabled = False, False
+        for provider in sortedProviderList():
+            if provider.is_active():
+                if provider.enable_daily:
+                    daily_enabled = True
+
+                if provider.enable_backlog:
+                    backlog_enabled = True
+
+                if backlog_enabled and daily_enabled:
+                    break
+
+        if not (daily_enabled and backlog_enabled):
+            sickbeard.helpers.add_site_message(
+                "No NZB/Torrent providers found or enabled for {0}.<br/>"
+                "Please <a href=\"" + sickbeard.WEB_ROOT + "/config/providers/\">check your settings</a>.".format(
+                    (("daily searches and backlog searches", "daily searches")[backlog_enabled], "backlog searches")[daily_enabled]), 'danger')
+        else:
+            sickbeard.helpers.remove_site_message(begins="No NZB/Torrent providers found or enabled for")

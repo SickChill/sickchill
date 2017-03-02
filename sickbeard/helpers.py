@@ -1753,19 +1753,43 @@ MESSAGE_COUNTER = 0
 
 
 def add_site_message(message, level='danger'):
-    to_add = dict(level=level, message=message)
+    with sickbeard.MESSAGES_LOCK:
+        to_add = dict(level=level, message=message)
 
-    basic_update_url = sickbeard.versionChecker.UpdateManager.get_update_url().split('?')[0]
-    for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
-        if basic_update_url in existing['message'] and basic_update_url in message:
-            sickbeard.SITE_MESSAGES[index] = to_add
-            return
+        basic_update_url = sickbeard.versionChecker.UpdateManager.get_update_url().split('?')[0]
+        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
+            if basic_update_url in existing['message'] and basic_update_url in message:
+                sickbeard.SITE_MESSAGES[index] = to_add
+                return
 
-        if message.endswith('Please use \'master\' unless specifically asked') and \
-                existing['message'].endswith('Please use \'master\' unless specifically asked'):
-            sickbeard.SITE_MESSAGES[index] = to_add
-            return
+            if message.endswith('Please use \'master\' unless specifically asked') and \
+                    existing['message'].endswith('Please use \'master\' unless specifically asked'):
+                sickbeard.SITE_MESSAGES[index] = to_add
+                return
 
-    global MESSAGE_COUNTER
-    MESSAGE_COUNTER += 1
-    sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
+            if message.startswith('No NZB/Torrent providers found or enabled for') and \
+                    existing['message'].startswith('No NZB/Torrent providers found or enabled for'):
+                sickbeard.SITE_MESSAGES[index] = to_add
+                return
+
+        global MESSAGE_COUNTER
+        MESSAGE_COUNTER += 1
+        sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
+
+
+def remove_site_message(begins='', ends='', contains='', key=None):
+    with sickbeard.MESSAGES_LOCK:
+        if key is not None and int(key) in sickbeard.SITE_MESSAGES:
+            del sickbeard.SITE_MESSAGES[int(key)]
+
+        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES.copy()):
+            checks = []
+            if begins and isinstance(begins, six.string_types):
+                checks.append(existing['message'].startswith(begins))
+            if ends and isinstance(ends, six.string_types):
+                checks.append(existing['message'].endsswith(ends))
+            if contains and isinstance(ends, six.string_types):
+                checks.append(contains in existing['message'])
+
+            if all(checks):
+                del sickbeard.SITE_MESSAGES[index]
