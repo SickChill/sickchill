@@ -307,8 +307,7 @@ class LoginHandler(BaseHandler):
         if self.get_argument('username', '') == username and self.get_argument('password', '') == password:
             api_key = sickbeard.API_KEY
 
-        if sickbeard.NOTIFY_ON_LOGIN and not helpers.is_ip_private(self.request.remote_ip):
-            notifiers.notify_login(self.request.remote_ip)
+        notifiers.notify_login(self.request.remote_ip)
 
         if api_key:
             remember_me = try_int(self.get_argument('remember_me', default=0), 0)
