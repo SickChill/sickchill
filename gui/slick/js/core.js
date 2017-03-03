@@ -223,6 +223,18 @@ var SICKRAGE = {
                     $(this).prop('checked', $(bulkCheck).prop('checked'));
                 });
             });
+
+            $(".enabler").each(function(){
+                if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
+            });
+
+            $(".enabler").on('change', function() {
+                if ($(this).prop('checked')){
+                    $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
+                } else {
+                    $('#content_'+$(this).attr('id')).fadeOut("fast", "linear");
+                }
+            });
         },
         QualityChooser: {
             setFromPresets: function (preset) {
@@ -285,18 +297,6 @@ var SICKRAGE = {
     config: {
         init: function() {
             $('#config-components').tabs();
-
-            $(".enabler").each(function(){
-                if (!$(this).prop('checked')) { $('#content_'+$(this).attr('id')).hide(); }
-            });
-
-            $(".enabler").on('click', function() {
-                if ($(this).prop('checked')){
-                    $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
-                } else {
-                    $('#content_'+$(this).attr('id')).fadeOut("fast", "linear");
-                }
-            });
 
             $(".viewIf").on('click', function() {
                 if ($(this).prop('checked')) {

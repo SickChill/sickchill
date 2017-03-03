@@ -48,6 +48,11 @@ class Notifier(object):
         if sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwilio(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ': ' + lang)
 
+    def notify_git_update(self, new_version):
+        if sickbeard.USE_TWILIO:
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            self._notifyTwilio(update_text + new_version)
+
     def notify_login(self, ipaddress=""):
         if sickbeard.USE_TWILIO:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]

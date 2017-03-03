@@ -35,7 +35,6 @@ from sickbeard import db, helpers, logger, notifiers, ui
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 
-
 import six
 
 

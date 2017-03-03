@@ -20,7 +20,6 @@
 
 from __future__ import print_function, unicode_literals
 
-import traceback
 import sickbeard
 
 from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
@@ -102,18 +101,18 @@ def notify_snatch(ep_name):
 
 
 def notify_git_update(new_version=""):
-    for n in notifiers:
-        if sickbeard.NOTIFY_ON_UPDATE:
-            try:
+    if sickbeard.NOTIFY_ON_UPDATE:
+        for n in notifiers:
+            if hasattr(n, 'notify_git_update'):
                 n.notify_git_update(new_version)
-            except Exception:
-                sickbeard.logger.log("Unable to send update notification. Continuing the update process", sickbeard.logger.DEBUG)
-                sickbeard.logger.log(traceback.format_exc(), sickbeard.logger.DEBUG)
+            else:
+                print(n.__module__)
 
 
 def notify_login(ipaddress):
-    for n in notifiers:
-        if sickbeard.NOTIFY_ON_LOGIN and hasattr(n, 'notify_login'):
-            n.notify_login(ipaddress)
-        else:
-            print(n.__module__)
+    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_private(ipaddress):
+        for n in notifiers:
+            if hasattr(n, 'notify_login'):
+                n.notify_login(ipaddress)
+            else:
+                print(n.__module__)
