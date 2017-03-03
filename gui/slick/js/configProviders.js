@@ -392,7 +392,7 @@ $(document).ready(function(){
         $(this).populateTorrentRssSection();
     });
 
-    $(this).on('click', '.provider_enabler', function(){
+    $('.provider_enabler').on('change', function(){
         $(this).refreshProviderList();
     });
 
@@ -503,26 +503,6 @@ $(document).ready(function(){
             }
         });
         $('div .providerDiv ' + "[name=" + $(this).attr('name') + "]").empty().replaceWith($(this).clone());
-    });
-
-    $(this).on('change', '.enabler', function(){
-        if ($(this).is(':checked')) {
-            $('.content_'+$(this).attr('id')).each( function() {
-                $(this).show();
-            });
-        } else {
-            $('.content_'+$(this).attr('id')).each( function() {
-                $(this).hide();
-            });
-        }
-    });
-
-    $(".enabler").each(function(){
-        if (!$(this).is(':checked')) {
-            $('.content_'+$(this).attr('id')).hide();
-        } else {
-            $('.content_'+$(this).attr('id')).show();
-        }
     });
 
     $.fn.makeTorrentOptionString = function(providerId) {
