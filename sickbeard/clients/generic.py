@@ -30,6 +30,8 @@ import bencode
 import sickbeard
 from sickbeard import logger, helpers
 
+import six
+
 
 class GenericClient(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self, name, host=None, username=None, password=None):
@@ -78,6 +80,45 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         if not self.auth:
             logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
             return False
+
+        # Dict, loop through and change all key,value pairs to bytes
+        if isinstance(params, dict):
+            for key, value in six.iteritems(params):
+                if isinstance(key, six.text_type):
+                    del params[key]
+                    key = key.encode('utf-8')
+
+                if isinstance(value, six.text_type):
+                    value = value.encode('utf-8')
+                params[key] = value
+
+        if isinstance(data, dict):
+            for key, value in six.iteritems(data):
+                if isinstance(key, six.text_type):
+                    del data[key]
+                    key = key.encode('utf-8')
+
+                if isinstance(value, six.text_type):
+                    value = value.encode('utf-8')
+                data[key] = value
+
+        # List, loop through and change all indexes to bytes
+        if isinstance(params, list):
+            for index, value in enumerate(params):
+                if isinstance(value, six.text_type):
+                    params[index] = value.encode('utf-8')
+
+        if isinstance(data, list):
+            for index, value in enumerate(data):
+                if isinstance(value, six.text_type):
+                    data[index] = value.encode('utf-8')
+
+        # Unicode, encode to bytes
+        if isinstance(params, six.text_type):
+            params = params.encode('utf-8')
+
+        if isinstance(data, six.text_type):
+            data = data.encode('utf-8')
 
         try:
             self.response = self.session.request(
