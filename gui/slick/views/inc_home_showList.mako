@@ -17,14 +17,49 @@
     <div id="${('container', 'container-anime')[curListType == 'Anime' and sickbeard.HOME_LAYOUT == 'poster']}" class="show-grid clearfix">
         <div class="posterview">
             % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-                % if curLoadingShow.show is None:
-                    <div class="show-container" data-name="0" data-date="010101" data-network="0" data-progress="101">
-                        <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/images/poster.png" />
-                        <div class="show-details">
-                            <div class="show-add">${_('Loading...')} (${curLoadingShow.show_name})</div>
-                        </div>
+                <%
+                    if curLoadingShow.show in sickbeard.showList:
+                        continue
+
+                    if curLoadingShow.show:
+                        loading_show_name = curLoadingShow.show.name
+                        loading_show_id = curLoadingShow.show.indexerid
+                        loading_show_network = curLoadingShow.show.network
+                        loading_show_quality = curLoadingShow.show.quality
+                    else:
+                        loading_show_name = curLoadingShow.show_name
+                        loading_show_id = curLoadingShow.show_name
+                        loading_show_network = _('No Network')
+                        loading_show_quality = 0
+                %>
+                <div class="show-container" data-name="${loading_show_name}" data-date="1" data-network="0" data-progress="0">
+                    <div class="show-image">
+                        <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="data:image/png;base64,
+                        R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" />
                     </div>
-                % endif
+                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show_id}" data-progress-percentage="0"></div>
+                    <div class="show-title">${loading_show_name}</div>
+                    <div class="show-date">&nbsp;</div>
+                    <div class="show-details">
+                        <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
+                            <tr>
+                                <td class="show-table">
+                                    <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
+                                </td>
+                                <td class="show-table">
+                                    % if sickbeard.HOME_LAYOUT != 'simple':
+                                        <span title="${loading_show_network}"><img class="show-network-image" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=network" alt="${loading_show_network}" title="${loading_show_network}" /></span>
+                                    % else:
+                                        <span title="${loading_show_network}">${loading_show_network}</span>
+                                    % endif
+                                </td>
+                                <td class="show-table">
+                                    ${renderQualityPill(loading_show_quality, showTitle=True, overrideClass="show-quality")}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             % endfor
 
             <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
@@ -182,31 +217,76 @@
                     <th>&nbsp;</th>
                 </tr>
             </tfoot>
-            % if sickbeard.showQueueScheduler.action.loadingShowList:
-                <tbody class="tablesorter-infoOnly">
+            <tbody>
+                % if sickbeard.showQueueScheduler.action.loadingShowList:
                     % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-                        % if curLoadingShow.show is not None and curLoadingShow.show in sickbeard.showList:
-                            <% continue %>
-                        % endif
+                        <%
+                            if curLoadingShow.show in sickbeard.showList:
+                                continue
+
+                            if curLoadingShow.show:
+                                loading_show_name = curLoadingShow.show.name
+                                loading_show_id = curLoadingShow.show.indexerid
+                            else:
+                                loading_show_name = curLoadingShow.show_name
+                                loading_show_id = curLoadingShow.show_name
+                        %>
                         <tr>
-                            <td align="center">(${_('loading')})</td>
+                            <td align="center">(${_('loading')})</td><td align="center"></td>
+                            % if sickbeard.HOME_LAYOUT == 'small':
+                                <td class="tvShow">
+                                    <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
+                                        % if curLoadingShow.show:
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" title="${loading_show_name}">
+                                        % else:
+                                            <span title="${loading_show_name}">
+                                        % endif
+
+                                            <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_id}"/>
+                                        % if curLoadingShow.show:
+                                            </a>
+                                        % else:
+                                            </span>
+                                        % endif
+                                         % if curLoadingShow.show:
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" style="vertical-align: middle;">${loading_show_name}</a>
+                                         % else:
+                                             <span style="vertical-align: middle;">${_('Loading...')} (${loading_show_name})</span>
+                                         % endif
+                                    </div>
+                                </td>
+                            % elif sickbeard.HOME_LAYOUT == 'banner':
+                                <td>
+                                    <span style="display: none;">${_('Loading...')} (${loading_show_name})</span>
+                                    <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
+                                        % if curLoadingShow.show:
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}">
+                                        % endif
+                                            <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_id}" title="${loading_show_name}"/>
+                                        % if curLoadingShow.show:
+                                            </a>
+                                        % endif
+                                    </div>
+                                </td>
+                            % elif sickbeard.HOME_LAYOUT == 'simple':
+                                <td class="tvShow">
+                                    % if curLoadingShow.show:
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show_id}">${loading_show_name}</a>
+                                    % else:
+                                        <span title="">${_('Loading...')} (${loading_show_name})</span>
+                                    % endif
+                                </td>
+                            % endif
                             <td></td>
-                            <td>
-                                % if curLoadingShow.show is None:
-                                    <span title="">${_('Loading...')} (${curLoadingShow.show_name})</span>
-                                % else:
-                                    <a href="displayShow?show=${curLoadingShow.show.indexerid}">${curLoadingShow.show.name}</a>
-                                % endif
-                            </td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
                         </tr>
                     % endfor
-                </tbody>
-            % endif
-            <tbody>
+                % endif
+
                 <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
                 % for curShow in myShowList:
                     <%
@@ -257,27 +337,27 @@
                     %>
                     <tr>
                         % if cur_airs_next:
-                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
-                        % try:
-                            <td align="center" class="nowrap">
-                                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
-                            </td>
-                        % except ValueError:
-                            <td align="center" class="nowrap"></td>
-                        % endtry
+                            <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
+                            % try:
+                                <td align="center" class="nowrap">
+                                    <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
+                                </td>
+                            % except ValueError:
+                                <td align="center" class="nowrap"></td>
+                            % endtry
                         % else:
                             <td align="center" class="nowrap"></td>
                         % endif
 
                         % if cur_airs_prev:
-                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
-                        % try:
-                            <td align="center" class="nowrap">
-                                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
-                            </td>
-                        % except ValueError:
-                            <td align="center" class="nowrap"></td>
-                        % endtry
+                            <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
+                            % try:
+                                <td align="center" class="nowrap">
+                                    <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
+                                </td>
+                            % except ValueError:
+                                <td align="center" class="nowrap"></td>
+                            % endtry
                         % else:
                             <td align="center" class="nowrap"></td>
                         % endif
