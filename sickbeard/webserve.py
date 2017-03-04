@@ -2108,26 +2108,25 @@ class Home(WebRoot):
         episodes = []
 
         # Queued Searches
-        searchstatus = 'queued'
+        searchstatus = 'Queued'
         for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Running Searches
-        searchstatus = 'searching'
+        searchstatus = 'Searching'
         if sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress():
             searchThread = sickbeard.searchQueueScheduler.action.currentItem
 
             if searchThread.success:
-                searchstatus = 'finished'
+                searchstatus = 'Finished'
 
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Finished Searches
-        searchstatus = 'finished'
+        searchstatus = 'Finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
-            if not show:
-                if not str(searchThread.show.indexerid) == show:
-                    continue
+            if show and str(searchThread.show.indexerid) != show:
+                continue
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:

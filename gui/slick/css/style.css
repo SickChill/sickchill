@@ -540,6 +540,42 @@ span.show-option {
     display: inline-block;
 }
 
+.loading-spinner16 {
+    background-image: url("../images/loading16.gif");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+
+.queued-search {
+    background-image: url("../images/queued.png");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+
+.yes-image {
+    background-image: url("../images/yes16.png");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+
+.no-image {
+    background-image: url("../images/no16.png");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+
 .show-container {
     margin: 4px;
     background-color: #F3F3F3;

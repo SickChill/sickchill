@@ -3315,7 +3315,7 @@ var SICKRAGE = {
             }
 
             if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])){
-                $('#srRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+                $('#srRoot').ajaxEpSearch();
                 $('.ep_summary').hide();
                 $('.ep_summaryTrigger').click(function() {
                     $(this).next('.ep_summary').slideToggle('normal', function() {
