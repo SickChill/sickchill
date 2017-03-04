@@ -22,7 +22,7 @@ function updateImages(data) {
     $.each(data.episodes, function (name, ep) {
         // Get td element for current ep
         var loadingClass = 'loading-spinner16';
-        var queuedClass = 'queued-search';
+        var queuedClass = 'displayshow-icon-clock';
         var searchClass = 'displayshow-icon-search';
 
         //Try to get the <a> Element
@@ -192,9 +192,9 @@ $(document).ready(function () {
             size: 16,
             colorRow: false,
             loadingClass: 'loading-spinner16',
-            queuedClass: 'queued-search',
-            noImage: 'no16-image',
-            yesImage: 'yes16-image'
+            queuedClass: 'displayshow-icon-clock',
+            noImage: 'displayshow-icon-disable',
+            yesImage: 'displayshow-icon-enable'
         }
     };
 
