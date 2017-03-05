@@ -4,6 +4,7 @@
     from sickbeard import sbdatetime
     from sickbeard import network_timezones
     from sickrage.helper.common import pretty_file_size
+    import os
     import re
 
     ## Need to initialize these for gettext, they are done dynamically in the ui
@@ -27,9 +28,9 @@
                         loading_show_network = curLoadingShow.show.network
                         loading_show_quality = curLoadingShow.show.quality
                     else:
-                        loading_show_name = curLoadingShow.show_name
+                        loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
                         loading_show_id = curLoadingShow.show_name
-                        loading_show_network = _('No Network')
+                        loading_show_network = _('Loading')
                         loading_show_quality = 0
                 %>
                 <div class="show-container" data-name="${loading_show_name}" data-date="1" data-network="0" data-progress="0">
@@ -37,7 +38,7 @@
                         <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" />
                     </div>
                     <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show_id}" data-progress-percentage="0"></div>
-                    <div class="show-title">${loading_show_name}</div>
+                    <div class="show-title">${_('Loading')} (${loading_show_name})</div>
                     <div class="show-date">&nbsp;</div>
                     <div class="show-details">
                         <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
@@ -218,7 +219,7 @@
                                 loading_show_name = curLoadingShow.show.name
                                 loading_show_id = curLoadingShow.show.indexerid
                             else:
-                                loading_show_name = curLoadingShow.show_name
+                                loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
                                 loading_show_id = curLoadingShow.show_name
                         %>
                         <tr>
@@ -231,18 +232,14 @@
                                         % else:
                                             <span title="${loading_show_name}">
                                         % endif
-
                                         <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_id}"/>
                                         % if curLoadingShow.show:
                                             </a>
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" style="vertical-align: middle;">${loading_show_name}</a>
                                         % else:
                                             </span>
+                                            <span style="vertical-align: middle;">${_('Loading...')} (${loading_show_name})</span>
                                         % endif
-                                         % if curLoadingShow.show:
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" style="vertical-align: middle;">${loading_show_name}</a>
-                                         % else:
-                                             <span style="vertical-align: middle;">${_('Loading...')} (${loading_show_name})</span>
-                                         % endif
                                     </div>
                                 </td>
                             % elif sickbeard.HOME_LAYOUT == 'banner':
