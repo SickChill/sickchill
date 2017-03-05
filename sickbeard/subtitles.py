@@ -335,7 +335,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
         if embedded_subtitles is None:
             embedded_subtitles = bool(not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'))
 
-        # Let sickrage addd more information to video file, based on the metadata.
+        # Let sickrage add more information to video file, based on the metadata.
         if episode:
             refine_video(video, episode)
 

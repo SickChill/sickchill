@@ -18,7 +18,6 @@
     <script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
 </%block>
 
 <%block name="content">
@@ -617,7 +616,7 @@
                     <h4 class="modal-title">${_('Download subtitle')}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>${_('Do you want to redownload the subtitle for this language?')}</p>
+                    <p>${_('Do you want to re-download the subtitle for this language?')}</p>
                     <p class="text-warning"><small>${_('It will overwrite your current subtitle')}</small></p>
                 </div>
                 <div class="modal-footer">
