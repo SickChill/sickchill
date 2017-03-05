@@ -399,7 +399,7 @@
                         <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
 
                         <td align="center">
-                            <span class="displayshow-icon-${("disabled", "enabled")[bool(curShow.paused)]}" title="${('No', 'Yes')[bool(curShow.paused)]}"></span>
+                            <span class="displayshow-icon-${("disable", "enable")[not bool(curShow.paused)]}" title="${('No', 'Yes')[not bool(curShow.paused)]}"></span>
                         </td>
 
                         <td align="center">

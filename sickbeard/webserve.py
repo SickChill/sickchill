@@ -623,7 +623,7 @@ class UI(WebRoot):
 
     def dismiss_site_message(self, index):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        helpers.remove_site_message(index)
+        helpers.remove_site_message(key=index)
         return sickbeard.SITE_MESSAGES
 
     def sickrage_background(self):

@@ -108,9 +108,9 @@ def check_enabled_providers():
                     break
 
         if not (daily_enabled and backlog_enabled):
-            sickbeard.helpers.add_site_message(
-                "No NZB/Torrent providers found or enabled for {0}.<br/>"
-                "Please <a href=\"" + sickbeard.WEB_ROOT + "/config/providers/\">check your settings</a>.".format(
-                    (("daily searches and backlog searches", "daily searches")[backlog_enabled], "backlog searches")[daily_enabled]), 'danger')
+            formatted_msg = "No NZB/Torrent providers found or enabled for {0}.<br/>".format(
+                (("daily searches and backlog searches", "daily searches")[backlog_enabled], "backlog searches")[daily_enabled])
+            formatted_msg += "Please <a href=\"" + sickbeard.WEB_ROOT + "/config/providers/\">check your settings</a>."
+            sickbeard.helpers.add_site_message(formatted_msg, 'danger')
         else:
             sickbeard.helpers.remove_site_message(begins="No NZB/Torrent providers found or enabled for")
