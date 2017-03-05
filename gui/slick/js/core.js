@@ -2197,7 +2197,7 @@ var SICKRAGE = {
                     4: function(node) { return $(node).find("span").text().toLowerCase(); },
                     5: function(node) { return $(node).find("span:first").text(); },
                     6: function(node) { return $(node).data('show-size'); },
-                    7: function(node) { return $(node).find("img").attr("alt"); }
+                    7: function(node) { return $(node).find("span").attr("title").toLowerCase(); }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
@@ -2948,12 +2948,12 @@ var SICKRAGE = {
                 textExtraction: {
                     2: function(node) { return ($(node).find("img").attr("alt") || 'unknown').toLowerCase(); },  // Network
                     3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
-                    4: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Sports
-                    5: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Scene
-                    6: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Anime
-                    7: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Season Folders
-                    8: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Paused
-                    9: function(node) { return $(node).find("img").attr("alt").toLowerCase(); },  // Subtitle
+                    4: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Sports
+                    5: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Scene
+                    6: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Anime
+                    7: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Season Folders
+                    8: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Paused
+                    9: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Subtitle
                     10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
                     11: function(node) { return $(node).text().toLowerCase(); }  // Show Status
                 },

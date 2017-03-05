@@ -277,10 +277,17 @@ def change_unpack_dir(unpack_dir):
         return True
 
     if ek(os.path.normpath, sickbeard.UNPACK_DIR) != ek(os.path.normpath, unpack_dir):
+        if bool(sickbeard.ROOT_DIRS) and \
+            any(map(lambda rd: helpers.is_subdirectory(unpack_dir, rd), sickbeard.ROOT_DIRS.split('|')[1:])):
+            # don't change if it's in any of the TV root directories
+            logger.log("Unable to change unpack directory to a sub-directory of a TV root dir")
+            return False
+
         if helpers.makeDir(unpack_dir):
             sickbeard.UNPACK_DIR = ek(os.path.normpath, unpack_dir)
             logger.log("Changed unpack directory to " + unpack_dir)
         else:
+            logger.log("Unable to create unpack directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed.")
             return False
 
     return True
