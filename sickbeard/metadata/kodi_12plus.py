@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
