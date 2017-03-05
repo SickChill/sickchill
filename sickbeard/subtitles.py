@@ -335,7 +335,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
         if embedded_subtitles is None:
             embedded_subtitles = bool(not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'))
 
-        # Let sickrage addd more information to video file, based on the metadata.
+        # Let sickrage add more information to video file, based on the metadata.
         if episode:
             refine_video(video, episode)
 
@@ -580,7 +580,7 @@ def refine_video(video, episode):
         elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
             setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
 
-    # Set quality form metadata
+    # Set quality from metadata
     _, quality = Quality.splitCompositeStatus(episode.status)
     if not video.format or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:

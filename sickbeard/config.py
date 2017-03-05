@@ -22,12 +22,15 @@ from __future__ import print_function, unicode_literals
 
 import datetime
 import os.path
+import platform
 import re
 
 import six
 
 # noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
+
+import rarfile
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
@@ -100,6 +103,57 @@ def change_https_key(https_key):
             return False
 
     return True
+
+
+def change_unrar_tool(unrar_tool, alt_unrar_tool):
+    unrar_tool = unrar_tool or sickbeard.UNRAR_TOOL or rarfile.UNRAR_TOOL or rarfile.ORIG_UNRAR_TOOL
+    alt_unrar_tool = alt_unrar_tool or sickbeard.ALT_TOOL or rarfile.ALT_TOOL
+
+    try:
+        rarfile.custom_check(unrar_tool)
+        sickbeard.UNRAR_TOOL = unrar_tool
+        rarfile.UNRAR_TOOL = unrar_tool
+        rarfile.ORIG_UNRAR_TOOL = unrar_tool
+    except (rarfile.RarCannotExec, rarfile.RarExecError):
+        if platform.system() == 'Windows':
+            for unrar_tool in ('C:\\Program Files\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\WinRAR\\UnRAR.exe'):
+                try:
+                    rarfile.custom_check(unrar_tool)
+                    sickbeard.UNRAR_TOOL = unrar_tool
+                    rarfile.UNRAR_TOOL = unrar_tool
+                    rarfile.ORIG_UNRAR_TOOL = unrar_tool
+                except (rarfile.RarCannotExec, rarfile.RarExecError):
+                    logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
+                    unrar_tool = "unrar.exe"
+                    if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", filename="unrar.exe"):
+                        try:
+
+                            rarfile.custom_check("unrar.exe")
+                            sickbeard.UNRAR_TOOL = unrar_tool
+                            rarfile.UNRAR_TOOL = unrar_tool
+                            rarfile.ORIG_UNRAR_TOOL = unrar_tool
+                        except (rarfile.RarCannotExec, rarfile.RarExecError):
+                            logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+                            pass
+
+    try:
+        rarfile.custom_check(alt_unrar_tool)
+        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
+        rarfile.ALT_TOOL = alt_unrar_tool
+    except (rarfile.RarCannotExec, rarfile.RarExecError):
+        pass
+
+    # noinspection PyProtectedMember
+    try:
+        test = rarfile._check_unrar_tool()
+    except (rarfile.RarCannotExec, rarfile.RarExecError):
+        test = False
+
+    if sickbeard.UNPACK and not test:
+        logger.log('Disabling UNPACK setting because no unrar is installed.')
+        sickbeard.UNPACK = 0
+
+    return test
 
 
 def change_sickrage_background(background):

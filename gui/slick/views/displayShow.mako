@@ -18,7 +18,6 @@
     <script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
     <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
 </%block>
 
 <%block name="content">
@@ -262,40 +261,40 @@
                                             % if sickbeard.USE_SUBTITLES:
                                                 <tr>
                                                     <td class="showLegend">${_('Subtitles')}: </td>
-                                                    <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td>
+                                                    <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles)]}" title=${("N", "Y")[bool(show.subtitles)]}></span></td>
                                                 </tr>
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Subtitles SR Metadata')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.subtitles_sr_metadata)]}" alt="${("N", "Y")[bool(show.subtitles_sr_metadata)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles_sr_metadata)]}" title=${("N", "Y")[bool(show.subtitles_sr_metadata)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Season Folders')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" alt=="${("N", "Y")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" title=${("N", "Y")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Paused')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.paused)]}" title=${("N", "Y")[bool(show.paused)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Air-by-Date')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.air_by_date)]}" title=${("N", "Y")[bool(show.air_by_date)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Sports')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.is_sports)]}" title=${("N", "Y")[bool(show.is_sports)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Anime')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.is_anime)]}" title=${("N", "Y")[bool(show.is_anime)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('DVD Order')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.dvdorder)]}" alt="${("N", "Y")[bool(show.dvdorder)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.dvdorder)]}" title=${("N", "Y")[bool(show.dvdorder)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Scene Numbering')}: </td>
-                                                <td><img src="${srRoot}/images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.scene)]}" title=${("N", "Y")[bool(show.scene)]}></span></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -617,7 +616,7 @@
                     <h4 class="modal-title">${_('Download subtitle')}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>${_('Do you want to redownload the subtitle for this language?')}</p>
+                    <p>${_('Do you want to re-download the subtitle for this language?')}</p>
                     <p class="text-warning"><small>${_('It will overwrite your current subtitle')}</small></p>
                 </div>
                 <div class="modal-footer">

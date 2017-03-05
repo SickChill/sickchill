@@ -219,8 +219,8 @@
         </div>
 
         <script type="text/javascript">
-            var commands = ${sorted(commands)};
             var episodes = ${episodes};
+            // var commands = ${sorted(commands)};  // Dont know why this is breaking the apibuilder
         </script>
         <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>

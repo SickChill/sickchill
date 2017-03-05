@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -1022,13 +1022,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_ICACLS = check_setting_bool(CFG, 'General', 'use_icacls', True)
         UNPACK = check_setting_int(CFG, 'General', 'unpack')
         UNPACK_DIR = check_setting_str(CFG, 'General', 'unpack_dir')
-        UNRAR_TOOL = check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL)
-        if UNRAR_TOOL:
-            rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = UNRAR_TOOL
 
-        ALT_UNRAR_TOOL = check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
-        if ALT_UNRAR_TOOL:
-            rarfile.ALT_TOOL = ALT_UNRAR_TOOL
+        config.change_unrar_tool(
+            check_setting_str(CFG, 'General', 'unrar_tool', rarfile.UNRAR_TOOL),
+            check_setting_str(CFG, 'General', 'alt_unrar_tool', rarfile.ALT_TOOL)
+        )
 
         RENAME_EPISODES = check_setting_bool(CFG, 'General', 'rename_episodes', True)
         AIRDATE_EPISODES = check_setting_bool(CFG, 'General', 'airdate_episodes')

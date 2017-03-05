@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -765,7 +765,7 @@ class Home(WebRoot):
         if not callback and jq_obj:
             return _("Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string.")
 
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'text/javascript')
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
@@ -2108,26 +2108,25 @@ class Home(WebRoot):
         episodes = []
 
         # Queued Searches
-        searchstatus = 'queued'
+        searchstatus = 'Queued'
         for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Running Searches
-        searchstatus = 'searching'
+        searchstatus = 'Searching'
         if sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress():
             searchThread = sickbeard.searchQueueScheduler.action.currentItem
 
             if searchThread.success:
-                searchstatus = 'finished'
+                searchstatus = 'Finished'
 
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Finished Searches
-        searchstatus = 'finished'
+        searchstatus = 'Finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
-            if not show:
-                if not str(searchThread.show.indexerid) == show:
-                    continue
+            if show and str(searchThread.show.indexerid) != show:
+                continue
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
@@ -4281,8 +4280,7 @@ class ConfigPostProcessing(Config):
         config.change_process_automatically(process_automatically)
         sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
-        sickbeard.UNRAR_TOOL= rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = unrar_tool
-        sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
+        config.change_unrar_tool(unrar_tool, alt_unrar_tool)
 
         unpack = try_int(unpack)
         if unpack == 1:
@@ -4433,24 +4431,9 @@ class ConfigPostProcessing(Config):
     @staticmethod
     def isRarSupported():
         """
-        Test Packing Support:
-            - Simulating in memory rar extraction on test.rar file
+        Test Unpacking Support: - checks if unrar is installed and accesible
         """
-        check = None
-        # noinspection PyBroadException
-        try:
-            # noinspection PyProtectedMember
-            check = rarfile._check_unrar_tool()
-        except Exception:
-            # noinspection PyBroadException
-            try:
-                if platform.system() in ('Windows', 'Microsoft') and ek(os.path.isfile, 'C:\\Program Files\\WinRar\\UnRar.exe'):
-                    sickbeard.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRar\\UnRar.exe'
-                    # noinspection PyProtectedMember
-                    check = rarfile._check_unrar_tool()
-            except Exception:
-                pass
-
+        check = config.change_unrar_tool(sickbeard.UNRAR_TOOL, sickbeard.ALT_UNRAR_TOOL)
         if not check:
             logger.log('Looks like unrar is not installed, check failed', logger.WARNING)
         return ('not supported', 'supported')[check]

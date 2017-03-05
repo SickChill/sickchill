@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -130,13 +130,11 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def renameShowEpisodes(self, show, force=False):
-        force_ = force
         queueItemObj = QueueItemRename(show)
         self.add_item(queueItemObj)
         return queueItemObj
 
     def download_subtitles(self, show, force=False):
-        force_ = force
         queueItemObj = QueueItemSubtitle(show)
         self.add_item(queueItemObj)
         return queueItemObj

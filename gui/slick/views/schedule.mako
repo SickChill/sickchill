@@ -399,7 +399,7 @@
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
-                                                   title="Manual Search" id="forceUpdate-${cur_result[b'showid']}"
+                                                   title="Manual Search" id="forceUpdate-${cur_result[b'showid']}x${cur_result[b'season']}x${cur_result[b'episode']}"
                                                    class="epSearch forceUpdate">
                                                     <span id="forceUpdateImage-${cur_result[b'showid']}"
                                                           class="displayshow-icon-search"></span>

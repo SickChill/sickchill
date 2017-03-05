@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Jonathon Saine <thezoggy@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -758,7 +758,7 @@ class CMDEpisode(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type="dict")
         # noinspection PyPep8
         sql_results = main_db_con.select(
             "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
@@ -1452,7 +1452,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
 
     def run(self):
         """ Get information about the scheduler """
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
         backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
@@ -2444,7 +2444,7 @@ class CMDShowSeasonList(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type="dict")
         if self.sort == "asc":
             sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
                                              [self.indexerid])

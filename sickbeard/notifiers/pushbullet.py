@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 # Author: Pedro Correia (http://github.com/pedrocorreia/)
 # Based on pushalot.py by Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
