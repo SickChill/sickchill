@@ -2872,28 +2872,33 @@ var SICKRAGE = {
         },
         restart: function(){
             var currentPid = srPID;
-            var checkIsAlive = setInterval(function(){
-                $.post(srRoot + '/home/is_alive/', function(data) {
-                    if (data.msg.toLowerCase() === 'nope') {
-                        // if it's still initializing then just wait and try again
+            var checkIsAlive = setInterval(function() {
+                $.post(srRoot + '/home/is-alive/', function(data) {
+                    if (data === undefined || data.msg !== currentPid) {
                         $('#restart_message').show();
-                    } else {
-                        // if this is before we've even shut down then just try again later
-                        if (currentPid === '' || data.msg === currentPid) {
-                            $('#shut_down_loading').hide();
-                            $('#shut_down_success').show();
-                            currentPid = data.msg;
-                        } else {
-                            clearInterval(checkIsAlive);
-                            $('#restart_loading').hide();
-                            $('#restart_success').show();
-                            $('#refresh_message').show();
-                            setTimeout(function(){
-                                window.location = srRoot + '/' + srDefaultPage + '/';
-                            }, 5000);
-                        }
+                        $('#shut_down_loading').hide();
+                        $('#shut_down_success').show();
                     }
-                }, 'jsonp');
+                    if (data !== undefined && data.msg !== 'nope' && data.msg !== currentPid) {
+                        clearInterval(checkIsAlive);
+                        $('#restart_loading').hide();
+                        $('#restart_success').show();
+                        $('#refresh_message').show();
+                        srPID = currentPid = data.msg;
+                        checkIsAlive = setInterval(function() {
+                            $.post(srRoot + '/home/is-alive/', function() {
+                                clearInterval(checkIsAlive);
+                                setTimeout(function(){
+                                    window.location = srRoot + '/' + srDefaultPage + '/';
+                                }, 2000);
+                            }, 'jsonp');
+                        }, 100);
+                    }
+                }, 'jsonp').fail(function() {
+                    $('#restart_message').show();
+                    $('#shut_down_loading').hide();
+                    $('#shut_down_success').show();
+                });
             }, 100);
         }
     },
