@@ -230,7 +230,7 @@
                                     <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="fa fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="fa fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
                                     <li><a href="${srRoot}/home/shutdown/?pid=${sbPID}" class="confirm shutdown"><i class="fa fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
-                                    % if srLogin is not True:
+                                    % if srLogin:
                                         <li><a href="${srRoot}/logout" class="confirm logout"><i class="fa fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>

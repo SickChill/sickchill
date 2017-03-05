@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Tyler Fenby <tylerfenby@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #

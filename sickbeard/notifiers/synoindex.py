@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Sebastien Erard <sebastien_erard@hotmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
