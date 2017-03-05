@@ -297,20 +297,14 @@ class HelpersDirectoryTests(unittest.TestCase):
         Test real_path
         """
         self.assertEqual(helpers.real_path('/usr/SickRage/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
-        self.assertEqual(helpers.real_path('C:\\Users\\..\\SickRage\\real\\path'), helpers.real_path('C:\\SickRage\\real\\path\\'))
 
     def test_is_subdirectory(self):
         """
         Test is_subdirectory
         """
         self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/Unpack', topdir_path='/usr/SickRage/Downloads'))
-        self.assertTrue(helpers.is_subdirectory(subdir_path='C:\\SickRage\\Downloads\\Unpack', topdir_path='C:\\SickRage\\Downloads'))
-
         self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/testfile.tst', topdir_path='/usr/SickRage/Downloads/'))
-        self.assertTrue(helpers.is_subdirectory(subdir_path='C:\\SickRage\\Downloads\\testfile.tst', topdir_path='C:\\SickRage\\Downloads\\'))
-
         self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickRage/Unpack', topdir_path='/usr/SickRage/Downloads'))
-        self.assertFalse(helpers.is_subdirectory(subdir_path='C:\\SickRage\\Unpack', topdir_path='C:\\SickRage\\Downloads'))
 
 class HelpersFileTests(unittest.TestCase):
     """
