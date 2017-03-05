@@ -2402,8 +2402,83 @@ var SICKRAGE = {
             });
 
             $('#srRoot').ajaxEpSearch({'colorRow': true});
-            $('#srRoot').ajaxEpSubtitlesSearch();
-            $('#srRoot').ajaxRetrySubtitlesSearch();
+
+            function enableLink(link) {
+                link.on('click.disabled', false);
+                link.prop('enableClick', '1');
+                link.fadeTo("fast", 1);
+            }
+
+            function disableLink(link) {
+                link.off('click.disabled');
+                link.prop('enableClick', '0');
+                link.fadeTo("fast", 0.5);
+            }
+
+            $('.epSubtitlesSearch').on("click", function() {
+                if ($(this).prop('enableClick') === '0') { return false; }
+                disableLink($(this));
+
+                var parent = $(this).parent();
+                var subtitlesTd = parent.siblings('.col-subtitles');
+
+                var icon = $(this).children('span');
+                icon.prop('class', 'loading-spinner16');
+                icon.prop('title', 'Searching');
+
+                $.getJSON($(this).attr('href'), function(data) {
+                    if (data.result.toLowerCase() !== "failure" && data.result.toLowerCase() !== "no subtitles downloaded") {
+                        // clear and update the subtitles column with new information
+                        var subtitles = data.subtitles.split(',');
+                        subtitlesTd.empty();
+                        $.each(subtitles, function(index, language) {
+                            if (language !== "") {
+                                subtitlesTd.append($("<img/>").attr({"src": srRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
+                            }
+                        });
+                        icon.prop('class', 'displayshow-icon-sub');
+                        enableLink($(this));
+                    } else {
+                        icon.prop('class', 'displayshow-icon-disable');
+                    }
+                    icon.prop('title', data.result);
+                });
+                return false;
+            });
+
+            $('.epRetrySubtitlesSearch').on('click', function() {
+                if ($(this).prop('enableClick') === '0') { return false; }
+
+                var selectedEpisode = $(this);
+                var subtitleModal = $("#confirmSubtitleDownloadModal");
+
+                $('#confirmSubtitleDownloadModal .btn.btn-success').on('click', function() {
+                    disableLink(selectedEpisode);
+                    subtitleModal.modal('hide');
+
+                    var img = selectedEpisode.children('img');
+                    img.hide();
+
+                    selectedEpisode.append($("<span/>").attr({"class": 'loading-spinner16', "title": "Searching"}));
+                    var icon = selectedEpisode.children('span');
+
+                    $.getJSON(selectedEpisode.prop('href'), function(data) {
+                        if (data.result.toLowerCase() === 'failure') {
+                            icon.prop('class', 'displayshow-icon-disable');
+                            icon.prop('title', 'Failed');
+                        } else {
+                            img.prop('title', 'Success');
+                            img.prop('alt', 'Success');
+                            icon.hide();
+                            img.show();
+                        }
+                    });
+                    enableLink(selectedEpisode);
+                    return false;
+                });
+                subtitleModal.modal('show');
+                return false;
+            });
 
             $('#seasonJump').on('change', function(){
                 var id = $('#seasonJump option:selected').val();
