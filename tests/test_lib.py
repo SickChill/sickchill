@@ -122,6 +122,7 @@ sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR
 sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
 sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8')
+sickbeard.GUI_NAME = 'slick'
 
 sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')
 sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash')
@@ -241,8 +242,9 @@ class TestDBConnection(db.DBConnection, object):
     """
 
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
-        db_file_name = os.path.join(TEST_DIR, filename)
-        super(TestDBConnection, self).__init__(db_file_name, suffix=suffix, row_type=row_type)
+        if TEST_DIR not in filename:
+            filename = os.path.join(TEST_DIR, filename)
+        super(TestDBConnection, self).__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
 class TestCacheDBConnection(TestDBConnection, object):
