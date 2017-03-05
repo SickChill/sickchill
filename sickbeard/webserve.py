@@ -4291,7 +4291,7 @@ class ConfigPostProcessing(Config):
             sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed."]
+            results += ["Unable to change unpack directory to " + ek(os.path.normpath, unpack_dir) + ", check the logs."]
 
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)

@@ -2197,7 +2197,7 @@ var SICKRAGE = {
                     4: function(node) { return $(node).find("span").text().toLowerCase(); },
                     5: function(node) { return $(node).find("span:first").text(); },
                     6: function(node) { return $(node).data('show-size'); },
-                    7: function(node) { return $(node).find("img").attr("alt"); }
+                    7: function(node) { return $(node).find("span").attr("title").toLowerCase(); }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
