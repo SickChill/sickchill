@@ -1087,12 +1087,26 @@ def is_hidden_folder(folder):
 
     return False
 
-
 def real_path(path):
     """
     Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
     """
     return ek(os.path.normpath, ek(os.path.normcase, ek(os.path.realpath, path)))
+
+def is_subdirectory(subdir_path, topdir_path):
+    """
+    Returns true if a subdir_path is a subdirectory of topdir_path
+    else otherwise.
+
+    :param subdir_path: The full path to the sub-directory
+    :param topdir_path: The full path to the top directory to check subdir_path against
+    """
+    topdir_path = real_path(topdir_path)
+    subdir_path = real_path(subdir_path)
+
+    # checks if the common prefix of both is equal to directory
+    # e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
+    return os.path.commonprefix([subdir_path, topdir_path]) == topdir_path
 
 
 def validateShow(show, season=None, episode=None):
