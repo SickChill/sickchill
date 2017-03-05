@@ -4280,8 +4280,7 @@ class ConfigPostProcessing(Config):
         config.change_process_automatically(process_automatically)
         sickbeard.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
-        sickbeard.UNRAR_TOOL= rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = unrar_tool
-        sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
+        config.change_unrar_tool(unrar_tool, alt_unrar_tool)
 
         unpack = try_int(unpack)
         if unpack == 1:
@@ -4432,24 +4431,9 @@ class ConfigPostProcessing(Config):
     @staticmethod
     def isRarSupported():
         """
-        Test Packing Support:
-            - Simulating in memory rar extraction on test.rar file
+        Test Unpacking Support: - checks if unrar is installed and accesible
         """
-        check = None
-        # noinspection PyBroadException
-        try:
-            # noinspection PyProtectedMember
-            check = rarfile._check_unrar_tool()
-        except Exception:
-            # noinspection PyBroadException
-            try:
-                if platform.system() in ('Windows', 'Microsoft') and ek(os.path.isfile, 'C:\\Program Files\\WinRar\\UnRar.exe'):
-                    sickbeard.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRar\\UnRar.exe'
-                    # noinspection PyProtectedMember
-                    check = rarfile._check_unrar_tool()
-            except Exception:
-                pass
-
+        check = config.change_unrar_tool(sickbeard.UNRAR_TOOL, sickbeard.ALT_UNRAR_TOOL)
         if not check:
             logger.log('Looks like unrar is not installed, check failed', logger.WARNING)
         return ('not supported', 'supported')[check]
