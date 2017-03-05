@@ -125,10 +125,9 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                 except (rarfile.RarCannotExec, rarfile.RarExecError):
                     logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
                     unrar_tool = "unrar.exe"
-                    if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", filename="unrar.exe"):
+                    if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
                         try:
-
-                            rarfile.custom_check("unrar.exe")
+                            rarfile.custom_check(unrar_tool)
                             sickbeard.UNRAR_TOOL = unrar_tool
                             rarfile.UNRAR_TOOL = unrar_tool
                             rarfile.ORIG_UNRAR_TOOL = unrar_tool
