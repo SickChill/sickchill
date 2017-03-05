@@ -114,7 +114,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         sickbeard.UNRAR_TOOL = unrar_tool
         rarfile.UNRAR_TOOL = unrar_tool
         rarfile.ORIG_UNRAR_TOOL = unrar_tool
-    except (rarfile.RarCannotExec, rarfile.RarExecError):
+    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if platform.system() == 'Windows':
             for unrar_tool in ('C:\\Program Files\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\WinRAR\\UnRAR.exe'):
                 try:
@@ -122,7 +122,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                     sickbeard.UNRAR_TOOL = unrar_tool
                     rarfile.UNRAR_TOOL = unrar_tool
                     rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                except (rarfile.RarCannotExec, rarfile.RarExecError):
+                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
                     logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
                     unrar_tool = "unrar.exe"
                     if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
@@ -131,7 +131,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                             sickbeard.UNRAR_TOOL = unrar_tool
                             rarfile.UNRAR_TOOL = unrar_tool
                             rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                        except (rarfile.RarCannotExec, rarfile.RarExecError):
+                        except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
                             logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
                             pass
 
@@ -139,13 +139,13 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         rarfile.custom_check(alt_unrar_tool)
         sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
         rarfile.ALT_TOOL = alt_unrar_tool
-    except (rarfile.RarCannotExec, rarfile.RarExecError):
+    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         pass
 
     # noinspection PyProtectedMember
     try:
         test = rarfile._check_unrar_tool()
-    except (rarfile.RarCannotExec, rarfile.RarExecError):
+    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         test = False
 
     if sickbeard.UNPACK and not test:
