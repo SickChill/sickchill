@@ -123,17 +123,19 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                     rarfile.UNRAR_TOOL = unrar_tool
                     rarfile.ORIG_UNRAR_TOOL = unrar_tool
                 except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
-                    unrar_tool = "unrar.exe"
-                    if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
-                        try:
-                            rarfile.custom_check(unrar_tool)
-                            sickbeard.UNRAR_TOOL = unrar_tool
-                            rarfile.UNRAR_TOOL = unrar_tool
-                            rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                        except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                            logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-                            pass
+                    pass
+                    # Either host an extracted unrar on sickrage.github.io, or add it to the source. unrarw32.exe is an installer
+                    # logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
+                    # unrar_tool = "unrar.exe"
+                    # if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
+                    #     try:
+                    #         rarfile.custom_check(unrar_tool)
+                    #         sickbeard.UNRAR_TOOL = unrar_tool
+                    #         rarfile.UNRAR_TOOL = unrar_tool
+                    #         rarfile.ORIG_UNRAR_TOOL = unrar_tool
+                    #     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    #         logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+                    #         pass
 
     try:
         rarfile.custom_check(alt_unrar_tool)
