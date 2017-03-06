@@ -2759,8 +2759,8 @@ class HomeAddShows(Home):
             configure_show_options=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
-            if not tvdb_id:
+            indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
+            if not indexer_id:
                 logger.log("Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(
                     "Unable to add {0}".format(show_name),
@@ -2768,9 +2768,9 @@ class HomeAddShows(Home):
                 )
                 return
 
-            indexer_id = try_int(tvdb_id, None)
+        indexer_id = try_int(indexer_id)
 
-        if Show.find(sickbeard.showList, int(indexer_id)):
+        if indexer_id <= 0 or Show.find(sickbeard.showList, indexer_id):
             return
 
         # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
@@ -2829,9 +2829,11 @@ class HomeAddShows(Home):
         show_dir = None
 
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir, int(default_status), quality, season_folders,
-                                                    indexer_lang, subtitles, anime, scene, None, blacklist, whitelist,
-                                                    int(default_status_after), root_dir=location)
+        sickbeard.showQueueScheduler.action.addShow(
+            indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
+            season_folders=season_folders, lang=indexer_lang, subtitles=subtitles, subtitles_sr_metadata=None,
+            anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
+            default_status_after=default_status_after, root_dir=location)
 
         ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
 
@@ -2947,9 +2949,11 @@ class HomeAddShows(Home):
         newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
 
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    season_folders, indexerLang, subtitles, subtitles_sr_metadata,
-                                                    anime, scene, None, blacklist, whitelist, int(defaultStatusAfter))
+        sickbeard.showQueueScheduler.action.addShow(
+            indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
+            season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
+            anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
+            default_status_after=int(defaultStatusAfter), root_dir=None)
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
         return finishAddShow()

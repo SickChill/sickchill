@@ -72,19 +72,18 @@ class ComingEpisodes(object):
         sql_l = []
         for show_obj in sickbeard.showList:
             next_air_date = show_obj.nextEpisode()
-            if next_air_date:
-                sql_l.append(
-                    [
-                        'SELECT DISTINCT {0} '.format(fields_to_select) +
-                        'FROM tv_episodes e, tv_shows s '
-                        'WHERE showid = ? '
-                        'AND airdate <= ? '
-                        'AND airdate >= ? '
-                        'AND s.indexer_id = e.showid '
-                        'AND e.status IN (' + ','.join(['?'] * 2) + ')',
-                        [show_obj.indexerid, next_air_date, recently, WANTED, UNAIRED]
-                    ]
-                )
+            sql_l.append(
+                [
+                    'SELECT DISTINCT {0} '.format(fields_to_select) +
+                    'FROM tv_episodes e, tv_shows s '
+                    'WHERE showid = ? '
+                    'AND airdate <= ? '
+                    'AND airdate >= ? '
+                    'AND s.indexer_id = e.showid '
+                    'AND e.status IN (' + ','.join(['?'] * 2) + ')',
+                    [show_obj.indexerid, (today, next_air_date)[bool(next_air_date)], recently, WANTED, UNAIRED]
+                ]
+            )
 
         results = []
         for sql_i in sql_l:
