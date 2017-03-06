@@ -2759,8 +2759,8 @@ class HomeAddShows(Home):
             configure_show_options=None):
 
         if indexer != "TVDB":
-            tvdb_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
-            if not tvdb_id:
+            indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
+            if not indexer_id:
                 logger.log("Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(
                     "Unable to add {0}".format(show_name),
@@ -2768,9 +2768,9 @@ class HomeAddShows(Home):
                 )
                 return
 
-            indexer_id = try_int(tvdb_id, -1)
+        indexer_id = try_int(indexer_id)
 
-        if indexer_id != '-1' and Show.find(sickbeard.showList, indexer_id):
+        if indexer_id <= 0 or Show.find(sickbeard.showList, indexer_id):
             return
 
         # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
