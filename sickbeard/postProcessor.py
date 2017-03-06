@@ -214,9 +214,10 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # Define associated files (all, allowed and non allowed)
             if ek(os.path.isfile, associated_file_path):
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
+                is_allowed_extension = associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(",")))
+                if sickbeard.MOVE_ASSOCIATED_FILES and is_allowed_extension:
                     file_path_list_to_allow.append(associated_file_path)
-                elif sickbeard.DELETE_NON_ASSOCIATED_FILES and not associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
+                elif sickbeard.DELETE_NON_ASSOCIATED_FILES and not is_allowed_extension:
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
