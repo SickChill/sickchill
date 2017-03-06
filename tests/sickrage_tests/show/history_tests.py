@@ -43,7 +43,7 @@ class HistoryTests(unittest.TestCase):
     """
     def test_get_actions(self):
         """
-        Test get actions
+        Tests whether or not the different kinds of actions an episode can have are returned correctly
         """
         test_cases = {
             None: [],
@@ -70,7 +70,7 @@ class HistoryTests(unittest.TestCase):
 
     def test_get_limit(self):
         """
-        Test get limit
+        Tests the static get limit method which should return the limit on the amount of elements that should be shown/returned
         """
         test_cases = {
             None: 0,
