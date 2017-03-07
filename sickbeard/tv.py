@@ -2446,14 +2446,16 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        logger.DEBUG)
             return
 
+        # get related files
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location, subfolders=True)
+            self.location, subfolders=True, rename=True)
 
-        # This is wrong. Cause of pp not moving subs.
+        # get related subs
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
+            # assume that the video file is in the subtitles dir to find associated subs
+            file_path = os.path.join(sickbeard.SUBTITLES_DIR, ek(os.path.basename, self.location))
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
-                sickbeard.SUBTITLES_DIR, subtitles_only=True, subfolders=True)
-            absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
+                file_path, subtitles_only=True, subfolders=True, rename=True)
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
 
