@@ -2872,34 +2872,36 @@ var SICKRAGE = {
         },
         restart: function(){
             var currentPid = srPID;
-            var checkIsAlive = setInterval(function() {
-                $.post(srRoot + '/home/is-alive/', function(data) {
-                    if (data === undefined || data.msg !== currentPid) {
+            var checkIsAlive = setTimeout(function () {
+                setInterval(function() {
+                    $.post(srRoot + '/home/is-alive/', function(data) {
+                        if (data === undefined || data.msg !== currentPid) {
+                            $('#restart_message').show();
+                            $('#shut_down_loading').hide();
+                            $('#shut_down_success').show();
+                        }
+                        if (data !== undefined && data.msg !== 'nope' && data.msg !== currentPid) {
+                            clearInterval(checkIsAlive);
+                            $('#restart_loading').hide();
+                            $('#restart_success').show();
+                            $('#refresh_message').show();
+                            srPID = currentPid = data.msg;
+                            checkIsAlive = setInterval(function() {
+                                $.post(srRoot + '/home/is-alive/', function() {
+                                    clearInterval(checkIsAlive);
+                                    setTimeout(function(){
+                                        window.location = srRoot + '/' + srDefaultPage + '/';
+                                    }, 2000);
+                                }, 'jsonp');
+                            }, 100);
+                        }
+                    }, 'jsonp').fail(function() {
                         $('#restart_message').show();
                         $('#shut_down_loading').hide();
                         $('#shut_down_success').show();
-                    }
-                    if (data !== undefined && data.msg !== 'nope' && data.msg !== currentPid) {
-                        clearInterval(checkIsAlive);
-                        $('#restart_loading').hide();
-                        $('#restart_success').show();
-                        $('#refresh_message').show();
-                        srPID = currentPid = data.msg;
-                        checkIsAlive = setInterval(function() {
-                            $.post(srRoot + '/home/is-alive/', function() {
-                                clearInterval(checkIsAlive);
-                                setTimeout(function(){
-                                    window.location = srRoot + '/' + srDefaultPage + '/';
-                                }, 2000);
-                            }, 'jsonp');
-                        }, 100);
-                    }
-                }, 'jsonp').fail(function() {
-                    $('#restart_message').show();
-                    $('#shut_down_loading').hide();
-                    $('#shut_down_success').show();
-                });
-            }, 100);
+                    });
+                }, 100);
+            }, 500);
         }
     },
     manage: {
