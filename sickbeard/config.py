@@ -116,7 +116,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         rarfile.ORIG_UNRAR_TOOL = unrar_tool
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if platform.system() == 'Windows':
-            for unrar_tool in ('C:\\Program Files\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\WinRAR\\UnRAR.exe'):
+            for unrar_tool in ('C:\\Program Files\\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\\WinRAR\\UnRAR.exe'):
                 try:
                     rarfile.custom_check(unrar_tool)
                     sickbeard.UNRAR_TOOL = unrar_tool
