@@ -48,7 +48,7 @@ class ShowTests(unittest.TestCase):
 
     def test_find(self):
         """
-        Test find
+        Test find tv shows by indexer_id
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 
@@ -94,7 +94,7 @@ class ShowTests(unittest.TestCase):
 
     def test_validate_indexer_id(self):
         """
-        Test validate indexer id
+        Tests if the indexer_id is valid and if so if it returns the right show
         """
         sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
 

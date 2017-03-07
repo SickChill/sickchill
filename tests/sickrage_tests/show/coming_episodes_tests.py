@@ -44,7 +44,7 @@ class ComingEpisodesTests(unittest.TestCase):
     """
     def test_get_categories(self):
         """
-        Test get categories
+        Tests if get_categories returns the valid format and the right values
         """
         categories_list = [
             None, [], ['A', 'B'], ['A', 'B'], '', 'A|B', 'A|B',
@@ -63,7 +63,7 @@ class ComingEpisodesTests(unittest.TestCase):
 
     def test_get_categories_map(self):
         """
-        Test get categories map
+        Tests if get_categories_map returns the valid format and the right values
         """
         categories_list = [
             None, [], ['A', 'B'], ['A', 'B']
@@ -82,7 +82,7 @@ class ComingEpisodesTests(unittest.TestCase):
 
     def test_get_sort(self):
         """
-        Test get sort
+        Tests if get_sort returns the right sort of coming episode
         """
         test_cases = {
             None: 'date',
