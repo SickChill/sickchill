@@ -771,10 +771,10 @@ class Home(WebRoot):
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
         if sickbeard.started:
-            return callback + '(' + json.dumps(
+            return (callback or '') + '(' + json.dumps(
                 {"msg": str(sickbeard.PID)}) + ');'
         else:
-            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+            return (callback or '') + '(' + json.dumps({"msg": "nope"}) + ');'
 
     @staticmethod
     def haveKODI():
