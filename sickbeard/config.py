@@ -116,26 +116,50 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         rarfile.ORIG_UNRAR_TOOL = unrar_tool
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if platform.system() == 'Windows':
+            # Look for WinRAR installations
+            unrar_tool_found = False
             for unrar_tool in ('C:\\Program Files\\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\\WinRAR\\UnRAR.exe'):
+                if ek(os.path.isfile, unrar_tool):
+                    unrar_tool_found = True
+                    break
+            # Can use it?
+            if unrar_tool_found:
                 try:
                     rarfile.custom_check(unrar_tool)
                     sickbeard.UNRAR_TOOL = unrar_tool
                     rarfile.UNRAR_TOOL = unrar_tool
                     rarfile.ORIG_UNRAR_TOOL = unrar_tool
                 except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    logger.log('Unrar not found at the path specified.')
+                    unrar_tool_found = False
                     pass
-                    # Either host an extracted unrar on sickrage.github.io, or add it to the source. unrarw32.exe is an installer
-                    # logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
-                    # unrar_tool = "unrar.exe"
-                    # if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
-                    #     try:
-                    #         rarfile.custom_check(unrar_tool)
-                    #         sickbeard.UNRAR_TOOL = unrar_tool
-                    #         rarfile.UNRAR_TOOL = unrar_tool
-                    #         rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                    #     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    #         logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-                    #         pass
+            # Download
+            if not unrar_tool_found:
+                logger.log('Trying to download unrar.exe and set the path')
+                unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar') # ./unrar (folder)
+                unrar_tool = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+
+                if (helpers.download_file("http://sickrage.github.io/unrar/unrar_win.zip",
+                                         filename=unrar_tool, session=helpers.make_session())
+                    and helpers.extractZip(archive=unrar_tool, targetDir=unrar_store)):
+                    try:
+                        ek(os.remove, unrar_tool)
+                    except OSError as e:
+                        logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_tool, e.strerror))
+                        pass
+
+                    unrar_tool = os.path.join(unrar_store, "unrar.exe")
+                    try:
+                        rarfile.custom_check(unrar_tool)
+                        sickbeard.UNRAR_TOOL = unrar_tool
+                        rarfile.UNRAR_TOOL = unrar_tool
+                        rarfile.ORIG_UNRAR_TOOL = unrar_tool
+                        logger.log('Successfully downloaded unrar.exe and set as unrar tool', )
+                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                        logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+                        pass
+                else:
+                    logger.log('Unable to download unrar.exe')
 
     try:
         rarfile.custom_check(alt_unrar_tool)
@@ -150,7 +174,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         test = False
 
-    if sickbeard.UNPACK and not test:
+    if sickbeard.UNPACK == 1 and not test:
         logger.log('Disabling UNPACK setting because no unrar is installed.')
         sickbeard.UNPACK = 0
 
