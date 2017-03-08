@@ -133,11 +133,14 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
             found = False
             winrar_path = 'WinRAR\\UnRAR.exe'
             # Make a set of unique paths to check from existing environment variables
-            for check in {
+            check_locations = {
                 os.path.join(location, winrar_path) for location in (
                     os.environ.get("ProgramFiles(x86)"), os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles")
                 ) if location
-            }:
+            }
+            check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+
+            for check in check_locations:
                 if ek(os.path.isfile, check):
                     # Can use it?
                     try:
