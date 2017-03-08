@@ -126,10 +126,6 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     **replacements), logger.WARNING)
 
         item = self.find_in_queue(directory, mode)
-
-        if not delete:
-            delete = (False, (not sickbeard.NO_DELETE, True)[method == u"move"])[mode == u"auto"]
-
         if item:
             if self.currentItem == item:
                 return log_helper(
