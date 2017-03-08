@@ -188,7 +188,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
             for found_file in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
-                file_name, file_extension = found_file.rpartition('.')[0, 3, 2]
+                file_name, file_extension = found_file.rpartition('.')[0:3:2]
 
                 # Handles subtitles with language code
                 if file_extension in SUBTITLE_EXTENSIONS and file_name.rpartition('.')[0].lower() == base_name.lower():
