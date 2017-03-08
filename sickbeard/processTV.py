@@ -325,6 +325,9 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
     :return: List of unpacked file names
     """
 
+    # TODO: Make this handle one rar at a time, and then loop through rars in process_dir,
+    # and process each one in process_dir just after extraction so we know whether to delete the rar or not when
+    # method == 'move'
     unpacked_dirs = []
 
     if sickbeard.UNPACK == 1 and rar_files:
