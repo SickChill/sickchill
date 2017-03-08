@@ -115,10 +115,19 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
 
     try:
         rarfile.custom_check(unrar_tool)
-        sickbeard.UNRAR_TOOL = unrar_tool
-        rarfile.UNRAR_TOOL = unrar_tool
-        rarfile.ORIG_UNRAR_TOOL = unrar_tool
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+        # Let's just return right now if the defaults work
+        try:
+            # noinspection PyProtectedMember
+            test = rarfile._check_unrar_tool()
+            if test:
+                # These must always be set to something before returning
+                sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL
+                sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL
+                return True
+        except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+            pass
+
         if platform.system() == 'Windows':
             # Look for WinRAR installations
             found = False
@@ -162,20 +171,9 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                 else:
                     logger.log('Unable to download unrar.exe')
 
-    try:
-        rarfile.custom_check(unrar_tool)
-        sickbeard.UNRAR_TOOL = unrar_tool
-        rarfile.UNRAR_TOOL = unrar_tool
-        rarfile.ORIG_UNRAR_TOOL = unrar_tool
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        pass
-
-    try:
-        rarfile.custom_check(alt_unrar_tool)
-        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
-        rarfile.ALT_TOOL = alt_unrar_tool
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        pass
+    # These must always be set to something before returning
+    sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = unrar_tool
+    sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
     try:
         # noinspection PyProtectedMember
