@@ -136,7 +136,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     :param process_path: The folder name to look in
     :param release_name: The NZB/Torrent name which resulted in this folder being downloaded
-    :param process_method: processing method, copy/move/symlink/link
+    :param process_method: processing method, move/copy/hardlink/symlink/symlink_reversed
     :param force: True to process previously processed files
     :param is_priority: whether to replace the file even if it exists at higher quality
     :param delete_on: delete files and folders after they are processed (always happens with move and auto combination)
@@ -239,7 +239,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
     :return: True if dir is valid for processing, False if not
     """
 
-    result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
+    result.output += log_helper("Validating folder " + process_path, logger.DEBUG)
 
     upper_name = ek(os.path.basename, process_path).upper()
     if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_'):

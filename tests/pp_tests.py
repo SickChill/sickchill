@@ -35,6 +35,7 @@ import sickbeard
 from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
 from sickbeard.postProcessor import PostProcessor
+from sickbeard import processTV
 from sickbeard.tv import TVEpisode, TVShow
 
 import tests.test_lib as test
@@ -158,6 +159,108 @@ class ListAssociatedFiles(unittest.TestCase):
         self.assertEqual(out_list, associated_files)
 
 
+class ProcessTVTests(unittest.TestCase):
+    """
+    Test processTV
+    """
+    def setUp(self):
+        os.makedirs('pp_tests/delete_me')
+        self.file_hello = os.path.join('pp_tests', "hello.txt")
+        with open(self.file_hello, "w") as file:
+            file.write("Hello World!")
+            file.close()
+        self.file_world = os.path.join('pp_tests/delete_me', "world.txt")
+        with open(self.file_world, "w") as file:
+            file.write("World, Hello!")
+            file.close()
+
+    def tearDown(self):
+        shutil.rmtree('pp_tests')
+
+    def test_delete_folder(self):
+        """
+        Test delete_folder
+        """
+        self.assertFalse(processTV.delete_folder(self.file_world))
+        self.assertFalse(processTV.delete_folder('pp_tests/delete_me'))
+        sickbeard.TV_DOWNLOAD_DIR = os.path.abspath('pp_tests/delete_me')
+        self.assertFalse(processTV.delete_folder('pp_tests/delete_me'))
+        sickbeard.TV_DOWNLOAD_DIR = ''
+        self.assertTrue(processTV.delete_folder('pp_tests/delete_me', False))
+        os.makedirs('pp_tests/delete_me')
+        self.assertTrue(processTV.delete_folder('pp_tests/delete_me'))
+
+    def test_delete_files(self):
+        """
+        Test delete_files
+        """
+        result = processTV.ProcessResult()
+        result.result = False
+
+        self.assertIsNone(processTV.delete_files('pp_tests/', ['somefile.txt'], result, force=False))
+        processTV.delete_files('pp_tests/', ['hello.txt'], result, force=True)
+        self.assertFalse(os.path.isfile(self.file_hello))
+
+        #TODO: Test chmod, OSError exceptions (?)
+
+    def test_log_helper(self):
+        """
+        Test log_helper
+        """
+        self.assertEqual(processTV.log_helper('Hello world!'), 'Hello world!\n')
+
+    @unittest.skip('Not yet implemented')
+    def test_process_dir(self):
+        """
+        Test process_dir
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_validate_dir(self):
+        """
+        Test validate_dir
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_unpack(self):
+        """
+        Test unpack
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_already_processed(self):
+        """
+        Test already_processed
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_process_failed(self):
+        """
+        Test process_failed
+        """
+        pass
+
+    @unittest.skip('Not yet implemented')
+    def test_process_media(self):
+        """
+        Test process_media
+        """
+        pass
+
+    def test_subtitles_enabled(self):
+        """
+        Test subtitles_enabled
+        """
+        self.assertFalse(processTV.subtitles_enabled('not a real show'))
+        # TODO: The next line fails.
+        #       Need to somehow force the functions to use the test database.
+        # self.assertTrue(processTV.subtitles_enabled('show.name.1x02.mkv'))
+
+
 if __name__ == '__main__':
     print("==================")
     print("STARTING - PostProcessor TESTS")
@@ -175,4 +278,9 @@ if __name__ == '__main__':
     print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ListAssociatedFiles)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    print("######################################################################")
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(ProcessTVTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
