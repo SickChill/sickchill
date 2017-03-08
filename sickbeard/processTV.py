@@ -215,17 +215,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if delete_folder(current_directory, check_empty=not delete_on):
             result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
-    # For processing extracted rars, only allow methods 'move' and 'copy'.
-    # On different methods fall back to 'move'.
-    method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
-
     # delete_on is always set to either sickbeard.DELRARCONTENTS or delete_on because all of these files are extracted files.
     # we don't need to delete the folder here if the delete_on is set correctly because it will be deleted in proc_dir on lines 215/215
+    # rar contents are always `move`
     for directory_from_rar in directories_from_rars:
         process_dir(
             process_path=directory_from_rar,
-            release_name=ek(os.path.basename, directory_from_rar),
-            process_method=method_fallback,
+            release_name=None,
+            process_method='move',
             force=force,
             is_priority=is_priority,
             delete_on=sickbeard.DELRARCONTENTS or delete_on,
