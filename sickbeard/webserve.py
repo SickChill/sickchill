@@ -4257,7 +4257,7 @@ class ConfigPostProcessing(Config):
     def savePostProcessing(self, kodi_data=None, kodi_12plus_data=None,
                            mediabrowser_data=None, sony_ps3_data=None,
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
-                           keep_processed_dir=None, process_method=None, processor_follow_symlinks=None,
+                           process_method=None, processor_follow_symlinks=None,
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None,
@@ -4298,7 +4298,6 @@ class ConfigPostProcessing(Config):
             results += ["Unable to change unpack directory to " + ek(os.path.normpath, unpack_dir) + ", check the logs."]
 
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
-        sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
         sickbeard.CREATE_MISSING_SHOW_DIRS = config.checkbox_to_value(create_missing_show_dirs)
         sickbeard.ADD_SHOWS_WO_DIR = config.checkbox_to_value(add_shows_wo_dir)
         sickbeard.PROCESS_METHOD = process_method

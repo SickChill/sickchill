@@ -219,7 +219,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 delete_on=self.delete,
                 failed=self.failed,
                 mode=self.mode
-            )
+            ).output
             logger.log("{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.directory))
 
             # give the CPU a break
