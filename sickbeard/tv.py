@@ -2448,14 +2448,14 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # get related files
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location, subfolders=True, rename=True)
+            self.location, subfolders=True)
 
         # get related subs
         if self.show.subtitles and sickbeard.SUBTITLES_DIR:
             # assume that the video file is in the subtitles dir to find associated subs
             subs_path = os.path.join(sickbeard.SUBTITLES_DIR, ek(os.path.basename, self.location))
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
-                subs_path, subtitles_only=True, subfolders=True, rename=True)
+                subs_path, subtitles_only=True, subfolders=True)
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
 

@@ -187,42 +187,36 @@
                             </div>
                         </div>
 
-                        <div class="field-pair row" id="content_move_associated_files">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Rename .nfo file')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(sickbeard.NFO_RENAME)]}/>
-                                <label for="nfo_rename">${_('rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Associated file extensions')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
-                                        <label for="allowed_extensions">${_('comma separated list of associated file extensions SickRage should keep while post processing.')}</label>
-                                    </div>
+                        <div id="content_move_associated_files">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                    <label class="component-title">${_('Associated file extensions')}</label>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="allowed_extensions">${_('leaving it empty means no associated files will be post processed')}</label>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <label for="allowed_extensions">${_('comma separated list of associated file extensions SickRage should keep while post processing.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="allowed_extensions">
+                                                ${_('leaving it empty means no associated files will be post processed into the show folder')}
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Delete non associated files')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="delete_non_associated_files" id="delete_non_associated_files" ${('', 'checked="checked"')[bool(sickbeard.DELETE_NON_ASSOCIATED_FILES)]}/>
-                                <label for="delete_non_associated_files">${_('delete non associated files while post processing?')}</label>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                    <label class="component-title">${_('Rename .nfo file')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(sickbeard.NFO_RENAME)]}/>
+                                    <label for="nfo_rename">${_('rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
+                                </div>
                             </div>
                         </div>
 

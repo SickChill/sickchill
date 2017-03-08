@@ -302,7 +302,6 @@ PROCESS_METHOD = None
 PROCESSOR_FOLLOW_SYMLINKS = False
 DELRARCONTENTS = False
 MOVE_ASSOCIATED_FILES = False
-DELETE_NON_ASSOCIATED_FILES = False
 POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
@@ -699,7 +698,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
-            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
+            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
@@ -1036,7 +1035,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROCESSOR_FOLLOW_SYMLINKS = check_setting_bool(CFG, 'General', 'processor_follow_symlinks')
         DELRARCONTENTS = check_setting_bool(CFG, 'General', 'del_rar_contents')
         MOVE_ASSOCIATED_FILES = check_setting_bool(CFG, 'General', 'move_associated_files')
-        DELETE_NON_ASSOCIATED_FILES = check_setting_bool(CFG, 'General', 'delete_non_associated_files', True)
         POSTPONE_IF_SYNC_FILES = check_setting_bool(CFG, 'General', 'postpone_if_sync_files', True)
         SYNC_FILES = check_setting_str(CFG, 'General', 'sync_files', SYNC_FILES)
         NFO_RENAME = check_setting_bool(CFG, 'General', 'nfo_rename', True)
@@ -1956,7 +1954,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'processor_follow_symlinks': int(PROCESSOR_FOLLOW_SYMLINKS),
             'del_rar_contents': int(DELRARCONTENTS),
             'move_associated_files': int(MOVE_ASSOCIATED_FILES),
-            'delete_non_associated_files': int(DELETE_NON_ASSOCIATED_FILES),
             'sync_files': SYNC_FILES,
             'postpone_if_sync_files': int(POSTPONE_IF_SYNC_FILES),
             'nfo_rename': int(NFO_RENAME),

@@ -145,8 +145,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-            self, file_path, subtitles_only=False, subfolders=False, rename=False):
+    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -166,8 +165,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if not file_path:
             return []
 
-        file_path_list_to_allow = []
-        file_path_list_to_delete = []
+        associated_files = []
 
         if subfolders:
             base_name = ek(os.path.basename, file_path).rpartition('.')[0]
@@ -176,7 +174,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # don't strip it all and use cwd by accident
         if not base_name:
-            return []
+            return associated_files
 
         dirname = ek(os.path.dirname, file_path) or '.'
 
@@ -190,7 +188,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
             for found_file in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
-                file_name, separator, file_extension = found_file.rpartition('.')
+                file_name, file_extension = found_file.rpartition('.')[0, 3, 2]
 
                 # Handles subtitles with language code
                 if file_extension in SUBTITLE_EXTENSIONS and file_name.rpartition('.')[0].lower() == base_name.lower():
@@ -204,11 +202,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
-            # If this is a rename in the show folder, we don't need to check anything, just add it to the list
-            if rename:
-                file_path_list_to_allow.append(associated_file_path)
-                continue
-
             # Exclude non-subtitle files with the 'subtitles_only' option
             if subtitles_only and not associated_file_path.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 continue
@@ -217,26 +210,16 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if helpers.is_rar_file(associated_file_path):
                 continue
 
-            # Define associated files (all, allowed and non allowed)
-            if ek(os.path.isfile, associated_file_path):
-                # check if allowed or not during post processing
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
-                    file_path_list_to_allow.append(associated_file_path)
-                elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
-                    file_path_list_to_delete.append(associated_file_path)
+            # Define associated files
+            if ek(os.path.isfile, associated_file_path) and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
+                associated_files.append(associated_file_path)
 
-        if file_path_list_to_allow or file_path_list_to_delete:
-            self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list_to_allow + file_path_list_to_delete), logger.DEBUG)
-            if file_path_list_to_delete:
-                self._log("Deleting non allowed associated files for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
-                # Delete all extensions the user doesn't allow
-                self._delete(file_path_list_to_delete)
-            if file_path_list_to_allow:
-                self._log("Allowing associated files for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
+        if associated_files:
+            self._log("Found the following associated files for {0}: {1}".format(file_path, associated_files), logger.DEBUG)
         else:
             self._log("No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 
-        return file_path_list_to_allow
+        return associated_files
 
     def _delete(self, file_path, associated_files=False):
         """
@@ -257,7 +240,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # figure out which files we want to delete
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path, subfolders=True)
+            file_list += self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
             self._log("There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)
@@ -304,9 +287,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         file_list = [file_path]
         subfolders = ek(os.path.normpath, ek(os.path.dirname, file_path)) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
-            file_list = file_list + self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:
             self._log("There were no files associated with " + file_path + ", not moving anything", logger.DEBUG)
@@ -1171,7 +1154,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "symlink_reversed":
                 self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                              sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
                 logger.log("Unknown process method: " + str(self.process_method), logger.ERROR)
                 raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
