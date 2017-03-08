@@ -175,7 +175,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         generator_to_use = [(process_path, [], [release_name])]
     else:
         result.output += log_helper("Processing {}".format(process_path), logger.INFO)
-        generator_to_use = ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS)
+        generator_to_use = ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS, topdown=False)
 
     for current_directory, directory_names, file_names in generator_to_use:
         result.result = True
