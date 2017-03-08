@@ -2368,12 +2368,18 @@ class HomePostProcess(Home):
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
+                       is_priority=None, delete_on=None, failed=None, proc_type="manual", force_next=None, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
         process_path = ss(kwargs.get('dir', proc_dir) or '')
         if not process_path:
             return self.redirect("/home/postprocess/")
+
+        force = config.checkbox_to_value(force)
+        is_priority = config.checkbox_to_value(is_priority)
+        delete_on = config.checkbox_to_value(delete_on)
+        force_next = config.checkbox_to_value(force_next)
+
 
         release_name = ss(nzbName) if nzbName else nzbName
 
