@@ -219,13 +219,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     # On different methods fall back to 'move'.
     method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
 
-    # auto post-processing deletes rar content by default if method is 'move',
-    # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
-    # manual post-processing will only delete when prompted by delete_on
-    delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
-                               not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
-                               mode == 'manual' and delete_on])
-
+    # delete_on is always set to either sickbeard.DELRARCONTENTS or delete_on because all of these files are extracted files.
+    # we don't need to delete the folder here if the delete_on is set correctly because it will be deleted in proc_dir on lines 215/215
     for directory_from_rar in directories_from_rars:
         process_dir(
             process_path=directory_from_rar,
@@ -233,15 +228,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             process_method=method_fallback,
             force=force,
             is_priority=is_priority,
-            delete_on=delete_rar_contents,
+            delete_on=sickbeard.DELRARCONTENTS or delete_on,
             failed=failed,
             mode=mode
         )
-
-        # Delete rar file only if the extracted dir was successfully processed
-        if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
-            this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
-            delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
