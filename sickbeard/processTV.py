@@ -176,15 +176,15 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         for rar_file in rar_files:
             result = unpack(current_directory, rar_file, force, result)
             if result.result and result.current_extracted_dir:
+                # process method for rar contents is either `move` or 'copy' (depends on sickbeard.DELRARCONTENTS's value)
                 # delete_on is always set to sickbeard.DELRARCONTENTS here because all of these files are extracted files.
-                # we don't need to delete the folder here if the delete_on is set correctly because it will be deleted in process_dir
-                # rar contents are always `move`
+                # we don't need to delete the folder here if the delete_on is set correctly, because it will be deleted in process_dir
                 # TODO: List files associated with the rar and pass them through to process_dir? Inner video filename may not match the rar release name
                 # And maybe only the video was rar'd?
                 result = process_dir(
                     process_path=result.current_extracted_dir,
                     release_name=None,
-                    process_method='move',
+                    process_method=('copy', 'move')[sickbeard.DELRARCONTENTS],
                     force=force,
                     is_priority=is_priority,
                     delete_on=sickbeard.DELRARCONTENTS,
@@ -209,7 +209,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             continue
 
         # noinspection PyTypeChecker
-        unwanted_files = filter(lambda x: x in video_files + rar_files + ['.stfolder'], file_names)
+        unwanted_files = filter(lambda x: x not in video_files + rar_files + ['.stfolder'], file_names)
         if unwanted_files:
             result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
