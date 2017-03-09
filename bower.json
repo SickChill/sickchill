@@ -19,13 +19,13 @@
     "underscore": "~1.8.3",
     "jqueryui-touch-punch": "*",
     "pnotify": "~2.1.0",
-    "qtip2": "~2.2.1",
+    "ng-qtip2": "~1.3.3",
     "tablesorter": "jquery.tablesorter#~2.28.4",
     "jquery-confirm": "~2.5.2",
     "bootstrap-formhelpers": "~2.3.0",
     "isotope": "~2.2.2",
     "openSans": "https://google-fonts.azurewebsites.net/googleFonts/openSans?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic",
-    "jquery-backstretch": "backstretch#^2.0.4"
+    "jquery-backstretch": "~2.1.15"
   },
   "resolutions": {
     "bootstrap": "~3.3.6",
