@@ -1290,28 +1290,34 @@ var SICKRAGE = {
                     'multi': example.multi,
                     'anime_type': example.animeType
                 }, function (data) {
+                    var info;
                     if (data === "invalid") {
+                        info = _('This pattern is invalid.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern is invalid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
+                        info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFFFDD');
                     } else {
+                        info = _('This pattern is valid.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern is valid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
                         $('#naming_pattern').qtip('toggle', false);
                         $('#naming_pattern').css('background-color', '#FFFFFF');
                     }
+                    $('#naming_pattern').attr('title', info);
+
                 });
             }
 
@@ -1334,28 +1340,33 @@ var SICKRAGE = {
                     'pattern': pattern,
                     'abd': 'True'
                 }, function (data) {
+                    var info;
                     if (data === "invalid") {
+                        info = _('This pattern is invalid.');
                         $('#naming_abd_pattern').qtip('option', {
-                            'content.text': 'This pattern is invalid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_abd_pattern').qtip('toggle', true);
                         $('#naming_abd_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
+                        info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_abd_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_abd_pattern').qtip('toggle', true);
                         $('#naming_abd_pattern').css('background-color', '#FFFFDD');
                     } else {
+                        info = _('This pattern is valid.');
                         $('#naming_abd_pattern').qtip('option', {
-                            'content.text': 'This pattern is valid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
                         $('#naming_abd_pattern').qtip('toggle', false);
                         $('#naming_abd_pattern').css('background-color', '#FFFFFF');
                     }
+                    $('#naming_abd_pattern').attr('title', info);
                 });
             }
 
@@ -1378,28 +1389,33 @@ var SICKRAGE = {
                     'pattern': pattern,
                     'sports': 'True' // @TODO does this actually need to be a string or can it be a boolean?
                 }, function (data) {
+                    var info;
                     if (data === "invalid") {
+                        info = _('This pattern is invalid.');
                         $('#naming_sports_pattern').qtip('option', {
-                            'content.text': 'This pattern is invalid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
                         $('#naming_sports_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
+                        info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_sports_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
                         $('#naming_sports_pattern').css('background-color', '#FFFFDD');
                     } else {
+                        info = _('This pattern is valid.');
                         $('#naming_sports_pattern').qtip('option', {
-                            'content.text': 'This pattern is valid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
                         $('#naming_sports_pattern').qtip('toggle', false);
                         $('#naming_sports_pattern').css('background-color', '#FFFFFF');
                     }
+                    $('#naming_sports_pattern').attr('title', info);
                 });
             }
 
@@ -1439,28 +1455,33 @@ var SICKRAGE = {
                     'multi': example.multi,
                     'anime_type': example.animeType
                 }, function (data) {
+                    var info;
                     if (data === "invalid") {
+                        info = _('This pattern is invalid.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern is invalid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFDDDD');
                     } else if (data === "seasonfolders") {
+                        info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFFFDD');
                     } else {
+                        info = _('This pattern is valid.');
                         $('#naming_pattern').qtip('option', {
-                            'content.text': 'This pattern is valid.',
+                            'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
                         $('#naming_pattern').qtip('toggle', false);
                         $('#naming_pattern').css('background-color', '#FFFFFF');
                     }
+                    $('#naming_pattern').attr('title', info);
                 });
             }
 
