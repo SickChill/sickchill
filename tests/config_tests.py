@@ -284,7 +284,7 @@ class ConfigTestChanges(unittest.TestCase):
         my_environ = mock.patch.dict(os.environ,
                                      {'ProgramFiles': 'C:\\Program Files (x86)\\'}, clear=True)
         with my_environ:
-             self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+            self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
 
         sickbeard.PROG_DIR = 'C:\\SickRage'
         my_environ = mock.patch.dict(os.environ,
