@@ -2136,6 +2136,8 @@ class Home(WebRoot):
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header("Content-Type", "application/json")
         return json.dumps({'episodes': episodes})
 
     @staticmethod
