@@ -107,7 +107,6 @@ class traktTrending(object):
         except (sickbeard.indexer_error, IOError) as e:
             logger.log("Unable to look up show on " + sickbeard.indexerApi(INDEXER_TVDB).name +
                        ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(INDEXER_TVDB).name), logger.DEBUG)
             return None
 
         if getattr(indexer_show_obj, 'poster', None):
