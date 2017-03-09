@@ -2489,7 +2489,7 @@ class HomeAddShows(Home):
             tmp = root_dirs[default_index]
             if tmp in root_dirs:
                 root_dirs.remove(tmp)
-                root_dirs = [tmp] + root_dirs
+                root_dirs.insert(0, tmp)
 
         dir_list = []
 

@@ -92,7 +92,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
-                query.update({"c%s"%i: 1 for i in self.categories})
+                query.update({"c"+str(i): 1 for i in self.categories})
 
                 data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
 

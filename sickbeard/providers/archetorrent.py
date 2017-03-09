@@ -97,7 +97,7 @@ class ArcheTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         # Search Params
         # c59=1&c73=1&c5=1&c41=1&c60=1&c66=1&c65=1&c67=1&c62=1&c64=1&c61=1&search=Good+Behavior+S01E01&cat=0&incldead=0&freeleech=0&lang=0
         search_params = {
-            'c5': '1', # Category: Series - DVDRip 
+            'c5': '1', # Category: Series - DVDRip
             'c41': '1', # Category: Series - HD
             'c60': '1', # Category: Series - Pack TV
             'c62': '1', # Category: Series - BDRip
@@ -119,11 +119,11 @@ class ArcheTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
-                logger.log('Search String: %s for mode %s' % (search_strings[mode], mode), logger.DEBUG)
+                logger.log('Search String: {0} for mode {1}'.format(search_strings[mode], mode), logger.DEBUG)
                 if mode != 'RSS':
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
-                
+
                 search_params['search'] = re.sub(r'[()]', '', search_string)
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
@@ -140,7 +140,7 @@ class ArcheTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     # Catégorie, Release, Date, DL, Size, C, S, L
                     labels = [label.get_text(strip=True) for label in torrent_rows[0]('th')]
-                    
+
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         cells = result('td')
