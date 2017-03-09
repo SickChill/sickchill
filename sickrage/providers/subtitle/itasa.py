@@ -93,7 +93,7 @@ class ItaSAProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __version__
+        self.session.headers['User-Agent'] = 'Subliminal/{}'.format(__version__)
 
         # login
         if self.username is not None and self.password is not None:
@@ -227,7 +227,7 @@ class ItaSAProvider(Provider):
         # attempt with country
         if not show_id and country_code:
             logger.debug('Getting show id with country')
-            show_id = show_ids.get('%s %s' % (series_sanitized, country_code.lower()))
+            show_id = show_ids.get('{0} {1}'.format(series_sanitized, country_code.lower()))
 
         # attempt clean
         if not show_id:
@@ -261,7 +261,7 @@ class ItaSAProvider(Provider):
         params = {
             'apikey': self.apikey,
             'show_id': show_id,
-            'q': 'Stagione %%%d' % season,
+            'q': 'Stagione %{}'.format(season),
             'version': sub_format
         }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
@@ -281,7 +281,7 @@ class ItaSAProvider(Provider):
 
         subs = []
         # Looking for subtitles in first page
-        season_re = re.compile('.*?stagione 0*?%d.*' % season)
+        season_re = re.compile('.*?stagione 0*?{}.*'.format(season))
         for subtitle in root.findall('data/subtitles/subtitle'):
             if season_re.match(subtitle.find('name').text.lower()):
                 logger.debug('Found season zip id %d - %r - %r',
@@ -294,7 +294,7 @@ class ItaSAProvider(Provider):
                     if 'limite di download' in content:
                         raise TooManyRequests()
                     else:
-                        raise ConfigurationError('Not a zip file: %r' % content)
+                        raise ConfigurationError('Not a zip file: {!r}'.format(content))
 
                 with ZipFile(io.BytesIO(content)) as zf:
                     episode_re = re.compile('s(\d{1,2})e(\d{1,2})')
@@ -361,7 +361,7 @@ class ItaSAProvider(Provider):
         params = {
             'apikey': self.apikey,
             'show_id': show_id,
-            'q': '%dx%02d' % (season, episode),
+            'q': '{0}x{1:02}'.format(season, episode),
             'version': sub_format
             }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
@@ -392,7 +392,7 @@ class ItaSAProvider(Provider):
 
         # Looking for subtitles in first page
         for subtitle in root.findall('data/subtitles/subtitle'):
-            if '%dx%02d' % (season, episode) in subtitle.find('name').text.lower():
+            if '{0}x{1:02}'.format(season, episode) in subtitle.find('name').text.lower():
 
                 logger.debug('Found subtitle id %d - %r - %r',
                              int(subtitle.find('id').text),
@@ -423,7 +423,7 @@ class ItaSAProvider(Provider):
 
             # Looking for show in following pages
             for subtitle in root.findall('data/subtitles/subtitle'):
-                if '%dx%02d' % (season, episode) in subtitle.find('name').text.lower():
+                if '{0}x{1:02}'.format(season, episode) in subtitle.find('name').text.lower():
 
                     logger.debug('Found subtitle id %d - %r - %r',
                                  int(subtitle.find('id').text),
@@ -454,7 +454,7 @@ class ItaSAProvider(Provider):
                 if 'limite di download' in content:
                     raise TooManyRequests()
                 else:
-                    raise ConfigurationError('Not a zip file: %r' % content)
+                    raise ConfigurationError('Not a zip file: {!r}'.format(content))
 
             with ZipFile(io.BytesIO(content)) as zf:
                 if len(zf.namelist()) > 1:   # pragma: no cover

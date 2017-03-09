@@ -313,10 +313,10 @@ class NameParser(object):
             # for sickbeard, so we'd need to flag it.
             new_season_numbers = list(set(new_season_numbers))  # remove duplicates
             if len(new_season_numbers) > 1:
-                raise InvalidNameException("Scene numbering results episodes from "
-                                           "seasons %s, (i.e. more than one) and "
-                                           "sickrage does not support this.  "
-                                           "Sorry." % (six.text_type(new_season_numbers)))
+                raise InvalidNameException(("Scene numbering results episodes from "
+                                            "seasons %s, (i.e. more than one) and "
+                                            "sickrage does not support this.  "
+                                            "Sorry.").format(six.text_type(new_season_numbers)))
 
             # I guess it's possible that we'd have duplicate episodes too, so lets
             # eliminate them

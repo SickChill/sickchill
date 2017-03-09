@@ -258,7 +258,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                             if len(torrent_rows) < 45:
                                 last_page = 1
 
-                            for result in torrent_rows[2:len(torrent_rows)-3]:
+                            for result in torrent_rows[2:-3]:
 
                                 try:
                                     link = result('td')[1].find('a')['href']
