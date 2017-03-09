@@ -24,7 +24,6 @@ import ast
 import datetime
 import gettext
 import os
-import rarfile
 import re
 import time
 import traceback
@@ -44,8 +43,6 @@ from mako.runtime import UNDEFINED
 from mimetypes import guess_type
 
 from operator import attrgetter
-
-import platform
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -78,6 +75,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 
 from sickbeard.webapi import function_mapper
 from sickbeard.imdbPopular import imdb_popular
+from sickbeard.traktTrending import trakt_trending
 from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.versionChecker import CheckVersion
 
@@ -2635,8 +2633,7 @@ class HomeAddShows(Home):
 
     def getTrendingShows(self, traktList=None):
         """
-        Display the new show page which collects a tvdb id, folder, and extra options and
-        posts them to addNewShow
+        Display the new show page which collects a tvdb id, folder, and extra options and posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="trendingShows.mako")
         if not traktList:
@@ -2666,60 +2663,13 @@ class HomeAddShows(Home):
             page_url = "shows/anticipated"
 
         trending_shows = []
-
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-
+        black_list = False
         try:
-            not_liked_show = ""
-            if sickbeard.TRAKT_ACCESS_TOKEN != '':
-                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
-                if sickbeard.TRAKT_BLACKLIST_NAME:
-                    not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
-                else:
-                    logger.log("Trakt blacklist name is empty", logger.DEBUG)
+            trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
+        except Exception as e:
+            logger.log("Could not get trending shows: {0}".format(ex(e)), logger.WARNING)
 
-            if traktList not in ["recommended", "newshow", "newseason"]:
-                limit_show = "?limit=" + str(100 + len(not_liked_show)) + "&"
-            else:
-                limit_show = "?"
-
-            shows = trakt_api.traktRequest(page_url + limit_show + "extended=full,images") or []
-
-            if sickbeard.TRAKT_ACCESS_TOKEN != '':
-                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
-
-            for show in shows:
-                try:
-                    if 'show' not in show:
-                        show['show'] = show
-
-                    if not Show.find(sickbeard.showList, [int(show['show']['ids']['tvdb'])]):
-                        if sickbeard.TRAKT_ACCESS_TOKEN != '':
-                            if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
-                                if not_liked_show:
-                                    if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
-                                        trending_shows += [show]
-                                else:
-                                    trending_shows += [show]
-                        else:
-                            if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
-                                    trending_shows += [show]
-                            else:
-                                trending_shows += [show]
-
-                except MultipleShowObjectsException:
-                    continue
-
-            if sickbeard.TRAKT_BLACKLIST_NAME != '':
-                blacklist = True
-            else:
-                blacklist = False
-
-        except traktException as e:
-            logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
-
-        return t.render(blacklist=blacklist, trending_shows=trending_shows)
+        return t.render(black_list=black_list, trending_shows=trending_shows)
 
     def popularShows(self):
         """
@@ -2731,7 +2681,7 @@ class HomeAddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
-            # print(traceback.format_exc())
+            logger.log("Could not get popular shows: {0}".format(ex(e)), logger.WARNING)
             popular_shows = None
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
