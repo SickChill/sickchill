@@ -72,14 +72,14 @@ class Notifier(object):
             try:
                 bus = dbus.SessionBus()
             except dbus.DBusException as e:
-                return ("<p>Error: unable to connect to D-Bus session bus: <code>%s</code>."
-                        "<p>Are you running SickRage in a desktop session?") % (cgi.escape(e),)
+                return ("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>."
+                        "<p>Are you running SickRage in a desktop session?").format(cgi.escape(e))
             try:
                 bus.get_object('org.freedesktop.Notifications',
                                '/org/freedesktop/Notifications')
             except dbus.DBusException as e:
-                return ("<p>Error: there doesn't seem to be a notification daemon available: <code>%s</code> "
-                        "<p>Try installing notification-daemon or notify-osd.") % (cgi.escape(e),)
+                return ("<p>Error: there doesn't seem to be a notification daemon available: <code>{}</code> "
+                        "<p>Try installing notification-daemon or notify-osd.").format(cgi.escape(e))
 
         return "<p>Error: Unable to send notification."
 

@@ -89,7 +89,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: %s" % mode, logger.DEBUG)
+            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % quote_plus(search_string)

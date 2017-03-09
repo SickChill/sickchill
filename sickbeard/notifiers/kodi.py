@@ -282,9 +282,9 @@ class Notifier(object):
         if showName:
             logger.log("Updating library in KODI via HTTP method for show " + showName, logger.DEBUG)
 
-            pathSql = 'select path.strPath from path, tvshow, tvshowlinkpath where ' \
-                      'tvshow.c00 = "%s" and tvshowlinkpath.idShow = tvshow.idShow ' \
-                      'and tvshowlinkpath.idPath = path.idPath' % showName
+            pathSql = ('select path.strPath from path, tvshow, tvshowlinkpath where '
+                      'tvshow.c00 = "{}" and tvshowlinkpath.idShow = tvshow.idShow '
+                      'and tvshowlinkpath.idPath = path.idPath').format(showName)
 
             # use this to get xml back for the path lookups
             xmlCommand = {

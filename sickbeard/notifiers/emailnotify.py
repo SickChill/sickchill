@@ -76,7 +76,7 @@ class Notifier(object):
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickRage Notification - Snatched</h3>'
-                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p><p>Quality: <b>{}</b></p>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
                         '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
                         'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], show[3]),
@@ -121,7 +121,7 @@ class Notifier(object):
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickRage Notification - Downloaded</h3>'
-                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p><p>Quality: <b>{}</b></p>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
                         '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
                         'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], show[3]),
@@ -166,8 +166,8 @@ class Notifier(object):
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickRage Notification - Subtitle Downloaded</h3>'
-                        '<p>Show: <b>{}</b></p><p>Episode Number: <b>{}</b></p><p>Episode: <b>{}</b></p></p>'
-                        '<p>Language: <b>{}</b></p>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>'
+                        '<p>Language: <b>{3}</b></p>'
                         '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
                         'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], lang),
