@@ -72,6 +72,7 @@ from configobj import ConfigObj  # pylint: disable=import-error
 from sickrage.helper.encoding import ek
 from sickrage.helper.argument_parser import SickRageArgumentParser
 
+# noinspection PyUnresolvedReferences
 from six.moves import reload_module
 
 

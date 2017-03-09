@@ -1607,19 +1607,20 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
-    if not (ek(os.path.exists, dest) or ek(os.path.exists, ek(os.path.dirname, dest))):
+    if not (ek(os.path.isdir, dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and ek(os.path.isdir, ek(os.path.dirname, dest)))):
         logger.log("A path is required for the destination. Check the root dir and show locations are correct for {0} (I got '{1}')".format(
             oldfile[0].name, dest), logger.WARNING)
         return False
 
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
-    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
+    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.isdir, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint:
+        # disable=no-member
         logger.log("Process method is 'move' and src and destination are on the same device, skipping free space check", logger.INFO)
         return True
 
     try:
-        disk_free = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
+        disk_free = disk_usage(dest if ek(os.path.isdir, dest) else ek(os.path.dirname, dest))
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)

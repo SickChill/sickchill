@@ -1658,7 +1658,6 @@ class Home(WebRoot):
                 logger.log(old_location + " != " + location, logger.DEBUG)  # pylint: disable=protected-access
                 if not (ek(os.path.isdir, location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
-
                 else:
                     # change it
                     try:
