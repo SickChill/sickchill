@@ -1593,7 +1593,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     Checks if the target system has enough free space to copy or move a file.
 
     :param src: Source filename
-    :param dest: Destination path
+    :param dest: Destination path (show dir in current usage)
     :param oldfile: File to be replaced (defaults to None)
     :return: True if there is enough space for the file, False if there isn't. Also returns True if the OS doesn't support this option
     """
@@ -1612,15 +1612,17 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
             oldfile[0].name, dest), logger.WARNING)
         return False
 
+    dest = (ek(os.path.dirname, dest), dest)[ek(os.path.isdir, dest)]
+
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
-    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.isdir, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint:
+    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest).st_dev:  # pylint:
         # disable=no-member
         logger.log("Process method is 'move' and src and destination are on the same device, skipping free space check", logger.INFO)
         return True
 
     try:
-        disk_free = disk_usage(dest if ek(os.path.isdir, dest) else ek(os.path.dirname, dest))
+        disk_free = disk_usage(dest)
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)
