@@ -20,6 +20,7 @@ Classes:
 Methods
     change_https_cert
     change_https_key
+    change_unrar_tool
     change_sickrage_background
     change_log_dir
     change_nzb_dir
@@ -55,6 +56,7 @@ import logging
 import os.path
 import sys
 import unittest
+import mock
 from collections import namedtuple
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
@@ -261,6 +263,24 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertTrue(config.change_https_key('server.key'))
         self.assertFalse(config.change_https_key('/:/server.key')) # INVALID
         sickbeard.HTTPS_KEY = ''
+
+    @mock.patch('platform.system', mock.MagicMock(return_value="Windows"))
+    @mock.patch('sickbeard.helpers.download_file', mock.MagicMock(return_value=True))
+    @mock.patch('sickbeard.helpers.extractZip', mock.MagicMock(return_value=True))
+    def test_change_unrar_tool(self):
+        """
+        Test change_unrar_tool
+        """
+        my_environ = mock.patch.dict(os.environ,
+                                     { 'ProgramFiles': 'C:\\Program Files (x86)\\',
+                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
+                                       'ProgramW6432': 'C:\\Program Files\\' }, clear=True)
+        with my_environ:
+            self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+
+        # with mock.patch.dict(os.environ, { 'ProgramFiles': '/C/Program Files/',
+        #                                    'ProgramFiles(x86)': '/C/Program Files (x86)/' }, clear=True):
+        #     self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
 
     def test_change_sickrage_background(self):
         """

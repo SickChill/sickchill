@@ -131,20 +131,17 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         if platform.system() == 'Windows':
             # Look for WinRAR installations
             found = False
-            install_paths = set()
+            winrar_path = 'WinRAR\\UnRAR.exe'
             # Make a set of unique paths to check from existing environment variables
-            if "ProgramW6432" in os.environ:  # it's simpler in Vista or newer
-                install_paths.update([os.environ["ProgramW6432"],  # Program Files
-                                      os.environ["ProgramFiles(x86)"]]),  # Program Files (x86)
-            else:
-                install_paths.add(os.environ["ProgramFiles"])  # Program Files / Program Files (x86)
-                if "ProgramFiles(x86)" in os.environ:  # is Windows 64 bit
-                    install_paths.update([os.environ["ProgramFiles(x86)"],  # Program Files (x86)
-                                          re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles(x86)"])])  # Program Files
-            install_paths = { os.path.join(location, 'WinRAR\\UnRAR.exe') for location in install_paths }
-            install_paths.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+            check_locations = {
+                os.path.join(location, winrar_path) for location in (
+                    os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
+                    os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
+                ) if location
+            }
+            check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
 
-            for check in install_paths:
+            for check in check_locations:
                 if ek(os.path.isfile, check):
                     # Can use it?
                     try:
