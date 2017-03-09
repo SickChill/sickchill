@@ -64,6 +64,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sickbeard import config, scheduler
 from configobj import ConfigObj
+from rarfile import RarExecError
 import sickbeard
 
 class ConfigTestBasic(unittest.TestCase):
@@ -271,16 +272,31 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_unrar_tool
         """
-        my_environ = mock.patch.dict(os.environ,
-                                     { 'ProgramFiles': 'C:\\Program Files (x86)\\',
-                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
-                                       'ProgramW6432': 'C:\\Program Files\\' }, clear=True)
-        with my_environ:
-            self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+        custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
+        custom_check_mock.new.side_effect = [RarExecError(), True]
 
-        # with mock.patch.dict(os.environ, { 'ProgramFiles': '/C/Program Files/',
-        #                                    'ProgramFiles(x86)': '/C/Program Files (x86)/' }, clear=True):
-        #     self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
+        with custom_check_mock,\
+              mock.patch('os.path.exists', mock.MagicMock(return_value=True)),\
+              mock.patch('os.path.getsize', mock.MagicMock(return_value=447440)),\
+              mock.patch('os.remove'):
+            self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
+
+        my_environ = mock.patch.dict(os.environ,
+                                     {'ProgramFiles': 'C:\\Program Files (x86)\\'}, clear=True)
+        with my_environ:
+             self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+
+        sickbeard.PROG_DIR = 'C:\\SickRage'
+        my_environ = mock.patch.dict(os.environ,
+                                     {'ProgramFiles': 'C:\\Program Files (x86)\\',
+                                      'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
+                                      'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
+        custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), True, True, True, True]
+        isfile_mock = mock.patch('os.path.isfile', mock.MagicMock())
+        isfile_mock.new.side_effect = [True, False, True]
+
+        with custom_check_mock, isfile_mock, my_environ:
+            self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
 
     def test_change_sickrage_background(self):
         """
