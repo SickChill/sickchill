@@ -2073,6 +2073,14 @@ class Home(WebRoot):
                 logger.log('No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.WARNING)
                 return results
 
+            # noinspection PyProtectedMember
+            def relative_ep_location(ep_loc, show_loc):
+                """ Returns the relative location compared to the show's location """
+                if ep_loc and show_loc and ep_loc.lower().startswith(show_loc.lower()):
+                    return ep_loc[len(show_loc) + 1:]
+                else:
+                    return ep_loc
+
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
                 results.append({
@@ -2084,7 +2092,7 @@ class Home(WebRoot):
                     'status': statusStrings[searchThread.segment.status],
                     'quality': self.getQualityClass(searchThread.segment),
                     'overview': Overview.overviewStrings[show_obj.getOverview(searchThread.segment.status)],
-                    'location': searchThread.segment._location,
+                    'location': relative_ep_location(searchThread.segment._location, show_obj._location),
                     'size': pretty_file_size(searchThread.segment.file_size) if searchThread.segment.file_size else ''
                 })
             else:
@@ -2099,7 +2107,7 @@ class Home(WebRoot):
                         'status': statusStrings[ep_obj.status],
                         'quality': self.getQualityClass(ep_obj),
                         'overview': Overview.overviewStrings[show_obj.getOverview(ep_obj.status)],
-                        'location': ep_obj._location,
+                        'location': relative_ep_location(ep_obj._location, show_obj._location),
                         'size': pretty_file_size(ep_obj.file_size) if ep_obj.file_size else ''
                     })
 
