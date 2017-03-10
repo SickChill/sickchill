@@ -56,12 +56,14 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
     IGNORED_FILESTRINGS = [".AppleDouble", ".DS_Store"]
 
-    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None):
+    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None, extra_assoc_files=None):
         """
         Creates a new post processor with the given file path and optionally an NZB name.
 
-        file_path: The path to the file to be processed
-        nzb_name: The name of the NZB which resulted in this file being downloaded (optional)
+        :param file_path: The path to the file to be processed
+        :param nzb_name: The name of the NZB which resulted in this file being downloaded (optional)
+        :param is_priority: Boolean, is this a priority download
+        :param extra_assoc_files: List of additional associated files to process
         """
         # absolute path to the folder that is being processed
         self.folder_path = ek(os.path.dirname, ek(os.path.abspath, file_path))
@@ -95,6 +97,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self.version = None
 
         self.anidbEpisode = None
+
+        self.extra_assoc_files = extra_assoc_files or []
 
     def _log(self, message, level=logger.INFO):
         """
@@ -240,7 +244,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # figure out which files we want to delete
         if associated_files:
-            file_list += self.list_associated_files(file_path, subfolders=True)
+            file_list += self.extra_assoc_files + self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
             self._log("There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)
@@ -287,8 +291,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         file_list = [file_path]
         subfolders = ek(os.path.normpath, ek(os.path.dirname, file_path)) != ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)
         if associated_files:
-            file_list += self.list_associated_files(file_path, subfolders=subfolders)
+            file_list += self.extra_assoc_files + self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
+            file_list += filter(lambda f: f.rpartition('.')[-1].lower() in SUBTITLE_EXTENSIONS, self.extra_assoc_files)
             file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:

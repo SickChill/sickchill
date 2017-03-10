@@ -382,18 +382,13 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Keep unprocessed files and folders')}</label>
+                                <label class="component-title">${_('Keep unprocessed folders')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="no_delete" id="no_delete" ${('', 'checked="checked"')[bool(sickbeard.NO_DELETE)]}/>
                                         <label for="no_delete">${_('Do not delete successfully processed folders if they still have files in them?')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('can be overridden using manual Post Processing')}</label>
                                     </div>
                                 </div>
                             </div>

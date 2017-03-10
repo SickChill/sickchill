@@ -2379,7 +2379,7 @@ class HomePostProcess(Home):
 
     def processEpisode(self, proc_dir=None, nzbName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, delete_on=None, failed=None, proc_type="manual", force_next=None, *args_, **kwargs):
-
+        # Don't remove param `delete_on`, nzbToMedia needs it
         mode = kwargs.get('type', proc_type)
         process_path = ss(kwargs.get('dir', proc_dir) or '')
         if not process_path:
@@ -2387,15 +2387,12 @@ class HomePostProcess(Home):
 
         force = config.checkbox_to_value(force)
         is_priority = config.checkbox_to_value(is_priority)
-        delete_on = config.checkbox_to_value(delete_on)
         force_next = config.checkbox_to_value(force_next)
-
-
         release_name = ss(nzbName) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
             process_path, release_name, method=process_method, force=force,
-            is_priority=is_priority, delete=delete_on, failed=failed, mode=mode,
+            is_priority=is_priority, failed=failed, mode=mode,
             force_next=force_next
         )
 

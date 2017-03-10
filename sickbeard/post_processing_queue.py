@@ -97,7 +97,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         return length
 
     def add_item(self, directory, filename=None, method=None, force=False, is_priority=None,
-                 delete=None, failed=False, mode="auto", force_next=False):
+                 failed=False, mode="auto", force_next=False):
         """
         Adds a processing task to the queue
         :param directory: directory to process
@@ -105,7 +105,6 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param method: processing method, copy/move/symlink/link
         :param force: force overwriting of existing files regardless of quality
         :param is_priority: whether to replace the file even if it exists at higher quality
-        :param delete: delete files and folders after they are processed (always happens with move and auto combination)
         :param failed: mark downloads as failed if they fail to process
         :param mode: processing type: auto/manual
         :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
@@ -127,11 +126,11 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 return log_helper(
                     "{directory} is already being processed right now, please wait until it completes before trying again".format(**replacements))
 
-            item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
+            item.set_params(directory, filename, method, force, is_priority, failed, mode)
             message = log_helper("A task for {directory} was already in the processing queue, updating the settings for that task".format(**replacements))
             return message + "<br\><span class='hidden'>Processing succeeded</span>"
         else:
-            item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
+            item = PostProcessorTask(directory, filename, method, force, is_priority, failed, mode)
             if force_next:
                 with self.lock:
                     item.run()  # Non threaded, but with queue lock
@@ -147,14 +146,13 @@ class PostProcessorTask(generic_queue.QueueItem):
     """
     Processing task
     """
-    def __init__(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
+    def __init__(self, directory, filename=None, method=None, force=False, is_priority=None, failed=False, mode="auto"):
         """
         :param directory: directory to process
         :param filename: release/nzb name if available
         :param method: processing method, copy/move/symlink/link
         :param force: force overwriting of existing files regardless of quality
         :param is_priority: whether to replace the file even if it exists at higher quality
-        :param delete: delete files and folders after they are processed (always happens with move and auto combination)
         :param failed: mark downloads as failed if they fail to process
         :param mode: processing type: auto/manual
         :return: None
@@ -166,7 +164,6 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.method = method
         self.force = config.checkbox_to_value(force)
         self.is_priority = config.checkbox_to_value(is_priority)
-        self.delete = config.checkbox_to_value(delete)
         self.failed = config.checkbox_to_value(failed)
         self.mode = mode
 
@@ -174,7 +171,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         self.last_result = None
 
-    def set_params(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
+    def set_params(self, directory, filename=None, method=None, force=False, is_priority=None, failed=False, mode="auto"):
         """
         Adjust settings for a task that is already in the queue
         :param directory: directory to process
@@ -182,7 +179,6 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param method: processing method, copy/move/symlink/link
         :param force: force overwriting of existing files regardless of quality
         :param is_priority: whether to replace the file even if it exists at higher quality
-        :param delete: delete files and folders after they are processed (always happens with move and auto combination)
         :param failed: mark downloads as failed if they fail to process
         :param mode: processing type: auto/manual
         :return: None
@@ -192,7 +188,6 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.method = method
         self.force = config.checkbox_to_value(force)
         self.is_priority = config.checkbox_to_value(is_priority)
-        self.delete = config.checkbox_to_value(delete)
         self.failed = config.checkbox_to_value(failed)
         self.mode = mode
 
@@ -212,7 +207,6 @@ class PostProcessorTask(generic_queue.QueueItem):
                 process_method=self.method,
                 force=self.force,
                 is_priority=self.is_priority,
-                delete_on=self.delete,
                 failed=self.failed,
                 mode=self.mode
             ).output

@@ -52,15 +52,6 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <b class="pull-lg-right pull-md-right pull-sm-right">${_('Delete files and folders')}</b>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input id="delete_on" name="delete_on" type="checkbox">
-                        <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to delete files and folders like auto processing)')}</i></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Don\'t use processing queue')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
@@ -79,7 +70,7 @@
                     </div>
                 % endif
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12 text-center">
                         <input id="submit" class="btn" type="submit" value="${_('Process')}" />
                     </div>
                 </div>

@@ -24,6 +24,7 @@ import os
 import shutil
 import stat
 
+from re import match
 from rarfile import RarFile, RarWarning, RarFatalError, RarCRCError, NoRarEntry, NotRarFile, \
     RarLockedArchiveError, RarWriteError, RarOpenError, RarUserError, RarMemoryError, BadRarName, BadRarFile, \
     RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
@@ -35,6 +36,7 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException, ex
+from postProcessor import PostProcessor
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods
@@ -130,18 +132,21 @@ def log_helper(message, level=logger.INFO):
 
 
 # pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
-def process_dir(process_path, release_name=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, mode="auto", result=None):
+def process_dir(process_path, release_name=None, process_method=None, force=False, is_priority=None, failed=False,
+                mode="auto", assoc_files=None, result=None):
     """
     Scans through the files in process_path and processes whatever media files it finds
 
+
     :param process_path: The folder name to look in
     :param release_name: The NZB/Torrent name which resulted in this folder being downloaded
-    :param process_method: processing method, move/copy/hardlink/symlink/symlink_reversed
+    :param process_method: Processing method, move/copy/hardlink/symlink/symlink_reversed
     :param force: True to process previously processed files
-    :param is_priority: whether to replace the file even if it exists at higher quality
-    :param delete_on: delete files and folders after they are processed (always happens with move and auto combination)
+    :param is_priority: Whether to replace the file even if it exists at higher quality
     :param failed: Boolean for whether or not the download failed
     :param mode: Type of postprocessing auto or manual
+    :param assoc_files: List of additional associated files to process
+    :param result: Current ProcessResult()
     """
 
     result = result or ProcessResult()
@@ -176,47 +181,53 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         for rar_file in rar_files:
             result = unpack(current_directory, rar_file, force, result)
             if result.result and result.current_extracted_dir:
-                # process method for rar contents is either `move` or 'copy' (depends on sickbeard.DELRARCONTENTS's value)
-                # delete_on is always set to sickbeard.DELRARCONTENTS here because all of these files are extracted files.
-                # we don't need to delete the folder here if the delete_on is set correctly, because it will be deleted in process_dir
                 # TODO: List files associated with the rar and pass them through to process_dir? Inner video filename may not match the rar release name
                 # And maybe only the video was rar'd?
+                # FIXME: Passing current directories associated files for rar_file is still not working perfectly.
+
+                # `process_method` determines if the rar contents should be deleted
+                # rar contents is always deleted when process_method is `move`
+                rar_full_path = ek(os.path.join, current_directory, rar_file)
                 result = process_dir(
                     process_path=result.current_extracted_dir,
                     release_name=None,
-                    process_method=('copy', 'move')[sickbeard.DELRARCONTENTS],
+                    process_method=('copy', 'move')[sickbeard.DELRARCONTENTS or process_method == 'move'],
                     force=force,
                     is_priority=is_priority,
-                    delete_on=sickbeard.DELRARCONTENTS,
                     failed=failed,
                     mode=mode,
+                    assoc_files=PostProcessor(rar_full_path, rar_file).list_associated_files(rar_full_path),
                     result=result
                 )
-                if process_method == 'move':
-                    delete_files(current_directory, [rar_file], result)
+                if result.result and process_method == 'move':
+                    # delete rar file and r00-r999 files (rar parts)
+                    delete_files(current_directory, [rar_file] + [f for f in os.listdir(current_directory)
+                                                   if match(r'r\d{2,3}', f.rpartition('.')[-1].lower())], result)
 
         if not validate_dir(current_directory, release_name, failed, result):
             continue
 
         video_files = filter(helpers.is_media_file, file_names)
         if video_files:
-            process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+            process_media(current_directory, video_files, release_name, process_method, force, is_priority, assoc_files, result)
         else:
             result.result = False
 
         # Delete all file not needed and avoid deleting files if Manual PostProcessing
-        if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
+        if not(process_method == "move" and result.result):
             continue
 
-        # noinspection PyTypeChecker
-        unwanted_files = filter(lambda x: x not in video_files + rar_files + ['.stfolder'], file_names)
+        unwanted_files = [f for f in os.listdir(current_directory)
+                          if not(helpers.is_media_file(f)
+                                 or helpers.is_rar_file(ek(os.path.join, current_directory, f))
+                                 or '.stfolder')]
         if unwanted_files:
             result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
         delete_folder(ek(os.path.join, current_directory, '@eaDir'), False)
         delete_files(current_directory, unwanted_files, result)
 
-        if delete_folder(current_directory, check_empty=(sickbeard.NO_DELETE, delete_on)[sickbeard.NO_DELETE]):
+        if delete_folder(current_directory, check_empty=sickbeard.NO_DELETE):
             result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
@@ -438,7 +449,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     return False
 
 
-def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
+def process_media(process_path, video_files, release_name, process_method, force, is_priority, assoc_files, result):  # pylint: disable=too-many-arguments
     """
     Postprocess mediafiles
 
@@ -448,6 +459,7 @@ def process_media(process_path, video_files, release_name, process_method, force
     :param process_method: auto/manual
     :param force: Postprocess currently postprocessing file
     :param is_priority: Boolean, is this a priority download
+    :param assoc_files: List of additional associated files to process
     :param result: Previous results
     """
 
@@ -460,7 +472,7 @@ def process_media(process_path, video_files, release_name, process_method, force
             continue
 
         try:
-            processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
+            processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority, assoc_files)
             result.result = processor.process()
             process_fail_message = ""
         except EpisodePostProcessingFailedException as e:
