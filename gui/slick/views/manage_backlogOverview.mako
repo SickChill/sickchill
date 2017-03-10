@@ -13,7 +13,7 @@
                 showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
                 totalWanted = totalQual = totalQualSnatched = 0
-                backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.name)
+                backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
                 for curShow in backLogShows:
                     totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
                     totalQual += showCounts[curShow.indexerid][Overview.QUAL]

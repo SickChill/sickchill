@@ -4,8 +4,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         clean: {
             dist: './dist/',
-            bower_components: './bower_components', // jshint ignore:line
-            fonts: '../gui/slick/css/*.ttf',
+            'bower_components': './bower_components',
+            fonts: './gui/slick/css/*.ttf',
             options: {
                 force: true
             }
@@ -64,7 +64,7 @@ module.exports = function(grunt) {
                     src: [
                         '*.ttf'
                     ],
-                    dest: '../gui/slick/css/'
+                    dest: './gui/slick/css/'
                 }]
             },
             glyphicon: {
@@ -79,19 +79,19 @@ module.exports = function(grunt) {
                         '*.woff',
                         '*.woff2'
                     ],
-                    dest: '../gui/slick/fonts/'
+                    dest: './gui/slick/fonts/'
                 }]
             }
         },
         uglify: {
             bower: {
                 files: {
-                    '../gui/slick/js/vender.min.js': ['./dist/bower.js']
+                    './gui/slick/js/vender.min.js': ['./dist/bower.js']
                 }
             },
             core: {
                 files: {
-                    '../gui/slick/js/core.min.js': ['../gui/slick/js/core.js']
+                    './gui/slick/js/core.min.js': ['./gui/slick/js/core.js']
                 }
             }
         },
@@ -101,7 +101,7 @@ module.exports = function(grunt) {
             },
             core: {
                 files: {
-                    './dist/core.css': ['../gui/slick/scss/core.scss']
+                    './dist/core.css': ['./gui/slick/scss/core.scss']
                 }
             }
         },
@@ -112,24 +112,24 @@ module.exports = function(grunt) {
             },
             bower: {
                 files: {
-                    '../gui/slick/css/vender.min.css': ['./dist/bower.css']
+                    './gui/slick/css/vender.min.css': ['./dist/bower.css']
                 }
             },
             core: {
                 files: {
-                    '../gui/slick/css/core.min.css': ['./dist/core.css']
+                    './gui/slick/css/core.min.css': ['./dist/core.css']
                 }
             }
         },
         jshint: {
             options: {
-                jshintrc: '../.jshintrc'
+                jshintrc: './.jshintrc'
             },
             all: [
-                '../gui/slick/js/**/*.js',
-                '!../gui/slick/js/lib/**/*.js',
-                '!../gui/slick/js/ajaxNotifications.js',
-                '!../gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
+                './gui/slick/js/**/*.js',
+                '!./gui/slick/js/lib/**/*.js',
+                '!./gui/slick/js/ajaxNotifications.js',
+                '!./gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
             ]
         },
         mocha: {

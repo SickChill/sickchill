@@ -66,8 +66,7 @@ from configobj import ConfigObj
 
 import requests
 
-import six
-
+from tornado.locale import load_gettext_translations
 
 gettext.install('messages', unicode=1, codeset='UTF-8')
 
@@ -860,10 +859,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
+
         if GUI_LANG:
             gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
         else:
             gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8')
+
+        load_gettext_translations(LOCALE_DIR, 'messages')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
