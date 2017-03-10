@@ -457,7 +457,6 @@ def change_version_notify(version_notify):
     :param version_notify: New desired state
     """
     version_notify = checkbox_to_value(version_notify)
-	
     try:
         if sickbeard.VERSION_NOTIFY == version_notify:
             return True
@@ -488,7 +487,6 @@ def change_download_propers(download_propers):
     :param download_propers: New desired state
     """
     download_propers = checkbox_to_value(download_propers)
-
     try:
         if sickbeard.DOWNLOAD_PROPERS == download_propers:
             return True
@@ -519,7 +517,6 @@ def change_use_trakt(use_trakt):
     :param use_trakt: New desired state
     """
     use_trakt = checkbox_to_value(use_trakt)
-
     try:
         if sickbeard.USE_TRAKT == use_trakt:
             return True
@@ -550,9 +547,8 @@ def change_use_subtitles(use_subtitles):
 
     :param use_subtitles: New desired state
     """
-    
+    use_subtitles = checkbox_to_value(use_subtitles)
     try:
-        use_subtitles = checkbox_to_value(use_subtitles)
         if sickbeard.USE_SUBTITLES == use_subtitles:
             return True
 
@@ -581,10 +577,8 @@ def change_process_automatically(process_automatically):
 
     :param process_automatically: New desired state
     """
-    
+    process_automatically = checkbox_to_value(process_automatically)
     try:
-        process_automatically = checkbox_to_value(process_automatically)
-
         if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
             return True
 
