@@ -106,53 +106,88 @@ def change_https_key(https_key):
 
 
 def change_unrar_tool(unrar_tool, alt_unrar_tool):
-    unrar_tool = unrar_tool or sickbeard.UNRAR_TOOL or rarfile.UNRAR_TOOL or rarfile.ORIG_UNRAR_TOOL
-    alt_unrar_tool = alt_unrar_tool or sickbeard.ALT_TOOL or rarfile.ALT_TOOL
+
+    # Check for failed unrar attempt, and remove it
+    # Must be done before unrar is ever called or the self-extractor opens and locks startup
+    bad_unrar = os.path.join(sickbeard.DATA_DIR, 'unrar.exe')
+    if os.path.exists(bad_unrar) and os.path.getsize(bad_unrar) == 447440:
+        os.remove(bad_unrar)
 
     try:
         rarfile.custom_check(unrar_tool)
-        sickbeard.UNRAR_TOOL = unrar_tool
-        rarfile.UNRAR_TOOL = unrar_tool
-        rarfile.ORIG_UNRAR_TOOL = unrar_tool
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+        # Let's just return right now if the defaults work
+        try:
+            # noinspection PyProtectedMember
+            test = rarfile._check_unrar_tool()
+            if test:
+                # These must always be set to something before returning
+                sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL
+                sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL
+                return True
+        except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+            pass
+
         if platform.system() == 'Windows':
-            for unrar_tool in ('C:\\Program Files\WinRAR\\UnRAR.exe', 'C:\\Program Files (x86)\WinRAR\\UnRAR.exe'):
-                try:
-                    rarfile.custom_check(unrar_tool)
-                    sickbeard.UNRAR_TOOL = unrar_tool
-                    rarfile.UNRAR_TOOL = unrar_tool
-                    rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    pass
-                    # Either host an extracted unrar on sickrage.github.io, or add it to the source. unrarw32.exe is an installer
-                    # logger.log('Unrar not found at the path specified. Trying to download unrar and set the path')
-                    # unrar_tool = "unrar.exe"
-                    # if helpers.download_file("http://www.rarlab.com/rar/unrarw32.exe", session=helpers.make_session(), filename=unrar_tool):
-                    #     try:
-                    #         rarfile.custom_check(unrar_tool)
-                    #         sickbeard.UNRAR_TOOL = unrar_tool
-                    #         rarfile.UNRAR_TOOL = unrar_tool
-                    #         rarfile.ORIG_UNRAR_TOOL = unrar_tool
-                    #     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    #         logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-                    #         pass
+            # Look for WinRAR installations
+            found = False
+            winrar_path = 'WinRAR\\UnRAR.exe'
+            # Make a set of unique paths to check from existing environment variables
+            check_locations = {
+                os.path.join(location, winrar_path) for location in (
+                    os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
+                    os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
+                ) if location
+            }
+            check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+
+            for check in check_locations:
+                if ek(os.path.isfile, check):
+                    # Can use it?
+                    try:
+                        rarfile.custom_check(check)
+                        unrar_tool = check
+                        found = True
+                        break
+                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                        found = False
+
+            # Download
+            if not found:
+                logger.log('Trying to download unrar.exe and set the path')
+                unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
+                unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+
+                if (helpers.download_file(
+                    "http://sickrage.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+                ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
+                    try:
+                        ek(os.remove, unrar_zip)
+                    except OSError as e:
+                        logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+
+                    check = os.path.join(unrar_store, "unrar.exe")
+                    try:
+                        rarfile.custom_check(check)
+                        unrar_tool = check
+                        logger.log('Successfully downloaded unrar.exe and set as unrar tool', )
+                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                        logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+                else:
+                    logger.log('Unable to download unrar.exe')
+
+    # These must always be set to something before returning
+    sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = unrar_tool
+    sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
     try:
-        rarfile.custom_check(alt_unrar_tool)
-        sickbeard.ALT_UNRAR_TOOL = alt_unrar_tool
-        rarfile.ALT_TOOL = alt_unrar_tool
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        pass
-
-    # noinspection PyProtectedMember
-    try:
+        # noinspection PyProtectedMember
         test = rarfile._check_unrar_tool()
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+        if sickbeard.UNPACK == 1:
+            logger.log('Disabling UNPACK setting because no unrar is installed.')
+            sickbeard.UNPACK = 0
         test = False
-
-    if sickbeard.UNPACK and not test:
-        logger.log('Disabling UNPACK setting because no unrar is installed.')
-        sickbeard.UNPACK = 0
 
     return test
 
@@ -278,7 +313,7 @@ def change_unpack_dir(unpack_dir):
 
     if ek(os.path.normpath, sickbeard.UNPACK_DIR) != ek(os.path.normpath, unpack_dir):
         if bool(sickbeard.ROOT_DIRS) and \
-            any(map(lambda rd: helpers.is_subdirectory(unpack_dir, rd), sickbeard.ROOT_DIRS.split('|')[1:])):
+                any(map(lambda rd: helpers.is_subdirectory(unpack_dir, rd), sickbeard.ROOT_DIRS.split('|')[1:])):
             # don't change if it's in any of the TV root directories
             logger.log("Unable to change unpack directory to a sub-directory of a TV root dir")
             return False
@@ -296,16 +331,22 @@ def change_unpack_dir(unpack_dir):
 def change_postprocessor_frequency(freq):
     """
     Change frequency of automatic postprocessing thread
-    TODO: Make all thread frequency changers in config.py return True/False status
 
     :param freq: New frequency
     """
-    sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
+    try:
+        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
 
-    if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
-        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
+        if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
+            sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
-    sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+        sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+        return True
+    
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_daily_search_frequency(freq):
@@ -314,12 +355,19 @@ def change_daily_search_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
+    try:
+        sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
 
-    if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
-        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
+        if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
+            sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
 
-    sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+        sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+        return True
+    
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_backlog_frequency(freq):
@@ -328,13 +376,20 @@ def change_backlog_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
+    try:
+        sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
 
-    sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
-    if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
-        sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
+        sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
+        if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
+            sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
 
-    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+        sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+        return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_update_frequency(freq):
@@ -343,12 +398,19 @@ def change_update_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
+    try:
+        sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
 
-    if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
-        sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
+        if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
+            sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
-    sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+        sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+        return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_showupdate_hour(freq):
@@ -357,15 +419,21 @@ def change_showupdate_hour(freq):
 
     :param freq: New frequency
     """
-    sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
+    try:
+        sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
 
-    if sickbeard.SHOWUPDATE_HOUR > 23:
-        sickbeard.SHOWUPDATE_HOUR = 0
-    elif sickbeard.SHOWUPDATE_HOUR < 0:
-        sickbeard.SHOWUPDATE_HOUR = 0
+        if sickbeard.SHOWUPDATE_HOUR > 23:
+            sickbeard.SHOWUPDATE_HOUR = 0
+        elif sickbeard.SHOWUPDATE_HOUR < 0:
+            sickbeard.SHOWUPDATE_HOUR = 0
 
-    sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+        sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+        return True
 
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
     """
@@ -373,130 +441,174 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
 
     :param subtitles_finder_frequency: New frequency
     """
-    if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
-        subtitles_finder_frequency = 1
+    try:
+        if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
+            subtitles_finder_frequency = 1
 
-    sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
+        sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
+        return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_version_notify(version_notify):
     """
     Enable/Disable versioncheck thread
-    TODO: Make this return True/False on success/failure
 
     :param version_notify: New desired state
     """
     version_notify = checkbox_to_value(version_notify)
+	
+    try:
+        if sickbeard.VERSION_NOTIFY == version_notify:
+            return True
 
-    if sickbeard.VERSION_NOTIFY == version_notify:
-        return
-
-    sickbeard.VERSION_NOTIFY = version_notify
-    if sickbeard.VERSION_NOTIFY:
-        if not sickbeard.versionCheckScheduler.enable:
-            logger.log("Starting VERSIONCHECK thread", logger.INFO)
-            sickbeard.versionCheckScheduler.silent = False
-            sickbeard.versionCheckScheduler.enable = True
-            sickbeard.versionCheckScheduler.forceRun()
-    else:
-        sickbeard.versionCheckScheduler.enable = False
-        sickbeard.versionCheckScheduler.silent = True
-        logger.log("Stopping VERSIONCHECK thread", logger.INFO)
+        sickbeard.VERSION_NOTIFY = version_notify
+        if sickbeard.VERSION_NOTIFY:
+            if not sickbeard.versionCheckScheduler.enable:
+                logger.log("Starting VERSIONCHECK thread", logger.INFO)
+                sickbeard.versionCheckScheduler.silent = False
+                sickbeard.versionCheckScheduler.enable = True
+                sickbeard.versionCheckScheduler.forceRun()
+                return True
+        else:
+            sickbeard.versionCheckScheduler.enable = False
+            sickbeard.versionCheckScheduler.silent = True
+            logger.log("Stopping VERSIONCHECK thread", logger.INFO)
+            return True
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_download_propers(download_propers):
     """
     Enable/Disable proper download thread
-    TODO: Make this return True/False on success/failure
 
     :param download_propers: New desired state
     """
     download_propers = checkbox_to_value(download_propers)
 
-    if sickbeard.DOWNLOAD_PROPERS == download_propers:
-        return
+    try:
+        if sickbeard.DOWNLOAD_PROPERS == download_propers:
+            return True
 
-    sickbeard.DOWNLOAD_PROPERS = download_propers
-    if sickbeard.DOWNLOAD_PROPERS:
-        if not sickbeard.properFinderScheduler.enable:
-            logger.log("Starting PROPERFINDER thread", logger.INFO)
-            sickbeard.properFinderScheduler.silent = False
-            sickbeard.properFinderScheduler.enable = True
-    else:
-        sickbeard.properFinderScheduler.enable = False
-        sickbeard.properFinderScheduler.silent = True
-        logger.log("Stopping PROPERFINDER thread", logger.INFO)
+        sickbeard.DOWNLOAD_PROPERS = download_propers
+        if sickbeard.DOWNLOAD_PROPERS:
+            if not sickbeard.properFinderScheduler.enable:
+                logger.log("Starting PROPERFINDER thread", logger.INFO)
+                sickbeard.properFinderScheduler.silent = False
+                sickbeard.properFinderScheduler.enable = True
+                return True
+        else:
+            sickbeard.properFinderScheduler.enable = False
+            sickbeard.properFinderScheduler.silent = True
+            logger.log("Stopping PROPERFINDER thread", logger.INFO)
+            return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_use_trakt(use_trakt):
     """
     Enable/disable trakt thread
-    TODO: Make this return true/false on success/failure
 
     :param use_trakt: New desired state
     """
     use_trakt = checkbox_to_value(use_trakt)
 
-    if sickbeard.USE_TRAKT == use_trakt:
-        return
+    try:
+        if sickbeard.USE_TRAKT == use_trakt:
+            return True
 
-    sickbeard.USE_TRAKT = use_trakt
-    if sickbeard.USE_TRAKT:
-        if not sickbeard.traktCheckerScheduler.enable:
-            logger.log("Starting TRAKTCHECKER thread", logger.INFO)
-            sickbeard.traktCheckerScheduler.silent = False
-            sickbeard.traktCheckerScheduler.enable = True
-    else:
-        sickbeard.traktCheckerScheduler.enable = False
-        sickbeard.traktCheckerScheduler.silent = True
-        logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
+        sickbeard.USE_TRAKT = use_trakt
+        if sickbeard.USE_TRAKT:
+            if not sickbeard.traktCheckerScheduler.enable:
+                logger.log("Starting TRAKTCHECKER thread", logger.INFO)
+                sickbeard.traktCheckerScheduler.silent = False
+                sickbeard.traktCheckerScheduler.enable = True
+                return True
+
+        else:
+            sickbeard.traktCheckerScheduler.enable = False
+            sickbeard.traktCheckerScheduler.silent = True
+            logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
+            return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_use_subtitles(use_subtitles):
     """
     Enable/Disable subtitle searcher
-    TODO: Make this return true/false on success/failure
 
     :param use_subtitles: New desired state
     """
-    use_subtitles = checkbox_to_value(use_subtitles)
-    if sickbeard.USE_SUBTITLES == use_subtitles:
-        return
+    
+    try:
+        use_subtitles = checkbox_to_value(use_subtitles)
+        if sickbeard.USE_SUBTITLES == use_subtitles:
+            return True
 
-    sickbeard.USE_SUBTITLES = use_subtitles
-    if sickbeard.USE_SUBTITLES:
-        if not sickbeard.subtitlesFinderScheduler.enable:
-            logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
-            sickbeard.subtitlesFinderScheduler.silent = False
-            sickbeard.subtitlesFinderScheduler.enable = True
-    else:
-        sickbeard.subtitlesFinderScheduler.enable = False
-        sickbeard.subtitlesFinderScheduler.silent = True
-        logger.log("Stopping SUBTITLESFINDER thread", logger.INFO)
+        sickbeard.USE_SUBTITLES = use_subtitles
+        if sickbeard.USE_SUBTITLES:
+            if not sickbeard.subtitlesFinderScheduler.enable:
+                logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
+                sickbeard.subtitlesFinderScheduler.silent = False
+                sickbeard.subtitlesFinderScheduler.enable = True
+                return True
+        else:
+            sickbeard.subtitlesFinderScheduler.enable = False
+            sickbeard.subtitlesFinderScheduler.silent = True
+            logger.log("Stopping SUBTITLESFINDER thread", logger.INFO)
+            return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def change_process_automatically(process_automatically):
     """
     Enable/Disable postprocessor thread
-    TODO: Make this return True/False on success/failure
 
     :param process_automatically: New desired state
     """
-    process_automatically = checkbox_to_value(process_automatically)
+    
+    try:
+        process_automatically = checkbox_to_value(process_automatically)
 
-    if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
-        return
+        if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
+            return True
 
-    sickbeard.PROCESS_AUTOMATICALLY = process_automatically
-    if sickbeard.PROCESS_AUTOMATICALLY:
-        if not sickbeard.autoPostProcessorScheduler.enable:
-            logger.log("Starting POSTPROCESSOR thread", logger.INFO)
-            sickbeard.autoPostProcessorScheduler.silent = False
-            sickbeard.autoPostProcessorScheduler.enable = True
-    else:
-        logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
-        sickbeard.autoPostProcessorScheduler.enable = False
-        sickbeard.autoPostProcessorScheduler.silent = True
+        sickbeard.PROCESS_AUTOMATICALLY = process_automatically
+        if sickbeard.PROCESS_AUTOMATICALLY:
+            if not sickbeard.autoPostProcessorScheduler.enable:
+                logger.log("Starting POSTPROCESSOR thread", logger.INFO)
+                sickbeard.autoPostProcessorScheduler.silent = False
+                sickbeard.autoPostProcessorScheduler.enable = True
+                return True
+        else:
+            logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
+            sickbeard.autoPostProcessorScheduler.enable = False
+            sickbeard.autoPostProcessorScheduler.silent = True
+            return True
+
+    except:
+        e = sys.exc_info()[0]
+        logger.log("Exception Caught: %s" % e, logger.INFO)
+        return False
 
 
 def check_section(cfg, sec):
