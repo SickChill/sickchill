@@ -58,13 +58,13 @@ Thumbs.db
 
 # Unrar Executable   #
 ######################
-lib/unrar2/UnRAR.exe
+unrar/*
 
 # Grunt #
 ######################
-.build/bower_components
-.build/node_modules
-.build/dist
+bower_components
+node_modules
+dist
 
 # Unit test/Coverage #
 ######################

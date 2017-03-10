@@ -166,6 +166,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def network_logo_name(self):
         return self.network.replace('\u00C9', 'e').replace('\u00E9', 'e').lower()
 
+    @property
+    def sort_name(self):
+        name = self.name
+        if not sickbeard.SORT_ARTICLE:
+            name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
+        return name.lower()
+
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
         if sickbeard.CREATE_MISSING_SHOW_DIRS or ek(os.path.isdir, self._location):
@@ -2446,14 +2453,16 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        logger.DEBUG)
             return
 
+        # get related files
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location, subfolders=True)
+            self.location, subfolders=True, rename=True)
 
-        # This is wrong. Cause of pp not moving subs.
-        if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
+        # get related subs
+        if self.show.subtitles and sickbeard.SUBTITLES_DIR:
+            # assume that the video file is in the subtitles dir to find associated subs
+            subs_path = os.path.join(sickbeard.SUBTITLES_DIR, ek(os.path.basename, self.location))
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
-                sickbeard.SUBTITLES_DIR, subtitles_only=True, subfolders=True)
-            absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
+                subs_path, subtitles_only=True, subfolders=True, rename=True)
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
 

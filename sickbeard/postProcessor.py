@@ -146,7 +146,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             return PostProcessor.DOESNT_EXIST
 
     def list_associated_files(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-            self, file_path, subtitles_only=False, subfolders=False):
+            self, file_path, subtitles_only=False, subfolders=False, rename=False):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -204,6 +204,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
+            # If this is a rename in the show folder, we don't need to check anything, just add it to the list
+            if rename:
+                file_path_list_to_allow.append(associated_file_path)
+                continue
+
             # Exclude non-subtitle files with the 'subtitles_only' option
             if subtitles_only and not associated_file_path.endswith(tuple(SUBTITLE_EXTENSIONS)):
                 continue
@@ -214,6 +219,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # Define associated files (all, allowed and non allowed)
             if ek(os.path.isfile, associated_file_path):
+                # check if allowed or not during post processing
                 if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
                     file_path_list_to_allow.append(associated_file_path)
                 elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
@@ -221,12 +227,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         if file_path_list_to_allow or file_path_list_to_delete:
             self._log("Found the following associated files for {0}: {1}".format(file_path, file_path_list_to_allow + file_path_list_to_delete), logger.DEBUG)
-            if file_path_list_to_allow:
-                self._log("Associated files to allow for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
             if file_path_list_to_delete:
-                self._log("Associated files to delete for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
+                self._log("Deleting non allowed associated files for {0}: {1}".format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
+            if file_path_list_to_allow:
+                self._log("Allowing associated files for {0}: {1}".format(file_path, file_path_list_to_allow), logger.DEBUG)
         else:
             self._log("No associated files for {0} were found during this pass".format(file_path), logger.DEBUG)
 

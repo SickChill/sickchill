@@ -246,6 +246,9 @@ class BaseHandler(RequestHandler):
         else:
             return True
 
+    def get_user_locale(self):
+        return sickbeard.GUI_LANG or None
+
 
 class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
@@ -363,7 +366,7 @@ class WebRoot(WebHandler):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         main_db_con = db.DBConnection(row_type='dict')
-        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())
+        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr))
         episodes = {}
 
         results = main_db_con.select(
@@ -595,7 +598,7 @@ class UI(WebRoot):
 
     def get_messages(self):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header("Content-Type", "application/json")
+        self.set_header('Content-Type', 'application/json')
         messages = {}
         cur_notification_num = 1
         for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
@@ -642,14 +645,14 @@ class WebFileBrowser(WebRoot):
     def index(self, path='', includeFiles=False, imagesOnly=False):  # pylint: disable=arguments-differ
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header("Content-Type", "application/json")
+        self.set_header('Content-Type', 'application/json')
 
         return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), bool(int(imagesOnly))))
 
     def complete(self, term, includeFiles=False, imagesOnly=False):
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header("Content-Type", "application/json")
+        self.set_header('Content-Type', 'application/json')
         paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)), imagesOnly=bool(int(imagesOnly)))
                  if 'path' in entry]
 
@@ -771,10 +774,10 @@ class Home(WebRoot):
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
         if sickbeard.started:
-            return callback + '(' + json.dumps(
+            return (callback or '') + '(' + json.dumps(
                 {"msg": str(sickbeard.PID)}) + ');'
         else:
-            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+            return (callback or '') + '(' + json.dumps({"msg": "nope"}) + ');'
 
     @staticmethod
     def haveKODI():
@@ -1402,12 +1405,12 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             sortedShowLists = [
-                ["Shows", sorted(shows, key=lambda mbr: attrgetter('name')(mbr).lower())],
-                ["Anime", sorted(anime, key=lambda mbr: attrgetter('name')(mbr).lower())]
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('sort_name')(mbr))]
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())]
+                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr))]
             ]
 
         bwl = None
@@ -2073,6 +2076,14 @@ class Home(WebRoot):
                 logger.log('No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.WARNING)
                 return results
 
+            # noinspection PyProtectedMember
+            def relative_ep_location(ep_loc, show_loc):
+                """ Returns the relative location compared to the show's location """
+                if ep_loc and show_loc and ep_loc.lower().startswith(show_loc.lower()):
+                    return ep_loc[len(show_loc) + 1:]
+                else:
+                    return ep_loc
+
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
                 results.append({
@@ -2084,7 +2095,7 @@ class Home(WebRoot):
                     'status': statusStrings[searchThread.segment.status],
                     'quality': self.getQualityClass(searchThread.segment),
                     'overview': Overview.overviewStrings[show_obj.getOverview(searchThread.segment.status)],
-                    'location': searchThread.segment._location,
+                    'location': relative_ep_location(searchThread.segment._location, show_obj._location),
                     'size': pretty_file_size(searchThread.segment.file_size) if searchThread.segment.file_size else ''
                 })
             else:
@@ -2099,7 +2110,7 @@ class Home(WebRoot):
                         'status': statusStrings[ep_obj.status],
                         'quality': self.getQualityClass(ep_obj),
                         'overview': Overview.overviewStrings[show_obj.getOverview(ep_obj.status)],
-                        'location': ep_obj._location,
+                        'location': relative_ep_location(ep_obj._location, show_obj._location),
                         'size': pretty_file_size(ep_obj.file_size) if ep_obj.file_size else ''
                     })
 
@@ -2136,6 +2147,8 @@ class Home(WebRoot):
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
         return json.dumps({'episodes': episodes})
 
     @staticmethod
@@ -2479,7 +2492,7 @@ class HomeAddShows(Home):
             tmp = root_dirs[default_index]
             if tmp in root_dirs:
                 root_dirs.remove(tmp)
-                root_dirs = [tmp] + root_dirs
+                root_dirs.insert(0, tmp)
 
         dir_list = []
 

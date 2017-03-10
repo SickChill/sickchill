@@ -13,21 +13,22 @@ before_install:
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
   - npm install -g grunt-cli
   - npm install -g bower
-  - cd .build && npm install --quiet && bower install && cd ..
+  - npm install --quiet
+  - bower install
 
 install:
     - pip install --upgrade pip
     - pip install --upgrade tox
 
 script:
-  - cd .build && grunt travis && cd ..
+  - grunt travis
   - tox -v --recreate
 
 cache:
   directories:
     - $HOME/.cache/pip
-    - .build/bower_components
-    - .build/node_modules
+    - bower_components
+    - node_modules
 
 after_failure:
   - cat ./Logs/sickrage.log

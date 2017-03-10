@@ -164,7 +164,7 @@ class SickRage(object):
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
         except (AttributeError, LookupError):
             sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
-                     'or find another way to force Python to use %s for string encoding.' % sickbeard.SYS_ENCODING)
+                     'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
