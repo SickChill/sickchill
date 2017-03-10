@@ -345,7 +345,7 @@ def change_postprocessor_frequency(freq):
     
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -366,7 +366,7 @@ def change_daily_search_frequency(freq):
     
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -388,7 +388,7 @@ def change_backlog_frequency(freq):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -409,7 +409,7 @@ def change_update_frequency(freq):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -432,7 +432,7 @@ def change_showupdate_hour(freq):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
@@ -450,7 +450,7 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -481,7 +481,7 @@ def change_version_notify(version_notify):
             return True
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -512,7 +512,7 @@ def change_download_propers(download_propers):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -544,7 +544,7 @@ def change_use_trakt(use_trakt):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
@@ -570,7 +570,7 @@ def change_use_subtitles(use_subtitles):
         else:
             sickbeard.subtitlesFinderScheduler.enable = False
             sickbeard.subtitlesFinderScheduler.silent = True
-            logger.log("Stopping SUBTITLESFINDER thread", logger.INFO)
+            logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
             return True
 
     except:
@@ -607,7 +607,7 @@ def change_process_automatically(process_automatically):
 
     except:
         e = sys.exc_info()[0]
-        logger.log("Exception Caught: %s" % e, logger.INFO)
+        logger.log("Exception Caught: %s" % e, logger.DEBUG)
         return False
 
 
