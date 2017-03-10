@@ -3503,7 +3503,7 @@ var SICKRAGE = {
                 $('img.trakt-image').each(function() {
                     // only load image from indexer when there is a indexer_id present in data-src-indexer-id
                     if ($(this).attr('data-src-indexer-id')) {
-                        $.post(srRoot + '/addShows/getTrendingShowImage', {indexer_id: $(this).attr('data-src-indexer-id')})
+                        $.post(srRoot + '/addShows/getTrendingShowImage', {indexerId: $(this).attr('data-src-indexer-id')})
                             .done(function (data) {
                                 if(data) {
                                     // replace src with cache location
@@ -3515,7 +3515,7 @@ var SICKRAGE = {
                         $(this).attr('src', $(this).attr('data-src-cache'));
                     }
                 } );
-            }
+            };
 
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
                 $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);

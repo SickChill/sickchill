@@ -2674,12 +2674,12 @@ class HomeAddShows(Home):
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
-    def getTrendingShowImage(self, indexer_id):
-        image_url = trakt_trending.get_image_url(indexer_id)
+    def getTrendingShowImage(self, indexerId):
+        image_url = trakt_trending.get_image_url(indexerId)
         if image_url:
-            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
+            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
             trakt_trending.cache_image(image_url, image_path)
-            return indexer_id
+            return indexerId
 
     def popularShows(self):
         """
