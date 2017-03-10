@@ -335,17 +335,12 @@ def change_postprocessor_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
-    try:
-        if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
-            sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
-        sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
-        return True
-    
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
+        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
+
+    sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+    return True
 
 
 def change_daily_search_frequency(freq):
@@ -355,18 +350,12 @@ def change_daily_search_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
-    try:
-
-        if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
-            sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
-
-        sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
-        return True
     
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
+        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
+
+    sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+    return True
 
 
 def change_backlog_frequency(freq):
@@ -376,18 +365,13 @@ def change_backlog_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
-    try:
-        sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
-        if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
-            sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
+    
+    sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
+    if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
+        sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
 
-        sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
-        return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+    return True
 
 
 def change_update_frequency(freq):
@@ -397,17 +381,12 @@ def change_update_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
-    try:
-        if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
-            sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
+    
+    if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
+        sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
-        sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
-        return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+    return True
 
 
 def change_showupdate_hour(freq):
@@ -417,19 +396,14 @@ def change_showupdate_hour(freq):
     :param freq: New frequency
     """
     sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
-    try:
-        if sickbeard.SHOWUPDATE_HOUR > 23:
-            sickbeard.SHOWUPDATE_HOUR = 0
-        elif sickbeard.SHOWUPDATE_HOUR < 0:
-            sickbeard.SHOWUPDATE_HOUR = 0
+    
+    if sickbeard.SHOWUPDATE_HOUR > 23:
+        sickbeard.SHOWUPDATE_HOUR = 0
+    elif sickbeard.SHOWUPDATE_HOUR < 0:
+        sickbeard.SHOWUPDATE_HOUR = 0
 
-        sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
-        return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+    return True
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
     """
@@ -437,17 +411,11 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
 
     :param subtitles_finder_frequency: New frequency
     """
-    try:
-        if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
-            subtitles_finder_frequency = 1
+    if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
+        subtitles_finder_frequency = 1
 
-        sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
-        return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
+    return True
 
 
 def change_version_notify(version_notify):
