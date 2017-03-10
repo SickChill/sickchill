@@ -3478,6 +3478,24 @@ var SICKRAGE = {
                 });
             };
 
+            $.loadTraktImages = function() {
+                $('img.trakt-image').each(function() {
+                    // only load image from indexer when there is a indexer_id present in data-src-indexer-id
+                    if ($(this).attr('data-src-indexer-id')) {
+                        $.post(srRoot + '/addShows/getTrendingShowImage', {indexer_id: $(this).attr('data-src-indexer-id')})
+                            .done(function (data) {
+                                if(data) {
+                                    // replace src with cache location
+                                    $('img.trakt-image[data-src-indexer-id="'+data+'"]').attr('src', $('img.trakt-image[data-src-indexer-id="'+data+'"]').attr('data-src-cache'));
+                                }
+                            });
+                    } else {
+                        // no indexer_id present -> load it directly from cache
+                        $(this).attr('src', $(this).attr('data-src-cache'));
+                    }
+                } );
+            }
+
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
                 $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
                 $(this).load(srRoot + path + ' #container', function(response, status) {
@@ -3485,6 +3503,7 @@ var SICKRAGE = {
                         $(this).empty().html(errorTxt);
                     } else {
                         $.initRemoteShowGrid();
+                        $.loadTraktImages();
                     }
                 });
             };

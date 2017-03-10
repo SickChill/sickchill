@@ -79,22 +79,22 @@ class traktTrending(object):
             logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
         for trending_show in trending_shows:
-            # Set image path to show (needed to show it on the screen from the cache)
-            image_name = str(trending_show['show']['ids']['tvdb']) + ".jpg"
+            # get indexer id
+            indexer_id = trending_show['show']['ids']['tvdb']
+            trending_show['indexer_id'] = indexer_id
+            # set image path to show (needed to show it on the screen from the cache)
+            image_name = self.get_image_name(indexer_id)
             image_path_relative = ek(posixpath.join, 'images', 'trakt_trending', image_name)
             trending_show['image_path'] = image_path_relative
-            # only get image if it doesn't exist yet
+            # clear indexer_id if we already have the image in the cache so we don't retrieve it again
             image_path = self.get_image_path(image_name)
-            if not ek(os.path.isfile, image_path):
-                image_url = self.get_image_url(trending_show)
-                # only cache image if there is actually a link to the image
-                if image_url:
-                    self.cache_image(image_url, image_path)
+            if ek(os.path.isfile, image_path):
+                trending_show['indexer_id'] = ''
 
         return trending_shows, black_list
 
     @staticmethod
-    def get_image_url(show):
+    def get_image_url(indexer_id):
         image_url = None
 
         try:
@@ -103,9 +103,9 @@ class traktTrending(object):
             lINDEXER_API_PARMS['banners'] = True
 
             t = sickbeard.indexerApi(INDEXER_TVDB).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show['show']['ids']['tvdb']]
+            indexer_show_obj = t[int(indexer_id)]
         except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(INDEXER_TVDB).name +
+            logger.log("Unable to look up show with id " + indexer_id + " on " + sickbeard.indexerApi(INDEXER_TVDB).name +
                        ", not downloading images: " + ex(e), logger.WARNING)
             return None
 
@@ -113,6 +113,10 @@ class traktTrending(object):
             image_url = re.sub('posters', '_cache/posters', indexer_show_obj['poster'])
 
         return image_url
+
+    @staticmethod
+    def get_image_name(indexer_id):
+         return str(indexer_id) + ".jpg"
 
     @staticmethod
     def get_image_path(image_name):

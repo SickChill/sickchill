@@ -2671,6 +2671,13 @@ class HomeAddShows(Home):
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
+    def getTrendingShowImage(self, indexer_id):
+        image_url = trakt_trending.get_image_url(indexer_id)
+        if image_url:
+            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
+            trakt_trending.cache_image(image_url, image_path)
+            return indexer_id
+
     def popularShows(self):
         """
         Fetches data from IMDB to show a list of popular shows.
