@@ -437,6 +437,7 @@ def change_version_notify(version_notify):
             sickbeard.versionCheckScheduler.enable = True
             sickbeard.versionCheckScheduler.forceRun()
         return True
+        
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
@@ -455,13 +456,14 @@ def change_download_propers(download_propers):
     if sickbeard.DOWNLOAD_PROPERS == download_propers:
         return True
 
-     sickbeard.DOWNLOAD_PROPERS = download_propers
-     if sickbeard.DOWNLOAD_PROPERS:
+    sickbeard.DOWNLOAD_PROPERS = download_propers
+    if sickbeard.DOWNLOAD_PROPERS:
         if not sickbeard.properFinderScheduler.enable:
             logger.log("Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
         return True
+        
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
@@ -502,27 +504,23 @@ def change_use_subtitles(use_subtitles):
     :param use_subtitles: New desired state
     """
     use_subtitles = checkbox_to_value(use_subtitles)
-    try:
-        if sickbeard.USE_SUBTITLES == use_subtitles:
-            return True
 
-        sickbeard.USE_SUBTITLES = use_subtitles
-        if sickbeard.USE_SUBTITLES:
-            if not sickbeard.subtitlesFinderScheduler.enable:
-                logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
-                sickbeard.subtitlesFinderScheduler.silent = False
-                sickbeard.subtitlesFinderScheduler.enable = True
-                return True
-        else:
-            sickbeard.subtitlesFinderScheduler.enable = False
-            sickbeard.subtitlesFinderScheduler.silent = True
-            logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
-            return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.INFO)
-        return False
+    if sickbeard.USE_SUBTITLES == use_subtitles:
+        return True
+ 
+    sickbeard.USE_SUBTITLES = use_subtitles
+    if sickbeard.USE_SUBTITLES:
+        if not sickbeard.subtitlesFinderScheduler.enable:
+            logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
+            sickbeard.subtitlesFinderScheduler.silent = False
+            sickbeard.subtitlesFinderScheduler.enable = True
+        return True
+    
+    else:
+        sickbeard.subtitlesFinderScheduler.enable = False
+        sickbeard.subtitlesFinderScheduler.silent = True
+        logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
+        return True
 
 
 def change_process_automatically(process_automatically):
@@ -532,27 +530,22 @@ def change_process_automatically(process_automatically):
     :param process_automatically: New desired state
     """
     process_automatically = checkbox_to_value(process_automatically)
-    try:
-        if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
-            return True
 
-        sickbeard.PROCESS_AUTOMATICALLY = process_automatically
-        if sickbeard.PROCESS_AUTOMATICALLY:
-            if not sickbeard.autoPostProcessorScheduler.enable:
-                logger.log("Starting POSTPROCESSOR thread", logger.INFO)
-                sickbeard.autoPostProcessorScheduler.silent = False
-                sickbeard.autoPostProcessorScheduler.enable = True
-                return True
-        else:
-            logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
-            sickbeard.autoPostProcessorScheduler.enable = False
-            sickbeard.autoPostProcessorScheduler.silent = True
-            return True
+    if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
+        return True
 
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.PROCESS_AUTOMATICALLY = process_automatically
+    if sickbeard.PROCESS_AUTOMATICALLY:
+        if not sickbeard.autoPostProcessorScheduler.enable:
+            logger.log("Starting POSTPROCESSOR thread", logger.INFO)
+            sickbeard.autoPostProcessorScheduler.silent = False
+            sickbeard.autoPostProcessorScheduler.enable = True
+        return True
+    else:
+        logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
+        sickbeard.autoPostProcessorScheduler.enable = False
+        sickbeard.autoPostProcessorScheduler.silent = True
+        return True
 
 
 def check_section(cfg, sec):
