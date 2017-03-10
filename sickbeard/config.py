@@ -334,9 +334,8 @@ def change_postprocessor_frequency(freq):
 
     :param freq: New frequency
     """
+    sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
     try:
-        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
-
         if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
             sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
@@ -355,8 +354,8 @@ def change_daily_search_frequency(freq):
 
     :param freq: New frequency
     """
+    sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
     try:
-        sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
 
         if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
             sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
@@ -376,9 +375,8 @@ def change_backlog_frequency(freq):
 
     :param freq: New frequency
     """
+    sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
     try:
-        sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
-
         sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
         if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
             sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
@@ -398,9 +396,8 @@ def change_update_frequency(freq):
 
     :param freq: New frequency
     """
+    sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
     try:
-        sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
-
         if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
             sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
@@ -419,9 +416,8 @@ def change_showupdate_hour(freq):
 
     :param freq: New frequency
     """
+    sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
     try:
-        sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
-
         if sickbeard.SHOWUPDATE_HOUR > 23:
             sickbeard.SHOWUPDATE_HOUR = 0
         elif sickbeard.SHOWUPDATE_HOUR < 0:
