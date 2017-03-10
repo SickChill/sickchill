@@ -425,27 +425,23 @@ def change_version_notify(version_notify):
     :param version_notify: New desired state
     """
     version_notify = checkbox_to_value(version_notify)
-    try:
-        if sickbeard.VERSION_NOTIFY == version_notify:
-            return True
+    
+    if sickbeard.VERSION_NOTIFY == version_notify:
+        return True
 
-        sickbeard.VERSION_NOTIFY = version_notify
-        if sickbeard.VERSION_NOTIFY:
-            if not sickbeard.versionCheckScheduler.enable:
-                logger.log("Starting VERSIONCHECK thread", logger.INFO)
-                sickbeard.versionCheckScheduler.silent = False
-                sickbeard.versionCheckScheduler.enable = True
-                sickbeard.versionCheckScheduler.forceRun()
-                return True
-        else:
-            sickbeard.versionCheckScheduler.enable = False
-            sickbeard.versionCheckScheduler.silent = True
-            logger.log("Stopping VERSIONCHECK thread", logger.INFO)
-            return True
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    sickbeard.VERSION_NOTIFY = version_notify
+    if sickbeard.VERSION_NOTIFY:
+        if not sickbeard.versionCheckScheduler.enable:
+            logger.log("Starting VERSIONCHECK thread", logger.INFO)
+            sickbeard.versionCheckScheduler.silent = False
+            sickbeard.versionCheckScheduler.enable = True
+            sickbeard.versionCheckScheduler.forceRun()
+        return True
+    else:
+        sickbeard.versionCheckScheduler.enable = False
+        sickbeard.versionCheckScheduler.silent = True
+        logger.log("Stopping VERSIONCHECK thread", logger.INFO)
+        return True
 
 
 def change_download_propers(download_propers):
@@ -455,27 +451,22 @@ def change_download_propers(download_propers):
     :param download_propers: New desired state
     """
     download_propers = checkbox_to_value(download_propers)
-    try:
-        if sickbeard.DOWNLOAD_PROPERS == download_propers:
-            return True
+        
+    if sickbeard.DOWNLOAD_PROPERS == download_propers:
+        return True
 
-        sickbeard.DOWNLOAD_PROPERS = download_propers
-        if sickbeard.DOWNLOAD_PROPERS:
-            if not sickbeard.properFinderScheduler.enable:
-                logger.log("Starting PROPERFINDER thread", logger.INFO)
-                sickbeard.properFinderScheduler.silent = False
-                sickbeard.properFinderScheduler.enable = True
-                return True
-        else:
-            sickbeard.properFinderScheduler.enable = False
-            sickbeard.properFinderScheduler.silent = True
-            logger.log("Stopping PROPERFINDER thread", logger.INFO)
-            return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+     sickbeard.DOWNLOAD_PROPERS = download_propers
+     if sickbeard.DOWNLOAD_PROPERS:
+        if not sickbeard.properFinderScheduler.enable:
+            logger.log("Starting PROPERFINDER thread", logger.INFO)
+            sickbeard.properFinderScheduler.silent = False
+            sickbeard.properFinderScheduler.enable = True
+        return True
+    else:
+        sickbeard.properFinderScheduler.enable = False
+        sickbeard.properFinderScheduler.silent = True
+        logger.log("Stopping PROPERFINDER thread", logger.INFO)
+        return True
 
 
 def change_use_trakt(use_trakt):
@@ -485,28 +476,23 @@ def change_use_trakt(use_trakt):
     :param use_trakt: New desired state
     """
     use_trakt = checkbox_to_value(use_trakt)
-    try:
-        if sickbeard.USE_TRAKT == use_trakt:
-            return True
+    
+    if sickbeard.USE_TRAKT == use_trakt:
+        return True
 
-        sickbeard.USE_TRAKT = use_trakt
-        if sickbeard.USE_TRAKT:
-            if not sickbeard.traktCheckerScheduler.enable:
-                logger.log("Starting TRAKTCHECKER thread", logger.INFO)
-                sickbeard.traktCheckerScheduler.silent = False
-                sickbeard.traktCheckerScheduler.enable = True
-                return True
+    sickbeard.USE_TRAKT = use_trakt
+    if sickbeard.USE_TRAKT:
+        if not sickbeard.traktCheckerScheduler.enable:
+            logger.log("Starting TRAKTCHECKER thread", logger.INFO)
+            sickbeard.traktCheckerScheduler.silent = False
+            sickbeard.traktCheckerScheduler.enable = True
+        return True
 
-        else:
-            sickbeard.traktCheckerScheduler.enable = False
-            sickbeard.traktCheckerScheduler.silent = True
-            logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
-            return True
-
-    except:
-        e = sys.exc_info()[0]
-        logger.log("Exception Caught: {}".format(e), logger.DEBUG)
-        return False
+    else:
+        sickbeard.traktCheckerScheduler.enable = False
+        sickbeard.traktCheckerScheduler.silent = True
+        logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
+        return True
 
 
 def change_use_subtitles(use_subtitles):
