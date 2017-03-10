@@ -436,13 +436,13 @@ def change_version_notify(version_notify):
             sickbeard.versionCheckScheduler.silent = False
             sickbeard.versionCheckScheduler.enable = True
             sickbeard.versionCheckScheduler.forceRun()
-        return True
         
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
         logger.log("Stopping VERSIONCHECK thread", logger.INFO)
-        return True
+    
+    return True
 
 
 def change_download_propers(download_propers):
@@ -462,13 +462,13 @@ def change_download_propers(download_propers):
             logger.log("Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
-        return True
         
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
         logger.log("Stopping PROPERFINDER thread", logger.INFO)
-        return True
+    
+    return True
 
 
 def change_use_trakt(use_trakt):
@@ -488,13 +488,13 @@ def change_use_trakt(use_trakt):
             logger.log("Starting TRAKTCHECKER thread", logger.INFO)
             sickbeard.traktCheckerScheduler.silent = False
             sickbeard.traktCheckerScheduler.enable = True
-        return True
 
     else:
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
         logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
-        return True
+    
+    return True
 
 
 def change_use_subtitles(use_subtitles):
@@ -514,13 +514,13 @@ def change_use_subtitles(use_subtitles):
             logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
             sickbeard.subtitlesFinderScheduler.silent = False
             sickbeard.subtitlesFinderScheduler.enable = True
-        return True
     
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
         logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
-        return True
+    
+    return True
 
 
 def change_process_automatically(process_automatically):
@@ -540,12 +540,13 @@ def change_process_automatically(process_automatically):
             logger.log("Starting POSTPROCESSOR thread", logger.INFO)
             sickbeard.autoPostProcessorScheduler.silent = False
             sickbeard.autoPostProcessorScheduler.enable = True
-        return True
+            
     else:
         logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
         sickbeard.autoPostProcessorScheduler.silent = True
-        return True
+    
+    return True
 
 
 def check_section(cfg, sec):
