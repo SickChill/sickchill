@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2017-03-09 15:16-0800\n"
+"POT-Creation-Date: 2017-03-09 16:47-0800\n"
 "PO-Revision-Date: 2017-02-08 23:24-0500\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: pt_BR\n"
@@ -86,8 +86,8 @@ msgstr "Guerra"
 msgid "Biography"
 msgstr "Biografia"
 
-#: gui/slick/views/config_general.mako:72 gui/slick/views/layouts/main.mako:141
-#: sickbeard/__init__.py:80 sickbeard/webserve.py:3762
+#: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:141
+#: sickbeard/__init__.py:80 sickbeard/webserve.py:3775
 msgid "History"
 msgstr "Histórico"
 
@@ -99,8 +99,8 @@ msgstr "Música"
 msgid "Western"
 msgstr "Faroeste"
 
-#: gui/slick/views/config_general.mako:73 gui/slick/views/layouts/main.mako:217
-#: sickbeard/__init__.py:81 sickbeard/webserve.py:2340
+#: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:217
+#: sickbeard/__init__.py:81 sickbeard/webserve.py:2353
 msgid "News"
 msgstr "Notícias"
 
@@ -306,19 +306,19 @@ msgstr "Verificador de Trakt"
 msgid "Event"
 msgstr "Evento"
 
-#: sickbeard/logger.py:483 sickbeard/webserve.py:1303
-#: sickbeard/webserve.py:1306 sickbeard/webserve.py:1484
-#: sickbeard/webserve.py:1493 sickbeard/webserve.py:1682
-#: sickbeard/webserve.py:1693 sickbeard/webserve.py:1716
-#: sickbeard/webserve.py:1729 sickbeard/webserve.py:1734
-#: sickbeard/webserve.py:1750 sickbeard/webserve.py:1755
-#: sickbeard/webserve.py:1819 sickbeard/webserve.py:1822
-#: sickbeard/webserve.py:1828 sickbeard/webserve.py:1831
-#: sickbeard/webserve.py:1838 sickbeard/webserve.py:1841
-#: sickbeard/webserve.py:1864 sickbeard/webserve.py:1962
-#: sickbeard/webserve.py:1967 sickbeard/webserve.py:1972
-#: sickbeard/webserve.py:2001 sickbeard/webserve.py:2005
-#: sickbeard/webserve.py:2010
+#: sickbeard/logger.py:483 sickbeard/webserve.py:1306
+#: sickbeard/webserve.py:1309 sickbeard/webserve.py:1487
+#: sickbeard/webserve.py:1496 sickbeard/webserve.py:1685
+#: sickbeard/webserve.py:1696 sickbeard/webserve.py:1719
+#: sickbeard/webserve.py:1732 sickbeard/webserve.py:1737
+#: sickbeard/webserve.py:1753 sickbeard/webserve.py:1758
+#: sickbeard/webserve.py:1822 sickbeard/webserve.py:1825
+#: sickbeard/webserve.py:1831 sickbeard/webserve.py:1834
+#: sickbeard/webserve.py:1841 sickbeard/webserve.py:1844
+#: sickbeard/webserve.py:1867 sickbeard/webserve.py:1965
+#: sickbeard/webserve.py:1970 sickbeard/webserve.py:1975
+#: sickbeard/webserve.py:2004 sickbeard/webserve.py:2008
+#: sickbeard/webserve.py:2013
 msgid "Error"
 msgstr "Erro"
 
@@ -382,40 +382,40 @@ msgstr "Opa"
 msgid "Wrong API key used"
 msgstr "Chave API errada"
 
-#: gui/slick/views/login.mako:34 sickbeard/webserve.py:298
+#: gui/slick/views/login.mako:34 sickbeard/webserve.py:301
 msgid "Login"
 msgstr "Login"
 
-#: sickbeard/webserve.py:387
+#: sickbeard/webserve.py:390
 msgid "API Key not generated"
 msgstr "Chave API não gerada"
 
-#: sickbeard/webserve.py:390
+#: sickbeard/webserve.py:393
 msgid "API Builder"
 msgstr "Construtor de API"
 
-#: gui/slick/views/config_general.mako:71 gui/slick/views/layouts/main.mako:137
-#: sickbeard/webserve.py:493
+#: gui/slick/views/config_general.mako:77 gui/slick/views/layouts/main.mako:137
+#: sickbeard/webserve.py:496
 msgid "Schedule"
 msgstr "Agenda"
 
-#: sickbeard/webserve.py:591
+#: sickbeard/webserve.py:594
 msgid "Test 1"
 msgstr "Teste 1"
 
-#: sickbeard/webserve.py:591
+#: sickbeard/webserve.py:594
 msgid "This is test number 1"
 msgstr "Este é o teste número 1"
 
-#: sickbeard/webserve.py:592
+#: sickbeard/webserve.py:595
 msgid "Test 2"
 msgstr "Teste 2"
 
-#: sickbeard/webserve.py:592
+#: sickbeard/webserve.py:595
 msgid "This is test number 2"
 msgstr "Este é o teste número 2"
 
-#: sickbeard/webserve.py:615
+#: sickbeard/webserve.py:618
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
@@ -423,29 +423,29 @@ msgstr ""
 "Você está usando o \"branch\" {branch}. Por favor, use o 'master', a "
 "menos que especificamente solicitado"
 
-#: sickbeard/webserve.py:671 sickbeard/webserve.py:676
+#: sickbeard/webserve.py:674 sickbeard/webserve.py:679
 msgid "Invalid show parameters"
 msgstr "Parâmetros inválidos para a série"
 
-#: sickbeard/webserve.py:683
+#: sickbeard/webserve.py:686
 #, fuzzy
 msgid "Invalid parameters"
 msgstr "Parâmetros inválidos"
 
-#: sickbeard/webserve.py:686 sickbeard/webserve.py:1864
+#: sickbeard/webserve.py:689 sickbeard/webserve.py:1867
 msgid "Episode couldn't be retrieved"
 msgstr "Episódio não pôde ser obtido"
 
-#: sickbeard/webserve.py:725 sickbeard/webserve.py:1232
-#: sickbeard/webserve.py:1261
+#: sickbeard/webserve.py:728 sickbeard/webserve.py:1235
+#: sickbeard/webserve.py:1264
 msgid "Home"
 msgstr "Página Inicial"
 
-#: gui/slick/views/layouts/main.mako:123 sickbeard/webserve.py:725
+#: gui/slick/views/layouts/main.mako:123 sickbeard/webserve.py:728
 msgid "Show List"
 msgstr "Lista de séries"
 
-#: sickbeard/webserve.py:766
+#: sickbeard/webserve.py:769
 msgid ""
 "Error: Unsupported Request. Send jsonp request with 'callback' variable "
 "in the query string."
@@ -453,31 +453,31 @@ msgstr ""
 "Erro: Pedido não Suportado. Envie um pedido jsonp com a variaável "
 "'callback' na string."
 
-#: sickbeard/webserve.py:810
+#: sickbeard/webserve.py:813
 msgid "Success. Connected and authenticated"
 msgstr "Sucesso. Conectado e autenticado"
 
-#: sickbeard/webserve.py:812
+#: sickbeard/webserve.py:815
 msgid "Authentication failed. SABnzbd expects"
 msgstr "Falha na Autenticação. SABnzbd espera"
 
-#: sickbeard/webserve.py:812
+#: sickbeard/webserve.py:815
 msgid "as authentication method"
 msgstr "método de autenticação"
 
-#: sickbeard/webserve.py:814
+#: sickbeard/webserve.py:817
 msgid "Unable to connect to host"
 msgstr "Não é possível conectar ao host"
 
-#: sickbeard/webserve.py:835
+#: sickbeard/webserve.py:838
 msgid "SMS sent successfully"
 msgstr "SMS enviado com sucesso"
 
-#: sickbeard/webserve.py:837
+#: sickbeard/webserve.py:840
 msgid "Problem sending SMS: {message}"
 msgstr "Problema ao enviar SMS: {message}"
 
-#: sickbeard/webserve.py:844
+#: sickbeard/webserve.py:847
 msgid ""
 "Telegram notification succeeded. Check your Telegram clients to make sure"
 " it worked"
@@ -485,11 +485,11 @@ msgstr ""
 "Notificação ao Telegram enviada. Verifique o Telegram para ver se "
 "funcionou"
 
-#: sickbeard/webserve.py:846
+#: sickbeard/webserve.py:849
 msgid "Error sending Telegram notification: {message}"
 msgstr "Erro enviando notificação ao Telegram: {message}"
 
-#: sickbeard/webserve.py:853
+#: sickbeard/webserve.py:856
 msgid ""
 "join notification succeeded. Check your join clients to make sure it "
 "worked"
@@ -497,31 +497,31 @@ msgstr ""
 "notificação de Boxcar2 bem sucedida. Verifique os clientes Boxcar2 para "
 "ter certeza que funcionou"
 
-#: sickbeard/webserve.py:855
+#: sickbeard/webserve.py:858
 msgid "Error sending join notification: {message}"
 msgstr "Erro ao enviar notificação do Telegram: {message}"
 
-#: sickbeard/webserve.py:865
+#: sickbeard/webserve.py:868
 msgid " with password"
 msgstr "com senha"
 
-#: sickbeard/webserve.py:867
+#: sickbeard/webserve.py:870
 msgid "Registered and Tested growl successfully {growl_host}"
 msgstr "Growl registrado e testado com sucesso {growl_host}"
 
-#: sickbeard/webserve.py:869
+#: sickbeard/webserve.py:872
 msgid "Registration and Testing of growl failed {growl_host}"
 msgstr "Falha no Registro e Teste do Growl {growl_host}"
 
-#: sickbeard/webserve.py:876
+#: sickbeard/webserve.py:879
 msgid "Test prowl notice sent successfully"
 msgstr "Aviso de teste prowl enviado com sucesso"
 
-#: sickbeard/webserve.py:878
+#: sickbeard/webserve.py:881
 msgid "Test prowl notice failed"
 msgstr "Aviso de teste prowl falhou"
 
-#: sickbeard/webserve.py:885
+#: sickbeard/webserve.py:888
 msgid ""
 "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure "
 "it worked"
@@ -529,11 +529,11 @@ msgstr ""
 "Notificação Boxcar2 enviada com sucesso. Verifique o cliente Boxcar2 para"
 " ver se funcionou"
 
-#: sickbeard/webserve.py:887
+#: sickbeard/webserve.py:890
 msgid "Error sending Boxcar2 notification"
 msgstr "Erro enviando notificação Boxcar2"
 
-#: sickbeard/webserve.py:894
+#: sickbeard/webserve.py:897
 msgid ""
 "Pushover notification succeeded. Check your Pushover clients to make sure"
 " it worked"
@@ -541,155 +541,155 @@ msgstr ""
 "Notificação Pushover enviada com sucesso. Verifique o cliente Pushover "
 "para ver se funcionou"
 
-#: sickbeard/webserve.py:896
+#: sickbeard/webserve.py:899
 msgid "Error sending Pushover notification"
 msgstr "Erro enviando notificação Pushover"
 
-#: sickbeard/webserve.py:913
+#: sickbeard/webserve.py:916
 msgid "Key verification successful"
 msgstr "Verificação da chave com sucesso"
 
-#: sickbeard/webserve.py:915
+#: sickbeard/webserve.py:918
 msgid "Unable to verify key"
 msgstr "Impossível verificar a chave"
 
-#: sickbeard/webserve.py:922
+#: sickbeard/webserve.py:925
 msgid "Tweet successful, check your twitter to make sure it worked"
 msgstr "Tweet com sucesso, verifique o seu twitter para ver se funcionou"
 
-#: sickbeard/webserve.py:924
+#: sickbeard/webserve.py:927
 msgid "Error sending tweet"
 msgstr "Erro ao enviar tweet"
 
-#: sickbeard/webserve.py:929
+#: sickbeard/webserve.py:932
 msgid "Please enter a valid account sid"
 msgstr "Por favor digite uma conta sid válida"
 
-#: sickbeard/webserve.py:932
+#: sickbeard/webserve.py:935
 msgid "Please enter a valid auth token"
 msgstr "Por favor, insira um código de validação correto"
 
-#: sickbeard/webserve.py:935
+#: sickbeard/webserve.py:938
 msgid "Please enter a valid phone sid"
 msgstr ""
 
-#: sickbeard/webserve.py:938
+#: sickbeard/webserve.py:941
 msgid "Please format the phone number as \"+1-###-###-####\""
 msgstr "Por favor formatar o número de telefone como \"+ 1-# # #-# # #-# # #\""
 
-#: sickbeard/webserve.py:942
+#: sickbeard/webserve.py:945
 msgid "Authorization successful and number ownership verified"
 msgstr "Autorizado com sucesso e número do dono verificado"
 
-#: sickbeard/webserve.py:944
+#: sickbeard/webserve.py:947
 msgid "Error sending sms"
 msgstr "Erro ao enviar sms"
 
-#: sickbeard/webserve.py:950
+#: sickbeard/webserve.py:953
 msgid "Slack message successful"
 msgstr "Mensagem folgada bem sucedida"
 
-#: sickbeard/webserve.py:952
+#: sickbeard/webserve.py:955
 msgid "Slack message failed"
 msgstr "Mensagem folgada falhada"
 
-#: sickbeard/webserve.py:958
+#: sickbeard/webserve.py:961
 msgid "Discord message successful"
 msgstr ""
 
-#: sickbeard/webserve.py:960
+#: sickbeard/webserve.py:963
 msgid "Discord message failed"
 msgstr ""
 
-#: sickbeard/webserve.py:970
+#: sickbeard/webserve.py:973
 msgid "Test KODI notice sent successfully to {kodi_host}"
 msgstr "Aviso de teste enviado ao KODI com êxito para {kodi_host}"
 
-#: sickbeard/webserve.py:972
+#: sickbeard/webserve.py:975
 msgid "Test KODI notice failed to {kodi_host}"
 msgstr "Aviso de teste do KODI falhou ao ser enviado para {kodi_host}"
 
-#: sickbeard/webserve.py:987
+#: sickbeard/webserve.py:990
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr "Aviso de teste enviado com sucesso ao Plex Home Theater ... {plex_clients}"
 
-#: sickbeard/webserve.py:989
+#: sickbeard/webserve.py:992
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr "Falha teste para o Plex Home Theater ... {plex_clients}"
 
-#: sickbeard/webserve.py:992
+#: sickbeard/webserve.py:995
 msgid "Tested Plex Home Theater(s)"
 msgstr "Plex Home Theater(s) testado"
 
-#: sickbeard/webserve.py:1006
+#: sickbeard/webserve.py:1009
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr "Plex Home Theater(s) testados com sucesso ... {plex_servers}"
 
-#: sickbeard/webserve.py:1008
+#: sickbeard/webserve.py:1011
 msgid "Test failed, No Plex Media Server host specified"
 msgstr "Teste falhou. Não foi especificado um servidor Plex"
 
-#: sickbeard/webserve.py:1010
+#: sickbeard/webserve.py:1013
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr "Falha no teste do Plex Media Server... {plex_servers}"
 
-#: sickbeard/webserve.py:1013
+#: sickbeard/webserve.py:1016
 msgid "Tested Plex Media Server host(s)"
 msgstr "Teste completo para o(s) host(s) do Servidor Plex"
 
-#: sickbeard/webserve.py:1021
+#: sickbeard/webserve.py:1024
 msgid "Tried sending desktop notification via libnotify"
 msgstr "Tentativa de envio notificação desktop via libnotify"
 
-#: sickbeard/webserve.py:1030
+#: sickbeard/webserve.py:1033
 msgid "Test notice sent successfully to {emby_host}"
 msgstr "Aviso de teste enviado com êxito para {emby_host}"
 
-#: sickbeard/webserve.py:1032
+#: sickbeard/webserve.py:1035
 msgid "Test notice failed to {emby_host}"
 msgstr "Falha no aviso de teste para {emby_host}"
 
-#: sickbeard/webserve.py:1040
+#: sickbeard/webserve.py:1043
 msgid "Successfully started the scan update"
 msgstr "Iniciada com sucesso a atualização de varredura"
 
-#: sickbeard/webserve.py:1042
+#: sickbeard/webserve.py:1045
 msgid "Test failed to start the scan update"
 msgstr "Falha ao iniciar atualização de varredura"
 
-#: sickbeard/webserve.py:1061
+#: sickbeard/webserve.py:1064
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr "Aviso de teste enviado com sucesso para {nmj2_host}"
 
-#: sickbeard/webserve.py:1063
+#: sickbeard/webserve.py:1066
 msgid "Test notice failed to {nmj2_host}"
 msgstr "Aviso de teste falhou para {nmj2_host}"
 
-#: sickbeard/webserve.py:1083
+#: sickbeard/webserve.py:1086
 msgid "Trakt Authorized"
 msgstr "Trakt Autorizado"
 
-#: sickbeard/webserve.py:1084
+#: sickbeard/webserve.py:1087
 msgid "Trakt Not Authorized!"
 msgstr "Trakt Não Autorizado!"
 
-#: sickbeard/webserve.py:1148
+#: sickbeard/webserve.py:1151
 msgid "Test email sent successfully! Check inbox."
 msgstr "E-mail de teste enviado com sucesso! Verifique a caixa de entrada."
 
-#: sickbeard/webserve.py:1150
+#: sickbeard/webserve.py:1153
 msgid "ERROR: {last_error}"
 msgstr "ERRO: {last_error}"
 
-#: sickbeard/webserve.py:1157
+#: sickbeard/webserve.py:1160
 msgid "Test NMA notice sent successfully"
 msgstr "Aviso de teste NMA enviado com sucesso"
 
-#: sickbeard/webserve.py:1159
+#: sickbeard/webserve.py:1162
 msgid "Test NMA notice failed"
 msgstr "Falha no envio de teste NMA"
 
-#: sickbeard/webserve.py:1166
+#: sickbeard/webserve.py:1169
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure"
 " it worked"
@@ -697,11 +697,11 @@ msgstr ""
 "Notificação Pushalot enviada com sucesso. Verifique o cliente Pushalot "
 "para ver se funcionou"
 
-#: sickbeard/webserve.py:1168
+#: sickbeard/webserve.py:1171
 msgid "Error sending Pushalot notification"
 msgstr "Erro ao enviar notificação Pushalot"
 
-#: sickbeard/webserve.py:1175
+#: sickbeard/webserve.py:1178
 msgid ""
 "Pushbullet notification succeeded. Check your device to make sure it "
 "worked"
@@ -709,26 +709,26 @@ msgstr ""
 "Notificação de Pushbullet bem sucedida. Verificar seu dispositivo para "
 "ter certeza que funcionou"
 
-#: sickbeard/webserve.py:1177 sickbeard/webserve.py:1187
-#: sickbeard/webserve.py:1196
+#: sickbeard/webserve.py:1180 sickbeard/webserve.py:1190
+#: sickbeard/webserve.py:1199
 msgid "Error sending Pushbullet notification"
 msgstr "Erro ao enviar notificação de Pushbullet"
 
 #: gui/slick/views/displayShow.mako:439
 #: gui/slick/views/inc_home_showList.mako:195 gui/slick/views/manage.mako:51
-#: sickbeard/webserve.py:1213
+#: sickbeard/webserve.py:1216
 msgid "Status"
 msgstr "Status"
 
-#: sickbeard/webserve.py:1232 sickbeard/webserve.py:1261
+#: sickbeard/webserve.py:1235 sickbeard/webserve.py:1264
 msgid "Restarting SickRage"
 msgstr "Reiniciando o SickRage"
 
-#: sickbeard/webserve.py:1264
+#: sickbeard/webserve.py:1267
 msgid "Update Failed"
 msgstr "Falha na Atualização"
 
-#: sickbeard/webserve.py:1265
+#: sickbeard/webserve.py:1268
 msgid ""
 "Update wasn't successful, not restarting. Check your log for more "
 "information."
@@ -736,30 +736,30 @@ msgstr ""
 "Atualização falhou, não reiniciar. Verifique os registros para obter mais"
 " informações."
 
-#: sickbeard/webserve.py:1272
+#: sickbeard/webserve.py:1275
 msgid "Checking out branch"
 msgstr "Verificando versão"
 
-#: sickbeard/webserve.py:1275
+#: sickbeard/webserve.py:1278
 msgid "Already on branch"
 msgstr "Última versão instalada"
 
-#: sickbeard/webserve.py:1303
+#: sickbeard/webserve.py:1306
 msgid "Invalid show ID: {show}"
 msgstr "ID da série inválida: {show}"
 
-#: sickbeard/webserve.py:1306 sickbeard/webserve.py:1836
-#: sickbeard/webserve.py:1967 sickbeard/webserve.py:2005
+#: sickbeard/webserve.py:1309 sickbeard/webserve.py:1839
+#: sickbeard/webserve.py:1970 sickbeard/webserve.py:2008
 msgid "Show not in show list"
 msgstr "Série não encontrada na lista"
 
 #: gui/slick/views/inc_rootDirs.mako:31 gui/slick/views/manage.mako:40
-#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1322
-#: sickbeard/webserve.py:1992
+#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1325
+#: sickbeard/webserve.py:1995
 msgid "Edit"
 msgstr "Editar"
 
-#: sickbeard/webserve.py:1332
+#: sickbeard/webserve.py:1335
 msgid ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
@@ -767,204 +767,204 @@ msgstr ""
 "Esta serie está em processo de download - as informações abaixo estão "
 "incompletas."
 
-#: sickbeard/webserve.py:1335
+#: sickbeard/webserve.py:1338
 msgid "The information on this page is in the process of being updated."
 msgstr "A informação nesta página está sendo atualizada."
 
-#: sickbeard/webserve.py:1338
+#: sickbeard/webserve.py:1341
 msgid "The episodes below are currently being refreshed from disk"
 msgstr "Os episódios abaixo estão atualmente sendo atualizados no disco"
 
-#: sickbeard/webserve.py:1341
+#: sickbeard/webserve.py:1344
 msgid "Currently downloading subtitles for this show"
 msgstr "Neste momento estão sendo baixados legendas para esta serie"
 
-#: sickbeard/webserve.py:1344
+#: sickbeard/webserve.py:1347
 msgid "This show is queued to be refreshed."
 msgstr "Esta série está na fila para ser atualizado."
 
-#: sickbeard/webserve.py:1347
+#: sickbeard/webserve.py:1350
 msgid "This show is queued and awaiting an update."
 msgstr "Essa série esta na fila e aguardando uma atualização."
 
-#: sickbeard/webserve.py:1350
+#: sickbeard/webserve.py:1353
 msgid "This show is queued and awaiting subtitles download."
 msgstr "Essa série esta na fila e aguardando legendas para download."
 
-#: sickbeard/webserve.py:1355
+#: sickbeard/webserve.py:1358
 msgid "Resume"
 msgstr "Continuar"
 
-#: sickbeard/webserve.py:1357
+#: sickbeard/webserve.py:1360
 msgid "Pause"
 msgstr "Pausar"
 
 #: gui/slick/views/editShow.mako:345 gui/slick/views/inc_blackwhitelist.mako:40
 #: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:60
-#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1359
+#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1362
 msgid "Remove"
 msgstr "Remover"
 
-#: sickbeard/webserve.py:1360
+#: sickbeard/webserve.py:1363
 msgid "Re-scan files"
 msgstr "Re-escanear Arquivos"
 
-#: sickbeard/webserve.py:1361
+#: sickbeard/webserve.py:1364
 msgid "Force Full Update"
 msgstr "Forçar a atualização completa"
 
-#: sickbeard/webserve.py:1362
+#: sickbeard/webserve.py:1365
 msgid "Update show in KODI"
 msgstr "Atualizar série no KODI"
 
-#: sickbeard/webserve.py:1363
+#: sickbeard/webserve.py:1366
 msgid "Update show in Emby"
 msgstr "Atualizar Série no Emby"
 
-#: sickbeard/webserve.py:1366
+#: sickbeard/webserve.py:1369
 msgid "Hide specials"
 msgstr "Ocultar especiais"
 
-#: sickbeard/webserve.py:1368
+#: sickbeard/webserve.py:1371
 msgid "Show specials"
 msgstr "Mostrar especiais"
 
-#: sickbeard/webserve.py:1370 sickbeard/webserve.py:1995
-#: sickbeard/webserve.py:1996
+#: sickbeard/webserve.py:1373 sickbeard/webserve.py:1998
+#: sickbeard/webserve.py:1999
 msgid "Preview Rename"
 msgstr "Prever renomeação"
 
-#: sickbeard/webserve.py:1373
+#: sickbeard/webserve.py:1376
 msgid "Download Subtitles"
 msgstr "Baixar legendas"
 
-#: sickbeard/webserve.py:1462
+#: sickbeard/webserve.py:1465
 msgid "No scene exceptions"
 msgstr "Sem exceções da \"Scene\""
 
-#: sickbeard/webserve.py:1480 sickbeard/webserve.py:1729
-#: sickbeard/webserve.py:1750
+#: sickbeard/webserve.py:1483 sickbeard/webserve.py:1732
+#: sickbeard/webserve.py:1753
 msgid "Invalid show ID"
 msgstr "ID da série inválida"
 
-#: sickbeard/webserve.py:1489 sickbeard/webserve.py:1734
-#: sickbeard/webserve.py:1755
+#: sickbeard/webserve.py:1492 sickbeard/webserve.py:1737
+#: sickbeard/webserve.py:1758
 msgid "Unable to find the specified show"
 msgstr "Não é possível encontrar a série especificada"
 
-#: sickbeard/webserve.py:1514
+#: sickbeard/webserve.py:1517
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr "Não é possível recuperar grupos de \"Fansubs\" do AniDB."
 
-#: sickbeard/webserve.py:1523 sickbeard/webserve.py:1525
+#: sickbeard/webserve.py:1526 sickbeard/webserve.py:1528
 msgid "Edit Show"
 msgstr "Editar Série"
 
-#: sickbeard/webserve.py:1601 sickbeard/webserve.py:1636
+#: sickbeard/webserve.py:1604 sickbeard/webserve.py:1639
 msgid "Unable to refresh this show: {error}"
 msgstr "Não foi possível atualizar a série: {error}"
 
-#: sickbeard/webserve.py:1627
+#: sickbeard/webserve.py:1630
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr "Não existe a nova localização <tt>{location}</tt>"
 
-#: sickbeard/webserve.py:1653
+#: sickbeard/webserve.py:1656
 msgid "Unable to update show: {error}"
 msgstr "Não foi possível atualizar a série: {error}"
 
-#: sickbeard/webserve.py:1660
+#: sickbeard/webserve.py:1663
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr ""
 "Não é possível forçar uma atualização das exceções da \"Scene\" do "
 "seriado."
 
-#: sickbeard/webserve.py:1667
+#: sickbeard/webserve.py:1670
 msgid "Unable to force an update on scene numbering of the show."
 msgstr ""
 "Não é possível forçar uma atualização das numerações da \"Scene\" do "
 "seriado."
 
-#: sickbeard/webserve.py:1673 sickbeard/webserve.py:3495
+#: sickbeard/webserve.py:1676 sickbeard/webserve.py:3508
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} erro{plural} ao gravar as alterações:"
 
-#: sickbeard/webserve.py:1684
+#: sickbeard/webserve.py:1687
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} foi {paused_resumed}"
 
-#: sickbeard/webserve.py:1684
+#: sickbeard/webserve.py:1687
 msgid "resumed"
 msgstr "reiniciado"
 
-#: sickbeard/webserve.py:1684
+#: sickbeard/webserve.py:1687
 msgid "paused"
 msgstr "em pausa"
 
-#: sickbeard/webserve.py:1696
+#: sickbeard/webserve.py:1699
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} foi {deleted_trashed} {was_deleted}"
 
-#: sickbeard/webserve.py:1698
+#: sickbeard/webserve.py:1701
 msgid "deleted"
 msgstr "excluído"
 
-#: sickbeard/webserve.py:1698
+#: sickbeard/webserve.py:1701
 msgid "trashed"
 msgstr "eliminado"
 
-#: sickbeard/webserve.py:1699
+#: sickbeard/webserve.py:1702
 msgid "(media untouched)"
 msgstr "(mídia não tocada)"
 
-#: sickbeard/webserve.py:1699
+#: sickbeard/webserve.py:1702
 msgid "(with all related media)"
 msgstr "(com tudo relacionado a mídia)"
 
-#: sickbeard/webserve.py:1720
+#: sickbeard/webserve.py:1723
 msgid "Unable to refresh this show."
 msgstr "Não foi possível atualizar este seriado."
 
-#: sickbeard/webserve.py:1740
+#: sickbeard/webserve.py:1743
 msgid "Unable to update this show."
 msgstr "Não foi possível atualizar este seriado."
 
-#: sickbeard/webserve.py:1779
+#: sickbeard/webserve.py:1782
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr ""
 "Comando de atualização de biblioteca enviado para KODI host(s)): "
 "{kodi_hosts}"
 
-#: sickbeard/webserve.py:1781
+#: sickbeard/webserve.py:1784
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr "Não é possível conectar com um ou mais host(s)) KODI: {kodi_hosts}"
 
-#: sickbeard/webserve.py:1790
+#: sickbeard/webserve.py:1793
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 "Comando de atualização de biblioteca enviado para Plex Media Server host:"
 " {plex_server}"
 
-#: sickbeard/webserve.py:1793
+#: sickbeard/webserve.py:1796
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr "Não é possível conectar ao Plex Media Server host: {plex_server}"
 
-#: sickbeard/webserve.py:1805
+#: sickbeard/webserve.py:1808
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr "Comando de atualização de biblioteca enviado para Emby host: {emby_host}"
 
-#: sickbeard/webserve.py:1807
+#: sickbeard/webserve.py:1810
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr "Não é possível conectar Emby host: {emby_host}"
 
-#: sickbeard/webserve.py:1817 sickbeard/webserve.py:2001
+#: sickbeard/webserve.py:1820 sickbeard/webserve.py:2004
 msgid "You must specify a show and at least one episode"
 msgstr "Você deve especificar um Seriado de pelo menos um episódio"
 
-#: sickbeard/webserve.py:1826
+#: sickbeard/webserve.py:1829
 msgid "Invalid status"
 msgstr "Status inválido"
 
-#: sickbeard/webserve.py:1919
+#: sickbeard/webserve.py:1922
 msgid ""
 "Backlog was automatically started for the following seasons of "
 "<b>{show_name}</b>"
@@ -973,16 +973,16 @@ msgstr ""
 "seriados de <b>{show_name}</b>"
 
 #: gui/slick/views/displayShow.mako:77 gui/slick/views/displayShow.mako:82
-#: gui/slick/views/displayShow.mako:407 sickbeard/webserve.py:1926
-#: sickbeard/webserve.py:1945
+#: gui/slick/views/displayShow.mako:407 sickbeard/webserve.py:1929
+#: sickbeard/webserve.py:1948
 msgid "Season"
 msgstr "Temporada"
 
-#: sickbeard/webserve.py:1933
+#: sickbeard/webserve.py:1936
 msgid "Backlog started"
 msgstr "Lista de pendências foi iniciada"
 
-#: sickbeard/webserve.py:1938
+#: sickbeard/webserve.py:1941
 msgid ""
 "Retrying Search was automatically started for the following season of "
 "<b>{show_name}</b>"
@@ -990,46 +990,46 @@ msgstr ""
 "Nova tentativa de pesquisa foi iniciado automaticamente para a temporada "
 "seguinte de <b>{show_name}</b>"
 
-#: sickbeard/webserve.py:1952
+#: sickbeard/webserve.py:1955
 msgid "Retry Search started"
 msgstr "Nova tentativa de busca iniciada"
 
-#: sickbeard/webserve.py:1962
+#: sickbeard/webserve.py:1965
 msgid "You must specify a show"
 msgstr "Você deve especificar uma série"
 
-#: sickbeard/webserve.py:1972 sickbeard/webserve.py:2010
+#: sickbeard/webserve.py:1975 sickbeard/webserve.py:2013
 msgid "Can't rename episodes when the show dir is missing."
 msgstr ""
 "Não é possível renomear episódios quando o diretório do seriado dir está "
 "faltando."
 
-#: sickbeard/webserve.py:2167 sickbeard/webserve.py:2188
+#: sickbeard/webserve.py:2180 sickbeard/webserve.py:2201
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr "Novas Legendas baixadas: {new_subtitle_languages}"
 
-#: sickbeard/webserve.py:2170 sickbeard/webserve.py:2191
+#: sickbeard/webserve.py:2183 sickbeard/webserve.py:2204
 msgid "No subtitles downloaded"
 msgstr "Nenhuma legenda baixada"
 
-#: gui/slick/views/config_general.mako:74 gui/slick/views/layouts/main.mako:218
-#: sickbeard/webserve.py:2318
+#: gui/slick/views/config_general.mako:80 gui/slick/views/layouts/main.mako:218
+#: sickbeard/webserve.py:2331
 msgid "IRC"
 msgstr "IRC"
 
-#: sickbeard/webserve.py:2331
+#: sickbeard/webserve.py:2344
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
 msgstr ""
 "Não foi possível carregar as notícias do repo. [Clique aqui para "
 "news.md]) ({news_url})"
 
-#: sickbeard/webserve.py:2338 sickbeard/webserve.py:2356
+#: sickbeard/webserve.py:2351 sickbeard/webserve.py:2369
 msgid "The was a problem connecting to github, please refresh and try again"
 msgstr ""
 "Ouve um problema na conexão com o github, por favor atualize e tente "
 "novamente"
 
-#: sickbeard/webserve.py:2353
+#: sickbeard/webserve.py:2366
 msgid ""
 "Could not load changes from the repo. [Click here for "
 "CHANGES.md]({changes_url})"
@@ -1037,64 +1037,64 @@ msgstr ""
 "Não foi possível carregar alterações do repo. [Clique aqui para "
 "CHANGES.md] ({changes_url})"
 
-#: gui/slick/views/layouts/main.mako:219 sickbeard/webserve.py:2358
+#: gui/slick/views/layouts/main.mako:219 sickbeard/webserve.py:2371
 msgid "Changelog"
 msgstr "Registro de alterações"
 
-#: gui/slick/views/layouts/main.mako:186 sickbeard/webserve.py:2368
-#: sickbeard/webserve.py:3810 sickbeard/webserve.py:4254
+#: gui/slick/views/layouts/main.mako:186 sickbeard/webserve.py:2381
+#: sickbeard/webserve.py:3823 sickbeard/webserve.py:4267
 msgid "Post Processing"
 msgstr "Pós-processamento"
 
-#: gui/slick/views/layouts/main.mako:124 sickbeard/webserve.py:2400
+#: gui/slick/views/layouts/main.mako:124 sickbeard/webserve.py:2413
 msgid "Add Shows"
 msgstr "Adicionar séries"
 
-#: sickbeard/webserve.py:2465
+#: sickbeard/webserve.py:2478
 msgid "No folders selected."
 msgstr "Nenhuma pasta selecionada."
 
-#: sickbeard/webserve.py:2587
+#: sickbeard/webserve.py:2600
 msgid "New Show"
 msgstr "Nova Série"
 
-#: sickbeard/webserve.py:2602
+#: sickbeard/webserve.py:2615
 msgid "Trending Shows"
 msgstr "Séries em alta"
 
-#: sickbeard/webserve.py:2604 sickbeard/webserve.py:2727
+#: sickbeard/webserve.py:2617 sickbeard/webserve.py:2740
 msgid "Popular Shows"
 msgstr "Séries populares"
 
-#: sickbeard/webserve.py:2606 sickbeard/webserve.py:2620
+#: sickbeard/webserve.py:2619 sickbeard/webserve.py:2633
 msgid "Most Anticipated Shows"
 msgstr "Séries mais aguardados aguardadas"
 
-#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2616
+#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2629
 msgid "New Shows"
 msgstr "Novas séries"
 
-#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2618
+#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2631
 msgid "Season Premieres"
 msgstr "Temporada de estréia"
 
-#: sickbeard/webserve.py:2747 sickbeard/webserve.py:2748
+#: sickbeard/webserve.py:2760 sickbeard/webserve.py:2761
 msgid "Existing Show"
 msgstr "Show existente"
 
-#: sickbeard/webserve.py:2826
+#: sickbeard/webserve.py:2839
 msgid "No root directories setup, please go back and add one."
 msgstr "Nenhum diretório raiz de instalação, por favor volte e adiciona um."
 
-#: sickbeard/webserve.py:2838 sickbeard/webserve.py:2957
+#: sickbeard/webserve.py:2851 sickbeard/webserve.py:2970
 msgid "Show added"
 msgstr "Série adicionada"
 
-#: sickbeard/webserve.py:2838
+#: sickbeard/webserve.py:2851
 msgid "Adding the specified show {show_name}"
 msgstr "Adicionando a série especificada {show_name}"
 
-#: sickbeard/webserve.py:2879
+#: sickbeard/webserve.py:2892
 msgid ""
 "Missing params, no Indexer ID or folder: {show_to_add} and "
 "{root_dir}/{show_path}"
@@ -1102,202 +1102,202 @@ msgstr ""
 "Faltando parâmetros, nenhum ID de indexador ou pasta: {show_to_add} e "
 "{root_dir}/{show_path}"
 
-#: sickbeard/webserve.py:2888
+#: sickbeard/webserve.py:2901
 msgid "Unknown error. Unable to add show due to problem with show selection."
 msgstr ""
 "Erro desconhecido. Não é possível adicionar a série devido a um problema "
 "com a série escolhida."
 
-#: sickbeard/webserve.py:2912 sickbeard/webserve.py:2922
+#: sickbeard/webserve.py:2925 sickbeard/webserve.py:2935
 msgid "Unable to add show"
 msgstr "Não é possível adicionar série"
 
-#: sickbeard/webserve.py:2912
+#: sickbeard/webserve.py:2925
 msgid "Folder {show_dir} exists already"
 msgstr "Diretório {show_dir} já existe"
 
-#: sickbeard/webserve.py:2923
+#: sickbeard/webserve.py:2936
 msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr "Não foi possível criar a pasta {show_dir}, série não adicionada"
 
-#: sickbeard/webserve.py:2957
+#: sickbeard/webserve.py:2970
 msgid "Adding the specified show into {show_dir}"
 msgstr "Adicionando a série especificada em {show_dir}"
 
-#: sickbeard/webserve.py:3033
+#: sickbeard/webserve.py:3046
 msgid "Shows Added"
 msgstr "Séries adicionadas"
 
-#: sickbeard/webserve.py:3034
+#: sickbeard/webserve.py:3047
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr ""
 "Adicionado automaticamente {num_shows} de seus arquivos de metadados "
 "existentes"
 
-#: gui/slick/views/layouts/main.mako:149 sickbeard/webserve.py:3051
+#: gui/slick/views/layouts/main.mako:149 sickbeard/webserve.py:3064
 msgid "Mass Update"
 msgstr "Atualização em massa"
 
-#: sickbeard/webserve.py:3089 sickbeard/webserve.py:3116
-#: sickbeard/webserve.py:3192 sickbeard/webserve.py:3193
+#: sickbeard/webserve.py:3102 sickbeard/webserve.py:3129
+#: sickbeard/webserve.py:3205 sickbeard/webserve.py:3206
 msgid "Episode Overview"
 msgstr "Visão geral do episódio"
 
-#: sickbeard/webserve.py:3225
+#: sickbeard/webserve.py:3238
 msgid "Missing Subtitles"
 msgstr "Legendas em falta"
 
-#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:3311
-#: sickbeard/webserve.py:3312
+#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:3324
+#: sickbeard/webserve.py:3325
 msgid "Backlog Overview"
 msgstr "Visão geral de dependências"
 
-#: sickbeard/webserve.py:3436
+#: sickbeard/webserve.py:3449
 msgid "Mass Edit"
 msgstr "Editor em massa"
 
-#: sickbeard/webserve.py:3541
+#: sickbeard/webserve.py:3554
 msgid "Unable to update show: {excption_format}"
 msgstr "Não é possível atualizar a série: {excption_format}"
 
-#: sickbeard/webserve.py:3549
+#: sickbeard/webserve.py:3562
 msgid "Unable to refresh show {show_name}: {excption_format}"
 msgstr "Não é possível atualizar o seriado {show_name}: {excption_format}"
 
-#: sickbeard/webserve.py:3560
+#: sickbeard/webserve.py:3573
 msgid "Errors encountered"
 msgstr "Erros encontrados"
 
-#: gui/slick/views/config_general.mako:255 sickbeard/webserve.py:3566
+#: gui/slick/views/config_general.mako:261 sickbeard/webserve.py:3579
 msgid "Updates"
 msgstr "Atualizações"
 
-#: sickbeard/webserve.py:3571
+#: sickbeard/webserve.py:3584
 msgid "Refreshes"
 msgstr "Atualizações"
 
-#: sickbeard/webserve.py:3576
+#: sickbeard/webserve.py:3589
 msgid "Renames"
 msgstr "Renomeações"
 
 #: gui/slick/views/displayShow.mako:263 gui/slick/views/displayShow.mako:438
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
-#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3581
-#: sickbeard/webserve.py:5180
+#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3594
+#: sickbeard/webserve.py:5193
 msgid "Subtitles"
 msgstr "Legendas"
 
-#: sickbeard/webserve.py:3586
+#: sickbeard/webserve.py:3599
 msgid "The following actions were queued"
 msgstr "As seguintes ações foram adicionadas à fila"
 
-#: sickbeard/webserve.py:3606
+#: sickbeard/webserve.py:3619
 msgid "For best results please set the Download Station alias as"
 msgstr ""
 "Para obter melhores resultados, por favor, configurar o alias da estação "
 "de Download como"
 
-#: sickbeard/webserve.py:3607
+#: sickbeard/webserve.py:3620
 msgid "You can check this setting in the Synology DSM"
 msgstr "Você pode verificar essa configuração no DSM Synology"
 
-#: sickbeard/webserve.py:3607 sickbeard/webserve.py:3609
+#: sickbeard/webserve.py:3620 sickbeard/webserve.py:3622
 msgid "Control Panel"
 msgstr "Painel de Controle"
 
-#: sickbeard/webserve.py:3607
+#: sickbeard/webserve.py:3620
 msgid "Application Portal"
 msgstr "Portal da aplicação"
 
-#: sickbeard/webserve.py:3608
+#: sickbeard/webserve.py:3621
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
 msgstr "Certifique-se de permitir que o DSM seja incorporado com iFrames também em"
 
-#: sickbeard/webserve.py:3609
+#: sickbeard/webserve.py:3622
 msgid "DSM Settings"
 msgstr "Configurações do DSM"
 
-#: sickbeard/webserve.py:3609
+#: sickbeard/webserve.py:3622
 msgid "Security"
 msgstr "Segurança"
 
-#: gui/slick/views/layouts/main.mako:163 sickbeard/webserve.py:3617
+#: gui/slick/views/layouts/main.mako:163 sickbeard/webserve.py:3630
 msgid "Manage Torrents"
 msgstr "Gerenciar Torrents"
 
-#: gui/slick/views/layouts/main.mako:166 sickbeard/webserve.py:3638
+#: gui/slick/views/layouts/main.mako:166 sickbeard/webserve.py:3651
 msgid "Failed Downloads"
 msgstr "Downloads Falhados"
 
-#: gui/slick/views/layouts/main.mako:151 sickbeard/webserve.py:3656
+#: gui/slick/views/layouts/main.mako:151 sickbeard/webserve.py:3669
 msgid "Manage Searches"
 msgstr "Gerenciar as buscas"
 
-#: sickbeard/webserve.py:3664
+#: sickbeard/webserve.py:3677
 msgid "Backlog search started"
 msgstr "Início de pesquisa de lista de dependências"
 
-#: sickbeard/webserve.py:3674
+#: sickbeard/webserve.py:3687
 msgid "Daily search started"
 msgstr "Iniciado a busca diária"
 
-#: sickbeard/webserve.py:3683
+#: sickbeard/webserve.py:3696
 msgid "Find propers search started"
 msgstr "Pesquisa iniciada"
 
-#: sickbeard/webserve.py:3692
+#: sickbeard/webserve.py:3705
 msgid "Subtitle search started"
 msgstr "Pesquisa de legendas iniciada"
 
-#: sickbeard/webserve.py:3756
+#: sickbeard/webserve.py:3769
 #, fuzzy
 msgid "Remove Selected"
 msgstr "Renomear selecionado"
 
-#: sickbeard/webserve.py:3757
+#: sickbeard/webserve.py:3770
 msgid "Clear History"
 msgstr "Limpar histórico"
 
-#: sickbeard/webserve.py:3758
+#: sickbeard/webserve.py:3771
 msgid "Trim History"
 msgstr "Encurtar histórico"
 
-#: sickbeard/webserve.py:3778
+#: sickbeard/webserve.py:3791
 msgid "Selected history entries removed"
 msgstr ""
 
-#: sickbeard/webserve.py:3785
+#: sickbeard/webserve.py:3798
 msgid "History cleared"
 msgstr "Histórico apagado"
 
-#: sickbeard/webserve.py:3792
+#: sickbeard/webserve.py:3805
 msgid "Removed history entries older than 30 days"
 msgstr "Remover entradas do histórico mais antigas do que 30 dias"
 
-#: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3805
+#: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3818
 msgid "General"
 msgstr "Geral"
 
-#: sickbeard/webserve.py:3806 sickbeard/webserve.py:4056
+#: sickbeard/webserve.py:3819 sickbeard/webserve.py:4069
 msgid "Backup/Restore"
 msgstr "Backup/Restaurar"
 
-#: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3807
-#: sickbeard/webserve.py:4119
+#: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3820
+#: sickbeard/webserve.py:4132
 msgid "Search Settings"
 msgstr "Configurações de pesquisa"
 
-#: gui/slick/views/layouts/main.mako:184 sickbeard/webserve.py:3808
-#: sickbeard/webserve.py:4455
+#: gui/slick/views/layouts/main.mako:184 sickbeard/webserve.py:3821
+#: sickbeard/webserve.py:4468
 msgid "Search Providers"
 msgstr "Provedores de pesquisa"
 
-#: gui/slick/views/layouts/main.mako:185 sickbeard/webserve.py:3809
+#: gui/slick/views/layouts/main.mako:185 sickbeard/webserve.py:3822
 msgid "Subtitles Settings"
 msgstr "Configurações de legendas"
 
-#: gui/slick/views/layouts/main.mako:187 sickbeard/webserve.py:3811
-#: sickbeard/webserve.py:4901
+#: gui/slick/views/layouts/main.mako:187 sickbeard/webserve.py:3824
+#: sickbeard/webserve.py:4914
 msgid "Notifications"
 msgstr "Notificações"
 
@@ -1305,80 +1305,80 @@ msgstr "Notificações"
 #: gui/slick/views/home.mako:94 gui/slick/views/inc_addShowOptions.mako:79
 #: gui/slick/views/inc_home_showList.mako:200
 #: gui/slick/views/layouts/main.mako:188 gui/slick/views/manage.mako:46
-#: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3812
-#: sickbeard/webserve.py:5245
+#: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3825
+#: sickbeard/webserve.py:5258
 msgid "Anime"
 msgstr "Anime"
 
-#: sickbeard/webserve.py:3850 sickbeard/webserve.py:3851
+#: sickbeard/webserve.py:3863 sickbeard/webserve.py:3864
 msgid "SickRage Configuration"
 msgstr "Configuração do SickRage"
 
-#: sickbeard/webserve.py:3865
+#: sickbeard/webserve.py:3878
 msgid "Config - General"
 msgstr "Configuração - geral"
 
-#: sickbeard/webserve.py:3865
+#: sickbeard/webserve.py:3878
 msgid "General Configuration"
 msgstr "Configuração geral"
 
-#: sickbeard/webserve.py:3905
+#: sickbeard/webserve.py:3918
 msgid "Saved Defaults"
 msgstr "Padrões salvos"
 
-#: sickbeard/webserve.py:3905
+#: sickbeard/webserve.py:3918
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 "Os padrões de \"adicionar série\" foram definidos para suas seleções "
 "atuais."
 
-#: sickbeard/webserve.py:4010
+#: sickbeard/webserve.py:4023
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 "Não é possível criar o diretório {directory}, diretório de log não "
 "alterado."
 
-#: sickbeard/webserve.py:4018
+#: sickbeard/webserve.py:4031
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 "Não é possível criar o diretório {directory}, o diretório da chave https "
 "não foi mudado."
 
-#: sickbeard/webserve.py:4022
+#: sickbeard/webserve.py:4035
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 "Não é possível criar o diretório {directory}, o diretório da chave https "
 "não foi mudado."
 
-#: sickbeard/webserve.py:4039 sickbeard/webserve.py:4237
-#: sickbeard/webserve.py:4378 sickbeard/webserve.py:5163
+#: sickbeard/webserve.py:4052 sickbeard/webserve.py:4250
+#: sickbeard/webserve.py:4391 sickbeard/webserve.py:5176
 msgid "Error(s) Saving Configuration"
 msgstr "Erro (s) a guardar a configuração"
 
-#: sickbeard/webserve.py:4042 sickbeard/webserve.py:4240
-#: sickbeard/webserve.py:4381 sickbeard/webserve.py:4887
-#: sickbeard/webserve.py:5166 sickbeard/webserve.py:5230
-#: sickbeard/webserve.py:5259
+#: sickbeard/webserve.py:4055 sickbeard/webserve.py:4253
+#: sickbeard/webserve.py:4394 sickbeard/webserve.py:4900
+#: sickbeard/webserve.py:5179 sickbeard/webserve.py:5243
+#: sickbeard/webserve.py:5272
 msgid "Configuration Saved"
 msgstr "Configuração salva"
 
-#: sickbeard/webserve.py:4055
+#: sickbeard/webserve.py:4068
 msgid "Config - Backup/Restore"
 msgstr "Config - Backup/Restaurar"
 
-#: sickbeard/webserve.py:4118
+#: sickbeard/webserve.py:4131
 msgid "Config - Episode Search"
 msgstr "Config - Busca de episódios"
 
-#: sickbeard/webserve.py:4253
+#: sickbeard/webserve.py:4266
 msgid "Config - Post Processing"
 msgstr "Config - pós-processamento"
 
-#: sickbeard/webserve.py:4293
+#: sickbeard/webserve.py:4306
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "Descompactação não suportado, desabilitando configuração de descompactar"
 
-#: sickbeard/webserve.py:4346 sickbeard/webserve.py:4357
+#: sickbeard/webserve.py:4359 sickbeard/webserve.py:4370
 msgid ""
 "You tried saving an invalid anime naming config, not saving your naming "
 "settings"
@@ -1386,61 +1386,61 @@ msgstr ""
 "Você tentou salvar um arquivo de configuração de nomeação de anime "
 "inválido, Suas configurações não serão salvas"
 
-#: sickbeard/webserve.py:4348 sickbeard/webserve.py:4359
+#: sickbeard/webserve.py:4361 sickbeard/webserve.py:4372
 msgid "You tried saving an invalid naming config, not saving your naming settings"
 msgstr ""
 "Você tentou salvar um arquivo de configuração com nome inválido, Suas "
 "configurações não serão salvas"
 
-#: sickbeard/webserve.py:4454
+#: sickbeard/webserve.py:4467
 msgid "Config - Providers"
 msgstr "Config - Provedores"
 
-#: sickbeard/webserve.py:4484
+#: sickbeard/webserve.py:4497
 msgid "No Provider Name specified"
 msgstr "Nenhum nome de provedor especificado"
 
-#: sickbeard/webserve.py:4486
+#: sickbeard/webserve.py:4499
 msgid "No Provider Url specified"
 msgstr "Nenhuma URL de provedor especificado"
 
-#: sickbeard/webserve.py:4488
+#: sickbeard/webserve.py:4501
 msgid "No Provider Api key specified"
 msgstr "Nenhuma chave Api para o provedor especificado"
 
-#: sickbeard/webserve.py:4900
+#: sickbeard/webserve.py:4913
 msgid "Config - Notifications"
 msgstr "Config - notificações"
 
-#: sickbeard/webserve.py:5179
+#: sickbeard/webserve.py:5192
 msgid "Config - Subtitles"
 msgstr "Config - legendas"
 
-#: sickbeard/webserve.py:5244
+#: sickbeard/webserve.py:5257
 msgid "Config - Anime"
 msgstr "Config - Anime"
 
-#: sickbeard/webserve.py:5272
+#: sickbeard/webserve.py:5285
 msgid "Clear Errors"
 msgstr "Limpar erros"
 
-#: sickbeard/webserve.py:5278
+#: sickbeard/webserve.py:5291
 msgid "Clear Warnings"
 msgstr "Limpar avisos"
 
-#: sickbeard/webserve.py:5284
+#: sickbeard/webserve.py:5297
 msgid "Submit Errors"
 msgstr "Enviar erros"
 
-#: sickbeard/webserve.py:5299
+#: sickbeard/webserve.py:5312
 msgid "Logs &amp; Errors"
 msgstr "Logs &amp; erros"
 
-#: sickbeard/webserve.py:5324
+#: sickbeard/webserve.py:5337
 msgid "Log File"
 msgstr "Arquivo de log"
 
-#: sickbeard/webserve.py:5324
+#: sickbeard/webserve.py:5337
 msgid "Logs"
 msgstr "Logs"
 
@@ -1592,7 +1592,7 @@ msgid "Show retrieved from existing metadata"
 msgstr "Série recuperada apartir do metadado existente"
 
 #: gui/slick/views/addShows_newShow.mako:49
-#: gui/slick/views/config_general.mako:188
+#: gui/slick/views/config_general.mako:194
 msgid "All Indexers"
 msgstr "Todos os indexadores"
 
@@ -1992,66 +1992,66 @@ msgstr "Restaurar seu arquivo de banco de dados e configuração."
 msgid "Select the backup file you wish to restore"
 msgstr "Selecione o arquivo de backup que você deseja restaurar"
 
-#: gui/slick/views/config_general.mako:12
-#: gui/slick/views/config_general.mako:26
+#: gui/slick/views/config_general.mako:18
+#: gui/slick/views/config_general.mako:32
 msgid "Misc"
 msgstr "Diversos"
 
-#: gui/slick/views/config_general.mako:13
+#: gui/slick/views/config_general.mako:19
 msgid "Interface"
 msgstr "Interface"
 
-#: gui/slick/views/config_general.mako:14
-#: gui/slick/views/config_general.mako:792 gui/slick/views/editShow.mako:267
+#: gui/slick/views/config_general.mako:20
+#: gui/slick/views/config_general.mako:798 gui/slick/views/editShow.mako:267
 msgid "Advanced Settings"
 msgstr "Configurações avançadas"
 
-#: gui/slick/views/config_general.mako:27
+#: gui/slick/views/config_general.mako:33
 msgid "Startup options. Indexer options. Log and show file locations."
 msgstr ""
 "Opções de inicialização. Opções de indexador. Locais de arquivo de log e "
 "série."
 
-#: gui/slick/views/config_general.mako:28
+#: gui/slick/views/config_general.mako:34
 msgid "Some options may require a manual restart to take effect."
 msgstr ""
 "Algumas opções podem requerer uma reinicialização manual para terem "
 "efeito."
 
-#: gui/slick/views/config_general.mako:36
+#: gui/slick/views/config_general.mako:42
 msgid "Default Indexer Language"
 msgstr "Idioma de indexador padrão"
 
-#: gui/slick/views/config_general.mako:46
+#: gui/slick/views/config_general.mako:52
 msgid "for adding shows and metadata providers"
 msgstr "para adicionar séries e provedores de metadados"
 
-#: gui/slick/views/config_general.mako:54
+#: gui/slick/views/config_general.mako:60
 msgid "Launch browser"
 msgstr "Iniciar navegador"
 
-#: gui/slick/views/config_general.mako:58
+#: gui/slick/views/config_general.mako:64
 msgid "open the SickRage home page on startup"
 msgstr "abrir a página inicial do SickRage na inicialização"
 
-#: gui/slick/views/config_general.mako:64
+#: gui/slick/views/config_general.mako:70
 msgid "Initial page"
 msgstr "Página inicial"
 
-#: gui/slick/views/config_general.mako:70 gui/slick/views/home.mako:74
+#: gui/slick/views/config_general.mako:76 gui/slick/views/home.mako:74
 #: gui/slick/views/layouts/main.mako:119 gui/slick/views/layouts/main.mako:311
 msgid "Shows"
 msgstr "Séries"
 
-#: gui/slick/views/config_general.mako:80
+#: gui/slick/views/config_general.mako:86
 msgid "when launching SickRage interface"
 msgstr "ao iniciar a interface do SickRage"
 
-#: gui/slick/views/config_general.mako:89
+#: gui/slick/views/config_general.mako:95
 msgid "Choose hour to update shows"
 msgstr "Escolher a hora que deseja atualizar as séries"
 
-#: gui/slick/views/config_general.mako:99
+#: gui/slick/views/config_general.mako:105
 msgid ""
 "with information such as next air dates, show ended, etc. Use 15 for 3pm,"
 " 4 for 4am etc."
@@ -2059,11 +2059,11 @@ msgstr ""
 "com informações como datas de próxima exibição, show terminado, etc. Use "
 "15 para 3pm, 4 para 4am etc."
 
-#: gui/slick/views/config_general.mako:104
-#: gui/slick/views/config_general.mako:534
-#: gui/slick/views/config_general.mako:564
-#: gui/slick/views/config_general.mako:1000
-#: gui/slick/views/config_general.mako:1096
+#: gui/slick/views/config_general.mako:110
+#: gui/slick/views/config_general.mako:540
+#: gui/slick/views/config_general.mako:570
+#: gui/slick/views/config_general.mako:1006
+#: gui/slick/views/config_general.mako:1102
 #: gui/slick/views/config_notifications.mako:458
 #: gui/slick/views/config_notifications.mako:824
 #: gui/slick/views/config_notifications.mako:869
@@ -2090,23 +2090,23 @@ msgstr ""
 msgid "note"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:104
+#: gui/slick/views/config_general.mako:110
 msgid "minutes are randomized each time SickRage is started"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:112
+#: gui/slick/views/config_general.mako:118
 msgid "Send to trash for actions"
 msgstr "Enviar para o lixo por ações"
 
-#: gui/slick/views/config_general.mako:118
+#: gui/slick/views/config_general.mako:124
 msgid "when using show \"Remove\" and delete files"
 msgstr "quando se usa \"Excluir\" de uma série e excluir arquivos"
 
-#: gui/slick/views/config_general.mako:124
+#: gui/slick/views/config_general.mako:130
 msgid "on scheduled deletes of the oldest log files"
 msgstr "em atualizações programadas dos arquivos de log mais antigos"
 
-#: gui/slick/views/config_general.mako:129
+#: gui/slick/views/config_general.mako:135
 msgid ""
 "selected actions use trash (recycle bin) instead of the default permanent"
 " delete"
@@ -2114,15 +2114,15 @@ msgstr ""
 "acções seleccionadas usar lixo (lixeira) em vez do padrão permanente de "
 "exclusão"
 
-#: gui/slick/views/config_general.mako:137
+#: gui/slick/views/config_general.mako:143
 msgid "Log file folder location"
 msgstr "Local de pasta de arquivo de log"
 
-#: gui/slick/views/config_general.mako:146
+#: gui/slick/views/config_general.mako:152
 msgid "Number of Log files saved"
 msgstr "Número de arquivos de Log salvos"
 
-#: gui/slick/views/config_general.mako:156
+#: gui/slick/views/config_general.mako:162
 msgid ""
 "number of log files saved when rotating logs (default: 5) (REQUIRES "
 "RESTART)"
@@ -2130,46 +2130,46 @@ msgstr ""
 "número de arquivos de log, salvados quando os logs de giro (padrão: 5) "
 "(requer reinicialização)"
 
-#: gui/slick/views/config_general.mako:164
+#: gui/slick/views/config_general.mako:170
 msgid "Size of Log files saved"
 msgstr "Tamanho dos arquivos de Log salvos"
 
-#: gui/slick/views/config_general.mako:174
+#: gui/slick/views/config_general.mako:180
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
 msgstr ""
 "tamanho máximo em MB do arquivo de log (padrão: 1MB) (REQUER "
 "REINICIALIZAÇÃO)"
 
-#: gui/slick/views/config_general.mako:182
+#: gui/slick/views/config_general.mako:188
 msgid "Use initial indexer set to"
 msgstr "Indexador inicial de uso definido predefenido"
 
-#: gui/slick/views/config_general.mako:197
+#: gui/slick/views/config_general.mako:203
 msgid "as the default selection when adding new shows"
 msgstr "como a seleção padrão ao adicionar novas séries"
 
-#: gui/slick/views/config_general.mako:205
+#: gui/slick/views/config_general.mako:211
 msgid "Timeout show indexer at"
 msgstr "Valor de \"Time Out\" do indexador"
 
-#: gui/slick/views/config_general.mako:215
+#: gui/slick/views/config_general.mako:221
 msgid "seconds of inactivity when finding new shows (default:20)"
 msgstr "segundos de inatividade quando encontrar novas séries (padrão: 20)"
 
-#: gui/slick/views/config_general.mako:223
+#: gui/slick/views/config_general.mako:229
 msgid "Show root directories"
 msgstr "Diretórios raiz do Seriado"
 
-#: gui/slick/views/config_general.mako:228
+#: gui/slick/views/config_general.mako:234
 msgid "where the files of shows are located"
 msgstr "onde se encontram os arquivos dos seriados"
 
-#: gui/slick/views/config_general.mako:241
-#: gui/slick/views/config_general.mako:312
-#: gui/slick/views/config_general.mako:590
-#: gui/slick/views/config_general.mako:776
-#: gui/slick/views/config_general.mako:1013
-#: gui/slick/views/config_general.mako:1218
+#: gui/slick/views/config_general.mako:247
+#: gui/slick/views/config_general.mako:318
+#: gui/slick/views/config_general.mako:596
+#: gui/slick/views/config_general.mako:782
+#: gui/slick/views/config_general.mako:1019
+#: gui/slick/views/config_general.mako:1224
 #: gui/slick/views/config_notifications.mako:181
 #: gui/slick/views/config_notifications.mako:326
 #: gui/slick/views/config_notifications.mako:453
@@ -2203,15 +2203,15 @@ msgstr "onde se encontram os arquivos dos seriados"
 msgid "Save Changes"
 msgstr "Salvar alterações"
 
-#: gui/slick/views/config_general.mako:256
+#: gui/slick/views/config_general.mako:262
 msgid "Options for software updates."
 msgstr "Opções para atualizações de software."
 
-#: gui/slick/views/config_general.mako:264
+#: gui/slick/views/config_general.mako:270
 msgid "Check software updates"
 msgstr "Procurar por atualizações"
 
-#: gui/slick/views/config_general.mako:268
+#: gui/slick/views/config_general.mako:274
 msgid ""
 "and display notifications when updates are available. Checks are run on "
 "startup and at the frequency set below*"
@@ -2220,11 +2220,11 @@ msgstr ""
 "Verificações são executados na inicialização e na frequência definida "
 "abaixo*"
 
-#: gui/slick/views/config_general.mako:274
+#: gui/slick/views/config_general.mako:280
 msgid "Automatically update"
 msgstr "Atualizar automaticamente"
 
-#: gui/slick/views/config_general.mako:278
+#: gui/slick/views/config_general.mako:284
 msgid ""
 "fetch and install software updates. Updates are run on startup and in the"
 " background at the frequency set below*"
@@ -2232,117 +2232,117 @@ msgstr ""
 "buscar e instalar atualizações de software. Atualizações são executadas "
 "na inicialização e em segundo plano na frequência definida abaixo*"
 
-#: gui/slick/views/config_general.mako:284
+#: gui/slick/views/config_general.mako:290
 msgid "Check the server every*"
 msgstr "Verifique o servidor a cada*"
 
-#: gui/slick/views/config_general.mako:294
+#: gui/slick/views/config_general.mako:300
 msgid "hours for software updates (default:1)"
 msgstr "horas para procurar atualizações de software (padrão: 1)"
 
-#: gui/slick/views/config_general.mako:302
+#: gui/slick/views/config_general.mako:308
 msgid "Notify on software update"
 msgstr "Notificar sobre a atualização de software"
 
-#: gui/slick/views/config_general.mako:306
+#: gui/slick/views/config_general.mako:312
 msgid "send a message to all enabled notifiers when SickRage has been updated"
 msgstr ""
 "enviar uma mensagem para todos os notificadores habilitados quando "
 "SickRage foi atualizado"
 
-#: gui/slick/views/config_general.mako:326
+#: gui/slick/views/config_general.mako:332
 msgid "User Interface"
 msgstr "Interface de usuário"
 
-#: gui/slick/views/config_general.mako:327
+#: gui/slick/views/config_general.mako:333
 msgid "Options for visual appearance."
 msgstr "Opções para aparência visual."
 
-#: gui/slick/views/config_general.mako:336
+#: gui/slick/views/config_general.mako:342
 msgid "Interface Language"
 msgstr "Idioma da Interface"
 
-#: gui/slick/views/config_general.mako:342
+#: gui/slick/views/config_general.mako:348
 msgid "System Language"
 msgstr "Idioma do sistema"
 
-#: gui/slick/views/config_general.mako:351
-#: gui/slick/views/config_general.mako:372
+#: gui/slick/views/config_general.mako:357
+#: gui/slick/views/config_general.mako:378
 msgid "for appearance to take effect, save then refresh your browser"
 msgstr ""
 "para que a aparência seja efetivada, salvar e em seguida, atualize seu "
 "navegador"
 
-#: gui/slick/views/config_general.mako:359
+#: gui/slick/views/config_general.mako:365
 msgid "Display theme"
 msgstr "Tema"
 
-#: gui/slick/views/config_general.mako:365
+#: gui/slick/views/config_general.mako:371
 msgid "Dark"
 msgstr "Escuro"
 
-#: gui/slick/views/config_general.mako:366
+#: gui/slick/views/config_general.mako:372
 msgid "Light"
 msgstr "Claro"
 
-#: gui/slick/views/config_general.mako:380
+#: gui/slick/views/config_general.mako:386
 msgid "Use a background image"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:385
+#: gui/slick/views/config_general.mako:391
 msgid "use a custom image as background for SickRage"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:391
+#: gui/slick/views/config_general.mako:397
 msgid "Background Path"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:402
+#: gui/slick/views/config_general.mako:408
 msgid "Path to the background image"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:411
+#: gui/slick/views/config_general.mako:417
 msgid "Show fanart in the background"
 msgstr "Fanart do seriado no fundo"
 
-#: gui/slick/views/config_general.mako:415
-#: gui/slick/views/config_general.mako:447
+#: gui/slick/views/config_general.mako:421
+#: gui/slick/views/config_general.mako:453
 msgid "on the show summary page"
 msgstr "na página de resumo do seriado"
 
-#: gui/slick/views/config_general.mako:423
+#: gui/slick/views/config_general.mako:429
 msgid "Fanart transparency"
 msgstr "Transparência da FanArt"
 
-#: gui/slick/views/config_general.mako:433
+#: gui/slick/views/config_general.mako:439
 msgid "transparency of the fanart in the background"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:443
+#: gui/slick/views/config_general.mako:449
 msgid "Show all seasons"
 msgstr "Mostrar todas as temporadas"
 
-#: gui/slick/views/config_general.mako:453
+#: gui/slick/views/config_general.mako:459
 msgid "Sort with \"The\", \"A\", \"An\""
 msgstr "Ordenar usando \"The\", \"A\", \"An\""
 
-#: gui/slick/views/config_general.mako:457
+#: gui/slick/views/config_general.mako:463
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
 msgstr "incluir (\"The\", \"A\", \"An\") quando ordenar as listas de séries"
 
-#: gui/slick/views/config_general.mako:463
+#: gui/slick/views/config_general.mako:469
 msgid "Missed episodes range"
 msgstr "Gama de episódios perdidos"
 
-#: gui/slick/views/config_general.mako:473
+#: gui/slick/views/config_general.mako:479
 msgid "set the range in days of the missed episodes in the Schedule page"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:481
+#: gui/slick/views/config_general.mako:487
 msgid "Display fuzzy dates"
 msgstr "Exibir datas difusos"
 
-#: gui/slick/views/config_general.mako:485
+#: gui/slick/views/config_general.mako:491
 msgid ""
 "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On "
 "Tue\""
@@ -2350,119 +2350,119 @@ msgstr ""
 "mover datas absolutas em dicas de ferramentas e exibir, por exemplo, "
 "\"última quinta-feira\", \"Na terça-feira\""
 
-#: gui/slick/views/config_general.mako:491
+#: gui/slick/views/config_general.mako:497
 msgid "Trim zero padding"
 msgstr "Apagar espaços"
 
-#: gui/slick/views/config_general.mako:495
+#: gui/slick/views/config_general.mako:501
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr "remover o número \"0\" à mostrada na hora do dia e data de mês"
 
-#: gui/slick/views/config_general.mako:501
+#: gui/slick/views/config_general.mako:507
 msgid "Date style"
 msgstr "Estilo da data"
 
-#: gui/slick/views/config_general.mako:510
+#: gui/slick/views/config_general.mako:516
 msgid "Use System Default"
 msgstr "Usar padrão do sistema"
 
-#: gui/slick/views/config_general.mako:520
+#: gui/slick/views/config_general.mako:526
 msgid "Time style"
 msgstr "Estilo do tempo"
 
-#: gui/slick/views/config_general.mako:534
+#: gui/slick/views/config_general.mako:540
 msgid "seconds are only shown on the History page"
 msgstr "segundos são mostrado apenas na página de Histórico"
 
-#: gui/slick/views/config_general.mako:542
+#: gui/slick/views/config_general.mako:548
 msgid "Timezone"
 msgstr "Fuso horário"
 
-#: gui/slick/views/config_general.mako:548
+#: gui/slick/views/config_general.mako:554
 msgid "Local"
 msgstr "Local"
 
-#: gui/slick/views/config_general.mako:554
+#: gui/slick/views/config_general.mako:560
 #: gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:190 gui/slick/views/manage.mako:42
 #: gui/slick/views/schedule.mako:47 gui/slick/views/schedule.mako:93
 msgid "Network"
 msgstr "Emissora"
 
-#: gui/slick/views/config_general.mako:559
+#: gui/slick/views/config_general.mako:565
 msgid ""
 "display dates and times in either your timezone or the shows network "
 "timezone"
 msgstr "exibir datas e horas em seu fuso horário ou o fuso de horário da rede"
 
-#: gui/slick/views/config_general.mako:564
+#: gui/slick/views/config_general.mako:570
 msgid ""
 "use local timezone to start searching for episodes minutes after show "
 "ends (depends on your dailysearch frequency)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:572
+#: gui/slick/views/config_general.mako:578
 msgid "Download url"
 msgstr "URL de Download"
 
-#: gui/slick/views/config_general.mako:582
+#: gui/slick/views/config_general.mako:588
 msgid "URL where the shows can be downloaded."
 msgstr "URL onde as séries podem ser baixadas."
 
-#: gui/slick/views/config_general.mako:605
+#: gui/slick/views/config_general.mako:611
 msgid "Web Interface"
 msgstr "Interface Web"
 
-#: gui/slick/views/config_general.mako:606
+#: gui/slick/views/config_general.mako:612
 msgid ""
 "it is recommended that you enable a username and password to secure "
 "SickRage from being tampered with remotely."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:607
+#: gui/slick/views/config_general.mako:613
 msgid "these options require a manual restart to take effect."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:615
+#: gui/slick/views/config_general.mako:621
 #: gui/slick/views/config_providers.mako:168
 #: gui/slick/views/config_providers.mako:268
 #: gui/slick/views/config_providers.mako:778
 msgid "API key"
 msgstr "Chave de API"
 
-#: gui/slick/views/config_general.mako:626
+#: gui/slick/views/config_general.mako:632
 msgid "used to give 3rd party programs limited access to SickRage"
 msgstr "usado por programas de terceiros para acesso limitado ao SickRage"
 
-#: gui/slick/views/config_general.mako:631
+#: gui/slick/views/config_general.mako:637
 msgid "you can try all the features of the API"
 msgstr "você pode tentar todos os recursos da API"
 
-#: gui/slick/views/config_general.mako:631
+#: gui/slick/views/config_general.mako:637
 msgid "here"
 msgstr "aqui"
 
-#: gui/slick/views/config_general.mako:639
+#: gui/slick/views/config_general.mako:645
 msgid "HTTP logs"
 msgstr "Logs de HTTP"
 
-#: gui/slick/views/config_general.mako:643
+#: gui/slick/views/config_general.mako:649
 msgid "enable logs from the internal Tornado web server"
 msgstr "ativar logs do servidor de web interno do Tornado"
 
-#: gui/slick/views/config_general.mako:649
+#: gui/slick/views/config_general.mako:655
 msgid "HTTP username"
 msgstr "Usuário HTTP"
 
-#: gui/slick/views/config_general.mako:659
+#: gui/slick/views/config_general.mako:665
 msgid "set blank for no login"
 msgstr "deixe em branco se não quiser login"
 
-#: gui/slick/views/config_general.mako:667
+#: gui/slick/views/config_general.mako:673
 msgid "HTTP password"
 msgstr "Senha HTTP"
 
-#: gui/slick/views/config_general.mako:677
+#: gui/slick/views/config_general.mako:683
 #: gui/slick/views/config_notifications.mako:254
 #: gui/slick/views/config_notifications.mako:272
 #: gui/slick/views/config_notifications.mako:421
@@ -2470,288 +2470,288 @@ msgstr "Senha HTTP"
 msgid "blank = no authentication"
 msgstr "em branco = sem autenticação"
 
-#: gui/slick/views/config_general.mako:685
+#: gui/slick/views/config_general.mako:691
 msgid "HTTP port"
 msgstr "Porta HTTP"
 
-#: gui/slick/views/config_general.mako:695
+#: gui/slick/views/config_general.mako:701
 msgid "web port to browse and access SickRage (default:8081)"
 msgstr "porta Web para navegar e acessar SickRage (padrão: 8081)"
 
-#: gui/slick/views/config_general.mako:703
+#: gui/slick/views/config_general.mako:709
 msgid "Notify on login"
 msgstr "Notificar no login"
 
-#: gui/slick/views/config_general.mako:707
+#: gui/slick/views/config_general.mako:713
 msgid "enable to be notified when a new login happens in webserver"
 msgstr "marque se quiser ser notificado quando ocorrer um novo login"
 
-#: gui/slick/views/config_general.mako:713
+#: gui/slick/views/config_general.mako:719
 msgid "Listen on IPv6"
 msgstr "Habilitar IPv6"
 
-#: gui/slick/views/config_general.mako:717
+#: gui/slick/views/config_general.mako:723
 msgid "attempt binding to any available IPv6 address"
 msgstr "tentativa de ligação para qualquer endereço IPv6 disponível"
 
-#: gui/slick/views/config_general.mako:723
+#: gui/slick/views/config_general.mako:729
 msgid "Enable HTTPS"
 msgstr "Habilitar HTTPS"
 
-#: gui/slick/views/config_general.mako:727
+#: gui/slick/views/config_general.mako:733
 msgid "enable access to the web interface using a HTTPS address"
 msgstr "permitir acesso à interface web utilizando um endereço HTTPS"
 
-#: gui/slick/views/config_general.mako:735
+#: gui/slick/views/config_general.mako:741
 msgid "HTTPS certificate"
 msgstr "Certificado HTTPS"
 
-#: gui/slick/views/config_general.mako:739
+#: gui/slick/views/config_general.mako:745
 msgid "file name or path to HTTPS certificate"
 msgstr "nome do arquivo ou caminho do certificado HTTPS"
 
-#: gui/slick/views/config_general.mako:745
+#: gui/slick/views/config_general.mako:751
 msgid "HTTPS key"
 msgstr "Chave HTTPS"
 
-#: gui/slick/views/config_general.mako:749
+#: gui/slick/views/config_general.mako:755
 msgid "file name or path to HTTPS key"
 msgstr "nome do arquivo ou caminho para chave HTTPS"
 
-#: gui/slick/views/config_general.mako:757
+#: gui/slick/views/config_general.mako:763
 msgid "Reverse proxy headers"
 msgstr "Cabeçalhos de proxy reverso"
 
-#: gui/slick/views/config_general.mako:763
+#: gui/slick/views/config_general.mako:769
 msgid "accept the following reverse proxy headers (advanced)..."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:768
+#: gui/slick/views/config_general.mako:774
 msgid "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:800
+#: gui/slick/views/config_general.mako:806
 msgid "CPU throttling"
 msgstr "Otimização de CPU"
 
-#: gui/slick/views/config_general.mako:814
+#: gui/slick/views/config_general.mako:820
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr "Normal (padrão). Alto é maior e Baixo é menor uso de CPU"
 
-#: gui/slick/views/config_general.mako:822
+#: gui/slick/views/config_general.mako:828
 msgid "Anonymous redirect"
 msgstr "Redirecionamento anônimo"
 
-#: gui/slick/views/config_general.mako:832
+#: gui/slick/views/config_general.mako:838
 msgid "backlink protection via anonymizer service, must end in \"?\""
 msgstr "proteção de backlink via serviço anonymizer, deve terminar em \"?\""
 
-#: gui/slick/views/config_general.mako:840
+#: gui/slick/views/config_general.mako:846
 msgid "Enable debug"
 msgstr "Ativar debug"
 
-#: gui/slick/views/config_general.mako:844
+#: gui/slick/views/config_general.mako:850
 msgid "enable debug logs"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:850
+#: gui/slick/views/config_general.mako:856
 msgid "Verify SSL Certs"
 msgstr "Verificar os certificados SSL"
 
-#: gui/slick/views/config_general.mako:854
+#: gui/slick/views/config_general.mako:860
 msgid "verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:860
+#: gui/slick/views/config_general.mako:866
 msgid "No Restart"
 msgstr "Sem reinicialização"
 
-#: gui/slick/views/config_general.mako:866
+#: gui/slick/views/config_general.mako:872
 msgid "only shutdown when restarting SR"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:871
+#: gui/slick/views/config_general.mako:877
 msgid ""
 "only select this when you have external software restarting SR "
 "automatically when it stops (like FireDaemon)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:879
+#: gui/slick/views/config_general.mako:885
 msgid "Encrypt passwords"
 msgstr "Criptografar senhas"
 
-#: gui/slick/views/config_general.mako:885
+#: gui/slick/views/config_general.mako:891
 msgid "in the <code>config.ini</code> file"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:890
+#: gui/slick/views/config_general.mako:896
 #: gui/slick/views/config_postProcessing.mako:423
 #: gui/slick/views/config_subtitles.mako:214
 msgid "warning"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:890
+#: gui/slick/views/config_general.mako:896
 msgid "passwords must only contain"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:891
+#: gui/slick/views/config_general.mako:897
 msgid "ASCII characters"
 msgstr "Caracteres ASCII"
 
-#: gui/slick/views/config_general.mako:899
+#: gui/slick/views/config_general.mako:905
 msgid "Unprotected calendar"
 msgstr "Calendário desprotegido"
 
-#: gui/slick/views/config_general.mako:905
+#: gui/slick/views/config_general.mako:911
 msgid "allow subscribing to the calendar without user and password"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:910
+#: gui/slick/views/config_general.mako:916
 msgid "some services like Google Calendar only work this way"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:918
+#: gui/slick/views/config_general.mako:924
 msgid "Google Calendar Icons"
 msgstr "Ícones do Calendário Google"
 
-#: gui/slick/views/config_general.mako:922
+#: gui/slick/views/config_general.mako:928
 msgid "show an icon next to exported calendar events in Google Calendar"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:928
+#: gui/slick/views/config_general.mako:934
 msgid "Proxy host"
 msgstr "Servidor proxy"
 
-#: gui/slick/views/config_general.mako:938
+#: gui/slick/views/config_general.mako:944
 msgid "blank to disable or proxy to use when connecting to providers"
 msgstr "em branco para desabilitar ou proxy para usar ao se conectar a provedores"
 
-#: gui/slick/views/config_general.mako:944
+#: gui/slick/views/config_general.mako:950
 msgid "also use global proxy setting for indexers (tvdb, xem, anidb, etc.)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:953
+#: gui/slick/views/config_general.mako:959
 msgid "Skip Remove Detection"
 msgstr "Pular detecção de removidos"
 
-#: gui/slick/views/config_general.mako:959
+#: gui/slick/views/config_general.mako:965
 msgid "skip detection of removed files"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:964
+#: gui/slick/views/config_general.mako:970
 msgid "if disabled the episode will be set to the default deleted status"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:972
+#: gui/slick/views/config_general.mako:978
 msgid "Default deleted episode status"
 msgstr "Status padrão de episódios excluídos"
 
-#: gui/slick/views/config_general.mako:995
+#: gui/slick/views/config_general.mako:1001
 msgid "define the status to be set for media file that has been deleted."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1000
+#: gui/slick/views/config_general.mako:1006
 msgid "Archived option will keep previous downloaded quality"
 msgstr "A opção Arquivado manterá a qualidade transferida anteriormente"
 
-#: gui/slick/views/config_general.mako:1005
+#: gui/slick/views/config_general.mako:1011
 msgid "example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1028
+#: gui/slick/views/config_general.mako:1034
 msgid "Options for github related features."
 msgstr "Opções relacionadas ao github."
 
-#: gui/slick/views/config_general.mako:1037
+#: gui/slick/views/config_general.mako:1043
 msgid "Branch version"
 msgstr "Versão do Branch"
 
-#: gui/slick/views/config_general.mako:1068
+#: gui/slick/views/config_general.mako:1074
 msgid "error: No branches found."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1070
+#: gui/slick/views/config_general.mako:1076
 msgid "select branch to use (restart required)"
 msgstr "selecione o Branch para usar (é necessário reiniciar)"
 
-#: gui/slick/views/config_general.mako:1079
+#: gui/slick/views/config_general.mako:1085
 #, fuzzy
 msgid "Authorization Type"
 msgstr "Token de autorização Pushalot"
 
-#: gui/slick/views/config_general.mako:1085
+#: gui/slick/views/config_general.mako:1091
 #, fuzzy
 msgid "Username and password"
 msgstr "Senha do cliente"
 
-#: gui/slick/views/config_general.mako:1091
+#: gui/slick/views/config_general.mako:1097
 #, fuzzy
 msgid "Personal access token"
 msgstr "Token de acesso a Boxcar2"
 
-#: gui/slick/views/config_general.mako:1096
+#: gui/slick/views/config_general.mako:1102
 msgid ""
 "You must use a personal access token if you're using \"two-factor "
 "authentication\" on GitHub."
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1105
+#: gui/slick/views/config_general.mako:1111
 msgid "GitHub username"
 msgstr "Usuário GitHub"
 
-#: gui/slick/views/config_general.mako:1115
-#: gui/slick/views/config_general.mako:1133
-#: gui/slick/views/config_general.mako:1158
+#: gui/slick/views/config_general.mako:1121
+#: gui/slick/views/config_general.mako:1139
+#: gui/slick/views/config_general.mako:1164
 msgid "*** (REQUIRED FOR SUBMITTING ISSUES) ***"
 msgstr "*** (NECESSÁRIO PARA SUBMETER ERROS) ***"
 
-#: gui/slick/views/config_general.mako:1123
+#: gui/slick/views/config_general.mako:1129
 msgid "GitHub password"
 msgstr "Senha do GitHub"
 
-#: gui/slick/views/config_general.mako:1143
+#: gui/slick/views/config_general.mako:1149
 #, fuzzy
 msgid "GitHub personal access token"
 msgstr "Token de acesso a Boxcar2"
 
-#: gui/slick/views/config_general.mako:1150
+#: gui/slick/views/config_general.mako:1156
 msgid "Generate Token"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1152
+#: gui/slick/views/config_general.mako:1158
 #, fuzzy
 msgid "Manage Tokens"
 msgstr "Gerenciar Torrents"
 
-#: gui/slick/views/config_general.mako:1167
+#: gui/slick/views/config_general.mako:1173
 msgid "GitHub remote for branch"
 msgstr "GitHub remoto para branch"
 
-#: gui/slick/views/config_general.mako:1177
+#: gui/slick/views/config_general.mako:1183
 msgid "access repo configured remotes (save then refresh browser)"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1182
+#: gui/slick/views/config_general.mako:1188
 msgid "default"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1182
+#: gui/slick/views/config_general.mako:1188
 msgid "origin"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1190
+#: gui/slick/views/config_general.mako:1196
 msgid "Git executable path"
 msgstr "Caminho do executável Git"
 
-#: gui/slick/views/config_general.mako:1200
+#: gui/slick/views/config_general.mako:1206
 msgid "only needed if OS is unable to locate git from env"
 msgstr "somente necessário se o sistema operacional não localizar o git do env"
 
-#: gui/slick/views/config_general.mako:1208
+#: gui/slick/views/config_general.mako:1214
 msgid "Git reset"
 msgstr "Git reset"
 
-#: gui/slick/views/config_general.mako:1212
+#: gui/slick/views/config_general.mako:1218
 msgid ""
 "removes untracked files and performs a hard reset on git branch "
 "automatically to help resolve update issues"

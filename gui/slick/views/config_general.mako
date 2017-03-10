@@ -6,6 +6,12 @@
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url
+
+    # noinspection PyProtectedMember
+    from tornado._locale_data import LOCALE_NAMES
+
+    def lang_name(code):
+        return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
 %>
 
 <%block name="tabs">
@@ -341,7 +347,7 @@
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
                                             <option value="" ${('', 'selected="selected"')[sickbeard.GUI_LANG == ""]}>${_('System Language')}</option>
                                             % for lang in [language for language in os.listdir(sickbeard.LOCALE_DIR) if '_' in language]:
-                                                <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang}</option>
+                                                <option value="${lang}" ${('', 'selected="selected"')[sickbeard.GUI_LANG == lang]}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>
                                     </div>

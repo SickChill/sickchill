@@ -246,6 +246,9 @@ class BaseHandler(RequestHandler):
         else:
             return True
 
+    def get_user_locale(self):
+        return sickbeard.GUI_LANG or None
+
 
 class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
