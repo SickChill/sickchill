@@ -81,7 +81,7 @@ class ComingEpisodes(object):
                     'AND airdate >= ? '
                     'AND s.indexer_id = e.showid '
                     'AND e.status IN (' + ','.join(['?'] * 2) + ')',
-                    [show_obj.indexerid, (today, next_air_date)[bool(next_air_date)], recently, WANTED, UNAIRED]
+                    [show_obj.indexerid, next_air_date or today, recently, WANTED, UNAIRED]
                 ]
             )
 

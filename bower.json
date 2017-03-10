@@ -25,7 +25,7 @@
     "bootstrap-formhelpers": "~2.3.0",
     "isotope": "~2.2.2",
     "openSans": "https://google-fonts.azurewebsites.net/googleFonts/openSans?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic",
-    "jquery-backstretch": "backstretch#^2.0.4"
+    "jquery-backstretch": "~2.1.15"
   },
   "resolutions": {
     "bootstrap": "~3.3.6",

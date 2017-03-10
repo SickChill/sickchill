@@ -166,6 +166,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def network_logo_name(self):
         return self.network.replace('\u00C9', 'e').replace('\u00E9', 'e').lower()
 
+    @property
+    def sort_name(self):
+        name = self.name
+        if not sickbeard.SORT_ARTICLE:
+            name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
+        return name.lower()
+
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
         if sickbeard.CREATE_MISSING_SHOW_DIRS or ek(os.path.isdir, self._location):

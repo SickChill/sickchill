@@ -108,7 +108,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${sickbeard.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75"  title="autopostprocessor_frequency"/>
+                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${sickbeard.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75" title="autopostprocessor_frequency"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -136,7 +136,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off"  title="sync_files"/>
+                                        <input type="text" name="sync_files" id="sync_files" value="${sickbeard.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" title="sync_files"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -502,7 +502,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off"  title="naming_pattern"/>
+                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern"/>
                                             <span class="displayshow-icon-legend" id="show_naming_key" title="${_('Toggle Naming Legend')}" class="legend" />
                                         </div>
                                     </div>
@@ -773,7 +773,8 @@
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                        <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" autocapitalize="off"  title="naming_adb_pattern"/>
+                                        <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}"
+                                               class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern"/>
                                         <span class="displayshow-icon-legend" id="show_naming_abd_key" title="${_('Toggle ABD Naming Legend')}" class="legend" />
                                     </div>
                                 </div>
@@ -957,7 +958,8 @@
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                        <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${sickbeard.NAMING_SPORTS_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
+                                        <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${sickbeard.NAMING_SPORTS_PATTERN}"
+                                               class="form-control input-sm input350" autocapitalize="off" title="naming_sports_pattern" />
                                         <span class="displayshow-icon-legend" id="show_naming_sports_key" title="${_('Toggle Sports Naming Legend')}" class="legend" />
                                     </div>
                                 </div>
@@ -1142,7 +1144,8 @@
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                        <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${sickbeard.NAMING_ANIME_PATTERN}" class="form-control input-sm input350" autocapitalize="off" />
+                                        <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${sickbeard.NAMING_ANIME_PATTERN}"
+                                               class="form-control input-sm input350" autocapitalize="off" title="naming_anime_pattern" />
                                         <span class="displayshow-icon-legend" id="show_naming_anime_key" title="${_('Toggle Anime Naming Legend')}" class="legend"/>
                                     </div>
                                 </div>

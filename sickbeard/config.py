@@ -331,7 +331,6 @@ def change_unpack_dir(unpack_dir):
 def change_postprocessor_frequency(freq):
     """
     Change frequency of automatic postprocessing thread
-    TODO: Make all thread frequency changers in config.py return True/False status
 
     :param freq: New frequency
     """
@@ -341,6 +340,7 @@ def change_postprocessor_frequency(freq):
         sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
     sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+    return True
 
 
 def change_daily_search_frequency(freq):
@@ -350,11 +350,12 @@ def change_daily_search_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
-
+    
     if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
 
     sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+    return True
 
 
 def change_backlog_frequency(freq):
@@ -364,12 +365,13 @@ def change_backlog_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
-
+    
     sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
     if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
         sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
 
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+    return True
 
 
 def change_update_frequency(freq):
@@ -379,11 +381,12 @@ def change_update_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
-
+    
     if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
         sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+    return True
 
 
 def change_showupdate_hour(freq):
@@ -393,14 +396,14 @@ def change_showupdate_hour(freq):
     :param freq: New frequency
     """
     sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
-
+    
     if sickbeard.SHOWUPDATE_HOUR > 23:
         sickbeard.SHOWUPDATE_HOUR = 0
     elif sickbeard.SHOWUPDATE_HOUR < 0:
         sickbeard.SHOWUPDATE_HOUR = 0
 
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
-
+    return True
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
     """
@@ -412,19 +415,19 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
         subtitles_finder_frequency = 1
 
     sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
+    return True
 
 
 def change_version_notify(version_notify):
     """
     Enable/Disable versioncheck thread
-    TODO: Make this return True/False on success/failure
 
     :param version_notify: New desired state
     """
     version_notify = checkbox_to_value(version_notify)
-
+    
     if sickbeard.VERSION_NOTIFY == version_notify:
-        return
+        return True
 
     sickbeard.VERSION_NOTIFY = version_notify
     if sickbeard.VERSION_NOTIFY:
@@ -433,23 +436,25 @@ def change_version_notify(version_notify):
             sickbeard.versionCheckScheduler.silent = False
             sickbeard.versionCheckScheduler.enable = True
             sickbeard.versionCheckScheduler.forceRun()
+        
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
         logger.log("Stopping VERSIONCHECK thread", logger.INFO)
+    
+    return True
 
 
 def change_download_propers(download_propers):
     """
     Enable/Disable proper download thread
-    TODO: Make this return True/False on success/failure
 
     :param download_propers: New desired state
     """
     download_propers = checkbox_to_value(download_propers)
-
+        
     if sickbeard.DOWNLOAD_PROPERS == download_propers:
-        return
+        return True
 
     sickbeard.DOWNLOAD_PROPERS = download_propers
     if sickbeard.DOWNLOAD_PROPERS:
@@ -457,23 +462,25 @@ def change_download_propers(download_propers):
             logger.log("Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
+        
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
         logger.log("Stopping PROPERFINDER thread", logger.INFO)
+    
+    return True
 
 
 def change_use_trakt(use_trakt):
     """
     Enable/disable trakt thread
-    TODO: Make this return true/false on success/failure
 
     :param use_trakt: New desired state
     """
     use_trakt = checkbox_to_value(use_trakt)
-
+    
     if sickbeard.USE_TRAKT == use_trakt:
-        return
+        return True
 
     sickbeard.USE_TRAKT = use_trakt
     if sickbeard.USE_TRAKT:
@@ -481,46 +488,51 @@ def change_use_trakt(use_trakt):
             logger.log("Starting TRAKTCHECKER thread", logger.INFO)
             sickbeard.traktCheckerScheduler.silent = False
             sickbeard.traktCheckerScheduler.enable = True
+
     else:
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
         logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
+    
+    return True
 
 
 def change_use_subtitles(use_subtitles):
     """
     Enable/Disable subtitle searcher
-    TODO: Make this return true/false on success/failure
 
     :param use_subtitles: New desired state
     """
     use_subtitles = checkbox_to_value(use_subtitles)
-    if sickbeard.USE_SUBTITLES == use_subtitles:
-        return
 
+    if sickbeard.USE_SUBTITLES == use_subtitles:
+        return True
+ 
     sickbeard.USE_SUBTITLES = use_subtitles
     if sickbeard.USE_SUBTITLES:
         if not sickbeard.subtitlesFinderScheduler.enable:
             logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
             sickbeard.subtitlesFinderScheduler.silent = False
             sickbeard.subtitlesFinderScheduler.enable = True
+    
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
-        logger.log("Stopping SUBTITLESFINDER thread", logger.INFO)
+        logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
+    
+    return True
 
 
 def change_process_automatically(process_automatically):
     """
     Enable/Disable postprocessor thread
-    TODO: Make this return True/False on success/failure
 
     :param process_automatically: New desired state
     """
     process_automatically = checkbox_to_value(process_automatically)
 
     if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
-        return
+        return True
 
     sickbeard.PROCESS_AUTOMATICALLY = process_automatically
     if sickbeard.PROCESS_AUTOMATICALLY:
@@ -528,10 +540,13 @@ def change_process_automatically(process_automatically):
             logger.log("Starting POSTPROCESSOR thread", logger.INFO)
             sickbeard.autoPostProcessorScheduler.silent = False
             sickbeard.autoPostProcessorScheduler.enable = True
+            
     else:
         logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
         sickbeard.autoPostProcessorScheduler.silent = True
+    
+    return True
 
 
 def check_section(cfg, sec):
