@@ -62,9 +62,9 @@ unrar/*
 
 # Grunt #
 ######################
-.build/bower_components
-.build/node_modules
-.build/dist
+bower_components
+node_modules
+dist
 
 # Unit test/Coverage #
 ######################
