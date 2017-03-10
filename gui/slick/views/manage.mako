@@ -63,7 +63,7 @@
                         <tbody>
                             <%
                                 myShowList = sickbeard.showList
-                                myShowList.sort(lambda x, y: x.name.lower() < y.name.lower())
+                                myShowList.sort(lambda x, y: x.sort_name < y.sort_name)
                             %>
                             % for curShow in myShowList:
                             <%

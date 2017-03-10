@@ -2126,7 +2126,7 @@ var SICKRAGE = {
             $('#filterShowName').on('input', _.debounce(function() {
                 $('.show-grid').isotope({
                     filter: function () {
-                      var name = $(this).attr('data-name').toLowerCase();
+                      var name = $(this).find('.show-title').html().trim().toLowerCase();
                       return name.indexOf($('#filterShowName').val().toLowerCase()) > -1;
                     }
                 });

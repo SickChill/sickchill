@@ -24,16 +24,21 @@
 
                     if curLoadingShow.show:
                         loading_show_name = curLoadingShow.show.name
+                        loading_show_sort_name = curLoadingShow.show.sort_name
                         loading_show_id = curLoadingShow.show.indexerid
                         loading_show_network = curLoadingShow.show.network
                         loading_show_quality = curLoadingShow.show.quality
                     else:
                         loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
+                        loading_show_sort_name = curLoadingShow.show_name
+                        if not sickbeard.SORT_ARTICLE:
+                            loading_show_sort_name = re.sub(r'(?:The|A|An)\s', '', loading_show_sort_name, flags=re.I)
+
                         loading_show_id = curLoadingShow.show_name
                         loading_show_network = _('Loading')
                         loading_show_quality = 0
                 %>
-                <div class="show-container" data-name="${loading_show_name}" data-date="1" data-network="0" data-progress="0">
+                <div class="show-container" data-name="${loading_show_sort_name}" data-date="1" data-network="0" data-progress="0">
                     <div class="show-image">
                         <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" />
                     </div>
@@ -58,7 +63,7 @@
                 </div>
             % endfor
 
-            <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
+            <% myShowList.sort(lambda x, y: x.sort_name < y.sort_name) %>
             % for curShow in myShowList:
                 <%
                     cur_airs_next = ''
@@ -119,7 +124,7 @@
                         elif display_status == 'Ended':
                             data_date = '5000000100.0'
                 %>
-                <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
+                <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
                     <div class="show-image">
                         <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
                     </div>
@@ -274,7 +279,7 @@
                     % endfor
                 % endif
 
-                <% myShowList.sort(lambda x, y: x.name.lower() < y.name.lower()) %>
+                <% myShowList.sort(lambda x, y: x.sort_name < y.sort_name) %>
                 % for curShow in myShowList:
                     <%
                         cur_airs_next = ''

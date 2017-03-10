@@ -366,7 +366,7 @@ class WebRoot(WebHandler):
             return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         main_db_con = db.DBConnection(row_type='dict')
-        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())
+        shows = sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr))
         episodes = {}
 
         results = main_db_con.select(
@@ -1405,12 +1405,12 @@ class Home(WebRoot):
                 else:
                     shows.append(show)
             sortedShowLists = [
-                ["Shows", sorted(shows, key=lambda mbr: attrgetter('name')(mbr).lower())],
-                ["Anime", sorted(anime, key=lambda mbr: attrgetter('name')(mbr).lower())]
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('sort_name')(mbr))]
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('name')(mbr).lower())]
+                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr))]
             ]
 
         bwl = None
