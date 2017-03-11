@@ -33,6 +33,7 @@ class DelugeAPI(GenericClient):
         super(DelugeAPI, self).__init__('Deluge', host, username, password)
 
         self.url = self.host + 'json'
+        self.session.headers.update({'Content-Type': 'application/json'})
 
     def _get_auth(self):
 
