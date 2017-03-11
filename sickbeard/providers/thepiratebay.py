@@ -49,7 +49,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         # URLs
         self.url = "https://thepiratebay.se"
         self.urls = {
-            "rss": [urljoin(self.url, "browse/208/0/4"), urljoin(self.url, "browse/205/0/4")],
+            "rss": [urljoin(self.url, "browse/208/0/4/0"), urljoin(self.url, "browse/205/0/4/0")],
             "search": urljoin(self.url, "search"),
         }
         self.custom_url = None
@@ -65,7 +65,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
     def convert_url(url, params):
         # noinspection PyBroadException
         try:
-            return urljoin(url, '{type}/{q}/{page}/{orderby}/{category}/'.format(**params)), {}
+            return urljoin(url, '{type}/{q}/{page}/{orderby}/{category}'.format(**params)), {}
         except Exception:
             return url.replace('search', 's/'), params
 
@@ -75,10 +75,11 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         205 = SD, 208 = HD, 200 = All Videos
         https://pirateproxy.pl/s/?q=Game of Thrones&type=search&orderby=7&page=0&category=200
         """
+        # oder_by is 7 in browse for seeders, but 8 in search!
         search_params = {
             "q": "",
             "type": "search",
-            "orderby": 7,
+            "orderby": 8,
             "page": 0,
             "category": 200
         }
@@ -117,9 +118,8 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                         # Prevents a 302 redirect, since there is always a 301 from .se to the best mirror having an extra
                         # redirect is excessive on the provider and spams the debug log unnecessarily
-                        search_url, search_params = self.convert_url(search_url, search_params)
-
-                        data = self.get_url(search_url, params=search_params, returns="text")
+                        search_url, params = self.convert_url(search_url, search_params)
+                        data = self.get_url(search_url, params=params, returns="text")
                     else:
                         data = self.get_url(search_url, returns="text")
 
