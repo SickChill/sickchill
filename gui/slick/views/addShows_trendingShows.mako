@@ -56,16 +56,16 @@
                 <label>
                     <span>${_('Select Trakt List')}:</span>
                     <select id="traktlistselection" class="form-control form-control-inline input-sm" title="Trakt List Selection">
-                        <option value="anticipated" ${' selected="selected"' if traktList == "anticipated" else ''}>${_('Most Anticipated')}</option>
-                        <option value="newshow" ${' selected="selected"' if traktList == "newshow" else ''}>${_('New Shows')}</option>
-                        <option value="newseason" ${' selected="selected"' if traktList == "newseason" else ''}>${_('Season Premieres')}</option>
-                        <option value="trending" ${' selected="selected"' if traktList == "trending" else ''}>${_('Trending')}</option>
-                        <option value="popular" ${' selected="selected"' if traktList == "popular" else ''}>${_('Popular')}</option>
-                        <option value="watched" ${' selected="selected"' if traktList == "watched" else '' }>${_('Most Watched')}</option>
-                        <option value="played" ${' selected="selected"' if traktList == "played" else '' }>${_('Most Played')}</option>
-                        <option value="collected" ${' selected="selected"' if traktList == "collected" else ''}>${_('Most Collected')}</option>
+                        <option value="anticipated" ${('', ' selected="selected"')[traktList == "anticipated"]}>${_('Most Anticipated')}</option>
+                        <option value="newshow" ${('', ' selected="selected"')[traktList == "newshow"]}>${_('New Shows')}</option>
+                        <option value="newseason" ${('', ' selected="selected"')[traktList == "newseason"]}>${_('Season Premieres')}</option>
+                        <option value="trending" ${('', ' selected="selected"')[traktList == "trending"]}>${_('Trending')}</option>
+                        <option value="popular" ${('', ' selected="selected"')[traktList == "popular"]}>${_('Popular')}</option>
+                        <option value="watched" ${('', ' selected="selected"')[traktList == "watched"]}>${_('Most Watched')}</option>
+                        <option value="played" ${('', ' selected="selected"')[traktList == "played"]}>${_('Most Played')}</option>
+                        <option value="collected" ${('', ' selected="selected"')[traktList == "collected"]}>${_('Most Collected')}</option>
                         % if sickbeard.TRAKT_ACCESS_TOKEN:
-                            <option value="recommended"  ${' selected="selected"' if traktList == "recommended" else ''}>${_('Recommended')}</option>
+                            <option value="recommended"  ${('', ' selected="selected"')[traktList == "recommended"]}>${_('Recommended')}</option>
                         % endif
                     </select>
                     &nbsp;

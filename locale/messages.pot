@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2017-03-09 16:47-0800\n"
+"POT-Creation-Date: 2017-03-11 11:07-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,117 +17,117 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: sickbeard/__init__.py:77
+#: sickbeard/__init__.py:76
 msgid "Drama"
 msgstr ""
 
-#: sickbeard/__init__.py:77
+#: sickbeard/__init__.py:76
 msgid "Mystery"
 msgstr ""
 
-#: sickbeard/__init__.py:77 sickbeard/__init__.py:82
+#: sickbeard/__init__.py:76 sickbeard/__init__.py:81
 msgid "Science-Fiction"
 msgstr ""
 
-#: sickbeard/__init__.py:77
+#: sickbeard/__init__.py:76
 msgid "Crime"
 msgstr ""
 
-#: gui/slick/views/history.mako:62 sickbeard/__init__.py:77
+#: gui/slick/views/history.mako:62 sickbeard/__init__.py:76
 msgid "Action"
 msgstr ""
 
-#: sickbeard/__init__.py:78
+#: sickbeard/__init__.py:77
 msgid "Comedy"
 msgstr ""
 
-#: sickbeard/__init__.py:78
+#: sickbeard/__init__.py:77
 msgid "Thriller"
 msgstr ""
 
-#: sickbeard/__init__.py:78
+#: sickbeard/__init__.py:77
 msgid "Animation"
 msgstr ""
 
-#: sickbeard/__init__.py:78
+#: sickbeard/__init__.py:77
 msgid "Family"
 msgstr ""
 
-#: sickbeard/__init__.py:78
+#: sickbeard/__init__.py:77
 msgid "Fantasy"
 msgstr ""
 
-#: sickbeard/__init__.py:79
+#: sickbeard/__init__.py:78
 msgid "Adventure"
 msgstr ""
 
-#: sickbeard/__init__.py:79
+#: sickbeard/__init__.py:78
 msgid "Horror"
 msgstr ""
 
-#: sickbeard/__init__.py:79
+#: sickbeard/__init__.py:78
 msgid "Film-Noir"
 msgstr ""
 
-#: sickbeard/__init__.py:79
+#: sickbeard/__init__.py:78
 msgid "Sci-Fi"
 msgstr ""
 
-#: sickbeard/__init__.py:79
+#: sickbeard/__init__.py:78
 msgid "Romance"
 msgstr ""
 
-#: sickbeard/__init__.py:80
+#: sickbeard/__init__.py:79
 msgid "Sport"
 msgstr ""
 
-#: sickbeard/__init__.py:80
+#: sickbeard/__init__.py:79
 msgid "War"
 msgstr ""
 
-#: sickbeard/__init__.py:80
+#: sickbeard/__init__.py:79
 msgid "Biography"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:141
-#: sickbeard/__init__.py:80 sickbeard/webserve.py:3775
+#: sickbeard/__init__.py:79 sickbeard/webserve.py:3775
 msgid "History"
 msgstr ""
 
-#: sickbeard/__init__.py:80
+#: sickbeard/__init__.py:79
 msgid "Music"
 msgstr ""
 
-#: sickbeard/__init__.py:80
+#: sickbeard/__init__.py:79
 msgid "Western"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:217
-#: sickbeard/__init__.py:81 sickbeard/webserve.py:2353
+#: sickbeard/__init__.py:80 sickbeard/webserve.py:2353
 msgid "News"
 msgstr ""
 
-#: sickbeard/__init__.py:81
+#: sickbeard/__init__.py:80
 msgid "Sitcom"
 msgstr ""
 
-#: sickbeard/__init__.py:81
+#: sickbeard/__init__.py:80
 msgid "Reality-TV"
 msgstr ""
 
-#: sickbeard/__init__.py:81
+#: sickbeard/__init__.py:80
 msgid "Documentary"
 msgstr ""
 
-#: sickbeard/__init__.py:81
+#: sickbeard/__init__.py:80
 msgid "Game-Show"
 msgstr ""
 
-#: sickbeard/__init__.py:81
+#: sickbeard/__init__.py:80
 msgid "Musical"
 msgstr ""
 
-#: sickbeard/__init__.py:82
+#: sickbeard/__init__.py:81
 msgid "Talk-Show"
 msgstr ""
 
@@ -179,15 +179,15 @@ msgstr ""
 msgid "Extend (Limited, E-prefixed)"
 msgstr ""
 
-#: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:93
-#: gui/slick/views/inc_home_showList.mako:307 sickbeard/common.py:220
+#: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:98
+#: gui/slick/views/inc_home_showList.mako:312 sickbeard/common.py:220
 #: sickbeard/common.py:605
 msgid "Downloaded"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:317 gui/slick/views/history.mako:127
-#: gui/slick/views/inc_home_showList.mako:97
-#: gui/slick/views/inc_home_showList.mako:311 gui/slick/views/layouts/main.mako:316
+#: gui/slick/views/inc_home_showList.mako:102
+#: gui/slick/views/inc_home_showList.mako:316 gui/slick/views/layouts/main.mako:316
 #: sickbeard/common.py:221 sickbeard/common.py:604
 msgid "Snatched"
 msgstr ""
@@ -214,8 +214,8 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:107
-#: gui/slick/views/inc_home_showList.mako:321 sickbeard/common.py:603
+#: gui/slick/views/inc_home_showList.mako:112
+#: gui/slick/views/inc_home_showList.mako:326 sickbeard/common.py:603
 msgid "Unaired"
 msgstr ""
 
@@ -689,7 +689,7 @@ msgstr ""
 msgid "Error sending Pushbullet notification"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:439 gui/slick/views/inc_home_showList.mako:195
+#: gui/slick/views/displayShow.mako:439 gui/slick/views/inc_home_showList.mako:200
 #: gui/slick/views/manage.mako:51 sickbeard/webserve.py:1216
 msgid "Status"
 msgstr ""
@@ -1015,6 +1015,22 @@ msgstr ""
 msgid "Most Anticipated Shows"
 msgstr ""
 
+#: sickbeard/webserve.py:2621
+msgid "Most Collected Shows"
+msgstr ""
+
+#: sickbeard/webserve.py:2623
+msgid "Most Watched Shows"
+msgstr ""
+
+#: sickbeard/webserve.py:2625
+msgid "Most Played Shows"
+msgstr ""
+
+#: sickbeard/webserve.py:2627
+msgid "Recommended Shows"
+msgstr ""
+
 #: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2629
 msgid "New Shows"
 msgstr ""
@@ -1239,7 +1255,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:288 gui/slick/views/editShow.mako:181
 #: gui/slick/views/home.mako:94 gui/slick/views/inc_addShowOptions.mako:79
-#: gui/slick/views/inc_home_showList.mako:200 gui/slick/views/layouts/main.mako:188
+#: gui/slick/views/inc_home_showList.mako:205 gui/slick/views/layouts/main.mako:188
 #: gui/slick/views/manage.mako:46 gui/slick/views/manage_massEdit.mako:202
 #: sickbeard/webserve.py:3825 sickbeard/webserve.py:5258
 msgid "Anime"
@@ -2232,7 +2248,7 @@ msgid "Local"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:560 gui/slick/views/inc_home_menu.mako:48
-#: gui/slick/views/inc_home_showList.mako:190 gui/slick/views/manage.mako:42
+#: gui/slick/views/inc_home_showList.mako:195 gui/slick/views/manage.mako:42
 #: gui/slick/views/schedule.mako:47 gui/slick/views/schedule.mako:93
 msgid "Network"
 msgstr ""
@@ -4463,7 +4479,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:1045
 #: gui/slick/views/config_postProcessing.mako:1251
 #: gui/slick/views/displayShow.mako:173 gui/slick/views/history.mako:64
-#: gui/slick/views/history.mako:132 gui/slick/views/inc_home_showList.mako:191
+#: gui/slick/views/history.mako:132 gui/slick/views/inc_home_showList.mako:196
 #: gui/slick/views/manage.mako:43 gui/slick/views/schedule.mako:95
 #: gui/slick/views/schedule.mako:425
 msgid "Quality"
@@ -4945,7 +4961,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:822
 #: gui/slick/views/config_providers.mako:919 gui/slick/views/editShow.mako:333
-#: gui/slick/views/inc_home_showList.mako:200
+#: gui/slick/views/inc_home_showList.mako:205
 msgid "Add"
 msgstr ""
 
@@ -5740,7 +5756,7 @@ msgid "Ignored Words"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:249 gui/slick/views/displayShow.mako:435
-#: gui/slick/views/inc_home_showList.mako:193
+#: gui/slick/views/inc_home_showList.mako:198
 #: gui/slick/views/manage_failedDownloads.mako:40
 msgid "Size"
 msgstr ""
@@ -6306,55 +6322,55 @@ msgstr ""
 msgid "Ended"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:33
-#: gui/slick/views/inc_home_showList.mako:41
+#: gui/slick/views/inc_home_showList.mako:38
+#: gui/slick/views/inc_home_showList.mako:46
 msgid "Loading"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:100
-#: gui/slick/views/inc_home_showList.mako:314
+#: gui/slick/views/inc_home_showList.mako:105
+#: gui/slick/views/inc_home_showList.mako:319
 msgid "Total"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:140
+#: gui/slick/views/inc_home_showList.mako:145
 msgid "Invalid date"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:169
-#: gui/slick/views/inc_home_showList.mako:381
+#: gui/slick/views/inc_home_showList.mako:174
+#: gui/slick/views/inc_home_showList.mako:386
 msgid "No Network"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:187 gui/slick/views/schedule.mako:91
+#: gui/slick/views/inc_home_showList.mako:192 gui/slick/views/schedule.mako:91
 msgid "Next Ep"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:188
+#: gui/slick/views/inc_home_showList.mako:193
 msgid "Prev Ep"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:189
-#: gui/slick/views/inc_home_showList.mako:200 gui/slick/views/schedule.mako:48
+#: gui/slick/views/inc_home_showList.mako:194
+#: gui/slick/views/inc_home_showList.mako:205 gui/slick/views/schedule.mako:48
 #: gui/slick/views/schedule.mako:90
 msgid "Show"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:192
+#: gui/slick/views/inc_home_showList.mako:197
 msgid "Downloads"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:194 gui/slick/views/layouts/main.mako:311
+#: gui/slick/views/inc_home_showList.mako:199 gui/slick/views/layouts/main.mako:311
 #: gui/slick/views/status.mako:45
 msgid "Active"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:226
+#: gui/slick/views/inc_home_showList.mako:231
 msgid "loading"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:241
-#: gui/slick/views/inc_home_showList.mako:247
-#: gui/slick/views/inc_home_showList.mako:263
+#: gui/slick/views/inc_home_showList.mako:246
+#: gui/slick/views/inc_home_showList.mako:252
+#: gui/slick/views/inc_home_showList.mako:268
 msgid "Loading..."
 msgstr ""
 
