@@ -35,13 +35,13 @@ import pythontwitter as twitter
 
 
 class Notifier(object):
-    consumer_key = "vHHtcB6WzpWDG6KYlBMr8g"
-    consumer_secret = "zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E"
+    consumer_key = b"vHHtcB6WzpWDG6KYlBMr8g"
+    consumer_hash = b"zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E" # (consumer_secret)
 
-    REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
-    ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
-    AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
-    SIGNIN_URL = 'https://api.twitter.com/oauth/authenticate'
+    REQUEST_TOKEN_URL = b'https://api.twitter.com/oauth/request_token'
+    ACCESS_TOKEN_URL = b'https://api.twitter.com/oauth/access_token'
+    AUTHORIZATION_URL = b'https://api.twitter.com/oauth/authorize'
+    SIGNIN_URL = b'https://api.twitter.com/oauth/authenticate'
 
     def notify_snatch(self, ep_name):
         if sickbeard.TWITTER_NOTIFY_ONSNATCH:
@@ -73,7 +73,7 @@ class Notifier(object):
     def _get_authorization(self):
 
         signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
-        oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
+        oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_hash)
         oauth_client = oauth.Client(oauth_consumer)
 
         logger.log('Requesting temp token from Twitter', logger.DEBUG)
@@ -103,7 +103,7 @@ class Notifier(object):
         logger.log('Generating and signing request for an access token using key ' + key, logger.DEBUG)
 
         signature_method_hmac_sha1 = oauth.SignatureMethod_HMAC_SHA1()  # @UnusedVariable
-        oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_secret)
+        oauth_consumer = oauth.Consumer(key=self.consumer_key, secret=self.consumer_hash)
         logger.log('oauth_consumer: ' + str(oauth_consumer), logger.DEBUG)
         oauth_client = oauth.Client(oauth_consumer, token)
         logger.log('oauth_client: ' + str(oauth_client), logger.DEBUG)
@@ -127,7 +127,7 @@ class Notifier(object):
     def _send_tweet(self, message=None):
 
         username = self.consumer_key
-        password = self.consumer_secret
+        password = self.consumer_hash
         access_token_key = sickbeard.TWITTER_USERNAME
         access_token_secret = sickbeard.TWITTER_PASSWORD
 
@@ -146,7 +146,7 @@ class Notifier(object):
     def _send_dm(self, message=None):
 
         username = self.consumer_key
-        password = self.consumer_secret
+        password = self.consumer_hash
         dmdest = sickbeard.TWITTER_DMTO
         access_token_key = sickbeard.TWITTER_USERNAME
         access_token_secret = sickbeard.TWITTER_PASSWORD

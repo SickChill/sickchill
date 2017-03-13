@@ -101,14 +101,11 @@ class DelugeDAPI(GenericClient):
         return True
 
     def _set_torrent_path(self, result):
-
-        path = sickbeard.TORRENT_PATH
-        if path:
-            return self.drpc.set_torrent_path(result.hash, path)
+        if sickbeard.TORRENT_PATH:
+            return self.drpc.set_torrent_path(result.hash, sickbeard.TORRENT_PATH)
         return True
 
     def _set_torrent_pause(self, result):
-
         if sickbeard.TORRENT_PAUSED:
             return self.drpc.pause_torrent(result.hash)
         return True

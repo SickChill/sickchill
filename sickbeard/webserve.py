@@ -2621,13 +2621,13 @@ class HomeAddShows(Home):
         elif traktList == "anticipated":
             page_title = _("Most Anticipated Shows")
         elif traktList == "collected":
-            page_title = "Most Collected Shows"
+            page_title = _("Most Collected Shows")
         elif traktList == "watched":
-            page_title = "Most Watched Shows"
+            page_title = _("Most Watched Shows")
         elif traktList == "played":
-            page_title = "Most Played Shows"
+            page_title = _("Most Played Shows")
         elif traktList == "recommended":
-            page_title = "Recommended Shows"
+            page_title = _("Recommended Shows")
         elif traktList == "newshow":
             page_title = _("New Shows")
         elif traktList == "newseason":
