@@ -26,7 +26,7 @@ class traktTrending(object):
         """Get trending show information from Trakt"""
 
         trending_shows = []
-        
+
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:

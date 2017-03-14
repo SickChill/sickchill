@@ -3512,7 +3512,7 @@ var SICKRAGE = {
 				$('.resetsorting').on('click', function(){
 					$('#showListTable').trigger('filterReset');
 				});
-				
+
                 $('#showListTable:has(tbody tr)').tablesorter({
                     widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
                     sortList: sortList,
@@ -3625,21 +3625,52 @@ var SICKRAGE = {
             };
 
             $.loadTraktImages = function() {
+                var url = srRoot + '/addShows/getTrendingShowImage';
+                var requestQueue = []; // contains list of indexer-ids to get image for
+
                 $('img.trakt-image').each(function() {
                     // only load image from indexer when there is a indexer_id present in data-src-indexer-id
                     if ($(this).attr('data-src-indexer-id')) {
-                        $.post(srRoot + '/addShows/getTrendingShowImage', {indexerId: $(this).attr('data-src-indexer-id')})
-                            .done(function (data) {
-                                if(data) {
-                                    // replace src with cache location
-                                    $('img.trakt-image[data-src-indexer-id="'+data+'"]').attr('src', $('img.trakt-image[data-src-indexer-id="'+data+'"]').attr('data-src-cache'));
-                                }
-                            });
+                        requestQueue.push($(this).attr('data-src-indexer-id'));
                     } else {
                         // no indexer_id present -> load it directly from cache
                         $(this).attr('src', $(this).attr('data-src-cache'));
                     }
                 } );
+
+                function processRequestQueue() {
+                    // Multitask X3
+                    var curId;
+                    if (requestQueue.length) {
+                        curId = requestQueue.shift(); // FIFO
+                        $.post(url, {indexerId: curId}, function (data) {
+                            if (data) {
+                                // replace src with cache location
+                                $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('src', $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('data-src-cache'));
+                            }
+                            processRequestQueue();
+                        });
+                    }
+                    if (requestQueue.length) {
+                        curId = requestQueue.shift(); // FIFO
+                        $.post(url, {indexerId: curId}, function (data) {
+                            if (data) {
+                                // replace src with cache location
+                                $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('src', $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('data-src-cache'));
+                            }
+                        });
+                    }
+                    if (requestQueue.length) {
+                        curId = requestQueue.shift(); // FIFO
+                        $.post(url, {indexerId: curId}, function (data) {
+                            if (data) {
+                                // replace src with cache location
+                                $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('src', $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('data-src-cache'));
+                            }
+                        });
+                    }
+                }
+                processRequestQueue();
             };
 
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
