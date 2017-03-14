@@ -111,7 +111,10 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     # Must be done before unrar is ever called or the self-extractor opens and locks startup
     bad_unrar = os.path.join(sickbeard.DATA_DIR, 'unrar.exe')
     if os.path.exists(bad_unrar) and os.path.getsize(bad_unrar) == 447440:
-        os.remove(bad_unrar)
+        try:
+            os.remove(bad_unrar)
+        except OSError as e:
+            logger.log("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror), logger.WARNING)
 
     try:
         rarfile.custom_check(unrar_tool)
