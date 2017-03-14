@@ -3365,17 +3365,28 @@ var SICKRAGE = {
             }, 500));
 
             function updateLogData() {
-                var postData = 'min_level='+$('select[name=min_level]').val()+'&log_filter='+$('select[name=log_filter]').val()+'&log_search='+$('#log_search').val();
-                var url = srRoot + '/errorlogs/viewlog/';
-                $.post(url, postData, function (data) {
-                    $('pre').html($(data).find('pre').html());
-                });
+                if ($('#log_update_toggle').data('state') === 'active') {
+                    var postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
+                    var url = srRoot + '/errorlogs/viewlog/';
+                    $.post(url, postData, function (data) {
+                        $('pre').html($(data).find('pre').html());
+                    });
+                }
                 setTimeout(function () {
                     "use strict";
                     updateLogData();
                 }, 500);
             }
             updateLogData();
+
+            $('#log_update_toggle').click(function () {
+                var wasActive = $(this).data('state') === 'active'; // State before clicking
+                $(this).data('state', wasActive ? 'paused' : 'active');
+                $(this).find('i').toggleClass('fa-pause fa-play');
+                $(this).find('span').text(wasActive ? _('Resume') : _('Pause'));
+                $(this).attr('title', wasActive ? _('Resume updating the log on this page.') : _('Pause updating the log on this page.'));
+                return false;
+            });
         }
     },
     schedule: {
