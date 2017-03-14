@@ -113,6 +113,10 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             (r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
              {"path": ek(os.path.join, self.options['data_root'], 'images')}),
 
+            # locale
+            (r'{0}/locale/(.*)'.format(self.options['web_root']), StaticFileHandler,
+             {"path": ek(os.path.join, sickbeard.PROG_DIR, 'locale')}),
+
             # cached images
             (r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
              {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}),
