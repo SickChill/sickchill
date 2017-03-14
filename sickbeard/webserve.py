@@ -236,7 +236,8 @@ class BaseHandler(RequestHandler):
         if not status:
             status = 301 if permanent else 302
         else:
-            assert isinstance(status, int) and 300 <= status <= 399
+            assert isinstance(status, int)
+            assert 300 <= status <= 399
         self.set_status(status)
         self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
 
