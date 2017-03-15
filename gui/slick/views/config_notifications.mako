@@ -3173,7 +3173,7 @@
                     <div class="component-group-desc">
                         <span class="icon-notifiers-discord" title="${_('Discord')}"></span>
                         <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Discord</a></h3>
-                        <p>${_('All-in-one voice and text chat for gammers that\'s free, secure, and works on both your desktop and phone.')}</p>
+                        <p>${_('All-in-one voice and text chat for gamers that\'s free, secure, and works on both your desktop and phone.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">

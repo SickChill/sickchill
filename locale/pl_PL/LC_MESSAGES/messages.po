@@ -3880,7 +3880,7 @@ msgid "Discord"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3176
-msgid "All-in-one voice and text chat for gammers that's free, secure, and works on both your desktop and phone."
+msgid "All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3190
