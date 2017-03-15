@@ -136,7 +136,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Username')}</span>
+                                    <label class="component-title">${_('Username')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -154,7 +154,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Password')}</span>
+                                    <label class="component-title">${_('Password')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -510,7 +510,7 @@
                             </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Emby API Key')}</label>
+                                    <label for="emby_apikey" class="component-title">${_('Emby API Key')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="text" name="emby_apikey" id="emby_apikey" value="${sickbeard.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
@@ -524,7 +524,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <input  class="btn" type="button" value="Test Emby" id="testEMBY" />
+                                    <input class="btn" type="button" value="Test Emby" id="testEMBY" />
                                     <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
                                 </div>
                             </div>
@@ -1065,7 +1065,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="growl_notify_ondownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <label for="growl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
                             <div class="field-pair row">
@@ -1185,7 +1185,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Prowl Message Title')}</label>
+                                    <label for="prowl_message_title" class="component-title">${_('Prowl Message Title')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="text" name="prowl_message_title" id="prowl_message_title" value="${sickbeard.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" autocapitalize="off" />
@@ -1194,7 +1194,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Global Prowl API key(s)')}</label>
+                                    <label for="prowl_api" class="component-title">${_('Global Prowl API key(s)')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -1216,7 +1216,7 @@
                             </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Show notification list')}</label>
+                                    <label for="prowl_show" class="component-title">${_('Show notification list')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -1467,7 +1467,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Pushover notification sound')}</label>
+                                    <label for="pushover_sound" class="component-title">${_('Pushover notification sound')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -1509,7 +1509,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Pushover priority')}</label>
+                                    <label for="pushover_priority" class="component-title">${_('Pushover priority')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -2044,7 +2044,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Free Mobile customer ID')}</label>
+                                    <label for="freemobile_id" class="component-title">${_('Free Mobile customer ID')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -2558,7 +2558,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Step Two')}</label>
+                                    <label for="twitter_key" class="component-title">${_('Step Two')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -2873,7 +2873,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
-                                    <label for="email_notify_ondownload">${_('send a notification when a download starts?')}</label>
+                                    <label for="email_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -3140,7 +3140,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Slack Incoming Webhook')}</label>
+                                    <label for="slack_webhook" class="component-title">${_('Slack Incoming Webhook')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="text" name="slack_webhook" id="slack_webhook" value="${sickbeard.SLACK_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
@@ -3173,7 +3173,7 @@
                     <div class="component-group-desc">
                         <span class="icon-notifiers-discord" title="${_('Discord')}"></span>
                         <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Discord</a></h3>
-                        <p>${_('All-in-one voice and text chat for gammers that\'s free, secure, and works on both your desktop and phone.')}</p>
+                        <p>${_('All-in-one voice and text chat for gamers that\'s free, secure, and works on both your desktop and phone.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
