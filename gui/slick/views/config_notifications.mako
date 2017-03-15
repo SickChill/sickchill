@@ -1065,7 +1065,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="growl_notify_ondownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <label for="growl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
                             <div class="field-pair row">
@@ -2873,7 +2873,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
-                                    <label for="email_notify_ondownload">${_('send a notification when a download starts?')}</label>
+                                    <label for="email_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
