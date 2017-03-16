@@ -41,12 +41,12 @@ except ImportError:
 
 
 from sickbeard.indexers import indexer_api
-from sickbeard.common import SD, SKIPPED, WANTED
+from sickbeard.common import SD, SKIPPED, WANTED, MULTI_EP_STRINGS
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickbeard.config import check_section, check_setting_int, check_setting_str, \
-    check_setting_float, check_setting_bool, ConfigMigrator
+    check_setting_float, check_setting_bool, min_max, ConfigMigrator
 from sickbeard import db, helpers, scheduler, search_queue, show_queue, logger, \
     naming, dailysearcher, metadata, providers
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, \
@@ -951,11 +951,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NAMING_SPORTS_PATTERN = check_setting_str(CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
         NAMING_ANIME_PATTERN = check_setting_str(CFG, 'General', 'naming_anime_pattern',
                                                  'Season %0S/%SN - S%0SE%0E - %EN')
-        NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
+        NAMING_ANIME = min_max(check_setting_int(CFG, 'General', 'naming_anime', 3), default=3, low=1, high=3)
         NAMING_CUSTOM_SPORTS = check_setting_bool(CFG, 'General', 'naming_custom_sports')
         NAMING_CUSTOM_ANIME = check_setting_bool(CFG, 'General', 'naming_custom_anime')
-        NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
-        NAMING_ANIME_MULTI_EP = check_setting_int(CFG, 'General', 'naming_anime_multi_ep', 1)
+        NAMING_MULTI_EP = min_max(check_setting_int(CFG, 'General', 'naming_multi_ep', 1), default=1, low=1, high=max(MULTI_EP_STRINGS))
+        NAMING_ANIME_MULTI_EP = min_max(check_setting_int(CFG, 'General', 'naming_anime_multi_ep', 1), default=1, low=1, high=max(MULTI_EP_STRINGS))
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = check_setting_bool(CFG, 'General', 'naming_strip_year')
 
