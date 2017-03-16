@@ -24,7 +24,6 @@ import ast
 import datetime
 import gettext
 import os
-import rarfile
 import re
 import time
 import traceback
@@ -44,8 +43,6 @@ from mako.runtime import UNDEFINED
 from mimetypes import guess_type
 
 from operator import attrgetter
-
-import platform
 
 from tornado.routes import route
 from tornado.web import RequestHandler, HTTPError, authenticated
@@ -68,7 +65,7 @@ from sickbeard import config, sab, clients, notifiers, ui, logger, \
     network_timezones
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, cpu_presets, \
-    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED, NAMING_LIMITED_EXTEND_E_PREFIXED
 
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
@@ -4359,45 +4356,35 @@ class ConfigPostProcessing(Config):
 
         if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
-            sickbeard.NAMING_MULTI_EP = int(naming_multi_ep)
-            sickbeard.NAMING_ANIME = int(naming_anime)
+            sickbeard.NAMING_MULTI_EP = try_int(naming_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime or 0) in [1, 2]:
-                results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
-            else:
-                results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
+            results.append(_("You tried saving an invalid normal naming config, not saving your naming settings"))
 
         if self.isNamingValid(naming_anime_pattern, naming_anime_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_ANIME_PATTERN = naming_anime_pattern
-            sickbeard.NAMING_ANIME_MULTI_EP = int(naming_anime_multi_ep)
-            sickbeard.NAMING_ANIME = int(naming_anime)
+            sickbeard.NAMING_ANIME_MULTI_EP = try_int(naming_anime_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
+            sickbeard.NAMING_ANIME = try_int(naming_anime, 3)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime or 0) in [1, 2]:
-                results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
-            else:
-                results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
+            results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
 
         if self.isNamingValid(naming_abd_pattern, None, abd=True) != "invalid":
             sickbeard.NAMING_ABD_PATTERN = naming_abd_pattern
         else:
-            results.append(
-                "You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
+            results.append("You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
 
         if self.isNamingValid(naming_sports_pattern, None, sports=True) != "invalid":
             sickbeard.NAMING_SPORTS_PATTERN = naming_sports_pattern
         else:
-            results.append(
-                "You tried saving an invalid sports naming config, not saving your sports settings")
+            results.append("You tried saving an invalid sports naming config, not saving your sports settings")
 
         sickbeard.save_config()
 
-        if len(results) > 0:
+        if results:
             for x in results:
                 logger.log(x, logger.WARNING)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
+            ui.notifications.error(_('Error(s) Saving Configuration'), '<br>\n'.join(results))
         else:
             ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4405,15 +4392,7 @@ class ConfigPostProcessing(Config):
 
     @staticmethod
     def testNaming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
-
-        if multi is not None:
-            multi = int(multi)
-
-        if anime_type is not None:
-            anime_type = int(anime_type)
-
-        result = naming.test_name(pattern, multi, abd, sports, anime_type)
-
+        result = naming.test_name(pattern, try_int(multi, None), abd, sports, try_int(anime_type, None))
         result = ek(os.path.join, result[b'dir'], result[b'name'])
 
         return result
@@ -4422,12 +4401,6 @@ class ConfigPostProcessing(Config):
     def isNamingValid(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         if not pattern:
             return "invalid"
-
-        if multi is not None:
-            multi = int(multi)
-
-        if anime_type is not None:
-            anime_type = int(anime_type)
 
         # air by date shows just need one check, we don't need to worry about season folders
         if abd:
@@ -4441,10 +4414,10 @@ class ConfigPostProcessing(Config):
 
         else:
             # check validity of single and multi ep cases for the whole path
-            is_valid = naming.check_valid_naming(pattern, multi, anime_type)
+            is_valid = naming.check_valid_naming(pattern, try_int(multi, None), try_int(anime_type, None))
 
             # check validity of single and multi ep cases for only the file name
-            require_season_folders = naming.check_force_season_folders(pattern, multi, anime_type)
+            require_season_folders = naming.check_force_season_folders(pattern, try_int(multi, None), try_int(anime_type, None))
 
         if is_valid and not require_season_folders:
             return "valid"
