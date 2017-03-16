@@ -3509,10 +3509,10 @@ var SICKRAGE = {
                 var sort = getMeta('sickbeard.COMING_EPS_SORT');
                 var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
-				$('.resetsorting').on('click', function(){
-					$('#showListTable').trigger('filterReset');
-				});
-				
+                $('.resetsorting').on('click', function(){
+                    $('#showListTable').trigger('filterReset');
+                });
+
                 $('#showListTable:has(tbody tr)').tablesorter({
                     widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
                     sortList: sortList,
