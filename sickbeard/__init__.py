@@ -742,11 +742,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         check_section(CFG, 'Discord')
 
         # Need to be before any passwords
-        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', min=0, max=2)
+        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', min_val=0, max_val=2)
         ENCRYPTION_SECRET = check_setting_str(CFG, 'General', 'encryption_secret', helpers.generateCookieSecret(), censor_log=True)
 
         # git login info
-        GIT_AUTH_TYPE = check_setting_int(CFG, 'General', 'git_auth_type', min=0, max=1)
+        GIT_AUTH_TYPE = check_setting_int(CFG, 'General', 'git_auth_type', min_val=0, max_val=1)
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username')
         GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', censor_log=True)
         GIT_TOKEN = check_setting_str(CFG, 'General', 'git_token_password', censor_log=True) # encryption needed
@@ -762,8 +762,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
-        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min=1)  # Default to 5 backup file (sickrage.log.x)
-        LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min=0.5)  # Default to max 10MB per logfile
+        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickrage.log.x)
+        LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
         if LOG_SIZE > 100:
             LOG_SIZE = 10.0
@@ -855,7 +855,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SICKRAGE_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickrage_background')
         SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path')
         FANART_BACKGROUND = check_setting_bool(CFG, 'GUI', 'fanart_background', True)
-        FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min=0.1, max=1.0)
+        FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
@@ -867,11 +867,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         load_gettext_translations(LOCALE_DIR, 'messages')
 
-        SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30, min=0)
+        SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30, min_val=0)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
 
         try:
-            WEB_PORT = check_setting_int(CFG, 'General', 'web_port', 8081, min=21, max=65535)
+            WEB_PORT = check_setting_int(CFG, 'General', 'web_port', 8081, min_val=21, max_val=65535)
         except Exception:
             WEB_PORT = 8081
 
@@ -941,8 +941,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         AUTO_UPDATE = check_setting_bool(CFG, 'General', 'auto_update')
         NOTIFY_ON_UPDATE = check_setting_bool(CFG, 'General', 'notify_on_update', True)
         SEASON_FOLDERS_DEFAULT = check_setting_bool(CFG, 'General', 'season_folders_default', True)
-        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min=min(indexerApi().indexers), max=max(indexerApi().indexers))
-        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min=0)
+        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers))
+        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
         ANIME_DEFAULT = check_setting_bool(CFG, 'General', 'anime_default')
         SCENE_DEFAULT = check_setting_bool(CFG, 'General', 'scene_default')
 
@@ -954,11 +954,11 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NAMING_SPORTS_PATTERN = check_setting_str(CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
         NAMING_ANIME_PATTERN = check_setting_str(CFG, 'General', 'naming_anime_pattern',
                                                  'Season %0S/%SN - S%0SE%0E - %EN')
-        NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3, min=1, max=3)
+        NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3, min_val=1, max_val=3)
         NAMING_CUSTOM_SPORTS = check_setting_bool(CFG, 'General', 'naming_custom_sports')
         NAMING_CUSTOM_ANIME = check_setting_bool(CFG, 'General', 'naming_custom_anime')
-        NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1, min=1, max=max(MULTI_EP_STRINGS))
-        NAMING_ANIME_MULTI_EP = check_setting_int(CFG, 'General', 'naming_anime_multi_ep', 1, min=1, max=max(MULTI_EP_STRINGS))
+        NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1, min_val=1, max_val=max(MULTI_EP_STRINGS))
+        NAMING_ANIME_MULTI_EP = check_setting_int(CFG, 'General', 'naming_anime_multi_ep', 1, min_val=1, max_val=max(MULTI_EP_STRINGS))
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = check_setting_bool(CFG, 'General', 'naming_strip_year')
 
@@ -990,21 +990,21 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         AUTOPOSTPROCESSOR_FREQUENCY = check_setting_int(CFG, 'General', 'autopostprocessor_frequency',
                                                         DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY,
-                                                        min=MIN_AUTOPOSTPROCESSOR_FREQUENCY, fallback_def=False)
+                                                        min_val=MIN_AUTOPOSTPROCESSOR_FREQUENCY, fallback_def=False)
 
         DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency',
                                                   DEFAULT_DAILYSEARCH_FREQUENCY,
-                                                  min=MIN_DAILYSEARCH_FREQUENCY, fallback_def=False)
+                                                  min_val=MIN_DAILYSEARCH_FREQUENCY, fallback_def=False)
 
         MIN_BACKLOG_FREQUENCY = get_backlog_cycle_time()
         BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', DEFAULT_BACKLOG_FREQUENCY,
-                                              min=MIN_BACKLOG_FREQUENCY, fallback_def=False)
+                                              min_val=MIN_BACKLOG_FREQUENCY, fallback_def=False)
 
         UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY,
-                                             min=MIN_UPDATE_FREQUENCY, fallback_def=False)
+                                             min_val=MIN_UPDATE_FREQUENCY, fallback_def=False)
 
         SHOWUPDATE_HOUR = check_setting_int(CFG, 'General', 'showupdate_hour', DEFAULT_SHOWUPDATE_HOUR,
-                                            min=0, max=23)
+                                            min_val=0, max_val=23)
 
         BACKLOG_DAYS = check_setting_int(CFG, 'General', 'backlog_days', 7)
 
@@ -1018,7 +1018,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROCESS_AUTOMATICALLY = check_setting_bool(CFG, 'General', 'process_automatically')
         NO_DELETE = check_setting_bool(CFG, 'General', 'no_delete')
         USE_ICACLS = check_setting_bool(CFG, 'General', 'use_icacls', True)
-        UNPACK = check_setting_int(CFG, 'General', 'unpack', min=0, max=2)
+        UNPACK = check_setting_int(CFG, 'General', 'unpack', min_val=0, max_val=2)
         UNPACK_DIR = check_setting_str(CFG, 'General', 'unpack_dir')
 
         config.change_unrar_tool(
@@ -1076,7 +1076,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path')
-        TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min=-1)
+        TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min_val=-1)
         TORRENT_PAUSED = check_setting_bool(CFG, 'TORRENT', 'torrent_paused')
         TORRENT_HIGH_BANDWIDTH = check_setting_bool(CFG, 'TORRENT', 'torrent_high_bandwidth')
         TORRENT_LABEL = check_setting_str(CFG, 'TORRENT', 'torrent_label')
@@ -1231,13 +1231,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRAKT_REMOVE_SERIESLIST = check_setting_bool(CFG, 'Trakt', 'trakt_remove_serieslist')
         TRAKT_REMOVE_SHOW_FROM_SICKRAGE = check_setting_bool(CFG, 'Trakt', 'trakt_remove_show_from_sickrage')
         TRAKT_SYNC_WATCHLIST = check_setting_bool(CFG, 'Trakt', 'trakt_sync_watchlist')
-        TRAKT_METHOD_ADD = check_setting_int(CFG, 'Trakt', 'trakt_method_add', min=0, max=2)
+        TRAKT_METHOD_ADD = check_setting_int(CFG, 'Trakt', 'trakt_method_add', min_val=0, max_val=2)
         TRAKT_START_PAUSED = check_setting_bool(CFG, 'Trakt', 'trakt_start_paused')
         TRAKT_USE_RECOMMENDED = check_setting_bool(CFG, 'Trakt', 'trakt_use_recommended')
         TRAKT_SYNC = check_setting_bool(CFG, 'Trakt', 'trakt_sync')
         TRAKT_SYNC_REMOVE = check_setting_bool(CFG, 'Trakt', 'trakt_sync_remove')
-        TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1, min=min(indexerApi().indexers), max=max(indexerApi().indexers))
-        TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30, min=0)
+        TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1, min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers))
+        TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30, min_val=0)
         TRAKT_BLACKLIST_NAME = check_setting_str(CFG, 'Trakt', 'trakt_blacklist_name')
 
         USE_PYTIVO = check_setting_bool(CFG, 'pyTivo', 'use_pytivo')
@@ -1275,7 +1275,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         EMAIL_NOTIFY_ONDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_ondownload')
         EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_onsubtitledownload')
         EMAIL_HOST = check_setting_str(CFG, 'Email', 'email_host')
-        EMAIL_PORT = check_setting_int(CFG, 'Email', 'email_port', 25, min=21, max=65535)
+        EMAIL_PORT = check_setting_int(CFG, 'Email', 'email_port', 25, min_val=21, max_val=65535)
         EMAIL_TLS = check_setting_bool(CFG, 'Email', 'email_tls')
         EMAIL_USER = check_setting_str(CFG, 'Email', 'email_user', censor_log=True)
         EMAIL_PASSWORD = check_setting_str(CFG, 'Email', 'email_password', censor_log=True)
@@ -1298,7 +1298,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SUBTITLES_PERFECT_MATCH = check_setting_bool(CFG, 'Subtitles', 'subtitles_perfect_match', True)
         EMBEDDED_SUBTITLES_ALL = check_setting_bool(CFG, 'Subtitles', 'embedded_subtitles_all')
         SUBTITLES_HEARING_IMPAIRED = check_setting_bool(CFG, 'Subtitles', 'subtitles_hearing_impaired')
-        SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1, min=1)
+        SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1, min_val=1)
         SUBTITLES_MULTI = check_setting_bool(CFG, 'Subtitles', 'subtitles_multi', True)
         SUBTITLES_KEEP_ONLY_WANTED = check_setting_bool(CFG, 'Subtitles', 'subtitles_keep_only_wanted')
         SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in check_setting_str(CFG, 'Subtitles', 'subtitles_extra_scripts').split('|') if x.strip()]
@@ -1366,7 +1366,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TIME_PRESET = TIME_PRESET_W_SECONDS.replace(":%S", "")
         TIMEZONE_DISPLAY = check_setting_str(CFG, 'GUI', 'timezone_display', 'local')
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
-        POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min=0, max=1)
+        POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
 
         # initialize NZB and TORRENT providers
@@ -1430,10 +1430,10 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                                              curTorrentProvider.get_id() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
                 curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
-                                                               curTorrentProvider.get_id() + '_minseed', 1, min=0)
+                                                               curTorrentProvider.get_id() + '_minseed', 1, min_val=0)
             if hasattr(curTorrentProvider, 'minleech'):
                 curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.get_id().upper(),
-                                                                curTorrentProvider.get_id() + '_minleech', 0, min=0)
+                                                                curTorrentProvider.get_id() + '_minleech', 0, min_val=0)
             if hasattr(curTorrentProvider, 'freeleech'):
                 curTorrentProvider.freeleech = check_setting_bool(CFG, curTorrentProvider.get_id().upper(), curTorrentProvider.get_id() + '_freeleech')
             if hasattr(curTorrentProvider, 'search_mode'):
