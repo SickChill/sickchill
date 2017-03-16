@@ -703,8 +703,8 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
 
     if not (min_val is None or isinstance(min_val, int)):
         logger.log(
-            "{dom}:{key} min value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='int', dt=type(min)), logger.ERROR)
+            "{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='int', dt=type(min_val)), logger.ERROR)
 
     if not (max_val is None or isinstance(max_val, int)):
         logger.log(
@@ -773,8 +773,8 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
 
     if not (min_val is None or isinstance(min_val, float)):
         logger.log(
-            "{dom}:{key} min value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='float', dt=type(min)), logger.ERROR)
+            "{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='float', dt=type(min_val)), logger.ERROR)
 
     if not (max_val is None or isinstance(max_val, float)):
         logger.log(
@@ -788,7 +788,7 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
         my_val = float(config[cfg_name][item_name])
 
         if isinstance(min_val, float) and my_val < min_val:
-            my_val = config[cfg_name][item_name] = (min, def_val)[fallback_def]
+            my_val = config[cfg_name][item_name] = (min_val, def_val)[fallback_def]
         if isinstance(max_val, float) and my_val > max_val:
             my_val = config[cfg_name][item_name] = (max_val, def_val)[fallback_def]
     except (ValueError, IndexError, KeyError, TypeError):
