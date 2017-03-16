@@ -353,7 +353,7 @@ def change_daily_search_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
-    
+
     if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
 
@@ -368,7 +368,7 @@ def change_backlog_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
-    
+
     sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
     if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
         sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
@@ -384,7 +384,7 @@ def change_update_frequency(freq):
     :param freq: New frequency
     """
     sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
-    
+
     if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
         sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
@@ -399,7 +399,7 @@ def change_showupdate_hour(freq):
     :param freq: New frequency
     """
     sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
-    
+
     if sickbeard.SHOWUPDATE_HOUR > 23:
         sickbeard.SHOWUPDATE_HOUR = 0
     elif sickbeard.SHOWUPDATE_HOUR < 0:
@@ -428,7 +428,7 @@ def change_version_notify(version_notify):
     :param version_notify: New desired state
     """
     version_notify = checkbox_to_value(version_notify)
-    
+
     if sickbeard.VERSION_NOTIFY == version_notify:
         return True
 
@@ -439,12 +439,12 @@ def change_version_notify(version_notify):
             sickbeard.versionCheckScheduler.silent = False
             sickbeard.versionCheckScheduler.enable = True
             sickbeard.versionCheckScheduler.forceRun()
-        
+
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
         logger.log("Stopping VERSIONCHECK thread", logger.INFO)
-    
+
     return True
 
 
@@ -455,7 +455,7 @@ def change_download_propers(download_propers):
     :param download_propers: New desired state
     """
     download_propers = checkbox_to_value(download_propers)
-        
+
     if sickbeard.DOWNLOAD_PROPERS == download_propers:
         return True
 
@@ -465,12 +465,12 @@ def change_download_propers(download_propers):
             logger.log("Starting PROPERFINDER thread", logger.INFO)
             sickbeard.properFinderScheduler.silent = False
             sickbeard.properFinderScheduler.enable = True
-        
+
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
         logger.log("Stopping PROPERFINDER thread", logger.INFO)
-    
+
     return True
 
 
@@ -481,7 +481,7 @@ def change_use_trakt(use_trakt):
     :param use_trakt: New desired state
     """
     use_trakt = checkbox_to_value(use_trakt)
-    
+
     if sickbeard.USE_TRAKT == use_trakt:
         return True
 
@@ -496,7 +496,7 @@ def change_use_trakt(use_trakt):
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
         logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
-    
+
     return True
 
 
@@ -510,19 +510,19 @@ def change_use_subtitles(use_subtitles):
 
     if sickbeard.USE_SUBTITLES == use_subtitles:
         return True
- 
+
     sickbeard.USE_SUBTITLES = use_subtitles
     if sickbeard.USE_SUBTITLES:
         if not sickbeard.subtitlesFinderScheduler.enable:
             logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
             sickbeard.subtitlesFinderScheduler.silent = False
             sickbeard.subtitlesFinderScheduler.enable = True
-    
+
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
         logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
-    
+
     return True
 
 
@@ -543,12 +543,12 @@ def change_process_automatically(process_automatically):
             logger.log("Starting POSTPROCESSOR thread", logger.INFO)
             sickbeard.autoPostProcessorScheduler.silent = False
             sickbeard.autoPostProcessorScheduler.enable = True
-            
+
     else:
         logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
         sickbeard.autoPostProcessorScheduler.silent = True
-    
+
     return True
 
 
@@ -676,12 +676,40 @@ def min_max(val, default, low, high):
 ################################################################################
 # check_setting_int                                                            #
 ################################################################################
-def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
+def check_setting_int(config, cfg_name, item_name, def_val=0, min=None, max=None, fallback_def=True, silent=True):
+    """
+    Checks config setting of integer type
 
+    :param config: config object
+    :type config: ConfigObj()
+    :param cfg_name: section name of config
+    :param item_name: item name of section
+    :param def_val: default value to return in case a value can't be retrieved from config,
+                    or in case value couldn't be converted,
+                    or if `value < min` or `value > max` (default: 0)
+    :param min: force value to be greater than or equal to `min` (optional)
+    :param max: force value to be lesser than or equal to `max` (optional)
+    :param fallback_def: if True, `def_val` will be returned when value not in range of `min` and `max`.
+                         otherwise, `min`/`max` value will be returned respectively (default: True)
+    :param silent: don't log result to debug log (default: True)
+
+    :return: value of `config[cfg_name][item_name]` or `min`/`max` (see def_low_high) `def_val` (see def_val)
+    :rtype: int
+    """
     if not isinstance(def_val, int):
         logger.log(
             "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
                 dom=cfg_name, key=item_name, t='int', dt=type(def_val)), logger.ERROR)
+
+    if not (min is None or isinstance(min, int)):
+        logger.log(
+            "{dom}:{key} min value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='int', dt=type(min)), logger.ERROR)
+
+    if not (max is None or isinstance(max, int)):
+        logger.log(
+            "{dom}:{key} max value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='int', dt=type(max)), logger.ERROR)
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
@@ -695,6 +723,12 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
             my_val = 0
 
         my_val = int(my_val)
+
+        if isinstance(min, int) and my_val < min:
+            my_val = config[cfg_name][item_name] = (min, def_val)[fallback_def]
+        if isinstance(max, int) and my_val > max:
+            my_val = config[cfg_name][item_name] = (max, def_val)[fallback_def]
+
     except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
 
@@ -712,18 +746,51 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, silent=True):
 ################################################################################
 # check_setting_float                                                          #
 ################################################################################
-def check_setting_float(config, cfg_name, item_name, def_val=0.0, silent=True):
+def check_setting_float(config, cfg_name, item_name, def_val=0.0, min=None, max=None, fallback_def=True, silent=True):
+    """
+    Checks config setting of float type
 
+    :param config: config object
+    :type config: ConfigObj()
+    :param cfg_name: section name of config
+    :param item_name: item name of section
+    :param def_val: default value to return in case a value can't be retrieved from config
+                    or if couldn't be converted,
+                    or if `value < min` or `value > max` (default: 0.0)
+    :param min: force value to be greater than or equal to `min` (optional)
+    :param max: force value to be lesser than or equal to `max (optional)
+    :param fallback_def: if True, `def_val` will be returned when value not in range of `min` and `max`.
+                         otherwise, `min`/`max` value will be returned respectively (default: True)
+    :param silent: don't log result to debug log (default: True)
+
+    :return: value of `config[cfg_name][item_name]` or `min`/`max` (see def_low_high) `def_val` (see def_val)
+    :rtype: float
+    """
     if not isinstance(def_val, float):
         logger.log(
             "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
                 dom=cfg_name, key=item_name, t='float', dt=type(def_val)), logger.ERROR)
+
+    if not (min is None or isinstance(min, float)):
+        logger.log(
+            "{dom}:{key} min value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='float', dt=type(min)), logger.ERROR)
+
+    if not (max is None or isinstance(max, float)):
+        logger.log(
+            "{dom}:{key} max value is not the correct type. Expected {t}, got {dt}".format(
+                dom=cfg_name, key=item_name, t='float', dt=type(max)), logger.ERROR)
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
             raise ValueError
 
         my_val = float(config[cfg_name][item_name])
+
+        if isinstance(min, float) and my_val < min:
+            my_val = config[cfg_name][item_name] = (min, def_val)[fallback_def]
+        if isinstance(max, float) and my_val > max:
+            my_val = config[cfg_name][item_name] = (max, def_val)[fallback_def]
     except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
 
@@ -742,7 +809,22 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, silent=True):
 # check_setting_str                                                            #
 ################################################################################
 def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), silent=True, censor_log=False):
+    """
+    Checks config setting of string types
 
+    :param config: config object
+    :type config: ConfigObj()
+    :param cfg_name: section name of config
+    :param item_name: item name of section
+    :param def_val: default value to return in case a value can't be retrieved from config
+                    or if couldn't be converted (default: empty six.text_type)
+    :param silent: don't log result to debug log (default: True)
+    :param censor_log: overrides and adds this setting to logger censored items (default: False)
+
+    :return: decrypted value of `config[cfg_name][item_name]`
+             or `def_val` (see cases of def_val)
+    :rtype: six.text_type
+    """
     if not isinstance(def_val, six.string_types):
         logger.log(
             "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
@@ -779,6 +861,21 @@ def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), si
 # check_setting_bool                                                           #
 ################################################################################
 def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
+    """
+    Checks config setting of boolean type
+
+    :param config: config object
+    :type config: ConfigObj()
+    :param cfg_name: section name of config
+    :param item_name: item name of section
+    :param def_val: default value to return in case a value can't be retrieved from config
+                    or if couldn't be converted (default: False)
+    :param silent: don't log result to debug log (default: True)
+
+    :return: value of `config[cfg_name][item_name]`
+             or `def_val` (see cases of def_val)
+    :rtype: bool
+    """
     try:
         if not isinstance(def_val, bool):
             logger.log(
