@@ -95,7 +95,10 @@ from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
 import six
+
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 
 
