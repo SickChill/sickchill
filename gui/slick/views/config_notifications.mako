@@ -2940,7 +2940,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM | h}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
