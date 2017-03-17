@@ -89,7 +89,7 @@ var gt = null;
     if (lang !== '') {
         $.ajax({
             dataType: "json",
-            url: srRoot + '/locale/' + $('html').attr('lang') + '/LC_MESSAGES/messages.json',
+            url: srRoot + '/locale/' + lang + '/LC_MESSAGES/messages.json',
             async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
             success: function(data) {
                 gt = new Gettext(data.messages); // jshint ignore:line
