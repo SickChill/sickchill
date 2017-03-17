@@ -191,14 +191,14 @@ module.exports = function(grunt) {
     ]);
 	grunt.registerTask('update_trans', 'Update translations. In order to sync with Crowdin, set the env-var `CROWDIN_API_KEY`.', function() {
 		var tasks = [
-			'run:babel_extract',
-			'run:babel_update',
+			'exec:babel_extract',
+			'exec:babel_update',
 			// + crowdin
-			'run:babel_compile',
+			'exec:babel_compile',
 			'po2json'
 		];
         if(process.env['CROWDIN_API_KEY']) {
-			tasks.splice(2, 0, 'run:crowdin_upload', 'run:crowdin_download') // insert items at index 2
+			tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download') // insert items at index 2
         } else {
 			grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
 		}
