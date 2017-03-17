@@ -82,9 +82,29 @@ function shiftReturn(array){
     return array;
 }
 
-var gt = new Gettext({ "domain" : "messages" }); // jshint ignore:line
+// Handle gettext.js
+var gt = null;
+(function loadTranslation() {
+    var lang = $('html').attr('lang');
+    if (lang !== '') {
+        $.ajax({
+            dataType: "json",
+            url: srRoot + '/locale/' + $('html').attr('lang') + '/LC_MESSAGES/messages.json',
+            async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
+            success: function(data) {
+                gt = new Gettext(data.messages); // jshint ignore:line
+            },
+            failure: function() {
+                gt = new Gettext(); // jshint ignore:line
+            }
+        });
+    } else {
+        // @FIXME: add support for 'System Language' option
+        gt = new Gettext(); // jshint ignore:line
+    }
+})();
 var __ = _; // Moves `underscore` to __
-_ = function(str) { return gt.gettext(str); };
+_ = function(str) { return gt.gettext(str); }; // Create shortcut
 
 var SICKRAGE = {
     common: {

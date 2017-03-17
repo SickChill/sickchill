@@ -94,10 +94,6 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
 
-        % if sickbeard.GUI_LANG:
-            <link rel="gettext" type="application/x-po" href="${srRoot}/locale/${sickbeard.GUI_LANG}/LC_MESSAGES/messages.po" />
-        % endif
-
         %if sickbeard.THEME_NAME != "light":
             <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
         %endif
