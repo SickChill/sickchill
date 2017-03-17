@@ -6,6 +6,7 @@
     from sickrage.helper.common import pretty_file_size
     import os
     import re
+    from six.moves import urllib
 
     ## Need to initialize these for gettext, they are done dynamically in the ui
     _('Continuing')
@@ -34,7 +35,7 @@
                         if not sickbeard.SORT_ARTICLE:
                             loading_show_sort_name = re.sub(r'(?:The|A|An)\s', '', loading_show_sort_name, flags=re.I)
 
-                        loading_show_id = curLoadingShow.show_name
+                        loading_show_id = urllib.parse.quote_plus(curLoadingShow.show_name)
                         loading_show_network = _('Loading')
                         loading_show_quality = 0
                 %>
@@ -225,7 +226,7 @@
                                 loading_show_id = curLoadingShow.show.indexerid
                             else:
                                 loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
-                                loading_show_id = curLoadingShow.show_name
+                                loading_show_id = urllib.parse.quote_plus(curLoadingShow.show_name)
                         %>
                         <tr>
                             <td align="center">(${_('loading')})</td><td align="center"></td>
