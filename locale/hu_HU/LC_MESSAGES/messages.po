@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2017-03-11 11:07-0800\n"
-"PO-Revision-Date: 2017-03-11 14:08-0500\n"
+"POT-Creation-Date: 2017-03-16 05:15-0700\n"
+"PO-Revision-Date: 2017-03-16 08:18-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -90,7 +90,7 @@ msgid "Biography"
 msgstr "Életrajzi"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:141
-#: sickbeard/__init__.py:79 sickbeard/webserve.py:3775
+#: sickbeard/__init__.py:79 sickbeard/webserve.py:3783
 msgid "History"
 msgstr "Előzmények"
 
@@ -103,7 +103,7 @@ msgid "Western"
 msgstr "Western"
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:217
-#: sickbeard/__init__.py:80 sickbeard/webserve.py:2353
+#: sickbeard/__init__.py:80 sickbeard/webserve.py:2361
 msgid "News"
 msgstr "Hírek"
 
@@ -308,15 +308,15 @@ msgstr "Trakt ellenőrző"
 msgid "Event"
 msgstr "Esemény"
 
-#: sickbeard/logger.py:483 sickbeard/webserve.py:1306 sickbeard/webserve.py:1309
-#: sickbeard/webserve.py:1487 sickbeard/webserve.py:1496 sickbeard/webserve.py:1685
-#: sickbeard/webserve.py:1696 sickbeard/webserve.py:1719 sickbeard/webserve.py:1732
-#: sickbeard/webserve.py:1737 sickbeard/webserve.py:1753 sickbeard/webserve.py:1758
-#: sickbeard/webserve.py:1822 sickbeard/webserve.py:1825 sickbeard/webserve.py:1831
-#: sickbeard/webserve.py:1834 sickbeard/webserve.py:1841 sickbeard/webserve.py:1844
-#: sickbeard/webserve.py:1867 sickbeard/webserve.py:1965 sickbeard/webserve.py:1970
-#: sickbeard/webserve.py:1975 sickbeard/webserve.py:2004 sickbeard/webserve.py:2008
-#: sickbeard/webserve.py:2013
+#: sickbeard/logger.py:483 sickbeard/webserve.py:1314 sickbeard/webserve.py:1317
+#: sickbeard/webserve.py:1495 sickbeard/webserve.py:1504 sickbeard/webserve.py:1693
+#: sickbeard/webserve.py:1704 sickbeard/webserve.py:1727 sickbeard/webserve.py:1740
+#: sickbeard/webserve.py:1745 sickbeard/webserve.py:1761 sickbeard/webserve.py:1766
+#: sickbeard/webserve.py:1830 sickbeard/webserve.py:1833 sickbeard/webserve.py:1839
+#: sickbeard/webserve.py:1842 sickbeard/webserve.py:1849 sickbeard/webserve.py:1852
+#: sickbeard/webserve.py:1875 sickbeard/webserve.py:1973 sickbeard/webserve.py:1978
+#: sickbeard/webserve.py:1983 sickbeard/webserve.py:2012 sickbeard/webserve.py:2016
+#: sickbeard/webserve.py:2021
 msgid "Error"
 msgstr "Hiba"
 
@@ -380,981 +380,982 @@ msgstr "Oops"
 msgid "Wrong API key used"
 msgstr "Rossz API kulcs"
 
-#: gui/slick/views/login.mako:34 sickbeard/webserve.py:301
+#: gui/slick/views/login.mako:34 sickbeard/webserve.py:302
 msgid "Login"
 msgstr "Bejelentkezés"
 
-#: sickbeard/webserve.py:390
+#: sickbeard/webserve.py:391
 msgid "API Key not generated"
 msgstr "Nem sikerült API-kulcsot generálni"
 
-#: sickbeard/webserve.py:393
+#: sickbeard/webserve.py:394
 msgid "API Builder"
 msgstr "API-Builder"
 
 #: gui/slick/views/config_general.mako:77 gui/slick/views/layouts/main.mako:137
-#: sickbeard/webserve.py:496
+#: sickbeard/webserve.py:497
 msgid "Schedule"
 msgstr "Ütemezés"
 
-#: sickbeard/webserve.py:594
+#: sickbeard/webserve.py:595
 msgid "Test 1"
 msgstr "Teszt 1"
 
-#: sickbeard/webserve.py:594
+#: sickbeard/webserve.py:595
 msgid "This is test number 1"
 msgstr "Ez az 1-es tesztszám"
 
-#: sickbeard/webserve.py:595
+#: sickbeard/webserve.py:596
 msgid "Test 2"
 msgstr "Teszt 2"
 
-#: sickbeard/webserve.py:595
+#: sickbeard/webserve.py:596
 msgid "This is test number 2"
 msgstr "Ez a 2-es tesztszám"
 
-#: sickbeard/webserve.py:618
+#: sickbeard/webserve.py:619
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
 msgstr ""
 
-#: sickbeard/webserve.py:674 sickbeard/webserve.py:679
+#: sickbeard/webserve.py:675 sickbeard/webserve.py:680
 msgid "Invalid show parameters"
 msgstr "Érvénytelen Tv-műsor paraméterek"
 
-#: sickbeard/webserve.py:686
+#: sickbeard/webserve.py:687
 msgid "Invalid parameters"
 msgstr ""
 
-#: sickbeard/webserve.py:689 sickbeard/webserve.py:1867
+#: sickbeard/webserve.py:690 sickbeard/webserve.py:1875
 msgid "Episode couldn't be retrieved"
 msgstr "Az epizódot nem sikerült megszerezni"
 
-#: sickbeard/webserve.py:728 sickbeard/webserve.py:1235 sickbeard/webserve.py:1264
+#: sickbeard/webserve.py:729 sickbeard/webserve.py:1243 sickbeard/webserve.py:1272
 msgid "Home"
 msgstr "Kezdőnézet"
 
-#: gui/slick/views/layouts/main.mako:123 sickbeard/webserve.py:728
+#: gui/slick/views/layouts/main.mako:123 sickbeard/webserve.py:729
 msgid "Show List"
 msgstr "Műsor lista"
 
-#: sickbeard/webserve.py:769
+#: sickbeard/webserve.py:777
 msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
 msgstr "Hiba: Nem támogatott kérés. Jsonp kérés küldése a \"callback\" változóval a karakterláncban."
 
-#: sickbeard/webserve.py:813
+#: sickbeard/webserve.py:821
 msgid "Success. Connected and authenticated"
 msgstr "Sikeres kapcsolódás és hitelesítés"
 
-#: sickbeard/webserve.py:815
+#: sickbeard/webserve.py:823
 msgid "Authentication failed. SABnzbd expects"
 msgstr "A hitelesítés sikertelen. SABnzbd szükséges"
 
-#: sickbeard/webserve.py:815
+#: sickbeard/webserve.py:823
 msgid "as authentication method"
 msgstr "hitelesítési módszerként"
 
-#: sickbeard/webserve.py:817
+#: sickbeard/webserve.py:825
 msgid "Unable to connect to host"
 msgstr "Nem tud csatlakozni a Host-hoz"
 
-#: sickbeard/webserve.py:838
+#: sickbeard/webserve.py:846
 msgid "SMS sent successfully"
 msgstr "SMS sikeresen elküldve"
 
-#: sickbeard/webserve.py:840
+#: sickbeard/webserve.py:848
 msgid "Problem sending SMS: {message}"
 msgstr "Probléma merült fel az SMS küldése közben: {message}"
 
-#: sickbeard/webserve.py:847
+#: sickbeard/webserve.py:855
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
 msgstr "Telegram értesítés elküldve. Lépj be a Telegram kliensbe, hogy ellenőrizd, minden jól működött-e"
 
-#: sickbeard/webserve.py:849
+#: sickbeard/webserve.py:857
 msgid "Error sending Telegram notification: {message}"
 msgstr "Hiba a Telegram értesítés elküldése közben: {message}"
 
-#: sickbeard/webserve.py:856
+#: sickbeard/webserve.py:864
 msgid "join notification succeeded. Check your join clients to make sure it worked"
 msgstr "join értesítés elküldve. Lépj be a join kliensbe, hogy ellenőrizd, minden jól működött-e"
 
-#: sickbeard/webserve.py:858
+#: sickbeard/webserve.py:866
 msgid "Error sending join notification: {message}"
 msgstr "Hiba a join értesítés elküldése közben: {message}"
 
-#: sickbeard/webserve.py:868
+#: sickbeard/webserve.py:876
 msgid " with password"
 msgstr " jelszóval"
 
-#: sickbeard/webserve.py:870
+#: sickbeard/webserve.py:878
 msgid "Registered and Tested growl successfully {growl_host}"
 msgstr "Growl sikeresen regisztrálva és tesztelve {growl_host}"
 
-#: sickbeard/webserve.py:872
+#: sickbeard/webserve.py:880
 msgid "Registration and Testing of growl failed {growl_host}"
 msgstr "Growl regisztrálása és tesztelése sikertelen {growl_host}"
 
-#: sickbeard/webserve.py:879
+#: sickbeard/webserve.py:887
 msgid "Test prowl notice sent successfully"
 msgstr "Prowl teszértesítés elküldve"
 
-#: sickbeard/webserve.py:881
+#: sickbeard/webserve.py:889
 msgid "Test prowl notice failed"
 msgstr "Prowl tesztértesítés elküldése sikertelen"
 
-#: sickbeard/webserve.py:888
+#: sickbeard/webserve.py:896
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
 msgstr "Boxcar2 értesítés elküldve. Lépj be a Boxcar2 kliensbe, hogy ellenőrizd, minden jól működött-e"
 
-#: sickbeard/webserve.py:890
+#: sickbeard/webserve.py:898
 msgid "Error sending Boxcar2 notification"
 msgstr "Hiba a Boxcar2 értesítés elküldése közben"
 
-#: sickbeard/webserve.py:897
+#: sickbeard/webserve.py:905
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
 msgstr "Pushover értesítés elküldve. Lépj be a Pushover kliensbe, hogy ellenőrizd, minden jól működött-e"
 
-#: sickbeard/webserve.py:899
+#: sickbeard/webserve.py:907
 msgid "Error sending Pushover notification"
 msgstr "Hiba a Pushover értesítés elküldése közben"
 
-#: sickbeard/webserve.py:916
+#: sickbeard/webserve.py:924
 msgid "Key verification successful"
 msgstr "A kulcs igazolása sikerrel járt"
 
-#: sickbeard/webserve.py:918
+#: sickbeard/webserve.py:926
 msgid "Unable to verify key"
 msgstr "Nem sikerült a kulcs igazolása"
 
-#: sickbeard/webserve.py:925
+#: sickbeard/webserve.py:933
 msgid "Tweet successful, check your twitter to make sure it worked"
 msgstr "Tweet elküldve, ellenőrizd a Twittered, hogy minden jól működött-e"
 
-#: sickbeard/webserve.py:927
+#: sickbeard/webserve.py:935
 msgid "Error sending tweet"
 msgstr "Hiba a tweet küldése közben"
 
-#: sickbeard/webserve.py:932
+#: sickbeard/webserve.py:940
 msgid "Please enter a valid account sid"
 msgstr ""
 
-#: sickbeard/webserve.py:935
+#: sickbeard/webserve.py:943
 msgid "Please enter a valid auth token"
 msgstr ""
 
-#: sickbeard/webserve.py:938
+#: sickbeard/webserve.py:946
 msgid "Please enter a valid phone sid"
 msgstr ""
 
-#: sickbeard/webserve.py:941
+#: sickbeard/webserve.py:949
 msgid "Please format the phone number as \"+1-###-###-####\""
 msgstr ""
 
-#: sickbeard/webserve.py:945
+#: sickbeard/webserve.py:953
 msgid "Authorization successful and number ownership verified"
 msgstr ""
 
-#: sickbeard/webserve.py:947
+#: sickbeard/webserve.py:955
 msgid "Error sending sms"
 msgstr ""
 
-#: sickbeard/webserve.py:953
+#: sickbeard/webserve.py:961
 msgid "Slack message successful"
 msgstr "Slack üzenet sikeresen elküldve"
 
-#: sickbeard/webserve.py:955
+#: sickbeard/webserve.py:963
 msgid "Slack message failed"
 msgstr "Slack üzenet küldése sikertelen"
 
-#: sickbeard/webserve.py:961
+#: sickbeard/webserve.py:969
 msgid "Discord message successful"
 msgstr ""
 
-#: sickbeard/webserve.py:963
+#: sickbeard/webserve.py:971
 msgid "Discord message failed"
 msgstr ""
 
-#: sickbeard/webserve.py:973
+#: sickbeard/webserve.py:981
 msgid "Test KODI notice sent successfully to {kodi_host}"
 msgstr "KODI tesztértesítés sikeresen elküldve a(z) {kodi_host} helyre"
 
-#: sickbeard/webserve.py:975
+#: sickbeard/webserve.py:983
 msgid "Test KODI notice failed to {kodi_host}"
 msgstr "KODI tesztértesítés {kodi_host} helyre küldése sikertelen"
 
-#: sickbeard/webserve.py:990
+#: sickbeard/webserve.py:998
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr "Tesztértesítés elküldve a Plex Home Theater számára ... {plex_clients}"
 
-#: sickbeard/webserve.py:992
+#: sickbeard/webserve.py:1000
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr "A teszt elküldése a Plex Home Theater számára sikertelen ... {plex_clients}"
 
-#: sickbeard/webserve.py:995
+#: sickbeard/webserve.py:1003
 msgid "Tested Plex Home Theater(s)"
 msgstr "Tesztelt Plex Home Theater kliens(ek)"
 
-#: sickbeard/webserve.py:1009
+#: sickbeard/webserve.py:1017
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr "Tesztértesítés elküldve a Plex Media Server(ek) számára ... {plex_servers}"
 
-#: sickbeard/webserve.py:1011
+#: sickbeard/webserve.py:1019
 msgid "Test failed, No Plex Media Server host specified"
 msgstr "A teszt sikertelen, nincs megadva Plex Media Server hoszt"
 
-#: sickbeard/webserve.py:1013
+#: sickbeard/webserve.py:1021
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr "A teszt elküldése a Plex Media Server(ek) számára sikertelen ... {plex_servers}"
 
-#: sickbeard/webserve.py:1016
+#: sickbeard/webserve.py:1024
 msgid "Tested Plex Media Server host(s)"
 msgstr "Tesztelt Plex Media Server hoszt(ok)"
 
-#: sickbeard/webserve.py:1024
+#: sickbeard/webserve.py:1032
 msgid "Tried sending desktop notification via libnotify"
 msgstr "Asztali értesítés küldése libnotify által"
 
-#: sickbeard/webserve.py:1033
+#: sickbeard/webserve.py:1041
 msgid "Test notice sent successfully to {emby_host}"
 msgstr "Tesztértesítés sikeresen elküldve ide: {emby_host}"
 
-#: sickbeard/webserve.py:1035
+#: sickbeard/webserve.py:1043
 msgid "Test notice failed to {emby_host}"
 msgstr "Tesztértesítés {emby_host} helyre küldése sikertelen"
 
-#: sickbeard/webserve.py:1043
+#: sickbeard/webserve.py:1051
 msgid "Successfully started the scan update"
 msgstr "Frissítés-ellenőrzés sikeresen elindítva"
 
-#: sickbeard/webserve.py:1045
+#: sickbeard/webserve.py:1053
 msgid "Test failed to start the scan update"
 msgstr "Frissítés-ellenőrzés elindítása sikertelen"
 
-#: sickbeard/webserve.py:1064
+#: sickbeard/webserve.py:1072
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr "Tesztértesítés sikeresen elküldve ide: {nmj2_host}"
 
-#: sickbeard/webserve.py:1066
+#: sickbeard/webserve.py:1074
 msgid "Test notice failed to {nmj2_host}"
 msgstr "Tesztértesítés {nmj2_host} helyre küldése sikertelen"
 
-#: sickbeard/webserve.py:1086
+#: sickbeard/webserve.py:1094
 msgid "Trakt Authorized"
 msgstr "Trakt engedélyezve"
 
-#: sickbeard/webserve.py:1087
+#: sickbeard/webserve.py:1095
 msgid "Trakt Not Authorized!"
 msgstr "Trakt nincs engedélyezve!"
 
-#: sickbeard/webserve.py:1151
+#: sickbeard/webserve.py:1159
 msgid "Test email sent successfully! Check inbox."
 msgstr "Teszt e-mail sikeresen elküldve. Ellenőrizd a bejövő levelidet."
 
-#: sickbeard/webserve.py:1153
+#: sickbeard/webserve.py:1161
 msgid "ERROR: {last_error}"
 msgstr "HIBA: {last_error}"
 
-#: sickbeard/webserve.py:1160
+#: sickbeard/webserve.py:1168
 msgid "Test NMA notice sent successfully"
 msgstr "NMA tesztértesítés elküldve"
 
-#: sickbeard/webserve.py:1162
+#: sickbeard/webserve.py:1170
 msgid "Test NMA notice failed"
 msgstr "NMA tesztértesítés elküldése sikertelen"
 
-#: sickbeard/webserve.py:1169
+#: sickbeard/webserve.py:1177
 msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
 msgstr "Pushalot értesítés elküldve. Lépj be a Pushalot kliensbe, hogy ellenőrizd, minden jól működött-e"
 
-#: sickbeard/webserve.py:1171
+#: sickbeard/webserve.py:1179
 msgid "Error sending Pushalot notification"
 msgstr "Hiba a Pushalot értesítés elküldése közben"
 
-#: sickbeard/webserve.py:1178
+#: sickbeard/webserve.py:1186
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
 msgstr "Pushbullet értesítés elküldve. Ellenőrizd a készüléked, hogy minden jól működött-e"
 
-#: sickbeard/webserve.py:1180 sickbeard/webserve.py:1190 sickbeard/webserve.py:1199
+#: sickbeard/webserve.py:1188 sickbeard/webserve.py:1198 sickbeard/webserve.py:1207
 msgid "Error sending Pushbullet notification"
 msgstr "Hiba a Pushbullet értesítés elküldése közben"
 
 #: gui/slick/views/displayShow.mako:439 gui/slick/views/inc_home_showList.mako:200
-#: gui/slick/views/manage.mako:51 sickbeard/webserve.py:1216
+#: gui/slick/views/manage.mako:48 sickbeard/webserve.py:1224
 msgid "Status"
 msgstr "Állapot"
 
-#: sickbeard/webserve.py:1235 sickbeard/webserve.py:1264
+#: sickbeard/webserve.py:1243 sickbeard/webserve.py:1272
 msgid "Restarting SickRage"
 msgstr "SickRage újraindítás"
 
-#: sickbeard/webserve.py:1267
+#: sickbeard/webserve.py:1275
 msgid "Update Failed"
 msgstr "Frissítés sikertelen"
 
-#: sickbeard/webserve.py:1268
+#: sickbeard/webserve.py:1276
 msgid "Update wasn't successful, not restarting. Check your log for more information."
 msgstr "A frissítés nem sikerült, így nincs újraindítás. Tekintsd meg a naplófájlt a részletekért."
 
-#: sickbeard/webserve.py:1275
+#: sickbeard/webserve.py:1283
 msgid "Checking out branch"
 msgstr "Ágazat ellenőrzése"
 
-#: sickbeard/webserve.py:1278
+#: sickbeard/webserve.py:1286
 msgid "Already on branch"
 msgstr "Legfrissebb ágazat telepítve"
 
-#: sickbeard/webserve.py:1306
+#: sickbeard/webserve.py:1314
 msgid "Invalid show ID: {show}"
 msgstr "Érvénytelen műsor azonosító: {show}"
 
-#: sickbeard/webserve.py:1309 sickbeard/webserve.py:1839 sickbeard/webserve.py:1970
-#: sickbeard/webserve.py:2008
+#: sickbeard/webserve.py:1317 sickbeard/webserve.py:1847 sickbeard/webserve.py:1978
+#: sickbeard/webserve.py:2016
 msgid "Show not in show list"
 msgstr "A műsor nincs a listán"
 
-#: gui/slick/views/inc_rootDirs.mako:31 gui/slick/views/manage.mako:40
-#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1325
-#: sickbeard/webserve.py:1995
+#: gui/slick/views/inc_rootDirs.mako:31 gui/slick/views/manage.mako:37
+#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1333
+#: sickbeard/webserve.py:2003
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: sickbeard/webserve.py:1335
+#: sickbeard/webserve.py:1343
 msgid "This show is in the process of being downloaded - the info below is incomplete."
 msgstr "Ez a sorozat letöltés alatt van - a lenti információ nem teljes."
 
-#: sickbeard/webserve.py:1338
+#: sickbeard/webserve.py:1346
 msgid "The information on this page is in the process of being updated."
 msgstr "Az oldalon található információk frissítés alatt vannak."
 
-#: sickbeard/webserve.py:1341
+#: sickbeard/webserve.py:1349
 msgid "The episodes below are currently being refreshed from disk"
 msgstr "A lenti epizódok frissítés alatt vannak a lemezről"
 
-#: sickbeard/webserve.py:1344
+#: sickbeard/webserve.py:1352
 msgid "Currently downloading subtitles for this show"
 msgstr "Ehhez a sorozathoz feliratot töltünk le"
 
-#: sickbeard/webserve.py:1347
+#: sickbeard/webserve.py:1355
 msgid "This show is queued to be refreshed."
 msgstr "A sorozat frissítése ütemezve."
 
-#: sickbeard/webserve.py:1350
+#: sickbeard/webserve.py:1358
 msgid "This show is queued and awaiting an update."
 msgstr ""
 
-#: sickbeard/webserve.py:1353
+#: sickbeard/webserve.py:1361
 msgid "This show is queued and awaiting subtitles download."
 msgstr ""
 
-#: sickbeard/webserve.py:1358
+#: gui/slick/js/core.js:3496 sickbeard/webserve.py:1366
 msgid "Resume"
 msgstr "Visszaállítás"
 
-#: sickbeard/webserve.py:1360
+#: gui/slick/js/core.js:3496 gui/slick/views/viewlogs.mako:12
+#: sickbeard/webserve.py:1368
 msgid "Pause"
 msgstr "Szünet"
 
 #: gui/slick/views/editShow.mako:345 gui/slick/views/inc_blackwhitelist.mako:40
-#: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:60
-#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1362
+#: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:57
+#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1370
 msgid "Remove"
 msgstr "Eltávolít"
 
-#: sickbeard/webserve.py:1363
+#: sickbeard/webserve.py:1371
 msgid "Re-scan files"
 msgstr "Fájlok újraolvasása"
 
-#: sickbeard/webserve.py:1364
+#: sickbeard/webserve.py:1372
 msgid "Force Full Update"
 msgstr "Teljes frissítés kényszerítése"
 
-#: sickbeard/webserve.py:1365
+#: sickbeard/webserve.py:1373
 msgid "Update show in KODI"
 msgstr "Sorozat frissítése a KODI-ban."
 
-#: sickbeard/webserve.py:1366
+#: sickbeard/webserve.py:1374
 msgid "Update show in Emby"
 msgstr "Sorozat frissítése az Emby-ben."
 
-#: sickbeard/webserve.py:1369
+#: sickbeard/webserve.py:1377
 msgid "Hide specials"
 msgstr "Extrák elrejtése"
 
-#: sickbeard/webserve.py:1371
+#: sickbeard/webserve.py:1379
 msgid "Show specials"
 msgstr "Extrák mutatása"
 
-#: sickbeard/webserve.py:1373 sickbeard/webserve.py:1998 sickbeard/webserve.py:1999
+#: sickbeard/webserve.py:1381 sickbeard/webserve.py:2006 sickbeard/webserve.py:2007
 msgid "Preview Rename"
 msgstr ""
 
-#: sickbeard/webserve.py:1376
+#: sickbeard/webserve.py:1384
 msgid "Download Subtitles"
 msgstr "Felirat letöltése"
 
-#: sickbeard/webserve.py:1465
+#: sickbeard/webserve.py:1473
 msgid "No scene exceptions"
 msgstr ""
 
-#: sickbeard/webserve.py:1483 sickbeard/webserve.py:1732 sickbeard/webserve.py:1753
+#: sickbeard/webserve.py:1491 sickbeard/webserve.py:1740 sickbeard/webserve.py:1761
 msgid "Invalid show ID"
 msgstr "Érvénytelen műsor azonosító"
 
-#: sickbeard/webserve.py:1492 sickbeard/webserve.py:1737 sickbeard/webserve.py:1758
+#: sickbeard/webserve.py:1500 sickbeard/webserve.py:1745 sickbeard/webserve.py:1766
 msgid "Unable to find the specified show"
 msgstr "Nem sikerült megtalálni a műsort"
 
-#: sickbeard/webserve.py:1517
+#: sickbeard/webserve.py:1525
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr ""
 
-#: sickbeard/webserve.py:1526 sickbeard/webserve.py:1528
+#: sickbeard/webserve.py:1534 sickbeard/webserve.py:1536
 msgid "Edit Show"
 msgstr "Műsor szerkesztése"
 
-#: sickbeard/webserve.py:1604 sickbeard/webserve.py:1639
+#: sickbeard/webserve.py:1612 sickbeard/webserve.py:1647
 msgid "Unable to refresh this show: {error}"
 msgstr ""
 
-#: sickbeard/webserve.py:1630
+#: sickbeard/webserve.py:1638
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr ""
 
-#: sickbeard/webserve.py:1656
+#: sickbeard/webserve.py:1664
 msgid "Unable to update show: {error}"
 msgstr "Nem lehet frissíteni a sorozatot: {error}"
 
-#: sickbeard/webserve.py:1663
+#: sickbeard/webserve.py:1671
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr ""
 
-#: sickbeard/webserve.py:1670
+#: sickbeard/webserve.py:1678
 msgid "Unable to force an update on scene numbering of the show."
 msgstr ""
 
-#: sickbeard/webserve.py:1676 sickbeard/webserve.py:3508
+#: sickbeard/webserve.py:1684 sickbeard/webserve.py:3516
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr ""
 
-#: sickbeard/webserve.py:1687
+#: sickbeard/webserve.py:1695
 msgid "{show_name} has been {paused_resumed}"
 msgstr ""
 
-#: sickbeard/webserve.py:1687
+#: sickbeard/webserve.py:1695
 msgid "resumed"
 msgstr "folytatódik"
 
-#: sickbeard/webserve.py:1687
+#: sickbeard/webserve.py:1695
 msgid "paused"
 msgstr "szünetel"
 
-#: sickbeard/webserve.py:1699
+#: sickbeard/webserve.py:1707
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} volt {deleted_trashed} {was_deleted}"
 
-#: sickbeard/webserve.py:1701
+#: sickbeard/webserve.py:1709
 msgid "deleted"
 msgstr "törölve"
 
-#: sickbeard/webserve.py:1701
+#: sickbeard/webserve.py:1709
 msgid "trashed"
 msgstr "kidobott"
 
-#: sickbeard/webserve.py:1702
+#: sickbeard/webserve.py:1710
 msgid "(media untouched)"
 msgstr "(média érintetlen)"
 
-#: sickbeard/webserve.py:1702
+#: sickbeard/webserve.py:1710
 msgid "(with all related media)"
 msgstr ""
 
-#: sickbeard/webserve.py:1723
+#: sickbeard/webserve.py:1731
 msgid "Unable to refresh this show."
 msgstr ""
 
-#: sickbeard/webserve.py:1743
+#: sickbeard/webserve.py:1751
 msgid "Unable to update this show."
 msgstr "Nem sikerült frissíteni ezen a sorozatot."
 
-#: sickbeard/webserve.py:1782
+#: sickbeard/webserve.py:1790
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr ""
 
-#: sickbeard/webserve.py:1784
+#: sickbeard/webserve.py:1792
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr ""
 
-#: sickbeard/webserve.py:1793
+#: sickbeard/webserve.py:1801
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 
-#: sickbeard/webserve.py:1796
+#: sickbeard/webserve.py:1804
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr ""
 
-#: sickbeard/webserve.py:1808
+#: sickbeard/webserve.py:1816
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr ""
 
-#: sickbeard/webserve.py:1810
+#: sickbeard/webserve.py:1818
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr ""
 
-#: sickbeard/webserve.py:1820 sickbeard/webserve.py:2004
+#: sickbeard/webserve.py:1828 sickbeard/webserve.py:2012
 msgid "You must specify a show and at least one episode"
 msgstr ""
 
-#: sickbeard/webserve.py:1829
+#: sickbeard/webserve.py:1837
 msgid "Invalid status"
 msgstr "Érvénytelen állapot"
 
-#: sickbeard/webserve.py:1922
+#: sickbeard/webserve.py:1930
 msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:77 gui/slick/views/displayShow.mako:82
-#: gui/slick/views/displayShow.mako:407 sickbeard/webserve.py:1929
-#: sickbeard/webserve.py:1948
+#: gui/slick/views/displayShow.mako:407 sickbeard/webserve.py:1937
+#: sickbeard/webserve.py:1956
 msgid "Season"
 msgstr "Évad"
 
-#: sickbeard/webserve.py:1936
+#: sickbeard/webserve.py:1944
 msgid "Backlog started"
 msgstr ""
 
-#: sickbeard/webserve.py:1941
+#: sickbeard/webserve.py:1949
 msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
 msgstr ""
 
-#: sickbeard/webserve.py:1955
+#: sickbeard/webserve.py:1963
 msgid "Retry Search started"
 msgstr ""
 
-#: sickbeard/webserve.py:1965
+#: sickbeard/webserve.py:1973
 msgid "You must specify a show"
 msgstr ""
 
-#: sickbeard/webserve.py:1975 sickbeard/webserve.py:2013
+#: sickbeard/webserve.py:1983 sickbeard/webserve.py:2021
 msgid "Can't rename episodes when the show dir is missing."
 msgstr ""
 
-#: sickbeard/webserve.py:2180 sickbeard/webserve.py:2201
+#: sickbeard/webserve.py:2188 sickbeard/webserve.py:2209
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr ""
 
-#: sickbeard/webserve.py:2183 sickbeard/webserve.py:2204
+#: sickbeard/webserve.py:2191 sickbeard/webserve.py:2212
 msgid "No subtitles downloaded"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:80 gui/slick/views/layouts/main.mako:218
-#: sickbeard/webserve.py:2331
+#: sickbeard/webserve.py:2339
 msgid "IRC"
 msgstr "IRC"
 
-#: sickbeard/webserve.py:2344
+#: sickbeard/webserve.py:2352
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
 msgstr ""
 
-#: sickbeard/webserve.py:2351 sickbeard/webserve.py:2369
+#: sickbeard/webserve.py:2359 sickbeard/webserve.py:2377
 msgid "The was a problem connecting to github, please refresh and try again"
 msgstr ""
 
-#: sickbeard/webserve.py:2366
+#: sickbeard/webserve.py:2374
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
 msgstr "Nem tölthetők be a változások a repóból. [Kattints ide a CHANGES.md fájl megtekintéséhez]({changes_url})"
 
-#: gui/slick/views/layouts/main.mako:219 sickbeard/webserve.py:2371
+#: gui/slick/views/layouts/main.mako:219 sickbeard/webserve.py:2379
 msgid "Changelog"
 msgstr "Újdonságok"
 
-#: gui/slick/views/layouts/main.mako:186 sickbeard/webserve.py:2381
-#: sickbeard/webserve.py:3823 sickbeard/webserve.py:4267
+#: gui/slick/views/layouts/main.mako:186 sickbeard/webserve.py:2389
+#: sickbeard/webserve.py:3831 sickbeard/webserve.py:4275
 msgid "Post Processing"
 msgstr "Utófeldolgozás"
 
-#: gui/slick/views/layouts/main.mako:124 sickbeard/webserve.py:2413
+#: gui/slick/views/layouts/main.mako:124 sickbeard/webserve.py:2421
 msgid "Add Shows"
 msgstr "Műsorok hozzáadása"
 
-#: sickbeard/webserve.py:2478
+#: sickbeard/webserve.py:2486
 msgid "No folders selected."
 msgstr "Nincsenek kiválasztott mappák."
 
-#: sickbeard/webserve.py:2600
+#: sickbeard/webserve.py:2608
 msgid "New Show"
 msgstr "Új műsor"
 
-#: sickbeard/webserve.py:2615
+#: sickbeard/webserve.py:2623
 msgid "Trending Shows"
 msgstr "Felkapott műsorok"
 
-#: sickbeard/webserve.py:2617 sickbeard/webserve.py:2740
+#: sickbeard/webserve.py:2625 sickbeard/webserve.py:2748
 msgid "Popular Shows"
 msgstr "Népszerű műsorok"
 
-#: sickbeard/webserve.py:2619 sickbeard/webserve.py:2633
+#: sickbeard/webserve.py:2627 sickbeard/webserve.py:2641
 msgid "Most Anticipated Shows"
 msgstr "Leginkább várt műsorok"
 
-#: sickbeard/webserve.py:2621
+#: sickbeard/webserve.py:2629
 msgid "Most Collected Shows"
 msgstr ""
 
-#: sickbeard/webserve.py:2623
+#: sickbeard/webserve.py:2631
 msgid "Most Watched Shows"
 msgstr ""
 
-#: sickbeard/webserve.py:2625
+#: sickbeard/webserve.py:2633
 msgid "Most Played Shows"
 msgstr ""
 
-#: sickbeard/webserve.py:2627
+#: sickbeard/webserve.py:2635
 msgid "Recommended Shows"
 msgstr ""
 
-#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2629
+#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2637
 msgid "New Shows"
 msgstr "Új műsorok"
 
-#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2631
+#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2639
 msgid "Season Premieres"
 msgstr "Évad-premierek"
 
-#: sickbeard/webserve.py:2760 sickbeard/webserve.py:2761
+#: sickbeard/webserve.py:2768 sickbeard/webserve.py:2769
 msgid "Existing Show"
 msgstr "Meglévő műsor"
 
-#: sickbeard/webserve.py:2839
+#: sickbeard/webserve.py:2847
 msgid "No root directories setup, please go back and add one."
 msgstr "Nincs megadva gyökérmappa, kérlek lépj vissza és adj meg egyet."
 
-#: sickbeard/webserve.py:2851 sickbeard/webserve.py:2970
+#: sickbeard/webserve.py:2859 sickbeard/webserve.py:2978
 msgid "Show added"
 msgstr "Műsor hozzáadva"
 
-#: sickbeard/webserve.py:2851
+#: sickbeard/webserve.py:2859
 msgid "Adding the specified show {show_name}"
 msgstr "{show_name} hozzáadása"
 
-#: sickbeard/webserve.py:2892
+#: sickbeard/webserve.py:2900
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
 msgstr "Hiányzó paraméterek, nincs Indexer ID vagy mappa: {show_to_add} és {root_dir}/{show_path}"
 
-#: sickbeard/webserve.py:2901
+#: sickbeard/webserve.py:2909
 msgid "Unknown error. Unable to add show due to problem with show selection."
 msgstr "Ismeretlen hiba történt. Sikertelen a műsor hozzáadása egy műsorválasztási hiba miatt."
 
-#: sickbeard/webserve.py:2925 sickbeard/webserve.py:2935
+#: sickbeard/webserve.py:2933 sickbeard/webserve.py:2943
 msgid "Unable to add show"
 msgstr "Nem sikerült a műsort hozzáadni"
 
-#: sickbeard/webserve.py:2925
+#: sickbeard/webserve.py:2933
 msgid "Folder {show_dir} exists already"
 msgstr "A(z) {show_dir} mappa már létezik"
 
-#: sickbeard/webserve.py:2936
+#: sickbeard/webserve.py:2944
 msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr "Nem sikerült létrehozni a(z) {show_dir} mappát, ezért a műsor hozzáadása sem lehetséges"
 
-#: sickbeard/webserve.py:2970
+#: sickbeard/webserve.py:2978
 msgid "Adding the specified show into {show_dir}"
 msgstr "Egy megadott műsor hozzáadása a(z) {show_dir} mappába"
 
-#: sickbeard/webserve.py:3046
+#: sickbeard/webserve.py:3054
 msgid "Shows Added"
 msgstr "Műsorok hozzáadva"
 
-#: sickbeard/webserve.py:3047
+#: sickbeard/webserve.py:3055
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr "Automatikusan hozzáadja a {num_shows} a meglévő metaadat-fájlokból"
 
-#: gui/slick/views/layouts/main.mako:149 sickbeard/webserve.py:3064
+#: gui/slick/views/layouts/main.mako:149 sickbeard/webserve.py:3072
 msgid "Mass Update"
 msgstr "Tömeges frissítés"
 
-#: sickbeard/webserve.py:3102 sickbeard/webserve.py:3129 sickbeard/webserve.py:3205
-#: sickbeard/webserve.py:3206
+#: sickbeard/webserve.py:3110 sickbeard/webserve.py:3137 sickbeard/webserve.py:3213
+#: sickbeard/webserve.py:3214
 msgid "Episode Overview"
 msgstr "Epizód áttekintés"
 
-#: sickbeard/webserve.py:3238
+#: sickbeard/webserve.py:3246
 msgid "Missing Subtitles"
 msgstr "Hiányzó feliratok"
 
-#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:3324
-#: sickbeard/webserve.py:3325
+#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:3332
+#: sickbeard/webserve.py:3333
 msgid "Backlog Overview"
 msgstr "Elmaradások áttekintése"
 
-#: sickbeard/webserve.py:3449
+#: sickbeard/webserve.py:3457
 msgid "Mass Edit"
 msgstr "Tömeges szerkesztés"
 
-#: sickbeard/webserve.py:3554
+#: sickbeard/webserve.py:3562
 msgid "Unable to update show: {excption_format}"
 msgstr "A műsor frissítése sikertelen: {excption_format}"
 
-#: sickbeard/webserve.py:3562
+#: sickbeard/webserve.py:3570
 msgid "Unable to refresh show {show_name}: {excption_format}"
 msgstr "A(z) {show_name} frissítése sikertelen: {excption_format}"
 
-#: sickbeard/webserve.py:3573
+#: sickbeard/webserve.py:3581
 msgid "Errors encountered"
 msgstr "Hiba történt"
 
-#: gui/slick/views/config_general.mako:261 sickbeard/webserve.py:3579
+#: gui/slick/views/config_general.mako:261 sickbeard/webserve.py:3587
 msgid "Updates"
 msgstr "Frissítések"
 
-#: sickbeard/webserve.py:3584
+#: sickbeard/webserve.py:3592
 msgid "Refreshes"
 msgstr "Frissít"
 
-#: sickbeard/webserve.py:3589
+#: sickbeard/webserve.py:3597
 msgid "Renames"
 msgstr "Átnevezése"
 
 #: gui/slick/views/displayShow.mako:263 gui/slick/views/displayShow.mako:438
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
-#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3594
-#: sickbeard/webserve.py:5193
+#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3602
+#: sickbeard/webserve.py:5177
 msgid "Subtitles"
 msgstr "Feliratok"
 
-#: sickbeard/webserve.py:3599
+#: sickbeard/webserve.py:3607
 msgid "The following actions were queued"
 msgstr "A következő műveletek lettek sorba állítva"
 
-#: sickbeard/webserve.py:3619
+#: sickbeard/webserve.py:3627
 msgid "For best results please set the Download Station alias as"
 msgstr "A legjobb eredmény érdekében állítsa be a Download Station aliasnevét a következőre:"
 
-#: sickbeard/webserve.py:3620
+#: sickbeard/webserve.py:3628
 msgid "You can check this setting in the Synology DSM"
 msgstr "Ellenőrizheted ezt a beállítást a Synology DSM-ben"
 
-#: sickbeard/webserve.py:3620 sickbeard/webserve.py:3622
+#: sickbeard/webserve.py:3628 sickbeard/webserve.py:3630
 msgid "Control Panel"
 msgstr "Vezérlőpult"
 
-#: sickbeard/webserve.py:3620
+#: sickbeard/webserve.py:3628
 msgid "Application Portal"
 msgstr "Applikáció-portál"
 
-#: sickbeard/webserve.py:3621
+#: sickbeard/webserve.py:3629
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
 msgstr "Ne felejtsd el engedélyezni a DSM-et, hogy iFrame-be is be lehessen ágyazni"
 
-#: sickbeard/webserve.py:3622
+#: sickbeard/webserve.py:3630
 msgid "DSM Settings"
 msgstr "DSM beállítások"
 
-#: sickbeard/webserve.py:3622
+#: sickbeard/webserve.py:3630
 msgid "Security"
 msgstr "Biztonság"
 
-#: gui/slick/views/layouts/main.mako:163 sickbeard/webserve.py:3630
+#: gui/slick/views/layouts/main.mako:163 sickbeard/webserve.py:3638
 msgid "Manage Torrents"
 msgstr "Torrentek kezelése"
 
-#: gui/slick/views/layouts/main.mako:166 sickbeard/webserve.py:3651
+#: gui/slick/views/layouts/main.mako:166 sickbeard/webserve.py:3659
 msgid "Failed Downloads"
 msgstr "Sikertelen letöltések"
 
-#: gui/slick/views/layouts/main.mako:151 sickbeard/webserve.py:3669
+#: gui/slick/views/layouts/main.mako:151 sickbeard/webserve.py:3677
 msgid "Manage Searches"
 msgstr "Keresések kezelése"
 
-#: sickbeard/webserve.py:3677
+#: sickbeard/webserve.py:3685
 msgid "Backlog search started"
 msgstr "Elmaradások keresése elindult"
 
-#: sickbeard/webserve.py:3687
+#: sickbeard/webserve.py:3695
 msgid "Daily search started"
 msgstr "Napi keresés elindult"
 
-#: sickbeard/webserve.py:3696
+#: sickbeard/webserve.py:3704
 msgid "Find propers search started"
 msgstr ""
 
-#: sickbeard/webserve.py:3705
+#: sickbeard/webserve.py:3713
 msgid "Subtitle search started"
 msgstr "Feliratok keresése elindult"
 
-#: sickbeard/webserve.py:3769
+#: sickbeard/webserve.py:3777
 msgid "Remove Selected"
 msgstr ""
 
-#: sickbeard/webserve.py:3770
+#: sickbeard/webserve.py:3778
 msgid "Clear History"
 msgstr "Előzmények törlése"
 
-#: sickbeard/webserve.py:3771
+#: sickbeard/webserve.py:3779
 msgid "Trim History"
 msgstr "Előzmények csökkentése"
 
-#: sickbeard/webserve.py:3791
+#: sickbeard/webserve.py:3799
 msgid "Selected history entries removed"
 msgstr ""
 
-#: sickbeard/webserve.py:3798
+#: sickbeard/webserve.py:3806
 msgid "History cleared"
 msgstr "Előzmények törölve"
 
-#: sickbeard/webserve.py:3805
+#: sickbeard/webserve.py:3813
 msgid "Removed history entries older than 30 days"
 msgstr "30 napnál régebbi bejegyzések eltávolítva"
 
-#: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3818
+#: gui/slick/views/layouts/main.mako:181 sickbeard/webserve.py:3826
 msgid "General"
 msgstr "Általános"
 
-#: sickbeard/webserve.py:3819 sickbeard/webserve.py:4069
+#: sickbeard/webserve.py:3827 sickbeard/webserve.py:4077
 msgid "Backup/Restore"
 msgstr "Mentés/Visszaállítás"
 
-#: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3820
-#: sickbeard/webserve.py:4132
+#: gui/slick/views/layouts/main.mako:183 sickbeard/webserve.py:3828
+#: sickbeard/webserve.py:4140
 msgid "Search Settings"
 msgstr "Keresési beállítások"
 
-#: gui/slick/views/layouts/main.mako:184 sickbeard/webserve.py:3821
-#: sickbeard/webserve.py:4468
+#: gui/slick/views/layouts/main.mako:184 sickbeard/webserve.py:3829
+#: sickbeard/webserve.py:4452
 msgid "Search Providers"
 msgstr "Keresőmotorok"
 
-#: gui/slick/views/layouts/main.mako:185 sickbeard/webserve.py:3822
+#: gui/slick/views/layouts/main.mako:185 sickbeard/webserve.py:3830
 msgid "Subtitles Settings"
 msgstr "Feliratok Beállításai"
 
-#: gui/slick/views/layouts/main.mako:187 sickbeard/webserve.py:3824
-#: sickbeard/webserve.py:4914
+#: gui/slick/views/layouts/main.mako:187 sickbeard/webserve.py:3832
+#: sickbeard/webserve.py:4898
 msgid "Notifications"
 msgstr "Értesítések"
 
 #: gui/slick/views/displayShow.mako:288 gui/slick/views/editShow.mako:181
 #: gui/slick/views/home.mako:94 gui/slick/views/inc_addShowOptions.mako:79
 #: gui/slick/views/inc_home_showList.mako:205 gui/slick/views/layouts/main.mako:188
-#: gui/slick/views/manage.mako:46 gui/slick/views/manage_massEdit.mako:202
-#: sickbeard/webserve.py:3825 sickbeard/webserve.py:5258
+#: gui/slick/views/manage.mako:43 gui/slick/views/manage_massEdit.mako:202
+#: sickbeard/webserve.py:3833 sickbeard/webserve.py:5242
 msgid "Anime"
 msgstr "Anime"
 
-#: sickbeard/webserve.py:3863 sickbeard/webserve.py:3864
+#: sickbeard/webserve.py:3871 sickbeard/webserve.py:3872
 msgid "SickRage Configuration"
 msgstr "SickRage beállítás"
 
-#: sickbeard/webserve.py:3878
+#: sickbeard/webserve.py:3886
 msgid "Config - General"
 msgstr "Beállítások - Általános"
 
-#: sickbeard/webserve.py:3878
+#: sickbeard/webserve.py:3886
 msgid "General Configuration"
 msgstr "Általános Beállítások"
 
-#: sickbeard/webserve.py:3918
+#: sickbeard/webserve.py:3926
 msgid "Saved Defaults"
 msgstr ""
 
-#: sickbeard/webserve.py:3918
+#: sickbeard/webserve.py:3926
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 
-#: sickbeard/webserve.py:4023
+#: sickbeard/webserve.py:4031
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 
-#: sickbeard/webserve.py:4031
+#: sickbeard/webserve.py:4039
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 
-#: sickbeard/webserve.py:4035
+#: sickbeard/webserve.py:4043
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 
-#: sickbeard/webserve.py:4052 sickbeard/webserve.py:4250 sickbeard/webserve.py:4391
-#: sickbeard/webserve.py:5176
+#: sickbeard/webserve.py:4060 sickbeard/webserve.py:4258 sickbeard/webserve.py:4390
+#: sickbeard/webserve.py:5160
 msgid "Error(s) Saving Configuration"
 msgstr ""
 
-#: sickbeard/webserve.py:4055 sickbeard/webserve.py:4253 sickbeard/webserve.py:4394
-#: sickbeard/webserve.py:4900 sickbeard/webserve.py:5179 sickbeard/webserve.py:5243
-#: sickbeard/webserve.py:5272
+#: sickbeard/webserve.py:4063 sickbeard/webserve.py:4261 sickbeard/webserve.py:4392
+#: sickbeard/webserve.py:4884 sickbeard/webserve.py:5163 sickbeard/webserve.py:5227
+#: sickbeard/webserve.py:5256
 msgid "Configuration Saved"
 msgstr "Beállítás mentve"
 
-#: sickbeard/webserve.py:4068
+#: sickbeard/webserve.py:4076
 msgid "Config - Backup/Restore"
 msgstr "Beállítások - biztonsági mentés és visszaállítás"
 
-#: sickbeard/webserve.py:4131
+#: sickbeard/webserve.py:4139
 msgid "Config - Episode Search"
 msgstr "Beállítások - Epizód Keresés"
 
-#: sickbeard/webserve.py:4266
+#: sickbeard/webserve.py:4274
 msgid "Config - Post Processing"
 msgstr "Beállítások - Utófeldolgozás"
 
-#: sickbeard/webserve.py:4306
+#: sickbeard/webserve.py:4314
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr ""
 
-#: sickbeard/webserve.py:4359 sickbeard/webserve.py:4370
+#: sickbeard/webserve.py:4365
+msgid "You tried saving an invalid normal naming config, not saving your naming settings"
+msgstr ""
+
+#: sickbeard/webserve.py:4373
 msgid "You tried saving an invalid anime naming config, not saving your naming settings"
 msgstr ""
 
-#: sickbeard/webserve.py:4361 sickbeard/webserve.py:4372
-msgid "You tried saving an invalid naming config, not saving your naming settings"
-msgstr ""
-
-#: sickbeard/webserve.py:4467
+#: sickbeard/webserve.py:4451
 msgid "Config - Providers"
 msgstr "Beállítás - Szolgáltatók"
 
-#: sickbeard/webserve.py:4497
+#: sickbeard/webserve.py:4481
 msgid "No Provider Name specified"
 msgstr ""
 
-#: sickbeard/webserve.py:4499
+#: sickbeard/webserve.py:4483
 msgid "No Provider Url specified"
 msgstr ""
 
-#: sickbeard/webserve.py:4501
+#: sickbeard/webserve.py:4485
 msgid "No Provider Api key specified"
 msgstr ""
 
-#: sickbeard/webserve.py:4913
+#: sickbeard/webserve.py:4897
 msgid "Config - Notifications"
 msgstr "Beállítások - Értesítések"
 
-#: sickbeard/webserve.py:5192
+#: sickbeard/webserve.py:5176
 msgid "Config - Subtitles"
 msgstr "Beállítások - Feliratok"
 
-#: sickbeard/webserve.py:5257
+#: sickbeard/webserve.py:5241
 msgid "Config - Anime"
 msgstr "Beállítások - Anime"
 
-#: sickbeard/webserve.py:5285
+#: sickbeard/webserve.py:5269
 msgid "Clear Errors"
 msgstr "Hibák törlése"
 
-#: sickbeard/webserve.py:5291
+#: sickbeard/webserve.py:5275
 msgid "Clear Warnings"
 msgstr "Figyelmeztetések törlése"
 
-#: sickbeard/webserve.py:5297
+#: sickbeard/webserve.py:5281
 msgid "Submit Errors"
 msgstr ""
 
-#: sickbeard/webserve.py:5312
+#: sickbeard/webserve.py:5296
 msgid "Logs &amp; Errors"
 msgstr "Naplók &amp; Hibák"
 
-#: sickbeard/webserve.py:5337
+#: sickbeard/webserve.py:5321
 msgid "Log File"
 msgstr "Naplófájl"
 
-#: sickbeard/webserve.py:5337
+#: sickbeard/webserve.py:5321
 msgid "Logs"
 msgstr "Naplók"
 
@@ -1375,6 +1376,14 @@ msgstr ""
 #: gui/slick/js/core.js:1311 gui/slick/js/core.js:1361 gui/slick/js/core.js:1410
 #: gui/slick/js/core.js:1476
 msgid "This pattern is valid."
+msgstr ""
+
+#: gui/slick/js/core.js:3497
+msgid "Resume updating the log on this page."
+msgstr ""
+
+#: gui/slick/js/core.js:3497 gui/slick/views/viewlogs.mako:10
+msgid "Pause updating the log on this page."
 msgstr ""
 
 #: gui/slick/views/404.mako:5
@@ -1451,8 +1460,8 @@ msgstr ""
 msgid "Displaying folders within these directories which aren't already added to SickRage"
 msgstr ""
 
-#: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:18
-#: gui/slick/views/manage.mako:119 gui/slick/views/manage_failedDownloads.mako:78
+#: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:15
+#: gui/slick/views/manage.mako:116 gui/slick/views/manage_failedDownloads.mako:78
 msgid "Submit"
 msgstr "Elküld"
 
@@ -1469,7 +1478,7 @@ msgid "All Indexers"
 msgstr "Összes indexerek"
 
 #: gui/slick/views/addShows_newShow.mako:57 gui/slick/views/displayShow.mako:440
-#: gui/slick/views/schedule.mako:97 gui/slick/views/viewlogs.mako:36
+#: gui/slick/views/schedule.mako:101 gui/slick/views/viewlogs.mako:41
 msgid "Search"
 msgstr "Keresés"
 
@@ -1504,7 +1513,7 @@ msgid "Skip Show"
 msgstr "Műsor átugrása"
 
 #: gui/slick/views/addShows_popularShows.mako:15
-#: gui/slick/views/inc_home_menu.mako:44 gui/slick/views/schedule.mako:44
+#: gui/slick/views/inc_home_menu.mako:44 gui/slick/views/schedule.mako:48
 msgid "Sort By"
 msgstr "Rendezés"
 
@@ -2195,8 +2204,8 @@ msgid "Local"
 msgstr "Helyi"
 
 #: gui/slick/views/config_general.mako:560 gui/slick/views/inc_home_menu.mako:48
-#: gui/slick/views/inc_home_showList.mako:195 gui/slick/views/manage.mako:42
-#: gui/slick/views/schedule.mako:47 gui/slick/views/schedule.mako:93
+#: gui/slick/views/inc_home_showList.mako:195 gui/slick/views/manage.mako:39
+#: gui/slick/views/schedule.mako:51 gui/slick/views/schedule.mako:97
 msgid "Network"
 msgstr "Tv csatorna"
 
@@ -3877,7 +3886,7 @@ msgid "Discord"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3176
-msgid "All-in-one voice and text chat for gammers that's free, secure, and works on both your desktop and phone."
+msgid "All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3190
@@ -4250,7 +4259,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:995
 #: gui/slick/views/config_postProcessing.mako:997
 #: gui/slick/views/config_postProcessing.mako:1181
-#: gui/slick/views/config_postProcessing.mako:1183 gui/slick/views/manage.mako:41
+#: gui/slick/views/config_postProcessing.mako:1183 gui/slick/views/manage.mako:38
 msgid "Show Name"
 msgstr "Műsor Neve"
 
@@ -4330,8 +4339,8 @@ msgstr "Utófeldolgozás dátuma"
 #: gui/slick/views/config_postProcessing.mako:1251
 #: gui/slick/views/displayShow.mako:173 gui/slick/views/history.mako:64
 #: gui/slick/views/history.mako:132 gui/slick/views/inc_home_showList.mako:196
-#: gui/slick/views/manage.mako:43 gui/slick/views/schedule.mako:95
-#: gui/slick/views/schedule.mako:425
+#: gui/slick/views/manage.mako:40 gui/slick/views/schedule.mako:99
+#: gui/slick/views/schedule.mako:429
 msgid "Quality"
 msgstr "Minőség"
 
@@ -4485,7 +4494,7 @@ msgid "add the absolute number to the season/episode format?"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1338
-msgid "only applies to animes. (eg. S15E45 - 310 vs S15E45)"
+msgid "only applies to anime. (eg. S15E45 - 310 vs S15E45)"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1346
@@ -4498,7 +4507,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1357
 #: gui/slick/views/config_postProcessing.mako:1376
-msgid "only applies to animes."
+msgid "only applies to anime."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1365
@@ -4796,7 +4805,7 @@ msgstr "Hozzáad"
 
 #: gui/slick/views/config_providers.mako:825
 #: gui/slick/views/config_providers.mako:922 gui/slick/views/inc_rootDirs.mako:32
-#: gui/slick/views/manage.mako:59 gui/slick/views/manage_massEdit.mako:75
+#: gui/slick/views/manage.mako:56 gui/slick/views/manage_massEdit.mako:75
 msgid "Delete"
 msgstr "Töröl"
 
@@ -5580,7 +5589,7 @@ msgid "Season Folders"
 msgstr "Évad Mappák"
 
 #: gui/slick/views/displayShow.mako:276 gui/slick/views/editShow.mako:140
-#: gui/slick/views/manage.mako:48 gui/slick/views/manage_manageSearches.mako:19
+#: gui/slick/views/manage.mako:45 gui/slick/views/manage_manageSearches.mako:19
 #: gui/slick/views/manage_massEdit.mako:159 gui/slick/views/status.mako:68
 msgid "Paused"
 msgstr "Szünetel"
@@ -5590,7 +5599,7 @@ msgid "Air-by-Date"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:284 gui/slick/views/editShow.mako:203
-#: gui/slick/views/manage.mako:44 gui/slick/views/manage_massEdit.mako:216
+#: gui/slick/views/manage.mako:41 gui/slick/views/manage_massEdit.mako:216
 msgid "Sports"
 msgstr "Sport"
 
@@ -5617,7 +5626,7 @@ msgid "Change selected episodes to"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:346 gui/slick/views/inc_home_menu.mako:30
-#: gui/slick/views/manage.mako:20 gui/slick/views/schedule.mako:40
+#: gui/slick/views/manage.mako:17 gui/slick/views/schedule.mako:44
 msgid "Select Columns"
 msgstr ""
 
@@ -5647,7 +5656,7 @@ msgstr "Epizód"
 msgid "Absolute"
 msgstr "Abszolút"
 
-#: gui/slick/views/displayShow.mako:431 gui/slick/views/manage.mako:45
+#: gui/slick/views/displayShow.mako:431 gui/slick/views/manage.mako:42
 msgid "Scene"
 msgstr ""
 
@@ -5660,7 +5669,7 @@ msgid "File Name"
 msgstr "Fájlnév"
 
 #: gui/slick/views/displayShow.mako:436
-#: gui/slick/views/manage_backlogOverview.mako:92 gui/slick/views/schedule.mako:88
+#: gui/slick/views/manage_backlogOverview.mako:92 gui/slick/views/schedule.mako:92
 msgid "Airdate"
 msgstr ""
 
@@ -5781,7 +5790,7 @@ msgstr ""
 msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
 msgstr ""
 
-#: gui/slick/views/editShow.mako:222 gui/slick/views/manage.mako:47
+#: gui/slick/views/editShow.mako:222 gui/slick/views/manage.mako:44
 msgid "Season folders"
 msgstr "Évad mappák"
 
@@ -5846,7 +5855,7 @@ msgid "Limit"
 msgstr "Korlát"
 
 #: gui/slick/views/history.mako:37 gui/slick/views/inc_home_menu.mako:34
-#: gui/slick/views/schedule.mako:63
+#: gui/slick/views/schedule.mako:67
 msgid "Layout"
 msgstr "Elrendezés"
 
@@ -6048,11 +6057,12 @@ msgstr ""
 msgid "All"
 msgstr "Összes"
 
-#: gui/slick/views/inc_home_menu.mako:27 gui/slick/views/manage.mako:23
+#: gui/slick/views/inc_home_menu.mako:27 gui/slick/views/manage.mako:20
+#: gui/slick/views/schedule.mako:40
 msgid "Clear Filter(s)"
 msgstr ""
 
-#: gui/slick/views/inc_home_menu.mako:36 gui/slick/views/schedule.mako:65
+#: gui/slick/views/inc_home_menu.mako:36 gui/slick/views/schedule.mako:69
 msgid "Poster"
 msgstr "Poszter"
 
@@ -6060,7 +6070,7 @@ msgstr "Poszter"
 msgid "Small Poster"
 msgstr "Kis Poszter"
 
-#: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:67
+#: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:71
 msgid "Banner"
 msgstr "Banner"
 
@@ -6068,7 +6078,7 @@ msgstr "Banner"
 msgid "Simple"
 msgstr "Egyszerű"
 
-#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:411
+#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:415
 msgid "Next Episode"
 msgstr "Következő Epizód"
 
@@ -6119,7 +6129,7 @@ msgstr "Érvénytelen dátum"
 msgid "No Network"
 msgstr "Nincs hálózat"
 
-#: gui/slick/views/inc_home_showList.mako:192 gui/slick/views/schedule.mako:91
+#: gui/slick/views/inc_home_showList.mako:192 gui/slick/views/schedule.mako:95
 msgid "Next Ep"
 msgstr "Következő Ep"
 
@@ -6128,8 +6138,8 @@ msgid "Prev Ep"
 msgstr "Előző Ep"
 
 #: gui/slick/views/inc_home_showList.mako:194
-#: gui/slick/views/inc_home_showList.mako:205 gui/slick/views/schedule.mako:48
-#: gui/slick/views/schedule.mako:90
+#: gui/slick/views/inc_home_showList.mako:205 gui/slick/views/schedule.mako:52
+#: gui/slick/views/schedule.mako:94
 msgid "Show"
 msgstr "Sorozat"
 
@@ -6168,35 +6178,35 @@ msgstr "Beállítás alapértelmezettként"
 msgid "Remember me"
 msgstr "Emlékezz rám"
 
-#: gui/slick/views/manage.mako:17 gui/slick/views/manage.mako:118
+#: gui/slick/views/manage.mako:14 gui/slick/views/manage.mako:115
 msgid "Edit Selected"
 msgstr ""
 
-#: gui/slick/views/manage.mako:49
+#: gui/slick/views/manage.mako:46
 msgid "Subtitle"
 msgstr "Felirat"
 
-#: gui/slick/views/manage.mako:50
+#: gui/slick/views/manage.mako:47
 msgid "Default Ep Status"
 msgstr "Alapértelmezett Ep állapota"
 
-#: gui/slick/views/manage.mako:52
+#: gui/slick/views/manage.mako:49
 msgid "Update"
 msgstr "Frissítés"
 
-#: gui/slick/views/manage.mako:53
+#: gui/slick/views/manage.mako:50
 msgid "Rescan"
 msgstr "Újraellenőrzés"
 
-#: gui/slick/views/manage.mako:54
+#: gui/slick/views/manage.mako:51
 msgid "Rename"
 msgstr "Átnevezés"
 
-#: gui/slick/views/manage.mako:56
+#: gui/slick/views/manage.mako:53
 msgid "Search Subtitle"
 msgstr "Felirat Keresés"
 
-#: gui/slick/views/manage.mako:58
+#: gui/slick/views/manage.mako:55
 msgid "Force Metadata Regen"
 msgstr ""
 
@@ -6441,7 +6451,7 @@ msgstr ""
 msgid "Key"
 msgstr "Kulcs"
 
-#: gui/slick/views/schedule.mako:22 gui/slick/views/schedule.mako:317
+#: gui/slick/views/schedule.mako:22 gui/slick/views/schedule.mako:321
 msgid "Missed"
 msgstr "Kimaradt"
 
@@ -6453,7 +6463,7 @@ msgstr "Ma"
 msgid "Soon"
 msgstr "Hamarosan"
 
-#: gui/slick/views/schedule.mako:25 gui/slick/views/schedule.mako:320
+#: gui/slick/views/schedule.mako:25 gui/slick/views/schedule.mako:324
 msgid "Later"
 msgstr "Később"
 
@@ -6461,55 +6471,55 @@ msgstr "Később"
 msgid "Subscribe"
 msgstr "Feliratkozás"
 
-#: gui/slick/views/schedule.mako:46
+#: gui/slick/views/schedule.mako:50
 msgid "Date"
 msgstr "Dátum"
 
-#: gui/slick/views/schedule.mako:54
+#: gui/slick/views/schedule.mako:58
 msgid "View Paused"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:56
+#: gui/slick/views/schedule.mako:60
 msgid "Hidden"
 msgstr "Rejtett"
 
-#: gui/slick/views/schedule.mako:57
+#: gui/slick/views/schedule.mako:61
 msgid "Shown"
 msgstr "Látható"
 
-#: gui/slick/views/schedule.mako:66
+#: gui/slick/views/schedule.mako:70
 msgid "Calendar"
 msgstr "Naptár"
 
-#: gui/slick/views/schedule.mako:68
+#: gui/slick/views/schedule.mako:72
 msgid "List"
 msgstr "Lista"
 
-#: gui/slick/views/schedule.mako:89
+#: gui/slick/views/schedule.mako:93
 msgid "Ends"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:92
+#: gui/slick/views/schedule.mako:96
 msgid "Next Ep Name"
 msgstr "Következő Ep neve"
 
-#: gui/slick/views/schedule.mako:94
+#: gui/slick/views/schedule.mako:98
 msgid "Run time"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:96
+#: gui/slick/views/schedule.mako:100
 msgid "Indexers"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:258
+#: gui/slick/views/schedule.mako:262
 msgid "No shows for this day"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:417
+#: gui/slick/views/schedule.mako:421
 msgid "Airs"
 msgstr ""
 
-#: gui/slick/views/schedule.mako:434 gui/slick/views/schedule.mako:439
+#: gui/slick/views/schedule.mako:438 gui/slick/views/schedule.mako:443
 msgid "Plot"
 msgstr ""
 
@@ -6657,11 +6667,11 @@ msgstr "szavazat"
 msgid "Remove Show"
 msgstr "Műsor eltávolítása"
 
-#: gui/slick/views/viewlogs.mako:11
+#: gui/slick/views/viewlogs.mako:16
 msgid "Level"
 msgstr ""
 
-#: gui/slick/views/viewlogs.mako:28
+#: gui/slick/views/viewlogs.mako:33
 msgid "Filter"
 msgstr ""
 

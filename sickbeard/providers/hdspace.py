@@ -120,6 +120,9 @@ class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 except ValueError:
                     logger.log("Could not find main torrent table", logger.ERROR)
                     continue
+                except IndexError:
+                    logger.log("Could not parse data from provider", logger.DEBUG)
+                    continue
 
                 html = BeautifulSoup(data[index:], 'html5lib')
                 if not html:
