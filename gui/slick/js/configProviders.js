@@ -167,7 +167,12 @@ $(document).ready(function(){
             $('#newznab_update_div').show();
             $('#newznab_cat').removeAttr("disabled");
             $('#newznab_cap').removeAttr("disabled");
-            $('#newznab_cat_update').removeAttr("disabled");
+
+            if ($('#newznab_cap:has(option)').length) {
+                $('#newznab_cat_update').removeAttr("disabled");
+            } else {
+                $('#newznab_cat_update').attr("disabled","disabled");
+            }
             $('#newznabcapdiv').show();
         }
 
@@ -242,6 +247,11 @@ $(document).ready(function(){
                     $("#newznab_cap").replaceOptions(newCapOptions);
                 }
             });
+        }
+        if ($('#newznab_cap:has(option)').length) {
+            $('#newznab_cat_update').removeAttr("disabled");
+        } else {
+            $('#newznab_cat_update').attr("disabled","disabled");
         }
     };
 
