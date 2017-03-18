@@ -139,6 +139,27 @@ module.exports = function(grunt) {
             options: {
                 run: true
             }
+        },
+        po2json: {
+            messages: {
+                options: {
+                    format: 'jed',
+                    singleFile: true
+                },
+                files: [{
+                    expand: true,
+                    src: './locale/*/LC_MESSAGES/messages.po',
+                    dest: '',
+                    ext: '' // workaround for relative files
+                }]
+            }
+        },
+        exec: {
+            babel_extract: {cmd: 'python setup.py extract_messages'},
+            babel_update: {cmd: 'python setup.py update_catalog'},
+            crowdin_upload: {cmd: 'crowdin-cli-py upload sources'},
+            crowdin_download: {cmd: 'crowdin-cli-py download'},
+            babel_compile: {cmd: 'python setup.py compile_catalog'}
         }
     });
 
@@ -150,6 +171,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-mocha');
+    grunt.loadNpmTasks('grunt-po2json');
+    grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('default', [
         'clean',
@@ -166,4 +189,20 @@ module.exports = function(grunt) {
         'jshint',
         'mocha'
     ]);
+    grunt.registerTask('update_trans', 'Update translations. In order to sync with Crowdin, set the env-var `CROWDIN_API_KEY`.', function() {
+        var tasks = [
+            'exec:babel_extract',
+            'exec:babel_update',
+            // + crowdin
+            'exec:babel_compile',
+            'po2json'
+        ];
+        if(process.env['CROWDIN_API_KEY']) {
+            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
+        } else {
+            grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
+        }
+
+        grunt.task.run(tasks);
+    });
 };

@@ -82,6 +82,30 @@ function shiftReturn(array){
     return array;
 }
 
+// Handle gettext.js
+var gt = null;
+(function loadTranslation() {
+    var lang = $('html').attr('lang');
+    if (lang !== '') {
+        $.ajax({
+            dataType: "json",
+            url: srRoot + '/locale/' + lang + '.json',
+            async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
+            success: function(data) {
+                gt = new Gettext(data.messages); // jshint ignore:line
+            },
+            failure: function() {
+                gt = new Gettext(); // jshint ignore:line
+            }
+        });
+    } else {
+        // @FIXME: add support for 'System Language' option
+        gt = new Gettext(); // jshint ignore:line
+    }
+})();
+var __ = _; // Moves `underscore` to __
+_ = function(str) { return gt.gettext(str); }; // Create shortcut
+
 var SICKRAGE = {
     common: {
         init: function() {
@@ -1584,7 +1608,7 @@ var SICKRAGE = {
                 setupAnimeNaming();
             });
 
-            // @TODO We might be able to change these from typewatch to _ debounce like we've done on the log page
+            // @TODO We might be able to change these from typewatch to __.debounce like we've done on the log page
             //       The main reason for doing this would be to use only open source stuff that's still being maintained
 
             $('#naming_multi_ep').on('change', fillExamples);
@@ -2123,7 +2147,7 @@ var SICKRAGE = {
             });
 
             // Handle filtering in the poster layout
-            $('#filterShowName').on('input', _.debounce(function() {
+            $('#filterShowName').on('input', __.debounce(function() {
                 $('.show-grid').isotope({
                     filter: function () {
                       var name = $(this).find('.show-title').html().trim().toLowerCase();
@@ -3455,7 +3479,7 @@ var SICKRAGE = {
 
         },
         viewlogs: function() {
-            $('#min_level,#log_filter,#log_search').on('keyup change', _.debounce(function () {
+            $('#min_level,#log_filter,#log_search').on('keyup change', __.debounce(function () {
                 if ($('#log_search').val().length > 0){
                     $('#log_filter option[value="<NONE>"]').prop('selected', true);
                     $('#min_level option[value=5]').prop('selected', true);
