@@ -6,9 +6,9 @@
 %>
 
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/configProviders.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#config-components').tabs();
             % if sickbeard.USE_NZBS:
                 var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
                 % for curNewznabProvider in sickbeard.newznabProviderList:
@@ -21,7 +21,6 @@
                 % endfor
             % endif
         });
-        $('#config-components').tabs();
     </script>
 </%block>
 
