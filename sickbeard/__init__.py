@@ -1358,7 +1358,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         COMING_EPS_LAYOUT = check_setting_str(CFG, 'GUI', 'coming_eps_layout', 'banner')
         COMING_EPS_DISPLAY_PAUSED = check_setting_bool(CFG, 'GUI', 'coming_eps_display_paused')
         COMING_EPS_SORT = check_setting_str(CFG, 'GUI', 'coming_eps_sort', 'date')
-        COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7)
+        COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7, min_val=0, max_val=42810)
         FUZZY_DATING = check_setting_bool(CFG, 'GUI', 'fuzzy_dating')
         TRIM_ZERO = check_setting_bool(CFG, 'GUI', 'trim_zero')
         DATE_PRESET = check_setting_str(CFG, 'GUI', 'date_preset', '%x')
@@ -2316,7 +2316,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'coming_eps_layout': COMING_EPS_LAYOUT,
             'coming_eps_display_paused': int(COMING_EPS_DISPLAY_PAUSED),
             'coming_eps_sort': COMING_EPS_SORT,
-            'coming_eps_missed_range': int(COMING_EPS_MISSED_RANGE),
+            'coming_eps_missed_range': config.min_max(COMING_EPS_MISSED_RANGE, 7, 0, 42810),
             'fuzzy_dating': int(FUZZY_DATING),
             'trim_zero': int(TRIM_ZERO),
             'date_preset': DATE_PRESET,
