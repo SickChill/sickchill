@@ -45,7 +45,7 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 from tornado.routes import route
-from tornado.web import RequestHandler, HTTPError, authenticated
+from tornado.web import RequestHandler, StaticFileHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -347,6 +347,17 @@ class KeyHandler(RequestHandler):
         except Exception:
             logger.log('Failed doing key request: {0}'.format((traceback.format_exc())), logger.ERROR)
             self.finish({'success': False, 'error': 'Failed returning results'})
+
+
+class LocaleFileHandler(StaticFileHandler):
+    """ Handles serving locale data on /locale/{lang_code}.(json|po|mo) """
+    def initialize(self, path):
+        """ Alter 'path' to replace {lang_code} with the requested lang (for example: en_US) """
+        super(LocaleFileHandler, self).initialize(path.format(lang_code=self.request.path.split('/')[-1].split('.')[0]))
+
+    def get(self, path=None, file_type=None, include_body=True):
+        """ Ignore 'path' and get file messages.{file_type} of the requested lang """
+        super(LocaleFileHandler, self).get('messages.' + file_type, include_body)
 
 
 @route('(.*)(/?)')

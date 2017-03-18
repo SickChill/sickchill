@@ -13,7 +13,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.webapi import ApiHandler
-from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
+from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler, LocaleFileHandler
 from sickrage.helper.encoding import ek
 
 
@@ -114,8 +114,8 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
              {"path": ek(os.path.join, self.options['data_root'], 'images')}),
 
             # locale
-            (r'{0}/locale/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, sickbeard.PROG_DIR, 'locale')}),
+            (r'{0}/locale/{1}'.format(self.options['web_root'], r'([a-z]{2}_[A-Z]{2})\.(json|po|mo)'), LocaleFileHandler,
+             {"path": ek(os.path.join, sickbeard.LOCALE_DIR, '{lang_code}/LC_MESSAGES')}),
 
             # cached images
             (r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
