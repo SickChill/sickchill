@@ -40,9 +40,9 @@
                 %>
                 <div class="show-container" data-name="${loading_show_sort_name}" data-date="1" data-network="0" data-progress="0">
                     <div class="show-image">
-                        <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" />
+                        <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=poster_thumb" />
                     </div>
-                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show_id}" data-progress-percentage="0"></div>
+                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show_id | u}" data-progress-percentage="0"></div>
                     <div class="show-title">${_('Loading')} (${loading_show_name})</div>
                     <div class="show-date">&nbsp;</div>
                     <div class="show-details">
@@ -52,7 +52,7 @@
                                     <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
                                 </td>
                                 <td class="show-table">
-                                    <span title="${loading_show_network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=network" alt="${loading_show_network}" title="${loading_show_network}" /></span>
+                                    <span title="${loading_show_network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=network" alt="${loading_show_network}" title="${loading_show_network}" /></span>
                                 </td>
                                 <td class="show-table">
                                     ${renderQualityPill(loading_show_quality, showTitle=True, overrideClass="show-quality")}
@@ -233,14 +233,14 @@
                                 <td class="tvShow">
                                     <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
                                         % if curLoadingShow.show:
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" title="${loading_show_name}">
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}" title="${loading_show_name}">
                                         % else:
                                             <span title="${loading_show_name}">
                                         % endif
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_id}"/>
+                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_name}"/>
                                         % if curLoadingShow.show:
                                             </a>
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}" style="vertical-align: middle;">${loading_show_name}</a>
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}" style="vertical-align: middle;">${loading_show_name}</a>
                                         % else:
                                             </span>
                                             <span style="vertical-align: middle;">${_('Loading...')} (${loading_show_name})</span>
@@ -252,9 +252,9 @@
                                     <span style="display: none;">${_('Loading...')} (${loading_show_name})</span>
                                     <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
                                         % if curLoadingShow.show:
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id}">
+                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}">
                                         % endif
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_id}" title="${loading_show_name}"/>
+                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_name}" title="${loading_show_name}"/>
                                         % if curLoadingShow.show:
                                             </a>
                                         % endif
@@ -263,7 +263,7 @@
                             % elif sickbeard.HOME_LAYOUT == 'simple':
                                 <td class="tvShow">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show_id}">${loading_show_name}</a>
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}">${loading_show_name}</a>
                                     % else:
                                         <span title="">${_('Loading...')} (${loading_show_name})</span>
                                     % endif
