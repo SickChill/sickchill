@@ -4009,7 +4009,7 @@ class ConfigGeneral(Config):
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
-        sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
+        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(try_int(coming_eps_missed_range), 7, 0, 42810),
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
