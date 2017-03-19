@@ -166,7 +166,8 @@ class TVCache(object):
 
         return False
 
-    def _getLastUpdate(self):
+    @property
+    def lastUpdate(self):
         cache_db_con = self._getDB()
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
 
@@ -179,7 +180,8 @@ class TVCache(object):
 
         return datetime.datetime.fromtimestamp(lastTime)
 
-    def _getLastSearch(self):
+    @property
+    def lastSearch(self):
         cache_db_con = self._getDB()
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
 
@@ -213,9 +215,6 @@ class TVCache(object):
             {'time': int(time.mktime(toDate.timetuple()))},
             {'provider': self.providerID}
         )
-
-    lastUpdate = property(_getLastUpdate)
-    lastSearch = property(_getLastSearch)
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update

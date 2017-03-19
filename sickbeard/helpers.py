@@ -1838,3 +1838,9 @@ def remove_site_message(begins='', ends='', contains='', key=None):
 
             if all(checks):
                 del sickbeard.SITE_MESSAGES[index]
+
+
+def sortable_name(name):
+    if not sickbeard.SORT_ARTICLE:
+        name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
+    return name.lower()

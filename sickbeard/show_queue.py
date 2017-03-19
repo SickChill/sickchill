@@ -19,6 +19,7 @@
 
 from __future__ import unicode_literals
 
+from collections import namedtuple
 import os
 import traceback
 
@@ -29,7 +30,7 @@ import sickbeard
 from sickbeard import generic_queue, logger, name_cache, notifiers, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
-from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir
+from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
 from sickbeard.tv import TVShow
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
@@ -43,17 +44,20 @@ import six
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
-        generic_queue.GenericQueue.__init__(self)
+        super(ShowQueue, self).__init__()
         self.queue_name = 'SHOWQUEUE'
 
     def _isInQueue(self, show, actions):
         if not show:
             return False
 
-        return show.indexerid in [x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions]
+        return show.indexerid in (x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions)
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
+
+    # def isInAddQueue(self, show):
+    #     return self._isInQueue(show, (ShowQueueActions.ADD,))
 
     def isInUpdateQueue(self, show):
         return self._isInQueue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
@@ -63,6 +67,9 @@ class ShowQueue(generic_queue.GenericQueue):
 
     def isInRenameQueue(self, show):
         return self._isInQueue(show, (ShowQueueActions.RENAME,))
+
+    def isInRemoveQueue(self, show):
+        return self._isInQueue(show, (ShowQueueActions.REMOVE,))
 
     def isInSubtitleQueue(self, show):
         return self._isInQueue(show, (ShowQueueActions.SUBTITLE,))
@@ -79,13 +86,15 @@ class ShowQueue(generic_queue.GenericQueue):
     def isBeingRenamed(self, show):
         return self._isBeingSomethinged(show, (ShowQueueActions.RENAME,))
 
+    def isBeingRemoved(self, show):
+        return self._isBeingSomethinged(show, (ShowQueueActions.REMOVE,))
+
     def isBeingSubtitled(self, show):
         return self._isBeingSomethinged(show, (ShowQueueActions.SUBTITLE,))
 
-    def _getLoadingShowList(self):
-        return [x for x in self.queue + [self.currentItem] if x is not None and x.isLoading]
-
-    loadingShowList = property(_getLoadingShowList)
+    @property
+    def loadingShowList(self):
+        return {x for x in self.queue + [self.currentItem] if x and x.isLoading}
 
     def updateShow(self, show, force=False):
 
@@ -219,17 +228,15 @@ class ShowQueueItem(generic_queue.QueueItem):
 
     def isInQueue(self):
         return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]  # @UndefinedVariable
+            sickbeard.showQueueScheduler.action.currentItem]
 
-    def _getName(self):
-        return str(self.show.indexerid)
+    @property
+    def show_name(self):
+        return self.show.name if self.show else 'UNSET'
 
-    def _isLoading(self):  # pylint: disable=no-self-use
+    @property
+    def isLoading(self):  # pylint: disable=no-self-use
         return False
-
-    show_name = property(_getName)
-
-    isLoading = property(_isLoading)
 
 
 class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attributes
@@ -238,7 +245,9 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                  lang, subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
                  default_status_after, root_dir):
 
-        if isinstance(showDir, str):
+        super(QueueItemAdd, self).__init__(ShowQueueActions.ADD, None)
+
+        if isinstance(showDir, bytes):
             self.showDir = showDir.decode('utf-8')
         else:
             self.showDir = showDir
@@ -261,29 +270,32 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
         self.show = None
 
-        # this will initialize self.show to None
-        ShowQueueItem.__init__(self, ShowQueueActions.ADD, self.show)
-
         # Process add show in priority
         self.priority = generic_queue.QueuePriorities.HIGH
 
-    def _getName(self):
+    @property
+    def show_name(self):
         """
         Returns the show name if there is a show object created, if not returns
         the dir that the show is being added to.
         """
-        return self.show.name if self.show else self.showDir
+        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1]
 
-    show_name = property(_getName)
 
-    def _isLoading(self):
+    @property
+    def isLoading(self):
         """
         Returns True if we've gotten far enough to have a show object, or False
         if we still only know the folder name.
         """
-        return not self.show
+        return self.show not in sickbeard.showList or not self.show
 
-    isLoading = property(_isLoading)
+    @property
+    def info(self):
+        info = namedtuple('LoadingShowInfo', 'id name sort_name network quality')
+        if self.show:
+            return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network, quality=self.show.quality)
+        return info(id=self.show_name, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'), quality=0)
 
     def run(self):  # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
 
@@ -500,7 +512,6 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         if sickbeard.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
             sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
-
             # add show to trakt.tv library
             if sickbeard.TRAKT_SYNC:
                 sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
@@ -533,7 +544,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
 class QueueItemRefresh(ShowQueueItem):
     def __init__(self, show=None, force=False):
-        ShowQueueItem.__init__(self, ShowQueueActions.REFRESH, show)
+        super(QueueItemRefresh, self).__init__(ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
         self.priority = generic_queue.QueuePriorities.HIGH
@@ -562,7 +573,7 @@ class QueueItemRefresh(ShowQueueItem):
 
 class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):
-        ShowQueueItem.__init__(self, ShowQueueActions.RENAME, show)
+        super(QueueItemRename, self).__init__(ShowQueueActions.RENAME, show)
 
     def run(self):
 
@@ -606,7 +617,7 @@ class QueueItemRename(ShowQueueItem):
 
 class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show=None):
-        ShowQueueItem.__init__(self, ShowQueueActions.SUBTITLE, show)
+        super(QueueItemSubtitle, self).__init__(ShowQueueActions.SUBTITLE, show)
 
     def run(self):
         super(QueueItemSubtitle, self).run()
@@ -622,7 +633,7 @@ class QueueItemSubtitle(ShowQueueItem):
 class QueueItemUpdate(ShowQueueItem):
     def __init__(self, show=None, force=False):
         action = ShowQueueActions.FORCEUPDATE if force else ShowQueueActions.UPDATE
-        ShowQueueItem.__init__(self, action, show)
+        super(QueueItemUpdate, self).__init__(action, show)
         self.force = force
         self.priority = generic_queue.QueuePriorities.HIGH
 
@@ -717,7 +728,7 @@ class QueueItemUpdate(ShowQueueItem):
 
 class QueueItemRemove(ShowQueueItem):
     def __init__(self, show=None, full=False):
-        ShowQueueItem.__init__(self, ShowQueueActions.REMOVE, show)
+        super(QueueItemRemove, self).__init__(ShowQueueActions.REMOVE, show)
 
         # lets make sure this happens before any other high priority actions
         self.priority = generic_queue.QueuePriorities.HIGH ** 2

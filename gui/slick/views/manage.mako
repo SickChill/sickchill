@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    from operator import attrgetter
     import sickbeard
     from sickbeard.common import statusStrings
 %>
@@ -58,12 +59,11 @@
                             </tr>
                         </thead>
                         <tbody>
+                            % for curShow in sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
                             <%
-                                myShowList = sickbeard.showList
-                                myShowList.sort(lambda x, y: x.sort_name < y.sort_name)
-                            %>
-                            % for curShow in myShowList:
-                            <%
+                                if sickbeard.showQueueScheduler.action.isInRemoveQueue(curShow) or sickbeard.showQueueScheduler.action.isBeingRemoved(curShow):
+                                    continue
+
                                 disabled = sickbeard.showQueueScheduler.action.isBeingUpdated(curShow) or sickbeard.showQueueScheduler.action.isInUpdateQueue(curShow)
                                 curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 

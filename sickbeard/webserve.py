@@ -728,16 +728,23 @@ class Home(WebRoot):
                         anime.append(show)
                     else:
                         shows.append(show)
-            showlists = [["Shows", shows], ["Anime", anime]]
+
+            sortedShowLists = [
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('sort_name')(mbr))]
+            ]
         else:
             shows = []
             for show in sickbeard.showList:
                 if selected_root_dir in show._location:
                     shows.append(show)
-            showlists = [["Shows", shows]]
+
+            sortedShowLists = [
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))]
+            ]
 
         stats = self.show_statistics()
-        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[
+        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", sortedShowLists=sortedShowLists, show_stat=stats[
             0], max_download_count=stats[1], controller="home", action="index", selected_root=selected_root or '-1')
 
     @staticmethod
@@ -3986,13 +3993,12 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
-        git_credentials_changed = sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN != git_auth_type, git_username, git_password, git_token
         sickbeard.GIT_AUTH_TYPE = int(git_auth_type)
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
         sickbeard.GIT_TOKEN = git_token
 
-        if git_credentials_changed:
+        if (sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN) != (git_auth_type, git_username, git_password, git_token):
             # Re-Initializes sickbeard.gh, so a restart isn't necessary
             setup_github()
 
@@ -4009,7 +4015,9 @@ class ConfigGeneral(Config):
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
-        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(try_int(coming_eps_missed_range), 7, 0, 42810),
+
+        config.change_schedule_missed_range(coming_eps_missed_range)
+
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
@@ -4033,7 +4041,7 @@ class ConfigGeneral(Config):
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
-            sickbeard.TIME_PRESET = sickbeard.TIME_PRESET_W_SECONDS.replace(":%S", "")
+            sickbeard.TIME_PRESET = time_preset.replace(":%S", "")
 
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 
