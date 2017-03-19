@@ -131,13 +131,13 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         return title, url
 
-    def _getRSSData(self):
+    def _get_rss_data(self):
         search_params = {
             'user': provider.username,
             'api': provider.api_key,
             'eng': 1,
             'catid': '19,20'  # SD,HD
         }
-        return self.getRSSFeed(self.provider.urls['rss'], params=search_params)
+        return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
 
 provider = OmgwtfnzbsProvider()

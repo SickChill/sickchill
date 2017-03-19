@@ -17,33 +17,14 @@
 % if sickbeard.HOME_LAYOUT == 'poster':
     <div id="${('container', 'container-anime')[curListType == 'Anime']}" class="show-grid clearfix">
         <div class="posterview">
-            % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-                <%
-                    if curLoadingShow.show in sickbeard.showList:
-                        continue
-
-                    if curLoadingShow.show:
-                        loading_show_name = curLoadingShow.show.name
-                        loading_show_sort_name = curLoadingShow.show.sort_name
-                        loading_show_id = curLoadingShow.show.indexerid
-                        loading_show_network = curLoadingShow.show.network
-                        loading_show_quality = curLoadingShow.show.quality
-                    else:
-                        loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
-                        loading_show_sort_name = curLoadingShow.show_name
-                        if not sickbeard.SORT_ARTICLE:
-                            loading_show_sort_name = re.sub(r'(?:The|A|An)\s', '', loading_show_sort_name, flags=re.I)
-
-                        loading_show_id = curLoadingShow.show_name
-                        loading_show_network = _('Loading')
-                        loading_show_quality = 0
-                %>
-                <div class="show-container" data-name="${loading_show_sort_name}" data-date="1" data-network="0" data-progress="0">
+            % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
+                <% loading_show = curLoadingShow.info %>
+                <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0">
                     <div class="show-image">
-                        <img alt="" title="${loading_show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=poster_thumb" />
+                        <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" />
                     </div>
-                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show_id | u}" data-progress-percentage="0"></div>
-                    <div class="show-title">${_('Loading')} (${loading_show_name})</div>
+                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id | u}" data-progress-percentage="0"></div>
+                    <div class="show-title">${_('Loading')} (${loading_show.name})</div>
                     <div class="show-date">&nbsp;</div>
                     <div class="show-details">
                         <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
@@ -52,20 +33,21 @@
                                     <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
                                 </td>
                                 <td class="show-table">
-                                    <span title="${loading_show_network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=network" alt="${loading_show_network}" title="${loading_show_network}" /></span>
+                                    <span title="${loading_show.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=network" alt="${loading_show.network}" title="${loading_show.network}" /></span>
                                 </td>
                                 <td class="show-table">
-                                    ${renderQualityPill(loading_show_quality, showTitle=True, overrideClass="show-quality")}
+                                    ${renderQualityPill(loading_show.quality, showTitle=True, overrideClass="show-quality")}
                                 </td>
                             </tr>
                         </table>
                     </div>
                 </div>
             % endfor
-
-            <% myShowList.sort(lambda x, y: x.sort_name < y.sort_name) %>
             % for curShow in myShowList:
                 <%
+                    if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
+                        continue
+
                     cur_airs_next = ''
                     cur_snatched = 0
                     cur_downloaded = 0
@@ -82,17 +64,9 @@
                     if curShow.indexerid in show_stat:
                         cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
 
-                        cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
-                        if not cur_snatched:
-                            cur_snatched = 0
-
-                        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
-                        if not cur_downloaded:
-                            cur_downloaded = 0
-
-                        cur_total = show_stat[curShow.indexerid]['ep_total']
-                        if not cur_total:
-                            cur_total = 0
+                        cur_snatched = show_stat[curShow.indexerid]['ep_snatched'] or 0
+                        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded'] or 0
+                        cur_total = show_stat[curShow.indexerid]['ep_total'] or 0
 
                     download_stat = str(cur_downloaded)
                     download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
@@ -214,74 +188,63 @@
                 </tr>
             </tfoot>
             <tbody>
-                % if sickbeard.showQueueScheduler.action.loadingShowList:
-                    % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-                        <%
-                            if curLoadingShow.show in sickbeard.showList:
-                                continue
-
-                            if curLoadingShow.show:
-                                loading_show_name = curLoadingShow.show.name
-                                loading_show_id = curLoadingShow.show.indexerid
-                            else:
-                                loading_show_name = curLoadingShow.show_name.rsplit(os.sep)[-1]
-                                loading_show_id = curLoadingShow.show_name
-                        %>
-                        <tr>
-                            <td align="center">(${_('loading')})</td><td align="center"></td>
-                            % if sickbeard.HOME_LAYOUT == 'small':
-                                <td class="tvShow">
-                                    <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
-                                        % if curLoadingShow.show:
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}" title="${loading_show_name}">
-                                        % else:
-                                            <span title="${loading_show_name}">
-                                        % endif
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_name}"/>
-                                        % if curLoadingShow.show:
-                                            </a>
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}" style="vertical-align: middle;">${loading_show_name}</a>
-                                        % else:
-                                            </span>
-                                            <span style="vertical-align: middle;">${_('Loading...')} (${loading_show_name})</span>
-                                        % endif
-                                    </div>
-                                </td>
-                            % elif sickbeard.HOME_LAYOUT == 'banner':
-                                <td>
-                                    <span style="display: none;">${_('Loading...')} (${loading_show_name})</span>
-                                    <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
-                                        % if curLoadingShow.show:
-                                            <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}">
-                                        % endif
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${loading_show_id | u}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show_name}" title="${loading_show_name}"/>
-                                        % if curLoadingShow.show:
-                                            </a>
-                                        % endif
-                                    </div>
-                                </td>
-                            % elif sickbeard.HOME_LAYOUT == 'simple':
-                                <td class="tvShow">
+                % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
+                    <% loading_show = curLoadingShow.info %>
+                    <tr>
+                        <td align="center">(${_('loading')})</td><td align="center"></td>
+                        % if sickbeard.HOME_LAYOUT == 'small':
+                            <td class="tvShow">
+                                <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show_id | u}">${loading_show_name}</a>
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}" title="${loading_show.name}">
                                     % else:
-                                        <span title="">${_('Loading...')} (${loading_show_name})</span>
+                                        <span title="${loading_show.name}">
                                     % endif
-                                </td>
-                            % endif
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    % endfor
-                % endif
-
-                <% myShowList.sort(lambda x, y: x.sort_name < y.sort_name) %>
+                                    <img src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}"/>
+                                    % if curLoadingShow.show:
+                                        </a>
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}" style="vertical-align: middle;">${loading_show.name}</a>
+                                    % else:
+                                        </span>
+                                        <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
+                                    % endif
+                                </div>
+                            </td>
+                        % elif sickbeard.HOME_LAYOUT == 'banner':
+                            <td>
+                                <span style="display: none;">${_('Loading...')} (${loading_show.name})</span>
+                                <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
+                                    % if curLoadingShow.show:
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}">
+                                    % endif
+                                    <img src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
+                                    % if curLoadingShow.show:
+                                        </a>
+                                    % endif
+                                </div>
+                            </td>
+                        % elif sickbeard.HOME_LAYOUT == 'simple':
+                            <td class="tvShow">
+                                % if curLoadingShow.show:
+                                    <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}">${loading_show.name}</a>
+                                % else:
+                                    <span title="">${_('Loading...')} (${loading_show.name})</span>
+                                % endif
+                            </td>
+                        % endif
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                % endfor
                 % for curShow in myShowList:
                     <%
+                        if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
+                            continue
+
                         cur_airs_next = ''
                         cur_airs_prev = ''
                         cur_snatched = 0

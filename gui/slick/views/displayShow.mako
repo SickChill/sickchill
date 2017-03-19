@@ -36,13 +36,10 @@
                             </div>
                             <select id="pickShow" class="form-control input-sm" title="Change Show">
                                 % for curShowList in sortedShowLists:
-                                    <% curShowType = curShowList[0] %>
-                                    <% curShowList = curShowList[1] %>
-
                                     % if len(sortedShowLists) > 1:
-                                        <optgroup label="${curShowType}">
+                                        <optgroup label="${curShowList[0]}">
                                     % endif
-                                    % for curShow in curShowList:
+                                    % for curShow in curShowList[1]:
                                         <option value="${curShow.indexerid}" ${('', 'selected="selected"')[curShow == show]}>${curShow.name}</option>
                                     % endfor
                                     % if len(sortedShowLists) > 1:

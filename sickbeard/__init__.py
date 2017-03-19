@@ -1358,7 +1358,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         COMING_EPS_LAYOUT = check_setting_str(CFG, 'GUI', 'coming_eps_layout', 'banner')
         COMING_EPS_DISPLAY_PAUSED = check_setting_bool(CFG, 'GUI', 'coming_eps_display_paused')
         COMING_EPS_SORT = check_setting_str(CFG, 'GUI', 'coming_eps_sort', 'date')
-        COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7, min_val=0, max_val=42810)
+        COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7, min_val=0, max_val=42810, fallback_def=False)
         FUZZY_DATING = check_setting_bool(CFG, 'GUI', 'fuzzy_dating')
         TRIM_ZERO = check_setting_bool(CFG, 'GUI', 'trim_zero')
         DATE_PRESET = check_setting_str(CFG, 'GUI', 'date_preset', '%x')
@@ -1373,10 +1373,10 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         providerList = providers.makeProviderList()
 
         NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data')
-        newznabProviderList = NewznabProvider.get_providers_list(NEWZNAB_DATA)
+        newznabProviderList = NewznabProvider.providers_list(NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data')
-        torrentRssProviderList = TorrentRssProvider.get_providers_list(TORRENTRSS_DATA)
+        torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if

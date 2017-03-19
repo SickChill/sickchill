@@ -288,12 +288,12 @@ class BTNProvider(TorrentProvider):
 
 
 class BTNCache(tvcache.TVCache):
-    def _getRSSData(self):
+    def _get_rss_data(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))
 
         # default to 15 minutes
-        seconds_minTime = self.minTime * 60
+        seconds_minTime = self.min_time * 60
         if seconds_since_last_update < seconds_minTime:
             seconds_since_last_update = seconds_minTime
 

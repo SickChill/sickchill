@@ -134,7 +134,7 @@ module.exports = function(grunt) {
         },
         mocha: {
             all: {
-                src: ['tests/testrunner.html'],
+                src: ['tests/mocha/testrunner.html'],
             },
             options: {
                 run: true
@@ -189,7 +189,7 @@ module.exports = function(grunt) {
         'jshint',
         'mocha'
     ]);
-    grunt.registerTask('update_trans', 'Update translations. In order to sync with Crowdin, set the env-var `CROWDIN_API_KEY`.', function() {
+    grunt.registerTask('update_trans', 'update translations', function() {
         var tasks = [
             'exec:babel_extract',
             'exec:babel_update',

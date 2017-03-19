@@ -24,3 +24,11 @@ describe('isMeta', function(){
         chai.assert.equal(false, isMeta('FAKE_CONTENT', ['a', 'b', 'c']));
     });
 });
+describe('shiftReturn', function(){
+    it('should return an array without the first item', function(){
+        chai.assert.deepEqual(['2', '3'], shiftReturn(['1', '2', '3']));
+    });
+    it('should return an empty array', function(){
+        chai.assert.deepEqual([], shiftReturn(['1']));
+    });
+});
