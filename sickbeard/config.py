@@ -552,13 +552,6 @@ def change_process_automatically(process_automatically):
     return True
 
 
-def change_schedule_missed_range(coming_eps_missed_range):
-    """Makes sure the range is not more than total days since the epoch"""
-    coming_eps_missed_range = try_int(coming_eps_missed_range)
-    sickbeard.COMING_EPS_MISSED_RANGE = min_max(coming_eps_missed_range, 7, 0, 42810)
-    return True
-
-
 def check_section(cfg, sec):
     """ Check if INI section exists, if not create it """
 
