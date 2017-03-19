@@ -2002,7 +2002,7 @@ class CMDShowAddExisting(ApiCall):
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), self.location,
             default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
             season_folders=int(self.season_folders), subtitles=self.subtitles,
@@ -2159,7 +2159,7 @@ class CMDShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(show_path)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), show_path, default_status=new_status,
             quality=new_quality, season_folders=int(self.season_folders),
             lang=self.lang, subtitles=self.subtitles, anime=self.anime,
@@ -2706,7 +2706,7 @@ class CMDShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
+            sickbeard.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
             logger.log("API::Unable to update show: {0}".format(e), logger.DEBUG)

@@ -17,7 +17,7 @@
 % if sickbeard.HOME_LAYOUT == 'poster':
     <div id="${('container', 'container-anime')[curListType == 'Anime']}" class="show-grid clearfix">
         <div class="posterview">
-            % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
+            % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
                 <% loading_show = curLoadingShow.info %>
                 <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0">
                     <div class="show-image">
@@ -45,7 +45,7 @@
             % endfor
             % for curShow in myShowList:
                 <%
-                    if sickbeard.showQueueScheduler.action.isInRemoveQueue(curShow) or sickbeard.showQueueScheduler.action.isBeingRemoved(curShow):
+                    if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
                         continue
 
                     cur_airs_next = ''
@@ -188,7 +188,7 @@
                 </tr>
             </tfoot>
             <tbody>
-                % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
+                % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
                     <% loading_show = curLoadingShow.info %>
                     <tr>
                         <td align="center">(${_('loading')})</td><td align="center"></td>
@@ -242,7 +242,7 @@
                 % endfor
                 % for curShow in myShowList:
                     <%
-                        if sickbeard.showQueueScheduler.action.isInRemoveQueue(curShow) or sickbeard.showQueueScheduler.action.isBeingRemoved(curShow):
+                        if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
                             continue
 
                         cur_airs_next = ''

@@ -47,82 +47,82 @@ class ShowQueue(generic_queue.GenericQueue):
         super(ShowQueue, self).__init__()
         self.queue_name = 'SHOWQUEUE'
 
-    def _isInQueue(self, show, actions):
+    def _is_in_queue(self, show, actions):
         if not show:
             return False
 
         return show.indexerid in (x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions)
 
-    def _isBeingSomethinged(self, show, actions):
+    def _is_being_somethinged(self, show, actions):
         return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
 
-    # def isInAddQueue(self, show):
+    # def is_in_add_queue(self, show):
     #     return self._isInQueue(show, (ShowQueueActions.ADD,))
 
-    def isInUpdateQueue(self, show):
-        return self._isInQueue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+    def is_in_update_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
 
-    def isInRefreshQueue(self, show):
-        return self._isInQueue(show, (ShowQueueActions.REFRESH,))
+    def is_in_refresh_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.REFRESH,))
 
-    def isInRenameQueue(self, show):
-        return self._isInQueue(show, (ShowQueueActions.RENAME,))
+    def is_in_rename_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.RENAME,))
 
-    def isInRemoveQueue(self, show):
-        return self._isInQueue(show, (ShowQueueActions.REMOVE,))
+    def is_in_remove_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.REMOVE,))
 
-    def isInSubtitleQueue(self, show):
-        return self._isInQueue(show, (ShowQueueActions.SUBTITLE,))
+    def is_in_subtitle_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.SUBTITLE,))
 
-    def isBeingAdded(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.ADD,))
+    def is_being_added(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.ADD,))
 
-    def isBeingUpdated(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+    def is_being_updated(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
 
-    def isBeingRefreshed(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.REFRESH,))
+    def is_being_refreshed(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.REFRESH,))
 
-    def isBeingRenamed(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.RENAME,))
+    def is_being_renamed(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.RENAME,))
 
-    def isBeingRemoved(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.REMOVE,))
+    def is_being_removed(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.REMOVE,))
 
-    def isBeingSubtitled(self, show):
-        return self._isBeingSomethinged(show, (ShowQueueActions.SUBTITLE,))
+    def is_being_subtitled(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.SUBTITLE,))
 
     @property
-    def loadingShowList(self):
-        return {x for x in self.queue + [self.currentItem] if x and x.isLoading}
+    def loading_show_list(self):
+        return {x for x in self.queue + [self.currentItem] if x and x.is_loading}
 
-    def updateShow(self, show, force=False):
+    def update_show(self, show, force=False):
 
-        if self.isBeingAdded(show):
+        if self.is_being_added(show):
             raise CantUpdateShowException(
                 '{0} is still being added, wait until it is finished before you update.'.format(show.name)
             )
 
-        if self.isBeingUpdated(show):
+        if self.is_being_updated(show):
             raise CantUpdateShowException(
                 '{0} is already being updated by Post-processor or manually started, can\'t update again until it\'s done.'.format(show.name)
             )
 
-        if self.isInUpdateQueue(show):
+        if self.is_in_update_queue(show):
             raise CantUpdateShowException(
                 '{0} is in process of being updated by Post-processor or manually started, can\'t update again until it\'s done.'.format(show.name)
             )
 
-        queueItemObj = QueueItemUpdate(show, force=force)
-        self.add_item(queueItemObj)
-        return queueItemObj
+        queue_item_obj = QueueItemUpdate(show, force=force)
+        self.add_item(queue_item_obj)
+        return queue_item_obj
 
-    def refreshShow(self, show, force=False):
+    def refresh_show(self, show, force=False):
 
-        if self.isBeingRefreshed(show) and not force:
+        if self.is_being_refreshed(show) and not force:
             raise CantRefreshShowException('This show is already being refreshed, not refreshing again.')
 
-        if (self.isBeingUpdated(show) or self.isInUpdateQueue(show)) and not force:
+        if (self.is_being_updated(show) or self.is_in_update_queue(show)) and not force:
             logger.log(
                 'A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I\'m skipping this request.',
                 logger.DEBUG)
@@ -134,24 +134,24 @@ class ShowQueue(generic_queue.GenericQueue):
 
         logger.log('Queueing show refresh for {0}'.format(show.name), logger.DEBUG)
 
-        queueItemObj = QueueItemRefresh(show, force=force)
-        self.add_item(queueItemObj)
-        return queueItemObj
+        queue_item_obj = QueueItemRefresh(show, force=force)
+        self.add_item(queue_item_obj)
+        return queue_item_obj
 
-    def renameShowEpisodes(self, show, force=False):
-        queueItemObj = QueueItemRename(show)
-        self.add_item(queueItemObj)
-        return queueItemObj
+    def rename_show_episodes(self, show, force=False):
+        queue_item_obj = QueueItemRename(show)
+        self.add_item(queue_item_obj)
+        return queue_item_obj
 
     def download_subtitles(self, show, force=False):
-        queueItemObj = QueueItemSubtitle(show)
-        self.add_item(queueItemObj)
-        return queueItemObj
+        queue_item_obj = QueueItemSubtitle(show)
+        self.add_item(queue_item_obj)
+        return queue_item_obj
 
-    def addShow(self,  # pylint: disable=too-many-arguments, too-many-locals
+    def add_show(self,  # pylint: disable=too-many-arguments, too-many-locals
                 indexer, indexer_id, showDir, default_status=None, quality=None, season_folders=None,
-                lang=None, subtitles=None, subtitles_sr_metadata=None, anime=None, scene=None, paused=None,
-                blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
+                 lang=None, subtitles=None, subtitles_sr_metadata=None, anime=None, scene=None, paused=None,
+                 blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
@@ -159,21 +159,21 @@ class ShowQueue(generic_queue.GenericQueue):
         if default_status_after is None:
             default_status_after = sickbeard.STATUS_DEFAULT_AFTER
 
-        queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, season_folders, lang,
+        queue_item_obj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, season_folders, lang,
                                     subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
                                     default_status_after, root_dir)
 
-        self.add_item(queueItemObj)
-        return queueItemObj
+        self.add_item(queue_item_obj)
+        return queue_item_obj
 
-    def removeShow(self, show, full=False):
+    def remove_show(self, show, full=False):
         if not show:
             raise CantRemoveShowException('Failed removing show: Show does not exist')
 
         if not hasattr(show, 'indexerid'):
             raise CantRemoveShowException('Failed removing show: Show does not have an indexer id')
 
-        if self._isInQueue(show, (ShowQueueActions.REMOVE,)):
+        if self._is_in_queue(show, (ShowQueueActions.REMOVE,)):
             raise CantRemoveShowException('{0} is already queued to be removed'.format(show.name))
 
         # remove other queued actions for this show.
@@ -226,7 +226,7 @@ class ShowQueueItem(generic_queue.QueueItem):
         super(ShowQueueItem, self).__init__(ShowQueueActions.names[action_id], action_id)
         self.show = show
 
-    def isInQueue(self):
+    def is_in_queue(self):
         return self in sickbeard.showQueueScheduler.action.queue + [
             sickbeard.showQueueScheduler.action.currentItem]
 
@@ -235,7 +235,7 @@ class ShowQueueItem(generic_queue.QueueItem):
         return self.show.name if self.show else 'UNSET'
 
     @property
-    def isLoading(self):  # pylint: disable=no-self-use
+    def is_loading(self):  # pylint: disable=no-self-use
         return False
 
 
@@ -283,7 +283,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
 
     @property
-    def isLoading(self):
+    def is_loading(self):
         """
         Returns True if we've gotten far enough to have a show object, or False
         if we still only know the folder name.
@@ -306,7 +306,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 assert isinstance(self.showDir, six.text_type)
             except AssertionError:
                 logger.log(traceback.format_exc(), logger.WARNING)
-                self._finishEarly()
+                self._finish_early()
                 return
 
         logger.log('Starting to add show {0}'.format('by ShowDir: {0}'.format(self.showDir) if self.showDir else 'by Indexer Id: {0}'.format(self.indexer_id)))
@@ -327,7 +327,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 show_name = get_showname_from_indexer(self.indexer, self.indexer_id, self.lang)
                 if not show_name:
                     logger.log('Unable to get a show {0}, can\'t add the show'.format(self.showDir))
-                    self._finishEarly()
+                    self._finish_early()
                     return
 
                 self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_name))
@@ -335,7 +335,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 dir_exists = makeDir(self.showDir)
                 if not dir_exists:
                     logger.log('Unable to create the folder {0}, can\'t add the show'.format(self.showDir))
-                    self._finishEarly()
+                    self._finish_early()
                     return
 
                 chmodAsParent(self.showDir)
@@ -348,7 +348,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 logger.log(error_string, logger.WARNING)
                 ui.notifications.error('Unable to add show', error_string)
 
-                self._finishEarly()
+                self._finish_early()
                 return
 
             # if the show has no episodes/seasons
@@ -359,7 +359,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)
 
-                self._finishEarly()
+                self._finish_early()
                 return
         except Exception as error:
             error_string = 'Unable to look up the show in {0} on {1} using ID {2}, not using the NFO. Delete .nfo and try adding manually again.'.format(
@@ -389,7 +389,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
                 trakt_api.traktRequest('sync/watchlist/remove', data, method='POST')
 
-            self._finishEarly()
+            self._finish_early()
             return
 
         try:
@@ -443,7 +443,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
             ui.notifications.error('Unable to add show', error_string)
 
-            self._finishEarly()
+            self._finish_early()
             return
 
         except MultipleShowObjectsException:
@@ -451,13 +451,13 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             logger.log(error_string, logger.WARNING)
             ui.notifications.error('Show skipped', error_string)
 
-            self._finishEarly()
+            self._finish_early()
             return
 
         except Exception as error:
             logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-            self._finishEarly()
+            self._finish_early()
             raise
 
         logger.log('Retrieving show info from IMDb', logger.DEBUG)
@@ -473,7 +473,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         except Exception as error:
             logger.log('Error saving the show to the database: {0}'.format(error), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-            self._finishEarly()
+            self._finish_early()
             raise
 
         # add it to the show list
@@ -534,9 +534,9 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         super(QueueItemAdd, self).finish()
         self.finish()
 
-    def _finishEarly(self):
+    def _finish_early(self):
         if self.show is not None:
-            sickbeard.showQueueScheduler.action.removeShow(self.show)
+            sickbeard.showQueueScheduler.action.remove_show(self.show)
 
         super(QueueItemAdd, self).finish()
         self.finish()
@@ -721,7 +721,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
-        sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
+        sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
         super(QueueItemUpdate, self).finish()
         self.finish()
 
