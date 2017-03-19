@@ -34,6 +34,7 @@
     "grunt-sass": "^2.0.0",
     "load-grunt-tasks": "^3.4.1",
     "mocha": "^3.0.2",
+    "npm-check-updates": "^2.10.3",
     "snyk": "^1.25.2"
   }
 }
