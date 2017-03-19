@@ -7,6 +7,11 @@
     <div class="row">
         <div class="col-lg-10 col-md-9 col-sm-12 col-xs-12 pull-right">
             <div class="pull-right">
+                <a href="" id="log_update_toggle" class="btn" data-state="active" title="${_('Pause updating the log on this page.')}">
+                    <i class='fa fa-pause'></i>
+                    <span>${_('Pause')}</span>
+                </a>
+                &nbsp;
                 <label>
                     <span>${_('Level')}:</span>
                     <select name="min_level" id="min_level" class="form-control form-control-inline input-sm" title="Minimum log level">

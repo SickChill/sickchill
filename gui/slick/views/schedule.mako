@@ -36,6 +36,10 @@
         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
             <div class="pull-right">
                 % if layout == 'list':
+                    <button type="button" class="resetsorting btn btn-inline">
+                        ${_('Clear Filter(s)')}
+                    </button>
+                    &nbsp;
                     <button id="popover" type="button" class="btn btn-inline">
                         ${_('Select Columns')} <b class="caret"></b>
                     </button>

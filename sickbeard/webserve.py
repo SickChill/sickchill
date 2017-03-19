@@ -24,7 +24,6 @@ import ast
 import datetime
 import gettext
 import os
-import rarfile
 import re
 import time
 import traceback
@@ -45,10 +44,8 @@ from mimetypes import guess_type
 
 from operator import attrgetter
 
-import platform
-
 from tornado.routes import route
-from tornado.web import RequestHandler, HTTPError, authenticated
+from tornado.web import RequestHandler, StaticFileHandler, HTTPError, authenticated
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -68,7 +65,7 @@ from sickbeard import config, sab, clients, notifiers, ui, logger, \
     network_timezones
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, cpu_presets, \
-    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED
+    SNATCHED, UNAIRED, IGNORED, WANTED, FAILED, SKIPPED, NAMING_LIMITED_EXTEND_E_PREFIXED
 
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
@@ -98,7 +95,10 @@ from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
 
 import six
+
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 
 
@@ -236,7 +236,8 @@ class BaseHandler(RequestHandler):
         if not status:
             status = 301 if permanent else 302
         else:
-            assert isinstance(status, int) and 300 <= status <= 399
+            assert isinstance(status, int)
+            assert 300 <= status <= 399
         self.set_status(status)
         self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
 
@@ -346,6 +347,17 @@ class KeyHandler(RequestHandler):
         except Exception:
             logger.log('Failed doing key request: {0}'.format((traceback.format_exc())), logger.ERROR)
             self.finish({'success': False, 'error': 'Failed returning results'})
+
+
+class LocaleFileHandler(StaticFileHandler):
+    """ Handles serving locale data on /locale/{lang_code}.(json|po|mo) """
+    def initialize(self, path):
+        """ Alter 'path' to replace {lang_code} with the requested lang (for example: en_US) """
+        super(LocaleFileHandler, self).initialize(path.format(lang_code=self.request.path.split('/')[-1].split('.')[0]))
+
+    def get(self, path=None, file_type=None, include_body=True):
+        """ Ignore 'path' and get file messages.{file_type} of the requested lang """
+        super(LocaleFileHandler, self).get('messages.' + file_type, include_body)
 
 
 @route('(.*)(/?)')
@@ -730,6 +742,7 @@ class Home(WebRoot):
 
     @staticmethod
     def show_statistics():
+        """ Loads show and episode statistics from db """
         main_db_con = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
@@ -741,12 +754,18 @@ class Home(WebRoot):
         sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_quality + ') AS ep_snatched,'
         sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download + ') AS ep_downloaded,'
         sql_statement += ' (SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1'
-        sql_statement += ' AND ((airdate <= ' + today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + '))'
+        sql_statement += ' AND ((airdate <= ' + today + ' AND status IN (' + ','.join([str(SKIPPED), str(WANTED), str(FAILED)]) + '))'
         sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total,'
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today
-        sql_statement += ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next,'
-        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,'
+        sql_statement += (' AND season > 0', '')[sickbeard.DISPLAY_SHOW_SPECIALS] + ' AND status IN (' + ','.join([str(UNAIRED), str(WANTED)]) + ')'
+        sql_statement += ' ORDER BY airdate ASC LIMIT 1) AS ep_airs_next,'
+
+        sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1'
+        sql_statement += (' AND season > 0', '')[sickbeard.DISPLAY_SHOW_SPECIALS] + ' AND status <> ' + str(UNAIRED)
+        sql_statement += ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,'
+
+        # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
         sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
@@ -3993,7 +4012,7 @@ class ConfigGeneral(Config):
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
-        sickbeard.COMING_EPS_MISSED_RANGE = try_int(coming_eps_missed_range, 7)
+        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(try_int(coming_eps_missed_range), 7, 0, 42810),
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
@@ -4352,45 +4371,35 @@ class ConfigPostProcessing(Config):
 
         if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
-            sickbeard.NAMING_MULTI_EP = int(naming_multi_ep)
-            sickbeard.NAMING_ANIME = int(naming_anime)
+            sickbeard.NAMING_MULTI_EP = try_int(naming_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime or 0) in [1, 2]:
-                results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
-            else:
-                results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
+            results.append(_("You tried saving an invalid normal naming config, not saving your naming settings"))
 
         if self.isNamingValid(naming_anime_pattern, naming_anime_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_ANIME_PATTERN = naming_anime_pattern
-            sickbeard.NAMING_ANIME_MULTI_EP = int(naming_anime_multi_ep)
-            sickbeard.NAMING_ANIME = int(naming_anime)
+            sickbeard.NAMING_ANIME_MULTI_EP = try_int(naming_anime_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
+            sickbeard.NAMING_ANIME = try_int(naming_anime, 3)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            if int(naming_anime or 0) in [1, 2]:
-                results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
-            else:
-                results.append(_("You tried saving an invalid naming config, not saving your naming settings"))
+            results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
 
         if self.isNamingValid(naming_abd_pattern, None, abd=True) != "invalid":
             sickbeard.NAMING_ABD_PATTERN = naming_abd_pattern
         else:
-            results.append(
-                "You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
+            results.append("You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
 
         if self.isNamingValid(naming_sports_pattern, None, sports=True) != "invalid":
             sickbeard.NAMING_SPORTS_PATTERN = naming_sports_pattern
         else:
-            results.append(
-                "You tried saving an invalid sports naming config, not saving your sports settings")
+            results.append("You tried saving an invalid sports naming config, not saving your sports settings")
 
         sickbeard.save_config()
 
-        if len(results) > 0:
+        if results:
             for x in results:
                 logger.log(x, logger.WARNING)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
+            ui.notifications.error(_('Error(s) Saving Configuration'), '<br>\n'.join(results))
         else:
             ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
 
@@ -4398,15 +4407,7 @@ class ConfigPostProcessing(Config):
 
     @staticmethod
     def testNaming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
-
-        if multi is not None:
-            multi = int(multi)
-
-        if anime_type is not None:
-            anime_type = int(anime_type)
-
-        result = naming.test_name(pattern, multi, abd, sports, anime_type)
-
+        result = naming.test_name(pattern, try_int(multi, None), abd, sports, try_int(anime_type, None))
         result = ek(os.path.join, result[b'dir'], result[b'name'])
 
         return result
@@ -4415,12 +4416,6 @@ class ConfigPostProcessing(Config):
     def isNamingValid(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         if not pattern:
             return "invalid"
-
-        if multi is not None:
-            multi = int(multi)
-
-        if anime_type is not None:
-            anime_type = int(anime_type)
 
         # air by date shows just need one check, we don't need to worry about season folders
         if abd:
@@ -4434,10 +4429,10 @@ class ConfigPostProcessing(Config):
 
         else:
             # check validity of single and multi ep cases for the whole path
-            is_valid = naming.check_valid_naming(pattern, multi, anime_type)
+            is_valid = naming.check_valid_naming(pattern, try_int(multi, None), try_int(anime_type, None))
 
             # check validity of single and multi ep cases for only the file name
-            require_season_folders = naming.check_force_season_folders(pattern, multi, anime_type)
+            require_season_folders = naming.check_force_season_folders(pattern, try_int(multi, None), try_int(anime_type, None))
 
         if is_valid and not require_season_folders:
             return "valid"

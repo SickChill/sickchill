@@ -471,7 +471,8 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
+                                        <input type="number" step="1" min="0" max="42810" name="coming_eps_missed_range" id="coming_eps_missed_range"
+                                               value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
                                     </div>
                                 </div>
                                 <div class="row">

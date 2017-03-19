@@ -1324,7 +1324,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('only applies to animes. (eg. S15E45 - 310 vs S15E45)')}</label>
+                                            <label>${_('only applies to anime. (eg. S15E45 - 310 vs S15E45)')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1343,7 +1343,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('only applies to animes.')}</label>
+                                            <label>${_('only applies to anime.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1356,13 +1356,13 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${('', 'checked="checked"')[sickbeard.NAMING_ANIME == 3]}/>
+                                            <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${('', 'checked="checked"')[sickbeard.NAMING_ANIME in (3, None)]}/>
                                             <label for="naming_anime_none">${_('don\'t include the absolute number')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('only applies to animes.')}</label>
+                                            <label>${_('only applies to anime.')}</label>
                                         </div>
                                     </div>
                                 </div>

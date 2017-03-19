@@ -113,7 +113,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 providers_dict[default.name].search_fallback = default.search_fallback
                 providers_dict[default.name].enable_daily = default.enable_daily
                 providers_dict[default.name].enable_backlog = default.enable_backlog
-                providers_dict[default.name].catIDs = default.catIDs
+                providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
+                                                                if 5000 <= try_int(x) <= 5999]) or default.catIDs
 
         return [x for x in providers_list if x]
 
