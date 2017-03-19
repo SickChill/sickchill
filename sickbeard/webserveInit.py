@@ -114,7 +114,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
              {"path": ek(os.path.join, self.options['data_root'], 'images')}),
 
             # locale
-            (r'{0}/locale/{1}'.format(self.options['web_root'], r'([a-z]{2}_[A-Z]{2})\.(json|po|mo)'), LocaleFileHandler,
+            (r'{0}/locale/([a-z]{{2}}_[A-Z]{{2}})\.(json|[pm]o)'.format(self.options['web_root']), LocaleFileHandler,
              {"path": ek(os.path.join, sickbeard.LOCALE_DIR, '{lang_code}/LC_MESSAGES')}),
 
             # cached images
