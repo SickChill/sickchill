@@ -1373,10 +1373,10 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         providerList = providers.makeProviderList()
 
         NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data')
-        newznabProviderList = NewznabProvider.get_providers_list(NEWZNAB_DATA)
+        newznabProviderList = NewznabProvider.providers_list(NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data')
-        torrentRssProviderList = TorrentRssProvider.get_providers_list(TORRENTRSS_DATA)
+        torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if

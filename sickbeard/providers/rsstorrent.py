@@ -69,7 +69,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         )
 
     @staticmethod
-    def get_providers_list(data):
+    def providers_list(data):
         providers_list = [x for x in (TorrentRssProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
         providers_set = []
