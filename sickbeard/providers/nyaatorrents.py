@@ -71,7 +71,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     search_params['term'] = search_string
 
                 results = []
-                data = self.cache.getRSSFeed(self.url, params=search_params)['entries']
+                data = self.cache.get_rss_feed(self.url, params=search_params)['entries']
                 if not data:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
 

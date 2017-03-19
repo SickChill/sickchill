@@ -156,7 +156,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
             # pylint: disable=protected-access
             # Access to a protected member of a client class
-            data = self.cache._getRSSData()['entries']
+            data = self.cache._get_rss_data()['entries']
             if not data:
                 return False, 'No items found in the RSS feed {0}'.format(self.url)
 
@@ -201,8 +201,8 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
 
 class TorrentRssCache(tvcache.TVCache):
-    def _getRSSData(self):
+    def _get_rss_data(self):
         if self.provider.cookies:
             add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
-        return self.getRSSFeed(self.provider.url)
+        return self.get_rss_feed(self.provider.url)

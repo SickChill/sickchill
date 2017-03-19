@@ -161,7 +161,7 @@ class BaseParser(type):
         @magic_skip
         def test_cache_update(self):
             """Check that the provider's cache parses rss search results"""
-            self.provider.cache.updateCache()
+            self.provider.cache.update_cache()
 
         def test_result_values(self):
             """Check that the provider returns results in proper format"""
