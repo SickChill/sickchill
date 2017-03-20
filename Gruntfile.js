@@ -34,8 +34,12 @@ module.exports = function(grunt) {
     /****************************************
     *  Admin only                           *
     ****************************************/
-    grunt.registerTask('publish', 'create a release tag and generate CHANGES.md\n(alias for newrelease and genchanges)',
-        ['newrelease', 'genchanges']);
+    grunt.registerTask('publish', 'create a release tag and generate CHANGES.md\n(alias for newrelease and genchanges)', [
+        'travis',
+        'update_trans',
+        'newrelease',
+        'genchanges'
+    ]);
 
     /****************************************
     *  Task configurations                  *
@@ -207,13 +211,13 @@ module.exports = function(grunt) {
                 cmd: function (b) { return 'git checkout ' + b; },
             },
             git_pull: {
-                cmd: function (b) { return 'git pull ' + b; },
+                cmd: function (b) { return 'git pull' },
             },
             git_merge: {
                 cmd: function (b) { return 'git merge ' + b; },
             },
             git_get_last_tag: {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format %(refname:short) refs/tags',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
                 callback: function(err, stdout, stderr) {
                     grunt.config('last_tag', stdout.trim());
@@ -239,7 +243,7 @@ module.exports = function(grunt) {
                 },
             },
             git_list_tags: {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)$$$" refs/tags',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\\$$\\$" refs/tags',
                 stdout: false,
                 callback: function(err, stdout, stderr) {
                     var all_tags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
@@ -274,8 +278,8 @@ module.exports = function(grunt) {
     *  Sub-tasks of publish task            *
     ****************************************/
     grunt.registerTask('newrelease', "pull and merge develop to master, create and push a new release", [
-        'exec:git_checkout:develop', 'exec:git_pull:develop',
-        'exec:git_checkout:master', 'exec:git_pull:master', 'exec:git_merge:develop',
+        'exec:git_checkout:develop', 'exec:git_pull',
+        'exec:git_checkout:master', 'exec:git_pull', 'exec:git_merge:develop',
         'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag',
         'exec:git_tag_new', 'exec:git_push:origin:master:true']);
 
@@ -294,8 +298,7 @@ module.exports = function(grunt) {
     *****************************************/
     grunt.registerTask('_get_next_tag', '(internal) do not run', function() {
         function leading_zeros(number) {
-            number = parseInt(number);
-            number = (number < 10 ? '0' + number : number).toString();
+            return ('0' + parseInt(number)).slice(-2);
         }
 
         var last_tag = grunt.config('last_tag');
@@ -310,13 +313,12 @@ module.exports = function(grunt) {
         var year = d.getFullYear().toString();
         var month = leading_zeros(d.getMonth() + 1);
         var day = leading_zeros(d.getDate());
-        var patch;
+        var patch = '1';
 
         if (year === last_tag[0] && month === leading_zeros(last_tag[1]) && day === leading_zeros(last_tag[2])) {
             patch = (parseInt(last_patch) + 1).toString();
-        } else {
-            patch = '1';
         }
+
         grunt.config('next_tag', ('v' + year + '.' + month + '.' + day + '-' + patch));
     });
 
