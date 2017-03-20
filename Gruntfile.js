@@ -36,7 +36,7 @@ module.exports = function(grunt) {
     ****************************************/
     grunt.registerTask('publish', 'create a release tag and generate CHANGES.md\n(alias for newrelease and genchanges)', [
         'travis',
-        'update_trans',
+        // 'update_trans', // blocks git pull in newrelease
         'newrelease',
         'genchanges'
     ]);
@@ -227,6 +227,7 @@ module.exports = function(grunt) {
                 cmd: 'git log --oneline ' + grunt.config('last_tag') + '..HEAD',
                 stdout: false,
                 callback: function(err, stdout, stderr) {
+                    console.log(grunt.config('last_tag'));
                     grunt.config('commits', stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim()); // removes commit hashes
                 }
             },
