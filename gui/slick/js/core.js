@@ -85,11 +85,10 @@ function shiftReturn(array){
 // Handle gettext.js
 var gt = null;
 (function loadTranslation() {
-    var lang = $('html').attr('lang');
-    if (lang !== '') {
+    if ($('html').attr('lang') !== '') {
         $.ajax({
             dataType: "json",
-            url: srRoot + '/locale/' + lang + '.json',
+            url: srRoot + '/locale/messages.json',
             async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
             success: function(data) {
                 gt = new Gettext(data.messages); // jshint ignore:line
@@ -99,7 +98,6 @@ var gt = null;
             }
         });
     } else {
-        // @FIXME: add support for 'System Language' option
         gt = new Gettext(); // jshint ignore:line
     }
 })();
