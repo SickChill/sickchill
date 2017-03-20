@@ -76,8 +76,7 @@ class Notifier(object):
                 else:
                     data['shows'][0]['ids']['tvrage'] = ep_obj.show.indexerid
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST:
-                    if sickbeard.TRAKT_REMOVE_SERIESLIST:
+                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
                         trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
@@ -86,9 +85,8 @@ class Notifier(object):
                 for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
                     data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST:
-                    if sickbeard.TRAKT_REMOVE_WATCHLIST:
-                        trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
+                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # update library
                 trakt_api.traktRequest("sync/collection", data, method='POST')

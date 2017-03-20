@@ -160,9 +160,8 @@ class DownloadStationAPI(GenericClient):
         data = self._task_post_data
         data['uri'] = result.url
 
-        if result.resultType == 'torrent':
-            if sickbeard.TORRENT_PATH:
-                data['destination'] = sickbeard.TORRENT_PATH
+        if result.resultType == 'torrent' and sickbeard.TORRENT_PATH:
+            data['destination'] = sickbeard.TORRENT_PATH
         elif sickbeard.SYNOLOGY_DSM_PATH:
             data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
 

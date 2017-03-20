@@ -279,10 +279,9 @@ class BTNProvider(TorrentProvider):
                     except TypeError:
                         result_date = None
 
-                    if result_date:
-                        if not search_date or result_date > search_date:
-                            title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date, self.show))
+                    if result_date and (not search_date or result_date > search_date):
+                        title, url = self._get_title_and_url(item)
+                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 

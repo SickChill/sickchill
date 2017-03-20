@@ -62,10 +62,8 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
     def _checkAuthFromData(self, parsed_json):  # pylint: disable=invalid-name
         ''' Check that we are authenticated. '''
 
-        if 'status' in parsed_json and 'message' in parsed_json:
-            if parsed_json.get('status') == 3:
-                logger.log('Invalid username or password. '
-                           'Check your settings', logger.WARNING)
+        if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 3:
+            logger.log('Invalid username or password. Check your settings', logger.WARNING)
 
         return True
 

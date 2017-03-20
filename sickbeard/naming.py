@@ -211,14 +211,13 @@ def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-m
 
     logger.log("The name " + new_name + " parsed into " + str(result), logger.DEBUG)
 
-    if abd or sports:
-        if result.air_date != ep.airdate:
-            logger.log("Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
-    elif anime_type != 3:
-        if len(result.ab_episode_numbers) and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]:
-            logger.log("Absolute numbering incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
+    if abd or sports and result.air_date != ep.airdate:
+        logger.log("Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
+        return False
+    elif (anime_type != 3 and len(result.ab_episode_numbers)
+          and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]):
+        logger.log("Absolute numbering incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
+        return False
     else:
         if result.season_number != ep.season:
             logger.log("Season number incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
