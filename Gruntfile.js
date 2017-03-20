@@ -267,8 +267,7 @@ module.exports = function(grunt) {
                         grunt.fatal('Missing file path.');
                     }
                     var path = file.substr(0, file.lastIndexOf('/', file.length-12)); // get sickrage.github.io folder
-                    return 'cd ' + path +
-                           ' && git commit -asm "Update changelog"';
+                    return 'cd ' + path + ' && git commit -asm "Update changelog" && git push origin master';
                 },
                 stdout: true
             }
@@ -292,7 +291,7 @@ module.exports = function(grunt) {
         }
         grunt.config('changesmd_file', file);
         grunt.task.run(['exec:git_get_last_tag', 'exec:git_list_tags', '_genchanges',
-                        'exec:commit_changelog', 'exec:git_push:origin:master']);
+                        'exec:commit_changelog']);
     });
 
     /****************************************
