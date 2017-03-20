@@ -65,6 +65,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         self.default = False
 
         self._caps = False
+        self.use_tv_search = None
         self.cap_tv_search = None
         # self.cap_search = None
         # self.cap_movie_search = None
@@ -138,19 +139,18 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         if not data:
             return self._caps
 
-        def _parse_cap(tag):
-            result = ''
-            elm = data.find(tag)
-            if elm and elm.get('available') == 'yes':
-                result = elm.get('supportedparams', 'tvdbid,season,ep')
-            return result
+        # Override nzb.su - tvsearch without tvdbid, with q param
+        if 'nzb.su' in self.url:
+            self.use_tv_search = True
+            self.cap_tv_search = ''
+            self._caps = True
+            return  self._caps
 
-        self.cap_tv_search = _parse_cap('tv-search')
-        # self.cap_search = _parse_cap('search')
-        # self.cap_movie_search = _parse_cap('movie-search')
-        # self.cap_audio_search = _parse_cap('audio-search')
+        elm = data.find('tv-search')
+        self.use_tv_search = elm and elm.get('available') == 'yes'
+        if self.use_tv_search:
+            self.cap_tv_search = elm.get('supportedparams', 'tvdbid,season,ep')
 
-        # self.caps = any([self.cap_tv_search, self.cap_search, self.cap_movie_search, self.cap_audio_search])
         self._caps = any([self.cap_tv_search])
 
     def get_newznab_categories(self, just_caps=False):
@@ -193,10 +193,6 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                             return_categories.append({'id': subcat['id'], 'name': subcat['name']})
 
             return True, return_categories, ''
-
-        error_string = 'Error getting xml for [{0}]'.format(self.name)
-        logger.log(error_string, logger.WARNING)
-        return False, return_categories, error_string
 
     @staticmethod
     def _get_default_providers():
@@ -280,17 +276,17 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         if not self._check_auth():
             return results
 
-        # gingadaddy has no caps.
-        if not self.caps and 'gingadaddy' not in self.url:
-            self.get_newznab_categories(just_caps=True)
+        if 'gingadaddy' not in self.url:  # gingadaddy has no caps.
+            if not self.caps:
+                self.get_newznab_categories(just_caps=True)
 
-        if not self.caps and 'gingadaddy' not in self.url:
-            return results
+            if not self.caps:
+                return results
 
         for mode in search_strings:
             torznab = False
             search_params = {
-                't': 'tvsearch' if 'tvdbid' in str(self.cap_tv_search) else 'search',
+                't': ('search', 'tvsearch')[self.use_tv_search],
                 'limit': 100,
                 'offset': 0,
                 'cat': self.catIDs.strip(', ') or '5030,5040',
@@ -301,7 +297,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 search_params['apikey'] = self.key
 
             if mode != 'RSS':
-                if search_params['t'] == 'tvsearch':
+                if self.use_tv_search:
                     if 'tvdbid' in str(self.cap_tv_search):
                         search_params['tvdbid'] = ep_obj.show.indexerid
 
