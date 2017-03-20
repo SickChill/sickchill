@@ -227,14 +227,14 @@ module.exports = function(grunt) {
                 }
             },
             git_tag_new: {
-                cmd: function (sign=true) {
-                    sign = (sign === "true" ? '-s ' : '')
+                cmd: function (sign) {
+                    sign = (sign !== "true"?'':'-s ')
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: false
             },
             git_push: {
-                cmd: function (remote, branch, tags='false') {
+                cmd: function (remote, branch, tags) {
                     return 'git push ' + remote + ' ' + branch + (tags === 'true'?' --tags':'');
                 },
             },

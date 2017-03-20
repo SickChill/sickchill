@@ -350,17 +350,16 @@ class KeyHandler(RequestHandler):
 
 
 class LocaleFileHandler(StaticFileHandler):
-    """ Handles serving locale data on /locale/{lang_code}.(json|[pm]o) """
+    """ Handles serving locale data on /locale/messages.json for js-gettext """
     def initialize(self, path):
         """ Alter 'path' to replace {lang_code} with the requested lang (for example: en_US) """
-        self.abs_path = ek(os.path.normpath, path.format(lang_code=self.request.path.split('/')[-1].split('.')[0]))
+        self.abs_path = ek(os.path.normpath, path.format(lang_code=sickbeard.GUI_LANG))
         super(LocaleFileHandler, self).initialize(self.abs_path)
 
-    def get(self, lang_code=None, underscore_country_code=None, file_type=None, include_body=True):
-        """ Get messages.{file_type} file of the requested lang """
-        file_name = 'messsages.' + file_type
-        if (os.path.isfile(os.path.join(self.abs_path, file_name))):
-            super(LocaleFileHandler, self).get(file_name, include_body)
+    def get(self, path='messages.json', include_body=True):
+        """ Get messages.json of the requested lang """
+        if os.path.isfile(os.path.join(self.abs_path, path)):
+            super(LocaleFileHandler, self).get(path, include_body)
         else:
             raise HTTPError(404)
 
