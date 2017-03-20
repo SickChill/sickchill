@@ -207,13 +207,13 @@ module.exports = function(grunt) {
                 cmd: function (b) { return 'git checkout ' + b; },
             },
             git_pull: {
-                cmd: function (b) { return 'git pull ' + b; },
+                cmd: function (b) { return 'git pull' },
             },
             git_merge: {
                 cmd: function (b) { return 'git merge ' + b; },
             },
             git_get_last_tag: {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format %(refname:short) refs/tags',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
                 callback: function(err, stdout, stderr) {
                     grunt.config('last_tag', stdout.trim());
@@ -239,7 +239,7 @@ module.exports = function(grunt) {
                 },
             },
             git_list_tags: {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)$$$" refs/tags',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\\$$\\$" refs/tags',
                 stdout: false,
                 callback: function(err, stdout, stderr) {
                     var all_tags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
@@ -274,8 +274,8 @@ module.exports = function(grunt) {
     *  Sub-tasks of publish task            *
     ****************************************/
     grunt.registerTask('newrelease', "pull and merge develop to master, create and push a new release", [
-        'exec:git_checkout:develop', 'exec:git_pull:develop',
-        'exec:git_checkout:master', 'exec:git_pull:master', 'exec:git_merge:develop',
+        'exec:git_checkout:develop', 'exec:git_pull',
+        'exec:git_checkout:master', 'exec:git_pull', 'exec:git_merge:develop',
         'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag',
         'exec:git_tag_new', 'exec:git_push:origin:master:true']);
 
