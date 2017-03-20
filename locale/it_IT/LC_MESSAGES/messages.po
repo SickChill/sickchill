@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2017-03-20 06:59-0700\n"
-"PO-Revision-Date: 2017-03-20 10:01-0400\n"
+"PO-Revision-Date: 2017-03-20 14:13-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -335,7 +335,7 @@ msgstr "Principale"
 
 #: gui/slick/views/inc_home_showList.mako:27 sickbeard/show_queue.py:298
 msgid "Loading"
-msgstr ""
+msgstr "Caricamento"
 
 #: sickbeard/versionChecker.py:70
 msgid "New update found for SickRage, starting auto-updater"
@@ -4169,19 +4169,19 @@ msgstr "Non eliminare le cartelle vuote"
 
 #: gui/slick/views/config_postProcessing.mako:397
 msgid "leave empty folders when Post Processing?"
-msgstr ""
+msgstr "lasciare le cartelle vuote durante la Post-Elaborazione?"
 
 #: gui/slick/views/config_postProcessing.mako:402
 msgid "can be overridden using manual Post Processing"
-msgstr ""
+msgstr "può essere ignorato usando la Post-Elaborazione manuale"
 
 #: gui/slick/views/config_postProcessing.mako:411
 msgid "Follow symbolic-links"
-msgstr ""
+msgstr "Segui i link simbolici"
 
 #: gui/slick/views/config_postProcessing.mako:418
 msgid "follow down symbolic links in download directory?"
-msgstr ""
+msgstr "segui i link simbolici nella cartella di download?"
 
 #: gui/slick/views/config_postProcessing.mako:423
 msgid "<b>EXPERTS ONLY.</b><br>Enable only if you know what <b>circular symbolic links</b> are,<br>and can <b>verify that you have none</b>."
@@ -5409,7 +5409,7 @@ msgstr "Elimina sottotitoli indesiderati"
 
 #: gui/slick/views/config_subtitles.mako:194
 msgid "enable to delete unwanted subtitle languages bundled with release"
-msgstr ""
+msgstr "attiva per eliminare sottotitoli indesiderati rilasciati insieme all'episodio"
 
 #: gui/slick/views/config_subtitles.mako:202
 msgid "Embedded Subtitles"
@@ -5417,7 +5417,7 @@ msgstr "Sottotitoli incorporati"
 
 #: gui/slick/views/config_subtitles.mako:209
 msgid "ignore subtitles embedded inside video file?"
-msgstr ""
+msgstr "ignorare i sottotitoli incorporati all'interno di file video?"
 
 #: gui/slick/views/config_subtitles.mako:214
 msgid "this will ignore <u>all</u> embedded subtitles for every video file!"
@@ -5429,7 +5429,7 @@ msgstr "Sottotitoli per non udenti"
 
 #: gui/slick/views/config_subtitles.mako:227
 msgid "download hearing impaired style subtitles?"
-msgstr ""
+msgstr "scaricare i sottotitoli per non udenti?"
 
 #: gui/slick/views/config_subtitles.mako:247
 msgid "See"
@@ -5639,7 +5639,7 @@ msgstr "Seleziona colonne"
 
 #: gui/slick/views/displayShow.mako:408
 msgid "Hide Episodes"
-msgstr ""
+msgstr "Nascondi episodi"
 
 #: gui/slick/views/displayShow.mako:410
 msgid "Show Episodes"
@@ -5718,7 +5718,7 @@ msgstr "Scarica sottotitoli"
 
 #: gui/slick/views/displayShow.mako:616
 msgid "Do you want to re-download the subtitle for this language?"
-msgstr ""
+msgstr "Vuoi ri-scaricare i sottotitoli per questa lingua?"
 
 #: gui/slick/views/displayShow.mako:617
 msgid "It will overwrite your current subtitle"
@@ -5956,11 +5956,11 @@ msgstr "(cancella file e cartelle come nell'elaborazione automatica)"
 
 #: gui/slick/views/home_postprocess.mako:64
 msgid "Don't use processing queue"
-msgstr ""
+msgstr "Non usare la coda di elaborazione"
 
 #: gui/slick/views/home_postprocess.mako:68
 msgid "(If checked this will return the result of the process here, but may be slow!)"
-msgstr ""
+msgstr "(se selezionato ritornerà il risultato del processo, ma potrebbe essere lento)"
 
 #: gui/slick/views/home_postprocess.mako:74
 msgid "Mark download as failed"
@@ -5988,7 +5988,7 @@ msgstr "Stato dei futuri episodi"
 
 #: gui/slick/views/inc_addShowOptions.mako:71
 msgid "Group episodes by season folder?"
-msgstr ""
+msgstr "Raggruppa gli episodi rispetto alle cartelle per stagione?"
 
 #: gui/slick/views/inc_addShowOptions.mako:83
 msgid "Is this show an Anime?"
@@ -6044,7 +6044,7 @@ msgstr "Lista vietati"
 
 #: gui/slick/views/inc_blackwhitelist.mako:96
 msgid "Custom Group"
-msgstr ""
+msgstr "Gruppo personalizzato"
 
 #: gui/slick/views/inc_defs.mako:9
 msgid "Allowed Quality:"
@@ -6644,7 +6644,7 @@ msgstr "Tutte le stagioni"
 
 #: gui/slick/views/testRename.mako:49
 msgid "select all"
-msgstr ""
+msgstr "seleziona tutti"
 
 #: gui/slick/views/testRename.mako:54 gui/slick/views/testRename.mako:124
 msgid "Rename Selected"
@@ -6676,11 +6676,11 @@ msgstr "Rimuovere serie TV"
 
 #: gui/slick/views/viewlogs.mako:16
 msgid "Level"
-msgstr ""
+msgstr "Livello"
 
 #: gui/slick/views/viewlogs.mako:33
 msgid "Filter"
-msgstr ""
+msgstr "Filtro"
 
 #: gui/slick/views/layouts/config.mako:47
 msgid "All non-absolute folder locations are relative to "
