@@ -64,7 +64,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         self.default = False
 
-        self.caps = False
+        self._caps = False
         self.cap_tv_search = None
         # self.cap_search = None
         # self.cap_movie_search = None
@@ -81,7 +81,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     @staticmethod
-    def get_providers_list(data):
+    def providers_list(data):
         default_list = [x for x in (NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')) if x]
         providers_list = [x for x in (NewznabProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
@@ -113,7 +113,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 providers_dict[default.name].search_fallback = default.search_fallback
                 providers_dict[default.name].enable_daily = default.enable_daily
                 providers_dict[default.name].enable_backlog = default.enable_backlog
-                providers_dict[default.name].catIDs = default.catIDs
+                providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
+                                                                if 5000 <= try_int(x) <= 5999]) or default.catIDs
 
         return [x for x in providers_list if x]
 
@@ -128,9 +129,14 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return self.get_id() + '.png'
         return 'newznab.png'
 
-    def set_caps(self, data):
+    @property
+    def caps(self):
+        return self._caps
+
+    @caps.setter
+    def caps(self, data):
         if not data:
-            return
+            return self._caps
 
         def _parse_cap(tag):
             result = ''
@@ -145,7 +151,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         # self.cap_audio_search = _parse_cap('audio-search')
 
         # self.caps = any([self.cap_tv_search, self.cap_search, self.cap_movie_search, self.cap_audio_search])
-        self.caps = any([self.cap_tv_search])
+        self._caps = any([self.cap_tv_search])
 
     def get_newznab_categories(self, just_caps=False):
         """
@@ -175,7 +181,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 logger.log(error_string, logger.DEBUG)
                 return False, return_categories, error_string
 
-            self.set_caps(html.find('searching'))
+            self.caps = html.find('searching')
             if just_caps:
                 return True, return_categories, 'Just checking caps!'
 
@@ -296,7 +302,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
             if mode != 'RSS':
                 if search_params['t'] == 'tvsearch':
-                    search_params['tvdbid'] = ep_obj.show.indexerid
+                    if 'tvdbid' in str(self.cap_tv_search):
+                        search_params['tvdbid'] = ep_obj.show.indexerid
 
                     if ep_obj.show.air_by_date or ep_obj.show.sports:
                         date_str = str(ep_obj.airdate)
@@ -316,7 +323,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
 
-                    if search_params['t'] != 'tvsearch':
+                    if 'tvdbid' not in search_params:
                         search_params['q'] = search_string
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
@@ -371,7 +378,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                         except StandardError:
                             continue
 
-                # Since we arent using the search string,
+                # Since we aren't using the search string,
                 # break out of the search string loop
                 if 'tvdbid' in search_params:
                     break

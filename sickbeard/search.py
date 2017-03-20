@@ -380,7 +380,7 @@ def searchForNeededEpisodes():
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-        curProvider.cache.updateCache()
+        curProvider.cache.update_cache()
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
@@ -449,7 +449,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_backlog]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-        curProvider.cache.updateCache()
+        curProvider.cache.update_cache()
 
     threading.currentThread().name = origThreadName
 

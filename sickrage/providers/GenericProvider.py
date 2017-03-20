@@ -116,7 +116,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return False
 
     def find_propers(self, search_date=None):
-        results = self.cache.listPropers(search_date)
+        results = self.cache.list_propers(search_date)
 
         return [Proper(x[b'name'], x[b'url'], datetime.fromtimestamp(x[b'time']), self.show) for x in results]
 
@@ -130,8 +130,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         searched_scene_season = None
 
         for episode in episodes:
-            cache_result = self.cache.searchCache(episode, manualSearch=manual_search,
-                                                  downCurQuality=download_current_quality)
+            cache_result = self.cache.search_cache(episode, manualSearch=manual_search,
+                                                   downCurQuality=download_current_quality)
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result
@@ -263,7 +263,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 logger.log('Adding item from search to cache: {0}'.format(title), logger.DEBUG)
                 # pylint: disable=protected-access
                 # Access to a protected member of a client class
-                ci = self.cache._addCacheEntry(title, url, parse_result=parse_result)
+                ci = self.cache._add_cache_entry(title, url, parse_result=parse_result)
 
                 if ci is not None:
                     cl.append(ci)
@@ -317,7 +317,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         if cl:
             # pylint: disable=protected-access
             # Access to a protected member of a client class
-            cache_db = self.cache._getDB()
+            cache_db = self.cache._get_db()
             cache_db.mass_action(cl)
 
         return results
@@ -367,7 +367,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return re.sub(r'[^\w\d_]', '_', str(name).strip().lower())
 
     def search_rss(self, episodes):
-        return self.cache.findNeededEpisodes(episodes)
+        return self.cache.find_needed_episodes(episodes)
 
     def seed_ratio(self):  # pylint: disable=no-self-use
         return ''

@@ -168,10 +168,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
     @property
     def sort_name(self):
-        name = self.name
-        if not sickbeard.SORT_ARTICLE:
-            name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
-        return name.lower()
+        return helpers.sortable_name(self.name)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing

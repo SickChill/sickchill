@@ -115,7 +115,7 @@ sickbeard.NAMING_MULTI_EP = 1
 sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.get_providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
 sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))

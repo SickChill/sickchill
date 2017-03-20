@@ -166,15 +166,30 @@ class ConfigTestBasic(unittest.TestCase):
         CFG['General']['status_default'] = None
         # normal
         self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 30), 60)
+        self.assertEqual(CFG['General']['indexer_timeout'], 60)
+        # force min/max
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 150, 100, 200), 150)
+        self.assertEqual(CFG['General']['indexer_timeout'], 150)
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 250, 200, 300, False), 200)
+        self.assertEqual(CFG['General']['indexer_timeout'], 200)
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 90, 50, 100), 90)
+        self.assertEqual(CFG['General']['indexer_timeout'], 90)
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 20, 10, 30, False), 30)
+        self.assertEqual(CFG['General']['indexer_timeout'], 30)
         # true/false => int
         self.assertEqual(config.check_setting_int(CFG, 'General', 'use_icacls', 1), 1)
+        self.assertEqual(CFG['General']['use_icacls'], 'True')
         self.assertEqual(config.check_setting_int(CFG, 'General', 'use_nzbs', 0), 0)
+        self.assertEqual(CFG['General']['use_nzbs'], 'False')
         # None value type + silent off
         self.assertEqual(config.check_setting_int(CFG, 'General', 'status_default', 5, silent=False), 5)
+        self.assertEqual(CFG['General']['status_default'], 5)
         # unmatched section
         self.assertEqual(config.check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1), 1)
-        # wrong def_val type
-        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 'ba'), 60)
+        self.assertEqual(CFG['Subtitles']['subtitles_finder_frequency'], 1)
+        # wrong def_val/min/max type
+        self.assertEqual(config.check_setting_int(CFG, 'General', 'indexer_timeout', 'ba', 'min', 'max'), 30)
+        self.assertEqual(CFG['General']['indexer_timeout'], 30)
 
     def test_check_setting_float(self):
         """
@@ -183,16 +198,29 @@ class ConfigTestBasic(unittest.TestCase):
         # setup
         CFG = ConfigObj('config.ini', encoding='UTF-8')
         config.check_section(CFG, 'General')
-        CFG['General']['fanart_background_opacity'] = 0.2
+        CFG['General']['fanart_background_opacity'] = 0.5
         CFG['General']['log_size'] = None
         # normal
-        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.4), 0.2)
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.4), 0.5)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.5)
+        # force min/max
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.7, 0.6, 1.0), 0.7)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.7)
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.7, 0.8, 1.0, False), 0.8)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.8)
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.3, 0.1, 0.4), 0.3)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.3)
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 0.1, 0.1, 0.2, False), 0.2)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.2)
         # None value type + silent off
         self.assertEqual(config.check_setting_float(CFG, 'General', 'log_size', 10.0, silent=False), 10.0)
+        self.assertEqual(CFG['General']['log_size'], 10.0)
         # unmatched section
         self.assertEqual(config.check_setting_float(CFG, 'Kodi', 'log_size', 2.5), 2.5)
-        # wrong def_val type
-        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 'ba'), 0.2)
+        self.assertEqual(CFG['Kodi']['log_size'], 2.5)
+        # wrong def_val/min/max type
+        self.assertEqual(config.check_setting_float(CFG, 'General', 'fanart_background_opacity', 'ba', 'min', 'max'), 0.2)
+        self.assertEqual(CFG['General']['fanart_background_opacity'], 0.2)
 
     def test_check_setting_str(self):
         """
