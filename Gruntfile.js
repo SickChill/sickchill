@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             'exec:babel_compile',
             'po2json'
         ];
-        if(process.env['CROWDIN_API_KEY']) {
+        if(process.env['CROWDIN_API_KEY']) { // jshint ignore:line
             tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
         } else {
             grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        bower_concat: {
+        'bower_concat': {
             all: {
                 dest: {
                     js: './dist/bower.js',
@@ -200,73 +200,73 @@ module.exports = function(grunt) {
         },
         exec: {
             // Translations
-            babel_extract: {cmd: 'python setup.py extract_messages'},
-            babel_update: {cmd: 'python setup.py update_catalog'},
-            crowdin_upload: {cmd: 'crowdin-cli-py upload sources'},
-            crowdin_download: {cmd: 'crowdin-cli-py download'},
-            babel_compile: {cmd: 'python setup.py compile_catalog'},
+            'babel_extract': {cmd: 'python setup.py extract_messages'},
+            'babel_update': {cmd: 'python setup.py update_catalog'},
+            'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
+            'crowdin_download': {cmd: 'crowdin-cli-py download'},
+            'babel_compile': {cmd: 'python setup.py compile_catalog'},
 
             // Publish/Releases
-            git_checkout: {
-                cmd: function (b) { return 'git checkout ' + b; },
+            'git_checkout': {
+                cmd: function (b) { return 'git checkout ' + b; }
             },
-            git_pull: {
-                cmd: function (b) { return 'git pull' },
+            'git_pull': {
+                cmd: 'git pull'
             },
-            git_merge: {
+            'git_merge': {
                 cmd: function (b) { return 'git merge ' + b; },
             },
-            git_get_last_tag: {
+            'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
-                callback: function(err, stdout, stderr) {
+                callback: function(err, stdout) {
                     grunt.config('last_tag', stdout.trim());
                 }
             },
-            git_list_changes: {
-                cmd: 'git log --oneline ' + grunt.config('last_tag') + '..HEAD',
+            'git_list_changes': {
+                cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
-                callback: function(err, stdout, stderr) {
-                    console.log(grunt.config('last_tag'));
+                callback: function(err, stdout) {
                     grunt.config('commits', stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim()); // removes commit hashes
                 }
             },
-            git_tag_new: {
+            'git_tag_new': {
                 cmd: function (sign) {
-                    sign = (sign !== "true"?'':'-s ')
+                    sign = (sign !== "true"?'':'-s ');
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: false
             },
-            git_push: {
+            'git_push': {
                 cmd: function (remote, branch, tags) {
                     return 'git push ' + remote + ' ' + branch + (tags === 'true'?' --tags':'');
-                },
+                }
             },
-            git_list_tags: {
+            'git_list_tags': {
                 cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\\$$\\$" refs/tags',
                 stdout: false,
-                callback: function(err, stdout, stderr) {
-                    var all_tags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
-                    all_tags.splice(all_tags.length-1, 1); // There's an empty object at the end
-                    for (var i = 0; i < all_tags.length; i++) {
-                        var explode = all_tags[i].split('|||');
-                        all_tags[i] = {
+                callback: function(err, stdout) {
+                    var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
+                    allTags.splice(allTags.length-1, 1); // There's an empty object at the end
+                    for (var i = 0; i < allTags.length; i++) {
+                        var explode = allTags[i].split('|||');
+                        allTags[i] = {
                             tag: explode[0].trim(),
                             hash: explode[1].trim(),
                             message: explode[2].trim().split('\n'),
-                            previous: (i > 0 ? all_tags[i-1].tag : null)
+                            previous: (i > 0 ? allTags[i-1].tag : null)
                         };
                     }
-                    grunt.config('all_tags', all_tags);
+                    grunt.config('all_tags', allTags);
                 }
             },
-            commit_changelog: {
+            'commit_changelog': {
                 cmd: function() {
-                    file = grunt.config('changesmd_file');
-                    if (!file)
+                    var file = grunt.config('changesmd_file');
+                    if (!file) {
                         grunt.fatal('Missing file path.');
-                    path = file.substr(0, file.lastIndexOf('/', file.length-12)); // get sickrage.github.io folder
+                    }
+                    var path = file.substr(0, file.lastIndexOf('/', file.length-12)); // get sickrage.github.io folder
                     return 'cd ' + path +
                            ' && git commit -asm "Update changelog"';
                 },
@@ -285,39 +285,41 @@ module.exports = function(grunt) {
         'exec:git_tag_new', 'exec:git_push:origin:master:true']);
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
-        file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
-        if (!file)
+        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        if (!file) {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
-                        '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
+                '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
+        }
         grunt.config('changesmd_file', file);
         grunt.task.run(['exec:git_get_last_tag', 'exec:git_list_tags', '_genchanges',
-                        'exec:commit_changelog', 'exec:git_push:origin:master'])
+                        'exec:commit_changelog', 'exec:git_push:origin:master']);
     });
 
     /****************************************
     *  Internal tasks                       *
     *****************************************/
     grunt.registerTask('_get_next_tag', '(internal) do not run', function() {
-        function leading_zeros(number) {
+        function leadingZeros(number) {
             return ('0' + parseInt(number)).slice(-2);
         }
 
-        var last_tag = grunt.config('last_tag');
-        if (!last_tag)
+        var lastTag = grunt.config('last_tag');
+        if (!lastTag) {
             grunt.fatal('internal task');
+        }
 
-        last_tag = last_tag.split('v')[1].split('-');
-        var last_patch = last_tag[1];
-        last_tag = last_tag[0].split('.');
+        lastTag = lastTag.split('v')[1].split('-');
+        var lastPatch = lastTag[1];
+        lastTag = lastTag[0].split('.');
 
         var d = new Date();
         var year = d.getFullYear().toString();
-        var month = leading_zeros(d.getMonth() + 1);
-        var day = leading_zeros(d.getDate());
+        var month = leadingZeros(d.getMonth() + 1);
+        var day = leadingZeros(d.getDate());
         var patch = '1';
 
-        if (year === last_tag[0] && month === leading_zeros(last_tag[1]) && day === leading_zeros(last_tag[2])) {
-            patch = (parseInt(last_patch) + 1).toString();
+        if (year === lastTag[0] && month === leadingZeros(lastTag[1]) && day === leadingZeros(lastTag[2])) {
+            patch = (parseInt(lastPatch) + 1).toString();
         }
 
         grunt.config('next_tag', ('v' + year + '.' + month + '.' + day + '-' + patch));
@@ -325,17 +327,19 @@ module.exports = function(grunt) {
 
     grunt.registerTask('_genchanges', "(internal) do not run", function() {
         // actual generate changes
-        var current_tag = grunt.config('last_tag');
-        if (!current_tag)
+        var currentTag = grunt.config('last_tag');
+        if (!currentTag) {
             grunt.fatal('internal task');
-        var all_tags = grunt.config('all_tags');
-        if (!all_tags)
+        }
+        var allTags = grunt.config('all_tags');
+        if (!allTags) {
             grunt.fatal('internal task');
+        }
 
-        file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        var file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
 
-        contents = "";
-        all_tags.reverse().forEach(function(tag) {
+        var contents = "";
+        allTags.reverse().forEach(function(tag) {
             contents += '### ' + tag.tag + '\n';
             contents += '\n';
             if (tag.previous) {
