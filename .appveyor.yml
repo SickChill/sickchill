@@ -22,6 +22,17 @@ cache:
 build: off
 deploy: off
 version: "{build}"
+skip_branch_with_pr: true
+shallow_clone: true
+skip_tags: true
+max_jobs: 4
+clone_depth: 4
+
+init:
+  - ps: ../addons/appveyor/rolling-build.ps1
+
+matrix:
+  fast_finish: true
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
