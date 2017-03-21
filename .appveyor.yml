@@ -69,7 +69,7 @@ install:
   - ps: Install-Product node $env:7
   - set PATH=%APPDATA%\npm;%PATH%
   - npm -g install npm
-  - npm -g install bower-cli
+  - npm -g install grunt-cli
   - npm install
   - bower install
 
