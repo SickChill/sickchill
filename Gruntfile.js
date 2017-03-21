@@ -274,11 +274,11 @@ module.exports = function(grunt) {
                     if (!file) {
                         grunt.fatal('Missing file path.');
                     }
-                    var path = file.substr(0, file.lastIndexOf(/[\\/]/, file.length-12)); // get sickrage.github.io folder
-                    if (path) {
-                        return 'cd ' + path + ' && git commit -asm "Update changelog" && git push origin master';
+                    var path = file.slice(0, -24); // slices 'sickrage-news/CHANGES.md' (len=24)
+                    if (!path) {
+                        grunt.fatal('path = "' + path + '"');
                     }
-                    grunt.fatal('path = "' + path + '"');
+                    return 'cd ' + path + ' && git commit -asm "Update changelog" && git push origin master';
                 },
                 stdout: true
             }
@@ -367,7 +367,6 @@ module.exports = function(grunt) {
             grunt.file.write(file, contents);
             return true;
         }
-        grunt.warn('allTags = ' + allTags.reverse());
         grunt.fatal('Received no contents to write to file, aborting');
     });
 };
