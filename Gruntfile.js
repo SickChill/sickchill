@@ -347,7 +347,7 @@ module.exports = function(grunt) {
             }
             contents += '\n';
             tag.message.forEach(function (row) {
-                contents += '* ' + row + '\n';
+                contents += '* ' + row.replace(/^\(.*HEAD.*\)\s/, '') + '\n';
             });
             contents += '\n';
         });
