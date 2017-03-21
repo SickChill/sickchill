@@ -39,7 +39,7 @@ class imdbPopular(object):
         if not data:
             return None
 
-        soup = BeautifulSoup(data, 'html5lib')
+        soup = BeautifulSoup(data, 'html.parser')
         results = soup.find_all("div", {"class": "lister-item"})
 
         for row in results:
