@@ -67,8 +67,9 @@ install:
 
   # Install node/npm
   - ps: Install-Product node $env:7
-  - npm -g install npm bower-cli
   - set PATH=%APPDATA%\npm;%PATH%
+  - npm -g install npm
+  - npm -g install bower-cli
   - npm install
   - bower install
 
