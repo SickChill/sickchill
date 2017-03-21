@@ -243,7 +243,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\$\$\$" refs/tags',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)@@@" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
                     if (!stdout) {
@@ -252,7 +252,7 @@ module.exports = function(grunt) {
                     if (err) {
                         grunt.fatal('Git command failed to execute.');
                     }
-                    var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
+                    var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('@@@');
                     allTags.splice(allTags.length-1, 1); // There's an empty object at the end
                     for (var i = 0; i < allTags.length; i++) {
                         var explode = allTags[i].split('|||');
