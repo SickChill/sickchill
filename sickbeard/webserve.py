@@ -652,24 +652,32 @@ class UI(WebRoot):
                 return content.read()
         return None
 
+    def custom_css(self):
+        if sickbeard.CUSTOM_CSS_PATH and ek(os.path.isfile, sickbeard.CUSTOM_CSS_PATH):
+            self.set_header('Content-Type', 'text/css')
+            with open(sickbeard.CUSTOM_CSS_PATH, 'r') as content:
+                return content.read()
+        return None
+
 
 @route('/browser(/?.*)')
 class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
 
-    def index(self, path='', includeFiles=False, imagesOnly=False):  # pylint: disable=arguments-differ
+    def index(self, path='', includeFiles=False, imagesOnly=False, cssOnly=False):  # pylint: disable=arguments-differ
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
 
-        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), bool(int(imagesOnly))))
+        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), bool(int(imagesOnly)), bool(int(cssOnly))))
 
-    def complete(self, term, includeFiles=False, imagesOnly=False):
+    def complete(self, term, includeFiles=False, imagesOnly=False, cssOnly=False):
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
-        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)), imagesOnly=bool(int(imagesOnly)))
+        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)),
+                                                          imagesOnly=bool(int(imagesOnly)), cssOnly=bool(int(cssOnly)))
                  if 'path' in entry]
 
         return json.dumps(paths)
@@ -3958,7 +3966,8 @@ class ConfigGeneral(Config):
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
-            sickrage_background=None, sickrage_background_path=None, git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
+            sickrage_background=None, sickrage_background_path=None, custom_css=None, custom_css_path=None,
+            git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
             display_all_seasons=None, gui_language=None):
 
         results = []
@@ -4072,6 +4081,8 @@ class ConfigGeneral(Config):
         config.change_sickrage_background(sickrage_background_path)
         sickbeard.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
+        sickbeard.CUSTOM_CSS = config.checkbox_to_value(custom_css)
+        config.change_custom_css(custom_css_path)
 
         sickbeard.DEFAULT_PAGE = default_page
 

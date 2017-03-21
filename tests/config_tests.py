@@ -22,6 +22,7 @@ Methods
     change_https_key
     change_unrar_tool
     change_sickrage_background
+    change_custom_css
     change_log_dir
     change_nzb_dir
     change_torrent_dir
@@ -334,6 +335,21 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertTrue(config.change_sickrage_background(__file__))
         self.assertFalse(config.change_sickrage_background('not_real.jpg'))
         self.assertTrue(config.change_sickrage_background(''))
+
+    def test_change_custom_css(self):
+        """
+        Test change_custom_css
+        """
+        sickbeard.CUSTOM_CSS_PATH = ''  # Initialize
+        self.assertFalse(config.change_custom_css(__file__)) # not a css file
+        self.assertFalse(config.change_custom_css('not_real.jpg')) # doesn't exist
+        self.assertFalse(config.change_custom_css('sickrage_tests')) # isn't a file
+        css_file = os.path.join(os.path.dirname(__file__), 'custom.css')
+        with open(css_file, 'w') as f:
+            f.write('table.main {\n    width: 100%;\n}')
+        self.assertTrue(config.change_custom_css(css_file)) # real
+        os.remove(css_file)
+        self.assertTrue(config.change_custom_css('')) # empty
 
     def test_change_log_dir(self):
         """

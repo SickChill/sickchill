@@ -8,13 +8,14 @@
             autocompleteURL:   srRoot + '/browser/complete',
             includeFiles:      0,
             imagesOnly:        0,
+            cssOnly:           0,
             showBrowseButton:  true
         }
     };
 
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
-    function browse(path, endpoint, includeFiles, imagesOnly) {
+    function browse(path, endpoint, includeFiles, imagesOnly, cssOnly) {
         if (currentBrowserPath === path) {
             return;
         }
@@ -27,7 +28,8 @@
 
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
-        currentRequest = $.getJSON(endpoint, {path: path, includeFiles: includeFiles, imagesOnly: imagesOnly}, function (data) {
+        currentRequest = $.getJSON(endpoint,
+            {path: path, includeFiles: includeFiles, imagesOnly: imagesOnly, cssOnly: cssOnly}, function (data) {
             fileBrowserDialog.empty();
             var firstVal = data[0];
             var i = 0;
@@ -40,18 +42,18 @@
                 .val(firstVal.currentPath)
                 .on('keypress', function (e) {
                     if (e.which === 13) {
-                        browse(e.target.value, endpoint, includeFiles, imagesOnly);
+                        browse(e.target.value, endpoint, includeFiles, imagesOnly, cssOnly);
                     }
                 })
                 .appendTo(fileBrowserDialog)
                 .fileBrowser({showBrowseButton: false})
                 .on('autocompleteselect', function (e, ui) {
-                    browse(ui.item.value, endpoint, includeFiles, imagesOnly);
+                    browse(ui.item.value, endpoint, includeFiles, imagesOnly, cssOnly);
                 });
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                if (imagesOnly && entry.isFile && !entry.isImage) {
+                if (entry.isFile && (imagesOnly && !entry.isImage || cssOnly && !entry.isCSS)) {
                     return true;
                 }
                 link = $('<a href="javascript:void(0)">').on('click', function () {
@@ -59,7 +61,7 @@
                         currentBrowserPath = entry.path;
                         $('.browserDialog .ui-button:contains("Ok")').click();
                     } else {
-                        browse(entry.path, endpoint, includeFiles, imagesOnly);
+                        browse(entry.path, endpoint, includeFiles, imagesOnly, cssOnly);
                     }
                 }).text(entry.name);
                 if (entry.isImage) {
@@ -122,7 +124,7 @@
             initialDir = options.initialDir;
         }
 
-        browse(initialDir, options.url, options.includeFiles, options.imagesOnly);
+        browse(initialDir, options.url, options.includeFiles, options.imagesOnly, options.cssOnly);
         fileBrowserDialog.dialog('open');
 
         return false;

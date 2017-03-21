@@ -43,7 +43,7 @@ def getWinDrives():
     return drives
 
 
-def getFileList(path, includeFiles, imagesOnly):
+def getFileList(path, includeFiles, imagesOnly, cssOnly):
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hide_list = ['boot', 'bootmgr', 'cache', 'config.msi', 'msocache', 'recovery', '$recycle.bin',
                  'recycler', 'system volume information', 'temporary internet files']  # windows specific
@@ -63,20 +63,26 @@ def getFileList(path, includeFiles, imagesOnly):
 
         is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
 
+        is_css = filename.endswith('css')
+
         if is_file and imagesOnly and not is_image:
+            continue
+
+        if is_file and cssOnly and not is_css:
             continue
 
         file_list.append({
             'name': filename,
             'path': full_filename,
             'isFile': is_file,
-            'isImage': is_image
+            'isImage': is_image,
+            'isCSS': is_css
         })
 
     return file_list
 
 
-def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None):
+def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None, cssOnly=None):
     """
     Returns a list of dictionaries with the folders contained at the given path.
 
@@ -86,6 +92,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
     :param path: to list contents
     :param includeParent: boolean, include parent dir in list as well
     :param includeFiles: boolean, include files or only directories
+    :param imagesOnly: boolean, include only images
+    :param cssOnly: boolean, include only css files
     :return: list of folders/files
     """
 
@@ -116,10 +124,10 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
         parent_path = ''
 
     try:
-        file_list = getFileList(path, includeFiles, imagesOnly)
+        file_list = getFileList(path, includeFiles, imagesOnly, cssOnly)
     except OSError as e:
         logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
-        file_list = getFileList(parent_path, includeFiles, imagesOnly)
+        file_list = getFileList(parent_path, includeFiles, imagesOnly, cssOnly)
 
     file_list = sorted(file_list,
                        lambda x, y: ek(os.path.basename, x['name']).lower() < ek(os.path.basename, y['path']).lower())
