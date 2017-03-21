@@ -15,7 +15,7 @@ environment:
       PYTHON_ARCH: "64"
 
 cache:
-  - "%APPDATA%\npm"
+  - "%APPDATA%\\npm"
   - node_modules
   - bower_components
 
