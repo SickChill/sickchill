@@ -269,7 +269,6 @@ module.exports = function(grunt) {
                     }
                     if (foundTags.length) {
                         grunt.config('all_tags', foundTags);
-                        console.log(foundTags);
                     }
                 }
             },
