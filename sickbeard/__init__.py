@@ -2118,7 +2118,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'join_notify_ondownload': int(JOIN_NOTIFY_ONDOWNLOAD),
             'join_notify_onsubtitledownload': int(JOIN_NOTIFY_ONSUBTITLEDOWNLOAD),
             'join_id': JOIN_ID,
-            'join_id': JOIN_APIKEY,
+            'join_apikey': JOIN_APIKEY,
         },
 
         'Prowl': {
