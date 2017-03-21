@@ -15,8 +15,9 @@ environment:
       PYTHON_ARCH: "64"
 
 cache:
-  - c:\python27\lib\site-packages
+  # - c:\python27\lib\site-packages
   - "%APPDATA%\\npm"
+  - .tox
   - node_modules
   - bower_components
 
