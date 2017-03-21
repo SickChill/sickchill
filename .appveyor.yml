@@ -28,9 +28,6 @@ skip_tags: true
 max_jobs: 4
 clone_depth: 4
 
-init:
-  - ps: ../addons/appveyor/rolling-build.ps1
-
 matrix:
   fast_finish: true
 
