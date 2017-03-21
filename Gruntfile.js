@@ -243,7 +243,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\\$$\\$" refs/tags',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\$\$\$" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
                     var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
