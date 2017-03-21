@@ -33,8 +33,8 @@ cache:
 after_failure:
   - cat ./Logs/sickrage.log
 
-#notifications:
-#  irc: "irc.freenode.net#sickrage-builds"
-#  email:
-#    on_success: change
-#    on_failure: change
+notifications:
+  irc: "irc.freenode.net#sickrage-builds"
+  email:
+    on_success: change
+    on_failure: change
