@@ -253,18 +253,23 @@ module.exports = function(grunt) {
                         grunt.fatal('Git command failed to execute.');
                     }
                     var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('@@@');
-                    allTags.splice(allTags.length-1, 1); // There's an empty object at the end
+                    var foundTags = [];
                     for (var i = 0; i < allTags.length; i++) {
-                        var explode = allTags[i].split('|||');
-                        allTags[i] = {
-                            tag: explode[0].trim(),
-                            hash: explode[1].trim(),
-                            message: explode[2].trim().split('\n'),
-                            previous: (i > 0 ? allTags[i-1].tag : null)
-                        };
+                        if (allTags[i].length) {
+                            var explode = allTags[i].split('|||');
+                            if (explode[0] && explode[1] && explode[2]) {
+                                foundTags.push({
+                                    tag: explode[0].trim(),
+                                    hash: explode[1].trim(),
+                                    message: explode[2].trim().split('\n'),
+                                    previous: (foundTags.length ? foundTags[foundTags.length - 1].tag : null)
+                                });
+                            }
+                        }
                     }
-                    if (allTags.length) {
-                        grunt.config('all_tags', allTags);
+                    if (foundTags.length) {
+                        grunt.config('all_tags', foundTags);
+                        console.log(foundTags);
                     }
                 }
             },
