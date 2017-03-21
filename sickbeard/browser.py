@@ -132,6 +132,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=[]):
 
     file_list = sorted(file_list,
                        lambda x, y: ek(os.path.basename, x['name']).lower() < ek(os.path.basename, y['path']).lower())
+    file_list = [x for x in file_list if not x['isFile']] + [x for x in file_list if x['isFile']]  # folders first
 
     entries = [{'currentPath': path}]
     if includeParent and parent_path != path:
