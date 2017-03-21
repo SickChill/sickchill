@@ -27,6 +27,8 @@ import stat
 import threading
 import traceback
 
+from unidecode import unidecode
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -164,7 +166,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
     @property
     def network_logo_name(self):
-        return self.network.replace('\u00C9', 'e').replace('\u00E9', 'e').lower()
+        return unidecode(self.network).lower()
 
     @property
     def sort_name(self):

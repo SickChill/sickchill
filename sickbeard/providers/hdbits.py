@@ -60,9 +60,8 @@ class HDBitsProvider(TorrentProvider):
 
     def _checkAuthFromData(self, parsedJSON):
 
-        if 'status' in parsedJSON and 'message' in parsedJSON:
-            if parsedJSON.get('status') == 5:
-                logger.log("Invalid username or password. Check your settings", logger.WARNING)
+        if 'status' in parsedJSON and 'message' in parsedJSON and parsedJSON.get('status') == 5:
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -119,10 +118,9 @@ class HDBitsProvider(TorrentProvider):
                     except Exception:
                         result_date = None
 
-                    if result_date:
-                        if not search_date or result_date > search_date:
-                            title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date, self.show))
+                    if result_date and (not search_date or result_date > search_date):
+                        title, url = self._get_title_and_url(item)
+                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
