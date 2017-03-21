@@ -62,7 +62,7 @@ install:
 
 test_script:
   - grunt travis
-  - tox -v --recreate
+  - tox -v --recreate -c tox-win.ini
 
 before_test:
   - echo Starting Tests
