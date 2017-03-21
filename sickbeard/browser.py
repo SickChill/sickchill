@@ -84,7 +84,7 @@ def getFileList(path, includeFiles, fileTypes):
     return file_list
 
 
-def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=[]):
+def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None):
     """
     Returns a list of dictionaries with the folders contained at the given path.
 
@@ -123,6 +123,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=[]):
     # if we're at the root then the next step is the meta-node showing our drive letters
     if path == parent_path and os.name == 'nt':
         parent_path = ''
+
+    fileTypes = fileTypes or []
 
     try:
         file_list = getFileList(path, includeFiles, fileTypes)
