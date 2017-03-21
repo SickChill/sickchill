@@ -7,15 +7,14 @@
             url:               srRoot + '/browser/',
             autocompleteURL:   srRoot + '/browser/complete',
             includeFiles:      0,
-            imagesOnly:        0,
-            cssOnly:           0,
+            fileTypes:         [], // file extensions to include, 'images' is an alias for image types
             showBrowseButton:  true
         }
     };
 
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
-    function browse(path, endpoint, includeFiles, imagesOnly, cssOnly) {
+    function browse(path, endpoint, includeFiles, fileTypes) {
         if (currentBrowserPath === path) {
             return;
         }
@@ -29,7 +28,7 @@
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
         currentRequest = $.getJSON(endpoint,
-            {path: path, includeFiles: includeFiles, imagesOnly: imagesOnly, cssOnly: cssOnly}, function (data) {
+            {path: path, includeFiles: includeFiles, fileTypes: fileTypes.join(',')}, function (data) {
             fileBrowserDialog.empty();
             var firstVal = data[0];
             var i = 0;
@@ -42,18 +41,19 @@
                 .val(firstVal.currentPath)
                 .on('keypress', function (e) {
                     if (e.which === 13) {
-                        browse(e.target.value, endpoint, includeFiles, imagesOnly, cssOnly);
+                        browse(e.target.value, endpoint, includeFiles, fileTypes);
                     }
                 })
                 .appendTo(fileBrowserDialog)
                 .fileBrowser({showBrowseButton: false})
                 .on('autocompleteselect', function (e, ui) {
-                    browse(ui.item.value, endpoint, includeFiles, imagesOnly, cssOnly);
+                    browse(ui.item.value, endpoint, includeFiles, fileTypes);
                 });
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                if (entry.isFile && (imagesOnly && !entry.isImage || cssOnly && !entry.isCSS)) {
+                if (entry.isFile && fileTypes &&
+                    (!entry.isAllowed || fileTypes.indexOf("images") !== -1 && !entry.isImage)) {
                     return true;
                 }
                 link = $('<a href="javascript:void(0)">').on('click', function () {
@@ -61,7 +61,7 @@
                         currentBrowserPath = entry.path;
                         $('.browserDialog .ui-button:contains("Ok")').click();
                     } else {
-                        browse(entry.path, endpoint, includeFiles, imagesOnly, cssOnly);
+                        browse(entry.path, endpoint, includeFiles, fileTypes);
                     }
                 }).text(entry.name);
                 if (entry.isImage) {
@@ -124,7 +124,7 @@
             initialDir = options.initialDir;
         }
 
-        browse(initialDir, options.url, options.includeFiles, options.imagesOnly, options.cssOnly);
+        browse(initialDir, options.url, options.includeFiles, options.fileTypes);
         fileBrowserDialog.dialog('open');
 
         return false;

@@ -43,7 +43,7 @@ def getWinDrives():
     return drives
 
 
-def getFileList(path, includeFiles, imagesOnly, cssOnly):
+def getFileList(path, includeFiles, fileTypes):
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hide_list = ['boot', 'bootmgr', 'cache', 'config.msi', 'msocache', 'recovery', '$recycle.bin',
                  'recycler', 'system volume information', 'temporary internet files']  # windows specific
@@ -61,28 +61,30 @@ def getFileList(path, includeFiles, imagesOnly, cssOnly):
         if not includeFiles and is_file:
             continue
 
-        is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
+        is_image = False
+        allowed_type = True
+        if is_file and fileTypes:
+            allowed_type = False
+            if 'images' in fileTypes:
+                allowed_type = is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
+            else:
+                allowed_type = filename.endswith(tuple(fileTypes))
 
-        is_css = filename.endswith('css')
-
-        if is_file and imagesOnly and not is_image:
-            continue
-
-        if is_file and cssOnly and not is_css:
-            continue
+            if not allowed_type:
+                continue
 
         file_list.append({
             'name': filename,
             'path': full_filename,
             'isFile': is_file,
             'isImage': is_image,
-            'isCSS': is_css
+            'isAllowed': allowed_type
         })
 
     return file_list
 
 
-def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None, cssOnly=None):
+def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=[]):
     """
     Returns a list of dictionaries with the folders contained at the given path.
 
@@ -92,8 +94,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
     :param path: to list contents
     :param includeParent: boolean, include parent dir in list as well
     :param includeFiles: boolean, include files or only directories
-    :param imagesOnly: boolean, include only images
-    :param cssOnly: boolean, include only css files
+    :param fileTypes: list, file extensions to include, 'images' is an alias for image types
     :return: list of folders/files
     """
 
@@ -124,10 +125,10 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, imagesOnly=None
         parent_path = ''
 
     try:
-        file_list = getFileList(path, includeFiles, imagesOnly, cssOnly)
+        file_list = getFileList(path, includeFiles, fileTypes)
     except OSError as e:
         logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
-        file_list = getFileList(parent_path, includeFiles, imagesOnly, cssOnly)
+        file_list = getFileList(parent_path, includeFiles, fileTypes)
 
     file_list = sorted(file_list,
                        lambda x, y: ek(os.path.basename, x['name']).lower() < ek(os.path.basename, y['path']).lower())

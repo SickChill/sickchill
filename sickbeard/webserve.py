@@ -665,19 +665,19 @@ class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
 
-    def index(self, path='', includeFiles=False, imagesOnly=False, cssOnly=False):  # pylint: disable=arguments-differ
+    def index(self, path='', includeFiles=False, fileTypes=''):  # pylint: disable=arguments-differ
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
 
-        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), bool(int(imagesOnly)), bool(int(cssOnly))))
+        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), fileTypes.split(',')))
 
-    def complete(self, term, includeFiles=False, imagesOnly=False, cssOnly=False):
+    def complete(self, term, includeFiles=False, fileTypes=''):
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
         paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)),
-                                                          imagesOnly=bool(int(imagesOnly)), cssOnly=bool(int(cssOnly)))
+                                                          fileTypes=fileTypes.split(','))
                  if 'path' in entry]
 
         return json.dumps(paths)
