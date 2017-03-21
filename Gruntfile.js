@@ -243,9 +243,15 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\\$$\\$" refs/tags',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\$\$\$" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
+                    if (!stdout) {
+                        grunt.fatal('Git command returned no data.');
+                    }
+                    if (err) {
+                        grunt.fatal('Git command failed to execute.');
+                    }
                     var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('$$$');
                     allTags.splice(allTags.length-1, 1); // There's an empty object at the end
                     for (var i = 0; i < allTags.length; i++) {
@@ -257,7 +263,9 @@ module.exports = function(grunt) {
                             previous: (i > 0 ? allTags[i-1].tag : null)
                         };
                     }
-                    grunt.config('all_tags', allTags);
+                    if (allTags.length) {
+                        grunt.config('all_tags', allTags);
+                    }
                 }
             },
             'commit_changelog': {
@@ -266,7 +274,10 @@ module.exports = function(grunt) {
                     if (!file) {
                         grunt.fatal('Missing file path.');
                     }
-                    var path = file.substr(0, file.lastIndexOf('/', file.length-12)); // get sickrage.github.io folder
+                    var path = file.slice(0, -24); // slices 'sickrage-news/CHANGES.md' (len=24)
+                    if (!path) {
+                        grunt.fatal('path = "' + path + '"');
+                    }
                     return 'cd ' + path + ' && git commit -asm "Update changelog" && git push origin master';
                 },
                 stdout: true
@@ -328,11 +339,11 @@ module.exports = function(grunt) {
         // actual generate changes
         var currentTag = grunt.config('last_tag');
         if (!currentTag) {
-            grunt.fatal('internal task');
+            grunt.fatal('No current tag information was received.');
         }
         var allTags = grunt.config('all_tags');
         if (!allTags) {
-            grunt.fatal('internal task');
+            grunt.fatal('No tags information was received.');
         }
 
         var file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
@@ -347,7 +358,7 @@ module.exports = function(grunt) {
             }
             contents += '\n';
             tag.message.forEach(function (row) {
-                contents += '* ' + row + '\n';
+                contents += '* ' + row.replace(/^\(.*HEAD.*\)\s/, '') + '\n';
             });
             contents += '\n';
         });
@@ -356,6 +367,6 @@ module.exports = function(grunt) {
             grunt.file.write(file, contents);
             return true;
         }
-        return false;
+        grunt.fatal('Received no contents to write to file, aborting');
     });
 };
