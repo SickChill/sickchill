@@ -524,8 +524,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
-        if parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers) or
-                                         parse_result.air_date) and parse_result.release_group:
+        if (parse_result.series_name and ((parse_result.season_number is not None and parse_result.episode_numbers)
+            or parse_result.air_date) and parse_result.release_group):
 
             if not self.release_name:
                 self.release_name = helpers.remove_non_release_groups(remove_extension(ek(os.path.basename, parse_result.original_name)))
@@ -1027,13 +1027,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 "This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
-        if sickbeard.USE_FREE_SPACE_CHECK:
-            if not helpers.is_file_locked(self.file_path):
-                if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
-                    self._log("Not enough space to continue PP, exiting", logger.WARNING)
-                    return False
-            else:
-                self._log("Unable to determine needed file space as the source file is locked for access")
+        if sickbeard.USE_FREE_SPACE_CHECK and not helpers.is_file_locked(self.file_path):
+            if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
+                self._log("Not enough space to continue PP, exiting", logger.WARNING)
+                return False
+        else:
+            self._log("Unable to determine needed file space as the source file is locked for access")
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:

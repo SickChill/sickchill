@@ -133,19 +133,18 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     for index, column in enumerate(columns):
                         lbl = column.get_text(strip=True)
                         if lbl:
-                          labels.append(str(lbl))
+                            labels.append(str(lbl))
                         else:
-                          lbl = column.find("img")
-                          if lbl:
-                            if lbl.has_attr("alt"):
-                              lbl = lbl['alt']
-                              labels.append(str(lbl))
-                          else:
-                            if index == 3:
-                              lbl = "Download"
+                            lbl = column.find("img")
+                            if lbl and lbl.has_attr("alt"):
+                                lbl = lbl['alt']
+                                labels.append(str(lbl))
                             else:
-                              lbl = str(index)
-                            labels.append(lbl)
+                                if index == 3:
+                                    lbl = "Download"
+                                else:
+                                    lbl = str(index)
+                                labels.append(lbl)
 
                     # Skip column headers
                     for result in torrent_rows:

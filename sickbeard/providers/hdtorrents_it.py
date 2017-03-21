@@ -93,14 +93,14 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % quote_plus(search_string)
-                    logger.log("Search string: %s" % search_string, logger.DEBUG)
+                    logger.log("Search string: {}".format(search_string), logger.DEBUG)
                 else:
                     search_url = self.urls['rss']
 
                 if self.freeleech:
                     search_url = search_url.replace('active=1', 'active=5')
 
-                logger.log("Search URL: %s" % search_url, logger.DEBUG)
+                logger.log("Search URL: {}".format(search_url), logger.DEBUG)
 
                 data = self.get_url(search_url)
                 if not data or 'Error' in data:
@@ -176,7 +176,7 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log("Found result: %s with %s seeders and %s leechers" % (title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

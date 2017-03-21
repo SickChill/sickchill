@@ -350,14 +350,18 @@ class KeyHandler(RequestHandler):
 
 
 class LocaleFileHandler(StaticFileHandler):
-    """ Handles serving locale data on /locale/{lang_code}.(json|po|mo) """
+    """ Handles serving locale data on /locale/messages.json for js-gettext """
     def initialize(self, path):
         """ Alter 'path' to replace {lang_code} with the requested lang (for example: en_US) """
-        super(LocaleFileHandler, self).initialize(path.format(lang_code=self.request.path.split('/')[-1].split('.')[0]))
+        self.abs_path = ek(os.path.normpath, path.format(lang_code=sickbeard.GUI_LANG))
+        super(LocaleFileHandler, self).initialize(self.abs_path)
 
-    def get(self, path=None, file_type=None, include_body=True):
-        """ Ignore 'path' and get file messages.{file_type} of the requested lang """
-        super(LocaleFileHandler, self).get('messages.' + file_type, include_body)
+    def get(self, path='messages.json', include_body=True):
+        """ Get messages.json of the requested lang """
+        if os.path.isfile(os.path.join(self.abs_path, path)):
+            super(LocaleFileHandler, self).get(path, include_body)
+        else:
+            raise HTTPError(404)
 
 
 @route('(.*)(/?)')
@@ -728,16 +732,23 @@ class Home(WebRoot):
                         anime.append(show)
                     else:
                         shows.append(show)
-            showlists = [["Shows", shows], ["Anime", anime]]
+
+            sortedShowLists = [
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))],
+                ["Anime", sorted(anime, key=lambda mbr: attrgetter('sort_name')(mbr))]
+            ]
         else:
             shows = []
             for show in sickbeard.showList:
                 if selected_root_dir in show._location:
                     shows.append(show)
-            showlists = [["Shows", shows]]
+
+            sortedShowLists = [
+                ["Shows", sorted(shows, key=lambda mbr: attrgetter('sort_name')(mbr))]
+            ]
 
         stats = self.show_statistics()
-        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", showlists=showlists, show_stat=stats[
+        return t.render(title=_("Home"), header=_("Show List"), topmenu="home", sortedShowLists=sortedShowLists, show_stat=stats[
             0], max_download_count=stats[1], controller="home", action="index", selected_root=selected_root or '-1')
 
     @staticmethod
@@ -1350,29 +1361,29 @@ class Home(WebRoot):
 
         show_message = ''
 
-        if sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
+        if sickbeard.showQueueScheduler.action.is_being_added(show_obj):
             show_message = _('This show is in the process of being downloaded - the info below is incomplete.')
 
-        elif sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
             show_message = _('The information on this page is in the process of being updated.')
 
-        elif sickbeard.showQueueScheduler.action.isBeingRefreshed(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_being_refreshed(show_obj):
             show_message = _('The episodes below are currently being refreshed from disk')
 
-        elif sickbeard.showQueueScheduler.action.isBeingSubtitled(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
             show_message = _('Currently downloading subtitles for this show')
 
-        elif sickbeard.showQueueScheduler.action.isInRefreshQueue(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_in_refresh_queue(show_obj):
             show_message = _('This show is queued to be refreshed.')
 
-        elif sickbeard.showQueueScheduler.action.isInUpdateQueue(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_in_update_queue(show_obj):
             show_message = _('This show is queued and awaiting an update.')
 
-        elif sickbeard.showQueueScheduler.action.isInSubtitleQueue(show_obj):
+        elif sickbeard.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
             show_message = _('This show is queued and awaiting subtitles download.')
 
-        if not sickbeard.showQueueScheduler.action.isBeingAdded(show_obj):
-            if not sickbeard.showQueueScheduler.action.isBeingUpdated(show_obj):
+        if not sickbeard.showQueueScheduler.action.is_being_added(show_obj):
+            if not sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
                 if show_obj.paused:
                     submenu.append({'title': _('Resume'), 'path': 'home/togglePause?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-play'})
                 else:
@@ -1391,7 +1402,7 @@ class Home(WebRoot):
 
                 submenu.append({'title': _('Preview Rename'), 'path': 'home/testRename?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-tag'})
 
-                if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.showQueueScheduler.action.isBeingSubtitled(show_obj):
+                if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
                     submenu.append({'title': _('Download Subtitles'), 'path': 'home/subtitleShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-language'})
 
         epCounts = {
@@ -1618,7 +1629,7 @@ class Home(WebRoot):
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
                 try:
-                    sickbeard.showQueueScheduler.action.refreshShow(show_obj)
+                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh this show: {error}").format(error=e))
 
@@ -1653,7 +1664,7 @@ class Home(WebRoot):
                     try:
                         show_obj.location = location
                         try:
-                            sickbeard.showQueueScheduler.action.refreshShow(show_obj)
+                            sickbeard.showQueueScheduler.action.refresh_show(show_obj)
                         except CantRefreshShowException as e:
                             errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB
@@ -1669,7 +1680,7 @@ class Home(WebRoot):
         # force the update
         if do_update:
             try:
-                sickbeard.showQueueScheduler.action.updateShow(show_obj, True)
+                sickbeard.showQueueScheduler.action.update_show(show_obj, True)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
@@ -1757,7 +1768,7 @@ class Home(WebRoot):
 
         # force the update
         try:
-            sickbeard.showQueueScheduler.action.updateShow(show_obj, bool(force))
+            sickbeard.showQueueScheduler.action.update_show(show_obj, bool(force))
         except CantUpdateShowException as e:
             ui.notifications.error(_("Unable to update this show."), ex(e))
 
@@ -2864,7 +2875,7 @@ class HomeAddShows(Home):
         show_dir = None
 
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
             season_folders=season_folders, lang=indexer_lang, subtitles=subtitles, subtitles_sr_metadata=None,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -2984,7 +2995,7 @@ class HomeAddShows(Home):
         newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
 
         # add the show
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
             season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -3052,7 +3063,7 @@ class HomeAddShows(Home):
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.addShow(
+                sickbeard.showQueueScheduler.action.add_show(
                     indexer, indexer_id, show_dir,
                     default_status=sickbeard.STATUS_DEFAULT,
                     quality=sickbeard.QUALITY_DEFAULT,
@@ -3559,18 +3570,18 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in toDelete:
-                sickbeard.showQueueScheduler.action.removeShow(show_obj, True)
+                sickbeard.showQueueScheduler.action.remove_show(show_obj, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in toRemove:
-                sickbeard.showQueueScheduler.action.removeShow(show_obj)
+                sickbeard.showQueueScheduler.action.remove_show(show_obj)
                 # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
                 try:
-                    sickbeard.showQueueScheduler.action.updateShow(show_obj, True)
+                    sickbeard.showQueueScheduler.action.update_show(show_obj, True)
                     updates.append(show_obj.name)
                 except CantUpdateShowException as e:
                     errors.append(_("Unable to update show: {excption_format}").format(excption_format=e))
@@ -3578,13 +3589,13 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
-                    sickbeard.showQueueScheduler.action.refreshShow(show_obj)
+                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
                     refreshes.append(show_obj.name)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh show {show_name}: {excption_format}").format(show_name=show_obj.name, excption_format=e))
 
             if curShowID in toRename:
-                sickbeard.showQueueScheduler.action.renameShowEpisodes(show_obj)
+                sickbeard.showQueueScheduler.action.rename_show_episodes(show_obj)
                 renames.append(show_obj.name)
 
             if curShowID in toSubtitle:
@@ -3989,13 +4000,12 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
-        git_credentials_changed = sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN != git_auth_type, git_username, git_password, git_token
         sickbeard.GIT_AUTH_TYPE = int(git_auth_type)
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
         sickbeard.GIT_TOKEN = git_token
 
-        if git_credentials_changed:
+        if (sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN) != (git_auth_type, git_username, git_password, git_token):
             # Re-Initializes sickbeard.gh, so a restart isn't necessary
             setup_github()
 
@@ -4012,7 +4022,9 @@ class ConfigGeneral(Config):
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         # sickbeard.LOG_DIR is set in config.change_log_dir()
-        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(try_int(coming_eps_missed_range), 7, 0, 42810),
+
+        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
+
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
@@ -4036,7 +4048,7 @@ class ConfigGeneral(Config):
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
-            sickbeard.TIME_PRESET = sickbeard.TIME_PRESET_W_SECONDS.replace(":%S", "")
+            sickbeard.TIME_PRESET = time_preset.replace(":%S", "")
 
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 

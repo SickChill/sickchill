@@ -52,7 +52,7 @@ name_sports_presets = (
 )
 
 
-class TVShow(object):  # pylint: disable=too-few-public-methods
+class TVShow(object):
     def __init__(self):
         self.name = "Show Name"
         self.genre = "Comedy"
@@ -62,41 +62,29 @@ class TVShow(object):  # pylint: disable=too-few-public-methods
         self.anime = 0
         self.scene = 0
 
-    def _is_anime(self):
+    @property
+    def is_anime(self):
         """
         Find out if show is anime
         :return: True if show is anime, False if not
         """
-        if self.anime > 0:
-            return True
-        else:
-            return False
+        return self.anime > 0
 
-    is_anime = property(_is_anime)
-
-    def _is_sports(self):
+    @property
+    def is_sports(self):
         """
         Find out if show is sports
         :return: True if show is sports, False if not
         """
-        if self.sports > 0:
-            return True
-        else:
-            return False
+        return self.sports > 0
 
-    is_sports = property(_is_sports)
-
-    def _is_scene(self):
+    @property
+    def is_scene(self):
         """
         Find out if show is scene numbering
         :return: True if show is scene numbering, False if not
         """
-        if self.scene > 0:
-            return True
-        else:
-            return False
-
-    is_scene = property(_is_scene)
+        return self.scene > 0
 
 
 class TVEpisode(tv.TVEpisode):  # pylint: disable=too-many-instance-attributes
@@ -223,14 +211,13 @@ def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-m
 
     logger.log("The name " + new_name + " parsed into " + str(result), logger.DEBUG)
 
-    if abd or sports:
-        if result.air_date != ep.airdate:
-            logger.log("Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
-    elif anime_type != 3:
-        if len(result.ab_episode_numbers) and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]:
-            logger.log("Absolute numbering incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
+    if abd or sports and result.air_date != ep.airdate:
+        logger.log("Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
+        return False
+    elif (anime_type != 3 and len(result.ab_episode_numbers)
+          and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]):
+        logger.log("Absolute numbering incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
+        return False
     else:
         if result.season_number != ep.season:
             logger.log("Season number incorrect in parsed episode, pattern isn't valid", logger.DEBUG)

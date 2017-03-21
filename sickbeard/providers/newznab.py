@@ -64,7 +64,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         self.default = False
 
-        self.caps = False
+        self._caps = False
+        self.use_tv_search = None
         self.cap_tv_search = None
         # self.cap_search = None
         # self.cap_movie_search = None
@@ -81,7 +82,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     @staticmethod
-    def get_providers_list(data):
+    def providers_list(data):
         default_list = [x for x in (NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')) if x]
         providers_list = [x for x in (NewznabProvider._make_provider(x) for x in data.split('!!!')) if x]
         seen_values = set()
@@ -129,24 +130,28 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return self.get_id() + '.png'
         return 'newznab.png'
 
-    def set_caps(self, data):
+    @property
+    def caps(self):
+        return self._caps
+
+    @caps.setter
+    def caps(self, data):
         if not data:
-            return
+            return self._caps
 
-        def _parse_cap(tag):
-            result = ''
-            elm = data.find(tag)
-            if elm and elm.get('available') == 'yes':
-                result = elm.get('supportedparams', 'tvdbid,season,ep')
-            return result
+        # Override nzb.su - tvsearch without tvdbid, with q param
+        if 'nzb.su' in self.url:
+            self.use_tv_search = True
+            self.cap_tv_search = ''
+            self._caps = True
+            return  self._caps
 
-        self.cap_tv_search = _parse_cap('tv-search')
-        # self.cap_search = _parse_cap('search')
-        # self.cap_movie_search = _parse_cap('movie-search')
-        # self.cap_audio_search = _parse_cap('audio-search')
+        elm = data.find('tv-search')
+        self.use_tv_search = elm and elm.get('available') == 'yes'
+        if self.use_tv_search:
+            self.cap_tv_search = elm.get('supportedparams', 'tvdbid,season,ep')
 
-        # self.caps = any([self.cap_tv_search, self.cap_search, self.cap_movie_search, self.cap_audio_search])
-        self.caps = any([self.cap_tv_search])
+        self._caps = any([self.cap_tv_search])
 
     def get_newznab_categories(self, just_caps=False):
         """
@@ -176,7 +181,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 logger.log(error_string, logger.DEBUG)
                 return False, return_categories, error_string
 
-            self.set_caps(html.find('searching'))
+            self.caps = html.find('searching')
             if just_caps:
                 return True, return_categories, 'Just checking caps!'
 
@@ -188,10 +193,6 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                             return_categories.append({'id': subcat['id'], 'name': subcat['name']})
 
             return True, return_categories, ''
-
-        error_string = 'Error getting xml for [{0}]'.format(self.name)
-        logger.log(error_string, logger.WARNING)
-        return False, return_categories, error_string
 
     @staticmethod
     def _get_default_providers():
@@ -275,17 +276,17 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         if not self._check_auth():
             return results
 
-        # gingadaddy has no caps.
-        if not self.caps and 'gingadaddy' not in self.url:
-            self.get_newznab_categories(just_caps=True)
+        if 'gingadaddy' not in self.url:  # gingadaddy has no caps.
+            if not self.caps:
+                self.get_newznab_categories(just_caps=True)
 
-        if not self.caps and 'gingadaddy' not in self.url:
-            return results
+            if not self.caps:
+                return results
 
         for mode in search_strings:
             torznab = False
             search_params = {
-                't': 'tvsearch' if 'tvdbid' in str(self.cap_tv_search) else 'search',
+                't': ('search', 'tvsearch')[self.use_tv_search],
                 'limit': 100,
                 'offset': 0,
                 'cat': self.catIDs.strip(', ') or '5030,5040',
@@ -296,8 +297,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 search_params['apikey'] = self.key
 
             if mode != 'RSS':
-                if search_params['t'] == 'tvsearch':
-                    search_params['tvdbid'] = ep_obj.show.indexerid
+                if self.use_tv_search:
+                    if 'tvdbid' in str(self.cap_tv_search):
+                        search_params['tvdbid'] = ep_obj.show.indexerid
 
                     if ep_obj.show.air_by_date or ep_obj.show.sports:
                         date_str = str(ep_obj.airdate)
@@ -317,7 +319,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
 
-                    if search_params['t'] != 'tvsearch':
+                    if 'tvdbid' not in search_params:
                         search_params['q'] = search_string
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
@@ -344,9 +346,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                                 elif validators.url(item.link.next.strip(), require_tld=False):
                                     download_url = item.link.next.strip()
 
-                            if not download_url and item.enclosure:
-                                if validators.url(item.enclosure.get('url', '').strip(), require_tld=False):
-                                    download_url = item.enclosure.get('url', '').strip()
+                            if all([not download_url, item.enclosure,
+                                validators.url(item.enclosure.get('url', '').strip(), require_tld=False)]):
+                                download_url = item.enclosure.get('url', '').strip()
 
                             if not (title and download_url):
                                 continue
@@ -372,7 +374,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                         except StandardError:
                             continue
 
-                # Since we arent using the search string,
+                # Since we aren't using the search string,
                 # break out of the search string loop
                 if 'tvdbid' in search_params:
                     break

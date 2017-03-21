@@ -22,18 +22,18 @@
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-qunit": "^1.2.0",
     "grunt-contrib-sass": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^2.0.0",
     "grunt-mocha": "^1.0.2",
     "grunt-po2json": "^0.3.0",
-    "grunt-sass": "^1.1.0",
+    "grunt-sass": "^2.0.0",
     "load-grunt-tasks": "^3.4.1",
     "mocha": "^3.0.2",
+    "npm-check-updates": "^2.10.3",
     "snyk": "^1.25.2"
   }
 }

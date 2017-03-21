@@ -10,25 +10,12 @@ trim_trailing_whitespace = true
 
 # Matches multiple files with brace expansion notation
 # Set default charset
-[*.{js,py}]
+[*.{js,py,mako},.jshintrc]
 charset = utf-8
-
-# Python styling
-[*.py]
-indent_style = space
-indent_size = 4
-
-# Mako styling
-[*.mako]
-indent_style = space
-indent_size = 4
-
-# Indentation override for all JS under lib directory
-[*.js]
 indent_style = space
 indent_size = 4
 
 # Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml}]
+[{package.json,*.yml}]
 indent_style = space
 indent_size = 2

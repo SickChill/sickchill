@@ -279,21 +279,20 @@ class BTNProvider(TorrentProvider):
                     except TypeError:
                         result_date = None
 
-                    if result_date:
-                        if not search_date or result_date > search_date:
-                            title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date, self.show))
+                    if result_date and (not search_date or result_date > search_date):
+                        title, url = self._get_title_and_url(item)
+                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
 
 class BTNCache(tvcache.TVCache):
-    def _getRSSData(self):
+    def _get_rss_data(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))
 
         # default to 15 minutes
-        seconds_minTime = self.minTime * 60
+        seconds_minTime = self.min_time * 60
         if seconds_since_last_update < seconds_minTime:
             seconds_since_last_update = seconds_minTime
 

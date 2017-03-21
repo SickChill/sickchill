@@ -85,11 +85,10 @@ function shiftReturn(array){
 // Handle gettext.js
 var gt = null;
 (function loadTranslation() {
-    var lang = $('html').attr('lang');
-    if (lang !== '') {
+    if ($('html').attr('lang') !== '') {
         $.ajax({
             dataType: "json",
-            url: srRoot + '/locale/' + lang + '.json',
+            url: srRoot + '/locale/messages.json',
             async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
             success: function(data) {
                 gt = new Gettext(data.messages); // jshint ignore:line
@@ -99,7 +98,6 @@ var gt = null;
             }
         });
     } else {
-        // @FIXME: add support for 'System Language' option
         gt = new Gettext(); // jshint ignore:line
     }
 })();
@@ -146,7 +144,10 @@ var SICKRAGE = {
 
             $("a.removeshow").confirm({
                 title: "Remove Show",
-                text: 'Are you sure you want to remove <span class="footerhighlight">' + $('#showtitle').data('showname') + '</span> from the database?<br><br><input type="checkbox" id="deleteFiles"> <span class="red-text">Check to delete files as well. IRREVERSIBLE</span></input>',
+                text: 'Are you sure you want to remove <span class="footerhighlight">' + $('#showtitle').data('showname') +
+                    '</span> from the database?<br><br>' +
+                    '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;' +
+                    '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
                 confirm: function(e) {
                     location.href = e.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
                 }
