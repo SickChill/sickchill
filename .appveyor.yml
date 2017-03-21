@@ -15,6 +15,7 @@ environment:
       PYTHON_ARCH: "64"
 
 cache:
+  - c:\python27\lib\site-packages
   - "%APPDATA%\\npm"
   - node_modules
   - bower_components
@@ -27,9 +28,6 @@ shallow_clone: true
 skip_tags: true
 max_jobs: 4
 clone_depth: 4
-
-init:
-  - ps: ../addons/appveyor/rolling-build.ps1
 
 matrix:
   fast_finish: true
