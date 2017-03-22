@@ -231,7 +231,7 @@ module.exports = function(grunt) {
                 cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim();  // removes commit hashes
+                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').replace('`', '').trim();  // removes commit hashes, and `
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
@@ -242,10 +242,9 @@ module.exports = function(grunt) {
             'git_tag_new': {
                 cmd: function (sign) {
                     sign = sign !== "true" ? '' : '-s ';
-                    grunt.log.writeln('git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"');
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
-                stdout: true
+                stdout: false
             },
             'git_push': {
                 cmd: function (remote, branch, tags) {
