@@ -244,7 +244,7 @@ module.exports = function(grunt) {
                     sign = sign !== "true" ? '' : '-s ';
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
-                stdout: false
+                stdout: true
             },
             'git_push': {
                 cmd: function (remote, branch, tags) {
