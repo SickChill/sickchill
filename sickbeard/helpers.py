@@ -388,9 +388,9 @@ def link(src, dst):
     :param dst: Destination file
     """
 
-    if (platform.system() == 'Windows' and ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)),
-        ctypes.c_wchar_p(six.text_type(src)), None) == 0):
-        raise ctypes.WinError()
+    if platform.system() == 'Windows':
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
+            raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
 
