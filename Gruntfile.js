@@ -242,6 +242,7 @@ module.exports = function(grunt) {
             'git_tag_new': {
                 cmd: function (sign) {
                     sign = sign !== "true" ? '' : '-s ';
+                    grunt.log.writeln('git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"');
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: true
