@@ -220,8 +220,11 @@ module.exports = function(grunt) {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
-                    /v\d{4}\.\d{2}\.\d{2}-\d+/.test(stdout.trim()) || grunt.fatal('Could not get the last tag name. We got: ' + stdout.trim());
-                    grunt.config('last_tag', stdout.trim());
+                    if (/v\d{4}\.\d{2}\.\d{2}-\d+/.test(stdout.trim())) {
+                        grunt.config('last_tag', stdout.trim());
+                    } else {
+                        grunt.fatal('Could not get the last tag name. We got: ' + stdout.trim());
+                    }
                 }
             },
             'git_list_changes': {
@@ -232,7 +235,7 @@ module.exports = function(grunt) {
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
-                        grunt.fatal('Getting new commit list failed!')
+                        grunt.fatal('Getting new commit list failed!');
                     }
                 }
             },
@@ -343,9 +346,9 @@ module.exports = function(grunt) {
         if (year === lastTag[0] && month === leadingZeros(lastTag[1]) && day === leadingZeros(lastTag[2])) {
             patch = (parseInt(lastPatch) + 1).toString();
         }
-        var next_tag = 'v' + year + '.' + month + '.' + day + '-' + patch;
-        grunt.log.writeln('Creating tag ' + next_tag);
-        grunt.config('next_tag', next_tag);
+        var nextTag = 'v' + year + '.' + month + '.' + day + '-' + patch;
+        grunt.log.writeln('Creating tag ' + nextTag);
+        grunt.config('next_tag', nextTag);
     });
 
     grunt.registerTask('_genchanges', "(internal) do not run", function() {
