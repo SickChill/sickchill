@@ -136,9 +136,10 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             labels.append(str(lbl))
                         else:
                             lbl = column.find("img")
-                            if lbl and lbl.has_attr("alt"):
-                                lbl = lbl['alt']
-                                labels.append(str(lbl))
+                            if lbl:
+                                if lbl.has_attr("alt"):
+                                    lbl = lbl['alt']
+                                    labels.append(str(lbl))
                             else:
                                 if index == 3:
                                     lbl = "Download"

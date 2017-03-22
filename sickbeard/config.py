@@ -433,11 +433,12 @@ def change_version_notify(version_notify):
         return True
 
     sickbeard.VERSION_NOTIFY = version_notify
-    if sickbeard.VERSION_NOTIFY and not sickbeard.versionCheckScheduler.enable:
-        logger.log("Starting VERSIONCHECK thread", logger.INFO)
-        sickbeard.versionCheckScheduler.silent = False
-        sickbeard.versionCheckScheduler.enable = True
-        sickbeard.versionCheckScheduler.forceRun()
+    if sickbeard.VERSION_NOTIFY:
+        if not sickbeard.versionCheckScheduler.enable:
+            logger.log("Starting VERSIONCHECK thread", logger.INFO)
+            sickbeard.versionCheckScheduler.silent = False
+            sickbeard.versionCheckScheduler.enable = True
+            sickbeard.versionCheckScheduler.forceRun()
     else:
         sickbeard.versionCheckScheduler.enable = False
         sickbeard.versionCheckScheduler.silent = True
@@ -458,10 +459,11 @@ def change_download_propers(download_propers):
         return True
 
     sickbeard.DOWNLOAD_PROPERS = download_propers
-    if sickbeard.DOWNLOAD_PROPERS and not sickbeard.properFinderScheduler.enable:
-        logger.log("Starting PROPERFINDER thread", logger.INFO)
-        sickbeard.properFinderScheduler.silent = False
-        sickbeard.properFinderScheduler.enable = True
+    if sickbeard.DOWNLOAD_PROPERS:
+        if not sickbeard.properFinderScheduler.enable:
+            logger.log("Starting PROPERFINDER thread", logger.INFO)
+            sickbeard.properFinderScheduler.silent = False
+            sickbeard.properFinderScheduler.enable = True
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.properFinderScheduler.silent = True
@@ -482,10 +484,11 @@ def change_use_trakt(use_trakt):
         return True
 
     sickbeard.USE_TRAKT = use_trakt
-    if sickbeard.USE_TRAKT and not sickbeard.traktCheckerScheduler.enable:
-        logger.log("Starting TRAKTCHECKER thread", logger.INFO)
-        sickbeard.traktCheckerScheduler.silent = False
-        sickbeard.traktCheckerScheduler.enable = True
+    if sickbeard.USE_TRAKT:
+        if not sickbeard.traktCheckerScheduler.enable:
+            logger.log("Starting TRAKTCHECKER thread", logger.INFO)
+            sickbeard.traktCheckerScheduler.silent = False
+            sickbeard.traktCheckerScheduler.enable = True
     else:
         sickbeard.traktCheckerScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
@@ -506,10 +509,11 @@ def change_use_subtitles(use_subtitles):
         return True
 
     sickbeard.USE_SUBTITLES = use_subtitles
-    if sickbeard.USE_SUBTITLES and not sickbeard.subtitlesFinderScheduler.enable:
-        logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
-        sickbeard.subtitlesFinderScheduler.silent = False
-        sickbeard.subtitlesFinderScheduler.enable = True
+    if sickbeard.USE_SUBTITLES:
+        if not sickbeard.subtitlesFinderScheduler.enable:
+            logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
+            sickbeard.subtitlesFinderScheduler.silent = False
+            sickbeard.subtitlesFinderScheduler.enable = True
     else:
         sickbeard.subtitlesFinderScheduler.enable = False
         sickbeard.subtitlesFinderScheduler.silent = True
@@ -530,10 +534,11 @@ def change_process_automatically(process_automatically):
         return True
 
     sickbeard.PROCESS_AUTOMATICALLY = process_automatically
-    if sickbeard.PROCESS_AUTOMATICALLY and not sickbeard.autoPostProcessorScheduler.enable:
-        logger.log("Starting POSTPROCESSOR thread", logger.INFO)
-        sickbeard.autoPostProcessorScheduler.silent = False
-        sickbeard.autoPostProcessorScheduler.enable = True
+    if sickbeard.PROCESS_AUTOMATICALLY:
+        if not sickbeard.autoPostProcessorScheduler.enable:
+            logger.log("Starting POSTPROCESSOR thread", logger.INFO)
+            sickbeard.autoPostProcessorScheduler.silent = False
+            sickbeard.autoPostProcessorScheduler.enable = True
     else:
         logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
         sickbeard.autoPostProcessorScheduler.enable = False
