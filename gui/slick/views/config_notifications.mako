@@ -1441,7 +1441,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>click here</b></a> to create a Pushover API key</label>
+                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -2277,6 +2277,32 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label for="join_id">${_('per device specific id')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+##                             <div class="field-pair row">
+##                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+##                                     <label for="join_apikey" class="component-title">${_('API Key')}</label>
+##                                 </div>
+##                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+##                                     <input type="text" name="join_apikey" id="join_apikey" value="${sickbeard.join_apikey}" class="form-control input-sm input250" autocapitalize="off" />
+##                                 </div>
+##                             </div>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('API key')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="join_apikey" id="join_apikey" value="${sickbeard.JOIN_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="join_apikey"><a href="${anon_url('https://joaoapps.com/join/web')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Join API key')}</label>
                                         </div>
                                     </div>
                                 </div>

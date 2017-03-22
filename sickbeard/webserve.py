@@ -887,9 +887,9 @@ class Home(WebRoot):
             return _("Error sending Telegram notification: {message}").format(message=message)
 
     @staticmethod
-    def testJoin(join_id=None):
+    def testJoin(join_id=None, join_apikey=None):
 
-        result, message = notifiers.join_notifier.test_notify(join_id)
+        result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
@@ -4950,7 +4950,7 @@ class ConfigNotifications(Config):
             use_telegram=None, telegram_notify_onsnatch=None, telegram_notify_ondownload=None,
             telegram_notify_onsubtitledownload=None, telegram_id=None, telegram_apikey=None,
             use_join=None, join_notify_onsnatch=None, join_notify_ondownload=None,
-            join_notify_onsubtitledownload=None, join_id=None,
+            join_notify_onsubtitledownload=None, join_id=None, join_apikey=None,
             use_prowl=None, prowl_notify_onsnatch=None, prowl_notify_ondownload=None,
             prowl_notify_onsubtitledownload=None, prowl_api=None, prowl_priority=0,
             prowl_show_list=None, prowl_show=None, prowl_message_title=None,
@@ -5051,6 +5051,7 @@ class ConfigNotifications(Config):
         sickbeard.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
         sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
         sickbeard.JOIN_ID = join_id
+        sickbeard.JOIN_APIKEY = join_apikey
 
         sickbeard.USE_PROWL = config.checkbox_to_value(use_prowl)
         sickbeard.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
