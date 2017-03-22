@@ -444,7 +444,7 @@ var SICKRAGE = {
         index: function() {
             $('#log_dir').fileBrowser({title: 'Select log file folder location'});
             $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
-            $('#custom_css_path').fileBrowser({title: 'Select CSS file', key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['css']});
+            $('#custom_css_path').fileBrowser({title: 'Select CSS file', key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {
