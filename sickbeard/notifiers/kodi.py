@@ -568,9 +568,10 @@ class Notifier(object):
             # either update each host, or only attempt to update until one successful result
             result = 0
             for host in [x.strip() for x in sickbeard.KODI_HOST.split(",")]:
-                if self._send_update_library(host, showName) and sickbeard.KODI_UPDATE_ONLYFIRST:
-                    logger.log("Successfully updated '" + host + "', stopped sending update library commands.", logger.DEBUG)
-                    return True
+                if self._send_update_library(host, showName):
+                    if sickbeard.KODI_UPDATE_ONLYFIRST:
+                        logger.log("Successfully updated '" + host + "', stopped sending update library commands.", logger.DEBUG)
+                        return True
                 else:
                     if sickbeard.KODI_ALWAYS_ON:
                         logger.log("Failed to detect KODI version for '" + host + "', check configuration and try again.", logger.WARNING)

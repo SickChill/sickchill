@@ -388,9 +388,9 @@ def link(src, dst):
     :param dst: Destination file
     """
 
-    if (platform.system() == 'Windows' and ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)),
-        ctypes.c_wchar_p(six.text_type(src)), None) == 0):
-        raise ctypes.WinError()
+    if platform.system() == 'Windows':
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
+            raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
 
@@ -420,10 +420,9 @@ def symlink(src, dst):
     :param dst: Destination file
     """
 
-    if (platform.system() == 'Windows' and
-        ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)),
-            ctypes.c_wchar_p(six.text_type(src)), (0, 1)[ek(os.path.isdir, src)]) in [0, 1280]):
-        raise ctypes.WinError()
+    if platform.system() == 'Windows':
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
+            raise ctypes.WinError()
     else:
         ek(os.symlink, src, dst)
 
