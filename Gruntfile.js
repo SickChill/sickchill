@@ -220,6 +220,7 @@ module.exports = function(grunt) {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
+                    /v\d{4}\.\d{2}\.\d{2}-\d+/.test(stdout.trim()) || grunt.fatal('Could not get the last tag name. We got: ' + stdout.trim());
                     grunt.config('last_tag', stdout.trim());
                 }
             },
@@ -227,12 +228,17 @@ module.exports = function(grunt) {
                 cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    grunt.config('commits', stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim()); // removes commit hashes
+                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim();  // removes commit hashes
+                    if (commits) {
+                        grunt.config('commits', commits);
+                    } else {
+                        grunt.fatal('Getting new commit list failed!')
+                    }
                 }
             },
             'git_tag_new': {
                 cmd: function (sign) {
-                    sign = (sign !== "true"?'':'-s ');
+                    sign = sign !== "true" ? '' : '-s ';
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: false
@@ -269,6 +275,8 @@ module.exports = function(grunt) {
                     }
                     if (foundTags.length) {
                         grunt.config('all_tags', foundTags);
+                    } else {
+                        grunt.fatal('Could not get existing tags information');
                     }
                 }
             },
@@ -300,11 +308,12 @@ module.exports = function(grunt) {
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
         var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
-        if (!file) {
+        if (file) {
+            grunt.config('changesmd_file', file);
+        } else {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
                 '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
         }
-        grunt.config('changesmd_file', file);
         grunt.task.run(['exec:git_get_last_tag', 'exec:git_list_tags', '_genchanges',
                         'exec:commit_changelog']);
     });
@@ -316,7 +325,6 @@ module.exports = function(grunt) {
         function leadingZeros(number) {
             return ('0' + parseInt(number)).slice(-2);
         }
-
         var lastTag = grunt.config('last_tag');
         if (!lastTag) {
             grunt.fatal('internal task');
@@ -335,8 +343,9 @@ module.exports = function(grunt) {
         if (year === lastTag[0] && month === leadingZeros(lastTag[1]) && day === leadingZeros(lastTag[2])) {
             patch = (parseInt(lastPatch) + 1).toString();
         }
-
-        grunt.config('next_tag', ('v' + year + '.' + month + '.' + day + '-' + patch));
+        var next_tag = 'v' + year + '.' + month + '.' + day + '-' + patch;
+        grunt.log.writeln('Creating tag ' + next_tag);
+        grunt.config('next_tag', next_tag);
     });
 
     grunt.registerTask('_genchanges', "(internal) do not run", function() {
@@ -351,6 +360,9 @@ module.exports = function(grunt) {
         }
 
         var file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        if (!file) {
+            grunt.fatal('Missing file path.');
+        }
 
         var contents = "";
         allTags.reverse().forEach(function(tag) {
@@ -370,7 +382,8 @@ module.exports = function(grunt) {
         if (contents) {
             grunt.file.write(file, contents);
             return true;
+        } else {
+            grunt.fatal('Received no contents to write to file, aborting');
         }
-        grunt.fatal('Received no contents to write to file, aborting');
     });
 };
