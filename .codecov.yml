@@ -3,7 +3,7 @@ codecov:
     require_ci_to_pass: yes # require the build to pass before submitting notifications
     after_n_builds: 1       # how many build to wait for before submitting notifications, therefore skipping status checks
     countdown: 60           # number of seconds to wait before checking CI status
-    delay: 90               # number of seconds between each CI status check
+    delay: 120               # number of seconds between each CI status check
 
 coverage:
   precision: 3         # how many decimal places to display in the UI: 0 <= value <= 4
