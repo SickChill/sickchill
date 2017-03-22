@@ -231,7 +231,7 @@ module.exports = function(grunt) {
                 cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').replace('`', '').trim();  // removes commit hashes, and `
+                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').replace(/`/gm, '').trim();  // removes commit hashes, and `
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
