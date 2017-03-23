@@ -2282,14 +2282,6 @@
                                 </div>
                             </div>
 
-##                             <div class="field-pair row">
-##                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-##                                     <label for="join_apikey" class="component-title">${_('API Key')}</label>
-##                                 </div>
-##                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-##                                     <input type="text" name="join_apikey" id="join_apikey" value="${sickbeard.join_apikey}" class="form-control input-sm input250" autocapitalize="off" />
-##                                 </div>
-##                             </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('API key')}</label>
