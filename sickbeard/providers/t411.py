@@ -44,11 +44,11 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'https://www.t411.li/',
-                     'search': 'https://api.t411.li/torrents/search/%s*?cid=%s&limit=100',
-                     'rss': 'https://api.t411.li/torrents/top/today',
-                     'login_page': 'https://api.t411.li/auth',
-                     'download': 'https://api.t411.li/torrents/download/%s'}
+        self.urls = {'base_url': 'https://www.t411.lv/',
+                     'search': 'https://api.t411.lv/torrents/search/%s*?cid=%s&limit=100',
+                     'rss': 'https://api.t411.lv/torrents/top/today',
+                     'login_page': 'https://api.t411.lv/auth',
+                     'download': 'https://api.t411.lv/torrents/download/%s'}
 
         self.url = self.urls['base_url']
 
