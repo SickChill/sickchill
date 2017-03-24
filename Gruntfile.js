@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             'exec:babel_compile',
             'po2json'
         ];
-        if(process.env['CROWDIN_API_KEY']) { // jshint ignore:line
+        if(process.env.CROWDIN_API_KEY) {
             tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
         } else {
             grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
@@ -311,7 +311,10 @@ module.exports = function(grunt) {
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
         var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
-        if (file) {
+        if (!file) {
+            file = process.env.SICKRAGE_CHANGES_FILE;
+        }
+        if (file && grunt.file.exists(file)) {
             grunt.config('changesmd_file', file);
         } else {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
