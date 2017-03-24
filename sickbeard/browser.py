@@ -42,7 +42,6 @@ def getWinDrives():
 
     return drives
 
-
 def getFileList(path, includeFiles, fileTypes):
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hide_list = ['boot', 'bootmgr', 'cache', 'config.msi', 'msocache', 'recovery', '$recycle.bin',
@@ -64,7 +63,6 @@ def getFileList(path, includeFiles, fileTypes):
         is_image = False
         allowed_type = True
         if is_file and fileTypes:
-            allowed_type = False
             if 'images' in fileTypes:
                 allowed_type = is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
             else:
