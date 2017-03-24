@@ -21,6 +21,7 @@
 from __future__ import print_function, unicode_literals
 
 from requests.auth import AuthBase
+import six
 import time
 import traceback
 
@@ -59,7 +60,7 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
     def login(self):
 
-        if self.token is not None and time.time() < (self.tokenLastUpdate + 30 * 60):
+        if self.token and self.tokenLastUpdate and time.time() < (self.tokenLastUpdate + 30 * 60):
             return True
 
         login_params = {'username': self.username,
@@ -73,7 +74,6 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         if response and 'token' in response:
             self.token = response['token']
             self.tokenLastUpdate = time.time()
-            # self.uid = response['uid'].encode('ascii', 'ignore')
             self.session.auth = T411Auth(self.token)
             return True
         else:
@@ -163,10 +163,13 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 class T411Auth(AuthBase):  # pylint: disable=too-few-public-methods
     """Attaches HTTP Authentication to the given Request object."""
     def __init__(self, token):
-        self.token = token
+        if isinstance(token, six.text_type):
+            self.token = token.encode('utf-8')
+        else:
+            self.token = token
 
     def __call__(self, r):
-        r.headers['Authorization'] = self.token
+        r.headers[b'Authorization'] = self.token
         return r
 
 provider = T411Provider()

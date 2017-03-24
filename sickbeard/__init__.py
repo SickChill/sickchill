@@ -88,6 +88,7 @@ indexerApi = indexer_api.indexerApi
 PID = None
 
 CFG = None
+WINDOWS_SHARES = {}
 CONFIG_FILE = None
 
 # This is the version of the config we EXPECT to find
@@ -421,6 +422,7 @@ JOIN_NOTIFY_ONSNATCH = False
 JOIN_NOTIFY_ONDOWNLOAD = False
 JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = False
 JOIN_ID = ''
+JOIN_APIKEY = ''
 
 USE_PROWL = False
 PROWL_NOTIFY_ONSNATCH = False
@@ -595,6 +597,8 @@ SICKRAGE_BACKGROUND = None
 SICKRAGE_BACKGROUND_PATH = None
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
+CUSTOM_CSS = None
+CUSTOM_CSS_PATH = None
 
 USE_SUBTITLES = False
 SUBTITLES_INCLUDE_SPECIALS = True
@@ -678,7 +682,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, TELEGRAM_NOTIFY_ONSNATCH, TELEGRAM_NOTIFY_ONDOWNLOAD, TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD, \
-            USE_JOIN, JOIN_ID, JOIN_NOTIFY_ONSNATCH, JOIN_NOTIFY_ONDOWNLOAD, JOIN_NOTIFY_ONSUBTITLEDOWNLOAD, \
+            USE_JOIN, JOIN_ID, JOIN_APIKEY, JOIN_NOTIFY_ONSNATCH, JOIN_NOTIFY_ONDOWNLOAD, JOIN_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROWL_MESSAGE_TITLE, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
@@ -710,7 +714,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
             USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
@@ -856,6 +860,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path')
         FANART_BACKGROUND = check_setting_bool(CFG, 'GUI', 'fanart_background', True)
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
+        CUSTOM_CSS = check_setting_bool(CFG, 'GUI', 'custom_css')
+        CUSTOM_CSS_PATH = check_setting_str(CFG, 'GUI', 'custom_css_path')
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
@@ -1147,6 +1153,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         JOIN_NOTIFY_ONDOWNLOAD = check_setting_bool(CFG, 'Join', 'join_notify_ondownload')
         JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Join', 'join_notify_onsubtitledownload')
         JOIN_ID = check_setting_str(CFG, 'Join', 'join_id')
+        JOIN_APIKEY = check_setting_str(CFG, 'Join', 'join_apikey')
 
         USE_PROWL = check_setting_bool(CFG, 'Prowl', 'use_prowl')
         PROWL_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Prowl', 'prowl_notify_onsnatch')
@@ -1368,6 +1375,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
+
+        if check_section(CFG, 'Shares'):
+            WINDOWS_SHARES.update(CFG['Shares'])
 
         # initialize NZB and TORRENT providers
         providerList = providers.makeProviderList()
@@ -1988,6 +1998,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'news_last_read': NEWS_LAST_READ,
         },
 
+        'Shares': WINDOWS_SHARES,
+
         'Blackhole': {
             'nzb_dir': NZB_DIR,
             'torrent_dir': TORRENT_DIR,
@@ -2116,6 +2128,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'join_notify_ondownload': int(JOIN_NOTIFY_ONDOWNLOAD),
             'join_notify_onsubtitledownload': int(JOIN_NOTIFY_ONSUBTITLEDOWNLOAD),
             'join_id': JOIN_ID,
+            'join_apikey': JOIN_APIKEY,
         },
 
         'Prowl': {
@@ -2309,6 +2322,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'sickrage_background_path': SICKRAGE_BACKGROUND_PATH,
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
+            'custom_css': int(CUSTOM_CSS),
+            'custom_css_path': CUSTOM_CSS_PATH,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
             'history_limit': HISTORY_LIMIT,

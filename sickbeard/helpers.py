@@ -67,6 +67,18 @@ from sickrage.show.Show import Show
 # pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
+orig_getaddrinfo = socket.getaddrinfo
+
+
+# Patches getaddrinfo so that resolving domains like thetvdb do not return ip6 addresses that no longer work on thetvdb.
+# This will not effect SickRage itself from being accessed through ip6
+def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, flags=0):
+    return orig_getaddrinfo(host, port, family, socktype, proto, flags)
+
+
+if socket.getaddrinfo.__module__ in ('socket', '_socket'):
+    logger.log("Patching socket to IPv4 only", logger.DEBUG)
+    socket.getaddrinfo = getaddrinfo_wrapper
 
 
 def indentXML(elem, level=0):
@@ -388,9 +400,9 @@ def link(src, dst):
     :param dst: Destination file
     """
 
-    if (platform.system() == 'Windows' and ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)),
-        ctypes.c_wchar_p(six.text_type(src)), None) == 0):
-        raise ctypes.WinError()
+    if platform.system() == 'Windows':
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
+            raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
 
@@ -420,10 +432,9 @@ def symlink(src, dst):
     :param dst: Destination file
     """
 
-    if (platform.system() == 'Windows' and
-        ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)),
-            ctypes.c_wchar_p(six.text_type(src)), (0, 1)[ek(os.path.isdir, src)]) in [0, 1280]):
-        raise ctypes.WinError()
+    if platform.system() == 'Windows':
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
+            raise ctypes.WinError()
     else:
         ek(os.symlink, src, dst)
 
@@ -1418,6 +1429,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         if isinstance(post_data, six.text_type):
             post_data = post_data.encode('utf-8')
 
+        if isinstance(url, six.text_type):
+            url = url.encode('utf-8')
+
         resp = session.request(
             'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
@@ -1517,6 +1531,12 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(default.format(error))
     except requests.exceptions.URLRequired as error:
         logger.log(default.format(error))
+    except TypeError as error:
+        logger.log(default.format(error), logger.ERROR)
+        logger.log('url is {0}'.format(repr(requests_exception.request.url)))
+        logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
+        logger.log('params are {0}'.format(repr(requests_exception.request.params)))
+        logger.log('post_data is {0}'.format(repr(requests_exception.request.data)))
     except Exception as error:
         logger.log(default.format(error), logger.ERROR)
         logger.log(traceback.format_exc(), logger.DEBUG)
@@ -1594,7 +1614,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     Checks if the target system has enough free space to copy or move a file.
 
     :param src: Source filename
-    :param dest: Destination path
+    :param dest: Destination path (show dir in current usage)
     :param oldfile: File to be replaced (defaults to None)
     :return: True if there is enough space for the file, False if there isn't. Also returns True if the OS doesn't support this option
     """
@@ -1608,19 +1628,22 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.log("A path to a file is required for the source. {0} is not a file.".format(src), logger.WARNING)
         return True
 
-    if not (ek(os.path.exists, dest) or ek(os.path.exists, ek(os.path.dirname, dest))):
+    if not (ek(os.path.isdir, dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and ek(os.path.isdir, ek(os.path.dirname, dest)))):
         logger.log("A path is required for the destination. Check the root dir and show locations are correct for {0} (I got '{1}')".format(
             oldfile[0].name, dest), logger.WARNING)
         return False
 
+    dest = (ek(os.path.dirname, dest), dest)[ek(os.path.isdir, dest)]
+
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
-    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest)).st_dev:  # pylint: disable=no-member
+    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest).st_dev:  # pylint:
+        # disable=no-member
         logger.log("Process method is 'move' and src and destination are on the same device, skipping free space check", logger.INFO)
         return True
 
     try:
-        disk_free = disk_usage(dest if ek(os.path.exists, dest) else ek(os.path.dirname, dest))
+        disk_free = disk_usage(dest)
     except Exception as error:
         logger.log("Unable to determine free space, so I will assume there is enough.", logger.WARNING)
         logger.log("Error: {error}".format(error=error), logger.DEBUG)

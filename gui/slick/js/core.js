@@ -443,7 +443,8 @@ var SICKRAGE = {
         },
         index: function() {
             $('#log_dir').fileBrowser({title: 'Select log file folder location'});
-            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, imagesOnly: 1});
+            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
+            $('#custom_css_path').fileBrowser({title: 'Select CSS file', key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {
@@ -477,7 +478,7 @@ var SICKRAGE = {
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
                 if (!growl.host) {
-                    $('#testGrowl-result').html('Please fill out the necessary fields above.');
+                    $('#testGrowl-result').html(_('Please fill out the necessary fields above.'));
                     $('#growl_host').addClass('warning');
                     return;
                 }
@@ -498,7 +499,7 @@ var SICKRAGE = {
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
                 if (!prowl.api) {
-                    $('#testProwl-result').html('Please fill out the necessary fields above.');
+                    $('#testProwl-result').html(_('Please fill out the necessary fields above.'));
                     $('#prowl_api').addClass('warning');
                     return;
                 }
@@ -520,7 +521,7 @@ var SICKRAGE = {
                 kodi.username = $.trim($('#kodi_username').val());
                 kodi.password = $.trim($('#kodi_password').val());
                 if (!kodi.host) {
-                    $('#testKODI-result').html('Please fill out the necessary fields above.');
+                    $('#testKODI-result').html(_('Please fill out the necessary fields above.'));
                     $('#kodi_host').addClass('warning');
                     return;
                 }
@@ -544,7 +545,7 @@ var SICKRAGE = {
                 plex.client.username = $.trim($('#plex_client_username').val());
                 plex.client.password = $.trim($('#plex_client_password').val());
                 if (!plex.client.host) {
-                    $('#testPHT-result').html('Please fill out the necessary fields above.');
+                    $('#testPHT-result').html(_('Please fill out the necessary fields above.'));
                     $('#plex_client_host').addClass('warning');
                     return;
                 }
@@ -569,7 +570,7 @@ var SICKRAGE = {
                 plex.server.password = $.trim($('#plex_server_password').val());
                 plex.server.token = $.trim($('#plex_server_token').val());
                 if (!plex.server.host) {
-                    $('#testPMS-result').html('Please fill out the necessary fields above.');
+                    $('#testPMS-result').html(_('Please fill out the necessary fields above.'));
                     $('#plex_server_host').addClass('warning');
                     return;
                 }
@@ -592,7 +593,7 @@ var SICKRAGE = {
                 emby.host = $('#emby_host').val();
                 emby.apikey = $('#emby_apikey').val();
                 if (!emby.host || !emby.apikey) {
-                    $('#testEMBY-result').html('Please fill out the necessary fields above.');
+                    $('#testEMBY-result').html(_('Please fill out the necessary fields above.'));
                     if (!emby.host) {
                         $('#emby_host').addClass('warning');
                     } else {
@@ -621,7 +622,7 @@ var SICKRAGE = {
                 var boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
                 if (!boxcar2.accesstoken) {
-                    $('#testBoxcar2-result').html('Please fill out the necessary fields above.');
+                    $('#testBoxcar2-result').html(_('Please fill out the necessary fields above.'));
                     $('#boxcar2_accesstoken').addClass('warning');
                     return;
                 }
@@ -641,7 +642,7 @@ var SICKRAGE = {
                 pushover.userkey = $('#pushover_userkey').val();
                 pushover.apikey = $('#pushover_apikey').val();
                 if (!pushover.userkey || !pushover.apikey) {
-                    $('#testPushover-result').html('Please fill out the necessary fields above.');
+                    $('#testPushover-result').html(_('Please fill out the necessary fields above.'));
                     if (!pushover.userkey) {
                         $('#pushover_userkey').addClass('warning');
                     } else {
@@ -686,7 +687,7 @@ var SICKRAGE = {
                 var twitter = {};
                 twitter.key = $.trim($('#twitter_key').val());
                 if (!twitter.key) {
-                    $('#testTwitter-result').html('Please fill out the necessary fields above.');
+                    $('#testTwitter-result').html(_('Please fill out the necessary fields above.'));
                     $('#twitter_key').addClass('warning');
                     return;
                 }
@@ -765,7 +766,7 @@ var SICKRAGE = {
                 nmj.database = $('#nmj_database').val();
                 nmj.mount = $('#nmj_mount').val();
                 if (!nmj.host) {
-                    $('#testNMJ-result').html('Please fill out the necessary fields above.');
+                    $('#testNMJ-result').html(_('Please fill out the necessary fields above.'));
                     $('#nmj_host').addClass('warning');
                     return;
                 }
@@ -825,7 +826,7 @@ var SICKRAGE = {
                 var nmjv2 = {};
                 nmjv2.host = $.trim($('#nmjv2_host').val());
                 if (!nmjv2.host) {
-                    $('#testNMJv2-result').html('Please fill out the necessary fields above.');
+                    $('#testNMJv2-result').html(_('Please fill out the necessary fields above.'));
                     $('#nmjv2_host').addClass('warning');
                     return;
                 }
@@ -845,7 +846,7 @@ var SICKRAGE = {
                 freemobile.id = $.trim($('#freemobile_id').val());
                 freemobile.apikey = $.trim($('#freemobile_apikey').val());
                 if (!freemobile.id || !freemobile.apikey) {
-                    $('#testFreeMobile-result').html('Please fill out the necessary fields above.');
+                    $('#testFreeMobile-result').html(_('Please fill out the necessary fields above.'));
                     if (!freemobile.id) {
                         $('#freemobile_id').addClass('warning');
                     } else {
@@ -875,7 +876,7 @@ var SICKRAGE = {
                 telegram.id = $.trim($('#telegram_id').val());
                 telegram.apikey = $.trim($('#telegram_apikey').val());
                 if (!telegram.id || !telegram.apikey) {
-                    $('#testTelegram-result').html('Please fill out the necessary fields above.');
+                    $('#testTelegram-result').html(_('Please fill out the necessary fields above.'));
                     if (!telegram.id) {
                         $('#telegram_id').addClass('warning');
                     } else {
@@ -903,12 +904,18 @@ var SICKRAGE = {
             $('#testJoin').on('click', function () {
                 var join = {};
                 join.id = $.trim($('#join_id').val());
-                if (!join.id ) {
-                    $('#testJoin-result').html('Please fill out the necessary fields above.');
+                join.apikey = $.trim($('#join_apikey').val());
+                if (!join.id || !join.apikey) {
+                    $('#testJoin-result').html(_('Please fill out the necessary fields above.'));
                     if (!join.id) {
                         $('#join_id').addClass('warning');
                     } else {
                         $('#join_id').removeClass('warning');
+                    }
+                    if (!join.apikey) {
+                        $('#join_apikey').addClass('warning');
+                    } else {
+                        $('#join_apikey').removeClass('warning');
                     }
                     return;
                 }
@@ -916,7 +923,8 @@ var SICKRAGE = {
                 $(this).prop('disabled', true);
                 $('#testJoin-result').html(loading);
                 $.post(srRoot + '/home/testJoin', {
-                    'join_id': join.id
+                    'join_id': join.id,
+                    'join_apikey': join.apikey
                 }).done(function (data) {
                     $('#testJoin-result').html(data);
                     $('#testJoin').prop('disabled', false);
@@ -958,7 +966,7 @@ var SICKRAGE = {
                 trakt.username = $.trim($('#trakt_username').val());
                 trakt.trendingBlacklist = $.trim($('#trakt_blacklist_name').val());
                 if (!trakt.username) {
-                    $('#testTrakt-result').html('Please fill out the necessary fields above.');
+                    $('#testTrakt-result').html(_('Please fill out the necessary fields above.'));
                     if (!trakt.username) {
                         $('#trakt_username').addClass('warning');
                     } else {
@@ -1035,7 +1043,7 @@ var SICKRAGE = {
                 nma.api = $.trim($('#nma_api').val());
                 nma.priority = $('#nma_priority').val();
                 if (!nma.api) {
-                    $('#testNMA-result').html('Please fill out the necessary fields above.');
+                    $('#testNMA-result').html(_('Please fill out the necessary fields above.'));
                     $('#nma_api').addClass('warning');
                     return;
                 }
@@ -1055,7 +1063,7 @@ var SICKRAGE = {
                 var pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
                 if (!pushalot.authToken) {
-                    $('#testPushalot-result').html('Please fill out the necessary fields above.');
+                    $('#testPushalot-result').html(_('Please fill out the necessary fields above.'));
                     $('#pushalot_authorizationtoken').addClass('warning');
                     return;
                 }
@@ -1074,7 +1082,7 @@ var SICKRAGE = {
                 var pushbullet = {};
                 pushbullet.api = $.trim($('#pushbullet_api').val());
                 if (!pushbullet.api) {
-                    $('#testPushbullet-result').html('Please fill out the necessary fields above.');
+                    $('#testPushbullet-result').html(_('Please fill out the necessary fields above.'));
                     $('#pushbullet_api').addClass('warning');
                     return;
                 }
