@@ -216,6 +216,29 @@ def change_sickrage_background(background):
     return True
 
 
+def change_custom_css(new_css):
+    """
+    Replace custom css file path
+
+    :param new_css: path to the new css file
+    :return: True on success, False on failure
+    """
+    if not new_css:
+        sickbeard.CUSTOM_CSS_PATH = ''
+        return True
+
+    new_css = ek(os.path.normpath, new_css)
+    if not ek(os.path.isfile, new_css):
+        logger.log("Custom css file does not exist: {0}".format(new_css))
+        return False
+    if not new_css.endswith('css'):
+        logger.log("Custom css file should have the .css extension: {0}".format(new_css))
+        return False
+
+    sickbeard.CUSTOM_CSS_PATH = new_css
+    return True
+
+
 def change_log_dir(log_dir, web_log):
     """
     Change logging directory for application and webserver

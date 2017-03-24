@@ -421,9 +421,7 @@
                                 <label for="fanart_background">${_('on the show summary page')}</label>
                             </div>
                         </div>
-
                         <div id="content_fanart_background">
-
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Fanart transparency')}</label>
@@ -441,7 +439,37 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Use a custom stylesheet file')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="custom_css" id="custom_css"
+                                    ${('', 'checked="checked"')[bool(sickbeard.CUSTOM_CSS)]} />
+                                <label for="custom_css">${_('use a custom .css file to style SickRage (for advanced users)')}</label>
+                            </div>
+                        </div>
+                        <div id="content_custom_css">
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Stylesheet File Path')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="custom_css_path" id="custom_css_path"
+                                                   value="${sickbeard.CUSTOM_CSS_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="custom_css_path" class="component-desc">${_('Path to the stylesheet (.css) file')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="field-pair row">

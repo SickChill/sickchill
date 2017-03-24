@@ -14,7 +14,7 @@ coverage:
 #    irc:
 #      default:                        # -> see "sections" below
 #        server: "chat.freenode.net"   #*S the domain of the irc server
-#        branches: null                # -> see https://github.com/codecov/support/wiki/Filtering-Branches
+#        branches: null                # -> see https://docs.codecov.io/docs/flags
 #        threshold: null               # -> see "threshold" below
 #        message: "template string"    # [advanced] -> see "customized message" below
 
@@ -25,34 +25,34 @@ coverage:
         target: auto           # specify the target coverage for each commit status
                                #   option: "auto" (must increase from parent commit or pull request base)
                                #   option: "X%" a static target percentage to hit
-        branches: null         # -> see https://github.com/codecov/support/wiki/Filtering-Branches
-        threshold: 0.1         # allowed to drop X% and still result in a "success" commit status
+        branches: null         # -> see https://docs.codecov.io/docs/flags
+        threshold: 0.1%        # allowed to drop X% and still result in a "success" commit status
         base: auto             # ?
         if_no_uploads: error   # will post commit status of "error" if no coverage reports we uploaded
                                # options: success, error, failure
         if_not_found: success  # if parent is not found report status as success, error, or failure
         if_ci_failed: error    # if ci fails report status as success, error, or failure
-        only_pulls: false      # ?
+        only_pulls: false      # if true set this status on pull requests only
         flags: null            # https://docs.codecov.io/docs/flags
-        paths: null            # ?
+        paths: null            # https://github.com/codecov/support/wiki/Filtering-Paths
 
     patch:                     # pull requests only: this commit status will measure the
                                # entire pull requests Coverage Diff. Checking if the lines
                                # adjusted are covered at least X%.
-      default:
-        enabled: yes             # must be yes|true to enable this status
-        target: 80%              # specify the target "X%" coverage to hit
-        branches: null           # -> see https://github.com/codecov/support/wiki/Filtering-Branches
-        threshold: 0.1           # allowed to drop X% and still result in a "success" commit status
-        if_no_uploads: error     # will post commit status of "error" if no coverage reports we uploaded
+      default: off
+#        enabled: yes             # must be yes|true to enable this status
+#        target: 30%              # specify the target "X%" coverage to hit
+#        branches: null           # -> see https://docs.codecov.io/docs/flags
+#        threshold: 0.1%          # allowed to drop X% and still result in a "success" commit status
+#        if_no_uploads: error     # will post commit status of "error" if no coverage reports we uploaded
                                  # options: success, error, failure
-        if_not_found: success
-        if_ci_failed: error
+#        if_not_found: success
+#        if_ci_failed: error
 
     changes:                   # if there are any unexpected changes in coverage
       default:
         enabled: no              # must be yes|true to enable this status
-        branches: null           # -> see https://github.com/codecov/support/wiki/Filtering-Branches
+        branches: null           # -> see https://docs.codecov.io/docs/flags
         if_no_uploads: error
         if_not_found: success
         if_ci_failed: error
@@ -74,7 +74,7 @@ parsers:
 
 comment:                 # comment: false  # to disable comments
   layout: "header, diff, changes, sunburst, suggestions, tree"
-  branches: null           # -> see https://github.com/codecov/support/wiki/Filtering-Branches
+  branches: null           # -> see https://docs.codecov.io/docs/flags
   behavior: default        # option: "default" posts once then update, posts new if delete
                            # option: "once"    post once then updates, if deleted do not post new
                            # option: "new"     delete old, post new

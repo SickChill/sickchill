@@ -596,6 +596,8 @@ SICKRAGE_BACKGROUND = None
 SICKRAGE_BACKGROUND_PATH = None
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
+CUSTOM_CSS = None
+CUSTOM_CSS_PATH = None
 
 USE_SUBTITLES = False
 SUBTITLES_INCLUDE_SPECIALS = True
@@ -711,7 +713,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, \
             DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
-            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
+            FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
             USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
@@ -857,6 +859,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path')
         FANART_BACKGROUND = check_setting_bool(CFG, 'GUI', 'fanart_background', True)
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
+        CUSTOM_CSS = check_setting_bool(CFG, 'GUI', 'custom_css')
+        CUSTOM_CSS_PATH = check_setting_str(CFG, 'GUI', 'custom_css_path')
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
@@ -2312,6 +2316,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'sickrage_background_path': SICKRAGE_BACKGROUND_PATH,
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
+            'custom_css': int(CUSTOM_CSS),
+            'custom_css_path': CUSTOM_CSS_PATH,
             'home_layout': HOME_LAYOUT,
             'history_layout': HISTORY_LAYOUT,
             'history_limit': HISTORY_LIMIT,
