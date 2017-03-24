@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import os
 import string
+from operator import itemgetter
 
 from sickbeard import logger
 from sickrage.helper.encoding import ek
@@ -42,6 +43,7 @@ def getWinDrives():
 
     return drives
 
+
 def getFileList(path, includeFiles, fileTypes):
     # prune out directories to protect the user from doing stupid things (already lower case the dir to reduce calls)
     hide_list = ['boot', 'bootmgr', 'cache', 'config.msi', 'msocache', 'recovery', '$recycle.bin',
@@ -50,6 +52,7 @@ def getFileList(path, includeFiles, fileTypes):
     hide_list += ['.git']
 
     file_list = []
+    dir_list = []
     for filename in ek(os.listdir, path):
         if filename.lower() in hide_list:
             continue
@@ -71,15 +74,23 @@ def getFileList(path, includeFiles, fileTypes):
             if not allowed_type:
                 continue
 
-        file_list.append({
+        item_to_add = {
             'name': filename,
             'path': full_filename,
             'isFile': is_file,
             'isImage': is_image,
             'isAllowed': allowed_type
-        })
+        }
 
-    return file_list
+        if is_file:
+            file_list.append(item_to_add)
+        else:
+            dir_list.append(item_to_add)
+
+    # Sort folders first, alphabetically, case insensitive
+    dir_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
+    file_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
+    return dir_list + file_list
 
 
 def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None):
@@ -129,10 +140,6 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
     except OSError as e:
         logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
         file_list = getFileList(parent_path, includeFiles, fileTypes)
-
-    file_list = sorted(file_list,
-                       lambda x, y: ek(os.path.basename, x['name']).lower() < ek(os.path.basename, y['path']).lower())
-    file_list = [x for x in file_list if not x['isFile']] + [x for x in file_list if x['isFile']]  # folders first
 
     entries = [{'currentPath': path}]
     if includeParent and parent_path != path:
