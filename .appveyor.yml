@@ -25,7 +25,6 @@ build: off
 deploy: off
 version: "{build}"
 skip_branch_with_pr: true
-shallow_clone: true
 skip_tags: true
 max_jobs: 4
 clone_depth: 4
