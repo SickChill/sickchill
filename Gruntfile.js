@@ -293,7 +293,7 @@ module.exports = function(grunt) {
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
-                    return 'cd ' + path + ' && git commit -asm "Update changelog" && git push origin master';
+                    return 'cd ' + path + ' && git commit -asm "Update changelog" && git fetch origin && git rebase && git push origin master';
                 },
                 stdout: true
             }
@@ -307,7 +307,7 @@ module.exports = function(grunt) {
         'exec:git_checkout:develop', 'exec:git_pull',
         'exec:git_checkout:master', 'exec:git_pull', 'exec:git_merge:develop',
         'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag',
-        'exec:git_tag_new', 'exec:git_push:origin:master:true']);
+        'exec:git_tag_new', 'exec:git_push:origin:master:true', 'exec:git_checkout:develop']);
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
         var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
