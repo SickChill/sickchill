@@ -350,6 +350,7 @@ module.exports = function(grunt) {
             patch = (parseInt(lastPatch) + 1).toString();
         }
         var nextTag = 'v' + year + '.' + month + '.' + day + '-' + patch;
+        nextTag = nextTag.replace(/^\(.*HEAD.*\)\s/, '')
         grunt.log.writeln('Creating tag ' + nextTag);
         grunt.config('next_tag', nextTag);
     });
