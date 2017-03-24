@@ -41,7 +41,7 @@ class BrowserTestAll(unittest.TestCase):
         """
         file_list = browser.getFileList(self.here, True, ['py'])
         self.assertIsNotNone(file_list)
-        test = file_list[0]
+        test = [x for x in file_list if x['name'] == os.path.basename(__file__)][0]
         self.assertTrue('isImage' in test and isinstance(test['isImage'], bool))
         self.assertTrue('isFile' in test and isinstance(test['isImage'], bool))
         self.assertTrue('isAllowed' in test and isinstance(test['isImage'], bool))
