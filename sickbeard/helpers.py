@@ -1417,6 +1417,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         if isinstance(post_data, six.text_type):
             post_data = post_data.encode('utf-8')
 
+        if isinstance(url, six.text_type):
+            url = url.encode('utf-8')
+
         resp = session.request(
             'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
@@ -1516,6 +1519,12 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(default.format(error))
     except requests.exceptions.URLRequired as error:
         logger.log(default.format(error))
+    except TypeError as error:
+        logger.log(default.format(error), logger.ERROR)
+        logger.log('url is {0}'.format(repr(requests_exception.request.url)))
+        logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
+        logger.log('params are {0}'.format(repr(requests_exception.request.params)))
+        logger.log('post_data is {0}'.format(repr(requests_exception.request.data)))
     except Exception as error:
         logger.log(default.format(error), logger.ERROR)
         logger.log(traceback.format_exc(), logger.DEBUG)
