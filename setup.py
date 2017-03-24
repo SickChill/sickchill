@@ -31,7 +31,8 @@ setup(
         'pytz',
         'requests',
         'mako',
-        'configobj'
+        'configobj',
+        'putio.py'
     ],
 
     test_suite="tests",
