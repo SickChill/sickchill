@@ -67,9 +67,8 @@ def getFileList(path, includeFiles, fileTypes):
         allowed_type = True
         if is_file and fileTypes:
             if 'images' in fileTypes:
-                allowed_type = is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
-            else:
-                allowed_type = filename.endswith(tuple(fileTypes))
+                is_image = filename.endswith(('jpg', 'jpeg', 'png', 'tiff', 'gif'))
+            allowed_type = filename.endswith(tuple(fileTypes)) or is_image
 
             if not allowed_type:
                 continue
