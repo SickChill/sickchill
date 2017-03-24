@@ -24,6 +24,9 @@ import os
 import string
 from operator import itemgetter
 
+import six
+
+import sickbeard
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 
@@ -120,6 +123,10 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
             for letter in getWinDrives():
                 letter_path = letter + ':\\'
                 entries.append({'name': letter_path, 'path': letter_path})
+
+            for name, share in six.iteritems(sickbeard.WINDOWS_SHARES):
+                entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
+
             return entries
         else:
             path = '/'
@@ -141,6 +148,10 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
         file_list = getFileList(parent_path, includeFiles, fileTypes)
 
     entries = [{'currentPath': path}]
+    if path == '/':
+        for name, share in six.iteritems(sickbeard.WINDOWS_SHARES):
+            entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
+
     if includeParent and parent_path != path:
         entries.append({'name': '..', 'path': parent_path})
     entries.extend(file_list)
