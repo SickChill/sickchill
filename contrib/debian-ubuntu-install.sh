@@ -19,8 +19,8 @@ fi
 
 # Get external ip address (checking 3 sites for redundancy)
 for i in 'ipecho.net/plain' 'ifconfig.me' 'checkip.amazonaws.com'; do
-    extip=$(curl -s $i)
-    [[ ! $extip ]] || break
+    extip=$(curl -s ${i})
+    [[ ! ${extip} ]] || break
 done
 
 # Get internal ip address
@@ -32,17 +32,17 @@ apt-get -qq install whiptail -y
 # Check to see what SickRage Dependencies are missing
 packages=$(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>1 | grep "no packages" | \
            awk '{ print $6 }' | tr '\n' ' ')
-if [[ $packages ]]; then
+if [[ ${packages} ]]; then
 # Show Whiptail and install required files
     {
     i=1
     while read -r line; do
         i=$(( $i + 1 ))
-        echo $i
-    done < <(apt-get update && apt-get install $packages -y)
+        echo ${i}
+    done < <(apt-get update && apt-get install ${packages} -y)
     } | whiptail --title "Progress" --gauge "Installing $packages" 8 80 0
 fi
-# Check to see if all prior packages were installed sucessfully. if not exit 1 and display whiptail issues
+# Check to see if all prior packages were installed successfully. if not exit 1 and display whiptail issues
 
 if [[ $(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | \
         awk '{print $6 }') ]]; then
@@ -72,7 +72,7 @@ if [[ ! -d /opt/sickrage ]]; then
 else
 	whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
 	choice=$?
-	if [[ $choice == 0 ]]; then
+	if [[ ${choice} == 0 ]]; then
 		echo "Removing Old SickRage Folder And Creating New SickRage Folder"
         	rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
 		echo "Git Cloning In Progress"
@@ -85,7 +85,7 @@ fi
 
 # Depending on Distro, Cp the service script, then change the owner/group and change the permissions. Finally
 # start the service
-if [[ $distro = ubuntu ]]; then
+if [[ ${distro} = ubuntu ]]; then
     if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
     	echo "Copying Startup Script To Upstart"
         cp /opt/sickrage/runscripts/init.upstart /etc/init/sickrage.conf
@@ -106,7 +106,7 @@ if [[ $distro = ubuntu ]]; then
 	echo "Starting SickRage"
         update-rc.d sickrage defaults && service sickrage start
     fi
-elif [[ $distro = debian ]]; then
+elif [[ ${distro} = debian ]]; then
     if [[ $(systemctl) =~ -\.mount ]]; then
     	echo "Copying Startup Script To systemd"
         cp /opt/sickrage/runscripts/init.systemd /etc/systemd/system/sickrage.service
@@ -124,7 +124,7 @@ fi
 
 # Finish by explaining the script is finished and give them the relevant IP addresses
 whiptail --title Complete --msgbox "Check that everything has been set up correctly by going to:
-     
+
           Internal IP: http://$intip:8081
                              OR
           External IP: http://$extip:8081
