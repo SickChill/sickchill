@@ -88,6 +88,7 @@ indexerApi = indexer_api.indexerApi
 PID = None
 
 CFG = None
+WINDOWS_SHARES = {}
 CONFIG_FILE = None
 
 # This is the version of the config we EXPECT to find
@@ -1375,6 +1376,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
 
+        if check_section(CFG, 'Shares'):
+            WINDOWS_SHARES.update(CFG['Shares'])
+
         # initialize NZB and TORRENT providers
         providerList = providers.makeProviderList()
 
@@ -1993,6 +1997,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'display_all_seasons': int(DISPLAY_ALL_SEASONS),
             'news_last_read': NEWS_LAST_READ,
         },
+
+        'Shares': WINDOWS_SHARES,
 
         'Blackhole': {
             'nzb_dir': NZB_DIR,
