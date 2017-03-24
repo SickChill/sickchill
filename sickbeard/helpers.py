@@ -67,6 +67,18 @@ from sickrage.show.Show import Show
 # pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
+orig_getaddrinfo = socket.getaddrinfo
+
+
+# Patches getaddrinfo so that resolving domains like thetvdb do not return ip6 addresses that no longer work on thetvdb.
+# This will not effect SickRage itself from being accessed through ip6
+def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, flags=0):
+    return orig_getaddrinfo(host, port, family, socktype, proto, flags)
+
+
+if socket.getaddrinfo.__module__ in ('socket', '_socket'):
+    logger.log("Patching socket to IPv4 only", logger.DEBUG)
+    socket.getaddrinfo = getaddrinfo_wrapper
 
 
 def indentXML(elem, level=0):
