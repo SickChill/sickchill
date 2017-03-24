@@ -231,7 +231,8 @@ module.exports = function(grunt) {
                 cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').replace(/`/gm, '').trim();  // removes commit hashes, and `
+                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim();  // removes commit hashes
+                    commits = commits.replace(/`/gm, '').replace(/^\(.*HEAD.*\)\s/gm, '')  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
@@ -350,7 +351,6 @@ module.exports = function(grunt) {
             patch = (parseInt(lastPatch) + 1).toString();
         }
         var nextTag = 'v' + year + '.' + month + '.' + day + '-' + patch;
-        nextTag = nextTag.replace(/^\(.*HEAD.*\)\s/, '')
         grunt.log.writeln('Creating tag ' + nextTag);
         grunt.config('next_tag', nextTag);
     });
