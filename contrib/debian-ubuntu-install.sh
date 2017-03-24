@@ -54,54 +54,70 @@ fi
 
 # Check to see if sickrage exists; If not make user/group
 if [[ ! "$(getent group sickrage)" ]]; then
-    addgroup --system sickrage
+	echo "Adding SickRage Group"
+    	addgroup --system sickrage
 fi
 if [[ ! "$(getent passwd sickrage)" ]]; then
-    adduser --disabled-password --system --home /var/lib/sickrage --gecos "SickRage" --ingroup sickrage sickrage
+	echo "Adding SickRage User"
+	adduser --disabled-password --system --home /var/lib/sickrage --gecos "SickRage" --ingroup sickrage sickrage
 fi
 
 # Check to see if /opt/sickrage exists. If it does ask if they want to overwrite it. if they do not exit 1
 # if they do, remove the whole directory and recreate
 if [[ ! -d /opt/sickrage ]]; then
-    mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
-    su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+	echo "Creating New SickRage Folder"
+	mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
+	echo "Git Cloning In Progress"
+	su -c "cd /opt && git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
 else
-    whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
-    choice=$?
-    if [[ $choice == 0 ]]; then
-        rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
-        su -c "git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
-    else
-        echo
-        exit 1
-    fi
+	whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
+	choice=$?
+	if [[ $choice == 0 ]]; then
+		echo "Removing Old SickRage Folder And Creating New SickRage Folder"
+        	rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
+		echo "Git Cloning In Progress"
+        	su -c "cd /opt && git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+    	else
+        	echo
+        	exit 1
+    	fi
 fi
 
 # Depending on Distro, Cp the service script, then change the owner/group and change the permissions. Finally
 # start the service
 if [[ $distro = ubuntu ]]; then
     if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
+    	echo "Copying Startup Script To Upstart"
         cp /opt/sickrage/runscripts/init.upstart /etc/init/sickrage.conf
 	chown root:root /etc/init/sickrage.conf && chmod 644 /etc/init/sickrage.conf
+	echo "Starting SickRage"
         service sickrage start
 
     elif [[ $(systemctl) =~ -\.mount ]]; then
+    	echo "Copying Startup Script To systemd"
         cp /opt/sickrage/runscripts/init.systemd /etc/systemd/system/sickrage.service
         chown root:root /etc/systemd/system/sickrage.service && chmod 644 /etc/systemd/system/sickrage.service
+	echo "Starting SickRage"
         systemctl -q enable sickrage && systemctl -q start sickrage
     else
+    	echo "Copying Startup Script To init"
         cp /opt/sickrage/runscripts/init.ubuntu /etc/init.d/sickrage
         chown root:root /etc/init.d/sickrage && chmod 644 /etc/init.d/sickrage
+	echo "Starting SickRage"
         update-rc.d sickrage defaults && service sickrage start
     fi
 elif [[ $distro = debian ]]; then
     if [[ $(systemctl) =~ -\.mount ]]; then
+    	echo "Copying Startup Script To systemd"
         cp /opt/sickrage/runscripts/init.systemd /etc/systemd/system/sickrage.service
         chown root:root /etc/systemd/system/sickrage.service && chmod 644 /etc/systemd/system/sickrage.service
+	echo "Starting SickRage"
         systemctl -q enable sickrage && systemctl -q start sickrage
     else
+    	echo "Copying Startup Script To init"
         cp /opt/sickrage/runscripts/init.debian /etc/init.d/sickrage
         chown root:root /etc/init.d/sickrage && chmod 755 /etc/init.d/sickrage
+	echo "Starting SickRage"
         update-rc.d sickrage defaults && service sickrage start
     fi
 fi
