@@ -73,7 +73,6 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         if response and 'token' in response:
             self.token = response['token']
-            logger.log(type(self.token), logger.ERROR)
             self.tokenLastUpdate = time.time()
             self.session.auth = T411Auth(self.token)
             return True
