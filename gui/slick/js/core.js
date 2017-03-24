@@ -1964,8 +1964,6 @@ var SICKRAGE = {
                     }
                     else if (selectedProvider.toLowerCase() === 'putio'){
                         client = 'putio';
-                        password = ' OAUTH TOKEN';
-                        $('#torrent_username_option').hide();
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
                         $('#torrent_verify_cert_option').hide();
@@ -1976,6 +1974,8 @@ var SICKRAGE = {
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text('URL to your putio client (e.g. http://localhost:8080)');
                         $('label[for="torrent_password"]').text('Create a new OAuth app for put.io at https://app.put.io/oauth/apps/new');
+                        $('#username_title.component-title').text('Put.io Parent Folder');
+                        $('#password_title.component-title').text('Put.io OAuth Token');
                     }
                     $('#host_title').text(client + host);
                     $('#username_title').text(client + username);

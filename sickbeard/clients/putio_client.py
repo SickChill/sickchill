@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 from putiopy import Client as PutioClient
 from putiopy import ClientError
 
@@ -27,7 +26,6 @@ class PutioAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
         super(PutioAPI, self).__init__('put_io', host, username, password)
-
         self.url = 'https://api.put.io/login'
 
     def _get_auth(self):
@@ -42,11 +40,25 @@ class PutioAPI(GenericClient):
 
         return self.auth
 
+    @property
+    def _parent_id(self):
+        parent_id = 0
+        if self.username is not None and self.username != '':
+            for f in self.auth.File.list():
+                if f.name == self.username:
+                    parent_id = f.id
+                    break
+
+        return parent_id
+
     def _add_torrent_uri(self, result):
-        return self.auth.Transfer.add_url(result.url).id is not None
+        transfer = self.auth.Transfer.add_url(result.url, self._parent_id)
+
+        return transfer.id is not None
 
     def _add_torrent_file(self, result):
-        transfer = self.auth.Transfer.add_torrent(result.name + '.torrent')
+        filename = result.name + '.torrent'
+        transfer = self.auth.Transfer.add_torrent(filename, self._parent_id)
 
         return transfer.id is not None
 
