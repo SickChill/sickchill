@@ -39,21 +39,61 @@ class BrowserTestAll(unittest.TestCase):
         """
         Test getFileList
         """
-        file_list = browser.getFileList(self.here, True, ['py'])
+        file_list = browser.getFileList(self.here, True, ['py', 'images'])
         self.assertIsNotNone(file_list)
-        test = file_list[0]
-        self.assertTrue('isImage' in test and isinstance(test['isImage'], bool))
-        self.assertTrue('isFile' in test and isinstance(test['isImage'], bool))
-        self.assertTrue('isAllowed' in test and isinstance(test['isImage'], bool))
-        self.assertTrue('name' in test and test['path'].endswith('py'))
-        self.assertTrue('path' in test and test['path'].endswith('py'))
+        for entry in file_list:
+            self.assertTrue('name' in entry)
+            self.assertTrue('path' in entry)
+            self.assertTrue('isImage' in entry)
+            self.assertTrue('isFile' in entry)
+            self.assertTrue('isAllowed' in entry)
 
-    @unittest.skip('Not yet implemented')
+            if entry['name'].endswith(('.jpg', '.jpeg', '.png', '.tiff', '.gif')):
+                self.assertTrue(entry['isImage'])
+            else:
+                self.assertFalse(entry['isImage'])
+
+            if entry['name'].endswith('.py') or entry['isImage']:
+                self.assertTrue(entry['isFile'])
+            else:
+                self.assertFalse(entry['isFile'])
+            self.assertTrue(entry['isAllowed'])
+
+        # folders only
+        file_list = browser.getFileList(self.here, False, [])
+        self.assertIsNotNone(file_list)
+        for entry in file_list:
+            self.assertTrue('name' in entry)
+            self.assertTrue('path' in entry)
+            self.assertTrue('isImage' in entry)
+            self.assertTrue('isFile' in entry)
+            self.assertTrue('isAllowed' in entry)
+
+            self.assertFalse(entry['isImage'])
+            self.assertFalse(entry['isFile'])
+            self.assertTrue(entry['isAllowed'])
+
     def test_folders_at_path(self):
         """
         Test foldersAtPath
         """
-        pass
+        test_list = browser.foldersAtPath(os.path.join(self.here, 'not_a_real_path'))
+        self.assertEqual(test_list[0]['currentPath'], self.here)
+
+        test_list = browser.foldersAtPath('')
+        if os.name == 'nt':
+            self.assertEqual(test_list[0]['currentPath'], 'Root')
+            drives = browser.getWinDrives()
+            self.assertEqual(len(drives), len(test_list[1:]))
+            for item in test_list[1:]:
+                self.assertTrue(item['path'].strip(':\\') in drives)
+        else:
+            self.assertEqual(test_list[0]['currentPath'], '/')
+
+        test_list = browser.foldersAtPath(os.path.join(self.here), includeParent=True)
+        self.assertEqual(test_list[0]['currentPath'], self.here)
+        self.assertEqual(test_list[1]['name'], '..')
+        self.assertEqual(test_list[1]['path'], os.path.dirname(self.here))
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr)
