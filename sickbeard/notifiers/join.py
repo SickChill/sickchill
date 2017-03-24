@@ -34,30 +34,34 @@ class Notifier(object):
 
     http://joaoapps.com/join/
     """
-    def test_notify(self, id=None):
+    def test_notify(self, id=None, apikey=None):
         """
         Send a test notification
         :param id: The Device ID
+        :param id: The User's API Key
         :returns: the notification
         """
-        return self._notify_join('Test', 'This is a test notification from SickRage', id, force=True)
+        return self._notify_join('Test', 'This is a test notification from SickRage', id, apikey, force=True)
 
-    def _send_join_msg(self, title, msg, id=None):
+    def _send_join_msg(self, title, msg, id=None, apikey=None):
         """
         Sends a Join notification
 
         :param title: The title of the notification to send
         :param msg: The message string to send
         :param id: The Device ID
+        :param id: The User's API Key
 
         :returns: True if the message succeeded, False otherwise
         """
         id = sickbeard.JOIN_ID if id is None else id
+        apikey = sickbeard.JOIN_APIKEY if apikey is None else apikey
 
         logger.log('Join in use with device ID: {0}'.format(id), logger.DEBUG)
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
         params = {
+            "apikey": apikey,
             "deviceId": id,
             "title": title,
             "text": message,
@@ -131,13 +135,14 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_join(title, update_text.format(ipaddress))
 
-    def _notify_join(self, title, message, id=None, force=False):
+    def _notify_join(self, title, message, id=None, apikey=None, force=False):
         """
         Sends a Join notification
 
         :param title: The title of the notification to send
         :param message: The message string to send
         :param id: The Device ID
+        :param id: The User's API Key
         :param force: Enforce sending, for instance for testing
 
         :returns: the message to send
@@ -149,4 +154,4 @@ class Notifier(object):
 
         logger.log('Sending a Join message for {0}'.format(message), logger.DEBUG)
 
-        return self._send_join_msg(title, message, id)
+        return self._send_join_msg(title, message, id, apikey)

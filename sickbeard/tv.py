@@ -63,7 +63,8 @@ from sickrage.helper.exceptions import ShowNotFoundException
 from sickrage.show.Show import Show
 
 from sickbeard.common import Quality, Overview, statusStrings
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, UNKNOWN
+from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, \
+                             UNKNOWN, FAILED
 from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
@@ -1241,21 +1242,23 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         curStatus_, curQuality = Quality.splitCompositeStatus(epStatus)
 
         # if it's one of these then we want it as long as it's in our allowed initial qualities
-        if epStatus in (WANTED, SKIPPED, UNKNOWN):
+        if epStatus in (WANTED, SKIPPED, UNKNOWN, FAILED):
             logger.log("Existing episode status is '{status}', getting found result for {name} {ep} with quality {quality}".format
                        (status=epStatus_text, name=self.name, ep=episode_num(season, episode),
                         quality=Quality.qualityStrings[quality]), logger.DEBUG)
             return True
         elif manualSearch:
-            if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
+            if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality != curQuality):
                 logger.log("Usually ignoring found result, but forced search allows the quality,"
                            " getting found result for {name} {ep} with quality {quality}".format
                            (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]),
                            logger.DEBUG)
                 return True
 
-        # if we are re-downloading then we only want it if it's in our preferred_qualities list and better than what we have, or we only have one bestQuality and we do not have that quality yet
-        if epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities and (quality > curQuality or curQuality not in preferred_qualities):
+        # if we are re-downloading then we only want it if it's in our preferred_qualities list and better than what we have,
+        # or we only have one bestQuality and we do not have that quality yet
+        if (epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities
+            and (quality > curQuality or curQuality not in preferred_qualities)):
             logger.log("Episode already exists with quality {existing_quality} but the found result"
                        " quality {new_quality} is wanted more, getting found result for {name} {ep}".format
                        (existing_quality=Quality.qualityStrings[curQuality],

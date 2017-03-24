@@ -94,11 +94,15 @@
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
         <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
 
-        %if sickbeard.THEME_NAME != "light":
+        % if sickbeard.THEME_NAME != "light":
             <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
-        %endif
+        % endif
 
         <%block name="css" />
+
+        % if sickbeard.CUSTOM_CSS:
+            <link rel="stylesheet" type="text/css" href="${srRoot}/ui/custom.css" />
+        % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
         <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
