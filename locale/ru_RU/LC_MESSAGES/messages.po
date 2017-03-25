@@ -19,117 +19,117 @@ msgstr ""
 
 #: sickbeard/__init__.py:76
 msgid "Drama"
-msgstr ""
+msgstr "Драма"
 
 #: sickbeard/__init__.py:76
 msgid "Mystery"
-msgstr ""
+msgstr "Детектив"
 
 #: sickbeard/__init__.py:76 sickbeard/__init__.py:81
 msgid "Science-Fiction"
-msgstr ""
+msgstr "Научная фантастика"
 
 #: sickbeard/__init__.py:76
 msgid "Crime"
-msgstr ""
+msgstr "Криминал"
 
 #: gui/slick/views/history.mako:62 sickbeard/__init__.py:76
 msgid "Action"
-msgstr ""
+msgstr "Боевик"
 
 #: sickbeard/__init__.py:77
 msgid "Comedy"
-msgstr ""
+msgstr "Комедия"
 
 #: sickbeard/__init__.py:77
 msgid "Thriller"
-msgstr ""
+msgstr "Триллер"
 
 #: sickbeard/__init__.py:77
 msgid "Animation"
-msgstr ""
+msgstr "Анимация"
 
 #: sickbeard/__init__.py:77
 msgid "Family"
-msgstr ""
+msgstr "Семейный"
 
 #: sickbeard/__init__.py:77
 msgid "Fantasy"
-msgstr ""
+msgstr "Фэнтези"
 
 #: sickbeard/__init__.py:78
 msgid "Adventure"
-msgstr ""
+msgstr "Приключения"
 
 #: sickbeard/__init__.py:78
 msgid "Horror"
-msgstr ""
+msgstr "Ужас"
 
 #: sickbeard/__init__.py:78
 msgid "Film-Noir"
-msgstr ""
+msgstr "Нуар"
 
 #: sickbeard/__init__.py:78
 msgid "Sci-Fi"
-msgstr ""
+msgstr "Научная фантастика"
 
 #: sickbeard/__init__.py:78
 msgid "Romance"
-msgstr ""
+msgstr "Романтика"
 
 #: sickbeard/__init__.py:79
 msgid "Sport"
-msgstr ""
+msgstr "Спорт"
 
 #: sickbeard/__init__.py:79
 msgid "War"
-msgstr ""
+msgstr "Военный"
 
 #: sickbeard/__init__.py:79
 msgid "Biography"
-msgstr ""
+msgstr "Биография"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:141
 #: sickbeard/__init__.py:79 sickbeard/webserve.py:3805
 msgid "History"
-msgstr ""
+msgstr "История"
 
 #: sickbeard/__init__.py:79
 msgid "Music"
-msgstr ""
+msgstr "Музыка"
 
 #: sickbeard/__init__.py:79
 msgid "Western"
-msgstr ""
+msgstr "Вестерн"
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:217
 #: sickbeard/__init__.py:80 sickbeard/webserve.py:2383
 msgid "News"
-msgstr ""
+msgstr "Новости"
 
 #: sickbeard/__init__.py:80
 msgid "Sitcom"
-msgstr ""
+msgstr "Комедия"
 
 #: sickbeard/__init__.py:80
 msgid "Reality-TV"
-msgstr ""
+msgstr "Реалити шоу"
 
 #: sickbeard/__init__.py:80
 msgid "Documentary"
-msgstr ""
+msgstr "Документальный"
 
 #: sickbeard/__init__.py:80
 msgid "Game-Show"
-msgstr ""
+msgstr "Игровое шоу"
 
 #: sickbeard/__init__.py:80
 msgid "Musical"
-msgstr ""
+msgstr "Музыкальный(мюзикл)"
 
 #: sickbeard/__init__.py:81
 msgid "Talk-Show"
-msgstr ""
+msgstr "Ток-шоу"
 
 #: sickbeard/common.py:80
 msgid "Started Download"
@@ -145,7 +145,7 @@ msgstr "Загрузка субтитров завершена"
 
 #: sickbeard/common.py:83
 msgid "SickRage Updated"
-msgstr "SickRage обновлено"
+msgstr "SickRage обновлен"
 
 #: sickbeard/common.py:84
 msgid "SickRage Updated To Commit#: "
@@ -161,7 +161,7 @@ msgstr ""
 
 #: sickbeard/common.py:111
 msgid "Repeat"
-msgstr ""
+msgstr "Повтор"
 
 #: sickbeard/common.py:112
 msgid "Repeat (Separated)"
@@ -169,7 +169,7 @@ msgstr ""
 
 #: sickbeard/common.py:114
 msgid "Extend"
-msgstr ""
+msgstr "Расширить"
 
 #: sickbeard/common.py:115
 msgid "Extend (Limited)"
@@ -183,7 +183,7 @@ msgstr ""
 #: gui/slick/views/inc_home_showList.mako:275 sickbeard/common.py:220
 #: sickbeard/common.py:605
 msgid "Downloaded"
-msgstr "Загрузить"
+msgstr "Загружено"
 
 #: gui/slick/views/displayShow.mako:314 gui/slick/views/history.mako:127
 #: gui/slick/views/inc_home_showList.mako:76
@@ -199,7 +199,7 @@ msgstr ""
 #: gui/slick/views/manage_manageSearches.mako:64 sickbeard/common.py:223
 #: sickbeard/common.py:612
 msgid "Failed"
-msgstr ""
+msgstr "Неудачный"
 
 #: sickbeard/common.py:224 sickbeard/common.py:613
 msgid "Snatched (Best)"
@@ -207,31 +207,31 @@ msgstr ""
 
 #: sickbeard/common.py:225 sickbeard/common.py:609
 msgid "Archived"
-msgstr ""
+msgstr "Помещено в архив"
 
 #: gui/slick/views/history.mako:89 gui/slick/views/history.mako:167
 #: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:602
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: gui/slick/views/inc_home_showList.mako:86
 #: gui/slick/views/inc_home_showList.mako:289 sickbeard/common.py:603
 msgid "Unaired"
-msgstr ""
+msgstr "Невышедшее"
 
 #: gui/slick/views/displayShow.mako:313 sickbeard/common.py:606
 msgid "Skipped"
-msgstr ""
+msgstr "Пропущено"
 
 #: gui/slick/views/displayShow.mako:310
 #: gui/slick/views/manage_backlogOverview.mako:26
 #: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:608
 msgid "Wanted"
-msgstr ""
+msgstr "Желаемое"
 
 #: sickbeard/common.py:610
 msgid "Ignored"
-msgstr ""
+msgstr "Пропущено"
 
 #: gui/slick/views/config_providers.mako:713 gui/slick/views/history.mako:130
 #: sickbeard/common.py:611
@@ -240,11 +240,11 @@ msgstr ""
 
 #: sickbeard/logger.py:474
 msgid "&lt;No Filter&gt;"
-msgstr ""
+msgstr "&lt;Без фильтров&gt;"
 
 #: sickbeard/logger.py:475
 msgid "Daily Searcher"
-msgstr ""
+msgstr "Ежедневный поиск"
 
 #: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:13
 #: sickbeard/logger.py:476
@@ -253,52 +253,52 @@ msgstr ""
 
 #: sickbeard/logger.py:477
 msgid "Show Updater"
-msgstr ""
+msgstr "Обновление шоу"
 
 #: sickbeard/logger.py:478
 msgid "Check Version"
-msgstr ""
+msgstr "Проверить версию"
 
 #: gui/slick/views/status.mako:16 gui/slick/views/status.mako:125
 #: sickbeard/logger.py:479
 msgid "Show Queue"
-msgstr ""
+msgstr "Очередь шоу"
 
 #: sickbeard/logger.py:480
 msgid "Search Queue (All)"
-msgstr ""
+msgstr "Очередь поиска (все)"
 
 #: sickbeard/logger.py:481
 msgid "Search Queue (Daily Searcher)"
-msgstr ""
+msgstr "Очередь поиска (Ежедневный поиск)"
 
 #: sickbeard/logger.py:482
 msgid "Search Queue (Backlog)"
-msgstr ""
+msgstr "Очередь поиска (Backlog)"
 
 #: sickbeard/logger.py:483
 msgid "Search Queue (Manual)"
-msgstr ""
+msgstr "Очередь поиска (ручная)"
 
 #: sickbeard/logger.py:484
 msgid "Search Queue (Retry/Failed)"
-msgstr ""
+msgstr "Очередь поиска (Повторить/Неудачный)"
 
 #: sickbeard/logger.py:485
 msgid "Search Queue (RSS)"
-msgstr ""
+msgstr "Очередь поиска (RSS)"
 
 #: sickbeard/logger.py:486
 msgid "Find Propers"
-msgstr ""
+msgstr "Найти Propers"
 
 #: sickbeard/logger.py:487
 msgid "Postprocessor"
-msgstr ""
+msgstr "Постобработка"
 
 #: sickbeard/logger.py:488
 msgid "Find Subtitles"
-msgstr ""
+msgstr "Найти субтитры"
 
 #: gui/slick/views/status.mako:21 sickbeard/logger.py:489
 msgid "Trakt Checker"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: sickbeard/logger.py:490
 msgid "Event"
-msgstr ""
+msgstr "Событие"
 
 #: sickbeard/logger.py:491 sickbeard/webserve.py:1336 sickbeard/webserve.py:1339
 #: sickbeard/webserve.py:1517 sickbeard/webserve.py:1526 sickbeard/webserve.py:1715
@@ -318,7 +318,7 @@ msgstr ""
 #: sickbeard/webserve.py:2005 sickbeard/webserve.py:2034 sickbeard/webserve.py:2038
 #: sickbeard/webserve.py:2043
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: sickbeard/logger.py:492
 msgid "Tornado"
@@ -335,7 +335,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_showList.mako:27 sickbeard/show_queue.py:298
 msgid "Loading"
-msgstr ""
+msgstr "Загрузка"
 
 #: sickbeard/versionChecker.py:70
 msgid "New update found for SickRage, starting auto-updater"
@@ -343,54 +343,54 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:74
 msgid "Update was successful"
-msgstr ""
+msgstr "Обновление завершено успешно"
 
 #: sickbeard/versionChecker.py:78
 msgid "Update failed!"
-msgstr ""
+msgstr "Не удалось обновить!"
 
 #: gui/slick/views/config_backuprestore.mako:7
 #: gui/slick/views/config_backuprestore.mako:18 sickbeard/versionChecker.py:90
 #: sickbeard/versionChecker.py:98 sickbeard/versionChecker.py:102
 #: sickbeard/versionChecker.py:106
 msgid "Backup"
-msgstr ""
+msgstr "Резервная копия"
 
 #: sickbeard/versionChecker.py:90
 msgid "Config backup in progress..."
-msgstr ""
+msgstr "Идет резервная копия конфигурации..."
 
 #: sickbeard/versionChecker.py:98
 msgid "Config backup successful, updating..."
-msgstr ""
+msgstr "Резервная копия конфигурации прошла успешно, обновление..."
 
 #: sickbeard/versionChecker.py:102 sickbeard/versionChecker.py:106
 msgid "Config backup failed, aborting update"
-msgstr ""
+msgstr "Резервная копия конфигурации не удалась, отмена обновления"
 
 #: sickbeard/versionChecker.py:271
 msgid "No update needed"
-msgstr ""
+msgstr "Нет обновлений"
 
 #: sickbeard/webserve.py:170
 msgid "Mako Error"
-msgstr ""
+msgstr "Mako Ошибка"
 
 #: sickbeard/webserve.py:195
 msgid "Oops"
-msgstr ""
+msgstr "Шайтан коробочка сломалась"
 
 #: sickbeard/webserve.py:197
 msgid "Wrong API key used"
-msgstr ""
+msgstr "Использован не верный API ключ"
 
 #: gui/slick/views/login.mako:34 sickbeard/webserve.py:302
 msgid "Login"
-msgstr ""
+msgstr "Логин"
 
 #: sickbeard/webserve.py:406
 msgid "API Key not generated"
-msgstr ""
+msgstr "API ключ не создан"
 
 #: sickbeard/webserve.py:409
 msgid "API Builder"
@@ -399,23 +399,23 @@ msgstr ""
 #: gui/slick/views/config_general.mako:77 gui/slick/views/layouts/main.mako:137
 #: sickbeard/webserve.py:512
 msgid "Schedule"
-msgstr ""
+msgstr "Расписание"
 
 #: sickbeard/webserve.py:610
 msgid "Test 1"
-msgstr ""
+msgstr "Тест 1"
 
 #: sickbeard/webserve.py:610
 msgid "This is test number 1"
-msgstr ""
+msgstr "Это тест номер 1"
 
 #: sickbeard/webserve.py:611
 msgid "Test 2"
-msgstr ""
+msgstr "Тест 2"
 
 #: sickbeard/webserve.py:611
 msgid "This is test number 2"
-msgstr ""
+msgstr "Это тест номер 2"
 
 #: sickbeard/webserve.py:634
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
