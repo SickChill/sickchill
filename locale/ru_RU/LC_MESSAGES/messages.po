@@ -6630,7 +6630,7 @@ msgstr ""
 
 #: gui/slick/views/testRename.mako:43
 msgid "All Seasons"
-msgstr ""
+msgstr "Все сезоны"
 
 #: gui/slick/views/testRename.mako:49
 msgid "select all"
@@ -6658,19 +6658,19 @@ msgstr ""
 
 #: gui/slick/views/trendingShows.mako:47
 msgid "votes"
-msgstr ""
+msgstr "Рейтинг"
 
 #: gui/slick/views/trendingShows.mako:53
 msgid "Remove Show"
-msgstr ""
+msgstr "Удалить шоу"
 
 #: gui/slick/views/viewlogs.mako:16
 msgid "Level"
-msgstr ""
+msgstr "Тип"
 
 #: gui/slick/views/viewlogs.mako:33
 msgid "Filter"
-msgstr ""
+msgstr "Фильтр"
 
 #: gui/slick/views/layouts/config.mako:47
 msgid "All non-absolute folder locations are relative to "
@@ -6678,7 +6678,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:125
 msgid "Manual Post-Processing"
-msgstr ""
+msgstr "Ручная постобработка"
 
 #: gui/slick/views/layouts/main.mako:152
 msgid "Episode Status Management"
@@ -6686,15 +6686,15 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:154
 msgid "Update PLEX"
-msgstr ""
+msgstr "Обновление PLEX"
 
 #: gui/slick/views/layouts/main.mako:157
 msgid "Update KODI"
-msgstr ""
+msgstr "Обновление KODI"
 
 #: gui/slick/views/layouts/main.mako:160
 msgid "Update Emby"
-msgstr ""
+msgstr "Обновление Emby"
 
 #: gui/slick/views/layouts/main.mako:169
 msgid "Missed Subtitle Management"
@@ -6702,51 +6702,51 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:180
 msgid "Help &amp; Info"
-msgstr ""
+msgstr "Помощь &amp; Информация"
 
 #: gui/slick/views/layouts/main.mako:182
 msgid "Backup &amp; Restore"
-msgstr ""
+msgstr "Резервное копирование &amp; Восстановление"
 
 #: gui/slick/views/layouts/main.mako:213
 msgid "Tools"
-msgstr ""
+msgstr "Инструменты"
 
 #: gui/slick/views/layouts/main.mako:220
 msgid "Support SickRage"
-msgstr ""
+msgstr "Поддержка SickRage"
 
 #: gui/slick/views/layouts/main.mako:223
 msgid "View Errors"
-msgstr ""
+msgstr "Посмотреть ошибки"
 
 #: gui/slick/views/layouts/main.mako:226
 msgid "View Warnings"
-msgstr ""
+msgstr "Посмотреть предупреждения"
 
 #: gui/slick/views/layouts/main.mako:228
 msgid "View Log"
-msgstr ""
+msgstr "Посмотреть Log"
 
 #: gui/slick/views/layouts/main.mako:230
 msgid "Check For Updates"
-msgstr ""
+msgstr "Проверить обновления"
 
 #: gui/slick/views/layouts/main.mako:231
 msgid "Restart"
-msgstr ""
+msgstr "Перезагрузить"
 
 #: gui/slick/views/layouts/main.mako:232
 msgid "Shutdown"
-msgstr ""
+msgstr "Выключить"
 
 #: gui/slick/views/layouts/main.mako:234
 msgid "Logout"
-msgstr ""
+msgstr "Выйти"
 
 #: gui/slick/views/layouts/main.mako:237
 msgid "Server Status"
-msgstr ""
+msgstr "Статус сервера"
 
 #: gui/slick/views/layouts/main.mako:316
 msgid "View overview of snatched episodes"
@@ -6754,15 +6754,15 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:318
 msgid "Episodes Downloaded"
-msgstr ""
+msgstr "Эпизодов загружено"
 
 #: gui/slick/views/layouts/main.mako:326
 msgid "Memory used"
-msgstr ""
+msgstr "Используемая память"
 
 #: gui/slick/views/layouts/main.mako:328
 msgid "Load time"
-msgstr ""
+msgstr "Время загрузки"
 
 #: gui/slick/views/layouts/main.mako:330
 msgid "Branch"
@@ -6770,5 +6770,5 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:331
 msgid "Now"
-msgstr ""
+msgstr "Сейчас"
 
