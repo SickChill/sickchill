@@ -937,11 +937,6 @@ class Home(WebRoot):
             return _("Error sending Pushover notification")
 
     @staticmethod
-    def putio_authorize():
-        client = clients.getClientInstance('putio')
-        return client().authentication_url  # pylint: disable=protected-access
-
-    @staticmethod
     def twitterStep1():
         return notifiers.twitter_notifier._get_authorization()  # pylint: disable=protected-access
 

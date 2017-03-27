@@ -398,10 +398,10 @@ class GitUpdateManager(UpdateManager):
         alternative_git = []
 
         # osx people who start sr from launchd have a broken path, so try a hail-mary attempt for them
-        if platform.system().lower() == 'darwin':
+        if platform.system() == 'Darwin':
             alternative_git.append('/usr/local/git/bin/git')
 
-        if platform.system().lower() == 'windows':
+        if platform.system() == 'Windows':
             if main_git != main_git.lower():
                 alternative_git.append(main_git.lower())
 

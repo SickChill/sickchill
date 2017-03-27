@@ -1973,6 +1973,9 @@ var SICKRAGE = {
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text('URL to your putio client (e.g. http://localhost:8080)');
+                        $('label[for="torrent_password"]').text('Create a new OAuth app for put.io at https://app.put.io/oauth/apps/new');
+                        $('#username_title.component-title').text('Put.io Parent Folder');
+                        $('#password_title.component-title').text('Put.io OAuth Token');
                     }
                     $('#host_title').text(client + host);
                     $('#username_title').text(client + username);
@@ -2053,14 +2056,6 @@ var SICKRAGE = {
                 torrent.host = $('#torrent_host').val();
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
-
-                if (torrent.method.toLowerCase() === 'putio') {
-                    $.post(srRoot + '/home/putio_authorize', function (data) {
-                        window.open(data);
-                    }).done(function() {
-                        $('#test_torrent_result').html('Confirm Authorization');
-                    });
-                }
 
                 $.post(srRoot + '/home/testTorrent', {
                     'torrent_method': torrent.method,
