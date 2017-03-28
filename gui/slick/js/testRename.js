@@ -34,13 +34,7 @@ $(document).ready(function(){
         });
 
         if (epArr.length === 0) { return false; }
-
-        var url = srRoot+'/home/doRename?show='+$('#showID').attr('value')+'&eps='+epArr.join('|');
-        if(url.length < 2083) {
-            window.location.href = url;
-        } else {
-            alert("You've selected too many shows, please uncheck some and try again. [" + url.length + "/2083 characters]");
-        }
+        $.redirect(srRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArr.join('|')}, 'POST');
     });
 
 });

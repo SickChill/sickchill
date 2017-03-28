@@ -24,6 +24,7 @@ import codecs
 import datetime
 import io
 import locale
+import platform
 import os
 import shutil
 import signal
@@ -178,7 +179,7 @@ class SickRage(object):
         self.no_launch = args.nolaunch
         self.forced_port = args.port
         if args.daemon:
-            self.run_as_daemon = not (sys.platform == 'win32' or sys.platform == 'darwin')
+            self.run_as_daemon = platform.system() != 'Windows'
             self.console_logging = False
             self.no_launch = True
 

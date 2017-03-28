@@ -88,13 +88,11 @@ var gt = null;
     if ($('html').attr('lang') !== '') {
         $.ajax({
             dataType: "json",
-            url: srRoot + '/locale/messages.json',
+            url: srRoot + '/ui/locale.json',
             async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
             success: function(data) {
-                gt = new Gettext(data.messages); // jshint ignore:line
-            },
-            failure: function() {
-                gt = new Gettext(); // jshint ignore:line
+                var toLoad = data === undefined ? null : data.messages;
+                gt = new Gettext(toLoad); // jshint ignore:line
             }
         });
     } else {
@@ -442,9 +440,9 @@ var SICKRAGE = {
             });
         },
         index: function() {
-            $('#log_dir').fileBrowser({title: 'Select log file folder location'});
-            $('#sickrage_background_path').fileBrowser({title: 'Select Background Image', key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
-            $('#custom_css_path').fileBrowser({title: 'Select CSS file', key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
+            $('#log_dir').fileBrowser({title: _('Select log file folder location')});
+            $('#sickrage_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
+            $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
         },
         backupRestore: function(){
             $('#Backup').on('click', function() {
@@ -468,8 +466,8 @@ var SICKRAGE = {
                     });
             });
 
-            $('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
-            $('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
+            $('#backupDir').fileBrowser({ title: _('Select backup folder to save to'), key: 'backupPath' });
+            $('#backupFile').fileBrowser({ title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1 });
             $('#config-components').tabs();
         },
         notifications: function() {
@@ -478,7 +476,7 @@ var SICKRAGE = {
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
                 if (!growl.host) {
-                    $('#testGrowl-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testGrowl-result').html( _('Please fill out the necessary fields above.') );
                     $('#growl_host').addClass('warning');
                     return;
                 }
@@ -499,7 +497,7 @@ var SICKRAGE = {
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
                 if (!prowl.api) {
-                    $('#testProwl-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testProwl-result').html( _('Please fill out the necessary fields above.') );
                     $('#prowl_api').addClass('warning');
                     return;
                 }
@@ -521,7 +519,7 @@ var SICKRAGE = {
                 kodi.username = $.trim($('#kodi_username').val());
                 kodi.password = $.trim($('#kodi_password').val());
                 if (!kodi.host) {
-                    $('#testKODI-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testKODI-result').html( _('Please fill out the necessary fields above.') );
                     $('#kodi_host').addClass('warning');
                     return;
                 }
@@ -545,7 +543,7 @@ var SICKRAGE = {
                 plex.client.username = $.trim($('#plex_client_username').val());
                 plex.client.password = $.trim($('#plex_client_password').val());
                 if (!plex.client.host) {
-                    $('#testPHT-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testPHT-result').html( _('Please fill out the necessary fields above.') );
                     $('#plex_client_host').addClass('warning');
                     return;
                 }
@@ -570,7 +568,7 @@ var SICKRAGE = {
                 plex.server.password = $.trim($('#plex_server_password').val());
                 plex.server.token = $.trim($('#plex_server_token').val());
                 if (!plex.server.host) {
-                    $('#testPMS-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testPMS-result').html( _('Please fill out the necessary fields above.') );
                     $('#plex_server_host').addClass('warning');
                     return;
                 }
@@ -593,7 +591,7 @@ var SICKRAGE = {
                 emby.host = $('#emby_host').val();
                 emby.apikey = $('#emby_apikey').val();
                 if (!emby.host || !emby.apikey) {
-                    $('#testEMBY-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testEMBY-result').html( _('Please fill out the necessary fields above.') );
                     if (!emby.host) {
                         $('#emby_host').addClass('warning');
                     } else {
@@ -622,7 +620,7 @@ var SICKRAGE = {
                 var boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
                 if (!boxcar2.accesstoken) {
-                    $('#testBoxcar2-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testBoxcar2-result').html( _('Please fill out the necessary fields above.') );
                     $('#boxcar2_accesstoken').addClass('warning');
                     return;
                 }
@@ -642,7 +640,7 @@ var SICKRAGE = {
                 pushover.userkey = $('#pushover_userkey').val();
                 pushover.apikey = $('#pushover_apikey').val();
                 if (!pushover.userkey || !pushover.apikey) {
-                    $('#testPushover-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testPushover-result').html( _('Please fill out the necessary fields above.') );
                     if (!pushover.userkey) {
                         $('#pushover_userkey').addClass('warning');
                     } else {
@@ -679,7 +677,7 @@ var SICKRAGE = {
                 $.get(srRoot + '/home/twitterStep1', function (data) {
                     window.open(data);
                 }).done(function() {
-                    $('#testTwitter-result').html('<b>Step1:</b> Confirm Authorization');
+                    $('#testTwitter-result').html( _('<b>Step 1:</b> Confirm Authorization') );
                 });
             });
 
@@ -687,7 +685,7 @@ var SICKRAGE = {
                 var twitter = {};
                 twitter.key = $.trim($('#twitter_key').val());
                 if (!twitter.key) {
-                    $('#testTwitter-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testTwitter-result').html( _('Please fill out the necessary fields above.') );
                     $('#twitter_key').addClass('warning');
                     return;
                 }
@@ -766,7 +764,7 @@ var SICKRAGE = {
                 nmj.database = $('#nmj_database').val();
                 nmj.mount = $('#nmj_mount').val();
                 if (!nmj.host) {
-                    $('#testNMJ-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testNMJ-result').html( _('Please fill out the necessary fields above.') );
                     $('#nmj_host').addClass('warning');
                     return;
                 }
@@ -826,7 +824,7 @@ var SICKRAGE = {
                 var nmjv2 = {};
                 nmjv2.host = $.trim($('#nmjv2_host').val());
                 if (!nmjv2.host) {
-                    $('#testNMJv2-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testNMJv2-result').html( _('Please fill out the necessary fields above.') );
                     $('#nmjv2_host').addClass('warning');
                     return;
                 }
@@ -846,7 +844,7 @@ var SICKRAGE = {
                 freemobile.id = $.trim($('#freemobile_id').val());
                 freemobile.apikey = $.trim($('#freemobile_apikey').val());
                 if (!freemobile.id || !freemobile.apikey) {
-                    $('#testFreeMobile-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testFreeMobile-result').html( _('Please fill out the necessary fields above.') );
                     if (!freemobile.id) {
                         $('#freemobile_id').addClass('warning');
                     } else {
@@ -876,7 +874,7 @@ var SICKRAGE = {
                 telegram.id = $.trim($('#telegram_id').val());
                 telegram.apikey = $.trim($('#telegram_apikey').val());
                 if (!telegram.id || !telegram.apikey) {
-                    $('#testTelegram-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testTelegram-result').html( _('Please fill out the necessary fields above.') );
                     if (!telegram.id) {
                         $('#telegram_id').addClass('warning');
                     } else {
@@ -906,7 +904,7 @@ var SICKRAGE = {
                 join.id = $.trim($('#join_id').val());
                 join.apikey = $.trim($('#join_apikey').val());
                 if (!join.id || !join.apikey) {
-                    $('#testJoin-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testJoin-result').html( _('Please fill out the necessary fields above.') );
                     if (!join.id) {
                         $('#join_id').addClass('warning');
                     } else {
@@ -966,7 +964,7 @@ var SICKRAGE = {
                 trakt.username = $.trim($('#trakt_username').val());
                 trakt.trendingBlacklist = $.trim($('#trakt_blacklist_name').val());
                 if (!trakt.username) {
-                    $('#testTrakt-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testTrakt-result').html( _('Please fill out the necessary fields above.') );
                     if (!trakt.username) {
                         $('#trakt_username').addClass('warning');
                     } else {
@@ -976,7 +974,7 @@ var SICKRAGE = {
                 }
 
                 if (/\s/g.test(trakt.trendingBlacklist)) {
-                    $('#testTrakt-result').html('Check blacklist name; the value needs to be a trakt slug');
+                    $('#testTrakt-result').html( _('Check blacklist name; the value needs to be a trakt slug') );
                     $('#trakt_blacklist_name').addClass('warning');
                     return;
                 }
@@ -1021,7 +1019,7 @@ var SICKRAGE = {
                 } else {
                     to = prompt('Enter an email address to send the test to:', null);
                     if (to === null || to.length === 0 || to.match(/.*@.*/) === null) {
-                        status.html('<p style="color: red;">You must provide a recipient email address!</p>');
+                        status.html('<p style="color: red;">' + _('You must provide a recipient email address!') + '</p>');
                     } else {
                         $.post(srRoot + '/home/testEmail', {
                             'host': host,
@@ -1043,7 +1041,7 @@ var SICKRAGE = {
                 nma.api = $.trim($('#nma_api').val());
                 nma.priority = $('#nma_priority').val();
                 if (!nma.api) {
-                    $('#testNMA-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testNMA-result').html( _('Please fill out the necessary fields above.') );
                     $('#nma_api').addClass('warning');
                     return;
                 }
@@ -1063,7 +1061,7 @@ var SICKRAGE = {
                 var pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
                 if (!pushalot.authToken) {
-                    $('#testPushalot-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testPushalot-result').html( _('Please fill out the necessary fields above.') );
                     $('#pushalot_authorizationtoken').addClass('warning');
                     return;
                 }
@@ -1082,7 +1080,7 @@ var SICKRAGE = {
                 var pushbullet = {};
                 pushbullet.api = $.trim($('#pushbullet_api').val());
                 if (!pushbullet.api) {
-                    $('#testPushbullet-result').html(_('Please fill out the necessary fields above.'));
+                    $('#testPushbullet-result').html( _('Please fill out the necessary fields above.') );
                     $('#pushbullet_api').addClass('warning');
                     return;
                 }
@@ -1106,7 +1104,7 @@ var SICKRAGE = {
                 }
 
                 if(!pushbullet.api) {
-                    $('#testPushbullet-result').html("You didn't supply a Pushbullet api key");
+                    $('#testPushbullet-result').html( _("You didn't supply a Pushbullet api key") );
                     $("#pushbullet_api").focus();
                     return false;
                 }
@@ -1132,7 +1130,7 @@ var SICKRAGE = {
 
                 $("#pushbullet_device_list").on('change', function(){
                     $("#pushbullet_device").val($("#pushbullet_device_list").val());
-                    $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
+                    $('#testPushbullet-result').html( _("Don't forget to save your new pushbullet settings.") );
                 });
 
                 $.post(srRoot + "/home/getPushbulletChannels", {
@@ -1161,7 +1159,7 @@ var SICKRAGE = {
 
                     $("#pushbullet_channel_list").on('change', function () {
                         $("#pushbullet_channel").val($("#pushbullet_channel_list").val());
-                        $('#testPushbullet-result').html("Don't forget to save your new pushbullet settings.");
+                        $('#testPushbullet-result').html( _("Don't forget to save your new pushbullet settings.") );
                     });
                 });
             }
@@ -1261,8 +1259,8 @@ var SICKRAGE = {
         },
         postProcessing: function() {
             $('#config-components').tabs();
-            $('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
-            $('#unpack_dir').fileBrowser({ title: 'Select Unpack Directory' });
+            $('#tv_download_dir').fileBrowser({ title: _('Select TV Download Directory') });
+            $('#unpack_dir').fileBrowser({ title: _('Select Unpack Directory') });
 
             // http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
             var typewatch = (function () {
@@ -1817,9 +1815,9 @@ var SICKRAGE = {
         },
         search: function() {
             $('#config-components').tabs();
-            $('#nzb_dir').fileBrowser({ title: 'Select .nzb black hole/watch location' });
-            $('#torrent_dir').fileBrowser({ title: 'Select .torrent black hole/watch location' });
-            $('#torrent_path').fileBrowser({ title: 'Select .torrent download location' });
+            $('#nzb_dir').fileBrowser({ title: _('Select .nzb black hole/watch location') });
+            $('#torrent_dir').fileBrowser({ title: _('Select .torrent black hole/watch location') });
+            $('#torrent_path').fileBrowser({ title: _('Select .torrent download location') });
 
             $.fn.nzbMethodHandler = function() {
                 var selectedProvider = $('#nzb_method :selected').val(),
@@ -1899,18 +1897,18 @@ var SICKRAGE = {
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
                         $('#torrent_path_option').hide();
-                        $('#torrent_seed_time_label').text('Minimum seeding time is');
+                        $('#torrent_seed_time_label').text( _('Minimum seeding time is') );
                         $('#torrent_seed_time_option').show();
-                        $('#host_desc_torrent').text('URL to your uTorrent client (e.g. http://localhost:8000)');
+                        $('#host_desc_torrent').text( _('URL to your uTorrent client (e.g. http://localhost:8000)') );
                     } else if (selectedProvider.toLowerCase() === 'transmission'){
                         client = 'Transmission';
-                        $('#torrent_seed_time_label').text('Stop seeding when inactive for');
+                        $('#torrent_seed_time_label').text( _('Stop seeding when inactive for') );
                         $('#torrent_seed_time_option').show();
                         $('#torrent_high_bandwidth_option').show();
                         $('#torrent_label_option').hide();
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_rpcurl_option').show();
-                        $('#host_desc_torrent').text('URL to your Transmission client (e.g. http://localhost:9091)');
+                        $('#host_desc_torrent').text( _('URL to your Transmission client (e.g. http://localhost:9091)') );
                     } else if (selectedProvider.toLowerCase() === 'deluge'){
                         client = 'Deluge';
                         $('#torrent_verify_cert_option').show();
@@ -1920,7 +1918,7 @@ var SICKRAGE = {
                         $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').hide();
                         $('#torrent_username').prop('value', '');
-                        $('#host_desc_torrent').text('URL to your Deluge client (e.g. http://localhost:8112)');
+                        $('#host_desc_torrent').text( _('URL to your Deluge client (e.g. http://localhost:8112)') );
                     } else if (selectedProvider.toLowerCase() === 'deluged'){
                         client = 'Deluge';
                         $('#torrent_verify_cert_option').hide();
@@ -1929,18 +1927,19 @@ var SICKRAGE = {
                         $('#label_warning_deluge').show();
                         $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').show();
-                        $('#host_desc_torrent').text('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)');
+                        $('#host_desc_torrent').text( _('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)') );
                     } else if (selectedProvider.toLowerCase() === 'download_station'){
                         client = 'Synology DS';
                         $('#torrent_label_option').hide();
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#torrent_path_option').find('.fileBrowser').hide();
-                        $('#host_desc_torrent').text('URL to your Synology DS client (e.g. http://localhost:5000)');
+                        $('#host_desc_torrent').text( _('URL to your Synology DS client (e.g. http://localhost:5000)') );
                         $('#path_synology').show();
                     } else if (selectedProvider.toLowerCase() === 'rtorrent'){
                         client = 'rTorrent';
-                        $('#host_desc_torrent').text('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)');
+                        $('#host_desc_torrent').html( _('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
+                                                        'or https://localhost/rutorrent/plugins/httprpc/action.php)') );
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').show();
@@ -1950,7 +1949,7 @@ var SICKRAGE = {
                         $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
-                        $('#host_desc_torrent').text('URL to your qbittorrent client (e.g. http://localhost:8080)');
+                        $('#host_desc_torrent').text( _('URL to your qBittorrent client (e.g. http://localhost:8080)') );
                     } else if (selectedProvider.toLowerCase() === 'mlnet'){
                         client = 'mlnet';
                         $('#torrent_path_option').hide();
@@ -1960,7 +1959,7 @@ var SICKRAGE = {
                         $('#torrent_verify_rtorrent').hide();
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
-                        $('#host_desc_torrent').text('URL to your MLDonkey (e.g. http://localhost:4080)');
+                        $('#host_desc_torrent').text( _('URL to your MLDonkey (e.g. http://localhost:4080)') );
                     }
                     else if (selectedProvider.toLowerCase() === 'putio'){
                         client = 'putio';
@@ -1972,7 +1971,11 @@ var SICKRAGE = {
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
-                        $('#host_desc_torrent').text('URL to your putio client (e.g. http://localhost:8080)');
+                        $('#host_desc_torrent').text( _('URL to your putio client (e.g. http://localhost:8080)') );
+                        $('label[for="torrent_password"]').text( _('<a herf="https://app.put.io/oauth/apps/new" target="_blank"> ' +
+                                                                    'Create a new OAuth app for put.io</a>') );
+                        $('#username_title.component-title').text( _('Put.io Parent Folder') );
+                        $('#password_title.component-title').text( _('Put.io OAuth Token') );
                     }
                     $('#host_title').text(client + host);
                     $('#username_title').text(client + username);
@@ -2053,14 +2056,6 @@ var SICKRAGE = {
                 torrent.host = $('#torrent_host').val();
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
-
-                if (torrent.method.toLowerCase() === 'putio') {
-                    $.post(srRoot + '/home/putio_authorize', function (data) {
-                        window.open(data);
-                    }).done(function() {
-                        $('#test_torrent_result').html('Confirm Authorization');
-                    });
-                }
 
                 $.post(srRoot + '/home/testTorrent', {
                     'torrent_method': torrent.method,
@@ -3385,12 +3380,12 @@ var SICKRAGE = {
                 $('.collapse.toggle').on('hide.bs.collapse', function () {
                     var reg = /collapseSeason-([0-9]+)/g;
                     var result = reg.exec(this.id);
-                    $('#showseason-' + result[1]).text('Show Episodes');
+                    $('#showseason-' + result[1]).text( _('Show Episodes') );
                 });
                 $('.collapse.toggle').on('show.bs.collapse', function () {
                     var reg = /collapseSeason-([0-9]+)/g;
                     var result = reg.exec(this.id);
-                    $('#showseason-' + result[1]).text('Hide Episodes');
+                    $('#showseason-' + result[1]).text( _('Hide Episodes') );
                 });
             });
 
@@ -3398,7 +3393,7 @@ var SICKRAGE = {
         editShow: function() {
             var allExceptions = [];
 
-            $('#location').fileBrowser({ title: 'Select Show Location' });
+            $('#location').fileBrowser({ title: _('Select Show Location') });
 
             SICKRAGE.common.QualityChooser.init();
 
@@ -3462,7 +3457,7 @@ var SICKRAGE = {
             $(this).toggleSceneException();
         },
         postProcess: function() {
-            $('#episodeDir').fileBrowser({ title: 'Select Unprocessed Episode Folder', key: 'postprocessPath' });
+            $('#episodeDir').fileBrowser({ title: _('Select Unprocessed Episode Folder'), key: 'postprocessPath' });
         },
         status: function() {
             $("#schedulerStatusTable").tablesorter({
@@ -3792,7 +3787,7 @@ var SICKRAGE = {
             $('.delete_root_dir').click(function(){
                 var curIndex = findDirIndex($(this).attr('id'));
                 $('#new_root_dir_'+curIndex).val(null);
-                $('#display_new_root_dir_'+curIndex).html('<b>DELETED</b>');
+                $('#display_new_root_dir_'+curIndex).html('<b>' + _('DELETED') + '</b>');
             });
 
             SICKRAGE.common.QualityChooser.init();
@@ -4375,7 +4370,7 @@ var SICKRAGE = {
                 if (searchRequestXhr) { searchRequestXhr.abort(); }
 
                 var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
-                $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
+                $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
 
                 searchRequestXhr = $.ajax({
                     url: srRoot + '/addShows/searchIndexersForShowName',
@@ -4386,7 +4381,7 @@ var SICKRAGE = {
                     timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
                     dataType: 'json',
                     error: function () {
-                        $('#searchResults').empty().html('search timed out, try again or try another indexer');
+                        $('#searchResults').empty().html( _('search timed out, try again or try another indexer') );
                     },
                     success: function (data) {
                         var firstResult = true;
@@ -4555,7 +4550,7 @@ var SICKRAGE = {
                     }
                 });
 
-                $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> loading folders...');
+                $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> ' + _('loading folders...'));
                 $.post(srRoot + '/addShows/massAddTable/', url, function(data) {
                     $('#tableDiv').html(data);
                     $("#addRootDirTable").tablesorter({

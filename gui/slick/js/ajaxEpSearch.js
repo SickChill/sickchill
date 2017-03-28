@@ -143,8 +143,8 @@ $(document).ready(function () {
 
         // Create var for img under anchor and set options for the loading gif
         var icon = selectedEpisode.children('span');
-        icon.prop('title','Loading');
-        icon.prop('alt','Loading');
+        icon.prop('title', _('Loading') );
+        icon.prop('alt', _('Loading') );
         icon.prop('class', stupidOptions.loadingClass);
 
         var url = selectedEpisode.prop('href');
