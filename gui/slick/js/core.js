@@ -88,13 +88,11 @@ var gt = null;
     if ($('html').attr('lang') !== '') {
         $.ajax({
             dataType: "json",
-            url: srRoot + '/locale/messages.json',
+            url: srRoot + '/ui/locale.json',
             async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
             success: function(data) {
-                gt = new Gettext(data.messages); // jshint ignore:line
-            },
-            failure: function() {
-                gt = new Gettext(); // jshint ignore:line
+                var toLoad = data === undefined ? null : data.messages;
+                gt = new Gettext(toLoad); // jshint ignore:line
             }
         });
     } else {
