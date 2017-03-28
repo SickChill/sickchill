@@ -1891,6 +1891,4 @@ def manage_torrents_url():
                 '</p><br>', 'info'
             )
 
-    if check_url(torrent_ui_url):
-        return torrent_ui_url
-    return ''
+    return torrent_ui_url
