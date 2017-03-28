@@ -163,8 +163,8 @@
                                     % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
                                         <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                                     % endif
-                                    % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-                                        <li><a href="${srRoot}/manage/manageTorrents/"><i class="fa fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
+                                    % if manage_torrents_url:
+                                        <li><a href="${manage_torrents_url}" target="_blank"><i class="fa fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
                                     % endif
                                     % if sickbeard.USE_FAILED_DOWNLOADS:
                                         <li><a href="${srRoot}/manage/failedDownloads/"><i class="fa fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
