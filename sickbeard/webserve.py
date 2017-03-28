@@ -156,6 +156,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['controller'] = "FixME"
         self.arguments['action'] = "FixME"
         self.arguments['show'] = UNDEFINED
+        self.arguments['manage_torrents_url'] = helpers.manage_torrents_url()
 
     def render(self, *args, **kwargs):
         for key in self.arguments:
@@ -3632,34 +3633,6 @@ class Manage(Home, WebRoot):
                                      messageDetail)
 
         return self.redirect("/manage/")
-
-    def manageTorrents(self):
-        t = PageTemplate(rh=self, filename="manage_torrents.mako")
-        info_download_station = ''
-
-        if re.search('localhost', sickbeard.TORRENT_HOST):
-            webui_url = re.sub('localhost', sickbeard.LOCALHOST_IP or helpers.get_lan_ip(), sickbeard.TORRENT_HOST)
-        else:
-            webui_url = sickbeard.TORRENT_HOST
-
-        if sickbeard.TORRENT_METHOD == 'utorrent':
-            webui_url = '/'.join(s.strip('/') for s in (webui_url, 'gui/'))
-        if sickbeard.TORRENT_METHOD == 'download_station':
-            if helpers.check_url(urljoin(webui_url, 'download/')):
-                webui_url += 'download/'
-            else:
-                info_download_station = '<p>' + _('For best results please set the Download Station alias as') + ' <code>download</code>. '
-                info_download_station += _('You can check this setting in the Synology DSM') + ' ' + '<b>' + _('Control Panel') + '</b> > <b>' + _('Application Portal') + '</b>.'
-                info_download_station += _('Make sure you allow DSM to be embedded with iFrames too in') + ' ' + '<b>'
-                info_download_station += _('Control Panel') + '</b> > <b>' + _('DSM Settings') + '</b> > <b>' + _('Security') + '</b>.'
-                info_download_station += '</p><br>'
-
-        if not sickbeard.TORRENT_PASSWORD == "" and not sickbeard.TORRENT_USERNAME == "":
-            webui_url = re.sub('://', '://' + str(sickbeard.TORRENT_USERNAME) + ':' + str(sickbeard.TORRENT_PASSWORD) + '@', webui_url)
-
-        return t.render(
-            webui_url=webui_url, info_download_station=info_download_station,
-            title=_('Manage Torrents'), header=_('Manage Torrents'), topmenu='manage')
 
     def failedDownloads(self, limit=100, toRemove=None):
         failed_db_con = db.DBConnection('failed.db')
