@@ -3,7 +3,7 @@ $(function () {
         var match = $(this).parent().attr("id").match(/^scene_exception_(\d+)$/);
         $(this).qtip({
             content: {
-                text: 'Loading...',
+                text: _('Loading...'),
                 ajax: {
                     url: $("#srRoot").val() + '/home/sceneExceptions',
                     type: 'GET',
