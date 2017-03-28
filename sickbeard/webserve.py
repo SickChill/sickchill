@@ -350,21 +350,6 @@ class KeyHandler(RequestHandler):
             self.finish({'success': False, 'error': 'Failed returning results'})
 
 
-class LocaleFileHandler(StaticFileHandler):
-    """ Handles serving locale data on /locale/messages.json for js-gettext """
-    def initialize(self, path):
-        """ Alter 'path' to replace {lang_code} with the requested lang (for example: en_US) """
-        self.abs_path = ek(os.path.normpath, path.format(lang_code=sickbeard.GUI_LANG))
-        super(LocaleFileHandler, self).initialize(self.abs_path)
-
-    def get(self, path='messages.json', include_body=True):
-        """ Get messages.json of the requested lang """
-        if os.path.isfile(os.path.join(self.abs_path, path)):
-            super(LocaleFileHandler, self).get(path, include_body)
-        else:
-            raise HTTPError(404)
-
-
 @route('(.*)(/?)')
 class WebRoot(WebHandler):
     def __init__(self, *args, **kwargs):
@@ -605,6 +590,19 @@ class CalendarHandler(BaseHandler):
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
         super(UI, self).__init__(*args, **kwargs)
+
+    def locale_json(self):
+        """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
+        locale_file = ek(os.path.normpath, '{base}/{loc_dir}/{lang}/LC_MESSAGES/messages.json'.format(
+            base=sickbeard.PROG_DIR, loc_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
+
+        if os.path.isfile(locale_file):
+            self.set_header('Content-Type', 'application/json')
+            with open(locale_file, 'r') as content:
+                return content.read()
+        else:
+            self.set_status(204)  # "No Content"
+            return None
 
     @staticmethod
     def add_message():

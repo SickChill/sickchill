@@ -3,7 +3,7 @@
 
     $.Browser = {
         defaults: {
-            title:             'Choose Directory',
+            title:             _('Choose Directory'),
             url:               srRoot + '/browser/',
             autocompleteURL:   srRoot + '/browser/complete',
             includeFiles:      0,

@@ -4,8 +4,8 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
-        if (0 === s.indexOf('Loading...')) {
-            return s.replace('Loading...', '000');
+        if (0 === s.indexOf( _('Loading...') )) {
+            return s.replace( _('Loading...') , '000');
         } else {
             return (metaToBool('sickbeard.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(The|A|An)\s/i,''));
         }
