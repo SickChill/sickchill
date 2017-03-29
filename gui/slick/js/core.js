@@ -1966,8 +1966,8 @@ var SICKRAGE = {
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text( _('URL to your putio client (e.g. http://localhost:8080)') );
-                        $('label[for="torrent_password"]').text(
-                            '<a herf="https://app.put.io/oauth/apps/new" target="_blank">' +
+                        $('label[for="torrent_password"]').html(
+                            '<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">' +
                             _('Create a new OAuth app for put.io') + '</a>');
                         $('#username_title.component-title').text( _('Put.io Parent Folder') );
                         $('#password_title.component-title').text( _('Put.io OAuth Token') );
