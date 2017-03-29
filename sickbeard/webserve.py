@@ -593,8 +593,8 @@ class UI(WebRoot):
 
     def locale_json(self):
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
-        locale_file = ek(os.path.normpath, '{base}/{loc_dir}/{lang}/LC_MESSAGES/messages.json'.format(
-            base=sickbeard.PROG_DIR, loc_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
+        locale_file = ek(os.path.normpath, '{locale_dir}/{lang}/LC_MESSAGES/messages.json'.format(
+            locale_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
 
         if os.path.isfile(locale_file):
             self.set_header('Content-Type', 'application/json')
