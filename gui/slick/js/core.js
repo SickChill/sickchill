@@ -4586,6 +4586,6 @@ $.getJSON(srRoot + '/ui/locale.json', function(data) {
     _ = function(str) { return gt.gettext(str); }; // Create shortcut
 
     if (navigator.userAgent.indexOf('PhantomJS') === -1) {
-		$(document).ready(UTIL.init);
+        $(document).ready(UTIL.init);
     }
 });
