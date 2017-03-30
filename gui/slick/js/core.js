@@ -83,18 +83,7 @@ function shiftReturn(array){
 }
 
 var __ = _; // Moves `underscore` to __
-// Handle gettext.js
-var gt = null;
-(function loadTranslation() {
-    $.getJSON(srRoot + '/ui/locale.json', function(data) {
-        if (data !== undefined) {
-            gt = new Gettext(data.messages); // jshint ignore:line
-        } else {
-            gt = new Gettext(); // jshint ignore:line
-        }
-        _ = function(str) { return gt.gettext(str); }; // Create shortcut
-    });
-})();
+_ = function(str) { return str; }; // Temporary (gets replaced)
 
 var SICKRAGE = {
     common: {
@@ -4585,6 +4574,18 @@ var UTIL = {
         UTIL.exec(controller, action);
     }
 };
-if (navigator.userAgent.indexOf('PhantomJS') === -1) {
-    $(document).ready(UTIL.init);
-}
+
+// Handle js-gettext + load javascript functions
+var gt = null;
+$.getJSON(srRoot + '/ui/locale.json', function(data) {
+    if (data !== undefined) {
+        gt = new Gettext(data.messages); // jshint ignore:line
+    } else {
+        gt = new Gettext(); // jshint ignore:line
+    }
+    _ = function(str) { return gt.gettext(str); }; // Create shortcut
+
+    if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+		$(document).ready(UTIL.init);
+    }
+});
