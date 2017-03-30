@@ -82,25 +82,19 @@ function shiftReturn(array){
     return array;
 }
 
+var __ = _; // Moves `underscore` to __
 // Handle gettext.js
 var gt = null;
 (function loadTranslation() {
-    if ($('html').attr('lang') !== '') {
-        $.ajax({
-            dataType: "json",
-            url: srRoot + '/ui/locale.json',
-            async: true, // NOTE: This should be false, but it logs a `deprecated` warning from jQuery.
-            success: function(data) {
-                var toLoad = data === undefined ? null : data.messages;
-                gt = new Gettext(toLoad); // jshint ignore:line
-            }
-        });
-    } else {
-        gt = new Gettext(); // jshint ignore:line
-    }
+    $.getJSON(srRoot + '/ui/locale.json', function(data) {
+        if (data !== undefined) {
+            gt = new Gettext(data.messages); // jshint ignore:line
+        } else {
+            gt = new Gettext(); // jshint ignore:line
+        }
+        _ = function(str) { return gt.gettext(str); }; // Create shortcut
+    });
 })();
-var __ = _; // Moves `underscore` to __
-_ = function(str) { return gt.gettext(str); }; // Create shortcut
 
 var SICKRAGE = {
     common: {
@@ -1972,8 +1966,9 @@ var SICKRAGE = {
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text( _('URL to your putio client (e.g. http://localhost:8080)') );
-                        $('label[for="torrent_password"]').text( _('<a herf="https://app.put.io/oauth/apps/new" target="_blank"> ' +
-                                                                    'Create a new OAuth app for put.io</a>') );
+                        $('label[for="torrent_password"]').html(
+                            '<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">' +
+                            _('Create a new OAuth app for put.io') + '</a>');
                         $('#username_title.component-title').text( _('Put.io Parent Folder') );
                         $('#password_title.component-title').text( _('Put.io OAuth Token') );
                     }
