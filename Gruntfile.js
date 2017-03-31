@@ -35,6 +35,7 @@ module.exports = function(grunt) {
     grunt.registerTask('commit_and_push_trans', 'commit and push translations', function() {
         grunt.log.writeln('Committing and pushing translations...');
         grunt.task.run([
+            'exec:did_translations_change',
             'exec:commit_trans',
             'exec:git_push:origin:' + process.env.TRAVIS_BRANCH // will be changed to master
         ]);
@@ -213,6 +214,15 @@ module.exports = function(grunt) {
             'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
             'crowdin_download': {cmd: 'crowdin-cli-py download'},
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
+            'did_translations_change': {
+                cmd: 'git diff-index HEAD -- locale/',
+                stdout: false,
+                callback: function(err, stdout) {
+                    if (!stdout.trim().length) {
+                        grunt.fatal('Translations weren\'t changed, aborting');
+                    }
+                }
+            },
             'commit_trans': {
                 // cmd: {'git commit -m "Update translations (build ' + process.env.TRAVIS_BUILD_NUMBER + ')" -- locale/'}
                 cmd: function() {

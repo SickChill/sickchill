@@ -45,12 +45,8 @@ after_success:
   - git remote rm origin
   - git remote add origin https://SickRage2:$BOT_GH_TOKEN@github.com/SickRage/SickRage.git
   - grunt update_trans
-  - if [[ ! -z $(git diff-index HEAD -- locale/) ]]; then
-      grunt commit_and_push_trans;
-      echo -e "Done!";
-    else
-      echo -e "No need to update translations.";
-    fi
+  - grunt commit_and_push_trans
+  - echo -e "Done!"
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
