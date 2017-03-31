@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "develop" ]; then
-#if [ "$TRAVIS_BRANCH" == "develop" ]; then
-  if [ ! -z "$CROWDIN_API_KEY" ]; then
-    echo -e "CROWDIN_API_KEY is not defined or empty"
-  exit 1
-  fi
+# if [ "$TRAVIS_BRANCH" == "develop" ]; then
+  # if [ -z "$CROWDIN_API_KEY" ]; then
+    # echo -e "CROWDIN_API_KEY is not defined or empty"
+    # exit 1
+  # fi
   
   echo -e "Setting up..."
   pip install --upgrade babel
@@ -15,18 +15,22 @@
   git config --global push.default simple # push only current branch
 
   echo -e "Updating translations..."
-  setup.py extract_messages
-  setup.py update_catalog
+  python setup.py extract_messages
+  python setup.py update_catalog
   crowdin-cli-py upload sources
   crowdin-cli-py download
-  setup.py compile_catalog
+  python setup.py compile_catalog
   grunt po2json
 
+  if [ -z "git diff-index --quiet HEAD -- locale/" ]; then
+	echo -e "No need to update translations."
+	exit 1
+  fi
   echo -e "Commiting and pushing translations..."
-  #git remote rm origin
-  #git remote add origin https://usernme:$GH_TOKEN@github.com/SickRage/SickRage.git
+  # git remote rm origin
+  # git remote add origin https://usernme:$GH_TOKEN@github.com/SickRage/SickRage.git
 
   git add -f -- locale/
   git commit -m "Update translations (build $TRAVIS_BUILD_NUMBER)"
-  #git push -f origin develop > /dev/null
-#fi
+  # git push -f origin develop > /dev/null
+# fi
