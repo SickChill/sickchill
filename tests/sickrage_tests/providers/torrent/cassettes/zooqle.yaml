@@ -1,0 +1,719 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
+    method: GET
+    uri: https://zooqle.com/search?q=Game+of+Thrones+S05E08+category%3Atv&fmt=rss&pg=1
+  response:
+    body: {string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\"
+        xmlns:torrent=\"https://zooqle.com/xmlns/0.1/index.xmlns\" xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"
+        xmlns:atom=\"http://www.w3.org/2005/Atom\">\n <channel>\n\t<title>RSS search:
+        \"Game of Thrones S05E08\" (1-30/148) | Zooqle\n\t</title>\n\t<description>Search
+        results for \"Game of Thrones S05E08\" at Zooqle</description>\n\t<link>https://zooqle.com/search?q=Game+of+Thrones+S05E08+category%3Atv&amp;pg=1&amp;encode=1</link>\n\t<opensearch:totalResults>148</opensearch:totalResults>\n\t<opensearch:startIndex>1</opensearch:startIndex>\n\t<opensearch:itemsPerPage>30</opensearch:itemsPerPage>\n\t<atom:link
+        rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"https://zooqle.com/opensearch.xml\"/>\n\t<opensearch:Query
+        role=\"request\" searchTerms=\"Game of Thrones S05E08\" startPage=\"1\" />\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 HDTV x264-KILLERS[ettv]</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 HDTV x264-KILLERS[ettv]\", 448 MB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05e08-hdtv-x264-killers-ettv-kusl0.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-hdtv-x264-killers-ettv-kusl0.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 04:23:05 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kusl0.torrent\"
+        length=\"470173385\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>470173385</torrent:contentLength>\n\t
+        <torrent:infoHash>2C7FAC7A8B18716E7209FC4AD769642DEAB43AE1</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:2C7FAC7A8B18716E7209FC4AD769642DEAB43AE1&dn=Game%20of%20Thrones%20S05E08%20HDTV%20x264-KILLERS%5Bettv%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>233</torrent:seeds>\n\t <torrent:peers>21</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_HDTV_x264_KILLERS_ettv.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV x264-0SEC[rarbg]</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV x264-0SEC[rarbg]\", 1.5 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-rarbg-kus1v.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-rarbg-kus1v.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 04:23:07 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kus1v.torrent\"
+        length=\"1605558027\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1605558027</torrent:contentLength>\n\t
+        <torrent:infoHash>A01287A1724D98763BEA5501F657BDE60A867BE0</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:A01287A1724D98763BEA5501F657BDE60A867BE0&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20x264-0SEC%5Brarbg%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>42</torrent:seeds>\n\t <torrent:peers>4</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_x264_0SEC_rarbg.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV x264-0SEC</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV x264-0SEC\", 1.6 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-kuk5u.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-kuk5u.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 04:49:50 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuk5u.torrent\"
+        length=\"1668086978\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1668086978</torrent:contentLength>\n\t
+        <torrent:infoHash>E946189A506C4C8307F3DC08CBABF41A8FBC62B6</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:E946189A506C4C8307F3DC08CBABF41A8FBC62B6&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20x264-0SEC]]></torrent:magnetURI>\n\t
+        <torrent:seeds>24</torrent:seeds>\n\t <torrent:peers>9</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_x264_0SEC.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 HDTV XviD-FUM[ettv]</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 HDTV XviD-FUM[ettv]\", 491 MB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05e08-hdtv-xvid-fum-ettv-3oe2a.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-hdtv-xvid-fum-ettv-3oe2a.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 08:22:43 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3oe2a.torrent\"
+        length=\"515148950\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>515148950</torrent:contentLength>\n\t
+        <torrent:infoHash>B33820428BDF3E862780D69676A7A19F905DB928</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:B33820428BDF3E862780D69676A7A19F905DB928&dn=Game%20of%20Thrones%20S05E08%20HDTV%20XviD-FUM%5Bettv%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>23</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_HDTV_XviD_FUM_ettv.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 PROPER 720p HDTV x264-0SEC mkv</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 PROPER 720p HDTV x264-0SEC mkv\", 1.5 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-proper-720p-hdtv-x264-0sec-mkv-kuryd.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-proper-720p-hdtv-x264-0sec-mkv-kuryd.html</guid>\n\t
+        <pubDate>Tue, 02 Jun 2015 04:31:48 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuryd.torrent\"
+        length=\"1614100913\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1614100913</torrent:contentLength>\n\t
+        <torrent:infoHash>35C9C7EB70609DE0157CDCA118B26F3F3029281E</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:35C9C7EB70609DE0157CDCA118B26F3F3029281E&dn=Game%20of%20Thrones%20S05E08%20PROPER%20720p%20HDTV%20x264-0SEC%20mkv]]></torrent:magnetURI>\n\t
+        <torrent:seeds>13</torrent:seeds>\n\t <torrent:peers>9</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_PROPER_720p_HDTV_x264_0SEC_mkv.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 Hardhome 720p WEB-DL AAC-SS -={SPARROW}=-</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05E08 Hardhome 720p WEB-DL
+        AAC-SS -={SPARROW}=-\", 530 MB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-hardhome-720p-web-dl-aac-ss-sparrow-kur7d.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-hardhome-720p-web-dl-aac-ss-sparrow-kur7d.html</guid>\n\t
+        <pubDate>Thu, 17 Dec 2015 16:56:41 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kur7d.torrent\"
+        length=\"555876407\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>555876407</torrent:contentLength>\n\t
+        <torrent:infoHash>7ECE5887EA4936602418D4C4DA0253C048E9C4E6</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:7ECE5887EA4936602418D4C4DA0253C048E9C4E6&dn=Game%20of%20Thrones%20S05E08%20Hardhome%20720p%20WEB-DL%20AAC-SS%20-%3D%7BSPARROW%7D%3D-]]></torrent:magnetURI>\n\t
+        <torrent:seeds>8</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_Hardhome_720p_WEB_DL_AAC_SS_SPARROW.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 1080p HDTV x264-BATV</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 1080p HDTV x264-BATV\", 5.0 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05e08-1080p-hdtv-x264-batv-kun1w.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-1080p-hdtv-x264-batv-kun1w.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 16:42:22 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kun1w.torrent\"
+        length=\"5332879143\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>5332879143</torrent:contentLength>\n\t
+        <torrent:infoHash>1343CB78D4139E1F5B6342B7DB7E41106A584D6E</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:1343CB78D4139E1F5B6342B7DB7E41106A584D6E&dn=Game%20of%20Thrones%20S05E08%201080p%20HDTV%20x264-BATV]]></torrent:magnetURI>\n\t
+        <torrent:seeds>7</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_1080p_HDTV_x264_BATV.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 PROPER 720p HDTV x264-0SEC[rarbg]</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05E08 PROPER 720p HDTV
+        x264-0SEC[rarbg]\", 1.5 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-proper-720p-hdtv-x264-0sec-rarbg-kuqtf.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-proper-720p-hdtv-x264-0sec-rarbg-kuqtf.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 09:14:53 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuqtf.torrent\"
+        length=\"1614100953\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1614100953</torrent:contentLength>\n\t
+        <torrent:infoHash>C91D26258D037672A74293D1F3FDE5A53A74B84E</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:C91D26258D037672A74293D1F3FDE5A53A74B84E&dn=Game%20of%20Thrones%20S05E08%20PROPER%20720p%20HDTV%20x264-0SEC%5Brarbg%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_PROPER_720p_HDTV_x264_0SEC_rarbg.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones [S05E08] HDTV 720p [Eng Rus]-Junoon</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones [S05E08] HDTV 720p [Eng Rus]-Junoon\", 479 MB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-hdtv-720p-eng-rus-junoon-3ov7a.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-hdtv-720p-eng-rus-junoon-3ov7a.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 13:59:40 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3ov7a.torrent\"
+        length=\"502634726\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>502634726</torrent:contentLength>\n\t
+        <torrent:infoHash>1A91482A543DCC0B3263E9C012F66914BA6F3D34</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:1A91482A543DCC0B3263E9C012F66914BA6F3D34&dn=Game%20of%20Thrones%20%5BS05E08%5D%20HDTV%20720p%20%5BEng%20Rus%5D-Junoon]]></torrent:magnetURI>\n\t
+        <torrent:seeds>2</torrent:seeds>\n\t <torrent:peers>1</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_HDTV_720p_Eng_Rus_Junoon.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 1080i HDTV MPEG2 DD5 1-CtrlHD[PsypherTV]</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05E08 1080i HDTV MPEG2
+        DD5 1-CtrlHD[PsypherTV]\", 6.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-1080i-hdtv-mpeg2-dd5-1-ctrlhd-psyphertv-3o9yo.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-1080i-hdtv-mpeg2-dd5-1-ctrlhd-psyphertv-3o9yo.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 07:03:02 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3o9yo.torrent\"
+        length=\"6485572166\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>6485572166</torrent:contentLength>\n\t
+        <torrent:infoHash>32116ABA2E5B685CBCFF24F0DE1F7AA7394D1CFC</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:32116ABA2E5B685CBCFF24F0DE1F7AA7394D1CFC&dn=Game%20of%20Thrones%20S05E08%201080i%20HDTV%20MPEG2%20DD5%201-CtrlHD%5BPsypherTV%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>0</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_1080i_HDTV_MPEG2_DD5_1_CtrlHD_PsypherTV.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV AAC x264-PSYPHER</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV AAC x264-PSYPHER\", 639 MB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-aac-x264-psypher-kurv3.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-aac-x264-psypher-kurv3.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 09:40:53 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kurv3.torrent\"
+        length=\"670118122\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>670118122</torrent:contentLength>\n\t
+        <torrent:infoHash>0351E1E34FCFBF75D13E60FD6A2B9814ACD2C0E8</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:0351E1E34FCFBF75D13E60FD6A2B9814ACD2C0E8&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20AAC%20x264-PSYPHER]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>0</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_AAC_x264_PSYPHER.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones [S05E08] HDTV 720p x265 HEVC [Eng Rus]-Junoon</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones [S05E08] HDTV 720p x265
+        HEVC [Eng Rus]-Junoon\", 263 MB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-hdtv-720p-x265-hevc-eng-rus-junoon-3ovv8.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-hdtv-720p-x265-hevc-eng-rus-junoon-3ovv8.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 14:14:46 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3ovv8.torrent\"
+        length=\"275961599\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>275961599</torrent:contentLength>\n\t
+        <torrent:infoHash>9CDCDDEEA7A7647BFC300566A3DFAB2274548662</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:9CDCDDEEA7A7647BFC300566A3DFAB2274548662&dn=Game%20of%20Thrones%20%5BS05E08%5D%20HDTV%20720p%20x265%20HEVC%20%5BEng%20Rus%5D-Junoon]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>1</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_HDTV_720p_x265_HEVC_Eng_Rus_Junoon.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 1080p (MULTi SUBS) HDTV H264 DD5 1-BLiTZCRiEG</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05E08 1080p (MULTi SUBS)
+        HDTV H264 DD5 1-BLiTZCRiEG\", 2.2 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-1080p-multi-subs-hdtv-h264-dd5-1-blitzcri-kuujr.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-1080p-multi-subs-hdtv-h264-dd5-1-blitzcri-kuujr.html</guid>\n\t
+        <pubDate>Fri, 17 Jul 2015 10:01:51 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuujr.torrent\"
+        length=\"2313755176\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>2313755176</torrent:contentLength>\n\t
+        <torrent:infoHash>ED6797003A3B27B50460A6C5612B2ED26A38FA64</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:ED6797003A3B27B50460A6C5612B2ED26A38FA64&dn=Game%20of%20Thrones%20S05E08%201080p%20%28MULTi%20SUBS%29%20HDTV%20H264%20DD5%201-BLiTZCRiEG]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>0</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_1080p_MULTi_SUBS_HDTV_H264_DD5_1_BLiTZCRi.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV x264-0SEC[PsypherTV]</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV x264-0SEC[PsypherTV]\", 1.5 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-psyphertv-3nwwu.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-psyphertv-3nwwu.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 02:46:39 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3nwwu.torrent\"
+        length=\"1605557993\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1605557993</torrent:contentLength>\n\t
+        <torrent:infoHash>E9DB3717301EEFD0924E8EA4C2DE8879214AD67C</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:E9DB3717301EEFD0924E8EA4C2DE8879214AD67C&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20x264-0SEC%5BPsypherTV%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>0</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_x264_0SEC_PsypherTV.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 480p</title>\n\t <description><![CDATA[\t Torrent:
+        \"Game of Thrones S05E08 480p\", 151 MB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-480p-3p430.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-480p-3p430.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 16:56:18 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3p430.torrent\"
+        length=\"158754819\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>158754819</torrent:contentLength>\n\t
+        <torrent:infoHash>67DE098091FC7FC6866A3ECCBD4BDF2F3BC08D0B</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:67DE098091FC7FC6866A3ECCBD4BDF2F3BC08D0B&dn=Game%20of%20Thrones%20S05E08%20480p]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_480p.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV x264-0SEC</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV x264-0SEC\", 1.6 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-3o10w.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-x264-0sec-3o10w.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 04:06:42 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3o10w.torrent\"
+        length=\"1668087316\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1668087316</torrent:contentLength>\n\t
+        <torrent:infoHash>8A8AFB7E4D9DF6DECBC759FA50E8EF95713AE354</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:8A8AFB7E4D9DF6DECBC759FA50E8EF95713AE354&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20x264-0SEC]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>1</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_x264_0SEC.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05E08 720p HDTV AAC x264-PSYPHER</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05E08 720p HDTV AAC x264-PSYPHER\", 639 MB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-aac-x264-psypher-3oblr.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05e08-720p-hdtv-aac-x264-psypher-3oblr.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 07:34:43 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3oblr.torrent\"
+        length=\"670118122\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>670118122</torrent:contentLength>\n\t
+        <torrent:infoHash>AE1CCBF5262907895E46652D4B68FE4D770DEA57</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:AE1CCBF5262907895E46652D4B68FE4D770DEA57&dn=Game%20of%20Thrones%20S05E08%20720p%20HDTV%20AAC%20x264-PSYPHER]]></torrent:magnetURI>\n\t
+        <torrent:seeds>0</torrent:seeds>\n\t <torrent:peers>0</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05E08_720p_HDTV_AAC_x264_PSYPHER.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones (2015) S05E08 HDTV 1080p NL Subs(H33T)SAM TBS</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones (2015) S05E08 HDTV 1080p
+        NL Subs(H33T)SAM TBS\", 3.1 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-2015-s05e08-hdtv-1080p-nl-subs-h33t-sam-tbs-3pstg.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-2015-s05e08-hdtv-1080p-nl-subs-h33t-sam-tbs-3pstg.html</guid>\n\t
+        <pubDate>Tue, 02 Jun 2015 01:03:21 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3pstg.torrent\"
+        length=\"3320292687\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3320292687</torrent:contentLength>\n\t
+        <torrent:infoHash>7E337B7D1EA9749C358AE6064AEDF79B10D6D1EE</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:7E337B7D1EA9749C358AE6064AEDF79B10D6D1EE&dn=Game%20of%20Thrones%20%282015%29%20S05E08%20HDTV%201080p%20NL%20Subs%28H33T%29SAM%20TBS]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>2</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_2015_S05E08_HDTV_1080p_NL_Subs_H33T_SAM_TBS.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones - Il Trono Di Spade S05e08-09[Mux - 720p - H264 - Ita
+        Eng Ac3 - Sub Ita Eng] DLMux - GiuseppeTnT</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game Of Thrones - Il Trono Di Spade S05e08-09[Mux - 720p - H264
+        - Ita Eng Ac3 - Sub Ita Eng] DLMux - GiuseppeTnT\", 3.5 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-il-trono-di-spade-s05e08-09-mux-720p-h264-ita-en-4ekp4.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-il-trono-di-spade-s05e08-09-mux-720p-h264-ita-en-4ekp4.html</guid>\n\t
+        <pubDate>Wed, 17 Jun 2015 22:49:45 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4ekp4.torrent\"
+        length=\"3771647705\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3771647705</torrent:contentLength>\n\t
+        <torrent:infoHash>8C14F66E8634EC43937742F67F3C34A8E0D1D439</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:8C14F66E8634EC43937742F67F3C34A8E0D1D439&dn=Game%20Of%20Thrones%20-%20Il%20Trono%20Di%20Spade%20S05e08-09%5BMux%20-%20720p%20-%20H264%20-%20Ita%20Eng%20Ac3%20-%20Sub%20Ita%20Eng%5D%20DLMux%20-%20GiuseppeTnT]]></torrent:magnetURI>\n\t
+        <torrent:seeds>13</torrent:seeds>\n\t <torrent:peers>8</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_Il_Trono_Di_Spade_S05e08_09_Mux_720p_H264_Ita_En.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Complete Season 5 1080p BDRip x264 AC3 5.1 + Extras
+        + Multisubs</title>\n\t <description><![CDATA[\t Torrent: \"Game Of Thrones
+        S05 Complete Season 5 1080p BDRip x264 AC3 5.1 + Extras + Multisubs\", 36.3
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-complete-season-5-1080p-bdrip-x264-ac3-5-1-e-ka9hp.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-complete-season-5-1080p-bdrip-x264-ac3-5-1-e-ka9hp.html</guid>\n\t
+        <pubDate>Fri, 25 Mar 2016 01:12:04 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/ka9hp.torrent\"
+        length=\"39011401527\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>39011401527</torrent:contentLength>\n\t
+        <torrent:infoHash>AE8385343E390AF8E993A289877264619BE59268</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:AE8385343E390AF8E993A289877264619BE59268&dn=Game%20Of%20Thrones%20S05%20Complete%20Season%205%201080p%20BDRip%20x264%20AC3%205.1%20%2B%20Extras%20%2B%20Multisubs]]></torrent:magnetURI>\n\t
+        <torrent:seeds>11</torrent:seeds>\n\t <torrent:peers>13</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Complete_Season_5_1080p_BDRip_x264_AC3_5_1_E.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Complete Season 5 480p BDRip x264 aac 2.0 + Extras
+        + Multisubs</title>\n\t <description><![CDATA[\t Torrent: \"Game Of Thrones
+        S05 Complete Season 5 480p BDRip x264 aac 2.0 + Extras + Multisubs\", 3.6
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-complete-season-5-480p-bdrip-x264-aac-2-0-ex-kjz3f.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-complete-season-5-480p-bdrip-x264-aac-2-0-ex-kjz3f.html</guid>\n\t
+        <pubDate>Sun, 03 Apr 2016 04:09:42 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kjz3f.torrent\"
+        length=\"3893882837\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3893882837</torrent:contentLength>\n\t
+        <torrent:infoHash>7A00BB17D24A8E5FE1623737E24F7B95898A3390</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:7A00BB17D24A8E5FE1623737E24F7B95898A3390&dn=Game%20Of%20Thrones%20S05%20Complete%20Season%205%20480p%20BDRip%20x264%20aac%202.0%20%2B%20Extras%20%2B%20Multisubs]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Complete_Season_5_480p_BDRip_x264_aac_2_0_Ex.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05 Season 5 Complete 720p HDTV x264 [Multi-Subs] [DexzAery
+        &amp; VectoR]</title>\n\t <description><![CDATA[\t Torrent: \"Game of Thrones
+        S05 Season 5 Complete 720p HDTV x264 [Multi-Subs] [DexzAery & VectoR]\", 3.4
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x264-multi-subs-kujw0.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x264-multi-subs-kujw0.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 16:46:51 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kujw0.torrent\"
+        length=\"3662978491\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3662978491</torrent:contentLength>\n\t
+        <torrent:infoHash>8F55AFD337B2A729B65E672A1B7F9E3F52542C44</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:8F55AFD337B2A729B65E672A1B7F9E3F52542C44&dn=Game%20of%20Thrones%20S05%20Season%205%20Complete%20720p%20HDTV%20x264%20%5BMulti-Subs%5D%20%5BDexzAery%20%26%20VectoR%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>97</torrent:seeds>\n\t <torrent:peers>19</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05_Season_5_Complete_720p_HDTV_x264_Multi_Subs.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia</title>\n\t
+        <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia\",
+        7.5 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-qqss44-d-amed-4a1nv.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-qqss44-d-amed-4a1nv.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 03:53:46 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4a1nv.torrent\"
+        length=\"8081973359\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>8081973359</torrent:contentLength>\n\t
+        <torrent:infoHash>F375026DFC0092ED4B881C257573ED7FDEF49D8F</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:F375026DFC0092ED4B881C257573ED7FDEF49D8F&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>98</torrent:seeds>\n\t <torrent:peers>110</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_\u043E\u0442_qqss44_D_Amed.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [05\u044501-09 \u0438\u0437 10] (2015) HDTVRip \u043E\u0442
+        qqss44 | D | Amedia</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [05\u044501-09
+        \u0438\u0437 10] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia\", 6.7 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-05%D1%8501-09-%D0%B8%D0%B7-10-2015-hdtvrip-%D0%BE%D1%82-qq-3zy3u.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-05%D1%8501-09-%D0%B8%D0%B7-10-2015-hdtvrip-%D0%BE%D1%82-qq-3zy3u.html</guid>\n\t
+        <pubDate>Mon, 08 Jun 2015 11:13:29 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3zy3u.torrent\"
+        length=\"7243458868\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7243458868</torrent:contentLength>\n\t
+        <torrent:infoHash>AB060FF5ACF3A52A33796E0C8E7D20C7F316A3E6</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:AB060FF5ACF3A52A33796E0C8E7D20C7F316A3E6&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5B05%D1%8501-09%20%D0%B8%D0%B7%2010%5D%20%282015%29%20HDTVRip%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>2</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_05\u044501_09_\u0438\u0437_10_2015_HDTVRip_\u043E\u0442_qq.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [05\u044501-08 \u0438\u0437 10] (2015) HDTVRip \u043E\u0442
+        qqss44 | D | Amedia</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [05\u044501-08
+        \u0438\u0437 10] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia\", 6.0 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-05%D1%8501-08-%D0%B8%D0%B7-10-2015-hdtvrip-%D0%BE%D1%82-qq-3o2fa.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-05%D1%8501-08-%D0%B8%D0%B7-10-2015-hdtvrip-%D0%BE%D1%82-qq-3o2fa.html</guid>\n\t
+        <pubDate>Mon, 01 Jun 2015 04:34:39 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3o2fa.torrent\"
+        length=\"6450250469\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>6450250469</torrent:contentLength>\n\t
+        <torrent:infoHash>9ADE1F86089E5293E63E70DDA7E756DB72AEB600</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:9ADE1F86089E5293E63E70DDA7E756DB72AEB600&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5B05%D1%8501-08%20%D0%B8%D0%B7%2010%5D%20%282015%29%20HDTVRip%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>5</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_05\u044501_08_\u0438\u0437_10_2015_HDTVRip_\u043E\u0442_qq.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 COMPLETE 1080p HDTV x264 anoXmous</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 COMPLETE
+        1080p HDTV x264 anoXmous\", 8.9 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-complete-1080p-hdtv-x264-anoxmous-kuvr2.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-complete-1080p-hdtv-x264-anoxmous-kuvr2.html</guid>\n\t
+        <pubDate>Sun, 21 Jun 2015 13:33:17 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuvr2.torrent\"
+        length=\"9517723650\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>9517723650</torrent:contentLength>\n\t
+        <torrent:infoHash>D69040E2CD9EE970E737A4C1A13CECD6F52EB2A1</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:D69040E2CD9EE970E737A4C1A13CECD6F52EB2A1&dn=Game%20Of%20Thrones%20S05%20Season%205%20COMPLETE%201080p%20HDTV%20x264%20anoXmous]]></torrent:magnetURI>\n\t
+        <torrent:seeds>301</torrent:seeds>\n\t <torrent:peers>68</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_COMPLETE_1080p_HDTV_x264_anoXmous.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05 BDRip 480p Extras + Commentaries Only</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05 BDRip 480p Extras
+        + Commentaries Only\", 1.6 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-bdrip-480p-extras-commentaries-only-kb04y.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-bdrip-480p-extras-commentaries-only-kb04y.html</guid>\n\t
+        <pubDate>Fri, 25 Mar 2016 16:09:22 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kb04y.torrent\"
+        length=\"1674363298\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>1674363298</torrent:contentLength>\n\t
+        <torrent:infoHash>1B6FD9CC759E199BA29105DCACFB1FDBEFDB559B</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:1B6FD9CC759E199BA29105DCACFB1FDBEFDB559B&dn=Game%20of%20Thrones%20S05%20BDRip%20480p%20Extras%20%2B%20Commentaries%20Only]]></torrent:magnetURI>\n\t
+        <torrent:seeds>2</torrent:seeds>\n\t <torrent:peers>1</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05_BDRip_480p_Extras_Commentaries_Only.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05 BDRip x264-DEMAND[rartv]</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game of Thrones S05 BDRip x264-DEMAND[rartv]\", 4.0 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/game-of-thrones-s05-bdrip-x264-demand-rartv-vg6fh.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-bdrip-x264-demand-rartv-vg6fh.html</guid>\n\t
+        <pubDate>Mon, 24 Oct 2016 11:34:22 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/vg6fh.torrent\"
+        length=\"4297016563\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>4297016563</torrent:contentLength>\n\t
+        <torrent:infoHash>88A94D5DA8C38582BE06CCA492DC65CA0667742C</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:88A94D5DA8C38582BE06CCA492DC65CA0667742C&dn=Game%20of%20Thrones%20S05%20BDRip%20x264-DEMAND%5Brartv%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>1</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05_BDRip_x264_DEMAND_rartv.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 1080p 5.1Ch BluRay ReEnc-DeeJayAhmed</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 1080p 5.1Ch
+        BluRay ReEnc-DeeJayAhmed\", 7.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-r091q.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-r091q.html</guid>\n\t
+        <pubDate>Wed, 25 May 2016 14:32:45 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/r091q.torrent\"
+        length=\"7520079614\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7520079614</torrent:contentLength>\n\t
+        <torrent:infoHash>EDA13331423EAE83AA28B62B6F16C2D248572C2E</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:EDA13331423EAE83AA28B62B6F16C2D248572C2E&dn=Game%20Of%20Thrones%20S05%20Season%205%201080p%205.1Ch%20BluRay%20ReEnc-DeeJayAhmed]]></torrent:magnetURI>\n\t
+        <torrent:seeds>8</torrent:seeds>\n\t <torrent:peers>6</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_1080p_5_1Ch_BluRay_ReEnc_DeeJayAhme.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 1080p 5.1Ch BluRay ReEnc-DeeJayAhmed</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 1080p 5.1Ch
+        BluRay ReEnc-DeeJayAhmed\", 7.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-jwuij.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-jwuij.html</guid>\n\t
+        <pubDate>Sat, 12 Mar 2016 11:05:00 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/jwuij.torrent\"
+        length=\"7520079564\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7520079564</torrent:contentLength>\n\t
+        <torrent:infoHash>C41F1002763D5E1A95BD56DE9E0D275AD0182A18</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:C41F1002763D5E1A95BD56DE9E0D275AD0182A18&dn=Game%20Of%20Thrones%20S05%20Season%205%201080p%205.1Ch%20BluRay%20ReEnc-DeeJayAhmed]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_1080p_5_1Ch_BluRay_ReEnc_DeeJayAhme.torrent</torrent:fileName>\n\t</item>\n\n\t\n\n
+        </channel>\n</rss>\n"}
+    headers:
+      cache-control: ['max-age=3600, public']
+      cf-ray: [347fb9438bea69d7-LHR]
+      connection: [keep-alive]
+      content-type: [applicaton/rss+xml]
+      date: ['Fri, 31 Mar 2017 02:01:57 GMT']
+      expires: ['Fri, 31 Mar 2017 03:01:57 GMT']
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=da0cac383581add702bcde44f24328a251490925717; expires=Sat,
+          31-Mar-18 02:01:57 GMT; path=/; domain=.zooqle.com; HttpOnly']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=da0cac383581add702bcde44f24328a251490925717]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
+    method: GET
+    uri: https://zooqle.com/search?q=Game+of+Thrones+S05+category%3Atv&fmt=rss&pg=1
+  response:
+    body: {string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\"
+        xmlns:torrent=\"https://zooqle.com/xmlns/0.1/index.xmlns\" xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"
+        xmlns:atom=\"http://www.w3.org/2005/Atom\">\n <channel>\n\t<title>RSS search:
+        \"Game of Thrones S05\" (1-30/212) | Zooqle\n\t</title>\n\t<description>Search
+        results for \"Game of Thrones S05\" at Zooqle</description>\n\t<link>https://zooqle.com/search?q=Game+of+Thrones+S05+category%3Atv&amp;pg=1&amp;encode=1</link>\n\t<opensearch:totalResults>212</opensearch:totalResults>\n\t<opensearch:startIndex>1</opensearch:startIndex>\n\t<opensearch:itemsPerPage>30</opensearch:itemsPerPage>\n\t<atom:link
+        rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"https://zooqle.com/opensearch.xml\"/>\n\t<opensearch:Query
+        role=\"request\" searchTerms=\"Game of Thrones S05\" startPage=\"1\" />\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | LostFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | LostFilm\", 5.8 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-lostfilm-4cnb8.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-lostfilm-4cnb8.html</guid>\n\t
+        <pubDate>Tue, 16 Jun 2015 23:40:25 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4cnb8.torrent\"
+        length=\"6229092352\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>6229092352</torrent:contentLength>\n\t
+        <torrent:infoHash>D800AFB108DA37B185DEFBF6B00442C81EB8C6CE</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:D800AFB108DA37B185DEFBF6B00442C81EB8C6CE&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%7C%20LostFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>574</torrent:seeds>\n\t <torrent:peers>84</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_LostFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 COMPLETE 1080p HDTV x264 anoXmous</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 COMPLETE
+        1080p HDTV x264 anoXmous\", 8.9 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-complete-1080p-hdtv-x264-anoxmous-kuvr2.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-complete-1080p-hdtv-x264-anoxmous-kuvr2.html</guid>\n\t
+        <pubDate>Sun, 21 Jun 2015 13:33:17 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kuvr2.torrent\"
+        length=\"9517723650\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>9517723650</torrent:contentLength>\n\t
+        <torrent:infoHash>D69040E2CD9EE970E737A4C1A13CECD6F52EB2A1</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:D69040E2CD9EE970E737A4C1A13CECD6F52EB2A1&dn=Game%20Of%20Thrones%20S05%20Season%205%20COMPLETE%201080p%20HDTV%20x264%20anoXmous]]></torrent:magnetURI>\n\t
+        <torrent:seeds>301</torrent:seeds>\n\t <torrent:peers>68</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_COMPLETE_1080p_HDTV_x264_anoXmous.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05 Season 5 Complete 720p HDTV x265 AAC E-Subs (GWC)</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game of Thrones S05 Season 5 Complete
+        720p HDTV x265 AAC E-Subs (GWC)\", 1.9 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x265-aac-e-subs-4cghx.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x265-aac-e-subs-4cghx.html</guid>\n\t
+        <pubDate>Tue, 16 Jun 2015 21:35:58 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4cghx.torrent\"
+        length=\"2044143533\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>2044143533</torrent:contentLength>\n\t
+        <torrent:infoHash>FCEDB614FCBB15156298D59177B2A238940B7D2F</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:FCEDB614FCBB15156298D59177B2A238940B7D2F&dn=Game%20of%20Thrones%20S05%20Season%205%20Complete%20720p%20HDTV%20x265%20AAC%20E-Subs%20%28GWC%29]]></torrent:magnetURI>\n\t
+        <torrent:seeds>173</torrent:seeds>\n\t <torrent:peers>46</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05_Season_5_Complete_720p_HDTV_x265_AAC_E_Subs.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia</title>\n\t
+        <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip \u043E\u0442 qqss44 | D | Amedia\",
+        7.5 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-qqss44-d-amed-4a1nv.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-qqss44-d-amed-4a1nv.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 03:53:46 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4a1nv.torrent\"
+        length=\"8081973359\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>8081973359</torrent:contentLength>\n\t
+        <torrent:infoHash>F375026DFC0092ED4B881C257573ED7FDEF49D8F</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:F375026DFC0092ED4B881C257573ED7FDEF49D8F&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>98</torrent:seeds>\n\t <torrent:peers>110</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_\u043E\u0442_qqss44_D_Amed.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game of Thrones S05 Season 5 Complete 720p HDTV x264 [Multi-Subs] [DexzAery
+        &amp; VectoR]</title>\n\t <description><![CDATA[\t Torrent: \"Game of Thrones
+        S05 Season 5 Complete 720p HDTV x264 [Multi-Subs] [DexzAery & VectoR]\", 3.4
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x264-multi-subs-kujw0.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-complete-720p-hdtv-x264-multi-subs-kujw0.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 16:46:51 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kujw0.torrent\"
+        length=\"3662978491\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3662978491</torrent:contentLength>\n\t
+        <torrent:infoHash>8F55AFD337B2A729B65E672A1B7F9E3F52542C44</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:8F55AFD337B2A729B65E672A1B7F9E3F52542C44&dn=Game%20of%20Thrones%20S05%20Season%205%20Complete%20720p%20HDTV%20x264%20%5BMulti-Subs%5D%20%5BDexzAery%20%26%20VectoR%5D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>97</torrent:seeds>\n\t <torrent:peers>19</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_of_Thrones_S05_Season_5_Complete_720p_HDTV_x264_Multi_Subs.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p | LostFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p | LostFilm\", 16.4 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-lostfilm-4ckfl.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-lostfilm-4ckfl.html</guid>\n\t
+        <pubDate>Tue, 16 Jun 2015 22:50:17 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4ckfl.torrent\"
+        length=\"17656775676\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>17656775676</torrent:contentLength>\n\t
+        <torrent:infoHash>4FA7E0830E2185F924A07368141A7C069C33F207</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:4FA7E0830E2185F924A07368141A7C069C33F207&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20720p%20%7C%20LostFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>58</torrent:seeds>\n\t <torrent:peers>29</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_720p_LostFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p \u043E\u0442 qqss44 | D | Amedia</title>\n\t
+        <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p \u043E\u0442 qqss44 | D | Amedia\",
+        12.8 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-%D0%BE%D1%82-qqss44-d-4a1nw.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-%D0%BE%D1%82-qqss44-d-4a1nw.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 03:53:46 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4a1nw.torrent\"
+        length=\"13749668180\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>13749668180</torrent:contentLength>\n\t
+        <torrent:infoHash>8E5CE42BE08AD6F875532A7EE0D17B125B69D155</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:8E5CE42BE08AD6F875532A7EE0D17B125B69D155&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20720p%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>34</torrent:seeds>\n\t <torrent:peers>36</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_720p_\u043E\u0442_qqss44_D.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip \u043E\u0442 -=HD-NET=- | \u041A\u041F\u041A
+        | D | Amedia</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [S05]
+        (2015) HDTVRip \u043E\u0442 -=HD-NET=- | \u041A\u041F\u041A | D | Amedia\",
+        2.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-hd-net-%D0%BA%D0%BF%D0%BA-d-4bmia.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-%D0%BE%D1%82-hd-net-%D0%BA%D0%BF%D0%BA-d-4bmia.html</guid>\n\t
+        <pubDate>Tue, 16 Jun 2015 03:31:05 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4bmia.torrent\"
+        length=\"2194397475\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>2194397475</torrent:contentLength>\n\t
+        <torrent:infoHash>FD2F993E547C0668D0C358E4FDCD4BCEB676F40B</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:FD2F993E547C0668D0C358E4FDCD4BCEB676F40B&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%D0%BE%D1%82%20-%3DHD-NET%3D-%20%7C%20%D0%9A%D0%9F%D0%9A%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>30</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_\u043E\u0442_HD_NET_\u041A\u041F\u041A_D.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p \u043E\u0442 qqss44 | LostFilm</title>\n\t
+        <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p \u043E\u0442 qqss44 | LostFilm\",
+        21.9 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-%D0%BE%D1%82-qqss44-l-4gfde.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-%D0%BE%D1%82-qqss44-l-4gfde.html</guid>\n\t
+        <pubDate>Thu, 18 Jun 2015 19:03:19 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4gfde.torrent\"
+        length=\"23539131788\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>23539131788</torrent:contentLength>\n\t
+        <torrent:infoHash>42A9B3F03F436E0A6ECB67F7039BD79112204F36</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:42A9B3F03F436E0A6ECB67F7039BD79112204F36&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20WEB-DL%201080p%20%D0%BE%D1%82%20qqss44%20%7C%20LostFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>16</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_WEB_DL_1080p_\u043E\u0442_qqss44_L.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 720p \u043E\u0442 qqss44 | LostFilm</title>\n\t
+        <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 720p \u043E\u0442 qqss44 | LostFilm\",
+        18.5 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-720p-%D0%BE%D1%82-qqss44-lo-4kfpb.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-720p-%D0%BE%D1%82-qqss44-lo-4kfpb.html</guid>\n\t
+        <pubDate>Sat, 20 Jun 2015 14:10:00 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4kfpb.torrent\"
+        length=\"19878042665\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>19878042665</torrent:contentLength>\n\t
+        <torrent:infoHash>810CE0972475404900586AA7B9E2F35A5BF2D1E0</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:810CE0972475404900586AA7B9E2F35A5BF2D1E0&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20WEB-DL%20720p%20%D0%BE%D1%82%20qqss44%20%7C%20LostFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>15</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_WEB_DL_720p_\u043E\u0442_qqss44_Lo.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p | AlexFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 720p | AlexFilm\", 14.3 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-alexfilm-4f1r7.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-720p-alexfilm-4f1r7.html</guid>\n\t
+        <pubDate>Thu, 18 Jun 2015 03:57:53 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4f1r7.torrent\"
+        length=\"15349445164\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>15349445164</torrent:contentLength>\n\t
+        <torrent:infoHash>847AC6826C6176DFC2B8E365C1320A67F2AE58C1</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:847AC6826C6176DFC2B8E365C1320A67F2AE58C1&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20720p%20%7C%20AlexFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>15</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_720p_AlexFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | AlexFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | AlexFilm\", 6.5 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-alexfilm-4elld.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-alexfilm-4elld.html</guid>\n\t
+        <pubDate>Wed, 17 Jun 2015 23:05:50 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4elld.torrent\"
+        length=\"7020306432\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7020306432</torrent:contentLength>\n\t
+        <torrent:infoHash>4833475F5A6AFA1B9A9BB3DD46380BDA3C363285</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:4833475F5A6AFA1B9A9BB3DD46380BDA3C363285&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%7C%20AlexFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>14</torrent:seeds>\n\t <torrent:peers>4</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_AlexFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDRip \u043E\u0442 KinoHitHD | \u041A\u041F\u041A
+        | Amedia</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [S05]
+        (2015) HDRip \u043E\u0442 KinoHitHD | \u041A\u041F\u041A | Amedia\", 2.2 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdrip-%D0%BE%D1%82-kinohithd-%D0%BA%D0%BF%D0%BA-a-nip8k.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdrip-%D0%BE%D1%82-kinohithd-%D0%BA%D0%BF%D0%BA-a-nip8k.html</guid>\n\t
+        <pubDate>Mon, 02 May 2016 03:44:16 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/nip8k.torrent\"
+        length=\"2397486019\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>2397486019</torrent:contentLength>\n\t
+        <torrent:infoHash>10D166206E18A6C088D22AEDA85FBC52814A7F18</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:10D166206E18A6C088D22AEDA85FBC52814A7F18&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDRip%20%D0%BE%D1%82%20KinoHitHD%20%7C%20%D0%9A%D0%9F%D0%9A%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>12</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDRip_\u043E\u0442_KinoHitHD_\u041A\u041F\u041A_A.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Complete Season 5 1080p BDRip x264 AC3 5.1 + Extras
+        + Multisubs</title>\n\t <description><![CDATA[\t Torrent: \"Game Of Thrones
+        S05 Complete Season 5 1080p BDRip x264 AC3 5.1 + Extras + Multisubs\", 36.3
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-complete-season-5-1080p-bdrip-x264-ac3-5-1-e-ka9hp.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-complete-season-5-1080p-bdrip-x264-ac3-5-1-e-ka9hp.html</guid>\n\t
+        <pubDate>Fri, 25 Mar 2016 01:12:04 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/ka9hp.torrent\"
+        length=\"39011401527\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>39011401527</torrent:contentLength>\n\t
+        <torrent:infoHash>AE8385343E390AF8E993A289877264619BE59268</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:AE8385343E390AF8E993A289877264619BE59268&dn=Game%20Of%20Thrones%20S05%20Complete%20Season%205%201080p%20BDRip%20x264%20AC3%205.1%20%2B%20Extras%20%2B%20Multisubs]]></torrent:magnetURI>\n\t
+        <torrent:seeds>11</torrent:seeds>\n\t <torrent:peers>13</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Complete_Season_5_1080p_BDRip_x264_AC3_5_1_E.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 1080p BluRay x264-Belex - Dual Audio + Subtitles</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 1080p BluRay x264-Belex
+        - Dual Audio + Subtitles\", 45.8 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-1080p-bluray-x264-belex-dual-audio-subtitles-kf7hh.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-1080p-bluray-x264-belex-dual-audio-subtitles-kf7hh.html</guid>\n\t
+        <pubDate>Tue, 29 Mar 2016 15:00:17 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kf7hh.torrent\"
+        length=\"49170337831\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>49170337831</torrent:contentLength>\n\t
+        <torrent:infoHash>A6E0D15CDBE3FA579BEF52D36FB60762DA536871</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:A6E0D15CDBE3FA579BEF52D36FB60762DA536871&dn=Game%20Of%20Thrones%20S05%201080p%20BluRay%20x264-Belex%20-%20Dual%20Audio%20%2B%20Subtitles]]></torrent:magnetURI>\n\t
+        <torrent:seeds>10</torrent:seeds>\n\t <torrent:peers>10</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_1080p_BluRay_x264_Belex_Dual_Audio_Subtitles.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTV 1080i | Amedia</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTV 1080i | Amedia\", 53.5 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtv-1080i-amedia-4az9t.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtv-1080i-amedia-4az9t.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 20:26:29 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4az9t.torrent\"
+        length=\"57498815053\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>57498815053</torrent:contentLength>\n\t
+        <torrent:infoHash>180A66648F3C3C40384C5C6E06DCB4A2BF7FC38A</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:180A66648F3C3C40384C5C6E06DCB4A2BF7FC38A&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTV%201080i%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>9</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTV_1080i_Amedia.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p \u043E\u0442 HDClub | LostFilm,
+        AlexFilm, FOX, Amedia, Omikron</title>\n\t <description><![CDATA[\t Torrent:
+        \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p \u043E\u0442 HDClub | LostFilm,
+        AlexFilm, FOX, Amedia, Omikron\", 46.7 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-%D0%BE%D1%82-hdclub-l-4rsrz.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-%D0%BE%D1%82-hdclub-l-4rsrz.html</guid>\n\t
+        <pubDate>Tue, 23 Jun 2015 10:26:48 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4rsrz.torrent\"
+        length=\"50187497585\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>50187497585</torrent:contentLength>\n\t
+        <torrent:infoHash>81F965B25B9C805B325BD6B5C6B75A939487D0D9</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:81F965B25B9C805B325BD6B5C6B75A939487D0D9&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20WEB-DL%201080p%20%D0%BE%D1%82%20HDClub%20%7C%20LostFilm%2C%20AlexFilm%2C%20FOX%2C%20Amedia%2C%20Omikron]]></torrent:magnetURI>\n\t
+        <torrent:seeds>8</torrent:seeds>\n\t <torrent:peers>6</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_WEB_DL_1080p_\u043E\u0442_HDClub_L.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 1080p 5.1Ch BluRay ReEnc-DeeJayAhmed</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 1080p 5.1Ch
+        BluRay ReEnc-DeeJayAhmed\", 7.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-r091q.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-r091q.html</guid>\n\t
+        <pubDate>Wed, 25 May 2016 14:32:45 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/r091q.torrent\"
+        length=\"7520079614\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7520079614</torrent:contentLength>\n\t
+        <torrent:infoHash>EDA13331423EAE83AA28B62B6F16C2D248572C2E</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:EDA13331423EAE83AA28B62B6F16C2D248572C2E&dn=Game%20Of%20Thrones%20S05%20Season%205%201080p%205.1Ch%20BluRay%20ReEnc-DeeJayAhmed]]></torrent:magnetURI>\n\t
+        <torrent:seeds>8</torrent:seeds>\n\t <torrent:peers>6</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_1080p_5_1Ch_BluRay_ReEnc_DeeJayAhme.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p | AlexFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p | AlexFilm\", 41.1 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-alexfilm-4vfgv.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-alexfilm-4vfgv.html</guid>\n\t
+        <pubDate>Wed, 24 Jun 2015 10:54:26 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4vfgv.torrent\"
+        length=\"44111170471\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>44111170471</torrent:contentLength>\n\t
+        <torrent:infoHash>ACEE9DFF3ED0E25C1ABDB7D8A0CF2883BF36C5DE</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:ACEE9DFF3ED0E25C1ABDB7D8A0CF2883BF36C5DE&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20WEB-DL%201080p%20%7C%20AlexFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>7</torrent:seeds>\n\t <torrent:peers>5</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_WEB_DL_1080p_AlexFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 1080p | LostFilm</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip 1080p | LostFilm\", 29.9 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-1080p-lostfilm-4dwz6.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-1080p-lostfilm-4dwz6.html</guid>\n\t
+        <pubDate>Wed, 17 Jun 2015 15:46:44 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4dwz6.torrent\"
+        length=\"32130244754\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>32130244754</torrent:contentLength>\n\t
+        <torrent:infoHash>FF6FA030CB6AAC127703B35F70D51CC2C48712DE</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:FF6FA030CB6AAC127703B35F70D51CC2C48712DE&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%201080p%20%7C%20LostFilm]]></torrent:magnetURI>\n\t
+        <torrent:seeds>7</torrent:seeds>\n\t <torrent:peers>5</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_1080p_LostFilm.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | FOX</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip | FOX\", 6.8 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-fox-4cfmc.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-fox-4cfmc.html</guid>\n\t
+        <pubDate>Tue, 16 Jun 2015 21:27:16 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4cfmc.torrent\"
+        length=\"7262842880\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7262842880</torrent:contentLength>\n\t
+        <torrent:infoHash>614117315AA6B661495E604FA3B7AC884A65A6E2</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:614117315AA6B661495E604FA3B7AC884A65A6E2&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip%20%7C%20FOX]]></torrent:magnetURI>\n\t
+        <torrent:seeds>6</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_FOX.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) BDRip \u043E\u0442 HQ-ViDEO</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) BDRip \u043E\u0442 HQ-ViDEO\", 10.9 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-bdrip-%D0%BE%D1%82-hq-video-rrie9.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-bdrip-%D0%BE%D1%82-hq-video-rrie9.html</guid>\n\t
+        <pubDate>Mon, 30 May 2016 01:25:54 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/rrie9.torrent\"
+        length=\"11725654016\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>11725654016</torrent:contentLength>\n\t
+        <torrent:infoHash>C78886FA22D5CF5ACF46FC6C83EE1DF1CD3F6243</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:C78886FA22D5CF5ACF46FC6C83EE1DF1CD3F6243&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20BDRip%20%D0%BE%D1%82%20HQ-ViDEO]]></torrent:magnetURI>\n\t
+        <torrent:seeds>5</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_BDRip_\u043E\u0442_HQ_ViDEO.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) HDTVRip-AVC 1080p | Amedia, AlexFilm, LostFilm,
+        FOX, UATEAM</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [S05]
+        (2015) HDTVRip-AVC 1080p | Amedia, AlexFilm, LostFilm, FOX, UATEAM\", 40.1
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-avc-1080p-amedia-4l18b.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-hdtvrip-avc-1080p-amedia-4l18b.html</guid>\n\t
+        <pubDate>Sat, 20 Jun 2015 20:38:05 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4l18b.torrent\"
+        length=\"43097944427\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>43097944427</torrent:contentLength>\n\t
+        <torrent:infoHash>7E406B3443169B51E695FA34288878E7C2DA3179</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:7E406B3443169B51E695FA34288878E7C2DA3179&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20HDTVRip-AVC%201080p%20%7C%20Amedia%2C%20AlexFilm%2C%20LostFilm%2C%20FOX%2C%20UATEAM]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>4</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_HDTVRip_AVC_1080p_Amedia.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) WEB-DL 1080p, HDTV 1080p \u043E\u0442 qqss44
+        | D | Amedia</title>\n\t <description><![CDATA[\t Torrent: \"\u0418\u0433\u0440\u0430
+        \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432 / Game of Thrones [S05]
+        (2015) WEB-DL 1080p, HDTV 1080p \u043E\u0442 qqss44 | D | Amedia\", 30.3 GB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-hdtv-1080p-4a9cf.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-web-dl-1080p-hdtv-1080p-4a9cf.html</guid>\n\t
+        <pubDate>Mon, 15 Jun 2015 09:05:06 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/4a9cf.torrent\"
+        length=\"32520623418\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>32520623418</torrent:contentLength>\n\t
+        <torrent:infoHash>B580B2976718A90BF640363EADFEC3F8ECF5D8FB</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:B580B2976718A90BF640363EADFEC3F8ECF5D8FB&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20WEB-DL%201080p%2C%20HDTV%201080p%20%D0%BE%D1%82%20qqss44%20%7C%20D%20%7C%20Amedia]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>5</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_WEB_DL_1080p_HDTV_1080p.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Complete Season 5 480p BDRip x264 aac 2.0 + Extras
+        + Multisubs</title>\n\t <description><![CDATA[\t Torrent: \"Game Of Thrones
+        S05 Complete Season 5 480p BDRip x264 aac 2.0 + Extras + Multisubs\", 3.6
+        GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-complete-season-5-480p-bdrip-x264-aac-2-0-ex-kjz3f.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-complete-season-5-480p-bdrip-x264-aac-2-0-ex-kjz3f.html</guid>\n\t
+        <pubDate>Sun, 03 Apr 2016 04:09:42 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/kjz3f.torrent\"
+        length=\"3893882837\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>3893882837</torrent:contentLength>\n\t
+        <torrent:infoHash>7A00BB17D24A8E5FE1623737E24F7B95898A3390</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:7A00BB17D24A8E5FE1623737E24F7B95898A3390&dn=Game%20Of%20Thrones%20S05%20Complete%20Season%205%20480p%20BDRip%20x264%20aac%202.0%20%2B%20Extras%20%2B%20Multisubs]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>7</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Complete_Season_5_480p_BDRip_x264_aac_2_0_Ex.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05 Season 5 1080p 5.1Ch BluRay ReEnc-DeeJayAhmed</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05 Season 5 1080p 5.1Ch
+        BluRay ReEnc-DeeJayAhmed\", 7.0 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-jwuij.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-season-5-1080p-5-1ch-bluray-reenc-deejayahme-jwuij.html</guid>\n\t
+        <pubDate>Sat, 12 Mar 2016 11:05:00 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/jwuij.torrent\"
+        length=\"7520079564\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>7520079564</torrent:contentLength>\n\t
+        <torrent:infoHash>C41F1002763D5E1A95BD56DE9E0D275AD0182A18</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:C41F1002763D5E1A95BD56DE9E0D275AD0182A18&dn=Game%20Of%20Thrones%20S05%20Season%205%201080p%205.1Ch%20BluRay%20ReEnc-DeeJayAhmed]]></torrent:magnetURI>\n\t
+        <torrent:seeds>4</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_Season_5_1080p_5_1Ch_BluRay_ReEnc_DeeJayAhme.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05-E07 (2015) 1080p HDTV DD5.1 NLSubs DDT</title>\n\t
+        <description><![CDATA[\t Torrent: \"Game Of Thrones S05-E07 (2015) 1080p HDTV
+        DD5.1 NLSubs DDT\", 2.6 GB\n\t ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-e07-2015-1080p-hdtv-dd5-1-nlsubs-ddt-3bbqj.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-e07-2015-1080p-hdtv-dd5-1-nlsubs-ddt-3bbqj.html</guid>\n\t
+        <pubDate>Mon, 25 May 2015 21:12:50 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3bbqj.torrent\"
+        length=\"2819068225\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>2819068225</torrent:contentLength>\n\t
+        <torrent:infoHash>0AE9A1564F584A82352BCC9A25545307C64D4E4B</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:0AE9A1564F584A82352BCC9A25545307C64D4E4B&dn=Game%20Of%20Thrones%20S05-E07%20%282015%29%201080p%20HDTV%20DD5.1%20NLSubs%20DDT]]></torrent:magnetURI>\n\t
+        <torrent:seeds>3</torrent:seeds>\n\t <torrent:peers>2</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_E07_2015_1080p_HDTV_DD5_1_NLSubs_DDT.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05-E06 (2015) XViD DD5.1 NLSubs DDT</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game Of Thrones S05-E06 (2015) XViD DD5.1 NLSubs DDT\", 483 MB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-e06-2015-xvid-dd5-1-nlsubs-ddt-36nti.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-e06-2015-xvid-dd5-1-nlsubs-ddt-36nti.html</guid>\n\t
+        <pubDate>Tue, 19 May 2015 19:30:25 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/36nti.torrent\"
+        length=\"507240252\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>507240252</torrent:contentLength>\n\t
+        <torrent:infoHash>73640E4B167C573538349A2A78399B40B63709EB</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:73640E4B167C573538349A2A78399B40B63709EB&dn=Game%20Of%20Thrones%20S05-E06%20%282015%29%20XViD%20DD5.1%20NLSubs%20DDT]]></torrent:magnetURI>\n\t
+        <torrent:seeds>3</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_E06_2015_XViD_DD5_1_NLSubs_DDT.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>Game Of Thrones S05-E08 (2015) XViD DD5.1 NLSubs -DDT</title>\n\t <description><![CDATA[\t
+        Torrent: \"Game Of Thrones S05-E08 (2015) XViD DD5.1 NLSubs -DDT\", 550 MB\n\t
+        ]]></description>\n\t \t <link>https://zooqle.com/game-of-thrones-s05-e08-2015-xvid-dd5-1-nlsubs-ddt-3qk5a.html</link>\n\t
+        <guid>https://zooqle.com/game-of-thrones-s05-e08-2015-xvid-dd5-1-nlsubs-ddt-3qk5a.html</guid>\n\t
+        <pubDate>Tue, 02 Jun 2015 09:58:58 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/3qk5a.torrent\"
+        length=\"576802922\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>576802922</torrent:contentLength>\n\t
+        <torrent:infoHash>261818BB82ADB68E5FFAD75C714FACF8BB1CD933</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:261818BB82ADB68E5FFAD75C714FACF8BB1CD933&dn=Game%20Of%20Thrones%20S05-E08%20%282015%29%20XViD%20DD5.1%20NLSubs%20-DDT]]></torrent:magnetURI>\n\t
+        <torrent:seeds>3</torrent:seeds>\n\t <torrent:peers>2</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>Game_Of_Thrones_S05_E08_2015_XViD_DD5_1_NLSubs_DDT.torrent</torrent:fileName>\n\t</item>\n\n\t\n\t<item>\n\t
+        <title>\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) Blu-ray 1080p | D</title>\n\t <description><![CDATA[\t
+        Torrent: \"\u0418\u0433\u0440\u0430 \u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432
+        / Game of Thrones [S05] (2015) Blu-ray 1080p | D\", 161.5 GB\n\t ]]></description>\n\t
+        \t <link>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-blu-ray-1080p-d-veegp.html</link>\n\t
+        <guid>https://zooqle.com/%D0%B8%D0%B3%D1%80%D0%B0-%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2-game-of-thrones-s05-2015-blu-ray-1080p-d-veegp.html</guid>\n\t
+        <pubDate>Fri, 23 Sep 2016 16:24:33 +0000</pubDate>\n\t <enclosure url=\"https://zooqle.com/download/veegp.torrent\"
+        length=\"173405317192\" type=\"application/x-bittorrent\" />\n\t <torrent:contentLength>173405317192</torrent:contentLength>\n\t
+        <torrent:infoHash>A7F144658CC8E3BFB0BE7FA3D64A31371319EDB3</torrent:infoHash>\n\t
+        <torrent:magnetURI><![CDATA[magnet:?xt=urn:btih:A7F144658CC8E3BFB0BE7FA3D64A31371319EDB3&dn=%D0%98%D0%B3%D1%80%D0%B0%20%D0%BF%D1%80%D0%B5%D1%81%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%20%2F%20Game%20of%20Thrones%20%5BS05%5D%20%282015%29%20Blu-ray%201080p%20%7C%20D]]></torrent:magnetURI>\n\t
+        <torrent:seeds>2</torrent:seeds>\n\t <torrent:peers>3</torrent:peers>\n\t
+        <torrent:verified>1</torrent:verified>\n\t <torrent:fileName>\u0418\u0433\u0440\u0430_\u043F\u0440\u0435\u0441\u0442\u043E\u043B\u043E\u0432_Game_of_Thrones_S05_2015_Blu_ray_1080p_D.torrent</torrent:fileName>\n\t</item>\n\n\t\n\n
+        </channel>\n</rss>\n"}
+    headers:
+      cache-control: ['max-age=3600, public']
+      cf-ray: [347fb9513ee735d8-LHR]
+      connection: [keep-alive]
+      content-type: [applicaton/rss+xml]
+      date: ['Fri, 31 Mar 2017 02:01:59 GMT']
+      expires: ['Fri, 31 Mar 2017 03:01:59 GMT']
+      server: [cloudflare-nginx]
+    status: {code: 200, message: OK}
+version: 1
