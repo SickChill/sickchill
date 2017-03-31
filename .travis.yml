@@ -19,6 +19,9 @@ before_install:
 install:
   - pip install --upgrade pip
   - pip install --upgrade tox
+  - if [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; then
+      pip install --upgrade babel mako crowdin-cli-py;
+    fi
 
 script:
   - grunt travis
@@ -36,7 +39,6 @@ after_failure:
 after_success:
   - if [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; then
       echo -e "Updating translations...";
-      pip install --upgrade babel mako crowdin-cli-py;
       git config --global user.name "SickRage";
       git config --global user.email sickrage2@gmail.com;
       git config --global push.default simple;
@@ -49,7 +51,7 @@ after_success:
       else
         echo -e "No need to update translations.";
       fi;
-    fi;
+    fi
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
