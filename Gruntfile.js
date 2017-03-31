@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         'mocha'
     ]);
     grunt.registerTask('update_trans', 'update translations', function() {
-        grunt.log('Updating translations...');
+        grunt.log.writeln('Updating translations...');
         var tasks = [
             'exec:babel_extract',
             'exec:babel_update',
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
     grunt.registerTask('commit_and_push_trans', 'commit and push translations', function() {
-        grunt.log('Committing and pushing translations...');
+        grunt.log.writeln('Committing and pushing translations...');
         grunt.task.run([
             'exec:commit_trans',
             'exec:git_push:origin:' + process.env.TRAVIS_BRANCH // will be changed to master

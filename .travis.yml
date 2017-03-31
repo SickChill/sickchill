@@ -37,7 +37,7 @@ after_failure:
   - cat ./Logs/sickrage.log
 
 after_success:
-  - if [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; then exit 1; fi
+  - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; }; then exit 1; fi
   - echo -e "Updating translations..."
   - git config --global user.name "SickRage2"
   - git config --global user.email sickrage2@gmail.com
