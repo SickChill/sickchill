@@ -22,7 +22,7 @@ install:
 
 script:
   - grunt travis
-  - tox -v --recreate
+  # - tox -v --recreate
 
 cache:
   directories:

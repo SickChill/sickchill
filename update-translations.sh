@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "develop" ]; then
-if [ "$TRAVIS_BRANCH" == "develop" ]; then
+#if [ "$TRAVIS_BRANCH" == "develop" ]; then
   if [ ! -z "$CROWDIN_API_KEY" ]; then
     echo -e "CROWDIN_API_KEY is not defined or empty"
   exit 1
@@ -29,4 +29,4 @@ if [ "$TRAVIS_BRANCH" == "develop" ]; then
   git add -f -- locale/
   git commit -m "Update translations (build $TRAVIS_BUILD_NUMBER)"
   #git push -f origin develop > /dev/null
-fi
+#fi
