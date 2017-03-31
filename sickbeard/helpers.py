@@ -1870,25 +1870,30 @@ def sortable_name(name):
     return name.lower()
 
 
-def manage_torrents_url():
-    if not sickbeard.USE_TORRENTS or sickbeard.TORRENT_METHOD == 'blackhole' or \
-                    sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
-        return ''
+def manage_torrents_url(reset=False):
+    if not reset:
+        return sickbeard.CLIENT_WEB_URLS.get('torrent', '')
+
+    if not sickbeard.USE_TORRENTS or not sickbeard.TORRENT_HOST.lower().startswith('http') or sickbeard.TORRENT_METHOD == 'blackhole' or \
+            sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
+        sickbeard.CLIENT_WEB_URLS['torrent'] = ''
+        return sickbeard.CLIENT_WEB_URLS.get('torrent')
 
     torrent_ui_url = re.sub('localhost|127.0.0.1', sickbeard.LOCALHOST_IP or get_lan_ip(), sickbeard.TORRENT_HOST or '', re.I)
+
+    def test_exists(url):
+        try:
+            h = requests.head(url)
+            return h.status_code != 404
+        except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout):
+            return False
 
     if sickbeard.TORRENT_METHOD == 'utorrent':
         torrent_ui_url = '/'.join(s.strip('/') for s in (torrent_ui_url, 'gui/'))
     elif sickbeard.TORRENT_METHOD == 'download_station':
-        if check_url(urljoin(torrent_ui_url, 'download/')):
-            torrent_ui_url += 'download/'
-        else:
-            add_site_message(
-                '<p>' + _('For best results please set the Download Station alias as') + ' <code>download</code>. ' +
-                _('You can check this setting in the Synology DSM') + ' ' + '<b>' + _('Control Panel') + '</b> > <b>' + _('Application Portal') + '</b>.' +
-                _('Make sure you allow DSM to be embedded with iFrames too in') + ' ' + '<b>' +
-                _('Control Panel') + '</b> > <b>' + _('DSM Settings') + '</b> > <b>' + _('Security') + '</b>.' +
-                '</p><br>', 'info'
-            )
+        if test_exists(urljoin(torrent_ui_url, 'download/')):
+            torrent_ui_url = urljoin(torrent_ui_url, 'download/')
 
-    return torrent_ui_url
+    sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
+
+    return sickbeard.CLIENT_WEB_URLS.get('torrent')
