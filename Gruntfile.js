@@ -16,6 +16,7 @@ module.exports = function(grunt) {
         'mocha'
     ]);
     grunt.registerTask('update_trans', 'update translations', function() {
+        grunt.log('Updating translations...');
         var tasks = [
             'exec:babel_extract',
             'exec:babel_update',
@@ -30,6 +31,13 @@ module.exports = function(grunt) {
         }
 
         grunt.task.run(tasks);
+    });
+    grunt.registerTask('commit_and_push_trans', 'commit and push translations', function() {
+        grunt.log('Committing and pushing translations...');
+        grunt.task.run([
+            'exec:commit_trans',
+            'exec:git_push:origin:' + process.env.TRAVIS_BRANCH
+        ]);
     });
     /****************************************
     *  Admin only                           *
@@ -173,12 +181,12 @@ module.exports = function(grunt) {
                 './gui/slick/js/**/*.js',
                 '!./gui/slick/js/lib/**/*.js',
                 '!./gui/slick/js/ajaxNotifications.js',
-                '!./gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
+                '!./gui/slick/js/**/*.min.js' // We use this because ignores doesn't seem to work :(
             ]
         },
         mocha: {
             all: {
-                src: ['tests/mocha/testrunner.html'],
+                src: ['tests/mocha/testrunner.html']
             },
             options: {
                 run: true
@@ -205,6 +213,13 @@ module.exports = function(grunt) {
             'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
             'crowdin_download': {cmd: 'crowdin-cli-py download'},
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
+            'commit_trans': {
+                // cmd: {'git commit -m "Update translations (build ' + process.env.TRAVIS_BUILD_NUMBER + ')" -- locale/'}
+                cmd: function() {
+                    return 'git commit --dry-run -m "Update translations (build ' +
+                        process.env.TRAVIS_BUILD_NUMBER + ')" -- locale/';
+                }
+            },
 
             // Publish/Releases
             'git_checkout': {
@@ -214,7 +229,7 @@ module.exports = function(grunt) {
                 cmd: 'git pull'
             },
             'git_merge': {
-                cmd: function (b) { return 'git merge ' + b; },
+                cmd: function (b) { return 'git merge ' + b; }
             },
             'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
@@ -232,7 +247,7 @@ module.exports = function(grunt) {
                 stdout: false,
                 callback: function(err, stdout) {
                     var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim();  // removes commit hashes
-                    commits = commits.replace(/`/gm, '').replace(/^\(.*HEAD.*\)\s/gm, '')  // removes ` and tag information
+                    commits = commits.replace(/`/gm, '').replace(/^\(.*HEAD.*\)\s/gm, '');  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
