@@ -382,7 +382,7 @@ module.exports = function(grunt) {
             }
             contents += '\n';
             tag.message.forEach(function (row) {
-                contents += '* ' + row
+                contents += row
                     // link issue numbers, style links it issues and pull requests
                     .replace(/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)?#([0-9]+)|https?:\/\/github.com\/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)\/(issues|pull)\/([0-9]+)/gm,
                         function(all, repoL, numL, repoR, typeR, numR) {
@@ -400,8 +400,17 @@ module.exports = function(grunt) {
                     })
                     // remove tag information
                     .replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '')
+                    // remove commit hashes from start
+                    .replace(/^[a-f0-9]{7} /gm, '')
                     // style messages that contain lists
-                    .replace(/\s{3}\*/g, '\n  *');
+                    .replace(/( {3,}\*{1})(?!\*)/g, '\n  -')
+                    // style messages that contain multiple lines
+                    .replace(/( {3,}\*{1})(?!\*)/g, '\n  -')
+                    // escapes markdown __ tags
+                    .replace(/__/gm, '\\_\\_')
+                    // add * to the first line only
+                    .replace(/^(\w)/, '* $1');
+
                 contents += '\n';
             });
             contents += '\n';
