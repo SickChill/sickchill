@@ -6,31 +6,59 @@ if [ "$TRAVIS_BRANCH" == "develop" ]; then # either the pushed branch or the pul
     # exit 1
   fi
   
-  echo -e "[1/9] Installing babel, mako and crowdin-cli-py"
-  pip install --upgrade babel mako crowdin-cli-py
+  echo -e "[ 1/10] Installing babel, mako and crowdin-cli-py"
+  pip install --upgrade babel mako crowdin-cli-py > /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
   
-  echo -e "[2/9] Configuring git..."
+  echo -e "[ 2/10] Configuring git..."
   git config --global user.name "SickRage"
   git config --global user.email sickrage2@gmail.com
   git config --global push.default simple # push only current branch
 
-  echo -e "[3/9] Extracting strings..."
+  echo -e "[ 3/10] Extracting strings..."
   python setup.py extract_messages > /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
   
-  echo -e "[4/9] Updating translations..."
+  echo -e "[ 4/10] Updating translations..."
   python setup.py update_catalog > /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
   
-  echo -e "[5/9] Uploading to Crowdin..."
+  echo -e "[ 5/10] Uploading to Crowdin..."
   crowdin-cli-py upload sources #> /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	# exit 1
+  fi
   
-  echo -e "[6/9] Downloading Crowdin..."
+  echo -e "[ 6/10] Downloading Crowdin..."
   crowdin-cli-py download #> /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	# exit 1
+  fi
   
-  echo -e "[7/9] Compiling translations..."
+  echo -e "[ 7/10] Compiling translations..."
   python setup.py compile_catalog > /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
   
-  echo -e "[8/9] Converting translations to json..."
+  echo -e "[ 8/10] Converting translations to json..."
   grunt po2json > /dev/null
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
 
   git diff-index --quiet HEAD -- locale/ # check if locale files have actually changed
   if [ $? == 0 ]; then # check return value, 0 is clean, otherwise is dirty
@@ -38,17 +66,24 @@ if [ "$TRAVIS_BRANCH" == "develop" ]; then # either the pushed branch or the pul
 	exit 1
   fi
 
-  echo -e "[9/9] Commiting and pushing translations..."
+  echo -e "[ 9/10] Commiting translations..."
   # git remote rm origin
   # git remote add origin https://usernme:$GH_TOKEN@github.com/SickRage/SickRage.git
 
   # git commit -q -m "Update translations (build $TRAVIS_BUILD_NUMBER)" -- locale/
   git commit --dry-run -m "Update translations (build $TRAVIS_BUILD_NUMBER)" -- locale/
+
   if [ "$TRAVIS_PULL_REQUEST" == "true" ] && [ "$TRAVIS_PULL_REQUEST_SLUG" == "SickRage/SickRage" ]; then
+    echo -e "[10/10] Pushing translations to $TRAVIS_PULL_REQUEST_BRANCH branch"
     git push --dry-run -f origin $TRAVIS_PULL_REQUEST_BRANCH > /dev/null
   else
+    echo -e "[10/10] Pushing translations to develop branch"
     git push --dry-run -f origin develop > /dev/null
   fi
+  if [ $? != 0 ]; then
+    echo -e "-!- An error has occurred."
+	exit 1
+  fi
   
-  echo -e "[-/-] Done!"
+  echo -e "Done!"
 fi
