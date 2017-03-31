@@ -36,7 +36,7 @@ module.exports = function(grunt) {
         grunt.log('Committing and pushing translations...');
         grunt.task.run([
             'exec:commit_trans',
-            'exec:git_push:origin:' + process.env.TRAVIS_BRANCH
+            'exec:git_push:origin:' + process.env.TRAVIS_BRANCH // will be changed to master
         ]);
     });
     /****************************************
