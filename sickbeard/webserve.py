@@ -594,8 +594,8 @@ class UI(WebRoot):
 
     def locale_json(self):
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
-        locale_file = ek(os.path.normpath, '{base}/{loc_dir}/{lang}/LC_MESSAGES/messages.json'.format(
-            base=sickbeard.PROG_DIR, loc_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
+        locale_file = ek(os.path.normpath, '{locale_dir}/{lang}/LC_MESSAGES/messages.json'.format(
+            locale_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
 
         if os.path.isfile(locale_file):
             self.set_header('Content-Type', 'application/json')
@@ -4246,6 +4246,8 @@ class ConfigSearch(Config):
                 sickbeard.TORRENT_PASSWORD = sickbeard.SYNOLOGY_DSM_PASSWORD
             if not sickbeard.TORRENT_PATH:
                 sickbeard.TORRENT_PATH = sickbeard.SYNOLOGY_DSM_PATH
+
+        helpers.manage_torrents_url(reset=True)
 
         sickbeard.save_config()
 

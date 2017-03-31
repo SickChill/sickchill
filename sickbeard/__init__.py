@@ -109,6 +109,7 @@ CREATEPID = False
 PIDFILE = ''
 
 SITE_MESSAGES = {}
+CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
 
 DAEMON = None
 NO_RESIZE = False
@@ -1095,6 +1096,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SYNOLOGY_DSM_USERNAME = check_setting_str(CFG, 'Synology', 'username', censor_log=True)
         SYNOLOGY_DSM_PASSWORD = check_setting_str(CFG, 'Synology', 'password', censor_log=True)
         SYNOLOGY_DSM_PATH = check_setting_str(CFG, 'Synology', 'path')
+
+        helpers.manage_torrents_url(reset=True)
 
         USE_KODI = check_setting_bool(CFG, 'KODI', 'use_kodi')
         KODI_ALWAYS_ON = check_setting_bool(CFG, 'KODI', 'kodi_always_on', True)

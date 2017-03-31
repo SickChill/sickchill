@@ -6,6 +6,7 @@
 %>
 
 <%block name="scripts">
+    <script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#config-components').tabs();
