@@ -19,6 +19,8 @@ before_install:
 install:
     - pip install --upgrade pip
     - pip install --upgrade tox
+    - pip install --upgrade babel
+    - pip install --upgrade crowdin-cli-py
 
 script:
   - grunt travis
@@ -32,6 +34,10 @@ cache:
 
 after_failure:
   - cat ./Logs/sickrage.log
+
+after_success:
+  - chmod +x ./update-translations.sh
+  - ./update-translations.sh
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
