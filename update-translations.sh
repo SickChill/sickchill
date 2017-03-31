@@ -83,5 +83,5 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" != "master" ]; th
   
   echo -e "Done!"
 else
-	echo -e "Nothing to do here (This is a PR or 'master' branch)"
+    echo -e "Nothing to do here (This is a PR or 'master' branch)"
 fi
