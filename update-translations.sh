@@ -9,6 +9,7 @@
   echo -e "Setting up..."
   pip install --upgrade babel
   pip install --upgrade crowdin-cli-py
+  pip install --upgrade mako
   
   git config --global user.name "SickRage"
   git config --global user.email sickrage2@gmail.com
@@ -22,15 +23,21 @@
   python setup.py compile_catalog
   grunt po2json
 
-  if [ -z "git diff-index --quiet HEAD -- locale/" ]; then
+  git diff-index --quiet HEAD -- locale/ # check if locale files have actually changed
+  if [ $? == 0 ]; then # check return value, 0 is clean, otherwise is dirty
 	echo -e "No need to update translations."
 	exit 1
   fi
+
   echo -e "Commiting and pushing translations..."
+  echo -e "commit msg: Update translations (build $TRAVIS_BUILD_NUMBER)" # remove later
   # git remote rm origin
   # git remote add origin https://usernme:$GH_TOKEN@github.com/SickRage/SickRage.git
 
-  git add -f -- locale/
-  git commit -m "Update translations (build $TRAVIS_BUILD_NUMBER)"
+  # git add -f -- locale/
+  # git commit -q -m "Update translations (build $TRAVIS_BUILD_NUMBER)"
+  git commit --dry-run -m "Update translations (build $TRAVIS_BUILD_NUMBER)"
   # git push -f origin develop > /dev/null
+  
+  echo -e "Done!"
 # fi
