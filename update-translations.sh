@@ -74,12 +74,14 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" != "master" ]; th
   # git commit -q -m "Update translations (build $TRAVIS_BUILD_NUMBER)" -- locale/
   git commit --dry-run -m "Update translations (build $TRAVIS_BUILD_NUMBER)" -- locale/
 
-  echo -e "[10/10] Pushing translations to develop branch"
-  git push --dry-run -f origin develop > /dev/null
+  echo -e "[10/10] Pushing translations to '$TRAVIS_BRANCH' branch"
+  git push --dry-run -q -f origin $TRAVIS_BRANCH > /dev/null
   if [ $? != 0 ]; then
     echo -e "-!- An error has occurred."
     exit 1
   fi
   
   echo -e "Done!"
+else
+	echo -e "Nothing to do here (This is a PR or 'master' branch)"
 fi
