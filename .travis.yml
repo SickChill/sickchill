@@ -38,15 +38,14 @@ after_failure:
   - cat ./Logs/sickrage.log
 
 after_success:
-  if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; }; then exit 0; fi
-  echo -e "Updating translations..."
-  git config --global user.name "SickRage2" > /dev/null
-  git config --global user.email sickrage2@gmail.com > /dev/null
-  git config --global push.default simple > /dev/null
-  git remote rm origin > /dev/null
-  git remote add origin https://SickRage2:$BOT_GH_TOKEN@github.com/SickRage/SickRage.git > /dev/null
-  grunt update_trans commit_and_push_trans
-  echo -e "Done!"
+  - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] \
+    && [[ "$TRAVIS_BRANCH" != "master" ]]; }; then exit 0; fi; echo Updating translations...
+  - git config --global user.name "SickRage2" > /dev/null
+  - git config --global user.email sickrage2@gmail.com > /dev/null
+  - git config --global push.default simple > /dev/null
+  - git remote rm origin > /dev/null
+  - git remote add origin https://SickRage2:$BOT_GH_TOKEN@github.com/SickRage/SickRage.git > /dev/null
+  - grunt update_trans commit_and_push_trans
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
