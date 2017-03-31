@@ -41,11 +41,15 @@ after_success:
   - git config --global push.default simple # push only current branch
 #  - git remote rm origin
 #  - git remote add origin https://usernme:$GH_TOKEN@github.com/SickRage/SickRage.git
-  - test $CROWDIN_API_KEY != "" && $TRAVIS_PULL_REQUEST = false && $TRAVIS_BRANCH != master \
-    && grunt update_trans \
-    && test $(git diff-index HEAD -- locale/) != "" \
-    && grunt commit_and_push_trans \
-    && echo -e "Done!"
+  - if [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" != "master" ]]; then
+      grunt update_trans;
+      if [[ ! -z $(git diff-index HEAD -- locale/) ]]; then
+        grunt commit_and_push_trans;
+        echo -e "Done!";
+      else
+        echo -e "No need to update translations.";
+      fi;
+    fi;
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
