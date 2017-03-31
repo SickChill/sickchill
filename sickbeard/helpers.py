@@ -1877,7 +1877,7 @@ def manage_torrents_url(reset=False):
     if not sickbeard.USE_TORRENTS or sickbeard.TORRENT_METHOD == 'blackhole' or \
             sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
         sickbeard.CLIENT_WEB_URLS['torrent'] = ''
-        sickbeard.CLIENT_WEB_URLS.get('torrent')
+        return sickbeard.CLIENT_WEB_URLS.get('torrent')
 
     torrent_ui_url = re.sub('localhost|127.0.0.1', sickbeard.LOCALHOST_IP or get_lan_ip(), sickbeard.TORRENT_HOST or '', re.I)
 
