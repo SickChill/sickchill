@@ -4287,6 +4287,8 @@ class ConfigSearch(Config):
             if not sickbeard.TORRENT_PATH:
                 sickbeard.TORRENT_PATH = sickbeard.SYNOLOGY_DSM_PATH
 
+        helpers.manage_torrents_url(reset=True)
+
         sickbeard.save_config()
 
         if len(results) > 0:
