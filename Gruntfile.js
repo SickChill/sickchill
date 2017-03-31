@@ -399,7 +399,10 @@ module.exports = function(grunt) {
                         return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
                     })
                     // remove tag information
-                    .replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');
+                    .replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '')
+                    // style messages that contain lists
+                    .replace(/\s{3}\*/g, '\n  *');
+                contents += '\n';
             });
             contents += '\n';
         });
