@@ -1874,7 +1874,7 @@ def manage_torrents_url(reset=False):
     if not reset:
         return sickbeard.CLIENT_WEB_URLS.get('torrent', '')
 
-    if not sickbeard.USE_TORRENTS or sickbeard.TORRENT_METHOD == 'blackhole' or \
+    if not sickbeard.USE_TORRENTS or not sickbeard.TORRENT_HOST.lower().startswith('http') or sickbeard.TORRENT_METHOD == 'blackhole' or \
             sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
         sickbeard.CLIENT_WEB_URLS['torrent'] = ''
         return sickbeard.CLIENT_WEB_URLS.get('torrent')
