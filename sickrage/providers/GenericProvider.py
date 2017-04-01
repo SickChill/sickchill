@@ -130,8 +130,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         searched_scene_season = None
 
         for episode in episodes:
-            cache_result = self.cache.search_cache(episode, manualSearch=manual_search,
-                                                   downCurQuality=download_current_quality)
+            cache_result = self.cache.search_cache(episode, manual_search=manual_search,
+                                                   down_cur_quality=download_current_quality)
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result

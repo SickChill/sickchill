@@ -136,14 +136,14 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                parsedJSON = self.get_url(search_url, post_data=post_data, returns='json')
-                if not parsedJSON:
+                parsed_json = self.get_url(search_url, post_data=post_data, returns='json')
+                if not parsed_json:
                     logger.log('No data returned from provider', logger.DEBUG)
                     self.session.cookies.clear()
                     continue
 
                 try:
-                    torrents = parsedJSON.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
+                    torrents = parsed_json.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except Exception:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
