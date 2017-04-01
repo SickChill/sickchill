@@ -169,7 +169,8 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
         return items
 
     # workaround, downloaded torrents are not verified even though they're good
-    def _verify_download(self, file_name=None):  # pylint: disable=unused-argument,no-self-use
+    @staticmethod
+    def _verify_download(*args, **kwargs):
         return True
 
 provider = ZooqleProvider()
