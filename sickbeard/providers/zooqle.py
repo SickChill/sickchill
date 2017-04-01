@@ -19,6 +19,8 @@
 
 from __future__ import unicode_literals
 
+import math
+
 import validators
 from requests.compat import urljoin
 from sickbeard.bs4_parser import BS4Parser
@@ -90,51 +92,32 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     logger.log('Expected xml but got something else, is your mirror failing?', logger.INFO)
                     continue
 
+                # only check result first
                 with BS4Parser(data, 'html5lib') as html:
-                    results_count = int(html.find('opensearch:totalresults').text)
-                    items_per_page = int(html.find('opensearch:itemsperpage').text)
+                    total_results = float(html.find('opensearch:totalresults').text)
+                    items_per_page = float(html.find('opensearch:itemsperpage').text)
 
-                    if float(results_count)/float(items_per_page) > 1:
-                        logger.log('Multiple pages of results were received from provider. '
-                                   'Pagination is not supported yet, using results from page one only', logger.DEBUG)
+                if not total_results:
+                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    continue
 
-                    for item in html('item'):
-                        try:
-                            title = item.title.get_text(strip=True)
-                            download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[!]') + \
-                                           self._custom_trackers
-                            if sickbeard.TORRENT_METHOD == 'blackhole':
-                                download_url = item.enclosure['url']
+                pages = int(math.ceil(total_results / items_per_page))
+                for page in range(pages):
+                    if page > 0:
+                        search_params['pg'] = page + 1
+                        data = self.get_url(search_url, params=search_params, returns='text')
 
-                            if not (title and download_url):
-                                continue
+                    if not data:
+                        logger.log(
+                            'URL did not return results/data, if the results are on the site maybe try a custom url,'
+                            ' or a different one', logger.DEBUG)
+                        continue
 
-                            seeders = try_int(item.find('torrent:seeds').get_text(strip=True))
-                            leechers = try_int(item.find('torrent:peers').get_text(strip=True))
+                    if not data.startswith('<?xml'):
+                        logger.log('Expected xml but got something else, is your mirror failing?', logger.INFO)
+                        continue
 
-                            # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or "
-                                           "leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
-                                continue
-
-                            verified = bool(try_int(item.find('torrent:verified').get_text(strip=True)))
-                            if self.confirmed and not verified:
-                                logger.log('Found result ' + title + " but that doesn't seem like a verified result so "
-                                                                     "I'm ignoring it", logger.DEBUG)
-                                continue
-
-                            torrent_size = item.find('torrent:contentlength').get_text(strip=True)
-                            size = convert_size(torrent_size) or -1
-                            info_hash = item.find('torrent:infohash').get_text(strip=True)
-
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
-                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
-
-                            items.append(item)
-
-                        except (AttributeError, TypeError, KeyError, ValueError):
-                            continue
+                    items += self._process_data(data)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
@@ -142,6 +125,48 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
             results += items
 
         return results
+
+    def _process_data(self, data):
+        items = []
+        with BS4Parser(data, 'html5lib') as html:
+            for item in html('item'):
+                try:
+                    title = item.title.get_text(strip=True)
+                    download_url = item.find('torrent:magneturi').next.replace('CDATA', '').strip('[!]') + self._custom_trackers
+                    if sickbeard.TORRENT_METHOD == 'blackhole':
+                        download_url = item.enclosure['url']
+
+                    if not (title and download_url):
+                        continue
+
+                    seeders = try_int(item.find('torrent:seeds').get_text(strip=True))
+                    leechers = try_int(item.find('torrent:peers').get_text(strip=True))
+
+                    # Filter unseeded torrent
+                    if seeders < self.minseed or leechers < self.minleech:
+                        logger.log("Discarding torrent because it doesn't meet the minimum seeders or "
+                                   "leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                        continue
+
+                    verified = bool(try_int(item.find('torrent:verified').get_text(strip=True)))
+                    if self.confirmed and not verified:
+                        logger.log('Found result ' + title + " but that doesn't seem like a verified result so "
+                                                             "I'm ignoring it", logger.DEBUG)
+                        continue
+
+                    torrent_size = item.find('torrent:contentlength').get_text(strip=True)
+                    size = convert_size(torrent_size) or -1
+                    info_hash = item.find('torrent:infohash').get_text(strip=True)
+
+                    item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
+                    logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+
+                    items.append(item)
+
+                except (AttributeError, TypeError, KeyError, ValueError):
+                    continue
+
+        return items
 
     # workaround, downloaded torrents are not verified even though they're good
     def _verify_download(self, file_name=None):  # pylint: disable=unused-argument,no-self-use
