@@ -49,8 +49,9 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
         self.custom_url = None
 
-        # self.cache = tvcache.TVCache(self, search_params={'RSS': ['tv', 'anime']})  # ??????????????????
-        self.cache = tvcache.TVCache(self)
+        self.cache = tvcache.TVCache(self, search_params={'RSS': ['TV', 'Anime']})
+
+        self.max_pages = 10  # limit results to the first 10 pages. 10*30=300 items are enough
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         """ Search provider """
@@ -58,22 +59,24 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
         search_params = {
-            'q': '%s category:' + ('tv', 'anime')[anime],
+            'q': '%s category:' + ('TV', 'Anime')[anime],
             'fmt': 'rss',
-            'pg': 1  # page number
+            'pg': 1,  # page number
+            'v': 't',  # Unknown, maybe view torrents (?)
+            's': 'ns',  # sort by ['dt'=datetime, 'sz'=size, 'ns'=seeders]
+            'sd': 'd'  # sort direction ['d'=desc, 'a'=asc]
         }
 
         for mode in search_strings:
-            if mode == 'RSS':
-                logger.log("RSS search mode is not supported, skipping".format(mode), logger.DEBUG)
-                continue
-
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
-
-                search_params['q'] %= search_string
-                logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                if mode == 'RSS':
+                    search_params.update({'q': '* category:' + search_string, 's': 'dt'})  # sort by added date-time
+                    self.max_pages = 3  # for an rss feed, 3*30=90 items are enough
+                else:
+                    search_params['q'] %= search_string
+                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
                 search_url = self.urls['search']
                 if self.custom_url:
@@ -98,13 +101,14 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     items_per_page = float(html.find('opensearch:itemsperpage').text)
 
                 if not total_results:
-                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 
                 pages = int(math.ceil(total_results / items_per_page))
-                for page in range(pages):
+                for page in range(min(pages, self.max_pages)):
                     if page > 0:
                         search_params['pg'] = page + 1
+                        logger.log('Processing result page {0} of {1}'.format(search_params['pg'], pages), logger.DEBUG)
                         data = self.get_url(search_url, params=search_params, returns='text')
 
                     if not data:
@@ -117,7 +121,7 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                         logger.log('Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
-                    items += self._process_data(data)
+                    items += self._process_data(data, mode)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
@@ -126,7 +130,7 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
 
         return results
 
-    def _process_data(self, data):
+    def _process_data(self, data, search_mode):
         items = []
         with BS4Parser(data, 'html5lib') as html:
             for item in html('item'):
@@ -143,13 +147,13 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     leechers = try_int(item.find('torrent:peers').get_text(strip=True))
 
                     # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                    if (seeders < self.minseed or leechers < self.minleech) and search_mode != 'RSS':
                         logger.log("Discarding torrent because it doesn't meet the minimum seeders or "
                                    "leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     verified = bool(try_int(item.find('torrent:verified').get_text(strip=True)))
-                    if self.confirmed and not verified:
+                    if self.confirmed and not verified and search_mode != 'RSS':
                         logger.log('Found result ' + title + " but that doesn't seem like a verified result so "
                                                              "I'm ignoring it", logger.DEBUG)
                         continue
@@ -159,7 +163,8 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
                     info_hash = item.find('torrent:infohash').get_text(strip=True)
 
                     item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
-                    logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+                    if search_mode != 'RSS':
+                        logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)
 
