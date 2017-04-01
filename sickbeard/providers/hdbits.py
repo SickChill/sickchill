@@ -58,7 +58,9 @@ class HDBitsProvider(TorrentProvider):
 
         return True
 
-    def _check_auth_from_data(self, parsed_json):
+    @staticmethod
+    def _check_auth_from_data(parsed_json):
+        """ Check that we are authenticated. """
 
         if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 5:
             logger.log("Invalid username or password. Check your settings", logger.WARNING)
