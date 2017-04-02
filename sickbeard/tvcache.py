@@ -35,33 +35,33 @@ import six
 
 
 class CacheDBConnection(db.DBConnection):
-    def __init__(self, providerName):
+    def __init__(self, provider_name):
         super(CacheDBConnection, self).__init__('cache.db')
 
         # Create the table if it's not already there
         try:
-            if not self.hasTable(providerName):
+            if not self.hasTable(provider_name):
                 self.action(
-                    "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
+                    "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
-                sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+                sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + provider_name + "] GROUP BY url HAVING count > 1")
 
                 for cur_dupe in sql_results:
-                    self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe[b"url"]])
+                    self.action("DELETE FROM [" + provider_name + "] WHERE url = ?", [cur_dupe[b"url"]])
 
             # add unique index to prevent further dupes from happening if one does not exist
-            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + providerName + "] (url)")
+            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + provider_name + "] (url)")
 
             # add release_group column to table if missing
-            if not self.hasColumn(providerName, 'release_group'):
-                self.addColumn(providerName, 'release_group', "TEXT", "")
+            if not self.hasColumn(provider_name, 'release_group'):
+                self.addColumn(provider_name, 'release_group', "TEXT", "")
 
             # add version column to table if missing
-            if not self.hasColumn(providerName, 'version'):
-                self.addColumn(providerName, 'version', "NUMERIC", "-1")
+            if not self.hasColumn(provider_name, 'version'):
+                self.addColumn(provider_name, 'version', "NUMERIC", "-1")
 
         except Exception as e:
-            if str(e) != "table [" + providerName + "] already exists":
+            if str(e) != "table [" + provider_name + "] already exists":
                 raise
 
         # Create the table if it's not already there
@@ -172,13 +172,13 @@ class TVCache(object):
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            lastTime = int(sql_results[0][b"time"])
-            if lastTime > int(time.mktime(datetime.datetime.today().timetuple())):
-                lastTime = 0
+            last_time = int(sql_results[0][b"time"])
+            if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
+                last_time = 0
         else:
-            lastTime = 0
+            last_time = 0
 
-        return datetime.datetime.fromtimestamp(lastTime)
+        return datetime.datetime.fromtimestamp(last_time)
 
     @property
     def last_search(self):
@@ -186,15 +186,20 @@ class TVCache(object):
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            lastTime = int(sql_results[0][b"time"])
-            if lastTime > int(time.mktime(datetime.datetime.today().timetuple())):
-                lastTime = 0
+            last_time = int(sql_results[0][b"time"])
+            if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
+                last_time = 0
         else:
-            lastTime = 0
+            last_time = 0
 
-        return datetime.datetime.fromtimestamp(lastTime)
+        return datetime.datetime.fromtimestamp(last_time)
 
     def set_last_update(self, to_date=None):
+        """
+        Sets the last update date for the current provider in the cache database
+        
+        :param to_date: date to set to, or None for today
+        """
         if not to_date:
             to_date = datetime.datetime.today()
 
@@ -205,14 +210,19 @@ class TVCache(object):
             {'provider': self.provider_id}
         )
 
-    def set_last_search(self, toDate=None):
-        if not toDate:
-            toDate = datetime.datetime.today()
+    def set_last_search(self, to_date=None):
+        """
+        Sets the last search date for the current provider in the cache database
+
+        :param to_date: date to set to, or None for today
+        """
+        if not to_date:
+            to_date = datetime.datetime.today()
 
         cache_db_con = self._get_db()
         cache_db_con.upsert(
             "lastSearch",
-            {'time': int(time.mktime(toDate.timetuple()))},
+            {'time': int(time.mktime(to_date.timetuple()))},
             {'provider': self.provider_id}
         )
 
@@ -236,13 +246,13 @@ class TVCache(object):
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
 
-            # create showObj from indexer_id if available
-            showObj = None
+            # create show_obj from indexer_id if available
+            show_obj = None
             if indexer_id:
-                showObj = Show.find(sickbeard.showList, indexer_id)
+                show_obj = Show.find(sickbeard.showList, indexer_id)
 
             try:
-                parse_result = NameParser(showObj=showObj).parse(name)
+                parse_result = NameParser(showObj=show_obj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log("{0}".format(error), logger.DEBUG)
                 return None
@@ -256,10 +266,10 @@ class TVCache(object):
 
         if season and episodes:
             # store episodes as a seperated string
-            episodeText = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
+            episode_text = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
 
             # get the current timestamp
-            curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
+            cur_timestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
             # get quality of release
             quality = parse_result.quality
@@ -276,11 +286,11 @@ class TVCache(object):
 
             return [
                 "INSERT OR IGNORE INTO [" + self.provider_id + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
-                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
+                [name, season, episode_text, parse_result.show.indexerid, url, cur_timestamp, quality, release_group, version]]
 
-    def search_cache(self, episode, manualSearch=False, downCurQuality=False):
-        neededEps = self.find_needed_episodes(episode, manualSearch, downCurQuality)
-        return neededEps.get(episode, [])
+    def search_cache(self, episode, manual_search=False, down_cur_quality=False):
+        needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)
+        return needed_eps.get(episode, [])
 
     def list_propers(self, date=None):
         cache_db_con = self._get_db()
