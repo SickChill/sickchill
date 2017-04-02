@@ -136,15 +136,12 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
     @caps.setter
     def caps(self, data):
-        if not data:
-            return self._caps
-
         # Override nzb.su - tvsearch without tvdbid, with q param
         if 'nzb.su' in self.url:
             self.use_tv_search = True
             self.cap_tv_search = ''
             self._caps = True
-            return  self._caps
+            return
 
         elm = data.find('tv-search')
         self.use_tv_search = elm and elm.get('available') == 'yes'
@@ -215,7 +212,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         return True
 
-    def _checkAuthFromData(self, data):
+    def _check_auth_from_data(self, data):
         """
         Checks that the returned data is valid
         Returns: _check_auth if valid otherwise False if there is an error
@@ -328,7 +325,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     break
 
                 with BS4Parser(data, 'html5lib') as html:
-                    if not self._checkAuthFromData(html):
+                    if not self._check_auth_from_data(html):
                         break
 
                     try:
