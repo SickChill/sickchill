@@ -58,9 +58,11 @@ class HDBitsProvider(TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsedJSON):
+    @staticmethod
+    def _check_auth_from_data(parsed_json):
+        """ Check that we are authenticated. """
 
-        if 'status' in parsedJSON and 'message' in parsedJSON and parsedJSON.get('status') == 5:
+        if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 5:
             logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
@@ -89,13 +91,13 @@ class HDBitsProvider(TorrentProvider):
 
         self._check_auth()
 
-        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, returns='json')
-        if not parsedJSON:
+        parsed_json = self.get_url(self.urls['search'], post_data=search_params, returns='json')
+        if not parsed_json:
             return []
 
-        if self._checkAuthFromData(parsedJSON):
-            if parsedJSON and 'data' in parsedJSON:
-                items = parsedJSON['data']
+        if self._check_auth_from_data(parsed_json):
+            if parsed_json and 'data' in parsed_json:
+                items = parsed_json['data']
             else:
                 logger.log("Resulting JSON from provider isn't correct, not parsing it", logger.ERROR)
                 items = []
@@ -185,10 +187,10 @@ class HDBitsCache(tvcache.TVCache):
         results = []
 
         try:
-            parsedJSON = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
+            parsed_json = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
-            if self.provider._checkAuthFromData(parsedJSON):
-                results = parsedJSON['data']
+            if self.provider._check_auth_from_data(parsed_json):
+                results = parsed_json['data']
         except Exception:
             pass
 

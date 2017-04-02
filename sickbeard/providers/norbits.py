@@ -1,5 +1,5 @@
 # coding=utf-8
-'''A Norbits (https://norbits.net) provider'''
+"""A Norbits (https://norbits.net) provider"""
 
 # URL: https://sickrage.github.io
 #
@@ -34,10 +34,10 @@ except ImportError:
 
 
 class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
-    '''Main provider object'''
+    """Main provider object"""
 
     def __init__(self):
-        ''' Initialize the class '''
+        """ Initialize the class """
         TorrentProvider.__init__(self, 'Norbits')
 
         self.username = None
@@ -59,8 +59,9 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         return True
 
-    def _checkAuthFromData(self, parsed_json):  # pylint: disable=invalid-name
-        ''' Check that we are authenticated. '''
+    @staticmethod
+    def _check_auth_from_data(parsed_json):
+        """ Check that we are authenticated. """
 
         if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 3:
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
@@ -68,7 +69,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return True
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
-        ''' Do the actual searching and JSON parsing'''
+        """ Do the actual searching and JSON parsing"""
 
         results = []
 
@@ -96,7 +97,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                 if not parsed_json:
                     return results
 
-                if self._checkAuthFromData(parsed_json):
+                if self._check_auth_from_data(parsed_json):
                     json_items = parsed_json.get('data', '')
                     if not json_items:
                         logger.log('Resulting JSON from provider is not correct, '
