@@ -815,6 +815,14 @@ home_newShow.mako
     border: 1px solid #DFDEDE;
 }
 
+#searchResults {
+    height: 100%;
+}
+
+#searchResults .legendStep {
+    margin-bottom: 5px;
+}
+
 #searchResults input[type="radio"] {
     vertical-align: -2px;
 }

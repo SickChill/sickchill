@@ -3683,52 +3683,45 @@ var SICKRAGE = {
         newShow: function() {
             function updateSampleText() {
                 // if something's selected then we have some behavior to figure out
+                var object = {
+                    showName: '',
+                    dir: 'unknown dir.',
+                    sepChar: ''
+                };
 
-                var showName, sepChar;
                 // if they've picked a radio button then use that
                 if ($('input:radio[name=whichSeries]:checked').length) {
-                    showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
+                    object.showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
                 } else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) { // if we provided a show in the hidden field, use that
-                    showName = $('#providedName').val();
-                } else {
-                    showName = '';
+                    object.showName = $('#providedName').val();
                 }
-                SICKRAGE.common.updateBlackWhiteList(showName);
-                var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
+
+                SICKRAGE.common.updateBlackWhiteList(object.showName);
 
                 // if we have a root dir selected, figure out the path
                 if ($('#rootDirs option:selected').length) {
-                    var rootDirectoryText = $('#rootDirs option:selected').val();
-                    if (rootDirectoryText.indexOf('/') >= 0) {
-                        sepChar = '/';
-                    } else if (rootDirectoryText.indexOf('\\') >= 0) {
-                        sepChar = '\\';
-                    } else {
-                        sepChar = '';
+                    object.dir = $('#rootDirs option:selected').val();
+                    if (object.dir.indexOf('/') >= 0) {
+                        object.sepChar = '/';
+                    } else if (object.dir.indexOf('\\') >= 0) {
+                        object.sepChar = '\\';
                     }
 
-                    if (rootDirectoryText.substr(sampleText.length - 1) !== sepChar) {
-                        rootDirectoryText += sepChar;
-                    }
-                    rootDirectoryText += '<i>||</i>' + sepChar;
-
-                    sampleText += rootDirectoryText;
-                } else if ($('#fullShowPath').length && $('#fullShowPath').val().length) {
-                    sampleText += $('#fullShowPath').val();
-                } else {
-                    sampleText += 'unknown dir.';
+                    object.dir.trim(object.sepChar);
+                    object.dir += object.sepChar;
+                } else if ($('#fullShowPath').val()) {
+                    object.dir = $('#fullShowPath').val();
                 }
 
-                sampleText += '</b>';
-
                 // if we have a show name then sanitize and use it for the dir name
-                if (showName.length) {
-                    $.post(srRoot + '/addShows/sanitizeFileName', {name: showName}, function (data) {
-                        $('#displayText').html(sampleText.replace('||', data));
+                if (object.showName.length) {
+                    $.post(srRoot + '/addShows/sanitizeFileName', { name: object.showName }, function (data) {
+                        $('#desc-show-name').text(object.showName);
+                        $('#desc-directory-name').html(object.dir + data + object.sepChar);
                     });
-                // if not then it's unknown
-                } else {
-                    $('#displayText').html(sampleText.replace('||', '??'));
+                } else { // if not then it's unknown
+                    $('#desc-show-name').text(object.showName);
+                    $('#desc-directory-name').html(object.dir);
                 }
 
                 // also toggle the add show button
@@ -3742,87 +3735,85 @@ var SICKRAGE = {
 
             var searchRequestXhr = null;
             function searchIndexers() {
-                if (!$('#nameToSearch').val().length) { return; }
+                if (!$('#showName').val()) { return; }
 
                 if (searchRequestXhr) { searchRequestXhr.abort(); }
 
-                var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
-                $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
+                var searchingFor = $('#showName').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+                $('#searchResults').empty().html(
+                    '<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
+                    _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor)
+                );
 
                 searchRequestXhr = $.ajax({
                     url: srRoot + '/addShows/searchIndexersForShowName',
                     data: {
-                        'search_term': $('#nameToSearch').val().trim(),
+                        'search_term': $('#showName').val().trim(),
                         'lang': $('#indexerLangSelect').val(),
-                        'indexer': $('#providedIndexer').val()},
+                        'indexer': $('#providedIndexer').val()
+                    },
                     timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
                     dataType: 'json',
                     error: function () {
-                        $('#searchResults').empty().html( _('search timed out, try again or try another indexer') );
+                        $('#searchResults').empty().html(_('search timed out, try again or try another indexer'));
                     },
                     success: function (data) {
-                        var firstResult = true;
-                        var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
-                        var checked = '';
+                        var resultStr = '<legend class="legendStep">Search Results</legend>';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
                         } else {
                             $.each(data.results, function(index, obj) {
-                                if (firstResult) {
-                                    checked = ' checked';
-                                    firstResult = false;
-                                } else {
-                                    checked = '';
+                                var whichSeries = obj.join('|').replace(/"/g, '');
+
+                                resultStr += '<input type="radio" class="whichSeries" name="whichSeries" value="' + whichSeries  + '"' + (!index ? 'checked' : '') + ' />';
+
+                                resultStr += '<span>&nbsp;<a href="' + anonURL + obj[2] + obj[3];
+                                if (data.langid) {
+                                    resultStr += '&lid=' + data.langid;
                                 }
+                                resultStr += '" target="_blank"><b>' + obj[4] + '</b></a>';
 
-                                var whichSeries = obj.join('|');
-
-                                resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + checked + ' /> ';
-                                if (data.langid && data.langid !== '') {
-                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
-                                } else {
-                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
-                                }
-
+                                // Debut text
                                 if (obj[5] !== null) {
-                                    var startDate = new Date(obj[5]);
-                                    var today = new Date();
-                                    if (startDate > today) {
-                                        resultStr += ' (will debut on ' + obj[5] + ')';
+                                    resultStr += ' (';
+                                    if (new Date(obj[5]) > new Date()) {
+                                        resultStr += _('will debut on');
                                     } else {
-                                        resultStr += ' (started on ' + obj[5] + ')';
+                                        resultStr += _('started on');
                                     }
+                                    resultStr += ' ' + obj[5] + ')';
                                 }
 
+                                // Indexer name
                                 if (obj[0] !== null) {
                                     resultStr += ' [' + obj[0] + ']';
                                 }
 
-                                resultStr += '<br>';
+                                resultStr += '</span><br/>';
                             });
                             resultStr += '</ul>';
                         }
-                        resultStr += '</fieldset>';
+
                         $('#searchResults').html(resultStr);
                         updateSampleText();
-                        myform.loadsection(0);
                     }
                 });
             }
 
-            $('#searchName').click(function () { searchIndexers(); });
+            $('#searchButton').click(searchIndexers);
 
-            if ($('#nameToSearch').length && $('#nameToSearch').val().length) {
-                $('#searchName').click();
+            if ($('#showName').val()) {
+                $('#search-button').click();
             }
 
             $('#addShowButton').click(function () {
                 // if they haven't picked a show don't let them submit
-                if (!$('input:radio[name="whichSeries"]:checked').val() && !$('input:hidden[name="whichSeries"]').val().length) {
+                if (!$('input:radio[name="whichSeries"]:checked').val()) {
                     notifyModal('You must choose a show to continue');
                     return false;
                 }
+
                 generateBlackWhiteList();
                 $('#addShowForm').submit();
             });
@@ -3832,52 +3823,16 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            /***********************************************
-            * jQuery Form to Form Wizard- (c) Dynamic Drive (www.dynamicdrive.com)
-            * This notice MUST stay intact for legal use
-            * Visit http://www.dynamicdrive.com/ for this script and 100s more.
-            ***********************************************/
-
-            function goToStep(num) {
-                $('.step').each(function () {
-                    if ($.data(this, 'section') + 1 === num) {
-                        $(this).click();
-                    }
-                });
-            }
-
-            $('#nameToSearch').focus();
-
-            // @TODO we need to move to real forms instead of this
-            var myform = new formtowizard({ // jshint ignore:line
-                formid: 'addShowForm',
-                revealfx: ['slide', 500],
-                oninit: function () {
-                    updateSampleText();
-                    if ($('input:hidden[name=whichSeries]').length && $('#fullShowPath').length) {
-                        goToStep(3);
-                    }
-                }
-            });
-
             $('#rootDirText').change(updateSampleText);
-            $('#searchResults').on('change', '#whichSeries', updateSampleText);
+            $('#searchResults').on('change', '.whichSeries', updateSampleText);
 
-            $('#nameToSearch').keyup(function(event) {
-                if (event.keyCode === 13) {
-                    $('#searchName').click();
+            $('#showName').focus().keyup(function(event) {
+                if (event.keyCode === 13) { // Enter
+                    $('#searchButton').click();
                 }
             });
 
-            $('#anime').change (function() {
-                updateSampleText();
-                myform.loadsection(2);
-            });
-
-            $('#qualityPreset').change (function() {
-                myform.loadsection(2);
-            });
-
+            updateSampleText();
         },
         addExistingShow: function(){
             $('#tableDiv').on('click', '#checkAll', function() {
