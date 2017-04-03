@@ -4,6 +4,7 @@ from __future__ import print_function, unicode_literals
 
 import os
 import threading
+from socket import error as SocketError, errno
 
 from tornado.ioloop import IOLoop
 from tornado.routes import route
@@ -148,11 +149,18 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         try:
             self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
                                           xheaders=sickbeard.HANDLE_REVERSE_PROXY, protocol=protocol)
-        except Exception:
-            if sickbeard.LAUNCH_BROWSER and not self.daemon:
-                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
-                logger.log("Launching browser and exiting")
-            logger.log("Could not start webserver on port {0}, already in use!".format(self.options['port']))
+        except SocketError as ex:
+            err_msg = ""
+            if ex.errno == errno.EADDRINUSE:  # Address/port combination already in use
+                if sickbeard.LAUNCH_BROWSER and not self.daemon:
+                    sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
+                    logger.log("Launching browser and exiting")
+                err_msg = "already in use!"
+
+            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
+            os._exit(1)  # pylint: disable=protected-access
+        except Exception as ex:
+            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
             os._exit(1)  # pylint: disable=protected-access
 
         try:
