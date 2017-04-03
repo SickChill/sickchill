@@ -68,6 +68,7 @@ from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.event_queue import Events
+from sickbeard.versionChecker import SourceUpdateManager
 from configobj import ConfigObj  # pylint: disable=import-error
 
 from sickrage.helper.encoding import ek
@@ -172,6 +173,22 @@ class SickRage(object):
         threading.currentThread().name = 'MAIN'
 
         args = SickRageArgumentParser(sickbeard.PROG_DIR).parse_args()
+
+        if args.force_update:
+            if ek(os.path.isdir, ek(os.path.join, sickbeard.PROG_DIR, '.git')):
+                print('It is recommended to use Git to update SickRage.')
+                print('See https://github.com/SickRage/SickRage/wiki/FAQ\'s-and-Fixes#update-problems-try-this')
+                sys.exit(0)
+
+            print('Forcing SickRage to update...')
+            result = SourceUpdateManager().update()
+
+            if not result:
+                print('Error while trying to force an update.')
+                sys.exit(1)
+
+            print('Successfully updated to latest commit. You may now run SickRage normally.')
+            sys.exit(0)
 
         # Need console logging for SickBeard.py and SickBeard-console.exe
         sickbeard.NO_RESIZE = args.noresize
