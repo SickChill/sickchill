@@ -73,19 +73,19 @@ class XThorProvider(TorrentProvider):
                     logger.log('No data returned from provider', logger.DEBUG)
                     continue
 
-                error_code = jdata.pop('error')
-                if error_code['code']:
-                    if error_code['code'] != 2:
-                        logger.log('{0}'.format(error_code['descr']), logger.WARNING)
+                error_code = jdata.pop('error', {})
+                if error_code.get('code'):
+                    if error_code.get('code') != 2:
+                        logger.log('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')), logger.WARNING)
                         return results
                     continue
 
-                account_ok = jdata.pop('user')['can_leech']
+                account_ok = jdata.pop('user', {}).get('can_leech')
                 if not account_ok:
                     logger.log('Sorry, your account is not allowed to download, check your ratio', logger.WARNING)
                     return results
 
-                torrents = jdata.pop('torrents')
+                torrents = jdata.pop('torrents', None)
                 if not torrents:
                     logger.log('Provider has no results for this search', logger.DEBUG)
                     continue
