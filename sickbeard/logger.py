@@ -411,10 +411,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 if issue_id and cur_error in classes.ErrorViewer.errors:
                     # clear error from error list
                     classes.ErrorViewer.errors.remove(cur_error)
-        except GhEx.RateLimitExceededException as ex:
+        except GhEx.RateLimitExceededException:
             submitter_result = 'Your Github user has exceeded its API rate limit, please try again later'
             issue_id = None
-        except GhEx.TwoFactorException as ex:
+        except GhEx.TwoFactorException:
             submitter_result = ('Your Github account requires Two-Factor Authentication, '
                                 'please change your auth method in the config')
             issue_id = None
