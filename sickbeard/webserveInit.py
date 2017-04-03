@@ -148,11 +148,11 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         try:
             self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
                                           xheaders=sickbeard.HANDLE_REVERSE_PROXY, protocol=protocol)
-        except Exception:
+        except Exception as ex:
             if sickbeard.LAUNCH_BROWSER and not self.daemon:
                 sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
                 logger.log("Launching browser and exiting")
-            logger.log("Could not start webserver on port {0}, already in use!".format(self.options['port']))
+            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
             os._exit(1)  # pylint: disable=protected-access
 
         try:
