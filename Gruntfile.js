@@ -173,12 +173,12 @@ module.exports = function(grunt) {
                 './gui/slick/js/**/*.js',
                 '!./gui/slick/js/lib/**/*.js',
                 '!./gui/slick/js/ajaxNotifications.js',
-                '!./gui/slick/js/**/*.min.js', // We use this because ignores doesn't seem to work :(
+                '!./gui/slick/js/**/*.min.js' // We use this because ignores doesn't seem to work :(
             ]
         },
         mocha: {
             all: {
-                src: ['tests/mocha/testrunner.html'],
+                src: ['tests/mocha/testrunner.html']
             },
             options: {
                 run: true
@@ -214,7 +214,7 @@ module.exports = function(grunt) {
                 cmd: 'git pull'
             },
             'git_merge': {
-                cmd: function (b) { return 'git merge ' + b; },
+                cmd: function (b) { return 'git merge ' + b; }
             },
             'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
@@ -231,8 +231,8 @@ module.exports = function(grunt) {
                 cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim();  // removes commit hashes
-                    commits = commits.replace(/`/gm, '').replace(/^\(.*HEAD.*\)\s/gm, '')  // removes ` and tag information
+                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim()  // removes commit hashes
+                        .replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
@@ -262,7 +262,7 @@ module.exports = function(grunt) {
                     if (err) {
                         grunt.fatal('Git command failed to execute.');
                     }
-                    var allTags = stdout.replace(/-*BEGIN PGP SIGNATURE-*(\n.*){9}\n/g, '').split('@@@');
+                    var allTags = stdout.replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '').split('@@@');
                     var foundTags = [];
                     for (var i = 0; i < allTags.length; i++) {
                         if (allTags[i].length) {
@@ -294,7 +294,8 @@ module.exports = function(grunt) {
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
-                    return 'cd ' + path + ' && git commit -asm "Update changelog" && git fetch origin && git rebase && git push origin master';
+                    return 'cd ' + path + ' && git commit -asm "Update changelog"' +
+                        ' && git fetch origin && git rebase && git push origin master';
                 },
                 stdout: true
             }
@@ -316,7 +317,7 @@ module.exports = function(grunt) {
             file = process.env.SICKRAGE_CHANGES_FILE;
         }
         if (file && grunt.file.exists(file)) {
-            grunt.config('changesmd_file', file);
+            grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
         } else {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
                 '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
@@ -381,7 +382,36 @@ module.exports = function(grunt) {
             }
             contents += '\n';
             tag.message.forEach(function (row) {
-                contents += '* ' + row.replace(/^\(.*HEAD.*\)\s/, '') + '\n';
+                contents += row
+                    // link issue numbers, style links it issues and pull requests
+                    .replace(/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)?#([0-9]+)|https?:\/\/github.com\/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)\/(issues|pull)\/([0-9]+)/gm,
+                        function(all, repoL, numL, repoR, typeR, numR) {
+                            if (numL) { // repoL, numL = user/repo#1234 style
+                                return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
+                                (repoL ? repoL : 'SickRage/SickRage') + '/issues/' + numL + ')';
+                            } else if (numR) { // repoR, type, numR = https://github/user/repo/issues/1234 style
+                                return '[#' + numR + ']' + '(https://github.com/' +
+                                    repoR + '/' + typeR + '/' + numR + ')';
+                            }
+                    })
+                    // shorten and link commit hashes
+                    .replace(/([a-f0-9]{40}(?![a-f0-9]))/g, function(sha1) {
+                        return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
+                    })
+                    // remove tag information
+                    .replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '')
+                    // remove commit hashes from start
+                    .replace(/^[a-f0-9]{7} /gm, '')
+                    // style messages that contain lists
+                    .replace(/( {3,}\*{1})(?!\*)/g, '\n  -')
+                    // style messages that contain multiple lines
+                    .replace(/( {3,}\*{1})(?!\*)/g, '\n  -')
+                    // escapes markdown __ tags
+                    .replace(/__/gm, '\\_\\_')
+                    // add * to the first line only
+                    .replace(/^(\w)/, '* $1');
+
+                contents += '\n';
             });
             contents += '\n';
         });
