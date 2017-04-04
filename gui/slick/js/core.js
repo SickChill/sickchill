@@ -3521,7 +3521,7 @@ var SICKRAGE = {
                 var sort = getMeta('sickbeard.COMING_EPS_SORT');
                 var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
-                $('.resetsorting').on('click', function(){
+                $('.resetsorting').on('click', function() {
                     $('#showListTable').trigger('filterReset');
                 });
 
@@ -3636,6 +3636,32 @@ var SICKRAGE = {
                 });
             };
 
+            $.loadTraktImages = function() {
+                var url = srRoot + '/addShows/getTrendingShowImage';
+                var ajaxCount = 0;
+                $('img.trakt-image').each(function() {
+                    // only load image from indexer when there is a indexer_id present in data-src-indexer-id
+                    var indexerId = $(this).attr('data-src-indexer-id');
+                    if (indexerId) {
+                        // use setTimemout to delay lookup for each lookup
+                        // if this is not done, all retrieval of cache urls (by changing the src value) will be done after all retrieval of images
+                        // this because the cache urls are appended to the request queue of the browser after the ajax calls for retrieval of images
+                        setTimeout(function () {
+                            $.post(url, {indexerId: indexerId}, function (data) {
+                                if (data) {
+                                    // replace src with cache location
+                                    $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('src', $('img.trakt-image[data-src-indexer-id="' + data + '"]').attr('data-src-cache'));
+                                }
+                            });
+                        }, 300 + (300 * ajaxCount));
+                        ajaxCount++;
+                    } else {
+                        // no indexer_id present -> load it directly from cache
+                        $(this).attr('src', $(this).attr('data-src-cache'));
+                    }
+                });
+            };
+
             $.fn.loadRemoteShows = function(path, loadingTxt, errorTxt) {
                 $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
                 $(this).load(srRoot + path + ' #container', function(response, status) {
@@ -3643,6 +3669,7 @@ var SICKRAGE = {
                         $(this).empty().html(errorTxt);
                     } else {
                         $.initRemoteShowGrid();
+                        $.loadTraktImages();
                     }
                 });
             };
