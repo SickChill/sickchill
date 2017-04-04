@@ -1,4 +1,7 @@
 from __future__ import absolute_import
+from .packages.six.moves.http_client import (
+    IncompleteRead as httplib_IncompleteRead
+)
 # Base Exceptions
 
 
@@ -180,8 +183,45 @@ class SNIMissingWarning(HTTPWarning):
     pass
 
 
+class DependencyWarning(HTTPWarning):
+    """
+    Warned when an attempt is made to import a module with missing optional
+    dependencies.
+    """
+    pass
+
+
 class ResponseNotChunked(ProtocolError, ValueError):
     "Response needs to be chunked in order to read it as chunks."
+    pass
+
+
+class BodyNotHttplibCompatible(HTTPError):
+    """
+    Body should be httplib.HTTPResponse like (have an fp attribute which
+    returns raw chunks) for read_chunked().
+    """
+    pass
+
+
+class IncompleteRead(HTTPError, httplib_IncompleteRead):
+    """
+    Response length doesn't match expected Content-Length
+
+    Subclass of http_client.IncompleteRead to allow int value
+    for `partial` to avoid creating large objects on streamed
+    reads.
+    """
+    def __init__(self, partial, expected):
+        super(IncompleteRead, self).__init__(partial, expected)
+
+    def __repr__(self):
+        return ('IncompleteRead(%i bytes read, '
+                '%i more expected)' % (self.partial, self.expected))
+
+
+class InvalidHeader(HTTPError):
+    "The header provided was somehow invalid."
     pass
 
 
@@ -199,3 +239,8 @@ class HeaderParsingError(HTTPError):
     def __init__(self, defects, unparsed_data):
         message = '%s, unparsed data: %r' % (defects or 'Unknown', unparsed_data)
         super(HeaderParsingError, self).__init__(message)
+
+
+class UnrewindableBodyError(HTTPError):
+    "urllib3 encountered an error when trying to rewind a body"
+    pass

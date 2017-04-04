@@ -36,14 +36,13 @@ usage:
 The other HTTP methods are supported - see `requests.api`. Full documentation
 is at <http://python-requests.org>.
 
-:copyright: (c) 2015 by Kenneth Reitz.
+:copyright: (c) 2016 by Kenneth Reitz.
 :license: Apache 2.0, see LICENSE for more details.
-
 """
 
 __title__ = 'requests'
-__version__ = '2.9.1'
-__build__ = 0x020901
+__version__ = '2.13.0'
+__build__ = 0x021300
 __author__ = 'Kenneth Reitz'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Kenneth Reitz'
@@ -54,6 +53,12 @@ try:
     pyopenssl.inject_into_urllib3()
 except ImportError:
     pass
+
+import warnings
+
+# urllib3's DependencyWarnings should be silenced.
+from .packages.urllib3.exceptions import DependencyWarning
+warnings.simplefilter('ignore', DependencyWarning)
 
 from . import utils
 from .models import Request, Response, PreparedRequest
@@ -76,8 +81,6 @@ except ImportError:
             pass
 
 logging.getLogger(__name__).addHandler(NullHandler())
-
-import warnings
 
 # FileModeWarnings go off per the default.
 warnings.simplefilter('default', FileModeWarning, append=True)
