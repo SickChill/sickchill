@@ -2225,8 +2225,8 @@ class Home(WebRoot):
 
         try:
             new_subtitles = ep_obj.download_subtitles(force_lang=lang)
-        except Exception as ex:
-            return json.dumps({'result': 'failure', 'errorMessage': ex.message})
+        except Exception as error:
+            return json.dumps({'result': 'failure', 'errorMessage': error.message})
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
