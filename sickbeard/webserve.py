@@ -2839,7 +2839,8 @@ class HomeAddShows(Home):
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
             default_status_after=default_status_after, root_dir=location)
 
-        ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
+        if show_name:
+            ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
 
         # done adding show
         return self.redirect('/home/')
