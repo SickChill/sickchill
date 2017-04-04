@@ -9,10 +9,10 @@ Name | Type | Description | Notes
 **dvd_episode_number** | **int** |  | [optional] 
 **dvd_season** | **int** |  | [optional] 
 **episode_name** | **str** |  | [optional] 
-**id** | **int** |  | [optional] 
-**overview** | **str** |  | [optional] 
 **first_aired** | **str** |  | [optional] 
+**id** | **int** |  | [optional] 
 **last_updated** | **int** |  | [optional] 
+**overview** | **str** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
