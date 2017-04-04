@@ -363,6 +363,17 @@ def copyFile(srcFile, destFile):
         from shutil import Error
         SpecialFileError = Error
 
+    copyfileobj_orig = shutil.copyfileobj
+
+    def copyfileobj(fsrc, fdst, length=10485760):
+        """
+        Override original shutil function to increase its speed
+        by increasing its buffer to 10MB (optimal)
+        """
+        return copyfileobj_orig(fsrc, fdst, length)
+
+    shutil.copyfileobj = copyfileobj
+
     try:
         ek(shutil.copyfile, srcFile, destFile)
     except (SpecialFileError, Error) as error:
