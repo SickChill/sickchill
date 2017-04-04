@@ -29,7 +29,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^2.0.0",
     "grunt-mocha": "^1.0.2",
-    "grunt-po2json": "^0.3.0",
+    "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
     "grunt-sass": "^2.0.0",
     "load-grunt-tasks": "^3.4.1",
     "mocha": "^3.0.2",
