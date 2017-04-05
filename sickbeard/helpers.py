@@ -1803,9 +1803,9 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
         if hasattr(s, 'data'):
             return s.data.get('seriesname')
     except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Show id " + str(indexer_id) + " not found on " + sickbeard.indexerApi(indexer).name +
-                       ", not adding show: " + ex(e), logger.WARNING)
-            return None
+        logger.log("Show id " + str(indexer_id) + " not found on " + sickbeard.indexerApi(indexer).name +
+                   ", not adding show: " + ex(e), logger.WARNING)
+        return None
 
     return None
 
