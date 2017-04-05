@@ -2226,11 +2226,11 @@ var SICKRAGE = {
                 textExtraction: {
                     0: function(node) { return $(node).find('time').attr('datetime'); },
                     1: function(node) { return $(node).find('time').attr('datetime'); },
-                    3: function(node) { return $(node).find("span").prop("title").toLowerCase(); },
-                    4: function(node) { return $(node).find("span").text().toLowerCase(); },
+                    3: function(node) { return $(node).find("span").prop("title"); },
+                    4: function(node) { return $(node).find("span").attr('class').replace('quality ', ''); },
                     5: function(node) { return $(node).find("span:first").text(); },
                     6: function(node) { return $(node).data('show-size'); },
-                    7: function(node) { return $(node).find("span").attr("title").toLowerCase(); }
+                    7: function(node) { return $(node).find("span").attr("title"); }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
@@ -2981,16 +2981,16 @@ var SICKRAGE = {
             $("#massUpdateTable:has(tbody tr)").tablesorter({
                 sortList: [[1,0]],
                 textExtraction: {
-                    2: function(node) { return ($(node).find("img").attr("alt") || 'unknown').toLowerCase(); },  // Network
-                    3: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Quality
-                    4: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Sports
-                    5: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Scene
-                    6: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Anime
-                    7: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Season Folders
-                    8: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Paused
-                    9: function(node) { return $(node).find("span").attr("title").toLowerCase(); },  // Subtitle
-                    10: function(node) { return $(node).text().toLowerCase(); },  // Default Episode Status
-                    11: function(node) { return $(node).text().toLowerCase(); }  // Show Status
+                    2: function(node) { return ($(node).find("img").attr("alt") || 'unknown'); },  // Network
+                    3: function(node) { return $(node).find("span").attr('class').replace('quality ', ''); },  // Quality
+                    4: function(node) { return $(node).find("span").attr("title"); },  // Sports
+                    5: function(node) { return $(node).find("span").attr("title"); },  // Scene
+                    6: function(node) { return $(node).find("span").attr("title"); },  // Anime
+                    7: function(node) { return $(node).find("span").attr("title"); },  // Season Folders
+                    8: function(node) { return $(node).find("span").attr("title"); },  // Paused
+                    9: function(node) { return $(node).find("span").attr("title"); },  // Subtitle
+                    10: function(node) { return $(node).text(); },  // Default Episode Status
+                    11: function(node) { return $(node).text(); }  // Show Status
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
@@ -3348,19 +3348,19 @@ var SICKRAGE = {
                     if(isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])) {
                         return {
                             0: function(node) { return $(node).find('time').attr('datetime'); }, // Time
-                            4: function(node) { return $(node).find("span").text().toLowerCase(); } // Quality
+                            4: function(node) { return $(node).find("span:last").attr('class').replace('quality ', ''); } // Quality
                         };
                     } else {
                         var compactExtract = {
                             0: function(node) { return $(node).find('time').attr('datetime'); }, // Time
-                            2: function(node) { return $(node).attr("provider").toLowerCase(); }
+                            2: function(node) { return $(node).attr("provider"); }
                         };
 
                         if(isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
                             compactExtract[4] = function (node) { return $(node).find("img").attr('title'); };  // Subtitles
-                            compactExtract[5] = function (node) { return $(node).find("span").text().toLowerCase(); }; // Quality
+                            compactExtract[5] = function (node) { return $(node).find("span").attr('class').replace('quality ', ''); }; // Quality
                         } else {
-                            compactExtract[4] = function (node) { return $(node).find("span").text().toLowerCase(); }; // Quality
+                            compactExtract[4] = function (node) { return $(node).find("span").attr('class').replace('quality ', ''); }; // Quality
                         }
 
                         return compactExtract;
@@ -3531,7 +3531,7 @@ var SICKRAGE = {
                     textExtraction: {
                         0: function(node) { return $(node).find('time').attr('datetime'); },
                         1: function(node) { return $(node).find('time').attr('datetime'); },
-                        7: function(node) { return $(node).find('span').text().toLowerCase(); }
+                        7: function(node) { return $(node).find('span').attr('class').replace('quality ', ''); }
                     },
                     headers: {
                         0: { sorter: 'realISODate' },
