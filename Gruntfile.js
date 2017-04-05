@@ -34,11 +34,10 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('commit_and_push_trans', 'commit and push translations', function() {
         grunt.log.writeln('Committing and pushing translations...');
-        var branch = process.env.TRAVIS_BRANCH ? process.env.TRAVIS_BRANCH : 'HEAD'; // TODO: Remove after testing
         grunt.task.run([
             'exec:did_translations_change',
             'exec:commit_trans',
-            'exec:git_push:origin:' + branch // TODO: Explicitly push to 'master'
+            'exec:git_push:origin:master'
         ]);
     });
     /****************************************
