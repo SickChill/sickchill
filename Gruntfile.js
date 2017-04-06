@@ -247,7 +247,7 @@ module.exports = function(grunt) {
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
-                        grunt.fatal('No changes to commit.');
+                        grunt.fatal('No changes to commit.', 0);
                     }
 
                     var commitMsg = [];
@@ -264,7 +264,7 @@ module.exports = function(grunt) {
 
                     if (!commitMsg.length || !commitPaths.length) {
                         if (grunt.config('stop_no_changes')) {
-                            grunt.fatal('Nothing to commit, aborting');
+                            grunt.fatal('Nothing to commit, aborting', 0);
                         } else {
                             grunt.log.writeln('No extra changes to commit');
                         }
