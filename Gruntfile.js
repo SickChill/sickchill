@@ -15,6 +15,7 @@ module.exports = function(grunt) {
         'jshint',
         'mocha'
     ]);
+
     grunt.registerTask('update_trans', 'update translations', function() {
         grunt.log.writeln('Updating translations...');
         var tasks = [
@@ -24,7 +25,7 @@ module.exports = function(grunt) {
             'exec:babel_compile',
             'po2json'
         ];
-        if(process.env.CROWDIN_API_KEY) {
+        if (process.env.CROWDIN_API_KEY) {
             tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
         } else {
             grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
@@ -32,23 +33,38 @@ module.exports = function(grunt) {
 
         grunt.task.run(tasks);
     });
-    grunt.registerTask('commit_and_push_trans', 'commit and push translations', function() {
-        grunt.log.writeln('Committing and pushing translations...');
-        grunt.task.run([
-            'exec:did_translations_change',
-            'exec:commit_trans',
-            'exec:git_push:origin:master'
-        ]);
-    });
+
     /****************************************
     *  Admin only                           *
     ****************************************/
-    grunt.registerTask('publish', 'create a release tag and generate CHANGES.md\n(alias for newrelease and genchanges)', [
-        'travis',
-        // 'update_trans', // blocks git pull in newrelease
-        'newrelease',
-        'genchanges'
+    grunt.registerTask('publish', 'run grunt, update translations, create a release tag and generate new CHANGES.md', [
+        'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
+        'default', // Run default task
+        'update_trans', // Update translations
+        'exec:commit_changed_files', // Determine what we need to commit and commit if needed (calls exec:commit_combined)
+        'exec:git:checkout:master', 'exec:git:pull', // Pull master
+        'exec:git:merge:develop', // Merge develop into master
+        'newreleasetag', // Create and push a new release tag
+        'exec:git_push:origin:"master develop":tags', // Push master and develop + tags
+        'exec:git:checkout:develop', // Go back to develop
+        'genchanges' // Update CHANGES.md
     ]);
+
+    grunt.registerTask('travis_update_and_push', 'used by TravisCI', function() {
+        if (process.env.TRAVIS) { // starts on 'master' branch
+            grunt.log.writeln('Running grunt and updating translations...');
+            grunt.task.run([
+                'default', // Run default task
+                'update_trans', // Update translations
+                'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
+                'exec:git:"reset --hard"', // Reset unstaged changes (to allow for a rebase)
+                'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
+                'exec:git_push:origin:"master develop"' // Push master and develop
+            ]);
+        } else {
+            grunt.fatal('This task is only for Travis-CI!');
+        }
+    });
 
     /****************************************
     *  Task configurations                  *
@@ -214,31 +230,63 @@ module.exports = function(grunt) {
             'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
             'crowdin_download': {cmd: 'crowdin-cli-py download'},
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
-            'did_translations_change': {
-                cmd: 'git diff-index HEAD -- locale/',
+
+            // Publish/Releases
+            'git': {
+                cmd: function (cmd, branch) {
+                    branch = branch ? ' ' + branch : '';
+                    return 'git ' + cmd + branch;
+                }
+            },
+            'commit_changed_files': { // Choose what to commit.
+                cmd: function(travis) {
+                    grunt.config('stop_no_changes', Boolean(travis));
+                    return 'git status -s -- locale/ gui/';
+                },
                 stdout: false,
                 callback: function(err, stdout) {
-                    if (!stdout.trim().length) {
-                        grunt.fatal('Translations weren\'t changed, aborting');
+                    stdout = stdout.trim();
+                    if (!stdout.length) {
+                        grunt.fatal('No changes to commit.');
+                    }
+
+                    var commitMsg = [];
+                    var commitPaths = [];
+                    if (stdout.match(/gui\/.*(vender|core)\.min\.(js|css)$/gm)) {
+                        commitMsg.push('Grunt');
+                        commitPaths.push('gui/**/vender.min.*');
+                        commitPaths.push('gui/**/core.min.*');
+                    }
+                    if (stdout.match(/locale\/.*(pot|po|mo|json)$/gm)) {
+                        commitMsg.push('Update translations');
+                        commitPaths.push('locale/');
+                    }
+
+                    if (!commitMsg.length || !commitPaths.length) {
+                        if (grunt.config('stop_no_changes')) {
+                            grunt.fatal('Nothing to commit, aborting');
+                        } else {
+                            grunt.log.writeln('No extra changes to commit');
+                        }
+                    } else {
+                        commitMsg = commitMsg.join(', ');
+                        commitMsg += process.env.TRAVIS_BUILD_NUMBER ? ' (build ' +
+                            process.env.TRAVIS_BUILD_NUMBER + ')' : '';
+                        grunt.config('commit_msg', commitMsg);
+                        grunt.config('commit_paths', commitPaths.join(' '));
+                        grunt.task.run('exec:commit_combined');
                     }
                 }
             },
-            'commit_trans': {
+            'commit_combined': {
                 cmd: function() {
-                    return 'git commit -m "Update translations (build ' +
-                        process.env.TRAVIS_BUILD_NUMBER + ')" -- locale/';
+                    var message = grunt.config('commit_msg');
+                    var paths = grunt.config('commit_paths');
+                    if (!message || !paths) {
+                        grunt.fatal('Call exec:commit_changed_files instead!');
+                    }
+                    return 'git add -- ' + paths + ' && git commit -m "' + message + '"';
                 }
-            },
-
-            // Publish/Releases
-            'git_checkout': {
-                cmd: function (b) { return 'git checkout ' + b; }
-            },
-            'git_pull': {
-                cmd: 'git pull'
-            },
-            'git_merge': {
-                cmd: function (b) { return 'git merge ' + b; }
             },
             'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
@@ -273,7 +321,7 @@ module.exports = function(grunt) {
             },
             'git_push': {
                 cmd: function (remote, branch, tags) {
-                    return 'git push ' + remote + ' ' + branch + (tags === 'true'?' --tags':'');
+                    return 'git push ' + remote + ' ' + branch + (tags === 'tags'?' --tags':'');
                 }
             },
             'git_list_tags': {
@@ -329,11 +377,9 @@ module.exports = function(grunt) {
     /****************************************
     *  Sub-tasks of publish task            *
     ****************************************/
-    grunt.registerTask('newrelease', "pull and merge develop to master, create and push a new release", [
-        'exec:git_checkout:develop', 'exec:git_pull',
-        'exec:git_checkout:master', 'exec:git_pull', 'exec:git_merge:develop',
-        'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag',
-        'exec:git_tag_new', 'exec:git_push:origin:master:true', 'exec:git_checkout:develop']);
+    grunt.registerTask('newreleasetag', "create and push a new release tag", [
+        'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag', 'exec:git_tag_new'
+    ]);
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
         var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
@@ -346,8 +392,7 @@ module.exports = function(grunt) {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
                 '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
         }
-        grunt.task.run(['exec:git_get_last_tag', 'exec:git_list_tags', '_genchanges',
-                        'exec:commit_changelog']);
+        grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
     /****************************************
@@ -382,10 +427,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('_genchanges', "(internal) do not run", function() {
         // actual generate changes
-        var currentTag = grunt.config('last_tag');
-        if (!currentTag) {
-            grunt.fatal('No current tag information was received.');
-        }
         var allTags = grunt.config('all_tags');
         if (!allTags) {
             grunt.fatal('No tags information was received.');
