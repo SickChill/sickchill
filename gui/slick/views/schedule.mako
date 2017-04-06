@@ -137,8 +137,8 @@
                                         <time datetime="${ends.isoformat('T')}"
                                               class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
                                     </td>
-                                    <td class="tvShow" nowrap="nowrap"><a
-                                            href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}</a>
+                                    <td class="tvShow">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}</a>
                                         % if int(cur_result[b'paused']):
                                             <span class="pause">[paused]</span>
                                         % endif
