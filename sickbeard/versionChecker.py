@@ -837,19 +837,6 @@ class SourceUpdateManager(UpdateManager):
                     old_path = ek(os.path.join, content_dir, dirname, curfile)
                     new_path = ek(os.path.join, sickbeard.PROG_DIR, dirname, curfile)
 
-                    # Avoid DLL access problem on WIN32/64
-                    # These files needing to be updated manually
-                    # or find a way to kill the access from memory
-                    if curfile in ('unrar.dll', 'unrar64.dll'):
-                        try:
-                            ek(os.chmod, new_path, stat.S_IWRITE)
-                            ek(os.remove, new_path)
-                            ek(os.renames, old_path, new_path)
-                        except Exception as e:
-                            logger.log("Unable to update " + new_path + ': ' + ex(e), logger.DEBUG)
-                            ek(os.remove, old_path)  # Trash the updated file without moving in new path
-                        continue
-
                     if ek(os.path.isfile, new_path):
                         ek(os.remove, new_path)
                     ek(os.renames, old_path, new_path)
