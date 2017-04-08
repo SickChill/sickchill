@@ -2832,6 +2832,10 @@ class HomeAddShows(Home):
         show_name = get_showname_from_indexer(1, indexer_id)
         show_dir = None
 
+        if not show_name:
+            ui.notifications.error(_('Unable to add show'))
+            return self.redirect('/home/')
+
         # add the show
         sickbeard.showQueueScheduler.action.add_show(
             indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
@@ -2839,8 +2843,7 @@ class HomeAddShows(Home):
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
             default_status_after=default_status_after, root_dir=location)
 
-        if show_name:
-            ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
+        ui.notifications.message(_('Show added'), _('Adding the specified show {show_name}').format(show_name=show_name))
 
         # done adding show
         return self.redirect('/home/')
