@@ -316,16 +316,16 @@ def _xem_exceptions_fetcher():
 
             url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
 
-            parsedJSON = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
-            if not parsedJSON:
+            parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
+            if not parsed_json:
                 logger.log("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
                            (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)
                 continue
 
-            if parsedJSON['result'] == 'failure':
+            if parsed_json['result'] == 'failure':
                 continue
 
-            for indexerid, names in six.iteritems(parsedJSON['data']):
+            for indexerid, names in six.iteritems(parsed_json['data']):
                 try:
                     xem_exception_dict[int(indexerid)] = names
                 except Exception as error:
