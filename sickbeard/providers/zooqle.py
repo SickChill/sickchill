@@ -28,7 +28,6 @@ from sickbeard.bs4_parser import BS4Parser
 import sickbeard
 from sickbeard import logger, tvcache
 
-from sickbeard.helpers import download_file
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -62,7 +61,7 @@ class ZooqleProvider(TorrentProvider):  # pylint: disable=too-many-instance-attr
             'q': '%s category:' + ('TV', 'Anime')[anime],
             'fmt': 'rss',
             'pg': 1,  # page number
-            'v': 't',  # Unknown, maybe view torrents (?)
+            'v': 't',  # view ['t'=table, 'g'=grouped]
             's': 'ns',  # sort by ['dt'=datetime, 'sz'=size, 'ns'=seeders]
             'sd': 'd'  # sort direction ['d'=desc, 'a'=asc]
         }
