@@ -1408,6 +1408,10 @@ schedule.mako
     background-color: #FFDDDD;
 }
 
+.listing-snatched {
+    background-color: #EBC1EA;
+}
+
 .listing-toofar {
     background-color: #BEDEED;
 }
@@ -1425,6 +1429,11 @@ span.listing-current {
 span.listing-overdue {
     color: #890000;
     border: 1px solid #890000;
+}
+
+span.listing-snatched {
+    color: #652164;
+    border: 1px solid #652164;
 }
 
 span.listing-toofar {

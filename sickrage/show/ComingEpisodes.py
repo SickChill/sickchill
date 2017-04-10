@@ -20,7 +20,7 @@
 import sickbeard
 
 from datetime import date, timedelta
-from sickbeard.common import WANTED, UNAIRED
+from sickbeard.common import WANTED, UNAIRED, Quality
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
@@ -36,7 +36,7 @@ class ComingEpisodes(object):
     Soon:     tomorrow till next week
     Later:    later than next week
     """
-    categories = ['later', 'missed', 'soon', 'today']
+    categories = ['later', 'missed', 'snatched', 'soon', 'today']
     sorts = {
         'date': (lambda a, b: a[b'localtime'] < b[b'localtime']),
         'network': (lambda a, b: (a[b'network'], a[b'localtime']) < (b[b'network'], b[b'localtime'])),
@@ -65,9 +65,11 @@ class ComingEpisodes(object):
 
         db = DBConnection(row_type='dict')
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
-             'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
+            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'e.location', 'name', 'network',
+             'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 'e.status as epstatus', 's.status']
         )
+
+        status_list = [WANTED, UNAIRED] + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         sql_l = []
         for show_obj in sickbeard.showList:
@@ -80,8 +82,8 @@ class ComingEpisodes(object):
                     'AND airdate <= ? '
                     'AND airdate >= ? '
                     'AND s.indexer_id = e.showid '
-                    'AND e.status IN (' + ','.join(['?'] * 2) + ')',
-                    [show_obj.indexerid, next_air_date or today, recently, WANTED, UNAIRED]
+                    'AND e.status IN (' + ','.join(['?'] * len(status_list)) + ')',
+                    [show_obj.indexerid, next_air_date or today, recently] + status_list
                 ]
             )
 
@@ -111,7 +113,11 @@ class ComingEpisodes(object):
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result[b'airdate'] < today:
+            if result[b'location'] and int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                continue
+            elif not result[b'location'] and int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                category = 'snatched'
+            elif result[b'airdate'] < today:
                 category = 'missed'
             elif result[b'airdate'] >= next_week:
                 category = 'later'

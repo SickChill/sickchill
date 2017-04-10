@@ -3,6 +3,8 @@
     import sickbeard
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
+    from sickbeard.common import Quality
+
     import datetime
     import time
     import re
@@ -20,6 +22,7 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
+                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
@@ -115,8 +118,12 @@
                                     cur_ep_enddate = cur_result[b'localtime']
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
-
-                                    if cur_ep_enddate < today:
+                                    
+                                    if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                        continue
+                                    elif not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                        show_div = 'listing-snatched'
+                                    elif cur_ep_enddate < today:
                                         show_div = 'listing-overdue'
                                     elif cur_ep_airdate >= next_week.date():
                                         show_div = 'listing-toofar'
@@ -222,6 +229,10 @@
                                             <% continue %>
                                         % endif
 
+                                        % if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                            <% continue %>
+                                        % endif
+
                                         <% cur_indexer = int(cur_result[b'indexer']) %>
                                         <% run_time = cur_result[b'runtime'] %>
                                         <% airday = cur_result[b'localtime'].date() %>
@@ -286,6 +297,9 @@
                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue
 
+                    if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                        continue
+
                     run_time = cur_result[b'runtime']
                     cur_ep_airdate = cur_result[b'localtime'].date()
 
@@ -303,7 +317,9 @@
                         </div>
                     % endif
 
-                    % if cur_ep_enddate < today:
+                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                        <% show_div = 'ep_listing listing-snatched' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar' %>
@@ -318,7 +334,7 @@
                     <div>
                         % if cur_segment != cur_ep_airdate:
                             % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                                <h2 class="day">${_('Missed')}</h2>
+                                <h2 class="day">${_('Missed')} / ${_('Snatched')}</h2>
                             <% missed_header = True %>
                             % elif cur_ep_airdate >= next_week.date() and not too_late_header:
                                 <h2 class="day">${_('Later')}</h2>
@@ -344,7 +360,9 @@
                         % endif
                     </div>
 
-                    % if cur_ep_enddate < today:
+                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                        <% show_div = 'ep_listing listing-snatched' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar' %>
@@ -356,7 +374,9 @@
                         % endif
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'show':
-                    % if cur_ep_enddate < today:
+                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                        <% show_div = 'ep_listing listing-snatched listingradius' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue listingradius' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar listingradius' %>
