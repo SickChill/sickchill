@@ -27,7 +27,6 @@ from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from sickrage.helper.common import convert_size, try_int
-from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 category_excluded = {
@@ -65,30 +64,35 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
         self.minseed = None
         self.minleech = None
 
-        self.hdtext = [' - Versione 720p',
-                       ' Versione 720p',
-                       ' V 720p',
-                       ' V 720',
-                       ' V HEVC',
-                       ' V  HEVC',
-                       ' V 1080',
-                       ' Versione 1080p',
-                       ' 720p HEVC',
-                       ' Ver 720',
-                       ' 720p HEVC',
-                       ' 720p']
+        self.hdtext = [
+            ' - Versione 720p',
+            ' Versione 720p',
+            ' V 720p',
+            ' V 720',
+            ' V HEVC',
+            ' V  HEVC',
+            ' V 1080',
+            ' Versione 1080p',
+            ' 720p HEVC',
+            ' Ver 720',
+            ' 720p HEVC',
+            ' 720p']
 
-        self.category_dict = {'Serie TV': 15,
-                              'BDRip': 1,
-                              'DVD': 20,
-                              'Anime': 5,
-                              'Screener': 19}
+        self.category_dict = {
+            'Serie TV': 15,
+            'BDRip': 1,
+            'DVD': 20,
+            'Anime': 5,
+            'Screener': 19
+        }
 
-        self.urls = {'base_url': 'http://ilcorsaronero.info',
-                     'detail': 'http://ilcorsaronero.info/tor/%s/',
-                     'search': 'http://ilcorsaronero.info/argh.php?search=%s',
-                     'search_page': 'http://ilcorsaronero.info/advsearch.php?search={0}&order=data&by=DESC&page={1}',
-                     'download': 'http://itorrents.org/torrent/%s.torrent'}
+        self.urls = {
+            'base_url': 'http://ilcorsaronero.info',
+            'detail': 'http://ilcorsaronero.info/tor/%s/',
+            'search': 'http://ilcorsaronero.info/argh.php?search=%s',
+            'search_page': 'http://ilcorsaronero.info/advsearch.php?search={0}&order=data&by=DESC&page={1}',
+            'download': 'http://itorrents.org/torrent/%s.torrent'
+        }
 
         self.url = self.urls['base_url']
 
@@ -96,7 +100,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
+        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ilCorsaroNero every 30 minutes max
 
     @staticmethod
     def _reverseQuality(quality):
@@ -235,10 +239,9 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                     if last_page:
                         break
 
-                    search_url = (self.urls['search_page']).format(search_string, x)
+                    search_url = self.urls['search_page'].format(search_string, x)
 
-                    logger.log(u'Search string: {0}'.format
-                                   (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log(u'Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
@@ -247,8 +250,13 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
                     try:
                         with BS4Parser(data, 'html5lib') as html:
-                            torrent_table = html.find('tr', class_='bordo').find_parent('table')
-                            torrent_rows = torrent_table('tr') if torrent_table else []
+                            table_header = html.find('tr', class_='bordo')
+                            torrent_table = table_header.find_parent('table') if table_header else None
+                            if not torrent_table:
+                                logger.log(u'Could not find table of torrents', logger.ERROR)
+                                continue
+
+                            torrent_rows = torrent_table('tr')
 
                             # Continue only if one Release is found
                             if (len(torrent_rows) < 6) or (len(torrent_rows[2]('td')) == 1):
