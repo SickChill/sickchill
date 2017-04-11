@@ -110,6 +110,7 @@
                                 <%
                                     cur_indexer = int(cur_result[b'indexer'])
                                     run_time = cur_result[b'runtime']
+                                    snatched_status = int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
                                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                         continue
@@ -119,7 +120,7 @@
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
                                     
-                                    if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                    if snatched_status:
                                         if cur_result[b'location']:
                                             continue
                                         else:
@@ -294,11 +295,12 @@
                 % for cur_result in results:
                 <%
                     cur_indexer = int(cur_result[b'indexer'])
+                    snatched_status = int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue
 
-                    if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                    if cur_result[b'location'] and snatched_status:
                         continue
 
                     run_time = cur_result[b'runtime']
@@ -318,7 +320,7 @@
                         </div>
                     % endif
 
-                    % if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                    % if snatched_status:
                         <% show_div = 'ep_listing listing-snatched' %>
                     % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
@@ -334,7 +336,7 @@
                 % elif sickbeard.COMING_EPS_SORT == 'date':
                     <div>
                         % if cur_segment != cur_ep_airdate:
-                            % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
+                            % if ((cur_ep_enddate < today and cur_ep_airdate != today.date()) or snatched_status) and not missed_header:
                                 <h2 class="day">${_('Missed')} / ${_('Snatched')}</h2>
                             <% missed_header = True %>
                             % elif cur_ep_airdate >= next_week.date() and not too_late_header:
@@ -361,7 +363,7 @@
                         % endif
                     </div>
 
-                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                    % if snatched_status:
                         <% show_div = 'ep_listing listing-snatched' %>
                     % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
@@ -375,7 +377,7 @@
                         % endif
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'show':
-                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                    % if snatched_status:
                         <% show_div = 'ep_listing listing-snatched listingradius' %>
                     % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue listingradius' %>
