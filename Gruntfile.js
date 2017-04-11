@@ -37,16 +37,8 @@ module.exports = function(grunt) {
     /****************************************
     *  Admin only                           *
     ****************************************/
-    grunt.registerTask('publish', 'run grunt, update translations, create a release tag and generate new CHANGES.md', [
-        'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
-        'default', // Run default task
-        'update_trans', // Update translations
-        'exec:commit_changed_files', // Determine what we need to commit and commit if needed (calls exec:commit_combined)
-        'exec:git:checkout:master', 'exec:git:pull', // Pull master
-        'exec:git:merge:develop', // Merge develop into master
-        'newreleasetag', // Create and push a new release tag
-        'exec:git_push:origin:"master develop":tags', // Push master and develop + tags
-        'exec:git:checkout:develop', // Go back to develop
+    grunt.registerTask('publish', 'create a new release tag and generate new CHANGES.md', [
+        'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
 
@@ -381,8 +373,14 @@ module.exports = function(grunt) {
     /****************************************
     *  Sub-tasks of publish task            *
     ****************************************/
-    grunt.registerTask('newreleasetag', "create and push a new release tag", [
-        'exec:git_get_last_tag', 'exec:git_list_changes', '_get_next_tag', 'exec:git_tag_new'
+    grunt.registerTask('newrelease', "pull and merge develop to master, create and push a new release", [
+        'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
+        'exec:git:checkout:master', 'exec:git:pull', // Pull master
+        'exec:git:merge:develop', // Merge develop into master
+        'exec:git_get_last_tag', 'exec:git_list_changes', // List changes from since last tag
+        '_get_next_tag', 'exec:git_tag_new', // Create new release tag
+        'exec:git_push:origin:master:tags', // Push master + tags
+        'exec:git:checkout:develop', // Go back to develop
     ]);
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
