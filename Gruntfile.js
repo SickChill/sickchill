@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(grunt) {
     grunt.registerTask('default', [
         'clean',
@@ -35,7 +37,7 @@ module.exports = function(grunt) {
     });
 
     /****************************************
-    *  Admin only                           *
+    *  Admin only tasks                     *
     ****************************************/
     grunt.registerTask('publish', 'create a new release tag and generate new CHANGES.md', [
         'newrelease', // Pull and merge develop to master, create and push a new release
@@ -277,17 +279,18 @@ module.exports = function(grunt) {
                     if (!message || !paths) {
                         grunt.fatal('Call exec:commit_changed_files instead!');
                     }
-                    return 'git add -- ' + paths + ' && git commit -m "' + message + '"';
+                    return ['git add -- ' + paths, 'git commit -m "' + message + '"'].join(' && ');
                 }
             },
             'git_get_last_tag': {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9].*',
+                cmd: 'git for-each-ref --sort=-taggerdate --count=1 --format "%(refname:short)" refs/tags',
                 stdout: false,
                 callback: function(err, stdout) {
-                    if (/v\d{4}\.\d{2}\.\d{2}-\d+/.test(stdout.trim())) {
-                        grunt.config('last_tag', stdout.trim());
+                    stdout = stdout.trim();
+                    if (/^v\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
+                        grunt.config('last_tag', stdout);
                     } else {
-                        grunt.fatal('Could not get the last tag name. We got: ' + stdout.trim());
+                        grunt.fatal('Could not get the last tag name. We got: ' + stdout);
                     }
                 }
             },
@@ -319,7 +322,7 @@ module.exports = function(grunt) {
             'git_list_tags': {
                 cmd: 'git for-each-ref --sort=refname ' +
                         '--format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" ' +
-                        'refs/tags/v20[0-9][0-9].*',
+                        'refs/tags/v20[0-9][0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
                     if (!stdout) {
@@ -332,21 +335,21 @@ module.exports = function(grunt) {
                         .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
                         .split('\xB6\xB6\xB6');
                     var foundTags = [];
-                    for (var i = 0; i < allTags.length; i++) {
-                        if (allTags[i].length) {
-                            var explode = allTags[i].split('|||');
+                    allTags.forEach(function(curTag) {
+                        if (curTag.length) {
+                            var explode = curTag.split('|||');
                             if (explode[0] && explode[1] && explode[2]) {
                                 foundTags.push({
                                     tag: explode[0].trim(),
                                     hash: explode[1].trim(),
                                     message: explode[2].trim().split('\n'),
-                                    previous: (foundTags.length ? foundTags[foundTags.length - 1].tag : null)
+                                    previous: (foundTags.length ? foundTags.splice(-1)[0].tag : null)
                                 });
                             }
                         }
-                    }
+                    });
                     if (foundTags.length) {
-                        grunt.config('all_tags', foundTags);
+                        grunt.config('all_tags', foundTags.reverse()); // LIFO
                     } else {
                         grunt.fatal('Could not get existing tags information');
                     }
@@ -362,8 +365,8 @@ module.exports = function(grunt) {
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
-                    return 'cd ' + path + ' && git commit -asm "Update changelog"' +
-                        ' && git fetch origin && git rebase && git push origin master';
+                    return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
+                        'git push origin master'].join(' && ');
                 },
                 stdout: true
             }
@@ -380,7 +383,7 @@ module.exports = function(grunt) {
         'exec:git_get_last_tag', 'exec:git_list_changes', // List changes from since last tag
         '_get_next_tag', 'exec:git_tag_new', // Create new release tag
         'exec:git_push:origin:master:tags', // Push master + tags
-        'exec:git:checkout:develop', // Go back to develop
+        'exec:git:checkout:develop' // Go back to develop
     ]);
 
     grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
@@ -401,28 +404,15 @@ module.exports = function(grunt) {
     *  Internal tasks                       *
     *****************************************/
     grunt.registerTask('_get_next_tag', '(internal) do not run', function() {
-        function leadingZeros(number) {
-            return ('0' + parseInt(number)).slice(-2);
-        }
+        grunt.config.requires('last_tag');
         var lastTag = grunt.config('last_tag');
-        if (!lastTag) {
-            grunt.fatal('internal task');
-        }
 
-        lastTag = lastTag.split('v')[1].split('-');
-        var lastPatch = lastTag[1];
-        lastTag = lastTag[0].split('.');
+        var lastPatch = lastTag.match(/[0-9]+$/)[0];
+        lastTag = grunt.template.date(lastTag.replace(/^v|-[0-9]*-?$/g, ''), 'yyyy.mm.dd');
+        var today = grunt.template.today('yyyy.mm.dd');
+        var patch = lastTag === today ? (parseInt(lastPatch) + 1).toString() : '1';
 
-        var d = new Date();
-        var year = d.getFullYear().toString();
-        var month = leadingZeros(d.getMonth() + 1);
-        var day = leadingZeros(d.getDate());
-        var patch = '1';
-
-        if (year === lastTag[0] && month === leadingZeros(lastTag[1]) && day === leadingZeros(lastTag[2])) {
-            patch = (parseInt(lastPatch) + 1).toString();
-        }
-        var nextTag = 'v' + year + '.' + month + '.' + day + '-' + patch;
+        var nextTag = 'v' + today + '-' + patch;
         grunt.log.writeln('Creating tag ' + nextTag);
         grunt.config('next_tag', nextTag);
     });
@@ -440,7 +430,7 @@ module.exports = function(grunt) {
         }
 
         var contents = "";
-        allTags.reverse().forEach(function(tag) {
+        allTags.forEach(function(tag) {
             contents += '### ' + tag.tag + '\n';
             contents += '\n';
             if (tag.previous) {
