@@ -96,8 +96,8 @@ function updateImages(data) {
                 if (ep.overview.toLowerCase() === 'snatched') {
                     // Find Banner or Poster
                     var actionElement = elementCompleteEpisodes.closest('div.ep_listing');
-                    if (actionElement.length == 0) {
-                        if (elementCompleteEpisodes.closest('table.calendarTable').length == 0) {
+                    if (actionElement.length === 0) {
+                        if (elementCompleteEpisodes.closest('table.calendarTable').length === 0) {
                             // List view
                             actionElement = elementCompleteEpisodes.closest('tr');
                         }
