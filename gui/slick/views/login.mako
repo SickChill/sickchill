@@ -12,7 +12,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="username">Username</label>
+                                <label for="username">${_('Username')}</label>
                                 <input class="form-control" title="username" name="username" type="text" placeholder="${_('Username')}" autocomplete="off"/>
                             </div>
                         </div>
@@ -20,7 +20,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="password">Password</label>
+                                <label for="password">${_('Password')}</label>
                                 <input class="form-control" title="password" name="password" type="password" placeholder="${_('Password')}" autocomplete="off"/>
                             </div>
                         </div>
