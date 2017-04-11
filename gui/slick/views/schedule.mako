@@ -119,10 +119,11 @@
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
                                     
-                                    if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-                                        continue
-                                    elif not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-                                        show_div = 'listing-snatched'
+                                    if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                        if cur_result[b'location']:
+                                            continue
+                                        else:
+                                            show_div = 'listing-snatched'
                                     elif cur_ep_enddate < today:
                                         show_div = 'listing-overdue'
                                     elif cur_ep_airdate >= next_week.date():
@@ -229,7 +230,7 @@
                                             <% continue %>
                                         % endif
 
-                                        % if cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                        % if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
                                             <% continue %>
                                         % endif
 
@@ -317,7 +318,7 @@
                         </div>
                     % endif
 
-                    % if not cur_result[b'location'] and int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                    % if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
                         <% show_div = 'ep_listing listing-snatched' %>
                     % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>

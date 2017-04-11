@@ -113,10 +113,11 @@ class ComingEpisodes(object):
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result[b'location'] and int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-                continue
-            elif not result[b'location'] and int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-                category = 'snatched'
+            if int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                if result[b'location']:
+                    continue
+                else:
+                    category = 'snatched'
             elif result[b'airdate'] < today:
                 category = 'missed'
             elif result[b'airdate'] >= next_week:
