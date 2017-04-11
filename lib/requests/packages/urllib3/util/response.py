@@ -13,6 +13,13 @@ def is_fp_closed(obj):
     """
 
     try:
+        # Check `isclosed()` first, in case Python3 doesn't set `closed`.
+        # GH Issue #928
+        return obj.isclosed()
+    except AttributeError:
+        pass
+
+    try:
         # Check via the official file-like-object way.
         return obj.closed
     except AttributeError:
@@ -61,7 +68,7 @@ def assert_header_parsing(headers):
 
 def is_response_to_head(response):
     """
-    Checks, wether a the request of a response has been a HEAD-request.
+    Checks whether the request of a response has been a HEAD-request.
     Handles the quirks of AppEngine.
 
     :param conn:

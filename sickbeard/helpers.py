@@ -81,6 +81,14 @@ if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     logger.log("Patching socket to IPv4 only", logger.DEBUG)
     socket.getaddrinfo = getaddrinfo_wrapper
 
+# Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
+copyfileobj_orig = shutil.copyfileobj
+
+def _copyfileobj(fsrc, fdst, length=10485760):
+    """ Run shutil.copyfileobj with a bigger buffer """
+    return copyfileobj_orig(fsrc, fdst, length)
+shutil.copyfileobj = _copyfileobj
+
 
 def indentXML(elem, level=0):
     """
