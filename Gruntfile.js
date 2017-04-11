@@ -289,7 +289,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_get_last_tag': {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9].*',
                 stdout: false,
                 callback: function(err, stdout) {
                     if (/v\d{4}\.\d{2}\.\d{2}-\d+/.test(stdout.trim())) {
@@ -325,7 +325,9 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)@@@" refs/tags',
+                cmd: 'git for-each-ref --sort=refname ' +
+                        '--format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" ' +
+                        'refs/tags/v20[0-9][0-9].*',
                 stdout: false,
                 callback: function(err, stdout) {
                     if (!stdout) {
@@ -334,7 +336,9 @@ module.exports = function(grunt) {
                     if (err) {
                         grunt.fatal('Git command failed to execute.');
                     }
-                    var allTags = stdout.replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '').split('@@@');
+                    var allTags = stdout
+                        .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
+                        .split('\xB6\xB6\xB6');
                     var foundTags = [];
                     for (var i = 0; i < allTags.length; i++) {
                         if (allTags[i].length) {
@@ -448,8 +452,8 @@ module.exports = function(grunt) {
             contents += '\n';
             tag.message.forEach(function (row) {
                 contents += row
-                    // link issue numbers, style links it issues and pull requests
-                    .replace(/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)?#([0-9]+)|https?:\/\/github.com\/([\w\d\-_.]+[/]{1}[\w\d\-_.]+)\/(issues|pull)\/([0-9]+)/gm,
+                    // link issue numbers, style links of issues and pull requests
+                    .replace(/([\w\d\-.]+\/[\w\d\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\d\-.]+\/[\w\d\-.]+)\/(issues|pull)\/(\d+)/gm,
                         function(all, repoL, numL, repoR, typeR, numR) {
                             if (numL) { // repoL, numL = user/repo#1234 style
                                 return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
@@ -464,11 +468,11 @@ module.exports = function(grunt) {
                         return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
                     })
                     // remove tag information
-                    .replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '')
+                    .replace(/^\([\w\d\s,.\-+/>]+\)\s/gm, '')
                     // remove commit hashes from start
                     .replace(/^[a-f0-9]{7} /gm, '')
                     // style messages that contain lists
-                    .replace(/( {3,}\*{1})(?!\*)/g, '\n  -')
+                    .replace(/( {3,}\*)(?!\*)/g, '\n  -')
                     // escapes markdown __ tags
                     .replace(/__/gm, '\\_\\_')
                     // add * to the first line only
