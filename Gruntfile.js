@@ -283,7 +283,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_get_last_tag': {
-                cmd: 'git for-each-ref --sort=-taggerdate --count=1 --format "%(refname:short)" refs/tags',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
@@ -295,10 +295,10 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_changes': {
-                cmd: function() { return 'git log --oneline ' + grunt.config('last_tag') + '..HEAD'; },
+                cmd: function() { return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
-                    var commits = stdout.replace(/^[a-f0-9]{9}\s/gm, '').trim()  // removes commit hashes
+                    var commits = stdout.trim()
                         .replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
@@ -316,7 +316,15 @@ module.exports = function(grunt) {
             },
             'git_push': {
                 cmd: function (remote, branch, tags) {
-                    return 'git push ' + remote + ' ' + branch + (tags === 'tags'?' --tags':'');
+                    var pushCmd = 'git push ' + remote + ' ' + branch;
+                    if (tags) {
+                        pushCmd += ' --tags';
+                    }
+                    if (grunt.option('no-push')) {
+                        console.warn('Pushing with --dry-run ...'.magenta.bold);
+                        pushCmd += ' --dry-run';
+                    }
+                    return pushCmd;
                 }
             },
             'git_list_tags': {
@@ -343,7 +351,7 @@ module.exports = function(grunt) {
                                     tag: explode[0].trim(),
                                     hash: explode[1].trim(),
                                     message: explode[2].trim().split('\n'),
-                                    previous: (foundTags.length ? foundTags.splice(-1)[0].tag : null)
+                                    previous: (foundTags.length ? foundTags.slice(-1)[0].tag : null)
                                 });
                             }
                         }
@@ -365,8 +373,13 @@ module.exports = function(grunt) {
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
+                    var pushCmd = 'git push origin master';
+                    if (grunt.option('no-push')) {
+                        console.warn('Pushing with --dry-run ...'.magenta.bold);
+                        pushCmd += ' --dry-run';
+                    }
                     return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
-                        'git push origin master'].join(' && ');
+                        pushCmd].join(' && ');
                 },
                 stdout: true
             }
