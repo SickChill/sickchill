@@ -31,8 +31,8 @@ skip_branch_with_pr: true
 skip_tags: true
 skip_commits:
   files:
-    - *.txt
-    - **/*.md
+    - '*.txt'
+    - '**/*.md'
     - .github/**/*
     - contrib/**/*
     - gui/**/images/**/*
