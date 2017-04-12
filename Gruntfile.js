@@ -264,8 +264,9 @@ module.exports = function(grunt) {
                         }
                     } else {
                         commitMsg = commitMsg.join(', ');
-                        commitMsg += process.env.TRAVIS_BUILD_NUMBER ? ' (build ' +
-                            process.env.TRAVIS_BUILD_NUMBER + ')' : '';
+                        if (process.env.TRAVIS_BUILD_NUMBER) {
+                            commitMsg += ' (build ' + process.env.TRAVIS_BUILD_NUMBER + ') [skip ci]';
+                        }
                         grunt.config('commit_msg', commitMsg);
                         grunt.config('commit_paths', commitPaths.join(' '));
                         grunt.task.run('exec:commit_combined');

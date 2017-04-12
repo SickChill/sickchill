@@ -24,10 +24,21 @@ cache:
 build: off
 deploy: off
 version: "{build}"
-skip_branch_with_pr: true
-skip_tags: true
 max_jobs: 4
 clone_depth: 4
+
+skip_branch_with_pr: true
+skip_tags: true
+skip_commits:
+  files:
+    - *.txt
+    - **/*.md
+    - .github/**/*
+    - contrib/**/*
+    - gui/**/images/**/*
+    - locale/**/*
+    - patches/**/*
+    - runscripts/**/*
 
 matrix:
   fast_finish: true
