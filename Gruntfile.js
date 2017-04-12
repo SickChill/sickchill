@@ -13,13 +13,32 @@ module.exports = function(grunt) {
         'mocha'
     ]);
 
-    grunt.registerTask('travis', [
-        'jshint',
-        'mocha'
-    ]);
+    grunt.registerTask('travis', 'Alias for "jshint", "mocha" tasks.', function(update) {
+        if (!update) {
+            grunt.task.run([
+                'jshint',
+                'mocha'
+            ]);
+        } else {
+            if (process.env.TRAVIS) {
+                grunt.log.writeln('Running grunt and updating translations...'.magenta);
+                grunt.task.run([
+                    // 'exec:git:checkout:master', // should be on 'master' branch
+                    'default', // Run default task
+                    'update_trans', // Update translations
+                    'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
+                    'exec:git:"reset --hard"', // Reset unstaged changes (to allow for a rebase)
+                    'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
+                    'exec:git_push:origin:"master develop"' // Push master and develop
+                ]);
+            } else {
+                grunt.fatal('This task is only for Travis-CI!');
+            }
+        }
+    });
 
-    grunt.registerTask('update_trans', 'update translations', function() {
-        grunt.log.writeln('Updating translations...');
+    grunt.registerTask('update_trans', 'Update translations', function() {
+        grunt.log.writeln('Updating translations...'.magenta);
         var tasks = [
             'exec:babel_extract',
             'exec:babel_update',
@@ -30,7 +49,7 @@ module.exports = function(grunt) {
         if (process.env.CROWDIN_API_KEY) {
             tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
         } else {
-            grunt.log.warn('WARNING: Env variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.');
+            grunt.log.warn('Environment variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.'.bold);
         }
 
         grunt.task.run(tasks);
@@ -39,25 +58,35 @@ module.exports = function(grunt) {
     /****************************************
     *  Admin only tasks                     *
     ****************************************/
-    grunt.registerTask('publish', 'create a new release tag and generate new CHANGES.md', [
+    grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
+        'travis',
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
 
-    grunt.registerTask('travis_update_and_push', 'used by TravisCI', function() {
-        if (process.env.TRAVIS) { // starts on 'master' branch
-            grunt.log.writeln('Running grunt and updating translations...');
-            grunt.task.run([
-                'default', // Run default task
-                'update_trans', // Update translations
-                'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-                'exec:git:"reset --hard"', // Reset unstaged changes (to allow for a rebase)
-                'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
-                'exec:git_push:origin:"master develop"' // Push master and develop
-            ]);
-        } else {
-            grunt.fatal('This task is only for Travis-CI!');
+    grunt.registerTask('newrelease', "Pull and merge develop to master, create and push a new release", [
+        'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
+        'exec:git:checkout:master', 'exec:git:pull', // Pull master
+        'exec:git:merge:develop', // Merge develop into master
+        'exec:git_get_last_tag', 'exec:git_list_changes', // List changes from since last tag
+        '_get_next_tag', 'exec:git_tag_new', // Create new release tag
+        'exec:git_push:origin:master:tags', // Push master + tags
+        'exec:git:checkout:develop' // Go back to develop
+    ]);
+
+    grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
+        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        if (!file) {
+            file = process.env.SICKRAGE_CHANGES_FILE;
         }
+        if (file && grunt.file.exists(file)) {
+            grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
+        } else {
+            grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
+                '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md\n' +
+                '\t\tor set the path in SICKRAGE_CHANGES_FILE (environment variable)');
+        }
+        grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
     /****************************************
@@ -260,7 +289,7 @@ module.exports = function(grunt) {
                         if (grunt.config('stop_no_changes')) {
                             grunt.fatal('Nothing to commit, aborting', 0);
                         } else {
-                            grunt.log.writeln('No extra changes to commit');
+                            grunt.log.ok('No extra changes to commit'.green);
                         }
                     } else {
                         commitMsg = commitMsg.join(', ');
@@ -322,7 +351,7 @@ module.exports = function(grunt) {
                         pushCmd += ' --tags';
                     }
                     if (grunt.option('no-push')) {
-                        console.warn('Pushing with --dry-run ...'.magenta.bold);
+                        grunt.log.warn('Pushing with --dry-run ...'.magenta);
                         pushCmd += ' --dry-run';
                     }
                     return pushCmd;
@@ -376,7 +405,7 @@ module.exports = function(grunt) {
                     }
                     var pushCmd = 'git push origin master';
                     if (grunt.option('no-push')) {
-                        console.warn('Pushing with --dry-run ...'.magenta.bold);
+                        grunt.log.warn('Pushing with --dry-run ...'.magenta);
                         pushCmd += ' --dry-run';
                     }
                     return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
@@ -385,33 +414,6 @@ module.exports = function(grunt) {
                 stdout: true
             }
         }
-    });
-
-    /****************************************
-    *  Sub-tasks of publish task            *
-    ****************************************/
-    grunt.registerTask('newrelease', "pull and merge develop to master, create and push a new release", [
-        'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
-        'exec:git:checkout:master', 'exec:git:pull', // Pull master
-        'exec:git:merge:develop', // Merge develop into master
-        'exec:git_get_last_tag', 'exec:git_list_changes', // List changes from since last tag
-        '_get_next_tag', 'exec:git_tag_new', // Create new release tag
-        'exec:git_push:origin:master:tags', // Push master + tags
-        'exec:git:checkout:develop' // Go back to develop
-    ]);
-
-    grunt.registerTask('genchanges', "generate CHANGES.md file", function() {
-        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
-        if (!file) {
-            file = process.env.SICKRAGE_CHANGES_FILE;
-        }
-        if (file && grunt.file.exists(file)) {
-            grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
-        } else {
-            grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
-                '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md');
-        }
-        grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
     /****************************************
@@ -427,7 +429,7 @@ module.exports = function(grunt) {
         var patch = lastTag === today ? (parseInt(lastPatch) + 1).toString() : '1';
 
         var nextTag = 'v' + today + '-' + patch;
-        grunt.log.writeln('Creating tag ' + nextTag);
+        grunt.log.ok(('Creating tag ' + nextTag).green);
         grunt.config('next_tag', nextTag);
     });
 
