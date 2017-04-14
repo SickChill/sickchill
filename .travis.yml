@@ -23,7 +23,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - grunt travis
+  - grunt ci
   - tox -v --recreate
 
 cache:
@@ -43,7 +43,7 @@ after_success:
   - git config --global push.default current
   - git remote rm origin
   - git remote add origin https://$GH_CRED@github.com/SickRage/SickRage.git
-  - grunt travis:update
+  - grunt ci:update
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
