@@ -27,9 +27,9 @@ module.exports = function(grunt) {
                     'default', // Run default task
                     'update_trans', // Update translations
                     'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-                    'exec:git:"reset --hard"', // Reset unstaged changes (to allow for a rebase)
+                    'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
                     'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
-                    'exec:git_push:origin:"master develop"' // Push master and develop
+                    'exec:git_push:origin:master develop' // Push master and develop
                 ]);
             } else {
                 grunt.fatal('This task is only for Travis-CI!');
@@ -309,8 +309,13 @@ module.exports = function(grunt) {
                     if (!message || !paths) {
                         grunt.fatal('Call exec:commit_changed_files instead!');
                     }
-                    return ['git add -- ' + paths, 'git commit -m "' + message + '"'].join(' && ');
-                }
+                    return 'git add -- ' + paths;
+                },
+				callback: function(err) {
+					if (!err) {
+						grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
+					}
+				}
             },
             'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9]*',
