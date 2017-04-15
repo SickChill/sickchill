@@ -313,7 +313,7 @@ module.exports = function(grunt) {
                 },
                 callback: function(err) {
                     if (!err) {
-                        grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
+                        grunt.task.run('exec:git:commit:-m \'' + grunt.config('commit_msg') + '\'');
                     }
                 }
             },
