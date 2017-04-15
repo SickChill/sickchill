@@ -363,11 +363,11 @@ module.exports = function(grunt) {
                 },
                 stderr: false,
                 callback: function(err, stdout, stderr) {
-                    if (err && err.code == 128 || stderr.includes('Authentication failed for')) {
+                    if (err && err.code == 128 || stderr.includes(process.env.GH_CRED)) {
                         grunt.fatal('Git remote config contains invalid credentials.');
                     } else {
-						grunt.fatal(stderr);
-					}
+                        grunt.log.write(stderr);
+                    }
                 }
             },
             'git_list_tags': {
