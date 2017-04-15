@@ -23,7 +23,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  # - grunt ci
+  - grunt ci
   # - tox -v --recreate
 
 cache:
