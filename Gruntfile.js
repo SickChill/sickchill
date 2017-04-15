@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             if (process.env.TRAVIS) {
                 grunt.log.writeln('Running grunt and updating translations...'.magenta);
                 grunt.task.run([
-                    // 'exec:git:checkout:master', // should be on 'master' branch
+                    'exec:git:checkout:master', // should be on 'master' branch
                     'default', // Run default task
                     'update_trans', // Update translations
                     'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
