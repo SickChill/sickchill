@@ -39,11 +39,13 @@ after_failure:
 after_success:
   - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$GH_CRED" =~ ^.+:.+$ ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]
     && [[ "$TRAVIS_BRANCH" != "master" ]]; }; then exit 0; fi;
+  # travis git version is 1.8.5.6 (as of 2017-04-15)
   - git config --global user.name "SickRage"
   - git config --global user.email sickrage2@gmail.com
   - git config --global push.default current
   - git remote rm origin
   - git remote add origin https://$GH_CRED@github.com/SickRage/SickRage.git
+  - git fetch origin
   - grunt ci:update
 
 notifications:
