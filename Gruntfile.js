@@ -363,11 +363,7 @@ module.exports = function(grunt) {
                 },
                 stderr: false,
                 callback: function(err, stdout, stderr) {
-                    if (err && err.code == 128 || stderr.includes(process.env.GH_CRED)) {
-                        grunt.fatal('Git remote contains invalid credentials.');
-                    } else {
-                        grunt.log.write(stderr);
-                    }
+                    grunt.log.write(stderr.replace(process.env.GH_CRED, '[censored]'));
                 }
             },
             'git_list_tags': {
