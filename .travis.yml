@@ -24,7 +24,7 @@ install:
 
 script:
   - grunt ci
-  # - tox -v --recreate
+  - tox -v --recreate
 
 cache:
   directories:
@@ -36,8 +36,9 @@ after_failure:
   - cat ./Logs/sickrage.log
 
 after_success:
+  # don't run if any of these are NOT met
   - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$GH_CRED" =~ ^.+:.+$ ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]
-    && [[ "$TRAVIS_BRANCH" != "master" ]]; }; then exit 0; fi;
+    && [[ "$TRAVIS_BRANCH" == "master" ]]; }; then exit 0; fi;
   - git --version
   - git config --global user.name "SickRage"
   - git config --global user.email sickrage2@gmail.com

@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             if (process.env.TRAVIS) {
                 grunt.log.writeln('Running grunt and updating translations...'.magenta);
                 grunt.task.run([
-                    'exec:git:checkout:master', // should be on 'master' branch
+                    'exec:git:checkout:master',
                     'default', // Run default task
                     'update_trans', // Update translations
                     'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
@@ -364,7 +364,7 @@ module.exports = function(grunt) {
                 stderr: false,
                 callback: function(err, stdout, stderr) {
                     if (err && err.code == 128 || stderr.includes(process.env.GH_CRED)) {
-                        grunt.fatal('Git remote config contains invalid credentials.');
+                        grunt.fatal('Git remote contains invalid credentials.');
                     } else {
                         grunt.log.write(stderr);
                     }
