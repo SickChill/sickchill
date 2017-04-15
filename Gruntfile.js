@@ -311,11 +311,11 @@ module.exports = function(grunt) {
                     }
                     return 'git add -- ' + paths;
                 },
-				callback: function(err) {
-					if (!err) {
-						grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
-					}
-				}
+                callback: function(err) {
+                    if (!err) {
+                        grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
+                    }
+                }
             },
             'git_get_last_tag': {
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9]*',
@@ -360,6 +360,14 @@ module.exports = function(grunt) {
                         pushCmd += ' --dry-run';
                     }
                     return pushCmd;
+                },
+                stderr: false,
+                callback: function(err, stdout, stderr) {
+                    if (err && err.code == 128 || stderr.includes('Authentication failed for')) {
+                        grunt.fatal('Git remote config contains invalid credentials.');
+                    } else {
+						grunt.fatal(stderr);
+					}
                 }
             },
             'git_list_tags': {
