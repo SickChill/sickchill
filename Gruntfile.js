@@ -2,7 +2,7 @@
 
 module.exports = function(grunt) {
     var IsTravis = Boolean(process.env.TRAVIS);
-    
+
     grunt.registerTask('default', [
         'clean',
         'bower',
@@ -318,13 +318,9 @@ module.exports = function(grunt) {
                         if (!IsTravis) {
                             grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
                         } else { // Workaround for Travis (with -m "text" the quotes are within the message)
-                            var done = this.async();
                             var msgFilePath = 'commit-msg.txt';
                             grunt.file.write(msgFilePath, grunt.config('commit_msg'));
                             grunt.task.run('exec:git:commit:-F ' + msgFilePath);
-                            grunt.file.delete(msgFilePath);
-                            console.log('[DEBUG] I have arrived!');
-                            done();
                         }
                     }
                 }

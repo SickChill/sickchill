@@ -24,7 +24,7 @@ install:
 
 script:
   - grunt ci
-  - tox -v --recreate
+#  - tox -v --recreate
 
 cache:
   directories:
