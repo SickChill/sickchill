@@ -873,6 +873,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 str(ep_obj.season), str(ep_obj.episode), str(ep_obj.airdate)
             ]
 
+            self._log(u"Script parameters: %s %s %s %s %s %s" % (ep_obj.location, self.file_path, ep_obj.show.indexerid, ep_obj.season, ep_obj.episode, ep_obj.airdate), logger.DEBUG)
+
             # use subprocess to run the command and capture output
             self._log("Executing command: {0}".format(script_cmd))
             try:
