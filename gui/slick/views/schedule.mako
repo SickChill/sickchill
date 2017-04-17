@@ -286,9 +286,6 @@
                 <!-- start non list view //-->
                 <%
                     cur_segment = None
-                    too_late_header = False
-                    missed_header = False
-                    today_header = False
                     show_div = 'ep_listing listing-default'
                 %>
 
@@ -334,34 +331,31 @@
                         % endif
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'date':
-                    <div>
-                        % if cur_segment != cur_ep_airdate:
-                            % if ((cur_ep_enddate < today and cur_ep_airdate != today.date()) or snatched_status) and not missed_header:
-                                <h2 class="day">${_('Missed')} / ${_('Snatched')}</h2>
-                            <% missed_header = True %>
-                            % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                                <h2 class="day">${_('Later')}</h2>
-                            <% too_late_header = True %>
-                            % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
-                                % if cur_ep_airdate == today.date():
-                                    <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
-                                        <span style="font-size: 14px; vertical-align: top;">[Today]</span>
-                                    </h2>
-                                <% today_header = True %>
-                                % else:
-                                    <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
-                                % endif
-                            % endif
-                            <% cur_segment = cur_ep_airdate %>
-                        % endif
-
-                        % if cur_ep_airdate == today.date() and not today_header:
+                    % if snatched_status:
+                        <% cur_category = 'Snatched' %>
+                    % elif cur_ep_enddate < today and cur_ep_airdate != today.date():
+                        <% cur_category = 'Missed' %>
+                    % elif cur_ep_airdate >= next_week.date():
+                        <% cur_category = 'Later' %>
+                    % elif cur_ep_airdate == today.date():
+                        <% cur_category = 'Today' %>
+                    % elif cur_ep_enddate > today and cur_ep_airdate < next_week.date():
+                        <% cur_category = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize() %>
+                    % endif
+                    % if cur_segment != cur_category:
+                        <div>
+                        % if cur_category in ('Snatched', 'Missed', 'Later'):
+                            <h2 class="day">${_(cur_category)}</h2>
+                        % elif cur_category == 'Today':
                             <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
                                 <span style="font-size: 14px; vertical-align: top;">[Today]</span>
                             </h2>
-                        <% today_header = True %>
+                        % else:
+                            <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                         % endif
-                    </div>
+                        <% cur_segment = cur_category %>
+                        </div>
+                    % endif
 
                     % if snatched_status:
                         <% show_div = 'ep_listing listing-snatched' %>
