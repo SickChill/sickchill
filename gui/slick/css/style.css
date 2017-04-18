@@ -901,6 +901,9 @@ home_trendingShows.mako
 /* =======================================================================
 displayShow.mako
 ========================================================================== */
+#pickShow {
+    display: inline-block;
+}
 
 #pickShow {
     display: inline-block;
