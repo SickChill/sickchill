@@ -68,6 +68,11 @@ class newpctProvider(TorrentProvider):
         for mode in search_strings:
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            
+            if self.onlyspasearch:
+                search_params['idioma_'] = 1
+            else:
+                search_params['idioma_'] = 'All'
 
             if self.onlyspasearch:
                 search_params['idioma_'] = 1
@@ -78,7 +83,7 @@ class newpctProvider(TorrentProvider):
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
                 logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                 continue
-
+                
             search_params['bus_de_'] = 'All' if mode != 'RSS' else 'semana'
 
             for search_string in search_strings[mode]:
