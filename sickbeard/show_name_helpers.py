@@ -140,7 +140,10 @@ def allPossibleShowNames(show, season=-1):
         showNames = get_scene_exceptions(show.indexerid, season=season)
 
     showNames.append(show.name)
-
+    # Show names with an apostrophe may be uploaded with it omitted.
+    if "'" in show.name:
+        showNames.append(show.name.replace("'", ""))
+    
     if not show.is_anime:
         newShowNames = []
         country_list = common.countryList
