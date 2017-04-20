@@ -1274,7 +1274,7 @@ class SSLIOStream(IOStream):
                     peer = '(not connected)'
                 gen_log.warning("SSL Error on %s %s: %s",
                                 self.socket.fileno(), peer, err)
-                return self.close(exc_info=True)
+                return self.close(exc_info=False)
             raise
         except socket.error as err:
             # Some port scans (e.g. nmap in -sT mode) have been known
