@@ -34,7 +34,7 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
         self.url = 'https://ncore.cc/'
         self.urls = {
                    'login': 'https://ncore.cc/login.php',
-                   'search': 'https://ncore.cc/torrents.php?kivalasztott_tipus[]=xvidser_hun&kivalasztott_tipus[]=xvidser&mire=%s&miben=name&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok&tags=&searchedfrompotato=true&jsons=true',
+                   'search': 'https://ncore.cc/torrents.php?miszerint=seeders&hogyan=DESC&tipus=kivalasztottak_kozott&kivalasztott_tipus=xvidser_hun,xvidser,dvdser_hun,dvdser,hdser_hun,hdser&csoport_listazas=osszes_sorozat&submit.x=0&submit.y=0&submit=Ok&tags=&searchedfrompotato=true&jsons=true',
                 }
         self.cache = tvcache.TVCache(self)
 
