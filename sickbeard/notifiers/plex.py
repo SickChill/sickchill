@@ -142,8 +142,10 @@ class Notifier(object):
 
         for cur_host in host_list:
 
-            url = 'http{0}://{1}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host)
             try:
+                new_host, new_port = cur_host.split(":")
+                new_host = socket.gethostbyname(new_host)+":"+new_port
+                url = 'http{0}://{1}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], new_host)
                 xml_response = getURL(url, headers=self.headers, session=self.session, returns='text', verify=False,
                                       allow_proxy=False)
                 if not xml_response:
