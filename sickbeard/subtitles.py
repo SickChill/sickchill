@@ -63,6 +63,7 @@ PROVIDER_URLS = {
     'podnapisi': 'http://www.podnapisi.net',
     'subscenter': 'http://www.subscenter.info',
     'thesubdb': 'http://www.thesubdb.com',
+    'thewiz': 'http://subs.thewiz.info',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
