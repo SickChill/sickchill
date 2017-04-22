@@ -1,13 +1,13 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import datetime
+    import time
+    import re
+
     import sickbeard
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
-
-    import datetime
-    import time
-    import re
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
