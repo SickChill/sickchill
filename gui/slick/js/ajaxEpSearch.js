@@ -104,9 +104,9 @@ function updateImages(data) {
                         // else - Calendar view is ignored
                     }
 
-                    if (actionElement !== null) {
+                    if (actionElement.length) {
                         // remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', function (i, value) { 
+                        actionElement.attr('class', function (i, value) {
                             return value.replace(/(^|\s)listing-\S+/g, '');
                         }).addClass('listing-snatched');
                     }
