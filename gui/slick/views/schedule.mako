@@ -119,7 +119,7 @@
                                     cur_ep_enddate = cur_result[b'localtime']
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
-                                    
+
                                     if snatched_status:
                                         if cur_result[b'location']:
                                             continue
@@ -287,6 +287,11 @@
                 <%
                     cur_segment = None
                     show_div = 'ep_listing listing-default'
+                    headers = {
+                        'snatched': _('Snatched'),
+                        'missed': _('Missed'),
+                        'later': _('Later')
+                    }
                 %>
 
                 % for cur_result in results:
@@ -307,6 +312,8 @@
                         cur_ep_enddate = cur_result[b'localtime'] + datetime.timedelta(minutes = run_time)
                     else:
                         cur_ep_enddate = cur_result[b'localtime']
+
+                    this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()
                 %>
                 % if sickbeard.COMING_EPS_SORT == 'network':
                     <% show_network = ('no network', cur_result[b'network'])[bool(cur_result[b'network'])] %>
@@ -332,26 +339,27 @@
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'date':
                     % if snatched_status:
-                        <% cur_category = 'Snatched' %>
+                        <% cur_category = 'snatched' %>
                     % elif cur_ep_enddate < today and cur_ep_airdate != today.date():
-                        <% cur_category = 'Missed' %>
+                        <% cur_category = 'missed' %>
                     % elif cur_ep_airdate >= next_week.date():
-                        <% cur_category = 'Later' %>
+                        <% cur_category = 'later' %>
                     % elif cur_ep_airdate == today.date():
-                        <% cur_category = 'Today' %>
+                        <% cur_category = 'today' %>
                     % elif cur_ep_enddate > today and cur_ep_airdate < next_week.date():
-                        <% cur_category = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize() %>
+                        <% cur_category = this_day_name %>
                     % endif
+
                     % if cur_segment != cur_category:
                         <div>
-                        % if cur_category in ('Snatched', 'Missed', 'Later'):
-                            <h2 class="day">${_(cur_category)}</h2>
-                        % elif cur_category == 'Today':
-                            <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
-                                <span style="font-size: 14px; vertical-align: top;">[Today]</span>
-                            </h2>
+                        % if cur_category in ('snatched', 'missed', 'later'):
+                            <h2 class="day">${headers[cur_category]}</h2>
                         % else:
-                            <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
+                            <h2 class="day">${this_day_name}
+                                % if cur_category == 'today':
+                                    <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
+                                % endif
+                            </h2>
                         % endif
                         <% cur_segment = cur_category %>
                         </div>
