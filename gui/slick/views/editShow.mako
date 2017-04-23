@@ -70,6 +70,22 @@
                                     </div>
                                 </div>
 
+				<div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Maximum size')}</span>
+                                    </div>
+				    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" id="max_size_MB" name="max_size_MB"
+                                                       value="${show.max_size_MB}" class="form-control input-sm input100" min="-1"/>
+						       <input type="text" value="MB" disabled class="input-sm input75"/>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">${_('Default Episode Status')}</span>

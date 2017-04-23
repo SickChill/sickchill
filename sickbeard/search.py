@@ -32,6 +32,7 @@ from sickbeard import clients, common, db, failed_history, helpers, history, log
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex
+from sickrage.helper.common import convert_size
 from sickrage.providers.GenericProvider import GenericProvider
 
 
@@ -223,11 +224,17 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
         if not show_name_helpers.filter_bad_releases(cur_result.name, parse=False, show=show):
             continue
 
+        size_MB = cur_result.size/(1024*1024)
         if hasattr(cur_result, 'size'):
+            if  size_MB > show.max_size_MB:
+                logger.log("%s is too big (%s MB). Maximum is defined to : %s MB" % (cur_result.name, size_MB, show.max_size_MB))
+                continue
             if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
                                                                            cur_result.provider.name):
                 logger.log(cur_result.name + " has previously failed, rejecting it")
                 continue
+        else:
+            logger.log("No size attribute for " + cur_result.name)
 
         if not bestResult:
             bestResult = cur_result

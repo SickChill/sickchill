@@ -1509,7 +1509,7 @@ class Home(WebRoot):
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
-                 defaultEpStatus=None, quality_preset=None):
+                 defaultEpStatus=None, quality_preset=None, max_size_MB=None):
 
         anidb_failed = False
         if not show:
@@ -1650,6 +1650,7 @@ class Home(WebRoot):
                 show_obj.dvdorder = dvdorder
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
+                show_obj.max_size_MB = max_size_MB
 
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
