@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = function(grunt) {
+    var IsTravis = Boolean(process.env.TRAVIS);
+
     grunt.registerTask('default', [
         'clean',
         'bower',
@@ -13,23 +15,23 @@ module.exports = function(grunt) {
         'mocha'
     ]);
 
-    grunt.registerTask('travis', 'Alias for "jshint", "mocha" tasks.', function(update) {
+    grunt.registerTask('ci', 'Alias for "jshint", "mocha" tasks.', function(update) {
         if (!update) {
             grunt.task.run([
                 'jshint',
                 'mocha'
             ]);
         } else {
-            if (process.env.TRAVIS) {
+            if (IsTravis) {
                 grunt.log.writeln('Running grunt and updating translations...'.magenta);
                 grunt.task.run([
-                    // 'exec:git:checkout:master', // should be on 'master' branch
+                    'exec:git:checkout:master',
                     'default', // Run default task
                     'update_trans', // Update translations
                     'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-                    'exec:git:"reset --hard"', // Reset unstaged changes (to allow for a rebase)
+                    'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
                     'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
-                    'exec:git_push:origin:"master develop"' // Push master and develop
+                    'exec:git_push:origin:master develop' // Push master and develop
                 ]);
             } else {
                 grunt.fatal('This task is only for Travis-CI!');
@@ -59,7 +61,7 @@ module.exports = function(grunt) {
     *  Admin only tasks                     *
     ****************************************/
     grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
-        'travis',
+        'ci',
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
@@ -309,7 +311,18 @@ module.exports = function(grunt) {
                     if (!message || !paths) {
                         grunt.fatal('Call exec:commit_changed_files instead!');
                     }
-                    return ['git add -- ' + paths, 'git commit -m "' + message + '"'].join(' && ');
+                    return 'git add -- ' + paths;
+                },
+                callback: function(err) {
+                    if (!err) {
+                        if (!IsTravis) {
+                            grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
+                        } else { // Workaround for Travis (with -m "text" the quotes are within the message)
+                            var msgFilePath = 'commit-msg.txt';
+                            grunt.file.write(msgFilePath, grunt.config('commit_msg'));
+                            grunt.task.run('exec:git:commit:-F ' + msgFilePath);
+                        }
+                    }
                 }
             },
             'git_get_last_tag': {
@@ -355,6 +368,10 @@ module.exports = function(grunt) {
                         pushCmd += ' --dry-run';
                     }
                     return pushCmd;
+                },
+                stderr: false,
+                callback: function(err, stdout, stderr) {
+                    grunt.log.write(stderr.replace(process.env.GH_CRED, '[censored]'));
                 }
             },
             'git_list_tags': {

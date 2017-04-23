@@ -23,7 +23,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - grunt travis
+  - grunt ci
   - tox -v --recreate
 
 cache:
@@ -36,14 +36,17 @@ after_failure:
   - cat ./Logs/sickrage.log
 
 after_success:
+  # don't run if any of these are NOT met
   - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$GH_CRED" =~ ^.+:.+$ ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]
     && [[ "$TRAVIS_BRANCH" == "master" ]]; }; then exit 0; fi;
+  - git --version
   - git config --global user.name "SickRage"
   - git config --global user.email sickrage2@gmail.com
   - git config --global push.default current
   - git remote rm origin
-  - git remote add origin https://$GH_CRED@github.com/SickRage/SickRage.git
-  - grunt travis:update
+  - git remote add origin https://$GH_CRED@github.com/$TRAVIS_REPO_SLUG.git
+  - git fetch origin master develop --no-tags
+  - grunt ci:update
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
