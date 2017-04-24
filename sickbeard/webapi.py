@@ -1904,7 +1904,7 @@ class CMDShow(ApiCall):
         else:
             show_dict["rls_ignore_words"] = []
 
-        show_dict["max_size_MB"] = show_obj.max_size_MB
+        show_dict["max_size"] = show_obj.max_size
         show_dict["scene"] = (0, 1)[show_obj.scene]
         # show_dict["archive_firstmatch"] = (0, 1)[show_obj.archive_firstmatch]
         # This might need to be here for 3rd part apps?

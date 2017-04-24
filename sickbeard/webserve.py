@@ -1650,7 +1650,7 @@ class Home(WebRoot):
                 show_obj.dvdorder = dvdorder
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
-                show_obj.max_size_MB = max_size_MB
+                show_obj.max_size = str(int(max_size_MB)*1000*1000 if max_size_MB != -1 else -1)
 
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')

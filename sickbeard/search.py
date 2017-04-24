@@ -224,11 +224,9 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
         if not show_name_helpers.filter_bad_releases(cur_result.name, parse=False, show=show):
             continue
 
-        size_MB = cur_result.size/(1024*1024)
         if hasattr(cur_result, 'size'):
-            logger.log("Test1")
-            if  show.max_size_MB > -1 and size_MB > show.max_size_MB:
-                logger.log('{} is too big ({} MB). Maximum is defined to : {} MB'.format(cur_result.name, size_MB, show.max_size_MB))
+            if  show.max_size > -1 and cur_result.size > show.max_size:
+                logger.log('{} is too big ({} MB). Maximum is defined to : {} MB'.format(cur_result.name, cur_result.size/(1000*1000), show.max_size/(1000*1000)))
                 continue
             if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
                                                                            cur_result.provider.name):

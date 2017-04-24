@@ -110,7 +110,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._rls_ignore_words = ""
         self._rls_require_words = ""
         self._default_ep_status = SKIPPED
-        self._max_size_MB = -1
+        self._max_size = -1
         self.dirty = True
 
         self._location = ""
@@ -153,7 +153,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
     default_ep_status = property(lambda self: self._default_ep_status, dirty_setter("_default_ep_status"))
     subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
-    max_size_MB = property(lambda self: self._max_size_MB, dirty_setter("_max_size_MB"))
+    max_size = property(lambda self: self._max_size, dirty_setter("_max_size"))
 
     @property
     def is_anime(self):
@@ -825,7 +825,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             self.subtitles_sr_metadata = int(sql_results[0][b"sub_use_sr_metadata"] or 0)
 
-            self.max_size_MB = sql_results[0][b"max_size_MB"]
+            self.max_size = sql_results[0][b"max_size"]
 
         # Get IMDb_info from database
         main_db_con = db.DBConnection()
@@ -1170,7 +1170,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "rls_require_words": self.rls_require_words,
                         "default_ep_status": self.default_ep_status,
                         "sub_use_sr_metadata": self.subtitles_sr_metadata,
-                        "max_size_MB": self.max_size_MB }
+                        "max_size": self.max_size }
 
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", newValueDict, controlValueDict)

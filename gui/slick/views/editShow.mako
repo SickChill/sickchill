@@ -78,7 +78,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="number" id="max_size_MB" name="max_size_MB"
-                                                       value="${show.max_size_MB}" class="form-control input-sm input100" min="-1"/>
+                                                       value="${str(int(show.max_size)/(1000*1000)) if show.max_size != -1 else show.max_size}" class="form-control input-sm input100" min="-1"/>
 						       <input type="text" value="MB" disabled class="input-sm input75"/>
                                                 <br/>
                                             </div>
