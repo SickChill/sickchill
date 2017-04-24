@@ -1128,25 +1128,11 @@ class AlterTVShowsFieldTypes(AddDefaultEpStatusToTvShows):
 
         self.incDBVersion()
 
-class AddMaxSize(AlterTVShowsFieldTypes):
-    """ Adding column max_size_MB to tv_shows """
-
-    def test(self):
-        return self.checkDBVersion() >= 43
-
-    def execute(self):
-        backupDatabase(self.checkDBVersion())
-
-        logger.log("Adding column max_size_MB to tvshows")
-        if not self.hasColumn("tv_shows", "max_size_MB"):
-            self.addColumn("tv_shows", "max_size_MB", "NUMERIC", "-1")
-
-        self.incDBVersion()
 
 
 class AddMinorVersion(AlterTVShowsFieldTypes):
     def test(self):
-        return self.checkDBVersion() >= 44 and self.hasColumn(b'db_version', b'db_minor_version')
+        return self.checkDBVersion() >= 43 and self.hasColumn(b'db_version', b'db_minor_version')
 
     def incDBVersion(self):
         warnings.warn("Deprecated: Use inc_major_version or inc_minor_version instead", DeprecationWarning)
@@ -1173,6 +1159,22 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
         self.inc_minor_version()
 
         logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+
+
+class AddMaxSize(AddMinorVersion):
+    """ Adding column max_size_MB to tv_shows """
+
+    def test(self):
+        return self.checkDBVersion() >= 44
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+
+        logger.log("Adding column max_size_MB to tvshows")
+        if not self.hasColumn("tv_shows", "max_size_MB"):
+            self.addColumn("tv_shows", "max_size_MB", "NUMERIC", "-1")
+
+        self.incDBVersion()
 
 
 class UseSickRageMetadataForSubtitle(AlterTVShowsFieldTypes):
