@@ -241,7 +241,7 @@ def is_rar_file(filename, only_first=True):
     :return: True if this is RAR/Part file, False if not
     """
     if only_first:
-        archive_regex = r'(?P<file>^(?P<base>(?:(?!(\.(part\d+|\d{3})\.rar|\.r\d{2})$).)*)\.(?:(?:(?:part0*1|000)\.)?rar|r00)$)'
+        archive_regex = r'(?P<file>^(?P<base>(?:(?!\.(part\d+|\d{3})\.rar$).)*)\.(?:(?:part0*1|000)\.)?rar$)'
     else:
         archive_regex = r'(?P<file>^(?P<base>(?:(?!(\.(part\d+|\d{3})\.rar|\.r\d{2})$).)*)\.(?:(?:(?:part\d+|\d{3})\.)?rar|r\d{2})$)'
     ret = re.search(archive_regex, filename) is not None

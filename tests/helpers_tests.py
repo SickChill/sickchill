@@ -255,7 +255,7 @@ class HelpersZipTests(unittest.TestCase):
         self.assertTrue(helpers.is_rar_file('lala.rar'))
         self.assertTrue(helpers.is_rar_file('lala.part001.rar'))
         self.assertTrue(helpers.is_rar_file('lala.000.rar'))
-        self.assertTrue(helpers.is_rar_file('lala.r00'))
+        self.assertFalse(helpers.is_rar_file('lala.r00'))
         self.assertFalse(helpers.is_rar_file('lala.zip'))
         self.assertFalse(helpers.is_rar_file('lala.iso'))
         self.assertFalse(helpers.is_rar_file('lala.wmv'))
