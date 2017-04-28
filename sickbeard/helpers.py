@@ -1570,8 +1570,9 @@ def get_size(start_path='.'):
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as error:
-                logger.log("Unable to get size for file {0} Error: {1}".format(fp, error), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                if not ek(os.path.islink, fp):
+                    logger.log("Unable to get size for file {0} Error: {1}".format(fp, error), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
 
