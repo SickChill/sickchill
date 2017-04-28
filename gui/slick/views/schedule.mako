@@ -24,7 +24,7 @@
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
                 % endif
-                <a class="btn btn-inline forceBacklog btn-cal-subscribe" href="${srRoot}/calendar">
+                <a class="btn btn-inline forceBacklog btn-cal-subscribe" href="#">
                     <i class="icon-calendar icon-white"></i>
                     ${_('Subscribe')}
                 </a>

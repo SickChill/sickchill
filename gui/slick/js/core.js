@@ -3513,9 +3513,8 @@ var SICKRAGE = {
     },
     schedule: {
         init: function() {
-            var calSubscribeLink = document.location.host;
-            calSubscribeLink = "webcal://" + calSubscribeLink + $(".btn-cal-subscribe").attr("href");
-            $(".btn-cal-subscribe").attr("href", calSubscribeLink);
+            // set webcal link for calendar subscription
+            $(".btn-cal-subscribe").attr("href", document.location.href.replace(/https?/, 'webcal').replace('schedule', 'calendar'));
         },
         index: function() {
             if(isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])){
