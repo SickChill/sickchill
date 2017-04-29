@@ -1004,6 +1004,20 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Ignore Broken Symbolic Links')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="ignore_broken_symlinks" id="ignore_broken_symlinks" ${('', 'checked="checked"')[bool(sickbeard.IGNORE_BROKEN_SYMLINKS)]}/>
+                                        <label for="ignore_broken_symlinks">${_('If checked, broken symbolic links warnings generated when calculating show size will be logged as debug')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Default deleted episode status')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
