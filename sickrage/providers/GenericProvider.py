@@ -130,8 +130,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         searched_scene_season = None
 
         for episode in episodes:
-            cache_result = self.cache.search_cache(episode, manualSearch=manual_search,
-                                                   downCurQuality=download_current_quality)
+            cache_result = self.cache.search_cache(episode, manual_search=manual_search,
+                                                   down_cur_quality=download_current_quality)
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result
@@ -214,6 +214,12 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
                         (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
                         (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                    ]) and not all([
+                        # fallback for anime on absolute numbering
+                        parse_result.is_anime,
+                        parse_result.ab_episode_numbers is not None,
+                        [ep for ep in episodes if ep.show.is_anime and
+                        ep.absolute_number in parse_result.ab_episode_numbers]
                     ]):
 
                         logger.log(

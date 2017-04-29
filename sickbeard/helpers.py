@@ -62,6 +62,7 @@ from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
 from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
 
@@ -80,6 +81,14 @@ def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, 
 if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     logger.log("Patching socket to IPv4 only", logger.DEBUG)
     socket.getaddrinfo = getaddrinfo_wrapper
+
+# Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
+copyfileobj_orig = shutil.copyfileobj
+
+def _copyfileobj(fsrc, fdst, length=10485760):
+    """ Run shutil.copyfileobj with a bigger buffer """
+    return copyfileobj_orig(fsrc, fdst, length)
+shutil.copyfileobj = _copyfileobj
 
 
 def indentXML(elem, level=0):
@@ -1496,7 +1505,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
             logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(error.request.url, ssl.OPENSSL_VERSION))
         if sickbeard.SSL_VERIFY:
-            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
+            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general".format(error.request.url))
         logger.log(default.format(error), logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -1558,6 +1567,10 @@ def get_size(start_path='.'):
     for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
+            if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
+                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp),
+                           logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
+                continue
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as error:
@@ -1790,16 +1803,21 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 
 def get_showname_from_indexer(indexer, indexer_id, lang='en'):
-    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-    lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
+    try:
+        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+        lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-    logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
+        logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
 
-    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-    s = t[int(indexer_id)]
+        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+        s = t[int(indexer_id)]
 
-    if hasattr(s, 'data'):
-        return s.data.get('seriesname')
+        if hasattr(s, 'data'):
+            return s.data.get('seriesname')
+    except (sickbeard.indexer_error, IOError) as e:
+        logger.log("Show id " + str(indexer_id) + " not found on " + sickbeard.indexerApi(indexer).name +
+                   ", not adding show: " + ex(e), logger.WARNING)
+        return None
 
     return None
 
@@ -1870,25 +1888,30 @@ def sortable_name(name):
     return name.lower()
 
 
-def manage_torrents_url():
-    if not sickbeard.USE_TORRENTS or sickbeard.TORRENT_METHOD == 'blackhole' or \
-                    sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
-        return ''
+def manage_torrents_url(reset=False):
+    if not reset:
+        return sickbeard.CLIENT_WEB_URLS.get('torrent', '')
+
+    if not sickbeard.USE_TORRENTS or not sickbeard.TORRENT_HOST.lower().startswith('http') or sickbeard.TORRENT_METHOD == 'blackhole' or \
+            sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
+        sickbeard.CLIENT_WEB_URLS['torrent'] = ''
+        return sickbeard.CLIENT_WEB_URLS.get('torrent')
 
     torrent_ui_url = re.sub('localhost|127.0.0.1', sickbeard.LOCALHOST_IP or get_lan_ip(), sickbeard.TORRENT_HOST or '', re.I)
+
+    def test_exists(url):
+        try:
+            h = requests.head(url)
+            return h.status_code != 404
+        except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout):
+            return False
 
     if sickbeard.TORRENT_METHOD == 'utorrent':
         torrent_ui_url = '/'.join(s.strip('/') for s in (torrent_ui_url, 'gui/'))
     elif sickbeard.TORRENT_METHOD == 'download_station':
-        if check_url(urljoin(torrent_ui_url, 'download/')):
-            torrent_ui_url += 'download/'
-        else:
-            add_site_message(
-                '<p>' + _('For best results please set the Download Station alias as') + ' <code>download</code>. ' +
-                _('You can check this setting in the Synology DSM') + ' ' + '<b>' + _('Control Panel') + '</b> > <b>' + _('Application Portal') + '</b>.' +
-                _('Make sure you allow DSM to be embedded with iFrames too in') + ' ' + '<b>' +
-                _('Control Panel') + '</b> > <b>' + _('DSM Settings') + '</b> > <b>' + _('Security') + '</b>.' +
-                '</p><br>', 'info'
-            )
+        if test_exists(urljoin(torrent_ui_url, 'download/')):
+            torrent_ui_url = urljoin(torrent_ui_url, 'download/')
 
-    return torrent_ui_url
+    sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
+
+    return sickbeard.CLIENT_WEB_URLS.get('torrent')

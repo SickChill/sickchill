@@ -217,10 +217,9 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if not(process_method == "move" and result.result):
             continue
 
-        unwanted_files = [f for f in os.listdir(current_directory)
-                          if not(helpers.is_media_file(f)
-                                 or helpers.is_rar_file(ek(os.path.join, current_directory, f))
-                                 or '.stfolder')]
+        # noinspection PyTypeChecker
+        unwanted_files = filter(lambda x: x in video_files + rar_files + ['.stfolder'] , file_names)
+
         if unwanted_files:
             result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 

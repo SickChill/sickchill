@@ -34,3 +34,6 @@ class SickRageArgumentParser(ArgumentParser):
         if sys.platform in ['win32', 'darwin']:
             daemon_help = 'running as daemon is not supported on your platform. it is substituted with: --quiet --nolaunch'
         self.add_argument('-d', '--daemon', action='store_true', help=daemon_help)
+        self.add_argument('--force-update', action='store_true', help='download the latest stable version and force an '
+                                                                      'update (use when you\'re unable to do so using '
+                                                                      'the web ui)')

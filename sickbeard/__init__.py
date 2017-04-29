@@ -109,6 +109,7 @@ CREATEPID = False
 PIDFILE = ''
 
 SITE_MESSAGES = {}
+CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
 
 DAEMON = None
 NO_RESIZE = False
@@ -216,6 +217,7 @@ ROOT_DIRS = None
 
 TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
+IGNORE_BROKEN_SYMLINKS = False
 SORT_ARTICLE = False
 DEBUG = False
 DBDEBUG = False
@@ -675,7 +677,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, \
-            showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
+            showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
@@ -917,6 +919,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
 
+        IGNORE_BROKEN_SYMLINKS = check_setting_bool(CFG, 'General', 'ignore_broken_symlinks')
+
         SORT_ARTICLE = check_setting_bool(CFG, 'General', 'sort_article')
 
         API_KEY = check_setting_str(CFG, 'General', 'api_key', censor_log=True)
@@ -1091,6 +1095,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SYNOLOGY_DSM_USERNAME = check_setting_str(CFG, 'Synology', 'username', censor_log=True)
         SYNOLOGY_DSM_PASSWORD = check_setting_str(CFG, 'Synology', 'password', censor_log=True)
         SYNOLOGY_DSM_PATH = check_setting_str(CFG, 'Synology', 'path')
+
+        helpers.manage_torrents_url(reset=True)
 
         USE_KODI = check_setting_bool(CFG, 'KODI', 'use_kodi')
         KODI_ALWAYS_ON = check_setting_bool(CFG, 'KODI', 'kodi_always_on', True)
@@ -1939,6 +1945,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'launch_browser': int(LAUNCH_BROWSER),
             'trash_remove_show': int(TRASH_REMOVE_SHOW),
             'trash_rotate_logs': int(TRASH_ROTATE_LOGS),
+            'ignore_broken_symlinks': int(IGNORE_BROKEN_SYMLINKS),
             'sort_article': int(SORT_ARTICLE),
             'proxy_setting': PROXY_SETTING,
             'proxy_indexers': int(PROXY_INDEXERS),

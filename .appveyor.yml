@@ -70,7 +70,7 @@ install:
   - bower install
 
 test_script:
-  - grunt travis
+  - grunt ci
   - tox -v --recreate
 
 before_test:

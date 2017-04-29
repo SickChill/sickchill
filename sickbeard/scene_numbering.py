@@ -495,20 +495,20 @@ def xem_refresh(indexer_id, indexer, force=False):
         try:
             # XEM MAP URL
             url = "http://thexem.de/map/havemap?origin={0}".format(sickbeard.indexerApi(indexer).config['xem_origin'])
-            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
-            if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result'] or 'data' not in parsedJSON or str(indexer_id) not in parsedJSON['data']:
+            parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
+            if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result'] or 'data' not in parsed_json or str(indexer_id) not in parsed_json['data']:
                 return
 
             # XEM API URL
             url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
-            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
-            if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result']:
+            parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
+            if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result']:
                 logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
                 return
 
             cl = []
-            for entry in parsedJSON['data']:
+            for entry in parsed_json['data']:
                 if 'scene' in entry:
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",

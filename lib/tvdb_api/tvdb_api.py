@@ -558,7 +558,7 @@ class Tvdb:
 
         return os.path.join(tempfile.gettempdir(), "tvdb_api-%s" % (uid))
 
-    @retry(tvdb_error)
+    #@retry(tvdb_error)
     def _loadUrl(self, url, params=None, language=None):
         try:
             log().debug("Retrieving URL %s" % url)
