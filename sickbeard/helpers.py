@@ -1568,7 +1568,8 @@ def get_size(start_path='.'):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
             if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
-                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp), logger.DEBUG)
+                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp),
+                           logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
                 continue
             try:
                 total_size += ek(os.path.getsize, fp)
