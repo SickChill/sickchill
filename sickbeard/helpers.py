@@ -1567,12 +1567,14 @@ def get_size(start_path='.'):
     for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
+            if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
+                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp), logger.DEBUG)
+                continue
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as error:
-                if not ek(os.path.islink, fp):
-                    logger.log("Unable to get size for file {0} Error: {1}".format(fp, error), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+                logger.log("Unable to get size for file {0} Error: {1}".format(fp, error), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
 
