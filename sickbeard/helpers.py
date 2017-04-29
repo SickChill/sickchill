@@ -1505,7 +1505,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
             logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(error.request.url, ssl.OPENSSL_VERSION))
         if sickbeard.SSL_VERIFY:
-            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
+            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general".format(error.request.url))
         logger.log(default.format(error), logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -1567,6 +1567,10 @@ def get_size(start_path='.'):
     for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
+            if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
+                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp),
+                           logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
+                continue
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as error:
