@@ -99,7 +99,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
 
             # Web calendar handler (Needed because option Unprotected calendar)
-            (r'{0}/calendar'.format(self.options['web_root']), CalendarHandler),
+            (r'{0}/calendar(/?)'.format(self.options['web_root']), CalendarHandler),
 
             # webui handlers
         ] + route.get_routes(self.options['web_root']))
