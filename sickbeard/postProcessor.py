@@ -114,11 +114,12 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         :param message: The string to log (six.text_type)
         :param level: The log level to use (optional)
+        :returns: The message + new line
         """
         logger.log(message, level)
         self.log += message + '\n'
 
-    def _checkForExistingFile(self, existing_file):
+    def _check_for_existing_file(self, existing_file):
         """
         Checks if a file exists already and if it does whether it's bigger or smaller than
         the file we are post processing
@@ -992,7 +993,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             new_ep_version = -1
 
         # check for an existing file
-        existing_file_status = self._checkForExistingFile(ep_obj.location)
+        existing_file_status = self._check_for_existing_file(ep_obj.location)
 
         if not priority_download:
             if existing_file_status == PostProcessor.EXISTS_SAME:
