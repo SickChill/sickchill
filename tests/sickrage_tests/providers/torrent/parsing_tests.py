@@ -57,8 +57,6 @@ disabled_provider_tests = {
     # Have to trick it into thinking is an anime search, and add string overrides
     'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # Timeouts way too many
-    'BinSearch': ['test_cache_update'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
