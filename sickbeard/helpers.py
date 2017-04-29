@@ -1514,7 +1514,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
             logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(error.request.url, ssl.OPENSSL_VERSION))
         if sickbeard.SSL_VERIFY:
-            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
+            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general".format(error.request.url))
         logger.log(default.format(error), logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
 
