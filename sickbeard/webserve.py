@@ -501,7 +501,7 @@ class WebRoot(WebHandler):
 
 
 class CalendarHandler(BaseHandler):
-    def get(self):
+    def get(self, *args, **kwargs):
         if sickbeard.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:
@@ -3935,7 +3935,7 @@ class ConfigGeneral(Config):
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             sickrage_background=None, sickrage_background_path=None, custom_css=None, custom_css_path=None,
             git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
-            display_all_seasons=None, gui_language=None):
+            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
 
         results = []
 
@@ -3965,6 +3965,7 @@ class ConfigGeneral(Config):
 
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
+        sickbeard.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
