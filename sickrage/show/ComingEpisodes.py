@@ -31,16 +31,21 @@ from operator import itemgetter
 
 class ComingEpisodes(object):
     """
-    Missed:   yesterday...(less than 1 week)
+    Snatched: snatched but not yet processed (no re-downloads)
+    Missed:   yesterday...(less than sickbeard.COMING_EPS_MISSED_RANGE)
     Today:    today
     Soon:     tomorrow till next week
     Later:    later than next week
     """
-    categories = ['later', 'missed', 'snatched', 'soon', 'today']
+    categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        'date': (lambda a, b: cmp((a[b'snatchedsort'], a[b'localtime']), (b[b'snatchedsort'], b[b'localtime']))),
-        'network': (lambda a, b: cmp((a[b'network'], a[b'localtime']), (b[b'network'], b[b'localtime']))),
-        'show': (lambda a, b: cmp((a[b'show_name'], a[b'localtime']), (b[b'show_name'], b[b'localtime']))),
+        # 'date': itemgetter(b'snatchedsort', b'localtime'),
+        'date': itemgetter(b'localtime'),
+        'network': itemgetter(b'network', b'localtime'),
+        'show': itemgetter(b'show_name', b'localtime'),
+        # 'date': (lambda a, b: cmp((a[b'snatchedsort'], a[b'localtime']), (b[b'snatchedsort'], b[b'localtime']))),
+        # 'network': (lambda a, b: cmp((a[b'network'], a[b'localtime']), (b[b'network'], b[b'localtime']))),
+        # 'show': (lambda a, b: cmp((a[b'show_name'], a[b'localtime']), (b[b'show_name'], b[b'localtime']))),
     }
 
     def __init__(self):
@@ -97,9 +102,9 @@ class ComingEpisodes(object):
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
-            results[index][b'snatchedsort'] = (0 if (results[index][b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST else 1)
+            # results[index][b'snatchedsort'] = int(not results[index][b'epstatus'] in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST)
 
-        results.sort(ComingEpisodes.sorts[sort])
+        results.sort(key=ComingEpisodes.sorts[sort])
 
         if not group:
             return results
