@@ -8,6 +8,8 @@
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
+    
+    SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
@@ -110,7 +112,7 @@
                                 <%
                                     cur_indexer = int(cur_result[b'indexer'])
                                     run_time = cur_result[b'runtime']
-                                    snatched_status = int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+                                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
 
                                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                         continue
@@ -231,7 +233,7 @@
                                             <% continue %>
                                         % endif
 
-                                        % if int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+                                        % if int(cur_result[b'epstatus']) in SNATCHED:
                                             <% continue %>
                                         % endif
 
@@ -297,7 +299,7 @@
                 % for cur_result in results:
                 <%
                     cur_indexer = int(cur_result[b'indexer'])
-                    snatched_status = int(cur_result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
 
                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue

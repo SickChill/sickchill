@@ -28,6 +28,7 @@ from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
 from operator import itemgetter
 
+SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
 class ComingEpisodes(object):
     """
@@ -39,13 +40,9 @@ class ComingEpisodes(object):
     """
     categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        # 'date': itemgetter(b'snatchedsort', b'localtime'),
-        'date': itemgetter(b'localtime'),
+        'date': itemgetter(b'snatchedsort', b'localtime'),
         'network': itemgetter(b'network', b'localtime'),
         'show': itemgetter(b'show_name', b'localtime'),
-        # 'date': (lambda a, b: cmp((a[b'snatchedsort'], a[b'localtime']), (b[b'snatchedsort'], b[b'localtime']))),
-        # 'network': (lambda a, b: cmp((a[b'network'], a[b'localtime']), (b[b'network'], b[b'localtime']))),
-        # 'show': (lambda a, b: cmp((a[b'show_name'], a[b'localtime']), (b[b'show_name'], b[b'localtime']))),
     }
 
     def __init__(self):
@@ -70,11 +67,12 @@ class ComingEpisodes(object):
 
         db = DBConnection(row_type='dict')
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'e.location', 'name', 'network',
-             'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 'e.status as epstatus', 's.status']
+            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id',
+             'e.location', 'name', 'network', 'paused', 'quality', 'runtime', 'season', 'show_name', 'showid',
+             'e.status as epstatus', 's.status']
         )
 
-        status_list = [WANTED, UNAIRED] + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
+        status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
         for show_obj in sickbeard.showList:
@@ -102,7 +100,7 @@ class ComingEpisodes(object):
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
-            # results[index][b'snatchedsort'] = int(not results[index][b'epstatus'] in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST)
+            results[index][b'snatchedsort'] = int(not results[index][b'epstatus'] in SNATCHED)
 
         results.sort(key=ComingEpisodes.sorts[sort])
 
@@ -118,7 +116,7 @@ class ComingEpisodes(object):
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if int(result[b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+            if result[b'epstatus'] in SNATCHED:
                 if result[b'location']:
                     continue
                 else:
