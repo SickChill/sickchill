@@ -38,9 +38,9 @@ class ComingEpisodes(object):
     """
     categories = ['later', 'missed', 'snatched', 'soon', 'today']
     sorts = {
-        'date': (lambda a, b: a[b'localtime'] < b[b'localtime']),
-        'network': (lambda a, b: (a[b'network'], a[b'localtime']) < (b[b'network'], b[b'localtime'])),
-        'show': (lambda a, b: (a[b'show_name'], a[b'localtime']) < (b[b'show_name'], b[b'localtime'])),
+        'date': (lambda a, b: cmp(a[b'localtime'], b[b'localtime'])),
+        'network': (lambda a, b: cmp((a[b'network'], a[b'localtime']), (b[b'network'], b[b'localtime']))),
+        'show': (lambda a, b: cmp((a[b'show_name'], a[b'localtime']), (b[b'show_name'], b[b'localtime']))),
     }
 
     def __init__(self):
@@ -98,7 +98,6 @@ class ComingEpisodes(object):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
 
-        results.sort(key=itemgetter(b'localtime'))
         results.sort(ComingEpisodes.sorts[sort])
 
         if not group:
