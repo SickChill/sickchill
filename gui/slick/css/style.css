@@ -1386,7 +1386,7 @@ schedule.mako
 ========================================================================== */
 
 .key {
-    margin-bottom: 20px;
+    line-height: 30px;
 }
 
 .listing-key {

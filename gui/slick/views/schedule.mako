@@ -20,7 +20,7 @@
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
         <div class="col-md-12">
-            <div class="pull-right">
+            <div class="pull-right key">
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
