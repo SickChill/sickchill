@@ -38,7 +38,7 @@ class ComingEpisodes(object):
     """
     categories = ['later', 'missed', 'snatched', 'soon', 'today']
     sorts = {
-        'date': (lambda a, b: cmp(a[b'localtime'], b[b'localtime'])),
+        'date': (lambda a, b: cmp((a[b'snatchedsort'], a[b'localtime']), (b[b'snatchedsort'], b[b'localtime']))),
         'network': (lambda a, b: cmp((a[b'network'], a[b'localtime']), (b[b'network'], b[b'localtime']))),
         'show': (lambda a, b: cmp((a[b'show_name'], a[b'localtime']), (b[b'show_name'], b[b'localtime']))),
     }
@@ -97,6 +97,7 @@ class ComingEpisodes(object):
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
+            results[index][b'snatchedsort'] = (0 if (results[index][b'epstatus']) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST else 1)
 
         results.sort(ComingEpisodes.sorts[sort])
 
