@@ -96,11 +96,11 @@ class qbittorrentAPI(GenericClient):
     def _set_torrent_priority(self, result):
 
         self.url = self.host + 'command/decreasePrio'
-        if result.priority == 1:
-            self.url = self.host + 'command/increasePrio'
+        #if result.priority == 1:
+        #    self.url = self.host + 'command/increasePrio'
 
         data = {'hashes': result.hash.lower()}
-        return self._request(method='post', data=data, cookies=self.session.cookies)
+        return True
 
     def _set_torrent_pause(self, result):
 
