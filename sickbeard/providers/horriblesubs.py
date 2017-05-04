@@ -93,8 +93,13 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             label = torrent_row.find('td', class_='dl-label')
                             title = label.get_text(strip=True)
 
-                            torrent_link = torrent_row.find('td', class_='hs-torrent-link')
-                            download_url = torrent_link.find('a')['href'] if torrent_link else None
+                            link = torrent_row.find('td', class_='hs-torrent-link')
+                            download_url = link.find('a')['href'] if link and link.find('a') else None
+
+                            if not download_url:
+                                # fallback to magnet link
+                                link = torrent_row.find('td', class_='hs-magnet-link')
+                                download_url = link.find('a')['href'] if link and link.find('a') else None
 
                         except StandardError:
                             continue
