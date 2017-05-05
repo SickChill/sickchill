@@ -14,12 +14,13 @@ from collections import Mapping
 from markupsafe._compat import text_type, string_types, int_types, \
      unichr, iteritems, PY2
 
+__version__ = "1.0"
 
 __all__ = ['Markup', 'soft_unicode', 'escape', 'escape_silent']
 
 
 _striptags_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
-_entity_re = re.compile(r'&([^;]+);')
+_entity_re = re.compile(r'&([^& ;]+);')
 
 
 class Markup(text_type):
@@ -142,7 +143,8 @@ class Markup(text_type):
                     return unichr(int(name[1:]))
             except ValueError:
                 pass
-            return u''
+            # Don't modify unexpected input.
+            return m.group()
         return _entity_re.sub(handle_match, text_type(self))
 
     def striptags(self):
@@ -260,7 +262,12 @@ if hasattr(text_type, 'format'):
                                      'its __html__ method.')
                 rv = value.__html__()
             else:
-                rv = string.Formatter.format_field(self, value, format_spec)
+                # We need to make sure the format spec is unicode here as
+                # otherwise the wrong callback methods are invoked.  For
+                # instance a byte string there would invoke __str__ and
+                # not __unicode__.
+                rv = string.Formatter.format_field(
+                    self, value, text_type(format_spec))
             return text_type(self.escape(rv))
 
 

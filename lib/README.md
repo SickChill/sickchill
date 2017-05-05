@@ -14,6 +14,8 @@ pipdeptree -p PACKAGE
 Packages List
 ----------------
 ```
+Mako==1.0.6
+  - MarkupSafe [required: >=0.9.2, installed: 1.0]
 tornado==4.5.1
   - backports-abc [required: >=0.4, installed: 0.5]
   - backports.ssl-match-hostname [required: Any, installed: 3.5.0.1]
