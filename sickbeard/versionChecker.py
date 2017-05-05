@@ -437,7 +437,7 @@ class GitUpdateManager(UpdateManager):
         cmd = git_path + ' ' + args
 
         try:
-            logger.log("Executing " + cmd + " with your shell in " + sickbeard.PROG_DIR, logger.DEBUG)
+            logger.log("Executing {0} with your shell in {1}".format(cmd, sickbeard.PROG_DIR), logger.DEBUG)
             p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                  shell=True, cwd=sickbeard.PROG_DIR)
             output, err = p.communicate()
@@ -447,27 +447,25 @@ class GitUpdateManager(UpdateManager):
                 output = output.strip()
 
         except OSError:
-            logger.log("Command " + cmd + " didn't work")
+            logger.log("Command {} didn't work".format(cmd))
             exit_status = 1
 
         if exit_status == 0:
-            logger.log(cmd + " : returned successful", logger.DEBUG)
-            exit_status = 0
+            logger.log("{} : returned successful".format(cmd), logger.DEBUG)
 
         elif exit_status == 1:
             if 'stash' in output:
                 logger.log("Please enable 'git reset' in settings or stash your changes in local files", logger.WARNING)
             elif log_errors:
-                logger.log(cmd + " returned : " + str(output), logger.ERROR)
-            exit_status = 1
-
-        elif log_errors and exit_status == 128 or 'fatal:' in output or err:
-            logger.log(cmd + " returned : " + str(output), logger.WARNING)
-            exit_status = 128
+                logger.log("{0} returned : {1}".format(cmd, str(output)), logger.ERROR)
 
         elif log_errors:
-            logger.log(cmd + " returned : " + str(output) + ", treat as error for now", logger.ERROR)
-            exit_status = 1
+            if exit_status in (127, 128) or 'fatal:' in output:
+                logger.log("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output) or str(err)), logger.WARNING)
+            else:
+                logger.log("{0} returned code {1}, treating as error : {2}"
+                           .format(cmd, exit_status, str(output) or str(err)), logger.ERROR)
+                exit_status = 1
 
         return output, err, exit_status
 
