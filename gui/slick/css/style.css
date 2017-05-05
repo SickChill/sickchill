@@ -3648,6 +3648,10 @@ input.tablesorter-filter.disabled {
     .tvshowImg {
         max-height: 269px;
     }
+
+    .show-info-container {
+        display: table;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -3661,6 +3665,10 @@ input.tablesorter-filter.disabled {
 
     .tvshowImg {
         max-height: 269px;
+    }
+
+    .show-info-container {
+        display: table;
     }
 }
 
