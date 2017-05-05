@@ -24,7 +24,9 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % if sickbeard.COMING_EPS_DISPLAY_SNATCHED:
+                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
