@@ -565,12 +565,13 @@ class GitUpdateManager(UpdateManager):
             else:
                 url = base_url + '/commits/'
 
-            newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a> '
-            newest_text += " (you're " + str(self._num_commits_behind) + " commit"
-            if self._num_commits_behind > 1:
-                newest_text += 's'
-            newest_text += ' behind)' + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
             newest_tag = 'newer_version_available'
+            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
+                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
+                            'newer version available</a> {commits_behind} &mdash; '
+                            '<a href="{update_url}">Update Now</a>').format(
+                compare_url=url, commits_behind=commits_behind, update_url=self.get_update_url())
 
         else:
             return
@@ -768,12 +769,13 @@ class SourceUpdateManager(UpdateManager):
             else:
                 url = base_url + '/commits/'
 
-            newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a>'
-            newest_text += " (you're " + str(self._num_commits_behind) + " commit"
-            if self._num_commits_behind > 1:
-                newest_text += "s"
-            newest_text += " behind)" + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
             newest_tag = 'newer_version_available'
+            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
+                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
+                            'newer version available</a> (you\'re {commits_behind} behind) &mdash; '
+                            '<a href="{update_url}">Update Now</a>').format(
+                compare_url=url, commits_behind=commits_behind, update_url=self.get_update_url())
         else:
             return
 

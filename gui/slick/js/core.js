@@ -4048,14 +4048,15 @@ var UTIL = {
 };
 
 // Handle js-gettext + load javascript functions
-var gt = null;
+var gt = null, _n = null;
 $.getJSON(srRoot + '/ui/locale.json', function(data) {
     if (data !== undefined) {
         gt = new Gettext(data.messages); // jshint ignore:line
     } else {
         gt = new Gettext(); // jshint ignore:line
     }
-    _ = function(str) { return gt.gettext(str); }; // Create shortcut
+    _ = function(str) { return gt.gettext(str); }; // Shortcut for normal gettext
+    _n = function(str, pluralStr, num) { return gt.ngettext(str, pluralStr, num); }; // Shortcut for plural gettext
 
     if (navigator.userAgent.indexOf('PhantomJS') === -1) {
         $(document).ready(UTIL.init);
