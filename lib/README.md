@@ -17,6 +17,10 @@ Add the output to the list below to the appropriate location (based on the top-l
 Packages List
 =========
 ```
+beautifulsoup4==4.5.3
+html5lib==0.999999999
+  - six [required: Any, installed: 1.10.0]
+  - webencodings [required: Any, installed: 0.5.1]
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
 tornado==4.5.1
