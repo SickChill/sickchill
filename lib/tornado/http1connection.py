@@ -19,7 +19,7 @@
 .. versionadded:: 4.0
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import re
 
@@ -257,6 +257,7 @@ class HTTP1Connection(httputil.HTTPConnection):
             if need_delegate_close:
                 with _ExceptionLoggingContext(app_log):
                     delegate.on_connection_close()
+            header_future = None
             self._clear_callbacks()
         raise gen.Return(True)
 
@@ -489,7 +490,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         elif ("Content-Length" in headers or
               headers.get("Transfer-Encoding", "").lower() == "chunked" or
               getattr(start_line, 'method', None) in ("HEAD", "GET")):
-            # start_line may be a request or reponse start line; only
+            # start_line may be a request or response start line; only
             # the former has a method attribute.
             return connection_header == "keep-alive"
         return False
@@ -565,7 +566,7 @@ class HTTP1Connection(httputil.HTTPConnection):
 
         if content_length is not None:
             return self._read_fixed_body(content_length, delegate)
-        if headers.get("Transfer-Encoding") == "chunked":
+        if headers.get("Transfer-Encoding", "").lower() == "chunked":
             return self._read_chunked_body(delegate)
         if self.is_client:
             return self._read_body_until_close(delegate)

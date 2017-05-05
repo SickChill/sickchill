@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 import gc
 import locale  # system locale module, not tornado.locale
 import logging
@@ -43,6 +43,7 @@ TEST_MODULES = [
     'tornado.test.options_test',
     'tornado.test.process_test',
     'tornado.test.queues_test',
+    'tornado.test.routing_test',
     'tornado.test.simple_httpclient_test',
     'tornado.test.stack_context_test',
     'tornado.test.tcpclient_test',
@@ -125,6 +126,9 @@ def main():
     # Silence the warning until we can drop 3.5.[01].
     warnings.filterwarnings("ignore", category=PendingDeprecationWarning,
                             message=".*legacy __aiter__ protocol")
+    # 3.5.2's PendingDeprecationWarning became a DeprecationWarning in 3.6.
+    warnings.filterwarnings("ignore", category=DeprecationWarning,
+                            message=".*legacy __aiter__ protocol")
 
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
@@ -180,6 +184,7 @@ def main():
             logging.error("logged %d warnings and %d errors",
                           log_counter.warning_count, log_counter.error_count)
             sys.exit(1)
+
 
 if __name__ == '__main__':
     main()
