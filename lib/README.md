@@ -1,18 +1,21 @@
-SickRage vendor folder
+Libraries directory
 ======================
 
-Vendored python packages and custom libraries go in here.<br/>
-Keep this list updated with installed versions and their dependencies,
+Vendored python packages and custom libraries go in this folder.
+
+Keep this list updated with installed versions and their dependencies,<br/>
 and ordered by the top-level library name.
 
-When adding a new package, please install locally using `virtualenv` and then use `pipdeptree`
-```
-pipdeptree -p PACKAGE
-```
+Adding a new package
+---------
+The best practice is to install the package within a Python **virtual environment** (using `virtualenv`),<br/>
+then use `pipdeptree -p PACKAGE` to get a list of the package (+dependencies) versions.<br/>
+Add the output to the list below to the appropriate location (based on the top-level package name)
 
+***
 
 Packages List
-----------------
+=========
 ```
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
