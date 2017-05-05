@@ -41,7 +41,7 @@
                                         <span class="component-title">${_('Show name')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="text" id="showName" value="${default_show_name}"
+                                        <input type="text" id="show-name" value="${default_show_name}"
                                                placeholder="Show name"
                                                class="form-control form-control-inline input-sm input350"
                                                autocapitalize="off"/>
@@ -88,7 +88,7 @@
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">
-                                            <input class="btn btn-inline" type="button" id="searchButton" value="${_('Search')}"/>
+                                            <input class="btn btn-inline" type="button" id="search-button" value="${_('Search')}"/>
                                         </span>
                                     </div>
                                 </div>
@@ -101,7 +101,8 @@
                     <div class="row stepDiv">
                         <div class="col-md-12">
                             % if provided_show_dir:
-                                <p>${_('Pre-chosen Destination Folder')}: <b>${provided_show_dir}</b></p>
+                                <p>${_('Pre-chosen Destination Folder')}:</p>
+                                <b style="font-size: 15px;">${provided_show_dir}</b>
                                 <br>
                                 <input type="hidden" id="fullShowPath" name="fullShowPath"
                                        value="${provided_show_dir}"/>
@@ -151,12 +152,10 @@
         <br/>
         <div class="row">
             <div class="col-md-12">
-                <div style="text-align: center;">
-                    <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled"/>
-                    % if provided_show_dir:
-                        <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}"/>
-                    % endif
-                </div>
+                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled"/>
+                % if provided_show_dir:
+                    <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}"/>
+                % endif
             </div>
         </div>
     </div>

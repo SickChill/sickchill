@@ -3735,11 +3735,11 @@ var SICKRAGE = {
 
             var searchRequestXhr = null;
             function searchIndexers() {
-                if (!$('#showName').val()) { return; }
+                if (!$('#show-name').val()) { return; }
 
                 if (searchRequestXhr) { searchRequestXhr.abort(); }
 
-                var searchingFor = $('#showName').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+                var searchingFor = $('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
                 $('#searchResults').empty().html(
                     '<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
                     _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor)
@@ -3748,7 +3748,7 @@ var SICKRAGE = {
                 searchRequestXhr = $.ajax({
                     url: srRoot + '/addShows/searchIndexersForShowName',
                     data: {
-                        'search_term': $('#showName').val().trim(),
+                        'search_term': $('#show-name').val().trim(),
                         'lang': $('#indexerLangSelect').val(),
                         'indexer': $('#providedIndexer').val()
                     },
@@ -3801,11 +3801,7 @@ var SICKRAGE = {
                 });
             }
 
-            $('#searchButton').click(searchIndexers);
-
-            if ($('#showName').val()) {
-                $('#search-button').click();
-            }
+            $('#search-button').click(searchIndexers);
 
             $('#addShowButton').click(function () {
                 // if they haven't picked a show don't let them submit
@@ -3826,11 +3822,15 @@ var SICKRAGE = {
             $('#rootDirText').change(updateSampleText);
             $('#searchResults').on('change', '.whichSeries', updateSampleText);
 
-            $('#showName').focus().keyup(function(event) {
+            $('#show-name').focus().keyup(function(event) {
                 if (event.keyCode === 13) { // Enter
-                    $('#searchButton').click();
+                    $('#search-button').click();
                 }
             });
+
+            if ($('#show-name').val()) {
+                $('#search-button').click();
+            }
 
             updateSampleText();
         },
