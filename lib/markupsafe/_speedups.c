@@ -29,7 +29,7 @@ static int
 init_constants(void)
 {
 	PyObject *module;
-	/* happing of characters to replace */
+	/* mapping of characters to replace */
 	escaped_chars_repl['"'] = UNICHR("&#34;");
 	escaped_chars_repl['\''] = UNICHR("&#39;");
 	escaped_chars_repl['&'] = UNICHR("&amp;");
@@ -41,7 +41,7 @@ init_constants(void)
 	escaped_chars_delta_len['"'] = escaped_chars_delta_len['\''] = \
 		escaped_chars_delta_len['&'] = 4;
 	escaped_chars_delta_len['<'] = escaped_chars_delta_len['>'] = 3;
-	
+
 	/* import markup type so that we can mark the return value */
 	module = PyImport_ImportModule("markupsafe");
 	if (!module)
@@ -94,7 +94,7 @@ escape_unicode(PyUnicodeObject *in)
 			}
 			++next_escp;
 		}
-		
+
 		if (next_escp > inp) {
 			/* copy unescaped chars between inp and next_escp */
 			Py_UNICODE_COPY(outp, inp, next_escp-inp);

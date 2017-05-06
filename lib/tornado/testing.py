@@ -2,7 +2,7 @@
 """Support classes for automated testing.
 
 * `AsyncTestCase` and `AsyncHTTPTestCase`:  Subclasses of unittest.TestCase
-  with additional support for testing asynchronous (`.IOLoop` based) code.
+  with additional support for testing asynchronous (`.IOLoop`-based) code.
 
 * `ExpectLog` and `LogTrapTestCase`: Make test logs less spammy.
 
@@ -10,7 +10,7 @@
   for the tornado.autoreload module to rerun the tests when code changes.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 try:
     from tornado import gen
@@ -127,7 +127,7 @@ class _TestMethodWrapper(object):
     method yields it must use a decorator to consume the generator),
     but will also detect other kinds of return values (these are not
     necessarily errors, but we alert anyway since there is no good
-    reason to return a value from a test.
+    reason to return a value from a test).
     """
     def __init__(self, orig_method):
         self.orig_method = orig_method
@@ -621,7 +621,7 @@ class ExpectLog(logging.Filter):
             an empty string to watch the root logger.
         :param regex: Regular expression to match.  Any log entries on
             the specified logger that match this regex will be suppressed.
-        :param required: If true, an exeption will be raised if the end of
+        :param required: If true, an exception will be raised if the end of
             the ``with`` statement is reached without matching any log entries.
         """
         if isinstance(logger, basestring_type):
@@ -656,7 +656,9 @@ def main(**kwargs):
 
     This test runner is essentially equivalent to `unittest.main` from
     the standard library, but adds support for tornado-style option
-    parsing and log formatting.
+    parsing and log formatting. It is *not* necessary to use this
+    `main` function to run tests using `AsyncTestCase`; these tests
+    are self-contained and can run with any test runner.
 
     The easiest way to run a test is via the command line::
 
@@ -734,6 +736,7 @@ def main(**kwargs):
         else:
             gen_log.error('FAIL')
         raise
+
 
 if __name__ == '__main__':
     main()

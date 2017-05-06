@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 from tornado.concurrent import Future
 from tornado import gen
 from tornado import netutil
@@ -602,6 +602,17 @@ class TestIOStreamMixin(object):
             server.close()
             client.close()
 
+    def test_write_memoryview(self):
+        server, client = self.make_iostream_pair()
+        try:
+            client.read_bytes(4, self.stop)
+            server.write(memoryview(b"hello"))
+            data = self.wait()
+            self.assertEqual(data, b"hell")
+        finally:
+            server.close()
+            client.close()
+
     def test_read_bytes_partial(self):
         server, client = self.make_iostream_pair()
         try:
@@ -793,6 +804,40 @@ class TestIOStreamMixin(object):
             for i in range(9):
                 server.read_bytes(MB, self.stop)
                 self.wait()
+        finally:
+            server.close()
+            client.close()
+
+    def test_future_write(self):
+        """
+        Test that write() Futures are never orphaned.
+        """
+        # Run concurrent writers that will write enough bytes so as to
+        # clog the socket buffer and accumulate bytes in our write buffer.
+        m, n = 10000, 1000
+        nproducers = 10
+        total_bytes = m * n * nproducers
+        server, client = self.make_iostream_pair(max_buffer_size=total_bytes)
+
+        @gen.coroutine
+        def produce():
+            data = b'x' * m
+            for i in range(n):
+                yield server.write(data)
+
+        @gen.coroutine
+        def consume():
+            nread = 0
+            while nread < total_bytes:
+                res = yield client.read_bytes(m)
+                nread += len(res)
+
+        @gen.coroutine
+        def main():
+            yield [produce() for i in range(nproducers)] + [consume()]
+
+        try:
+            self.io_loop.run_sync(main)
         finally:
             server.close()
             client.close()

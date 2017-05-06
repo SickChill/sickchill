@@ -10,9 +10,10 @@ interface of its subclasses, including `.AsyncHTTPClient`, `.IOLoop`,
 and `.Resolver`.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import array
+import atexit
 import os
 import re
 import sys
@@ -64,6 +65,23 @@ else:
         _BaseString = str
     else:
         _BaseString = Union[bytes, unicode_type]
+
+
+try:
+    from sys import is_finalizing
+except ImportError:
+    # Emulate it
+    def _get_emulated_is_finalizing():
+        L = []
+        atexit.register(lambda: L.append(None))
+
+        def is_finalizing():
+            # Not referencing any globals here
+            return L != []
+
+        return is_finalizing
+
+    is_finalizing = _get_emulated_is_finalizing()
 
 
 class ObjectDict(_ObjectDictBase):
@@ -165,30 +183,26 @@ def raise_exc_info(exc_info):
 
 def exec_in(code, glob, loc=None):
     # type: (Any, Dict[str, Any], Optional[Mapping[str, Any]]) -> Any
-    pass
+    if isinstance(code, basestring_type):
+        # exec(string) inherits the caller's future imports; compile
+        # the string first to prevent that.
+        code = compile(code, '<string>', 'exec', dont_inherit=True)
+    exec(code, glob, loc)
 
 
 if PY3:
     exec("""
 def raise_exc_info(exc_info):
-    raise exc_info[1].with_traceback(exc_info[2])
+    try:
+        raise exc_info[1].with_traceback(exc_info[2])
+    finally:
+        exc_info = None
 
-def exec_in(code, glob, loc=None):
-    if isinstance(code, str):
-        code = compile(code, '<string>', 'exec', dont_inherit=True)
-    exec(code, glob, loc)
 """)
 else:
     exec("""
 def raise_exc_info(exc_info):
     raise exc_info[0], exc_info[1], exc_info[2]
-
-def exec_in(code, glob, loc=None):
-    if isinstance(code, basestring):
-        # exec(string) inherits the caller's future imports; compile
-        # the string first to prevent that.
-        code = compile(code, '<string>', 'exec', dont_inherit=True)
-    exec code in glob, loc
 """)
 
 
@@ -221,6 +235,7 @@ def _re_unescape_replacement(match):
     if group[0] in _alphanum:
         raise ValueError("cannot unescape '\\\\%s'" % group[0])
     return group
+
 
 _re_unescape_pattern = re.compile(r'\\(.)', re.DOTALL)
 
@@ -439,6 +454,7 @@ def _websocket_mask_python(mask, data):
         return unmasked_arr.tobytes()
     else:
         return unmasked_arr.tostring()
+
 
 if (os.environ.get('TORNADO_NO_EXTENSION') or
         os.environ.get('TORNADO_EXTENSION') == '0'):

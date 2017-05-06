@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 from tornado import gen
 from tornado.log import app_log
@@ -283,6 +283,7 @@ class StackContextTest(AsyncTestCase):
             StackContext(functools.partial(self.context, 'c1')),
             f1)
         self.assertEqual(self.active_contexts, [])
+
 
 if __name__ == '__main__':
     unittest.main()
