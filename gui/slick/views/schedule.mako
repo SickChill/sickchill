@@ -8,7 +8,7 @@
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
-    
+
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
 <%block name="scripts">
@@ -24,7 +24,9 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % if sickbeard.COMING_EPS_DISPLAY_SNATCHED:
+                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
@@ -66,7 +68,16 @@
                     </select>
                     &nbsp;
                 </label>
-
+                % if layout != 'calendar':
+                <label>
+                    <span>${_('View Snatched')}:</span>
+                    <select name="viewsnatched" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View snatched">
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                    </select>
+                    &nbsp;
+                </label>
+                % endif
                 <label>
                     <span>${_('Layout')}:</span>
                     <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Layout">
@@ -114,6 +125,9 @@
                                     snatched_status = int(cur_result[b'epstatus']) in SNATCHED
 
                                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                                        continue
+
+                                    if snatched_status and not sickbeard.COMING_EPS_DISPLAY_SNATCHED:
                                         continue
 
                                     cur_ep_airdate = cur_result[b'localtime'].date()
@@ -303,7 +317,7 @@
                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue
 
-                    if cur_result[b'location'] and snatched_status:
+                    if snatched_status and (cur_result[b'location'] or not sickbeard.COMING_EPS_DISPLAY_SNATCHED):
                         continue
 
                     run_time = cur_result[b'runtime']
