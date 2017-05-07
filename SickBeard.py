@@ -456,7 +456,7 @@ class SickRage(object):
             # shutdown web server
             if self.web_server:
                 logger.log('Shutting down Tornado')
-                self.web_server.shutDown()
+                self.web_server.shutdown()
 
                 try:
                     self.web_server.join(10)
@@ -497,8 +497,8 @@ class SickRage(object):
     def force_update():
         """
         Forces SickRage to update to the latest version and exit.
-        
-        :return: True if successful, False otherwise 
+
+        :return: True if successful, False otherwise
         """
 
         def update_with_git():
