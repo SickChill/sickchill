@@ -224,15 +224,17 @@ class MainSanityCheck(db.DBSanityCheck):
     def fix_unaired_episodes(self):
 
         curDate = datetime.date.today()
+        
+        if curDate.year >= 2017:
 
-        sql_results = self.connection.select(
-            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
-            [curDate.toordinal(), common.SKIPPED, common.WANTED])
+            sql_results = self.connection.select(
+                "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
+                [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
-        for cur_unaired in sql_results:
-            logger.log("Fixing unaired episode status for episode_id: {0}".format(cur_unaired[b"episode_id"]))
-            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
-                                   [common.UNAIRED, cur_unaired[b"episode_id"]])
+            for cur_unaired in sql_results:
+                logger.log("Fixing unaired episode status for episode_id: {0}".format(cur_unaired[b"episode_id"]))
+                self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
+                                       [common.UNAIRED, cur_unaired[b"episode_id"]])
 
     def fix_tvrage_show_statues(self):
         status_map = {
