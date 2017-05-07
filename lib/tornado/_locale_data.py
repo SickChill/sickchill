@@ -17,13 +17,12 @@
 
 """Data used by the tornado.locale module."""
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 LOCALE_NAMES = {
     "af_ZA": {"name_en": u"Afrikaans", "name": u"Afrikaans"},
     "am_ET": {"name_en": u"Amharic", "name": u"አማርኛ"},
     "ar_AR": {"name_en": u"Arabic", "name": u"العربية"},
-    "ar_SA": {"name_en": u"Arabic (Saudi Arabia)", "name": u"(العربية (المملكة العربية السعودية"},
     "bg_BG": {"name_en": u"Bulgarian", "name": u"Български"},
     "bn_IN": {"name_en": u"Bengali", "name": u"বাংলা"},
     "bs_BA": {"name_en": u"Bosnian", "name": u"Bosanski"},
@@ -59,7 +58,6 @@ LOCALE_NAMES = {
     "mk_MK": {"name_en": u"Macedonian", "name": u"Македонски"},
     "ml_IN": {"name_en": u"Malayalam", "name": u"മലയാളം"},
     "ms_MY": {"name_en": u"Malay", "name": u"Bahasa Melayu"},
-    "no_NO": {"name_en": u"Norwegian", "name": u"Norsk"},
     "nb_NO": {"name_en": u"Norwegian (bokmal)", "name": u"Norsk (bokmål)"},
     "nl_NL": {"name_en": u"Dutch", "name": u"Nederlands"},
     "nn_NO": {"name_en": u"Norwegian (nynorsk)", "name": u"Norsk (nynorsk)"},

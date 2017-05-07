@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 from wsgiref.validate import validator
 
 from tornado.escape import json_decode
@@ -83,6 +83,8 @@ def wrap_web_tests_application():
                 return WSGIContainer(validator(self.app))
         result["WSGIApplication_" + cls.__name__] = WSGIApplicationWrappedTest
     return result
+
+
 globals().update(wrap_web_tests_application())
 
 
@@ -96,4 +98,6 @@ def wrap_web_tests_adapter():
                 return WSGIContainer(validator(WSGIAdapter(self.app)))
         result["WSGIAdapter_" + cls.__name__] = WSGIAdapterWrappedTest
     return result
+
+
 globals().update(wrap_web_tests_adapter())

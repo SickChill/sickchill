@@ -16,12 +16,12 @@
 
 """Posix implementations of platform-specific functionality."""
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import fcntl
 import os
 
-from tornado.platform import interface
+from tornado.platform import common, interface
 
 
 def set_close_exec(fd):
@@ -53,7 +53,7 @@ class Waker(interface.Waker):
     def wake(self):
         try:
             self.writer.write(b"x")
-        except IOError:
+        except (IOError, ValueError):
             pass
 
     def consume(self):
@@ -67,4 +67,4 @@ class Waker(interface.Waker):
 
     def close(self):
         self.reader.close()
-        self.writer.close()
+        common.try_close(self.writer)
