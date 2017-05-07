@@ -107,7 +107,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         if not all([title, download_url]):
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
+                        item = {'title': '[HorribleSubs] ' + title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
                                 'hash': ''}
 
                         if mode != 'RSS':
