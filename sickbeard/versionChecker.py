@@ -461,10 +461,10 @@ class GitUpdateManager(UpdateManager):
 
         elif log_errors:
             if exit_status in (127, 128) or 'fatal:' in output:
-                logger.log("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output) or str(err)), logger.WARNING)
+                logger.log("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output or err)), logger.WARNING)
             else:
                 logger.log("{0} returned code {1}, treating as error : {2}"
-                           .format(cmd, exit_status, str(output) or str(err)), logger.ERROR)
+                           .format(cmd, exit_status, str(output or err)), logger.ERROR)
                 exit_status = 1
 
         return output, err, exit_status
