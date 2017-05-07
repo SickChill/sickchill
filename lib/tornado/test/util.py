@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import os
 import platform
@@ -76,3 +76,21 @@ def exec_test(caller_globals, caller_locals, s):
     local_namespace = {}
     exec(textwrap.dedent(s), global_namespace, local_namespace)
     return local_namespace
+
+
+def is_coverage_running():
+    """Return whether coverage is currently running.
+    """
+    if 'coverage' not in sys.modules:
+        return False
+    tracer = sys.gettrace()
+    if tracer is None:
+        return False
+    try:
+        mod = tracer.__module__
+    except AttributeError:
+        try:
+            mod = tracer.__class__.__module__
+        except AttributeError:
+            return False
+    return mod.startswith('coverage')

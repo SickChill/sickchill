@@ -16,7 +16,7 @@
 
 """Miscellaneous network utility code."""
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import errno
 import os
@@ -95,6 +95,9 @@ else:
 # leading to deadlock. Avoid it by caching the idna encoder on the main
 # thread now.
 u'foo'.encode('idna')
+
+# For undiagnosed reasons, 'latin1' codec may also need to be preloaded.
+u'foo'.encode('latin1')
 
 # These errnos indicate that a non-blocking operation must be retried
 # at a later time.  On most platforms they're the same value, but on
@@ -196,6 +199,7 @@ def bind_sockets(port, address=None, family=socket.AF_UNSPEC,
         sock.listen(backlog)
         sockets.append(sock)
     return sockets
+
 
 if hasattr(socket, 'AF_UNIX'):
     def bind_unix_socket(file, mode=0o600, backlog=_DEFAULT_BACKLOG):
