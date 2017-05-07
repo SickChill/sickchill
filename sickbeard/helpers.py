@@ -1839,24 +1839,15 @@ def recursive_listdir(path):
 MESSAGE_COUNTER = 0
 
 
-def add_site_message(message, level='danger'):
+def add_site_message(message, tag=None, level='danger'):
     with sickbeard.MESSAGES_LOCK:
-        to_add = dict(level=level, message=message)
+        to_add = dict(level=level, tag=tag, message=message)
 
-        basic_update_url = sickbeard.versionChecker.UpdateManager.get_update_url().split('?')[0]
-        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
-            if basic_update_url in existing['message'] and basic_update_url in message:
-                sickbeard.SITE_MESSAGES[index] = to_add
-                return
-
-            if message.endswith('Please use \'master\' unless specifically asked') and \
-                    existing['message'].endswith('Please use \'master\' unless specifically asked'):
-                sickbeard.SITE_MESSAGES[index] = to_add
-                return
-
-            if message.startswith('No NZB/Torrent providers found or enabled for') and \
-                    existing['message'].startswith('No NZB/Torrent providers found or enabled for'):
-                sickbeard.SITE_MESSAGES[index] = to_add
+        if tag:  # prevent duplicate messages of the same type
+            # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
+            existing = next((x for x, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag), None)
+            if existing:
+                sickbeard.SITE_MESSAGES[existing] = to_add
                 return
 
         global MESSAGE_COUNTER
@@ -1864,22 +1855,14 @@ def add_site_message(message, level='danger'):
         sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
 
 
-def remove_site_message(begins='', ends='', contains='', key=None):
+def remove_site_message(key=None, tag=None):
     with sickbeard.MESSAGES_LOCK:
         if key is not None and int(key) in sickbeard.SITE_MESSAGES:
             del sickbeard.SITE_MESSAGES[int(key)]
-
-        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES.copy()):
-            checks = []
-            if begins and isinstance(begins, six.string_types):
-                checks.append(existing['message'].startswith(begins))
-            if ends and isinstance(ends, six.string_types):
-                checks.append(existing['message'].endsswith(ends))
-            if contains and isinstance(ends, six.string_types):
-                checks.append(contains in existing['message'])
-
-            if all(checks):
-                del sickbeard.SITE_MESSAGES[index]
+        elif tag is not None:
+            found = [idx for idx, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag]
+            for key in found:
+                del sickbeard.SITE_MESSAGES[key]
 
 
 def sortable_name(name):

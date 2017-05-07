@@ -50,10 +50,11 @@ function notifyModal(message){
     $('#site-notification-modal').modal();
 }
 
-function addSiteMessage(level, message){
+function addSiteMessage(level, tag, message){
     level = level || 'danger';
+    tag = tag || '';
     message = message || '';
-    $.post(srRoot + '/ui/set_site_message', {level: level, message: message}, function (siteMessages) {
+    $.post(srRoot + '/ui/set_site_message', {level: level, tag: tag, message: message}, function (siteMessages) {
         var messagesDiv = $('#site-messages');
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
@@ -4047,14 +4048,15 @@ var UTIL = {
 };
 
 // Handle js-gettext + load javascript functions
-var gt = null;
+var gt = null, _n = null;
 $.getJSON(srRoot + '/ui/locale.json', function(data) {
     if (data !== undefined) {
         gt = new Gettext(data.messages); // jshint ignore:line
     } else {
         gt = new Gettext(); // jshint ignore:line
     }
-    _ = function(str) { return gt.gettext(str); }; // Create shortcut
+    _ = function(str) { return gt.gettext(str); }; // Shortcut for normal gettext
+    _n = function(str, pluralStr, num) { return gt.ngettext(str, pluralStr, num); }; // Shortcut for plural gettext
 
     if (navigator.userAgent.indexOf('PhantomJS') === -1) {
         $(document).ready(UTIL.init);

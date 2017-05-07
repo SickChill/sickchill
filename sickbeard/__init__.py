@@ -68,7 +68,7 @@ import requests
 
 from tornado.locale import load_gettext_translations
 
-gettext.install('messages', unicode=1, codeset='UTF-8')
+gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 # Some strings come from metadata or libraries or 3rd party sites,
 # So we need to pre-define them to get translations for them
@@ -870,9 +870,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
 
         if GUI_LANG:
-            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
         else:
-            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8')
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
         load_gettext_translations(LOCALE_DIR, 'messages')
 

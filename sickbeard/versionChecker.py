@@ -371,11 +371,6 @@ class GitUpdateManager(UpdateManager):
     def get_num_commits_behind(self):
         return self._num_commits_behind
 
-    @staticmethod
-    def _git_error():
-        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
-        helpers.add_site_message(error_message, 'danger')
-
     def _find_working_git(self):
         test_cmd = 'version'
 
@@ -419,9 +414,10 @@ class GitUpdateManager(UpdateManager):
                     logger.log("Not using: " + cur_git, logger.DEBUG)
 
         # Still haven't found a working git
-        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
-        helpers.add_site_message(error_message, 'danger')
-
+        helpers.add_site_message(
+            _('Unable to find your git executable - Shutdown SickRage and EITHER set git_path in '
+              'your config.ini OR delete your .git folder and run from source to enable updates.'),
+            tag='unable_to_find_git', level='danger')
         return None
 
     @staticmethod
@@ -552,12 +548,14 @@ class GitUpdateManager(UpdateManager):
                 return
 
         logger.log("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}, num_commits_ahead = {3}".format
-                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead), logger.DEBUG)
+                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead),
+                   logger.DEBUG)
 
     def set_newest_text(self):
         if self._num_commits_ahead:
-            logger.log("Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.WARNING)
-            newest_text = "Local branch is ahead of " + self.branch + ". Automatic update not possible."
+            newest_tag = 'local_branch_ahead'
+            newest_text = 'Local branch is ahead of {branch}. Automatic update not possible.'.format(branch=self.branch)
+            logger.log(newest_text, logger.WARNING)
 
         elif self._num_commits_behind > 0:
 
@@ -567,16 +565,18 @@ class GitUpdateManager(UpdateManager):
             else:
                 url = base_url + '/commits/'
 
-            newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a> '
-            newest_text += " (you're " + str(self._num_commits_behind) + " commit"
-            if self._num_commits_behind > 1:
-                newest_text += 's'
-            newest_text += ' behind)' + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
+            newest_tag = 'newer_version_available'
+            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
+                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
+                            'newer version available</a> {commits_behind} &mdash; '
+                            '<a href="{update_url}">Update Now</a>').format(
+                compare_url=url, commits_behind=commits_behind, update_url=self.get_update_url())
 
         else:
             return
 
-        helpers.add_site_message(newest_text, 'success')
+        helpers.add_site_message(newest_text, tag=newest_tag, level='success')
 
     def need_update(self):
 
@@ -750,15 +750,17 @@ class SourceUpdateManager(UpdateManager):
                 # when _cur_commit_hash doesn't match anything _num_commits_behind == 100
                 self._num_commits_behind += 1
 
-        logger.log("cur_commit = " + str(self._cur_commit_hash) + ", newest_commit = " + str(self._newest_commit_hash) +
-                   ", num_commits_behind = " + str(self._num_commits_behind), logger.DEBUG)
+        logger.log("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}".format
+                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind), logger.DEBUG)
 
     def set_newest_text(self):
         if not self._cur_commit_hash:
             logger.log("Unknown current version number, don't know if we should update or not", logger.DEBUG)
 
-            newest_text = "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set."
-            newest_text += "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
+            newest_tag = 'unknown_current_version'
+            newest_text = _('Unknown current version number: '
+                            'If you\'ve never used the SickRage upgrade system before then current version is not set. '
+                            '&mdash; <a href="{update_url}">Update Now</a>').format(update_url=self.get_update_url())
 
         elif self._num_commits_behind > 0:
             base_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
@@ -767,15 +769,17 @@ class SourceUpdateManager(UpdateManager):
             else:
                 url = base_url + '/commits/'
 
-            newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a>'
-            newest_text += " (you're " + str(self._num_commits_behind) + " commit"
-            if self._num_commits_behind > 1:
-                newest_text += "s"
-            newest_text += " behind)" + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
+            newest_tag = 'newer_version_available'
+            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
+                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
+                            'newer version available</a> (you\'re {commits_behind} behind) &mdash; '
+                            '<a href="{update_url}">Update Now</a>').format(
+                compare_url=url, commits_behind=commits_behind, update_url=self.get_update_url())
         else:
             return
 
-        helpers.add_site_message(newest_text, 'success')
+        helpers.add_site_message(newest_text, tag=newest_tag, level='success')
 
     def update(self):  # pylint: disable=too-many-statements
         """

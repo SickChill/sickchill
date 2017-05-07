@@ -632,14 +632,15 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
-    def set_site_message(self, message, level):
+    def set_site_message(self, message, tag, level):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if message:
-            helpers.add_site_message(message, level)
+            helpers.add_site_message(message, tag=tag, level=level)
         else:
             if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.get_current_user():
-                message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
-                helpers.add_site_message(message, 'danger')
+                message = _('You\'re using the {branch} branch. '
+                            'Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                helpers.add_site_message(message, tag='not_using_master_branch', level='danger')
 
         return sickbeard.SITE_MESSAGES
 
@@ -3949,10 +3950,10 @@ class ConfigGeneral(Config):
         if gui_language != sickbeard.GUI_LANG:
             if gui_language:
                 # Selected language
-                gettext.translation('messages', sickbeard.LOCALE_DIR, languages=[gui_language], codeset='UTF-8').install(unicode=1)
+                gettext.translation('messages', sickbeard.LOCALE_DIR, languages=[gui_language], codeset='UTF-8').install(unicode=1, names=["ngettext"])
             else:
                 # System default language
-                gettext.install('messages', sickbeard.LOCALE_DIR, unicode=1, codeset='UTF-8')
+                gettext.install('messages', sickbeard.LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
             sickbeard.GUI_LANG = gui_language
 
