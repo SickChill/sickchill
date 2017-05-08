@@ -49,6 +49,8 @@ class Torrent9Provider(TorrentProvider):
             items = []
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
+                if mode == 'Season':
+                    search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
                 if mode != 'RSS':
                     logger.log("Search string: {0}".format
