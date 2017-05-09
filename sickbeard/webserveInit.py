@@ -83,27 +83,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             login_url='{0}/login/'.format(self.options['web_root']),
         )
 
-        # Main Handlers
-        self.app.add_handlers('.*$', [
-            # webapi handler
-            (r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler),
-
-            # webapi key retrieval
-            (r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler),
-
-            # webapi builder redirect
-            (r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
-
-            # webui login/logout handlers
-            (r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler),
-            (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
-
-            # Web calendar handler (Needed because option Unprotected calendar)
-            (r'{0}/calendar'.format(self.options['web_root']), CalendarHandler),
-
-            # webui handlers
-        ] + route.get_routes(self.options['web_root']))
-
         # Static File Handlers
         self.app.add_handlers(".*$", [
             # favicon
@@ -134,6 +113,27 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             (r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
              {"path": self.video_root})
         ])
+
+        # Main Handlers
+        self.app.add_handlers('.*$', [
+            # webapi handler
+            (r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler),
+
+            # webapi key retrieval
+            (r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler),
+
+            # webapi builder redirect
+            (r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
+
+            # webui login/logout handlers
+            (r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler),
+            (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
+
+            # Web calendar handler (Needed because option Unprotected calendar)
+            (r'{0}/calendar'.format(self.options['web_root']), CalendarHandler),
+
+            # webui handlers
+        ] + route.get_routes(self.options['web_root']))
 
     def run(self):
         if self.enable_https:
@@ -170,6 +170,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 
-    def shutDown(self):
+    def shutdown(self):
         self.alive = False
         self.io_loop.stop()

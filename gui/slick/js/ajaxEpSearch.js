@@ -94,10 +94,24 @@ function updateImages(data) {
                 spanCompleteEpisodes.prop('title','Search');
                 spanCompleteEpisodes.prop('alt','Search');
                 if (ep.overview.toLowerCase() === 'snatched') {
-                    elementCompleteEpisodes.closest('tr').remove();
-                } else {
-                    enableLink(elementCompleteEpisodes);
+                    // Find Banner or Poster
+                    var actionElement = elementCompleteEpisodes.closest('div.ep_listing');
+                    if (actionElement.length === 0) {
+                        if (elementCompleteEpisodes.closest('table.calendarTable').length === 0) {
+                            // List view
+                            actionElement = elementCompleteEpisodes.closest('tr');
+                        }
+                        // else - Calendar view is ignored
+                    }
+
+                    if (actionElement.length) {
+                        // remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
+                        actionElement.attr('class', function (i, value) {
+                            return value.replace(/(^|\s)listing-\S+/g, '');
+                        }).addClass('listing-snatched');
+                    }
                 }
+                enableLink(elementCompleteEpisodes);
             }
         }
     });

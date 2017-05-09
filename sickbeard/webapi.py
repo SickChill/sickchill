@@ -37,6 +37,7 @@ from sickbeard import classes, db, helpers, image_cache, logger, network_timezon
 from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
     SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
 from sickbeard.versionChecker import CheckVersion
+from sickbeard.postProcessor import PROCESS_METHODS
 from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException, ex
@@ -1311,7 +1312,7 @@ class CMDPostProcess(ApiCall):
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
-                                                      ["copy", "symlink", "hardlink", "move"])
+                                                      PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
         self.delete, args = self.check_params(args, kwargs, "delete", False, False, "bool", [])
