@@ -283,7 +283,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         for mode in search_strings:
             torznab = False
             search_params = {
-                't': ('search', 'tvsearch')[self.use_tv_search],
+                't': ('search', 'tvsearch')[bool(self.use_tv_search)],
                 'limit': 100,
                 'offset': 0,
                 'cat': self.catIDs.strip(', ') or '5030,5040',
