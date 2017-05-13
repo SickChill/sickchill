@@ -38,7 +38,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.supports_absolute_numbering = True
         self.anime_only = True
 
-        self.url = 'http://www.nyaa.se'
+        self.url = 'https://nyaa.si'
 
         self.minseed = 0
         self.minleech = 0
@@ -63,12 +63,12 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
                 search_params = {
                     'page': 'rss',
-                    'cats': '1_0',  # All anime
-                    'sort': 2,  # Sort Descending By Seeders
-                    'order': 1
+                    'c': '1_0',  # Category: All anime
+                    's': 'id',  # Sort by: 'id'=Date / 'size' / 'name' / 'seeders' / 'leechers' / 'downloads'
+                    'o': 'desc'  # Sort direction: asc / desc
                 }
                 if mode != 'RSS':
-                    search_params['term'] = search_string
+                    search_params['q'] = search_string
 
                 results = []
                 data = self.cache.get_rss_feed(self.url, params=search_params)['entries']
