@@ -61,6 +61,7 @@ disabled_provider_tests = {
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
     'Torrent9': {'Episode': ['NCIS S14E09'], 'Season': ['NCIS S14']},
+    'NyaaTorrents': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
 }

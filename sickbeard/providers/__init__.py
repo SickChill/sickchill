@@ -23,7 +23,7 @@ from random import shuffle
 
 import sickbeard
 from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, xthor, abnormal, torrentbytes, cpasbien,\
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien, \
     torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
     scenetime, nebulance, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, danishbits, hd4free, limetorrents, \
     norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it, immortalseed, ilcorsaronero
@@ -31,7 +31,7 @@ from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, tor
 __all__ = [
     'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'torrentbytes', 'freshontv', 'cpasbien',
+    'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
     'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch',
     'xthor', 'abnormal', 'scenetime', 'nebulance', 'tvchaosuk',
