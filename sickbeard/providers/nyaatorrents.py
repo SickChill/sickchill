@@ -32,7 +32,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'NyaaTorrents')
+        TorrentProvider.__init__(self, 'Nyaa')
 
         self.public = True
         self.supports_absolute_numbering = True
@@ -44,7 +44,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.minleech = 0
         self.confirmed = False
 
-        self.cache = tvcache.TVCache(self, min_time=20)  # only poll NyaaTorrents every 20 minutes max
+        self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
