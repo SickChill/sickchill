@@ -44,8 +44,6 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         self.minleech = 0
         self.confirmed = False
 
-        self.regex = re.compile(r'(\d+) seeder\(s\), (\d+) leecher\(s\), \d+ download\(s\) - (\d+.?\d* [KMGT]iB)(.*)', re.DOTALL)
-
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll NyaaTorrents every 20 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
@@ -58,8 +56,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
                 search_params = {
                     'page': 'rss',
@@ -82,15 +79,11 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         if not all([title, download_url]):
                             continue
 
-                        item_info = self.regex.search(curItem['summary'])
-                        if not item_info:
-                            logger.log('There was a problem parsing an item summary, skipping: {0}'.format
-                                       (title), logger.DEBUG)
-                            continue
-
-                        seeders, leechers, torrent_size, verified = item_info.groups()
-                        seeders = try_int(seeders)
-                        leechers = try_int(leechers)
+                        seeders = try_int(curItem['seeders'])
+                        leechers = try_int(curItem['leechers'])
+                        torrent_size = curItem['size']
+                        info_hash = curItem['infoHash']
+                        # verified = curItem['???']
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
@@ -100,12 +93,13 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                             continue
 
                         if self.confirmed and not verified and mode != 'RSS':
-                            logger.log('Found result {0} but that doesn\'t seem like a verified result so I\'m ignoring it'.format
-                                       (title), logger.DEBUG)
+                            logger.log('Found result {0} but that doesn\'t seem like a verified result'
+                                       'so I\'m ignoring it'.format(title), logger.DEBUG)
                             continue
 
                         size = convert_size(torrent_size) or -1
-                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        result = {'title': title, 'link': download_url, 'size': size,
+                                  'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
                             logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
                                        (title, seeders, leechers), logger.DEBUG)
@@ -114,8 +108,8 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     except StandardError:
                         continue
 
-            # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            # For each search mode sort all the items by seeders
+            items.sort(key=lambda d: d.get('seeders', 0), reverse=True)
             results += items
 
         return results
