@@ -23,6 +23,7 @@ html5lib==0.999999999
   - webencodings [required: Any, installed: 0.5.1]
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
+requests==2.14.2
 tornado==4.5.1
   - backports-abc [required: >=0.4, installed: 0.5]
   - backports.ssl-match-hostname [required: Any, installed: 3.5.0.1]
