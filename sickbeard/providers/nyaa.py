@@ -62,7 +62,8 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     'page': 'rss',
                     'c': '1_0',  # Category: All anime
                     's': 'id',  # Sort by: 'id'=Date / 'size' / 'name' / 'seeders' / 'leechers' / 'downloads'
-                    'o': 'desc'  # Sort direction: asc / desc
+                    'o': 'desc',  # Sort direction: asc / desc
+                    'f': ('0', '2')[self.confirmed]  # Quality filter: 0 = None / 1 = No Remakes / 2 = Trusted Only
                 }
                 if mode != 'RSS':
                     search_params['q'] = search_string
@@ -82,8 +83,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         seeders = try_int(curItem['seeders'])
                         leechers = try_int(curItem['leechers'])
                         torrent_size = curItem['size']
-                        info_hash = curItem['infoHash']
-                        # verified = curItem['???']
+                        info_hash = curItem['infohash']
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
@@ -92,12 +92,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        if self.confirmed and not verified and mode != 'RSS':
-                            logger.log('Found result {0} but that doesn\'t seem like a verified result'
-                                       'so I\'m ignoring it'.format(title), logger.DEBUG)
-                            continue
-
-                        size = convert_size(torrent_size) or -1
+                        size = convert_size(torrent_size, units=['BYTES', 'KIB', 'MIB', 'GIB', 'TIB', 'PIB']) or -1
                         result = {'title': title, 'link': download_url, 'size': size,
                                   'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
