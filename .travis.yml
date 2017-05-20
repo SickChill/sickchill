@@ -33,7 +33,7 @@ cache:
     - node_modules
 
 after_failure:
-  - cat ./Logs/sickrage.log
+  - cat ./tests/Logs/sickrage.log
 
 after_success:
   # don't run if any of these are NOT met
