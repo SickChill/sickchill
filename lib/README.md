@@ -18,6 +18,7 @@ Packages List
 =========
 ```
 beautifulsoup4==4.5.3
+# certgen.py==d52975c # source: https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py
 html5lib==0.999999999
   - six [required: Any, installed: 1.10.0]
   - webencodings [required: Any, installed: 0.5.1]

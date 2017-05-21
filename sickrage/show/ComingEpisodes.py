@@ -40,9 +40,9 @@ class ComingEpisodes(object):
     """
     categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        'date': itemgetter(b'snatchedsort', b'localtime'),
-        'network': itemgetter(b'network', b'localtime'),
-        'show': itemgetter(b'show_name', b'localtime'),
+        'date': itemgetter(b'snatchedsort', b'localtime', b'episode'),
+        'network': itemgetter(b'network', b'localtime', b'episode'),
+        'show': itemgetter(b'show_name', b'localtime', b'episode'),
     }
 
     def __init__(self):
