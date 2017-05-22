@@ -253,12 +253,25 @@ class HelpersZipTests(unittest.TestCase):
         Test is_rar_file
         """
         self.assertTrue(helpers.is_rar_file('lala.rar'))
+        self.assertTrue(helpers.is_rar_file('lala.part001.rar'))
+        self.assertTrue(helpers.is_rar_file('lala.000.rar'))
+        self.assertFalse(helpers.is_rar_file('lala.r00'))
         self.assertFalse(helpers.is_rar_file('lala.zip'))
         self.assertFalse(helpers.is_rar_file('lala.iso'))
         self.assertFalse(helpers.is_rar_file('lala.wmv'))
         self.assertFalse(helpers.is_rar_file('lala.avi'))
         self.assertFalse(helpers.is_rar_file('lala.mkv'))
         self.assertFalse(helpers.is_rar_file('lala.mp4'))
+
+        self.assertTrue(helpers.is_rar_file('lala.part1.rar', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.part01.rar', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.part001.rar', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.1.rar', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.01.rar', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.001.rar', only_first=False))
+        self.assertFalse(helpers.is_rar_file('lala.r0', only_first=False))
+        self.assertTrue(helpers.is_rar_file('lala.r00', only_first=False))
+        self.assertFalse(helpers.is_rar_file('lala.r000', only_first=False))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """

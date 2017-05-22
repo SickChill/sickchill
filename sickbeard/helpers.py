@@ -65,7 +65,6 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
-
 # pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
@@ -85,9 +84,12 @@ if socket.getaddrinfo.__module__ in ('socket', '_socket'):
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj
 
+
 def _copyfileobj(fsrc, fdst, length=10485760):
     """ Run shutil.copyfileobj with a bigger buffer """
     return copyfileobj_orig(fsrc, fdst, length)
+
+
 shutil.copyfileobj = _copyfileobj
 
 
@@ -205,7 +207,7 @@ def is_media_file(filename):
     # ignore samples
     try:
         assert isinstance(filename, six.string_types), type(filename)
-        is_rar = is_rar_file(filename)
+        is_rar = is_rar_file(filename, only_first=False)
         filename = ek(os.path.basename, filename)
 
         if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
@@ -230,14 +232,18 @@ def is_media_file(filename):
         return False
 
 
-def is_rar_file(filename):
+def is_rar_file(filename, only_first=True):
     """
     Check if file is a RAR file, or part of a RAR set
 
     :param filename: Filename to check
+    :param only_first: If True, only matches the first RAR part (e.g. *.rar/*.part001.rar/*.000.rar/*.r00)
     :return: True if this is RAR/Part file, False if not
     """
-    archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    if only_first:
+        archive_regex = r'(?P<file>^(?P<base>(?:(?!\.(part\d+|\d{3})\.rar$).)*)\.(?:(?:part0*1|000)\.)?rar$)'
+    else:
+        archive_regex = r'(?P<file>^(?P<base>(?:(?!(\.(part\d+|\d{3})\.rar|\.r\d{2})$).)*)\.(?:(?:(?:part\d+|\d{3})\.)?rar|r\d{2})$)'
     ret = re.search(archive_regex, filename) is not None
     try:
         if ret and ek(os.path.exists, filename) and ek(os.path.isfile, filename):
@@ -411,7 +417,8 @@ def link(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
+        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)),
+                                                  ctypes.c_wchar_p(six.text_type(src)), None) == 0:
             raise ctypes.WinError()
     else:
         ek(os.link, src, dst)
@@ -443,7 +450,9 @@ def symlink(src, dst):
     """
 
     if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), 1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(ctypes.c_wchar_p(six.text_type(dst)),
+                                                      ctypes.c_wchar_p(six.text_type(src)),
+                                                      1 if ek(os.path.isdir, src) else 0) in [0, 1280]:
             raise ctypes.WinError()
     else:
         ek(os.symlink, src, dst)
@@ -577,7 +586,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         check_files = ek(os.listdir, check_empty_dir)
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(
-                check_file in ignore_items for check_file in check_files)):
+                    check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
                 logger.log("Deleting empty folder: " + check_empty_dir)
@@ -729,7 +738,7 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
     if season and episode:
         main_db_con = db.DBConnection()
-        sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
+        sql = "SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?"
         sql_results = main_db_con.select(sql, [show.indexerid, season, episode])
 
         if len(sql_results) == 1:
