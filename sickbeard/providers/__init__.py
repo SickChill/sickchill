@@ -23,19 +23,19 @@ from random import shuffle
 
 import sickbeard
 from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, torrentz, zooqle, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien,\
-    torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, danishbits, hd4free, limetorrents, \
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaa, xthor, abnormal, torrentbytes, cpasbien, \
+    torrent9, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, \
+    scenetime, nebulance, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, danishbits, hd4free, limetorrents, \
     norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it, immortalseed, ilcorsaronero
 
 __all__ = [
     'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
     'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
+    'speedcd', 'nyaa', 'torrentbytes', 'cpasbien',
     'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
     'shazbat', 'rarbg', 'tntvillage', 'binsearch', 'zooqle',
-    'xthor', 'abnormal', 'scenetime', 'transmitthenet', 'tvchaosuk',
-    'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
+    'xthor', 'abnormal', 'scenetime', 'nebulance', 'tvchaosuk',
+    'torrentproject', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
     'hdspace', 'newpct', 'elitetorrent', 'danishbits', 'hd4free', 'limetorrents',
     'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it',
     'immortalseed', 'ilcorsaronero'
@@ -108,9 +108,11 @@ def check_enabled_providers():
                     break
 
         if not (daily_enabled and backlog_enabled):
-            formatted_msg = "No NZB/Torrent providers found or enabled for {0}.<br/>".format(
-                (("daily searches and backlog searches", "daily searches")[backlog_enabled], "backlog searches")[daily_enabled])
-            formatted_msg += "Please <a href=\"" + sickbeard.WEB_ROOT + "/config/providers/\">check your settings</a>."
-            sickbeard.helpers.add_site_message(formatted_msg, 'danger')
+            searches = ((_('daily searches and backlog searches'), _('daily searches'))[backlog_enabled],
+                        _('backlog searches'))[daily_enabled]
+            formatted_msg = _('No NZB/Torrent providers found or enabled for {searches}.<br/>'
+                              'Please <a href="{web_root}/config/providers/">check your settings</a>.')
+            sickbeard.helpers.add_site_message(formatted_msg.format(searches=searches, web_root=sickbeard.WEB_ROOT),
+                                               tag='no_providers_enabled', level='danger')
         else:
-            sickbeard.helpers.remove_site_message(begins="No NZB/Torrent providers found or enabled for")
+            sickbeard.helpers.remove_site_message(tag='no_providers_enabled')

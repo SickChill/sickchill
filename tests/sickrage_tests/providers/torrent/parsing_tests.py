@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=fixme
+
 """
 Test Provider Result Parsing
 When recording new cassettes:
@@ -57,12 +57,11 @@ disabled_provider_tests = {
     # Have to trick it into thinking is an anime search, and add string overrides
     'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
     'Torrent9': {'Episode': ['NCIS S14E09'], 'Season': ['NCIS S14']},
-    'NyaaTorrents': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+    'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
 }

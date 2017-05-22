@@ -68,7 +68,7 @@ import requests
 
 from tornado.locale import load_gettext_translations
 
-gettext.install('messages', unicode=1, codeset='UTF-8')
+gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 # Some strings come from metadata or libraries or 3rd party sites,
 # So we need to pre-define them to get translations for them
@@ -217,6 +217,7 @@ ROOT_DIRS = None
 
 TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
+IGNORE_BROKEN_SYMLINKS = False
 SORT_ARTICLE = False
 DEBUG = False
 DBDEBUG = False
@@ -582,6 +583,7 @@ HISTORY_LAYOUT = None
 HISTORY_LIMIT = 0
 DISPLAY_SHOW_SPECIALS = False
 COMING_EPS_LAYOUT = None
+COMING_EPS_DISPLAY_SNATCHED = False
 COMING_EPS_DISPLAY_PAUSED = False
 COMING_EPS_SORT = None
 COMING_EPS_MISSED_RANGE = None
@@ -678,7 +680,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_PLEX_SERVER, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME, PLEX_CLIENT_PASSWORD, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, \
             USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, \
-            showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, \
+            showUpdateScheduler, INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
@@ -704,7 +706,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
-            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
+            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_DISPLAY_SNATCHED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
@@ -868,9 +870,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
 
         if GUI_LANG:
-            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1)
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
         else:
-            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8')
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
         load_gettext_translations(LOCALE_DIR, 'messages')
 
@@ -919,6 +921,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
+
+        IGNORE_BROKEN_SYMLINKS = check_setting_bool(CFG, 'General', 'ignore_broken_symlinks')
 
         SORT_ARTICLE = check_setting_bool(CFG, 'General', 'sort_article')
 
@@ -1367,6 +1371,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         DISPLAY_SHOW_SPECIALS = check_setting_bool(CFG, 'GUI', 'display_show_specials', True)
         COMING_EPS_LAYOUT = check_setting_str(CFG, 'GUI', 'coming_eps_layout', 'banner')
         COMING_EPS_DISPLAY_PAUSED = check_setting_bool(CFG, 'GUI', 'coming_eps_display_paused')
+        COMING_EPS_DISPLAY_SNATCHED = check_setting_bool(CFG, 'GUI', 'coming_eps_display_snatched')
         COMING_EPS_SORT = check_setting_str(CFG, 'GUI', 'coming_eps_sort', 'date')
         COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7, min_val=0, max_val=42810, fallback_def=False)
         FUZZY_DATING = check_setting_bool(CFG, 'GUI', 'fuzzy_dating')
@@ -1946,6 +1951,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'launch_browser': int(LAUNCH_BROWSER),
             'trash_remove_show': int(TRASH_REMOVE_SHOW),
             'trash_rotate_logs': int(TRASH_ROTATE_LOGS),
+            'ignore_broken_symlinks': int(IGNORE_BROKEN_SYMLINKS),
             'sort_article': int(SORT_ARTICLE),
             'proxy_setting': PROXY_SETTING,
             'proxy_indexers': int(PROXY_INDEXERS),
@@ -2333,6 +2339,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'display_show_specials': int(DISPLAY_SHOW_SPECIALS),
             'coming_eps_layout': COMING_EPS_LAYOUT,
             'coming_eps_display_paused': int(COMING_EPS_DISPLAY_PAUSED),
+            'coming_eps_display_snatched': int(COMING_EPS_DISPLAY_SNATCHED),
             'coming_eps_sort': COMING_EPS_SORT,
             'coming_eps_missed_range': config.min_max(COMING_EPS_MISSED_RANGE, 7, 0, 42810),
             'fuzzy_dating': int(FUZZY_DATING),

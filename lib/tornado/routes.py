@@ -1,8 +1,8 @@
-import inspect
-import os
+""" Custom fast routes """
 import tornado.web
 
 route_list = []
+
 
 class route(object):
     _routes = []
@@ -12,16 +12,17 @@ class route(object):
         self.name = name
 
     def __call__(self, _handler):
-        """gets called when we class decorate"""
+        """ Gets called when we decorate a class """
         name = self.name and self.name or _handler.__name__
         self._routes.append((self._uri, _handler, name))
         return _handler
 
     @classmethod
-    def get_routes(self, webroot=''):
-        self._routes.reverse()
-        routes = [tornado.web.url(webroot + _uri, _handler, name=name) for _uri, _handler, name, in self._routes]
+    def get_routes(cls, webroot=''):
+        cls._routes.reverse()
+        routes = [tornado.web.url(webroot + _uri, _handler, name=name) for _uri, _handler, name, in cls._routes]
         return routes
 
-def route_redirect(from_, to, name=None):
-    route._routes.append(tornado.web.url(from_, tornado.web.RedirectHandler, dict(url=to), name=name))
+
+def route_redirect(src, dst, name=None):
+    route._routes.append(tornado.web.url(src, tornado.web.RedirectHandler, dict(url=dst), name=name))

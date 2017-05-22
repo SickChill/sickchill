@@ -474,6 +474,13 @@ class WebRoot(WebHandler):
 
         return self.redirect("/schedule/")
 
+
+    def toggleScheduleDisplaySnatched(self):
+
+        sickbeard.COMING_EPS_DISPLAY_SNATCHED = not sickbeard.COMING_EPS_DISPLAY_SNATCHED
+
+        return self.redirect("/schedule/")
+
     def setScheduleSort(self, sort):
         if sort not in ('date', 'network', 'show') or sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
@@ -501,7 +508,7 @@ class WebRoot(WebHandler):
 
 
 class CalendarHandler(BaseHandler):
-    def get(self):
+    def get(self, *args, **kwargs):
         if sickbeard.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:
@@ -625,14 +632,15 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
-    def set_site_message(self, message, level):
+    def set_site_message(self, message, tag, level):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if message:
-            helpers.add_site_message(message, level)
+            helpers.add_site_message(message, tag=tag, level=level)
         else:
             if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and self.get_current_user():
-                message = _('You\'re using the {branch} branch. Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
-                helpers.add_site_message(message, 'danger')
+                message = _('You\'re using the {branch} branch. '
+                            'Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
+                helpers.add_site_message(message, tag='not_using_master_branch', level='danger')
 
         return sickbeard.SITE_MESSAGES
 
@@ -2832,6 +2840,10 @@ class HomeAddShows(Home):
         show_name = get_showname_from_indexer(1, indexer_id)
         show_dir = None
 
+        if not show_name:
+            ui.notifications.error(_('Unable to add show'))
+            return self.redirect('/home/')
+
         # add the show
         sickbeard.showQueueScheduler.action.add_show(
             indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
@@ -3931,17 +3943,17 @@ class ConfigGeneral(Config):
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             sickrage_background=None, sickrage_background_path=None, custom_css=None, custom_css_path=None,
             git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
-            display_all_seasons=None, gui_language=None):
+            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
 
         results = []
 
         if gui_language != sickbeard.GUI_LANG:
             if gui_language:
                 # Selected language
-                gettext.translation('messages', sickbeard.LOCALE_DIR, languages=[gui_language], codeset='UTF-8').install(unicode=1)
+                gettext.translation('messages', sickbeard.LOCALE_DIR, languages=[gui_language], codeset='UTF-8').install(unicode=1, names=["ngettext"])
             else:
                 # System default language
-                gettext.install('messages', sickbeard.LOCALE_DIR, unicode=1, codeset='UTF-8')
+                gettext.install('messages', sickbeard.LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
             sickbeard.GUI_LANG = gui_language
 
@@ -3961,6 +3973,7 @@ class ConfigGeneral(Config):
 
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
+        sickbeard.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
