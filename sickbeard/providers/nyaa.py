@@ -81,15 +81,15 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                             continue
 
                         try:
-                            seeders = try_int(curItem['seeders'])
-                            leechers = try_int(curItem['leechers'])
-                            torrent_size = curItem['size']
-                            info_hash = curItem['infohash']
-                        except KeyError:
                             seeders = try_int(curItem['nyaa:seeders'])
                             leechers = try_int(curItem['nyaa:leechers'])
                             torrent_size = curItem['nyaa:size']
                             info_hash = curItem['nyaa:infohash']
+                        except KeyError: # Transition phase because of https://github.com/nyaadevs/nyaa/pull/140
+                            seeders = try_int(curItem['seeders'])
+                            leechers = try_int(curItem['leechers'])
+                            torrent_size = curItem['size']
+                            info_hash = curItem['infohash']
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
