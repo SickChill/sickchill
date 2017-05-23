@@ -56,6 +56,8 @@ import six
 
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
+# noinspection PyProtectedMember
+from tornado._locale_data import LOCALE_NAMES
 
 import sickbeard
 from sickbeard import classes, db, logger
@@ -65,6 +67,12 @@ from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
+
+# Add some missing languages
+LOCALE_NAMES.update({
+    "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
+    "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
+})
 
 # pylint: disable=protected-access
 # Access to a protected member of a client class
