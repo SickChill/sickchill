@@ -860,12 +860,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     # Create the CA Certificate
     cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, validity_period, 'sha256')
+    cacert = createCertificate(careq, (careq, cakey), serial, validity_period, b'sha256')
 
     cname = 'SickRage'
     pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, validity_period, 'sha256')
+    cert = createCertificate(req, (cacert, cakey), serial, validity_period, b'sha256')
 
     # Save the key and certificate to disk
     try:
