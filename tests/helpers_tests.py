@@ -504,12 +504,12 @@ class HelpersEncryptionTests(unittest.TestCase):
     """
     Test encryption and decryption
     """
-    @unittest.skip('Not yet implemented')
     def test_create_https_certificates(self):
         """
         Test create_https_certificates
         """
-        pass
+        # very basic!
+        self.assertTrue(helpers.create_https_certificates('test.crt', 'test.key'))
 
     @unittest.skip('Not yet implemented')
     def test_encrypt(self):
