@@ -506,10 +506,57 @@ class HelpersEncryptionTests(unittest.TestCase):
     """
     def test_create_https_certificates(self):
         """
-        Test create_https_certificates
+        Test that create_https_certificates successfully generates certificate and private key
         """
-        # very basic!
-        self.assertTrue(helpers.create_https_certificates('test.crt', 'test.key'))
+        try:
+            import OpenSSL
+        except ImportError:
+            self.skipTest('pyOpenSSL is not installed')
+            return False
+
+        base_path = os.path.dirname(__file__)
+        cert_path = os.path.abspath(os.path.join(base_path, 'test.crt'))
+        pkey_path = os.path.abspath(os.path.join(base_path, 'test.key'))
+
+        def removeTestFiles():
+            try:
+                os.remove(cert_path)
+                os.remove(pkey_path)
+            except OSError:
+                pass
+
+        removeTestFiles()  # always remove existing
+        self.assertTrue(helpers.create_https_certificates(cert_path, pkey_path))
+        self.assertTrue(os.path.isfile(cert_path))
+        self.assertTrue(os.path.isfile(pkey_path))
+
+        FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
+        try:
+            with open(cert_path, 'rt') as f:
+                cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load certificate')
+
+        try:
+            with open(pkey_path, 'rt') as f:
+                pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load private key')
+
+        context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+        context.use_privatekey(pkey)
+        context.use_certificate(cert)
+        failed = False
+        try:
+            context.check_privatekey()
+        except OpenSSL.SSL.Error:
+            failed = True
+        finally:
+            removeTestFiles()
+
+        self.assertFalse(failed, 'private key does not match certificate')
 
     @unittest.skip('Not yet implemented')
     def test_encrypt(self):
