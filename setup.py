@@ -41,7 +41,9 @@ setup(
         'rednose',
         'mock',
         'vcrpy-unittest',
-        'babel'
+        'babel',
+        'flake8-coding',
+        'isort'
     ],
 
     classifiers=[
