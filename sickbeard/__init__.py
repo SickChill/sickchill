@@ -622,6 +622,7 @@ ADDIC7ED_USER = ADDIC7ED_PASS = None
 OPENSUBTITLES_USER = OPENSUBTITLES_PASS = None
 LEGENDASTV_USER = LEGENDASTV_PASS = None
 ITASA_USER = ITASA_PASS = None
+SUBSCENTER_USER = SUBSCENTER_PASS = None
 
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
@@ -710,7 +711,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, \
             USE_SUBTITLES, SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH, subtitlesFinderScheduler, \
-            SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, \
+            SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, OPENSUBTITLES_USER, OPENSUBTITLES_PASS, SUBSCENTER_USER, SUBSCENTER_PASS, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
@@ -1328,6 +1329,9 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         OPENSUBTITLES_USER = check_setting_str(CFG, 'Subtitles', 'opensubtitles_username', censor_log=True)
         OPENSUBTITLES_PASS = check_setting_str(CFG, 'Subtitles', 'opensubtitles_password', censor_log=True)
+
+        SUBSCENTER_USER = check_setting_str(CFG, 'Subtitles', 'subscenter_username', censor_log=True)
+        SUBSCENTER_PASS = check_setting_str(CFG, 'Subtitles', 'subscenter_password', censor_log=True)
 
         USE_FAILED_DOWNLOADS = check_setting_bool(CFG, 'FailedDownloads', 'use_failed_downloads')
         DELETE_FAILED = check_setting_bool(CFG, 'FailedDownloads', 'delete_failed')
@@ -2378,6 +2382,9 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
             'opensubtitles_username': OPENSUBTITLES_USER,
             'opensubtitles_password': helpers.encrypt(OPENSUBTITLES_PASS, ENCRYPTION_VERSION),
+
+            'subscenter_username': SUBSCENTER_USER,
+            'subscenter_password': helpers.encrypt(SUBSCENTER_PASS, ENCRYPTION_VERSION),
         },
 
         'FailedDownloads': {

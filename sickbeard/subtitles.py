@@ -89,6 +89,10 @@ class SubtitleProviderPool(object):  # pylint: disable=too-few-public-methods
                 'opensubtitles': {
                     'username': sickbeard.OPENSUBTITLES_USER,
                     'password': sickbeard.OPENSUBTITLES_PASS
+                },
+                'subscenter': {
+                    'username': sickbeard.SUBSCENTER_USER,
+                    'password': sickbeard.SUBSCENTER_PASS
                 }
             }
 

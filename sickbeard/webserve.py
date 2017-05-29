@@ -5195,7 +5195,7 @@ class ConfigSubtitles(Config):
             service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
             subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None,
             addic7ed_user=None, addic7ed_pass=None, itasa_user=None, itasa_pass=None, legendastv_user=None, legendastv_pass=None,
-            opensubtitles_user=None, opensubtitles_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
+            opensubtitles_user=None, opensubtitles_pass=None, subscenter_user=None, subscenter_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
 
         config.change_subtitle_finder_frequency(subtitles_finder_frequency)
         config.change_use_subtitles(use_subtitles)
@@ -5232,6 +5232,8 @@ class ConfigSubtitles(Config):
         sickbeard.LEGENDASTV_PASS = legendastv_pass or ''
         sickbeard.OPENSUBTITLES_USER = opensubtitles_user or ''
         sickbeard.OPENSUBTITLES_PASS = opensubtitles_pass or ''
+        sickbeard.SUBSCENTER_USER = subscenter_user or ''
+        sickbeard.SUBSCENTER_PASS = subscenter_pass or ''
 
         sickbeard.save_config()
         # Reset provider pool so next time we use the newest settings
