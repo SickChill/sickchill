@@ -21,12 +21,12 @@
 from __future__ import unicode_literals
 
 import re
+
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -85,7 +85,8 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             return results
 
         search_params = {
-            "c41": 1, "c33": 1, "c38": 1, "c32": 1, "c37": 1
+            "Episode": {"c33": 1, "c38": 1, "c32": 1, "c37": 1},
+            "Season": {"c41": 1}
         }
 
         for mode in search_strings:
@@ -97,8 +98,8 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_params["search"] = search_string
-                data = self.get_url(self.urls["search"], params=search_params, returns="text")
+                search_params[mode]["search"] = search_string
+                data = self.get_url(self.urls["search"], params=search_params[mode], returns="text")
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
@@ -151,7 +152,7 @@ class TorrentBytesProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
-                        except (AttributeError, TypeError):
+                        except (AttributeError, TypeError, ValueError):
                             continue
 
             # For each search mode sort all the items by seeders if available
