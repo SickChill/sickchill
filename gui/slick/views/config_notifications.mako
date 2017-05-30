@@ -2170,7 +2170,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('N.B: Don\'t forget to talk with your bot at least one time if you get a 403 error.')}</label>
+                                            <label>${_('Note: Don\'t forget to talk with your bot at least one time if you get a 403 error.')}</label>
                                         </div>
                                    </div>
                                 </div>
