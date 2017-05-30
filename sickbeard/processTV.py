@@ -202,7 +202,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             result.result = False
 
         # Delete all file not needed and avoid deleting files if Manual PostProcessing
-        if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
+        if not result.result or not delete_on and (process_method != "move" or mode == "manual"):
             continue
 
         # noinspection PyTypeChecker
