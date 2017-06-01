@@ -48,6 +48,10 @@ if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in provider_manager.names():
     provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
+# Overwrite the outdated SubsCenter provider.
+if 'subscenter' in provider_manager.names():
+    provider_manager.unregister('subscenter = subliminal.providers.subscenter:SubsCenterProvider')
+provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
