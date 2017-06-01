@@ -43,7 +43,7 @@ from sickrage.helper.encoding import ek
 from sickrage.recompiled import tags
 from sickrage.tagger.episode import EpisodeTags
 
-gettext.install('messages', unicode=1, codeset='UTF-8')
+gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.

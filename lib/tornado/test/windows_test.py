@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import functools
 import os
 import socket
@@ -6,6 +7,7 @@ import unittest
 from tornado.platform.auto import set_close_exec
 
 skipIfNonWindows = unittest.skipIf(os.name != 'nt', 'non-windows platform')
+
 
 @skipIfNonWindows
 class WindowsTest(unittest.TestCase):

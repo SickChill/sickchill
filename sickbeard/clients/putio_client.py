@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Clinton Collins <clinton.collins@gmail.com>
 # Medicine: Dustyn Gibson <miigotu@gmail.com>
 # This file is part of SickRage.

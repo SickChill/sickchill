@@ -328,7 +328,8 @@
                                 'legendastv': {'user': sickbeard.LEGENDASTV_USER, 'pass': sickbeard.LEGENDASTV_PASS},
                                 'addic7ed': {'user': sickbeard.ADDIC7ED_USER, 'pass': sickbeard.ADDIC7ED_PASS},
                                 'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
-                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}
+                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS},
+                                'subscenter': {'user': sickbeard.SUBSCENTER_USER, 'pass': sickbeard.SUBSCENTER_PASS}
                             }
                         %>
                         % for curService in sickbeard.subtitles.sorted_service_list():

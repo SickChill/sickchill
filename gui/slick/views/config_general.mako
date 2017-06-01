@@ -5,10 +5,7 @@
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard.helpers import anon_url
-
-    # noinspection PyProtectedMember
-    from tornado._locale_data import LOCALE_NAMES
+    from sickbeard.helpers import anon_url, LOCALE_NAMES
 
     def lang_name(code):
         return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
@@ -997,6 +994,20 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label>${_('if disabled the episode will be set to the default deleted status')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Ignore Broken Symbolic Links')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="ignore_broken_symlinks" id="ignore_broken_symlinks" ${('', 'checked="checked"')[bool(sickbeard.IGNORE_BROKEN_SYMLINKS)]}/>
+                                        <label for="ignore_broken_symlinks">${_('If checked, broken symbolic links warnings generated when calculating show size will be logged as debug')}</label>
                                     </div>
                                 </div>
                             </div>
