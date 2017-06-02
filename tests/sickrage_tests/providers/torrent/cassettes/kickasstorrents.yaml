@@ -8,7 +8,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0)
           Gecko/20120101 Firefox/29.0']
     method: GET
-    uri: https://kat.cr/usearch/?q=Game+of+Thrones+S05E08&field=seeders&rss=1&category=tv&sorder=desc
+    uri: https://kickass.cd/usearch/?q=Game+of+Thrones+S05E08&field=seeders&rss=1&category=tv&sorder=desc
   response:
     body:
       string: !!binary |
@@ -113,7 +113,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0)
           Gecko/20120101 Firefox/29.0']
     method: GET
-    uri: https://kat.cr/tv/?q=&field=time_add&rss=1&category=tv&sorder=desc
+    uri: https://kickass.cd/tv/?q=&field=time_add&rss=1&category=tv&sorder=desc
   response:
     body:
       string: !!binary |
@@ -224,7 +224,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0)
           Gecko/20120101 Firefox/29.0']
     method: GET
-    uri: https://kat.cr/anime/?q=&field=time_add&rss=1&category=tv&sorder=desc
+    uri: https://kickass.cd/anime/?q=&field=time_add&rss=1&category=tv&sorder=desc
   response:
     body:
       string: !!binary |
@@ -332,7 +332,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0)
           Gecko/20120101 Firefox/29.0']
     method: GET
-    uri: https://kat.cr/usearch/?q=Game+of+Thrones+S05&field=seeders&rss=1&category=tv&sorder=desc
+    uri: https://kickass.cd/usearch/?q=Game+of+Thrones+S05&field=seeders&rss=1&category=tv&sorder=desc
   response:
     body:
       string: !!binary |
@@ -418,8 +418,8 @@ interactions:
       date: ['Mon, 04 Apr 2016 17:33:00 GMT']
       server: [nginx]
       set-cookie: ['lang_detected=none; expires=Tue, 04-Apr-2017 17:31:50 GMT; Max-Age=31536000;
-          path=/; domain=.kat.cr', 'lang_code=en; expires=Tue, 04-Apr-2017 17:31:50
-          GMT; Max-Age=31536000; path=/; domain=.kat.cr', country_code=US; Path=/;]
+          path=/; domain=.kickass.cd', 'lang_code=en; expires=Tue, 04-Apr-2017 17:31:50
+          GMT; Max-Age=31536000; path=/; domain=.kickass.cd', country_code=US; Path=/;]
       strict-transport-security: [max-age=31536000; includeSubDomains]
       x-content-type-options: [nosniff]
       x-xss-protection: ['1']
