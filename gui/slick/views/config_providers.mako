@@ -70,7 +70,7 @@
                             % for curProvider in sickbeard.providers.sortedProviderList():
                             <%
                                 ## These will show the '!' not saying they are broken
-                                broken_providers = {}
+                                broken_providers = {'torrentproject', 'cpasbien'}
                                 if curProvider.provider_type == GenericProvider.NZB and not sickbeard.USE_NZBS:
                                     continue
                                 elif curProvider.provider_type == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
