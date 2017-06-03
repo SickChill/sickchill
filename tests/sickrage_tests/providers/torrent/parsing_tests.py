@@ -114,8 +114,7 @@ class BaseParser(type):
             def magic(self, *args, **kwargs):
                 # pylint:disable=no-member
                 if func.func_name in disabled_provider_tests.get(self.provider.name, []):
-                    print("skipped")
-                    return unittest.skip(str(self.provider.name))
+                    self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
                 func(self, *args, **kwargs)
             return magic
 
