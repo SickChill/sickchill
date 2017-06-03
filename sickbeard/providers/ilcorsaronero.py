@@ -55,6 +55,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         TorrentProvider.__init__(self, 'ilCorsaroNero')
 
+        self.public = True
         self._uid = None
         self._hash = None
         self.cat = None
