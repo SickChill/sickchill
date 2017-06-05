@@ -7,8 +7,9 @@ Episode tagger to extract information from episodes
 from __future__ import print_function, unicode_literals
 
 import re
-from sickrage.recompiled import tags
+
 from sickrage.helper.common import try_int
+from sickrage.recompiled import tags
 
 
 class EpisodeTags(object):

@@ -23,15 +23,14 @@ Common helper functions
 
 from __future__ import print_function, unicode_literals
 
+import glob
 import os
 import re
-import glob
 from fnmatch import fnmatch
 
-from github import Github, BadCredentialsException, TwoFactorException
-import six
-
 import sickbeard
+import six
+from github import BadCredentialsException, Github, TwoFactorException
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'

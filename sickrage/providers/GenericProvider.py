@@ -20,26 +20,25 @@
 from __future__ import print_function, unicode_literals
 
 import re
-from datetime import datetime
-
 from base64 import b16encode, b32decode
+from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-import six
 
 import sickbeard
+import six
+from requests.utils import add_dict_to_cookiejar
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickbeard.db import DBConnection
-from sickbeard.helpers import download_file, getURL, remove_file_failed, make_session
+from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickrage.helper.common import replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
-from requests.utils import add_dict_to_cookiejar
 
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
