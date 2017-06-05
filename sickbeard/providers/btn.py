@@ -20,18 +20,17 @@
 
 from __future__ import print_function, unicode_literals
 
-from datetime import datetime
-import jsonrpclib
 import math
 import socket
 import time
+from datetime import datetime
 
+import jsonrpclib
 import sickbeard
+import six
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
-import six
-
 from sickrage.helper.common import episode_num
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider

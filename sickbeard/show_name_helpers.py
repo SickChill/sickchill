@@ -24,13 +24,11 @@ import os
 import re
 
 import sickbeard
+import six
 from sickbeard import common, logger
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickrage.helper.encoding import ek
-
-import six
-
 
 resultFilters = [
     "sub(bed|ed|pack|s)",

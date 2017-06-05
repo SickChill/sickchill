@@ -22,7 +22,7 @@
 from __future__ import unicode_literals
 
 import sickbeard
-from sickbeard import logger, common
+from sickbeard import common, logger
 
 
 class Notifier(object):

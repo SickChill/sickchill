@@ -32,15 +32,15 @@ import time
 import traceback
 
 import sickbeard
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, \
-    ui
-from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
-    SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
-from sickbeard.versionChecker import CheckVersion
+import six
+from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
+from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
+                              WANTED)
 from sickbeard.postProcessor import PROCESS_METHODS
+from sickbeard.versionChecker import CheckVersion
 from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException, ex
+from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
@@ -51,6 +51,10 @@ from sickrage.show.History import History
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+# pylint: disable=import-error
+from tornado.web import RequestHandler
 
 try:
     import json
@@ -58,13 +62,8 @@ except ImportError:
     # pylint: disable=import-error
     import simplejson as json
 
-# pylint: disable=import-error
-from tornado.web import RequestHandler
 
-import six
 
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
 
 
 indexer_ids = ["indexerid", "tvdbid"]

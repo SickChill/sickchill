@@ -24,17 +24,15 @@ import os
 import shutil
 import stat
 
-from rarfile import RarFile, RarWarning, RarFatalError, RarCRCError, NoRarEntry, NotRarFile, \
-    RarLockedArchiveError, RarWriteError, RarOpenError, RarUserError, RarMemoryError, BadRarName, BadRarFile, \
-    RarNoFilesError, RarWrongPassword, RarCannotExec, RarSignalExit, RarUnknownError, Error, \
-    RarUserBreak, RarCreateError, RarExecError, NoCrypto, NeedFirstVolume, PasswordRequired
-
 import sickbeard
+from rarfile import (BadRarFile, BadRarName, Error, NeedFirstVolume, NoCrypto, NoRarEntry, NotRarFile, PasswordRequired, RarCannotExec, RarCRCError,
+                     RarCreateError, RarExecError, RarFatalError, RarFile, RarLockedArchiveError, RarMemoryError, RarNoFilesError, RarOpenError, RarSignalExit,
+                     RarUnknownError, RarUserBreak, RarUserError, RarWarning, RarWriteError, RarWrongPassword)
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException, ex
+from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods

@@ -25,10 +25,8 @@ import os
 import re
 
 import sickbeard
-
+from sickbeard import helpers, logger
 from sickbeard.metadata import generic
-
-from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
