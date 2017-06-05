@@ -18,6 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
+
 import re
 
 from sickbeard import logger, tvcache

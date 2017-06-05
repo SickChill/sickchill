@@ -2,13 +2,13 @@
 
 from __future__ import print_function, unicode_literals
 
-import re
 import os
 import posixpath
-from bs4 import BeautifulSoup
+import re
 from datetime import date
 
 import sickbeard
+from bs4 import BeautifulSoup
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
 

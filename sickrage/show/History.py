@@ -17,14 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
-from datetime import timedelta
+from __future__ import unicode_literals
+
+from datetime import datetime, timedelta
+
+import six
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
 from sickrage.helper.common import try_int
-
-
-import six
 
 
 class History(object):

@@ -20,15 +20,13 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
-import telnetlib
 import re
+import telnetlib
 
+import sickbeard
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
-
 from six.moves import urllib
-
 
 try:
     import xml.etree.cElementTree as etree

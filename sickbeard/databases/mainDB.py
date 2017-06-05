@@ -22,21 +22,15 @@
 from __future__ import print_function, unicode_literals
 
 import datetime
-
-import warnings
-import sickbeard
 import os.path
+import warnings
 
-from sickbeard import db, common, helpers, logger
-
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+import sickbeard
+import six
+from sickbeard import common, db, helpers, logger, subtitles
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.encoding import ek
-
-from sickbeard import subtitles
-
-import six
-
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44

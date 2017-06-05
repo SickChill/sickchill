@@ -5,10 +5,9 @@ from __future__ import print_function, unicode_literals
 import os
 import posixpath
 
-from libtrakt.trakt import TraktAPI
-from libtrakt.exceptions import traktException
-
 import sickbeard
+from libtrakt.exceptions import traktException
+from libtrakt.trakt import TraktAPI
 from sickbeard import helpers, logger
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 from sickrage.helper.encoding import ek

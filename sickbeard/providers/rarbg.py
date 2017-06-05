@@ -27,7 +27,6 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 

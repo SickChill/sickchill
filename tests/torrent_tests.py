@@ -74,6 +74,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         return True
 
     @staticmethod
+    @unittest.skip('KickAssTorrents is down, needs a replacement')  # TODO
     def test_search():  # pylint: disable=too-many-locals
         """
         Test searching

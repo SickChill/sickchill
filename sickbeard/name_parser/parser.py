@@ -27,9 +27,8 @@ from collections import OrderedDict
 from threading import Lock
 
 import dateutil
-import six
-
 import sickbeard
+import six
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickrage.helper.common import remove_extension

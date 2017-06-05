@@ -20,15 +20,14 @@
 
 from __future__ import print_function, unicode_literals
 
-import io
 import binascii
-from enzyme import MKV
+import io
 
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import DistributionNotFound, get_distribution
+
 import sickbeard
-
 import six
-
+from enzyme import MKV
 
 try:
     get_distribution('pymediainfo')

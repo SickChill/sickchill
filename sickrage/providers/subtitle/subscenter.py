@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import bisect
-from collections import defaultdict
 import io
 import json
 import logging
 import zipfile
+from collections import defaultdict
 
 from babelfish import Language
 from guessit import guessit
 from requests import Session
-
-from subliminal.providers import ParserBeautifulSoup, Provider
 from subliminal import __short_version__
-from subliminal.cache import SHOW_EXPIRATION_TIME, region
+from subliminal.cache import region, SHOW_EXPIRATION_TIME
 from subliminal.exceptions import AuthenticationError, ConfigurationError, ProviderError
-from subliminal.subtitle import Subtitle, fix_line_ending, guess_matches
+from subliminal.providers import ParserBeautifulSoup, Provider
+from subliminal.subtitle import fix_line_ending, guess_matches, Subtitle
 from subliminal.utils import sanitize
 from subliminal.video import Episode, Movie
 

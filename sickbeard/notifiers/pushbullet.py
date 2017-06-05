@@ -19,11 +19,12 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-from requests.compat import urljoin
+
 import re
 
 import sickbeard
-from sickbeard import logger, helpers, common
+from requests.compat import urljoin
+from sickbeard import common, helpers, logger
 
 
 class Notifier(object):

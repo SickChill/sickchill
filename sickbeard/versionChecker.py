@@ -31,11 +31,10 @@ import time
 import traceback
 
 import sickbeard
+import six
 from sickbeard import db, helpers, logger, notifiers, ui
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-
-import six
 
 
 class CheckVersion(object):

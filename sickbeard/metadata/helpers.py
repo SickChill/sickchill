@@ -20,8 +20,7 @@
 
 from __future__ import print_function, unicode_literals
 
-from sickbeard import helpers
-from sickbeard import logger
+from sickbeard import helpers, logger
 
 meta_session = helpers.make_session()
 

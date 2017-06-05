@@ -19,17 +19,17 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-from requests.compat import urljoin
+
 import os
 import re
 import time
-import validators
 
 import sickbeard
+import validators
+from requests.compat import urljoin
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.encoding import ek, ss
 from sickrage.providers.nzb.NZBProvider import NZBProvider

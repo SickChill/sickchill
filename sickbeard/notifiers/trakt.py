@@ -21,11 +21,10 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
+from libtrakt import TraktAPI
+from libtrakt.exceptions import traktAuthException, traktException, traktServerBusy
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
-
-from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
 
 
 class Notifier(object):

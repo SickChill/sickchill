@@ -22,8 +22,15 @@
 
 from __future__ import unicode_literals
 
+import ast
 import socket
+import time
+
+import sickbeard
 from requests.compat import urlencode
+from sickbeard import common, db, logger
+from sickrage.helper.encoding import ss
+from six.moves.http_client import HTTPException, HTTPSConnection
 
 try:
     # this only exists in 2.6
@@ -33,13 +40,7 @@ except ImportError:
     class SSLError(Exception):
         pass
 
-import sickbeard
-from six.moves.http_client import HTTPSConnection, HTTPException
-import time
-import ast
 
-from sickbeard import logger, common, db
-from sickrage.helper.encoding import ss
 
 
 class Notifier(object):
