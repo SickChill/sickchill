@@ -47,11 +47,10 @@ if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in provider_manager.names():
     provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
-# Overwrite the outdated SubsCenter provider.
-# This causes SR to not start for me
-#if 'subscenter' in provider_manager.names():
-#    provider_manager.unregister('subscenter = subliminal.providers.subscenter:SubsCenterProvider')
-#provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
+# We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
+# Until it gets an update in subliminal, we'll use a fixed provider.
+if 'subscenter' not in provider_manager.names():
+    provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
