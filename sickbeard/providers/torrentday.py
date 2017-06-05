@@ -48,7 +48,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         # URLs
         self.custom_url = None
-        self.url = 'https://classic.torrentday.com'
+        self.url = 'https://www.torrentday.com'
         self.urls = {
             'login': urljoin(self.url, '/t'),
             'search': urljoin(self.url, '/V3/API/API.php'),
