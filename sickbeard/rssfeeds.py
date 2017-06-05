@@ -2,7 +2,6 @@
 from __future__ import print_function, unicode_literals
 
 from feedparser.api import parse
-
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
 

@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import re
 import traceback
 import urllib
@@ -24,8 +26,7 @@ import urllib
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -55,6 +56,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         TorrentProvider.__init__(self, 'ilCorsaroNero')
 
+        self.public = True
         self._uid = None
         self._hash = None
         self.cat = None

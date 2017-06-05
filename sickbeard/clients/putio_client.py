@@ -17,8 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from putiopy import Client as PutioClient, ClientError
+from __future__ import unicode_literals
 
+from putiopy import Client as PutioClient, ClientError
 from sickbeard import helpers
 from sickbeard.clients.generic import GenericClient
 

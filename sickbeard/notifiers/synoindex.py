@@ -24,7 +24,6 @@ import os
 import subprocess
 
 import sickbeard
-
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex

@@ -20,13 +20,12 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
 import re
 
-from sickbeard import logger, common
-from sickrage.helper.exceptions import ex
-
+import sickbeard
 import twilio
+from sickbeard import common, logger
+from sickrage.helper.exceptions import ex
 
 
 class Notifier(object):

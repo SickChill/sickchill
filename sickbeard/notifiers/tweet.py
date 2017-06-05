@@ -20,9 +20,10 @@
 
 from __future__ import print_function, unicode_literals
 
+import oauth2 as oauth
+import pythontwitter as twitter
 import sickbeard
-
-from sickbeard import logger, common
+from sickbeard import common, logger
 from sickrage.helper.exceptions import ex
 
 try:
@@ -30,8 +31,6 @@ try:
 except ImportError:
     from cgi import parse_qsl
 
-import oauth2 as oauth
-import pythontwitter as twitter
 
 
 class Notifier(object):

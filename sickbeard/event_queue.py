@@ -7,8 +7,6 @@ import traceback
 
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
-
-
 from six.moves.queue import Empty, Queue
 
 

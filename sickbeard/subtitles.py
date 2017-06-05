@@ -28,19 +28,18 @@ import subprocess
 import threading
 import traceback
 
+import sickbeard
 import six
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
-from subliminal import Episode, ProviderPool, provider_manager
-
-import sickbeard
 from sickbeard import db, history, logger
 from sickbeard.common import Quality
 from sickbeard.helpers import is_media_file
 from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+from subliminal import Episode, provider_manager, ProviderPool
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -49,9 +48,10 @@ if 'legendastv' not in provider_manager.names():
 if 'itasa' not in provider_manager.names():
     provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
 # Overwrite the outdated SubsCenter provider.
-if 'subscenter' in provider_manager.names():
-    provider_manager.unregister('subscenter = subliminal.providers.subscenter:SubsCenterProvider')
-provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
+# This causes SR to not start for me
+#if 'subscenter' in provider_manager.names():
+#    provider_manager.unregister('subscenter = subliminal.providers.subscenter:SubsCenterProvider')
+#provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 

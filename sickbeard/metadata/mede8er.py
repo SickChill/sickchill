@@ -20,15 +20,14 @@
 
 from __future__ import print_function, unicode_literals
 
+import datetime
 import io
 import os
-import datetime
 
 import sickbeard
-from sickbeard import logger, helpers
-from sickbeard.metadata import mediabrowser
 import six
-
+from sickbeard import helpers, logger
+from sickbeard.metadata import mediabrowser
 from sickrage.helper.common import dateFormat, replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException

@@ -23,10 +23,8 @@ import datetime
 import threading
 
 import sickbeard
-from sickbeard import common, db, logger, scheduler, search_queue, ui
-
-
 import six
+from sickbeard import common, db, logger, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):

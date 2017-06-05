@@ -19,8 +19,10 @@
 
 """Custom exceptions used or raised by indexer_api"""
 
-from tvdb_api.tvdb_exceptions import (tvdb_exception, tvdb_error, tvdb_userabort, tvdb_shownotfound, tvdb_showincomplete,
-                                      tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
+from __future__ import unicode_literals
+
+from tvdb_api.tvdb_exceptions import (tvdb_attributenotfound, tvdb_episodenotfound, tvdb_error, tvdb_exception, tvdb_seasonnotfound, tvdb_showincomplete,
+                                      tvdb_shownotfound, tvdb_userabort)
 
 indexerExcepts = ["indexer_exception", "indexer_error", "indexer_userabort", "indexer_shownotfound", "indexer_showincomplete",
                   "indexer_seasonnotfound", "indexer_episodenotfound", "indexer_attributenotfound"]

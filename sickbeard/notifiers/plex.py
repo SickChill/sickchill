@@ -21,17 +21,19 @@
 from __future__ import print_function, unicode_literals
 
 import re
+
+import sickbeard
+import six
+from sickbeard import common, logger
+from sickbeard.helpers import getURL, make_session
+from sickrage.helper.exceptions import ex
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
-import sickbeard
-from sickbeard import logger, common
-from sickbeard.helpers import getURL, make_session
-import six
 
-from sickrage.helper.exceptions import ex
 
 
 class Notifier(object):

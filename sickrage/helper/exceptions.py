@@ -19,10 +19,8 @@
 
 from __future__ import print_function, unicode_literals
 
-from sickrage.helper.encoding import ss
-
-
 import six
+from sickrage.helper.encoding import ss
 
 
 def ex(e):

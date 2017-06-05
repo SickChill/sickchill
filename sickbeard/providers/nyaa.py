@@ -23,7 +23,6 @@ from __future__ import print_function, unicode_literals
 import re
 
 from sickbeard import logger, tvcache
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -80,16 +79,10 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         if not all([title, download_url]):
                             continue
 
-                        try:
-                            seeders = try_int(curItem['nyaa:seeders'])
-                            leechers = try_int(curItem['nyaa:leechers'])
-                            torrent_size = curItem['nyaa:size']
-                            info_hash = curItem['nyaa:infohash']
-                        except KeyError: # Transition phase because of https://github.com/nyaadevs/nyaa/pull/140
-                            seeders = try_int(curItem['seeders'])
-                            leechers = try_int(curItem['leechers'])
-                            torrent_size = curItem['size']
-                            info_hash = curItem['infohash']
+                        seeders = try_int(curItem['nyaa_seeders'])
+                        leechers = try_int(curItem['nyaa_leechers'])
+                        torrent_size = curItem['nyaa_size']
+                        info_hash = curItem['nyaa_infohash']
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':

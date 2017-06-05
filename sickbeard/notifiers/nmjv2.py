@@ -21,14 +21,12 @@
 
 from __future__ import print_function, unicode_literals
 
-from xml.dom.minidom import parseString
-import sickbeard
 import time
+from xml.dom.minidom import parseString
 
+import sickbeard
 from sickbeard import logger
-
 from six.moves import urllib
-
 
 try:
     import xml.etree.cElementTree as etree
