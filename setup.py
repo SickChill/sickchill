@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 """
 Use setup tools to install sickrage
 """
