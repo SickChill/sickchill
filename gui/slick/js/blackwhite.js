@@ -1,30 +1,30 @@
-function generateBlackWhiteList() { // jshint ignore:line
-    var realvalues = [];
+const generateBlackWhiteList = () => {
+    let realvalues = [];
 
-    $('#white option').each(function(i, selected) {
+    $('#white option').each((i, selected) => {
         realvalues[i] = $(selected).val();
     });
-    $("#whitelist").val(realvalues.join(","));
+    $('#whitelist').val(realvalues.join(','));
 
     realvalues = [];
-    $('#black option').each(function(i, selected) {
+    $('#black option').each((i, selected) => {
         realvalues[i] = $(selected).val();
     });
-    $("#blacklist").val(realvalues.join(","));
-}
+    $('#blacklist').val(realvalues.join(','));
+};
 
-function updateBlackWhiteList(showName) { // jshint ignore:line
+const updateBlackWhiteList = showName => {
     $('#pool').children().remove();
 
     $('#blackwhitelist').show();
     if (showName) {
         $.getJSON(srRoot + '/home/fetch_releasegroups', {
-            'show_name': showName
-        }, function (data) {
+            show_name: showName // eslint-disable-line camelcase
+        }, data => {
             if (data.result === 'success') {
-                $.each(data.groups, function(i, group) {
-                    var option = $("<option>");
-                    option.attr("value", group.name);
+                $.each(data.groups, (i, group) => {
+                    const option = $('<option>');
+                    option.attr('value', group.name);
                     option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
                     option.appendTo('#pool');
                 });
@@ -33,44 +33,49 @@ function updateBlackWhiteList(showName) { // jshint ignore:line
     }
 }
 
-$('#removeW').click(function() {
-    !$('#white option:selected').remove().appendTo('#pool'); // jshint ignore:line
+$('#removeW').click(() => {
+    !$('#white option:selected').remove().appendTo('#pool');
 });
 
-$('#addW').click(function() {
-    !$('#pool option:selected').remove().appendTo('#white'); // jshint ignore:line
+$('#addW').click(() => {
+    !$('#pool option:selected').remove().appendTo('#white');
 });
 
-$('#addB').click(function() {
-    !$('#pool option:selected').remove().appendTo('#black'); // jshint ignore:line
+$('#addB').click(() => {
+    !$('#pool option:selected').remove().appendTo('#black');
 });
 
-$('#removeP').click(function() {
-    !$('#pool option:selected').remove(); // jshint ignore:line
+$('#removeP').click(() => {
+    !$('#pool option:selected').remove();
 });
 
-$('#removeB').click(function() {
-    !$('#black option:selected').remove().appendTo('#pool'); // jshint ignore:line
+$('#removeB').click(() => {
+    !$('#black option:selected').remove().appendTo('#pool');
 });
 
-$('#addToWhite').click(function() {
-    var group = $('#addToPoolText').val();
-    if(group !== '') {
-        var option = $('<option>');
-        option.attr('value',group);
+$('#addToWhite').click(() => {
+    const group = $('#addToPoolText').val();
+    if (group !== '') {
+        const option = $('<option>');
+        option.attr('value', group);
         option.html(group);
         option.appendTo('#white');
         $('#addToPoolText').val('');
     }
 });
 
-$('#addToBlack').click(function() {
-    var group = $('#addToPoolText').val();
-    if(group !== '') {
-        var option = $('<option>');
-        option.attr('value',group);
+$('#addToBlack').click(() => {
+    const group = $('#addToPoolText').val();
+    if (group !== '') {
+        const option = $('<option>');
+        option.attr('value', group);
         option.html(group);
         option.appendTo('#black');
         $('#addToPoolText').val('');
     }
 });
+
+export {
+    generateBlackWhiteList,
+    updateBlackWhiteList
+};
