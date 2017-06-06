@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(grunt) {
-    var IsTravis = Boolean(process.env.TRAVIS);
+    const isTravis = Boolean(process.env.TRAVIS);
 
     grunt.registerTask('default', [
         'clean',
@@ -10,19 +10,17 @@ module.exports = function(grunt) {
         'copy',
         'uglify',
         'sass',
-        'cssmin',
-        'jshint',
-        'mocha'
+        'cssmin'
     ]);
 
-    grunt.registerTask('ci', 'Alias for "jshint", "mocha" tasks.', function(update) {
+    grunt.registerTask('ci', 'Alias for "jshint", "mocha" tasks.', update => {
         if (!update) {
             grunt.task.run([
                 'jshint',
                 'mocha'
             ]);
         } else {
-            if (IsTravis) {
+            if (isTravis) {
                 grunt.log.writeln('Running grunt and updating translations...'.magenta);
                 grunt.task.run([
                     'exec:git:checkout:master',
@@ -39,9 +37,9 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('update_trans', 'Update translations', function() {
+    grunt.registerTask('update_trans', 'Update translations', () => {
         grunt.log.writeln('Updating translations...'.magenta);
-        var tasks = [
+        const tasks = [
             'exec:babel_extract',
             'exec:babel_update',
             // + crowdin
@@ -49,7 +47,7 @@ module.exports = function(grunt) {
             'po2json'
         ];
         if (process.env.CROWDIN_API_KEY) {
-            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
+            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // Insert items at index 2
         } else {
             grunt.log.warn('Environment variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.'.bold);
         }
@@ -57,16 +55,16 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    /****************************************
-    *  Admin only tasks                     *
-    ****************************************/
+    /*
+    *  Admin only tasks
+    */
     grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
         'ci',
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
 
-    grunt.registerTask('newrelease', "Pull and merge develop to master, create and push a new release", [
+    grunt.registerTask('newrelease', 'Pull and merge develop to master, create and push a new release', [
         'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
         'exec:git:checkout:master', 'exec:git:pull', // Pull master
         'exec:git:merge:develop', // Merge develop into master
@@ -76,8 +74,8 @@ module.exports = function(grunt) {
         'exec:git:checkout:develop' // Go back to develop
     ]);
 
-    grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
-        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+    grunt.registerTask('genchanges', 'Generate CHANGES.md file', () => {
+        let file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
         if (!file) {
             file = process.env.SICKRAGE_CHANGES_FILE;
         }
@@ -91,10 +89,10 @@ module.exports = function(grunt) {
         grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
-    /****************************************
-    *  Task configurations                  *
-    ****************************************/
-    require('load-grunt-tasks')(grunt); // loads all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
+    /*
+    *  Task configurations
+    */
+    require('load-grunt-tasks')(grunt); // Loads all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
     grunt.initConfig({
         clean: {
             dist: './dist/',
@@ -215,25 +213,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jshint: {
-            options: {
-                jshintrc: './.jshintrc'
-            },
-            all: [
-                './gui/slick/js/**/*.js',
-                '!./gui/slick/js/lib/**/*.js',
-                '!./gui/slick/js/ajaxNotifications.js',
-                '!./gui/slick/js/**/*.min.js' // We use this because ignores doesn't seem to work :(
-            ]
-        },
-        mocha: {
-            all: {
-                src: ['tests/mocha/testrunner.html']
-            },
-            options: {
-                run: true
-            }
-        },
         po2json: {
             messages: {
                 options: {
@@ -257,26 +236,26 @@ module.exports = function(grunt) {
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
 
             // Publish/Releases
-            'git': {
-                cmd: function (cmd, branch) {
+            git: {
+                cmd(cmd, branch) {
                     branch = branch ? ' ' + branch : '';
                     return 'git ' + cmd + branch;
                 }
             },
             'commit_changed_files': { // Choose what to commit.
-                cmd: function(travis) {
+                cmd(travis) {
                     grunt.config('stop_no_changes', Boolean(travis));
                     return 'git status -s -- locale/ gui/';
                 },
                 stdout: false,
-                callback: function(err, stdout) {
+                callback(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
                         grunt.fatal('No changes to commit.', 0);
                     }
 
-                    var commitMsg = [];
-                    var commitPaths = [];
+                    let commitMsg = [];
+                    let commitPaths = [];
                     if (stdout.match(/gui\/.*(vender|core)\.min\.(js|css)$/gm)) {
                         commitMsg.push('Grunt');
                         commitPaths.push('gui/**/vender.min.*');
@@ -305,7 +284,7 @@ module.exports = function(grunt) {
                 }
             },
             'commit_combined': {
-                cmd: function() {
+                cmd() {
                     var message = grunt.config('commit_msg');
                     var paths = grunt.config('commit_paths');
                     if (!message || !paths) {
@@ -313,7 +292,7 @@ module.exports = function(grunt) {
                     }
                     return 'git add -- ' + paths;
                 },
-                callback: function(err) {
+                callback(err) {
                     if (!err) {
                         if (!IsTravis) {
                             grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
@@ -338,7 +317,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_changes': {
-                cmd: function() { return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
+                cmd() { return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
                     var commits = stdout.trim()
@@ -351,14 +330,14 @@ module.exports = function(grunt) {
                 }
             },
             'git_tag_new': {
-                cmd: function (sign) {
+                cmd(sign) {
                     sign = sign !== "true" ? '' : '-s ';
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: false
             },
             'git_push': {
-                cmd: function (remote, branch, tags) {
+                cmd(remote, branch, tags) {
                     var pushCmd = 'git push ' + remote + ' ' + branch;
                     if (tags) {
                         pushCmd += ' --tags';
@@ -379,7 +358,7 @@ module.exports = function(grunt) {
                         '--format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" ' +
                         'refs/tags/v20[0-9][0-9]*',
                 stdout: false,
-                callback: function(err, stdout) {
+                callback(err, stdout) {
                     if (!stdout) {
                         grunt.fatal('Git command returned no data.');
                     }
@@ -390,7 +369,7 @@ module.exports = function(grunt) {
                         .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
                         .split('\xB6\xB6\xB6');
                     var foundTags = [];
-                    allTags.forEach(function(curTag) {
+                    allTags.forEach(curTag => {
                         if (curTag.length) {
                             var explode = curTag.split('|||');
                             if (explode[0] && explode[1] && explode[2]) {
@@ -411,12 +390,12 @@ module.exports = function(grunt) {
                 }
             },
             'commit_changelog': {
-                cmd: function() {
+                cmd() {
                     var file = grunt.config('changesmd_file');
                     if (!file) {
                         grunt.fatal('Missing file path.');
                     }
-                    var path = file.slice(0, -24); // slices 'sickrage-news/CHANGES.md' (len=24)
+                    var path = file.slice(0, -24); // Slices 'sickrage-news/CHANGES.md' (len=24)
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
@@ -433,25 +412,25 @@ module.exports = function(grunt) {
         }
     });
 
-    /****************************************
-    *  Internal tasks                       *
-    *****************************************/
-    grunt.registerTask('_get_next_tag', '(internal) do not run', function() {
+    /*
+    *  Internal tasks
+    */
+    grunt.registerTask('_get_next_tag', '(internal) do not run', () => {
         grunt.config.requires('last_tag');
-        var lastTag = grunt.config('last_tag');
+        let lastTag = grunt.config('last_tag');
 
-        var lastPatch = lastTag.match(/[0-9]+$/)[0];
+        const lastPatch = lastTag.match(/[0-9]+$/)[0];
         lastTag = grunt.template.date(lastTag.replace(/^v|-[0-9]*-?$/g, ''), 'yyyy.mm.dd');
-        var today = grunt.template.today('yyyy.mm.dd');
-        var patch = lastTag === today ? (parseInt(lastPatch) + 1).toString() : '1';
+        const today = grunt.template.today('yyyy.mm.dd');
+        const patch = lastTag === today ? (parseInt(lastPatch, 10) + 1).toString() : '1';
 
-        var nextTag = 'v' + today + '-' + patch;
-        grunt.log.ok(('Creating tag ' + nextTag).green);
+        const nextTag = `v${today}-${patch}`;
+        grunt.log.ok((`Creating tag ${nextTag}`).green);
         grunt.config('next_tag', nextTag);
     });
 
-    grunt.registerTask('_genchanges', "(internal) do not run", function() {
-        // actual generate changes
+    grunt.registerTask('_genchanges', '(internal) do not run', () => {
+        // Generate changes
         var allTags = grunt.config('all_tags');
         if (!allTags) {
             grunt.fatal('No tags information was received.');
@@ -507,8 +486,7 @@ module.exports = function(grunt) {
         if (contents) {
             grunt.file.write(file, contents);
             return true;
-        } else {
-            grunt.fatal('Received no contents to write to file, aborting');
         }
+        grunt.fatal('Received no contents to write to file, aborting');
     });
 };
