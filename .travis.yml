@@ -19,9 +19,9 @@ addons:
 
 before_install:
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - yarn install
 
 install:
+  - yarn install
   - pip install --upgrade pip
   - pip install --upgrade tox
   - pip install --upgrade babel mako crowdin-cli-py
@@ -33,7 +33,6 @@ script:
 cache:
   directories:
     - $HOME/.cache/pip
-    - bower_components
     - node_modules
 
 after_failure:
