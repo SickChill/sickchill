@@ -1,10 +1,5 @@
 // @TODO Move these into common.ini when possible,
 //       currently we can't do that as browser.js and a few others need it before this is loaded
-
-function getMeta(pyVar){
-    return $('meta[data-var="' + pyVar + '"]').data('content');
-}
-
 var srRoot = getMeta('srRoot'),
     srDefaultPage = getMeta('srDefaultPage'),
     srPID = getMeta('srPID'),
@@ -28,27 +23,6 @@ var configSuccess = function(){
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
 };
-
-function metaToBool(pyVar){
-    var meta = $('meta[data-var="' + pyVar + '"]').data('content');
-    if(meta === undefined){
-        console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
-        return meta;
-    } else {
-        meta = (isNaN(meta) ? meta.toLowerCase() : meta.toString());
-        return !(meta === 'false' || meta === 'none' || meta === '0');
-    }
-}
-
-function isMeta(pyVar, result){
-    var reg = new RegExp(result.length > 1 ? result.join('|') : result);
-    return (reg).test($('meta[data-var="' + pyVar + '"]').data('content'));
-}
-
-function notifyModal(message){
-    $('#site-notification-modal .modal-body').html(message);
-    $('#site-notification-modal').modal();
-}
 
 function addSiteMessage(level, tag, message){
     level = level || 'danger';

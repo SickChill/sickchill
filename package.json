@@ -41,6 +41,7 @@
         "jquery-confirm": "^3.2.3",
         "jquery-tokeninput": "^1.6.0",
         "jquery-ui": "^1.12.1",
+        "loglevel": "^1.4.1",
         "pnotify": "^3.2.0",
         "qtip2": "^3.0.3",
         "tablesorter": "2.28.4",
@@ -74,6 +75,7 @@
             "jquery"
         ],
         "globals": [
+            "_",
             "srRoot",
             "metaToBool"
         ]
