@@ -7,15 +7,11 @@ dist: xenial
 sudo: false
 
 env:
-  - TRAVIS_NODE_VERSION="5.6.0"
+  - TRAVIS_NODE_VERSION="v7.9.0"
 
 before_install:
-  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm &&
-    git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - npm install -g grunt-cli
-  - npm install -g bower
-  - npm install --quiet
-  - bower install
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+  - yarn install
 
 install:
   - pip install --upgrade pip
@@ -37,8 +33,7 @@ after_failure:
 
 after_success:
   # don't run if any of these are NOT met
-  - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$GH_CRED" =~ ^.+:.+$ ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]
-    && [[ "$TRAVIS_BRANCH" == "master" ]]; }; then exit 0; fi;
+  - if ! { [[ ! -z "$CROWDIN_API_KEY" ]] && [[ "$GH_CRED" =~ ^.+:.+$ ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; }; then exit 0; fi;
   - git --version
   - git config --global user.name "SickRage"
   - git config --global user.email sickrage2@gmail.com
