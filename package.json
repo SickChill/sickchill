@@ -72,6 +72,10 @@
         "envs": [
             "browser",
             "jquery"
+        ],
+        "globals": [
+            "srRoot",
+            "metaToBool"
         ]
     },
     "babel": {
