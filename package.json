@@ -12,6 +12,7 @@
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
         "test": "grunt travis",
+        "bundle": "webpack gui/slick/js/index.js gui/slick/dist/bundle.js",
         "link": "xo",
         "security": "snyk test"
     },
