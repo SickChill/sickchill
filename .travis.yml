@@ -24,8 +24,9 @@ script:
   - tox -v --recreate
 
 cache:
+  yarn: true
+  pip: true
   directories:
-    - $HOME/.cache/pip
     - node_modules
 
 after_failure:
