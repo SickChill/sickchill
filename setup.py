@@ -3,6 +3,7 @@
 Use setup tools to install sickrage
 """
 import os
+import re
 
 from babel.messages import frontend as babel
 from setuptools import find_packages, setup
@@ -11,6 +12,26 @@ ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
 with open(os.path.join(ROOT, 'readme.md'), 'r') as r:
     long_description = r.read()
+
+def get_requirements(rel_file_path):
+    unique_reqs = set()
+    with open(os.path.join(ROOT, rel_file_path), 'r') as reqs_f:
+        for pkg in reqs_f.readlines():
+            pkg = pkg.strip()
+            # Discard all commented-out packages, notes and empty lines
+            if not pkg or pkg.startswith('#'):
+                continue
+            pkg_match = re.match(r'^(?P<pkg>[\w\-.]+[=]{2}[\d.]+)(\s*#+\s*(?P<note>.*))*?$', pkg)
+            if pkg_match:
+                unique_reqs.add(pkg_match.group(1))
+            else:
+                print('Unable to read package line: {}'.format(pkg))
+                return None
+    return sorted(unique_reqs, key=str.lower)
+
+requirements = get_requirements('requirements/requirements.txt')
+if not requirements:
+    raise AssertionError('get_requirements failed')
 
 setup(
     name="sickrage",
@@ -28,12 +49,7 @@ setup(
     license='GPLv2',
 
     packages=find_packages(),
-    install_requires=[
-        'pytz',
-        'requests',
-        'mako',
-        'configobj'
-    ],
+    install_requires=requirements,
 
     test_suite="tests",
     tests_require=[
