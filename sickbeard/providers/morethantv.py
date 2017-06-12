@@ -122,14 +122,63 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
-
                 if mode != 'RSS':
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
+                if mode == 'Season':
+                    # Parse search string to get number and create second string in format "Season XX"
+                    seasonnumber = re.match('.*?([0-9]+)$', search_string).group(1)
+                    search_stringnew = re.sub(r'S\d\d', 'Season', search_string)
+                    search_stringnew = '{0} {1}'.format(search_stringnew, seasonnumber.lstrip('0'))
+
+                    searchedSeasonShort = 'S{0}'.format(seasonnumber)
+                    searchedSeason = 'Season {0}'.format(seasonnumber.lstrip('0'))
+
+                    logger.log("Second Search string: {0}".format
+                               (search_stringnew), logger.DEBUG)
+
+                    # Process the search and get the returned page
+                    search_params['searchstr'] = search_string
+                    data = self.get_url(self.urls['search'], params=search_params,
+					                    returns='text').replace('\n', '')
+					
+                    search_params['searchstr'] = search_stringnew
+                    seasondata = self.get_url(self.urls['search'], params=search_params,
+					                          returns='text').replace('\n', '')
+					
+                    # Regex to match only the torrent table in each page
+                    regex = '.*torrent_table">(.*)</table>'
+                    regextable = ('(?<=<table class="torrent_table cats no_grouping"'
+                                  ' id="torrent_table">).*(?=</table>)')
+
+                    # If no result, table is empty
+                    if re.search('Your search did not match anything.', data):
+                        normaltable = ''
+                    else:
+                        normaltable = re.search(regex, data).group(1)
+                    if re.search('Your search did not match anything.', seasondata):
+                        alttable = ''
+                    else:
+                        alttable = re.search(regex, seasondata).group(1)
+					
+                    # Merge the tables so that the next step goes
+                    # through only one set of data for both searches
+                    fulltable = normaltable + alttable
+                    if normaltable == '' and alttable == '':
+                        data = ''
+                    if normaltable == '':
+                        data = re.sub(regextable, '{0}'.format(fulltable),  seasondata)
+                    elif alttable == '':
+                        data = re.sub(regextable, '{0}'.format(fulltable),  data)
+                    else:
+                        data = re.sub(regextable, '{0}'.format(fulltable),  data)
+
                 search_params['searchstr'] = search_string
 
-                data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                if mode != 'Season':
+                   data = self.get_url(self.urls['search'], params=search_params, returns='text')
+				
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
@@ -153,6 +202,32 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 continue
 
                             title = result.find('a', title='View torrent').get_text(strip=True)
+
+                            if mode == 'Season':
+                                # Skip if torrent doesn't contain the right season number
+                                if searchedSeason not in title and searchedSeasonShort not in title:
+                                    continue
+                                # If torrent isn't grouped, no need to get the folder name
+                                elif searchedSeasonShort in title:
+                                    pass
+                                else:
+                                    torrentid = urljoin(self.url, result.find('span', title='Download').parent['href'])
+                                    torrentid = re.match('.*?id=([0-9]+)', torrentid).group(1)
+									
+                                    group_params = {
+                                        'torrentid': ''
+                                    }
+
+                                    # Obtain folder name to use as title
+                                    group_params['torrentid'] = torrentid
+                                    torrentInfo = self.get_url(self.urls['search'],params=group_params,
+                                                               returns='text').replace('\n', '')
+
+                                    releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(torrentid)
+                                    releasename = re.search(releaseregex, torrentInfo).group(1)
+                                    title = releasename
+
+							
                             download_url = urljoin(self.url, result.find('span', title='Download').parent['href'])
                             if not all([title, download_url]):
                                 continue
