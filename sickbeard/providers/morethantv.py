@@ -122,6 +122,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
+
                 if mode != 'RSS':
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
@@ -142,11 +143,11 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     search_params['searchstr'] = search_string
                     data = self.get_url(self.urls['search'], params=search_params,
                                         returns='text').replace('\n', '')
-					
+
                     search_params['searchstr'] = search_stringnew
                     seasondata = self.get_url(self.urls['search'], params=search_params,
                                               returns='text').replace('\n', '')
-					
+
                     # Regex to match only the torrent table in each page
                     regex = '.*torrent_table">(.*)</table>'
                     regextable = ('(?<=<table class="torrent_table cats no_grouping"'
@@ -161,7 +162,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         alttable = ''
                     else:
                         alttable = re.search(regex, seasondata).group(1)
-					
+
                     # Merge the tables so that the next step goes
                     # through only one set of data for both searches
                     fulltable = normaltable + alttable
@@ -178,7 +179,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 if mode != 'Season':
                    data = self.get_url(self.urls['search'], params=search_params, returns='text')
-				
+
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
@@ -213,7 +214,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 else:
                                     torrentid = urljoin(self.url, result.find('span', title='Download').parent['href'])
                                     torrentid = re.match('.*?id=([0-9]+)', torrentid).group(1)
-									
+
                                     group_params = {
                                         'torrentid': ''
                                     }
@@ -227,7 +228,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                     releasename = re.search(releaseregex, torrentInfo).group(1)
                                     title = releasename
 
-							
+
                             download_url = urljoin(self.url, result.find('span', title='Download').parent['href'])
                             if not all([title, download_url]):
                                 continue
