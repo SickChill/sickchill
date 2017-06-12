@@ -141,11 +141,11 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     # Process the search and get the returned page
                     search_params['searchstr'] = search_string
                     data = self.get_url(self.urls['search'], params=search_params,
-					                    returns='text').replace('\n', '')
+                                        returns='text').replace('\n', '')
 					
                     search_params['searchstr'] = search_stringnew
                     seasondata = self.get_url(self.urls['search'], params=search_params,
-					                          returns='text').replace('\n', '')
+                                              returns='text').replace('\n', '')
 					
                     # Regex to match only the torrent table in each page
                     regex = '.*torrent_table">(.*)</table>'
