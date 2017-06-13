@@ -61,7 +61,7 @@ PROVIDER_URLS = {
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
-    'subscenter': 'http://www.subscenter.org',
+    'subscenter': 'http://www.subscenter.info',
     'thesubdb': 'http://www.thesubdb.com',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
