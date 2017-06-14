@@ -1,13 +1,11 @@
-import {getMeta} from '../utils';
+import getMeta from '../utils/get-meta';
 
-const defaults = {
-    srRoot: getMeta('srRoot'),
-    srDefaultPage: getMeta('srDefaultPage'),
-    themeSpinner: getMeta('themeSpinner'),
-    anonURL: getMeta('anonURL'),
-    srPID: getMeta('srPID')
-};
+const config = {};
 
-const config = {...defaults};
+config.srRoot = getMeta('srRoot');
+config.srDefaultPage = getMeta('srDefaultPage');
+config.themeSpinner = getMeta('themeSpinner');
+config.anonURL = getMeta('anonURL');
+config.srPID = getMeta('srPID');
 
 export default config;

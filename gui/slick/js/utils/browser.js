@@ -1,11 +1,13 @@
-(function($) {
-    'use strict';
+import $ from 'jquery';
 
+import config from '../config/index';
+
+const load = () => {
     $.Browser = {
         defaults: {
             title: _('Choose Directory'),
-            url: srRoot + '/browser/',
-            autocompleteURL: srRoot + '/browser/complete',
+            url: config.srRoot + '/browser/',
+            autocompleteURL: config.srRoot + '/browser/complete',
             includeFiles: 0, // @TODO: Replace this with false
             fileTypes: [], // File extensions to include, 'images' is an alias for image types
             showBrowseButton: true
@@ -56,7 +58,7 @@
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, (i, entry) => {
                 // @TODO: Clean this up.
-                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) {
+                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
                 }
                 link = $('<a href="javascript:void(0)">').on('click', () => {
@@ -219,4 +221,8 @@
         }
         return options.field;
     };
-})(jQuery);
+};
+
+export default {
+    load
+};

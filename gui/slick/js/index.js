@@ -1,9 +1,16 @@
-// @TODO: Move everything from core into seperate files and then import into here
-import {getText} from './utils';
+import $ from 'jquery';
 
-import home from './home';
+import {browser, getText} from './utils';
+import config from './config';
+import scrolltotop from './lib/jquery.scrolltopcontrol-1.1';
 
+import {home} from './routes';
+
+browser.load();
 getText.load();
+scrolltotop.init({
+    html: `<img src="${config.srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />`
+});
 
 const routes = {
     home

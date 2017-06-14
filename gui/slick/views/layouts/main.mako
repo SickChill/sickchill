@@ -343,8 +343,6 @@
                 <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
                 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
                 <script type="text/javascript" src="${srRoot}/js/dist/bundle.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}" charset="utf-8"></script>
                 <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
             % endif
             <%block name="scripts" />

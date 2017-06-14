@@ -1,6 +1,6 @@
 import {debounce} from 'underscore';
 
-import {getMeta} from '../utils';
+import {getMeta} from '../../utils';
 
 export default () => {
     // Resets the tables sorting, needed as we only use a single call for both tables in tablesorter
@@ -139,7 +139,7 @@ export default () => {
             stickyHeaders_offset: 50, // eslint-disable-line camelcase
             filter_saveFilters: true, // eslint-disable-line camelcase
             filter_functions: { // eslint-disable-line camelcase
-                5(e, n, f) {
+                5(e, n, f) { // eslint-disable-line complexity
                     let test = false;
                     const pct = Math.floor((n % 1) * 1000);
                     if (f === '') {

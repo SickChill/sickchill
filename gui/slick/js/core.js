@@ -6,7 +6,6 @@ import {
     notifyModal
 } from './utils';
 
-const topImageHtml = `<img src="${srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />`;
 const loading = `<img src="${srRoot}/images/loading16${themeSpinner}.gif" height="16" width="16" />`;
 
 const configSuccess = function() {

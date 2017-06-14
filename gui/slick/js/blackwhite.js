@@ -31,26 +31,26 @@ const updateBlackWhiteList = showName => {
             }
         });
     }
-}
+};
 
 $('#removeW').click(() => {
-    !$('#white option:selected').remove().appendTo('#pool');
+    !$('#white option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addW').click(() => {
-    !$('#pool option:selected').remove().appendTo('#white');
+    !$('#pool option:selected').remove().appendTo('#white'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addB').click(() => {
-    !$('#pool option:selected').remove().appendTo('#black');
+    !$('#pool option:selected').remove().appendTo('#black'); // eslint-disable-line no-unused-expressions
 });
 
 $('#removeP').click(() => {
-    !$('#pool option:selected').remove();
+    !$('#pool option:selected').remove(); // eslint-disable-line no-unused-expressions
 });
 
 $('#removeB').click(() => {
-    !$('#black option:selected').remove().appendTo('#pool');
+    !$('#black option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addToWhite').click(() => {
