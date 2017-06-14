@@ -20,14 +20,12 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - grunt ci
+  - yarn test
   - tox -v --recreate
 
 cache:
   yarn: true
   pip: true
-  directories:
-    - node_modules
 
 after_failure:
   - cat ./tests/Logs/sickrage.log
@@ -42,7 +40,7 @@ after_success:
   - git remote rm origin
   - git remote add origin https://$GH_CRED@github.com/$TRAVIS_REPO_SLUG.git
   - git fetch origin master develop --no-tags
-  - grunt ci:update
+  - grunt ci
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
