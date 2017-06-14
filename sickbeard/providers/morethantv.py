@@ -160,7 +160,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                             if mode == 'Season':
                                 # Skip if torrent isn't the right season, we can't search
-								# for an exact season on MTV, it returns all of them
+                                # for an exact season on MTV, it returns all of them
                                 if searchedSeason not in title:
                                     continue
                                 # If torrent is grouped, we need a folder name for title
