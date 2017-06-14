@@ -30,5 +30,9 @@ module.exports = {
 
         // Add your application's scripts below
         './gui/slick/js/index'
-    ]
+    ],
+    output: {
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, './gui/slick/js/dist/')
+    }
 };

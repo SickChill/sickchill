@@ -12,7 +12,7 @@
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
         "test": "xo && nyc ava",
-        "build": "webpack gui/slick/js/index.js gui/slick/js/dist/bundle.js",
+        "build": "webpack",
         "security": "snyk test"
     },
     "devDependencies": {
