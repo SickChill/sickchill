@@ -11,9 +11,8 @@
     },
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
-        "test": "grunt travis",
-        "compile": "webpack gui/slick/js/index.js gui/slick/js/dist/bundle.js",
-        "link": "xo",
+        "test": "xo && nyc ava",
+        "build": "webpack gui/slick/js/index.js gui/slick/js/dist/bundle.js",
         "security": "snyk test"
     },
     "devDependencies": {
@@ -30,9 +29,10 @@
         "grunt-sass": "^2.0.0",
         "load-grunt-tasks": "^3.5.2",
         "snyk": "^1.28.1",
-        "webpack": "^2.6.1"
+        "webpack": "v3.0.0-rc.1"
     },
     "dependencies": {
+        "babel-polyfill": "^6.23.0",
         "bootstrap": "3.3.6",
         "bootstrap-3-typeahead": "^4.0.2",
         "bootstrap-hover-dropdown": "^2.2.1",
@@ -72,8 +72,7 @@
             "unicorn/no-abusive-eslint-disable": "off"
         },
         "envs": [
-            "browser",
-            "jquery"
+            "browser"
         ],
         "globals": [
             "_",
