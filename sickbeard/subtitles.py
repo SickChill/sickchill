@@ -47,6 +47,8 @@ if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in provider_manager.names():
     provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
+if 'thewiz' not in provider_manager.names():
+    provider_manager.register('thewiz = sickrage.providers.subtitle.thewiz:TheWizProvider')
 # We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
 # Until it gets an update in subliminal, we'll use a fixed provider.
 if 'subscenter' not in provider_manager.names():
@@ -61,8 +63,9 @@ PROVIDER_URLS = {
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
-    'subscenter': 'http://www.subscenter.org',
+    'subscenter': 'http://www.subscenter.info',
     'thesubdb': 'http://www.thesubdb.com',
+    'thewiz': 'http://subs.thewiz.info',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
