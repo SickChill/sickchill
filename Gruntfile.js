@@ -1,7 +1,5 @@
-'use strict';
-
 module.exports = function(grunt) {
-    var IsTravis = Boolean(process.env.TRAVIS);
+    const isTravis = Boolean(process.env.TRAVIS);
 
     grunt.registerTask('default', [
         'clean',
@@ -10,38 +8,29 @@ module.exports = function(grunt) {
         'copy',
         'uglify',
         'sass',
-        'cssmin',
-        'jshint',
-        'mocha'
+        'cssmin'
     ]);
 
-    grunt.registerTask('ci', 'Alias for "jshint", "mocha" tasks.', function(update) {
-        if (!update) {
+    grunt.registerTask('ci', 'Alias for travis tasks.', () => {
+        if (isTravis) {
+            grunt.log.writeln('Running grunt and updating translations...'.magenta);
             grunt.task.run([
-                'jshint',
-                'mocha'
+                'exec:git:checkout:master',
+                'default', // Run default task
+                'update_trans', // Update translations
+                'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
+                'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
+                'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
+                'exec:git_push:origin:master develop' // Push master and develop
             ]);
         } else {
-            if (IsTravis) {
-                grunt.log.writeln('Running grunt and updating translations...'.magenta);
-                grunt.task.run([
-                    'exec:git:checkout:master',
-                    'default', // Run default task
-                    'update_trans', // Update translations
-                    'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-                    'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
-                    'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
-                    'exec:git_push:origin:master develop' // Push master and develop
-                ]);
-            } else {
-                grunt.fatal('This task is only for Travis-CI!');
-            }
+            grunt.fatal('This task is only for Travis-CI!');
         }
     });
 
-    grunt.registerTask('update_trans', 'Update translations', function() {
+    grunt.registerTask('update_trans', 'Update translations', () => {
         grunt.log.writeln('Updating translations...'.magenta);
-        var tasks = [
+        const tasks = [
             'exec:babel_extract',
             'exec:babel_update',
             // + crowdin
@@ -49,7 +38,7 @@ module.exports = function(grunt) {
             'po2json'
         ];
         if (process.env.CROWDIN_API_KEY) {
-            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
+            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // Insert items at index 2
         } else {
             grunt.log.warn('Environment variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.'.bold);
         }
@@ -57,16 +46,16 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    /****************************************
-    *  Admin only tasks                     *
-    ****************************************/
+    /*
+    *  Admin only tasks
+    */
     grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
         'ci',
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
 
-    grunt.registerTask('newrelease', "Pull and merge develop to master, create and push a new release", [
+    grunt.registerTask('newrelease', 'Pull and merge develop to master, create and push a new release', [
         'exec:git:checkout:develop', 'exec:git:pull', // Pull develop
         'exec:git:checkout:master', 'exec:git:pull', // Pull master
         'exec:git:merge:develop', // Merge develop into master
@@ -76,8 +65,8 @@ module.exports = function(grunt) {
         'exec:git:checkout:develop' // Go back to develop
     ]);
 
-    grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
-        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+    grunt.registerTask('genchanges', 'Generate CHANGES.md file', () => {
+        let file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
         if (!file) {
             file = process.env.SICKRAGE_CHANGES_FILE;
         }
@@ -91,149 +80,11 @@ module.exports = function(grunt) {
         grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
-    /****************************************
-    *  Task configurations                  *
-    ****************************************/
-    require('load-grunt-tasks')(grunt); // loads all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
+    /*
+    *  Task configurations
+    */
+    require('load-grunt-tasks')(grunt); // Loads all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
     grunt.initConfig({
-        clean: {
-            dist: './dist/',
-            'bower_components': './bower_components',
-            fonts: './gui/slick/css/*.ttf',
-            options: {
-                force: true
-            }
-        },
-        bower: {
-            install: {
-                options: {
-                    copy: false
-                }
-            }
-        },
-        'bower_concat': {
-            all: {
-                dest: {
-                    js: './dist/bower.js',
-                    css: './dist/bower.css'
-                },
-                exclude: [],
-                dependencies: {},
-                mainFiles: {
-                    'tablesorter': [
-                        'dist/js/jquery.tablesorter.combined.js',
-                        'dist/js/widgets/widget-columnSelector.min.js',
-                        'dist/js/widgets/widget-stickyHeaders.min.js',
-                        'dist/css/theme.blue.min.css'
-                    ],
-                    'bootstrap': [
-                        'dist/css/bootstrap.min.css',
-                        'dist/js/bootstrap.min.js'
-                    ],
-                    'bootstrap-formhelpers': [
-                        'dist/js/bootstrap-formhelpers.min.js'
-                    ],
-                    'isotope': [
-                        "dist/isotope.pkgd.min.js"
-                    ],
-                    "outlayer": [
-                        "item.js",
-                        "outlayer.js"
-                    ],
-                    "openSans": [
-                        "*.ttf", "*.css"
-                    ]
-                },
-                bowerOptions: {
-                    relative: false
-                }
-            }
-        },
-        copy: {
-            openSans: {
-                files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: 'bower_components/openSans',
-                    src: [
-                        '*.ttf'
-                    ],
-                    dest: './gui/slick/css/'
-                }]
-            },
-            glyphicon: {
-                files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: 'bower_components/bootstrap/fonts',
-                    src: [
-                        '*.eot',
-                        '*.svg',
-                        '*.ttf',
-                        '*.woff',
-                        '*.woff2'
-                    ],
-                    dest: './gui/slick/fonts/'
-                }]
-            }
-        },
-        uglify: {
-            bower: {
-                files: {
-                    './gui/slick/js/vender.min.js': ['./dist/bower.js']
-                }
-            },
-            core: {
-                files: {
-                    './gui/slick/js/core.min.js': ['./gui/slick/js/core.js']
-                }
-            }
-        },
-        sass: {
-            options: {
-                sourceMap: true
-            },
-            core: {
-                files: {
-                    './dist/core.css': ['./gui/slick/scss/core.scss']
-                }
-            }
-        },
-        cssmin: {
-            options: {
-                shorthandCompacting: false,
-                roundingPrecision: -1
-            },
-            bower: {
-                files: {
-                    './gui/slick/css/vender.min.css': ['./dist/bower.css']
-                }
-            },
-            core: {
-                files: {
-                    './gui/slick/css/core.min.css': ['./dist/core.css']
-                }
-            }
-        },
-        jshint: {
-            options: {
-                jshintrc: './.jshintrc'
-            },
-            all: [
-                './gui/slick/js/**/*.js',
-                '!./gui/slick/js/lib/**/*.js',
-                '!./gui/slick/js/ajaxNotifications.js',
-                '!./gui/slick/js/**/*.min.js' // We use this because ignores doesn't seem to work :(
-            ]
-        },
-        mocha: {
-            all: {
-                src: ['tests/mocha/testrunner.html']
-            },
-            options: {
-                run: true
-            }
-        },
         po2json: {
             messages: {
                 options: {
@@ -244,39 +95,41 @@ module.exports = function(grunt) {
                     expand: true,
                     src: './locale/*/LC_MESSAGES/messages.po',
                     dest: '',
-                    ext: '' // workaround for relative files
+                    ext: '' // Workaround for relative files
                 }]
             }
         },
         exec: {
             // Translations
-            'babel_extract': {cmd: 'python setup.py extract_messages'},
-            'babel_update': {cmd: 'python setup.py update_catalog'},
-            'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
-            'crowdin_download': {cmd: 'crowdin-cli-py download'},
-            'babel_compile': {cmd: 'python setup.py compile_catalog'},
+            babel_extract: {cmd: 'python setup.py extract_messages'}, // eslint-disable-line camelcase
+            babel_update: {cmd: 'python setup.py update_catalog'}, // eslint-disable-line camelcase
+            crowdin_upload: {cmd: 'crowdin-cli-py upload sources'}, // eslint-disable-line camelcase
+            crowdin_download: {cmd: 'crowdin-cli-py download'}, // eslint-disable-line camelcase
+            babel_compile: {cmd: 'python setup.py compile_catalog'}, // eslint-disable-line camelcase
 
             // Publish/Releases
-            'git': {
-                cmd: function (cmd, branch) {
+            git: {
+                cmd(cmd, branch) {
                     branch = branch ? ' ' + branch : '';
                     return 'git ' + cmd + branch;
                 }
             },
-            'commit_changed_files': { // Choose what to commit.
-                cmd: function(travis) {
+
+             // Choose what to commit.
+            commit_changed_files: {  // eslint-disable-line camelcase
+                cmd(travis) {
                     grunt.config('stop_no_changes', Boolean(travis));
                     return 'git status -s -- locale/ gui/';
                 },
                 stdout: false,
-                callback: function(err, stdout) {
+                callback(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
                         grunt.fatal('No changes to commit.', 0);
                     }
 
-                    var commitMsg = [];
-                    var commitPaths = [];
+                    const commitPaths = [];
+                    let commitMsg = [];
                     if (stdout.match(/gui\/.*(vender|core)\.min\.(js|css)$/gm)) {
                         commitMsg.push('Grunt');
                         commitPaths.push('gui/**/vender.min.*');
@@ -304,31 +157,35 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            'commit_combined': {
-                cmd: function() {
-                    var message = grunt.config('commit_msg');
-                    var paths = grunt.config('commit_paths');
+            commit_combined: { // eslint-disable-line camelcase
+                cmd() {
+                    const message = grunt.config('commit_msg');
+                    const paths = grunt.config('commit_paths');
                     if (!message || !paths) {
                         grunt.fatal('Call exec:commit_changed_files instead!');
                     }
                     return 'git add -- ' + paths;
                 },
-                callback: function(err) {
-                    if (!err) {
-                        if (!IsTravis) {
-                            grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
-                        } else { // Workaround for Travis (with -m "text" the quotes are within the message)
-                            var msgFilePath = 'commit-msg.txt';
-                            grunt.file.write(msgFilePath, grunt.config('commit_msg'));
-                            grunt.task.run('exec:git:commit:-F ' + msgFilePath);
-                        }
+                callback(err) {
+                    if (err) {
+                        // @TODO: Add error handling
+                        return;
+                    }
+
+                    // Workaround for Travis (with -m "text" the quotes are within the message)
+                    if (isTravis) {
+                        const msgFilePath = 'commit-msg.txt';
+                        grunt.file.write(msgFilePath, grunt.config('commit_msg'));
+                        grunt.task.run('exec:git:commit:-F ' + msgFilePath);
+                    } else {
+                        grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
                     }
                 }
             },
-            'git_get_last_tag': {
+            git_get_last_tag: { // eslint-disable-line camelcase
                 cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9]*',
                 stdout: false,
-                callback: function(err, stdout) {
+                callback(err, stdout) {
                     stdout = stdout.trim();
                     if (/^v\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
                         grunt.config('last_tag', stdout);
@@ -337,12 +194,14 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            'git_list_changes': {
-                cmd: function() { return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
+            git_list_changes: { // eslint-disable-line camelcase
+                cmd() {
+                    return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD';
+                },
                 stdout: false,
-                callback: function(err, stdout) {
-                    var commits = stdout.trim()
-                        .replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');  // removes ` and tag information
+                callback(err, stdout) {
+                    // Removes ` and tag information
+                    const commits = stdout.trim().replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
@@ -350,16 +209,16 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            'git_tag_new': {
-                cmd: function (sign) {
-                    sign = sign !== "true" ? '' : '-s ';
+            git_tag_new: { // eslint-disable-line camelcase
+                cmd(sign) {
+                    sign = sign !== 'true' ? '' : '-s ';
                     return 'git tag ' + sign + grunt.config('next_tag') + ' -m "' + grunt.config('commits') + '"';
                 },
                 stdout: false
             },
-            'git_push': {
-                cmd: function (remote, branch, tags) {
-                    var pushCmd = 'git push ' + remote + ' ' + branch;
+            git_push: { // eslint-disable-line camelcase
+                cmd(remote, branch, tags) {
+                    let pushCmd = 'git push ' + remote + ' ' + branch;
                     if (tags) {
                         pushCmd += ' --tags';
                     }
@@ -370,29 +229,29 @@ module.exports = function(grunt) {
                     return pushCmd;
                 },
                 stderr: false,
-                callback: function(err, stdout, stderr) {
+                callback(err, stdout, stderr) {
                     grunt.log.write(stderr.replace(process.env.GH_CRED, '[censored]'));
                 }
             },
-            'git_list_tags': {
+            git_list_tags: { // eslint-disable-line camelcase
                 cmd: 'git for-each-ref --sort=refname ' +
                         '--format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" ' +
                         'refs/tags/v20[0-9][0-9]*',
                 stdout: false,
-                callback: function(err, stdout) {
+                callback(err, stdout) {
                     if (!stdout) {
                         grunt.fatal('Git command returned no data.');
                     }
                     if (err) {
                         grunt.fatal('Git command failed to execute.');
                     }
-                    var allTags = stdout
+                    const allTags = stdout
                         .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
                         .split('\xB6\xB6\xB6');
-                    var foundTags = [];
-                    allTags.forEach(function(curTag) {
+                    const foundTags = [];
+                    allTags.forEach(curTag => {
                         if (curTag.length) {
-                            var explode = curTag.split('|||');
+                            const explode = curTag.split('|||');
                             if (explode[0] && explode[1] && explode[2]) {
                                 foundTags.push({
                                     tag: explode[0].trim(),
@@ -410,60 +269,59 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            'commit_changelog': {
-                cmd: function() {
-                    var file = grunt.config('changesmd_file');
+            commit_changelog: { // eslint-disable-line camelcase
+                cmd() {
+                    const file = grunt.config('changesmd_file');
                     if (!file) {
                         grunt.fatal('Missing file path.');
                     }
-                    var path = file.slice(0, -24); // slices 'sickrage-news/CHANGES.md' (len=24)
+                    const path = file.slice(0, -24); // Slices 'sickrage-news/CHANGES.md' (len=24)
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }
-                    var pushCmd = 'git push origin master';
+                    let pushCmd = 'git push origin master';
                     if (grunt.option('no-push')) {
                         grunt.log.warn('Pushing with --dry-run ...'.magenta);
                         pushCmd += ' --dry-run';
                     }
-                    return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
-                        pushCmd].join(' && ');
+                    return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase', pushCmd].join(' && ');
                 },
                 stdout: true
             }
         }
     });
 
-    /****************************************
-    *  Internal tasks                       *
-    *****************************************/
-    grunt.registerTask('_get_next_tag', '(internal) do not run', function() {
+    /*
+    *  Internal tasks
+    */
+    grunt.registerTask('_get_next_tag', '(internal) do not run', () => {
         grunt.config.requires('last_tag');
-        var lastTag = grunt.config('last_tag');
+        let lastTag = grunt.config('last_tag');
 
-        var lastPatch = lastTag.match(/[0-9]+$/)[0];
+        const lastPatch = lastTag.match(/[0-9]+$/)[0];
         lastTag = grunt.template.date(lastTag.replace(/^v|-[0-9]*-?$/g, ''), 'yyyy.mm.dd');
-        var today = grunt.template.today('yyyy.mm.dd');
-        var patch = lastTag === today ? (parseInt(lastPatch) + 1).toString() : '1';
+        const today = grunt.template.today('yyyy.mm.dd');
+        const patch = lastTag === today ? (parseInt(lastPatch, 10) + 1).toString() : '1';
 
-        var nextTag = 'v' + today + '-' + patch;
-        grunt.log.ok(('Creating tag ' + nextTag).green);
+        const nextTag = `v${today}-${patch}`;
+        grunt.log.ok((`Creating tag ${nextTag}`).green);
         grunt.config('next_tag', nextTag);
     });
 
-    grunt.registerTask('_genchanges', "(internal) do not run", function() {
-        // actual generate changes
-        var allTags = grunt.config('all_tags');
+    grunt.registerTask('_genchanges', '(internal) do not run', () => {
+        // Generate changes
+        const allTags = grunt.config('all_tags');
         if (!allTags) {
             grunt.fatal('No tags information was received.');
         }
 
-        var file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        const file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
         if (!file) {
             grunt.fatal('Missing file path.');
         }
 
-        var contents = "";
-        allTags.forEach(function(tag) {
+        let contents = '';
+        allTags.forEach(tag => {
             contents += '### ' + tag.tag + '\n';
             contents += '\n';
             if (tag.previous) {
@@ -471,33 +329,32 @@ module.exports = function(grunt) {
                     tag.previous + '...' + tag.tag + ')\n';
             }
             contents += '\n';
-            tag.message.forEach(function (row) {
-                contents += row
-                    // link issue numbers, style links of issues and pull requests
-                    .replace(/([\w\d\-.]+\/[\w\d\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\d\-.]+\/[\w\d\-.]+)\/(issues|pull)\/(\d+)/gm,
-                        function(all, repoL, numL, repoR, typeR, numR) {
-                            if (numL) { // repoL, numL = user/repo#1234 style
-                                return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
-                                (repoL ? repoL : 'SickRage/SickRage') + '/issues/' + numL + ')';
-                            } else if (numR) { // repoR, type, numR = https://github/user/repo/issues/1234 style
-                                return '[#' + numR + ']' + '(https://github.com/' +
-                                    repoR + '/' + typeR + '/' + numR + ')';
-                            }
-                    })
-                    // shorten and link commit hashes
-                    .replace(/([a-f0-9]{40}(?![a-f0-9]))/g, function(sha1) {
-                        return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
-                    })
-                    // remove tag information
-                    .replace(/^\([\w\d\s,.\-+/>]+\)\s/gm, '')
-                    // remove commit hashes from start
-                    .replace(/^[a-f0-9]{7} /gm, '')
-                    // style messages that contain lists
-                    .replace(/( {3,}\*)(?!\*)/g, '\n  -')
-                    // escapes markdown __ tags
-                    .replace(/__/gm, '\\_\\_')
-                    // add * to the first line only
-                    .replace(/^(\w)/, '* $1');
+
+            // Link issue numbers, style links of issues and pull requests
+            const reg = /([\w\d\-.]+\/[\w\d\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\d\-.]+\/[\w\d\-.]+)\/(issues|pull)\/(\d+)/gm;
+            tag.message.forEach(row => {
+                contents += row.replace(reg, (all, repoL, numL, repoR, typeR, numR) => {
+                    if (numL) { // RepoL, numL = user/repo#1234 style
+                        return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
+                        (repoL ? repoL : 'SickRage/SickRage') + '/issues/' + numL + ')';
+                    } else if (numR) { // RepoR, type, numR = https://github/user/repo/issues/1234 style
+                        return '[#' + numR + '](https://github.com/' + repoR + '/' + typeR + '/' + numR + ')';
+                    }
+                })
+                // Shorten and link commit hashes
+                .replace(/([a-f0-9]{40}(?![a-f0-9]))/g, sha1 => {
+                    return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
+                })
+                // Remove tag information
+                .replace(/^\([\w\d\s,.\-+/>]+\)\s/gm, '')
+                // Remove commit hashes from start
+                .replace(/^[a-f0-9]{7} /gm, '')
+                // Style messages that contain lists
+                .replace(/( {3,}\*)(?!\*)/g, '\n  -')
+                // Escapes markdown __ tags
+                .replace(/__/gm, '\\_\\_')
+                // Add * to the first line only
+                .replace(/^(\w)/, '* $1');
 
                 contents += '\n';
             });
@@ -507,8 +364,7 @@ module.exports = function(grunt) {
         if (contents) {
             grunt.file.write(file, contents);
             return true;
-        } else {
-            grunt.fatal('Received no contents to write to file, aborting');
         }
+        grunt.fatal('Received no contents to write to file, aborting');
     });
 };
