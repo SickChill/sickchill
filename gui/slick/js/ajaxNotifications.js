@@ -31,7 +31,7 @@ function displayPNotify(type, title, message, id) {
 function check_notifications() {
     $.getJSON(message_url, function (data) {
         $.each(data, function (name, data) {
-            displayPNotify(data.type, data.title, data.message, name);
+            displayPNotify(data.type, data.title, data.message, data.hash);
         });
     });
     setTimeout(function () {
