@@ -129,7 +129,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 if mode == 'Season':
-                    searchedSeason = re.match('.*\s(Season\s\d+|S\d\d+)', search_string).group(1)
+                    searchedSeason = re.match('.*\s(Season\s\d+|S\d+)', search_string).group(1)
 
                 search_params['searchstr'] = search_string
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
