@@ -24,10 +24,8 @@
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="show-header row">
         <div class="col-md-12">
-
             <div class="row">
                 <div class="col-md-12" style="margin: 5px 0;">
-                    <input type="hidden" id="srRoot" value="${srRoot}" />
                     <div class="form-inline">
                         <label for="pickShow">${_('Change Show')}:</label>
                         <div class="pick-show-group input350">
