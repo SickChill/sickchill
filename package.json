@@ -77,6 +77,11 @@
         },
         "envs": [
             "browser"
+        ],
+        "ignores": [
+            "lib/**/*",
+            "gui/slick/js/core.js",
+            "Gruntfile.js"
         ]
     },
     "babel": {
