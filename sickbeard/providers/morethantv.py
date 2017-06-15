@@ -169,14 +169,14 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                     torrentid = re.match('.*?id=([0-9]+)', torrentid).group(1)
 
                                     group_params = {
-                                        'torrentid': 'torrentid'
+                                        'torrentid': torrentid
                                     }
 
                                     # Obtain folder name to use as title
-                                    torrentInfo = self.get_url(self.urls['search'],params=group_params,
+                                    torrentInfo = self.get_url(self.urls['search'], params=group_params,
                                                                returns='text').replace('\n', '')
 
-                                    releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(torrentid)
+                                    releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(re.escape(torrentid))
                                     releasename = re.search(releaseregex, torrentInfo).group(1)
                                     title = releasename
 
