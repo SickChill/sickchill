@@ -343,7 +343,6 @@
                 <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
                 <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
                 <script type="text/javascript" src="${srRoot}/js/dist/bundle.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
             % endif
             <%block name="scripts" />
         </div>

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import {browser, getText} from './utils';
+import {browser, getText, notifications} from './utils';
 import config from './config';
 import scrolltotop from './lib/jquery.scrolltopcontrol-1.1';
 
@@ -11,6 +11,7 @@ getText.load();
 scrolltotop.init({
     html: `<img src="${config.srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />`
 });
+notifications();
 
 const routes = {
     home

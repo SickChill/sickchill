@@ -12,8 +12,31 @@
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
         "test": "xo && nyc ava",
-        "build": "webpack",
+        "build": "webpack --progress --colors",
+        "watch": "webpack --progress --colors --watch",
         "security": "snyk test"
+    },
+    "dependencies": {
+        "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+        "babel-plugin-transform-object-rest-spread": "^6.23.0",
+        "babel-polyfill": "^6.23.0",
+        "bootstrap": "3.3.6",
+        "bootstrap-3-typeahead": "^4.0.2",
+        "bootstrap-hover-dropdown": "^2.2.1",
+        "isotope": "^1.0.0-alpha.3",
+        "jquery": "^3.2.1",
+        "jquery-backstretch": "^2.1.15",
+        "jquery-confirm": "^3.2.3",
+        "jquery-tokeninput": "^1.6.0",
+        "jquery-ui": "^1.12.1",
+        "lodash": "^4.17.4",
+        "loglevel": "^1.4.1",
+        "pnotify": "^3.2.0",
+        "qtip2": "^3.0.3",
+        "tablesorter": "2.28.4",
+        "timeago": "^1.5.4",
+        "underscore": "^1.8.3",
+        "xo": "^0.18.2"
     },
     "devDependencies": {
         "grunt": "^1.0.1",
@@ -30,25 +53,6 @@
         "load-grunt-tasks": "^3.5.2",
         "snyk": "^1.28.1",
         "webpack": "v3.0.0-rc.1"
-    },
-    "dependencies": {
-        "babel-polyfill": "^6.23.0",
-        "bootstrap": "3.3.6",
-        "bootstrap-3-typeahead": "^4.0.2",
-        "bootstrap-hover-dropdown": "^2.2.1",
-        "isotope": "^1.0.0-alpha.3",
-        "jquery": "^3.2.1",
-        "jquery-backstretch": "^2.1.15",
-        "jquery-confirm": "^3.2.3",
-        "jquery-tokeninput": "^1.6.0",
-        "jquery-ui": "^1.12.1",
-        "loglevel": "^1.4.1",
-        "pnotify": "^3.2.0",
-        "qtip2": "^3.0.3",
-        "tablesorter": "2.28.4",
-        "timeago": "^1.5.4",
-        "underscore": "^1.8.3",
-        "xo": "^0.18.2"
     },
     "xo": {
         "space": 4,
@@ -73,11 +77,6 @@
         },
         "envs": [
             "browser"
-        ],
-        "globals": [
-            "_",
-            "srRoot",
-            "metaToBool"
         ]
     },
     "babel": {
@@ -87,7 +86,9 @@
             "@ava/transform-test-files"
         ],
         "plugins": [
-            "transform-regenerator"
+            "transform-regenerator",
+            "transform-es2015-destructuring",
+            "transform-object-rest-spread"
         ]
     },
     "ava": {

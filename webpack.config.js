@@ -5,10 +5,11 @@ module.exports = {
     module: {
         loaders: [{
             loader: 'babel-loader',
+            exclude: /node_modules/,
 
             // Skip any files outside of your project's `src` directory
             include: [
-                path.resolve(__dirname, 'src')
+                path.resolve(__dirname, './gui/slick/js/**/*')
             ],
 
             // Only run `.js` and `.jsx` files through Babel
@@ -16,7 +17,11 @@ module.exports = {
 
             // Options to configure babel with
             query: {
-                plugins: ['transform-runtime'],
+                plugins: [
+                    'transform-runtime',
+                    'transform-es2015-destructuring',
+                    'transform-object-rest-spread'
+                ],
                 presets: [
                     'es2015',
                     'stage-0'
