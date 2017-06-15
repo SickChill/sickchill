@@ -214,10 +214,15 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
             try:
                 torrent_bdecode = bencode.bdecode(result.content)
             except (bencode.BTL.BTFailure, Exception) as error:
-                logger.log('Unable to bdecode torrent', logger.ERROR)
-                logger.log('Error is: {0}'.format(error), logger.DEBUG)
-                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
-                raise
+                if (isinstance(error, bencode.BTL.BTFailure) and 'data after valid prefix' in error.message):
+                    # Skip this specific exception
+                    pass
+                else:
+                    logger.log('Unable to bdecode torrent', logger.ERROR)
+                    logger.log('Error is: {0}'.format(error), logger.DEBUG)
+                    # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                    raise
+
             try:
                 info = torrent_bdecode[b'info']
             except Exception:

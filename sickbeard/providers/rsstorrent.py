@@ -174,8 +174,12 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 try:
                     bencode.bdecode(torrent_file)
                 except (bencode.BTL.BTFailure, Exception) as error:
-                    self.dumpHTML(torrent_file)
-                    return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
+                    if (isinstance(error, bencode.BTL.BTFailure) and 'data after valid prefix' in error.message):
+                        # Skip this specific exception
+                        pass
+                    else:
+                        self.dumpHTML(torrent_file)
+                        return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 
             return True, 'RSS feed Parsed correctly'
 
