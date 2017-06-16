@@ -30,6 +30,9 @@ requests==2.18.1
   - chardet [required: >=3.0.2,<3.1.0, installed: 3.0.4]
   - idna [required: >=2.5,<2.6, installed: 2.5]
   - urllib3 [required: <1.22,>=1.21.1, installed: 1.21.1]
+requests-oauthlib==0.8.0
+  - oauthlib [required: >=0.6.2, installed: 2.0.2]
+  - requests [required: >=2.0.0, installed: 2.18.1]
 tornado==4.5.1
   - backports-abc [required: >=0.4, installed: 0.5]
   - backports.ssl-match-hostname [required: Any, installed: 3.5.0.1]
