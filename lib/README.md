@@ -25,7 +25,11 @@ html5lib==0.999999999
   - webencodings [required: Any, installed: 0.5.1]
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
-requests==2.14.2
+requests==2.18.1
+  - certifi [required: >=2017.4.17, installed: 2017.4.17]
+  - chardet [required: >=3.0.2,<3.1.0, installed: 3.0.4]
+  - idna [required: >=2.5,<2.6, installed: 2.5]
+  - urllib3 [required: <1.22,>=1.21.1, installed: 1.21.1]
 tornado==4.5.1
   - backports-abc [required: >=0.4, installed: 0.5]
   - backports.ssl-match-hostname [required: Any, installed: 3.5.0.1]
