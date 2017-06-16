@@ -3,14 +3,14 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 
  Status   |  Package  |  Version / Commit  | Notes
 :-------: | :-------: | :----------------: | -----
-:exclamation: | adba | ??? | **Modified**<br>not on PYPI - https://github.com/lad1337/adba
+:exclamation: | adba | ??? | **Modified**<br>not on PYPI - [GH:lad1337/adba](https://github.com/lad1337/adba)
 :warning: | babelfish | 0.5.5-dev | we can use `0.5.5`.<br>The diff is that `-dev` includes `get_files.py`,<br>which isn't needed and doesn't even work anymore.
 :ok: | backports-abc | 0.5 | 
 :ok: | backports.ssl-match-hostname | 3.5.0.1 | 
 :ok: | beautifulsoup4 | 4.5.3 | 
 :ok: | bencode | 1.0 | Made vanilla with [8c4278a](https://github.com/SickRage/SickRage/commit/8c4278a52bf30a02914aa85c9b9ba5ad61021bea).<br>A newer version (fork) is available: [GH:fuzeman/bencode.py](https://github.com/fuzeman/bencode.py)
 :ok: | cachecontrol | 0.11.5 | 
-:warning: | certgen.py | [d52975c](https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py) | Source: [pyca/pyopenssl -> examples/certgen.py](https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py)
+:warning: | certgen.py | [d52975c](https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py) | Source: [GH:pyca/pyopenssl](https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py)
 :ok: | certifi | 2017.4.17
 :ok: | cfscrape | 1.7.1 | Note: Can't upgrade to latest version<br>because Node.js is now required.
 :warning: | chardet | [ff1d917](https://github.com/chardet/chardet/tree/ff1d9173dc4304899d6aa982d3a12f171a82da1c)
