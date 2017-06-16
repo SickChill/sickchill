@@ -608,13 +608,15 @@ class UI(WebRoot):
     def get_messages(self):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
+        notifications = ui.notifications.get_notifications(self.request.remote_ip)
         messages = {}
-        cur_notification_num = 1
-        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
-            messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                     'message': cur_notification.message,
-                                                                     'type': cur_notification.type}
-            cur_notification_num += 1
+        for index, cur_notification in enumerate(notifications, 1):
+            messages['notification-' + str(index)] = {
+                'hash': hash(cur_notification),
+                'title': cur_notification.title,
+                'message': cur_notification.message,
+                'type': cur_notification.type
+            }
 
         return json.dumps(messages)
 
