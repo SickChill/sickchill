@@ -25,6 +25,10 @@ html5lib==0.999999999
   - webencodings [required: Any, installed: 0.5.1]
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
+python-twitter==3.3
+  - future [required: Any, installed: 0.16.0] # <-- Not really needed, so not installed
+  - requests [required: Any, installed: 2.18.1]
+  - requests-oauthlib [required: Any, installed: 0.8.0]
 requests==2.18.1
   - certifi [required: >=2017.4.17, installed: 2017.4.17]
   - chardet [required: >=3.0.2,<3.1.0, installed: 3.0.4]
