@@ -5,7 +5,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :-------: | :-------: | :----------------: | -----
 :exclamation: | adba | ??? | **Modified**<br>not on PYPI - [GH:lad1337/adba](https://github.com/lad1337/adba)
 :warning: | babelfish | 0.5.5-dev | we can use `0.5.5`.<br>The diff is that `-dev` includes `get_files.py`,<br>which isn't needed and doesn't even work anymore.
-:ok: | backports-abc | 0.5 | 
+:ok: | backports_abc | 0.5 | 
 :ok: | backports.ssl-match-hostname | 3.5.0.1 | 
 :ok: | beautifulsoup4 | 4.5.3 | 
 :ok: | bencode | 1.0 | Made vanilla with [8c4278a](https://github.com/SickRage/SickRage/commit/8c4278a52bf30a02914aa85c9b9ba5ad61021bea).<br>A newer version (fork) is available: [GH:fuzeman/bencode.py](https://github.com/fuzeman/bencode.py)
@@ -20,8 +20,8 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | dogpile.core | 0.4.1
 :ok: | enum34 | 1.0.4
 :warning: | enzyme | [9572bea](https://github.com/Diaoul/enzyme/tree/9572bea606a6145dad153cd712653d6cf10ef18e)
-:ok: | fake_useragent | 0.1.2  | Note: There's a `ua.json` file that's used by `sickbeard.common`,<br>should be moved to a better location.
-:exclamation: | feedparser | 5.2.1 | **Modified**<br>See [#2957-`04fc020`](https://github.com/SickRage/SickRage/pull/2957/commits/04fc020d315acd4e947a30a5b7653c507b91b5ac)
+:ok: | fake-useragent | 0.1.2  | Note: There's a `ua.json` file that's used by `sickbeard.common`,<br>should be moved to a better location.
+:exclamation: | feedparser | [f1dd1bb](https://github.com/kurtmckee/feedparser/tree/f1dd1bb923ebfe6482fc2521c1f150b4032289ec) | **Modified**<br>See [#2957-`04fc020`](https://github.com/SickRage/SickRage/pull/2957/commits/04fc020d315acd4e947a30a5b7653c507b91b5ac)
 :warning: | futures | [43bfc41](https://github.com/agronholm/pythonfutures/tree/43bfc41626208d78f4db1839e2808772defdfdca)
 :warning: | guessit | [a4fb286](https://github.com/guessit-io/guessit/tree/a4fb2865d4b697397aa976388bbd0edf558a24fb)
 :warning: | hachoir_core | [708fdf6](https://bitbucket.org/haypo/hachoir/src/708fdf64a982ba2e638aa59d94f143112066b8ce/hachoir-core/hachoir_core/)  | Bitbucket
@@ -51,7 +51,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | pymediainfo | 2.0  | as an `.egg` file, loaded by `pkg_resources`
 :ok: | pynma | 1.0
 :warning: | pysrt | [47aaa59](https://github.com/byroot/pysrt/tree/47aaa592c3bc185cd2bc1d58d1451bf98be3c1ef)
-:warning: | python-dateutil | [d05b837](https://github.com/paxan/python-dateutil/tree/d05b837d2b6ce2be8e6901ec2ccc4966cf0aae08)
+:warning: | python-dateutil | [d05b837](https://github.com/dateutil/dateutil/tree/d05b837d2b6ce2be8e6901ec2ccc4966cf0aae08)
 :exclamation: | python-fanart | 1.4.0 | **Modified**<br>API url was updated. No newer version.
 :construction::up: | python-twitter | :warning: [420f234](https://github.com/bear/python-twitter/tree/420f23488970e01d179390b55d0f8bc036eb81b4)<br>:up: 3.3 | [#3870](https://github.com/SickRage/SickRage/pull/3870) updates this
 :ok: | pytz | 2016.4  | as an `.egg` file, loaded by `pkg_resources`

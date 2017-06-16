@@ -1,6 +1,6 @@
 #! adba==???  # <Modified + not on PYPI - https://github.com/lad1337/adba>
 # babelfish==0.5.5-dev  # we can use 0.5.5. The diff is that -dev includes get_files.py which isn't needed and doesn't even work anymore
-backports-abc==0.5
+backports_abc==0.5
 backports.ssl-match-hostname==3.5.0.1
 beautifulsoup4==4.5.3
 bencode==1.0  # Made vanilla with https://github.com/SickRage/SickRage/commit/8c4278a52bf30a02914aa85c9b9ba5ad61021bea. A newer version (fork) is available: https://github.com/fuzeman/bencode.py
@@ -15,8 +15,8 @@ decorator==4.0.10
 dogpile.core==0.4.1
 enum34==1.0.4
 # enzyme==9572bea606a6145dad153cd712653d6cf10ef18e
-fake_useragent==0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
-#! feedparser==5.2.1  # <Modified: See https://github.com/SickRage/SickRage/pull/2957/commits/04fc020d315acd4e947a30a5b7653c507b91b5ac>
+fake-useragent==0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
+#! feedparser==f1dd1bb923ebfe6482fc2521c1f150b4032289ec  # <Modified: See https://github.com/SickRage/SickRage/pull/2957/commits/04fc020d315acd4e947a30a5b7653c507b91b5ac>
 # futures==43bfc41626208d78f4db1839e2808772defdfdca
 # guessit==a4fb2865d4b697397aa976388bbd0edf558a24fb
 # hachoir_core==708fdf64a982ba2e638aa59d94f143112066b8ce  # On Bitbucket
