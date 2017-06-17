@@ -27,6 +27,8 @@ html5lib==0.999999999
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
 markdown2==2.3.4
+python-dateutil==2.6.0
+  - six [required: >=1.5, installed: 1.10.0]
 python-twitter==3.3
   - future [required: Any, installed: 0.16.0] # <-- Not really needed, so not installed
   - requests [required: Any, installed: 2.18.1]
