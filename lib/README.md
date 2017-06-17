@@ -27,6 +27,8 @@ html5lib==0.999999999
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
 markdown2==2.3.4
+PySocks==1.6.7
+  - win-inet-pton==1.0.1
 python-dateutil==2.6.0
   - six [required: >=1.5, installed: 1.10.0]
 python-twitter==3.3
