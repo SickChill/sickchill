@@ -1,13 +1,16 @@
-import sys
+import argparse
+import json
 import re
 
-if not len(sys.argv) == 2:
-    print('Usage: python {} requirements-file'.format(sys.argv[0]))
-    sys.exit(1)
 
-file = sys.argv[1]
+def _readlines(file_path):
+    with open(file_path, 'r') as fh:
+        return fh.readlines()
 
-print('Sorting [{}]...'.format(file))
+
+def _write(file_path, string):
+    with open(file_path, 'wb') as fh:  # use 'wb' to avoid CR-LF
+        fh.write(string)
 
 
 def sort_key(val):
@@ -17,11 +20,59 @@ def sort_key(val):
     return val.translate(None, '.-_[]').lower()
 
 
-with open(file, 'r') as in_file:
-    lines = sorted(in_file.readlines(), key=sort_key)
+def export_file_as_json(in_file, out_file):
+    line_regex = re.compile(r'^(?P<disabled>[#!]* *)?'
+                            r'(?P<name>[\w\-.]+)'
+                            r'(?:[=]{1,2}(?P<version>[\da-z.?\-]+))?'
+                            r'(?:\s*#+\s*(?P<notes>.*))*?$',
+                            re.I)
+    reqs = []
+    for pkg in _readlines(in_file):
+        pkg = pkg.strip()
+        if not pkg:
+            continue
 
-with open(file, 'wb') as out_file:  # use 'wb' to avoid CR-LF
-    for line in lines:
-        out_file.write(line)
+        pkg_match = re.match(line_regex, pkg)
+        if pkg_match:
+            if re.match(r'[\da-z]{40}', str(pkg_match.group('version')), re.I):
+                commit_hash_warning = 'Uses commit hash instead of version number'
+            else:
+                commit_hash_warning = None
 
-print('Done')
+            pkg_obj = {
+                'active': not bool(pkg_match.group('disabled')),
+                'name': pkg_match.group('name'),
+                'version': pkg_match.group('version'),
+                'notes': pkg_match.group('notes') or commit_hash_warning,
+            }
+            reqs.append(pkg_obj)
+        else:
+            print('Unable to read package line: {}'.format(pkg))
+            reqs = None
+            break
+
+    reqs.sort(key=lambda x: x['name'].translate(None, '.-_[]').lower())
+    _write(out_file, json.dumps(reqs, indent=4, sort_keys=True, separators=(',', ': ')))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Requirements file sorter')
+    parser.add_argument('file', metavar='requirements-file', help='requirements file to sort')
+    parser.add_argument('-j', '--json', action='store_true', help='parse and export as json')
+    args = parser.parse_args()
+
+    if not args:
+        parser.print_help()
+        exit(1)
+
+    if not args.json:
+        print('Sorting [{}]...'.format(args.file))
+        lines = _readlines(args.file)
+        lines = ''.join(sorted(lines, key=sort_key))
+        _write(args.file, lines)
+    else:
+        new_file = args.file.rpartition('.')[0] + '.json'
+        print('Exporting [{0}] as [{1}]...'.format(args.file, new_file))
+        export_file_as_json(args.file, new_file)
+
+    print('Done')
