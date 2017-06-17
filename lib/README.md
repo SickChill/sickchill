@@ -25,6 +25,7 @@ git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4
 html5lib==0.999999999
   - six [required: Any, installed: 1.10.0]
   - webencodings [required: Any, installed: 0.5.1]
+IMDbPY==5.1.1
 Mako==1.0.6
   - MarkupSafe [required: >=0.9.2, installed: 1.0]
 markdown2==2.3.4
