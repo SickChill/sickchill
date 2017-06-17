@@ -43,4 +43,5 @@ tornado==4.5.1
   - certifi [required: Any, installed: 2017.4.17]
   - singledispatch [required: Any, installed: 3.4.0.3]
     - six [required: Any, installed: 1.10.0]
+Unidecode==0.04.20
 ```
