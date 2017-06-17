@@ -9,11 +9,13 @@ file = sys.argv[1]
 
 print('Sorting [{}]...'.format(file))
 
+
 def sort_key(val):
     comment = re.search(r'^[#!]+\s', val)
     if comment:
-        return val[comment.end(0):].lower()
-    return val.lower()
+        val = val[comment.end(0):]
+    return val.translate(None, '.-_[]').lower()
+
 
 with open(file, 'r') as in_file:
     lines = sorted(in_file.readlines(), key=sort_key)
