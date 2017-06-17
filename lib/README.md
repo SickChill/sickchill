@@ -49,4 +49,5 @@ Unidecode==0.04.20
 validators==0.10
   - decorator [required: >=3.4.0, installed: 4.0.10]
   - six [required: >=1.4.0, installed: 1.10.0]
+xmltodict==0.11.0
 ```
