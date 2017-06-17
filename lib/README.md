@@ -17,6 +17,7 @@ Add the output to the list below to the appropriate location (based on the top-l
 Packages List
 =========
 ```
+babelfish=0.5.5
 beautifulsoup4==4.5.3
 bencode==1.0
 # certgen.py==d52975c # source: https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py
