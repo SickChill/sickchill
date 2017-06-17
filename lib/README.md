@@ -46,4 +46,7 @@ tornado==4.5.1
   - singledispatch [required: Any, installed: 3.4.0.3]
     - six [required: Any, installed: 1.10.0]
 Unidecode==0.04.20
+validators==0.10
+  - decorator [required: >=3.4.0, installed: 4.0.10]
+  - six [required: >=1.4.0, installed: 1.10.0]
 ```
