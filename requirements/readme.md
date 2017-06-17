@@ -8,12 +8,12 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | backports_abc | 0.5 | 
 :ok: | backports.ssl-match-hostname | 3.5.0.1 | 
 :ok: | beautifulsoup4 | 4.5.3 | 
-:ok: | bencode | 1.0 | Made vanilla with [8c4278a](https://github.com/SickRage/SickRage/commit/8c4278a52bf30a02914aa85c9b9ba5ad61021bea).<br>A newer version (fork) is available: [GH:fuzeman/bencode.py](https://github.com/fuzeman/bencode.py)
+:ok: | bencode | 1.0 | Resolved by [#3858](https://github.com/SickRage/SickRage/pull/3858) + [#3871](https://github.com/SickRage/SickRage/pull/3871)<br>A newer version (fork) is available: [GH:fuzeman/bencode.py](https://github.com/fuzeman/bencode.py)
 :ok: | cachecontrol | 0.11.5 | 
 :warning: | certgen.py | [d52975c](https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py) | Source: [GH:pyca/pyopenssl](https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py)
 :ok: | certifi | 2017.4.17
 :ok: | cfscrape | 1.7.1 | Note: Can't upgrade to latest version<br>because Node.js is now required.
-:construction::up: | chardet | :warning: [ff1d917](https://github.com/chardet/chardet/tree/ff1d9173dc4304899d6aa982d3a12f171a82da1c)<br>:up: 3.0.4 | [#3870](https://github.com/SickRage/SickRage/pull/3870) updates this
+:ok: | chardet | 3.0.4 | Resolved by [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :ok: | configobj | 4.6.0
 :ok: | decorator | 4.0.10
 :warning: | dogpile.cache | [229615b](https://bitbucket.org/zzzeek/dogpile.cache/src/229615be466d00c9c135a90d8965679ab3e4edaa/dogpile/)  | Bitbucket
@@ -29,7 +29,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | hachoir_parser | [708fdf6](https://bitbucket.org/haypo/hachoir/src/708fdf64a982ba2e638aa59d94f143112066b8ce/hachoir-parser/hachoir_parser/)  | Bitbucket
 :ok: | html5lib | 0.999999999
 :ok: | httplib2 | 0.9.2 | + tests folder from [cf631a7](https://github.com/httplib2/httplib2/tree/cf631a73e2f3f43897b65206127ced82382d35f5)
-:construction::heavy_plus_sign: | idna | 2.5 | [#3870](https://github.com/SickRage/SickRage/pull/3870) adds this
+:ok: | idna | 2.5 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :exclamation: | imdbpy | [aa68c6c](https://github.com/alberanid/imdbpy/tree/aa68c6c919eae91bbd5cebc49866a78ce67dc9ea)  | **Modified**<br>Only comments... See [#3697](https://github.com/SickRage/SickRage/pull/3697)
 :warning: | js2py | [05e77f0](https://github.com/PiotrDabkowski/Js2Py/tree/05e77f0d4ffe91ef418a93860e666962cfd193b8)
 :warning: | jsonrpclib | [e3a3cde](https://github.com/joshmarshall/jsonrpclib/tree/e3a3cdedc9577b25b91274815b38ba7f3bc43c68)
@@ -40,8 +40,8 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | markdown2 | [596d48b](https://github.com/trentm/python-markdown2/tree/596d48b4279259561ca96329538c65de4c00edde)
 :ok: | MarkupSafe | 1.0
 :ok: | ndg-httpsclient | 0.3.3
-:construction::heavy_plus_sign: | oauthlib | 2.0.2 | [#3870](https://github.com/SickRage/SickRage/pull/3870) adds this
-:construction::x: | oauth2 | :warning: | **[#3870](https://github.com/SickRage/SickRage/pull/3870) removes this**
+:ok: | oauthlib | 2.0.2 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
+:heavy_minus_sign: | oauth2 | - | Removed in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :question: | pgi | 0.0.11.1 | Can't verify, unable to install this using pip.<br>Only being used by `sickbeard.notifiers.libnotify` as far as I can tell.
 :exclamation: | pkg_resources.py | - | Copied from setuptools and looks to be modified.<br>Maybe we don't really need this?<br>Used to load the egg files for `pymediainfo` and `pytz`.
 :ok: | profilehooks | 1.5
@@ -53,12 +53,12 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | pysrt | [47aaa59](https://github.com/byroot/pysrt/tree/47aaa592c3bc185cd2bc1d58d1451bf98be3c1ef)
 :warning: | python-dateutil | [d05b837](https://github.com/dateutil/dateutil/tree/d05b837d2b6ce2be8e6901ec2ccc4966cf0aae08)
 :exclamation: | python-fanart | 1.4.0 | **Modified**<br>API url was updated. No newer version.
-:construction::up: | python-twitter | :warning: [420f234](https://github.com/bear/python-twitter/tree/420f23488970e01d179390b55d0f8bc036eb81b4)<br>:up: 3.3 | [#3870](https://github.com/SickRage/SickRage/pull/3870) updates this
+:ok: | python-twitter | 3.3 | Updated in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :ok: | pytz | 2016.4  | as an `.egg` file, loaded by `pkg_resources`
 :exclamation: | rarfile | [3e54b22](https://github.com/markokr/rarfile/tree/3e54b222c8703eea64cd07102df7bb9408b582b3) | *v3.0 Github release*<br>**Modified**<br>See [`059dd933#diff-c1f4e96`](https://github.com/SickRage/SickRage/commit/059dd933b9da3a0f83c6cbb4f47c198e5a957fc6#diff-c1f4e968aa545d42d2e462672169da4a)
 :warning: | rebulk | [42d0a58](https://github.com/Toilal/rebulk/tree/42d0a58af9d793334616a6582f2a83b0fae0dd5f)
-:construction::up: | requests | :ok: 2.14.2<br>:up: 2.18.1 | [#3870](https://github.com/SickRage/SickRage/pull/3870) updates this
-:construction::heavy_plus_sign: | requests-oauthlib | 0.8.0 | [#3870](https://github.com/SickRage/SickRage/pull/3870) adds this
+:ok: | requests | 2.18.1 | Updated in [#3870](https://github.com/SickRage/SickRage/pull/3870)
+:ok: | requests-oauthlib | 0.8.0 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :exclamation: | rtorrent-python | 0.2.9  | **Modified**<br>See [commits log for `lib/rtorrent`](https://github.com/SickRage/SickRage/commits/master/lib/rtorrent)
 :exclamation: | send2trash | 1.3.0  | **Modified**<br>See [`9ad8114`](https://github.com/SickRage/SickRage/commit/9ad811432ab0ca3292410d29464ce2532361eb55)
 :ok: | simplejson | 2.0.9
@@ -76,7 +76,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | twilio | [f91e1a9](https://github.com/twilio/twilio-python/tree/f91e1a9e6f4e0a60589b2b90cb66b89b879b9c3e)
 :warning: | tzlocal | [8e0a63d](https://github.com/regebro/tzlocal/tree/8e0a63ddbf50ff9e5b1d23b540cdc343efe1a4af)
 :ok: | unidecode | 0.04.12
-:construction::heavy_plus_sign: | urllib3 | 1.21.1 | [#3870](https://github.com/SickRage/SickRage/pull/3870) adds this
+:ok: | urllib3 | 1.21.1 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :ok: | validators | 0.10
 :ok: | webencodings | 0.5.1
 :warning: | xmltodict | [579a005](https://github.com/martinblech/xmltodict/tree/579a00520315e30681e0f0f81de645ce5680ed47)
