@@ -45,6 +45,7 @@ from contextlib import closing
 from itertools import cycle, izip
 
 import adba
+import bencode
 import certifi
 import cfscrape
 import rarfile
@@ -1906,3 +1907,19 @@ def manage_torrents_url(reset=False):
     sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
 
     return sickbeard.CLIENT_WEB_URLS.get('torrent')
+
+
+def bdecode(x, allow_extra_data=False):
+    """
+    Custom bdecode function to ignore the 'data after valid prefix' exception.
+
+    :param allow_extra_data: Set to True to allow extra data after valid prefix
+    :return: bdecoded data
+    """
+    try:
+        r, l = bencode.decode_func[x[0]](x, 0)
+    except (IndexError, KeyError, ValueError):
+        raise bencode.BTL.BTFailure("not a valid bencoded string")
+    if not allow_extra_data and l != len(x):
+        raise bencode.BTL.BTFailure("invalid bencoded value (data after valid prefix)")
+    return r
