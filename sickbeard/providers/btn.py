@@ -172,6 +172,16 @@ class BTNProvider(TorrentProvider):
 
         if 'ReleaseName' in parsed_json and parsed_json['ReleaseName']:
             title = parsed_json['ReleaseName']
+            append = ''
+            if 'Resolution' in parsed_json and parsed_json['Resolution'].lower() not in title.lower():
+                append += parsed_json['Resolution']
+            if 'Source' in parsed_json and parsed_json['Source'].lower() not in title.lower():
+                append += parsed_json['Source']
+            if 'Codec' in parsed_json and parsed_json['Codec'].lower() not in title.lower():
+                append += parsed_json['Codec']
+
+            if append:
+                title += ' [' + append + ']'
 
         else:
             # If we don't have a release name we need to get creative
@@ -278,7 +288,8 @@ class BTNProvider(TorrentProvider):
 
                     if result_date and (not search_date or result_date > search_date):
                         title, url = self._get_title_and_url(item)
-                        results.append(classes.Proper(title, url, result_date, self.show))
+                        if title and url:
+                            results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
