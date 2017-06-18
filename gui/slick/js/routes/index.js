@@ -1,5 +1,7 @@
 import home from './home';
+import config from './config';
 
 export {
-    home // eslint-disable-line import/prefer-default-export
+    home,
+    config
 };

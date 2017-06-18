@@ -18,7 +18,7 @@
         <div id="htpcnas">
 
             <!-- /kodi component-group //-->
-            <div class="row">
+            <div namespace="kodi" class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-kodi" title="KODI"></span>
@@ -40,13 +40,12 @@
 
                         <!-- content_use_kodi //-->
                         <div id="content_use_kodi">
-
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Always on')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${('', 'checked="checked"')[bool(sickbeard.KODI_ALWAYS_ON)]}/>
+                                    <input field="always_on" type="checkbox" name="kodi_always_on" ${('', 'checked="checked"')[bool(sickbeard.KODI_ALWAYS_ON)]}/>
                                     <label for="kodi_always_on">${_('log errors when unreachable?')}</label>
                                 </div>
                             </div>
@@ -56,7 +55,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSNATCH)]}/>
+                                    <input field="notify.onsnatch" type="checkbox" name="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSNATCH)]}/>
                                     <label for="kodi_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -66,7 +65,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input field="notify.ondownload" type="checkbox" name="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="kodi_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -76,7 +75,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input field="notify.onsubtitledownload" type="checkbox" name="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="kodi_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -86,7 +85,7 @@
                                     <label class="component-title">${_('Update library')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_LIBRARY)]}/>
+                                    <input field="update.libary" type="checkbox" name="kodi_update_library" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_LIBRARY)]}/>
                                     <label for="kodi_update_library">${_('update KODI library when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -96,7 +95,7 @@
                                     <label class="component-title">${_('Full library update')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_FULL)]}/>
+                                    <input field="update.full" type="checkbox" name="kodi_update_full" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_FULL)]}/>
                                     <label for="kodi_update_full">${_('perform a full library update if update per-show fails?')}</label>
                                 </div>
                             </div>
@@ -106,7 +105,7 @@
                                     <label class="component-title">${_('Only update first host')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_ONLYFIRST)]}/>
+                                    <input field="update.onlyfirst" type="checkbox" name="kodi_update_onlyfirst" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_ONLYFIRST)]}/>
                                     <label for="kodi_update_onlyfirst">${_('only send library updates to the first active host?')}</label>
                                 </div>
                             </div>
@@ -118,7 +117,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="kodi_host" id="kodi_host" value="${sickbeard.KODI_HOST}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input field="host" type="text" name="kodi_host" value="${sickbeard.KODI_HOST}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -141,7 +140,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="kodi_username" id="kodi_username" value="${sickbeard.KODI_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input field="username" type="text" name="kodi_username" value="${sickbeard.KODI_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -159,7 +158,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input field="password" class="form-control input-sm input250" type="password" name="kodi_password" value="${sickbeard.KODI_PASSWORD}" autocomplete="no" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -169,20 +168,18 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="testNotification" id="testKODI-result">${_('Click below to test.')}</div>
+                                    <div class="testNotification result">${_('Click below to test.')}</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <input  class="btn" type="button" value="Test KODI" id="testKODI" />
-                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                    <input class="btn test" type="button" value="Test KODI"/>
+                                    <input class="config_submitter btn" type="submit" value="${_('Save Changes')}" />
                                 </div>
                             </div>
                         </div>
-
                     </fieldset>
                 </div>
             </div>

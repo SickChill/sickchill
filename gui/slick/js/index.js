@@ -1,10 +1,11 @@
 import $ from 'jquery';
 
 import {browser, getText, notifications} from './utils';
+import log from './log';
 import config from './config';
 import scrolltotop from './lib/jquery.scrolltopcontrol-1.1';
 
-import {home} from './routes';
+import {home, config as configRoute} from './routes';
 
 browser.load();
 getText.load();
@@ -14,13 +15,20 @@ scrolltotop.init({
 notifications();
 
 const routes = {
-    home
+    home,
+    config: {
+        notifications: configRoute.notifications
+    }
 };
+
+window.routes = routes;
 
 const UTIL = {
     exec(controller, action) {
         action = action === undefined ? 'init' : action;
         action = action === 'index' ? 'root' : action;
+
+        console.log(`Cannot load route ${controller}:${action}`);
 
         if (controller !== '' && routes[controller] && typeof routes[controller][action] === 'function') {
             routes[controller][action]();

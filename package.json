@@ -23,6 +23,7 @@
         "bootstrap": "3.3.6",
         "bootstrap-3-typeahead": "^4.0.2",
         "bootstrap-hover-dropdown": "^2.2.1",
+        "dot-prop": "^4.1.1",
         "isotope": "^1.0.0-alpha.3",
         "jquery": "^3.2.1",
         "jquery-backstretch": "^2.1.15",
