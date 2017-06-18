@@ -21,7 +21,7 @@ PNotify.prototype.options.styling = 'bootstrap3';
 PNotify.prototype.options.width = '340px';
 PNotify.prototype.options.desktop = {
     desktop: true,
-    icon: '/images/ico/favicon-196.png'
+    icon: config.srRoot + '/images/ico/favicon-196.png'
 };
 
 const displayPNotify = ({type, title, message, id}) => {

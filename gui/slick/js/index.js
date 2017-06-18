@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import {browser, getText, notifications} from './utils';
+import {browser, getText, notifications, siteMessage} from './utils';
 import log from './log';
 import config from './config';
 import scrolltotop from './lib/jquery.scrolltopcontrol-1.1';
@@ -13,6 +13,7 @@ scrolltotop.init({
     html: `<img src="${config.srRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />`
 });
 notifications();
+siteMessage.getMessages();
 
 const routes = {
     home,
@@ -28,7 +29,7 @@ const UTIL = {
         action = action === undefined ? 'init' : action;
         action = action === 'index' ? 'root' : action;
 
-        console.log(`Cannot load route ${controller}:${action}`);
+        log.info(`Cannot load route ${controller}:${action}`);
 
         if (controller !== '' && routes[controller] && typeof routes[controller][action] === 'function') {
             routes[controller][action]();

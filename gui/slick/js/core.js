@@ -27,30 +27,7 @@ const configSuccess = function() {
     $('#prowl_show').trigger('notify');
 };
 
-function addSiteMessage(level, tag, message) {
-    level = level || 'danger';
-    tag = tag || '';
-    message = message || '';
-    $.post(config.srRoot + '/ui/set_site_message', {level, tag, message}, siteMessages => {
-        const messagesDiv = $('#site-messages');
-        if (messagesDiv !== undefined) {
-            messagesDiv.empty();
-            for (const key in siteMessages) {
-                if (siteMessages.hasOwnProperty(key)) {
-                    messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">' +
-                        '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>' +
-                        '</div>');
-                }
-            }
-        }
-    });
 
-    $('#site-messages').on('click', '.site-message-dismiss', function() {
-        const messageID = $(this).data('id');
-        $('#site-message-' + messageID).hide();
-        $.post(config.srRoot + '/ui/dismiss-site-message', {index: messageID});
-    });
-}
 
 function shiftReturn(array) {
     // Performs .shift() on array.

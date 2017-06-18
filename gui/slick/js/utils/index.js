@@ -5,6 +5,7 @@ import isMeta from './is-meta';
 import metaToBool from './meta-to-bool';
 import notifications from './notifications';
 import notifyModal from './notify-modal';
+import siteMessage from './site-message';
 
 export {
     browser,
@@ -13,5 +14,6 @@ export {
     isMeta,
     metaToBool,
     notifications,
-    notifyModal
+    notifyModal,
+    siteMessage
 };
