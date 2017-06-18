@@ -180,14 +180,14 @@ class BTNProvider(TorrentProvider):
             if 'Codec' in parsed_json and parsed_json['Codec'].lower() not in title.lower():
                 append += parsed_json['Codec']
 
-            if len(append) > 0
+            if append:
                 title += ' [' + append + ']'
 
         else:
             # If we don't have a release name we need to get creative
-            title = None
+            title = ''
             if 'Series' in parsed_json:
-                title = parsed_json['Series']
+                title += parsed_json['Series']
             if 'GroupName' in parsed_json:
                 title += '.' + parsed_json['GroupName'] if title else parsed_json['GroupName']
             if 'Resolution' in parsed_json:
