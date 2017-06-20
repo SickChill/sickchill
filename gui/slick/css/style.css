@@ -2367,6 +2367,20 @@ pre {
     padding: 0;
 }
 
+.floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    padding: 0px 4px;
+    background-color: #777777;
+    border: 2px solid #959595;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
 /* navbar styling */
 .navbar-default {
     background-color: #333333;

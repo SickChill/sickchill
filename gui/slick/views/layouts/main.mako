@@ -107,8 +107,21 @@
     <body data-controller="${controller}" data-action="${action}">
         <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
             <div class="container-fluid">
+                <%
+                    numCombined = numErrors + numWarnings + sickbeard.NEWS_UNREAD
+                    if numCombined:
+                        if numErrors:
+                            toolsBadgeClass = ' btn-danger'
+                        elif numWarnings:
+                            toolsBadgeClass = ' btn-warning'
+                        else:
+                            toolsBadgeClass = ''
+                %>
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapsible-navbar">
+                        % if numCombined:
+                            <span class="floating-badge${ toolsBadgeClass }">${ str(numCombined) }</span>
+                        % endif
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -200,15 +213,7 @@
                                 else:
                                     newsBadge = ''
 
-                                numCombined = numErrors + numWarnings + sickbeard.NEWS_UNREAD
                                 if numCombined:
-                                    if numErrors:
-                                        toolsBadgeClass = ' btn-danger'
-                                    elif numWarnings:
-                                        toolsBadgeClass = ' btn-warning'
-                                    else:
-                                        toolsBadgeClass = ''
-
                                     toolsBadge = ' <span class="badge'+toolsBadgeClass+'">'+str(numCombined)+'</span>'
                                 else:
                                     toolsBadge = ''
