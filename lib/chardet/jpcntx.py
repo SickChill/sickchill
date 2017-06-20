@@ -25,7 +25,6 @@
 # 02110-1301  USA
 ######################### END LICENSE BLOCK #########################
 
-from .compat import wrap_ord
 
 # This is hiragana 2-char sequence table, the number in each cell represents its frequency category
 jp2CharContext = (
@@ -131,7 +130,7 @@ class JapaneseContextAnalysis(object):
 
     def reset(self):
         self._total_rel = 0  # total sequence received
-        # category counters, each interger counts sequence in its category
+        # category counters, each integer counts sequence in its category
         self._rel_sample = [0] * self.NUM_OF_CATEGORY
         # if last byte in current buffer is not the last byte of a character,
         # we need to know how many bytes to skip in next buffer
@@ -194,7 +193,7 @@ class SJISContextAnalysis(JapaneseContextAnalysis):
         if not byte_str:
             return -1, 1
         # find out current char's byte length
-        first_char = wrap_ord(byte_str[0])
+        first_char = byte_str[0]
         if (0x81 <= first_char <= 0x9F) or (0xE0 <= first_char <= 0xFC):
             char_len = 2
             if (first_char == 0x87) or (0xFA <= first_char <= 0xFC):
@@ -204,7 +203,7 @@ class SJISContextAnalysis(JapaneseContextAnalysis):
 
         # return its order if it is hiragana
         if len(byte_str) > 1:
-            second_char = wrap_ord(byte_str[1])
+            second_char = byte_str[1]
             if (first_char == 202) and (0x9F <= second_char <= 0xF1):
                 return second_char - 0x9F, char_len
 
@@ -215,7 +214,7 @@ class EUCJPContextAnalysis(JapaneseContextAnalysis):
         if not byte_str:
             return -1, 1
         # find out current char's byte length
-        first_char = wrap_ord(byte_str[0])
+        first_char = byte_str[0]
         if (first_char == 0x8E) or (0xA1 <= first_char <= 0xFE):
             char_len = 2
         elif first_char == 0x8F:
@@ -225,7 +224,7 @@ class EUCJPContextAnalysis(JapaneseContextAnalysis):
 
         # return its order if it is hiragana
         if len(byte_str) > 1:
-            second_char = wrap_ord(byte_str[1])
+            second_char = byte_str[1]
             if (first_char == 0xA4) and (0xA1 <= second_char <= 0xF3):
                 return second_char - 0xA1, char_len
 
