@@ -13,11 +13,11 @@
 %>
 
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/ratingTooltip.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
+    <script type="text/javascript" src="${ static_url('js/lib/jquery.bookmarkscroll.js') }"></script>
+    <script type="text/javascript" src="${ static_url('js/plotTooltip.js') }"></script>
+    <script type="text/javascript" src="${ static_url('js/sceneExceptionsTooltip.js') }"></script>
+    <script type="text/javascript" src="${ static_url('js/ratingTooltip.js') }"></script>
+    <script type="text/javascript" src="${ static_url('js/ajaxEpSearch.js') }"></script>
 </%block>
 
 <%block name="content">
@@ -131,7 +131,7 @@
                                 % else:
                                 % if 'country_codes' in show.imdb_info:
                                     % for country in show.imdb_info['country_codes'].split('|'):
-                                        <img src="${srRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                                        <img src="${ static_url('images/blank.png') }" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
                                     % endfor
                                 % endif
                                     <span>
@@ -142,7 +142,7 @@
                             </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                 % endif
-                                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" src="${srRoot}/images/indexers/${sickbeard.indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" src="${ static_url('images/indexers/' + sickbeard.indexerApi(show.indexer).config["icon"]) }" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
                                     <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif
@@ -253,7 +253,7 @@
                                             <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                                             <tr>
                                                 <td class="showLegend">${_('Info Language')}:</td>
-                                                <td><img src="${srRoot}/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';"/></td>
+                                                <td><img src="${ static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png') }';"/></td>
                                             </tr>
                                             % if sickbeard.USE_SUBTITLES:
                                                 <tr>
@@ -451,8 +451,8 @@
                                                 <input type="checkbox" class="epCheck" id="${str(epResult[b"season"])+'x'+str(epResult[b"episode"])}" name="${str(epResult[b"season"]) +"x"+str(epResult[b"episode"])}" />
                                             % endif
                                         </td>
-                                        <td align="center"><img src="${srRoot}/images/${("nfo-no.gif", "nfo.gif")[epResult[b"hasnfo"]]}" alt="${("N", "Y")[epResult[b"hasnfo"]]}" width="23" height="11" /></td>
-                                        <td align="center"><img src="${srRoot}/images/${("tbn-no.gif", "tbn.gif")[epResult[b"hastbn"]]}" alt="${("N", "Y")[epResult[b"hastbn"]]}" width="23" height="11" /></td>
+                                        <td align="center"><img src="${ static_url('images/' + ("nfo-no.gif", "nfo.gif")[epResult[b"hasnfo"]]) }" alt="${("N", "Y")[epResult[b"hasnfo"]]}" width="23" height="11" /></td>
+                                        <td align="center"><img src="${ static_url('images/' + ("tbn-no.gif", "tbn.gif")[epResult[b"hastbn"]]) }" alt="${("N", "Y")[epResult[b"hastbn"]]}" width="23" height="11" /></td>
                                         <td align="center" class="episode">
                                             <%
                                                 text = str(epResult[b'episode'])
@@ -488,9 +488,9 @@
                                         </td>
                                         <td class="col-name">
                                             % if epResult[b"description"] != "" and epResult[b"description"] is not None:
-                                                <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult[b"season"])}_${str(epResult[b"episode"])}" />
+                                                <img src="${ static_url('images/info32.png') }" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${str(epResult[b"season"])}_${str(epResult[b"episode"])}" />
                                             % else:
-                                                <img src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
+                                                <img src="${ static_url('images/info32.png') }" width="16" height="16" class="plotInfoNone" alt="" />
                                             % endif
                                             ${epResult[b"name"]}
                                         </td>
@@ -530,10 +530,10 @@
                                                 % if flag.strip():
                                                     % if flag != 'und':
                                                         <a class="epRetrySubtitlesSearch" href="retrySearchSubtitles?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}&amp;lang=${flag}">
-                                                            <img src="${srRoot}/images/subtitles/flags/${flag}.png" data-image-url="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
+                                                            <img src="${ static_url('images/subtitles/flags/' + flag + '.png') }" data-image-url="${ static_url('images/subtitles/flags/' + flag + '.png') }" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png') }';" />
                                                         </a>
                                                     % else:
-                                                        <img src="${srRoot}/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${srRoot}/images/flags/unknown.png';" />
+                                                        <img src="${ static_url('images/subtitles/flags/' + flag + '.png') }" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png') }';" />
                                                     % endif
                                                 % endif
                                             % endfor
