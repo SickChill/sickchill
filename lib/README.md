@@ -49,6 +49,8 @@ tornado==4.5.1
   - certifi [required: Any, installed: 2017.4.17]
   - singledispatch [required: Any, installed: 3.4.0.3]
     - six [required: Any, installed: 1.10.0]
+tzlocal==1.4
+  - pytz [required: Any, installed: 2016.4]
 Unidecode==0.04.20
 validators==0.10
   - decorator [required: >=3.4.0, installed: 4.0.10]
