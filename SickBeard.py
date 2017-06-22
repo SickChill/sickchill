@@ -513,7 +513,7 @@ class SickRage(object):
             updater = GitUpdateManager()
             if not run_git(updater, 'config remote.origin.url https://github.com/SickRage/SickRage.git'):
                 return False
-            if not run_git(updater, 'fetch origin'):
+            if not run_git(updater, 'fetch origin --prune'):
                 return False
             if not run_git(updater, 'checkout master'):
                 return False
