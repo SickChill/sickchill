@@ -1,6 +1,9 @@
 FROM python:2.7.13-alpine
-ARG
-ENV SICKRAGE_VERSION v2017.06.05-1
+# Run with...
+# export SICKRAGE_VERSION=v2017.06.05-1; docker build . --build-arg SICKRAGE_VERSION=${SICKRAGE_VERSION} -t sickrage:${SICKRAGE_VERSION}
+
+ARG SICKRAGE_VERSION
+
 ENV PID_FILE /var/run/sickrage/sickrage.pid
 ENV DATA_DIR /data
 ENV CONF_DIR /config/
@@ -12,9 +15,6 @@ RUN mkdir /var/run/sickrage/
 
 
 VOLUME ["/config","/data"]
-
-#ADD ./start.sh /start.sh
-#RUN chmod u+x  /start.sh
 
 WORKDIR /app/sickrage/
 
