@@ -38,7 +38,8 @@ from logging import NullHandler
 
 import sickbeard
 import six
-from github import InputFileContent, RateLimitExceededException, TwoFactorException
+from github import InputFileContent
+from github.GithubException import RateLimitExceededException, TwoFactorException
 from sickbeard import classes
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek, ss
