@@ -40,7 +40,13 @@ setup(
     license='GPLv2',
 
     packages=find_packages(),
-    install_requires=requirements,
+    # install_requires=requirements,  # Commented-out for now
+    install_requires=[
+        'pytz',
+        'requests',
+        'mako',
+        'configobj'
+    ],
 
     test_suite="tests",
     tests_require=[

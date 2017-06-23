@@ -1,4 +1,4 @@
-List of dependencies [![Requirements Status](https://requires.io/github/SickRage/SickRage/requirements.svg?branch=feature%2Frequirements)](https://requires.io/github/SickRage/SickRage/requirements/?branch=feature%2Frequirements)
+List of dependencies [![Requirements Status](https://requires.io/github/SickRage/SickRage/requirements.svg?branch=develop)](https://requires.io/github/SickRage/SickRage/requirements/?branch=develop)
 ======================
 
  Status   |  Package  |  Version / Commit  | Notes
