@@ -3793,12 +3793,16 @@ var SICKRAGE = {
                         var firstResult = true;
                         var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
                         var checked = '';
+                        var disabled = '';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
                         } else {
                             $.each(data.results, function(index, obj) {
-                                if (firstResult) {
+                                var inShowList = obj[6];
+                                disabled = inShowList ? ' title="Already in your show list" disabled' : '';
+
+                                if (firstResult && !inShowList) {
                                     checked = ' checked';
                                     firstResult = false;
                                 } else {
@@ -3807,7 +3811,7 @@ var SICKRAGE = {
 
                                 var whichSeries = obj.join('|');
 
-                                resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + checked + ' /> ';
+                                resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '')  + '"' + disabled + checked + ' /> ';
                                 if (data.langid && data.langid !== '') {
                                     resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                                 } else {
@@ -3826,6 +3830,10 @@ var SICKRAGE = {
 
                                 if (obj[0] !== null) {
                                     resultStr += ' [' + obj[0] + ']';
+                                }
+
+                                if (inShowList) {
+                                    resultStr += ' &mdash; <a href="' + srRoot + '/home/displayShow?show=' + obj[3] + '"><strong>Already in your show list</strong></a>';
                                 }
 
                                 resultStr += '<br>';
