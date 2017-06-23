@@ -2,6 +2,19 @@ import argparse
 import json
 import re
 
+LINE_REGEX = re.compile(r'^(?P<disabled>[#!]* *)?'
+                        r'(?P<install>(?P<name>[\w\-.\[\]]+)'
+                        r'(?:[=]{1,2}(?P<version>[\da-z.?\-]+))?)'
+                        r'(?:\s*#+\s*(?P<notes>.*))*?$',
+                        re.I)
+VCS_REGEX = re.compile(r'^(?P<disabled>[#!]* *)?'
+                       r'(?P<install>(?P<vcs>git|hg)\+(?P<repo>.*?)(?:\.git)?'
+                       r'@(?P<version>[\da-z]+)'
+                       r'#egg=(?P<name>[\w\-.\[\]]+)'
+                       r'(?:&subdirectory=(?P<repo_subdir>.*?))?)'
+                       r'(?:\s*#+\s*(?P<notes>.*))*?$',
+                       re.I)
+
 
 def _readlines(file_path):
     with open(file_path, 'r') as fh:
@@ -32,28 +45,16 @@ def sort_key(val):
     return val
 
 
-def export_file_as_json(in_file, out_file):
-    line_regex = re.compile(r'^(?P<disabled>[#!]* *)?'
-                            r'(?P<name>[\w\-.\[\]]+)'
-                            r'(?:[=]{1,2}(?P<version>[\da-z.?\-]+))?'
-                            r'(?:\s*#+\s*(?P<notes>.*))*?$',
-                            re.I)
-    vcs_regex = re.compile(r'^(?P<disabled>[#!]* *)?'
-                           r'(?P<vcs>git|hg)\+(?P<repo>.*?)(?:\.git)?'
-                           r'@(?P<version>[\da-z]+)'
-                           r'#egg=(?P<name>[\w\-.\[\]]+)'
-                           r'(?:&subdirectory=(?P<repo_subdir>.*?))?'
-                           r'(?:\s*#+\s*(?P<notes>.*))*?$',
-                           re.I)
+def file_to_dict(file_path):
     reqs = []
-    for pkg in _readlines(in_file):
+    for pkg in _readlines(file_path):
         pkg = pkg.strip()
         if not pkg:
             continue
 
         pkg_obj = dict()
-        pkg_match = re.match(line_regex, pkg)
-        pkg_vcs_match = re.match(vcs_regex, pkg)
+        pkg_match = re.match(LINE_REGEX, pkg)
+        pkg_vcs_match = re.match(VCS_REGEX, pkg)
 
         if not (pkg_match or pkg_vcs_match):
             print('Unable to read package line: {}'.format(pkg))
@@ -61,17 +62,25 @@ def export_file_as_json(in_file, out_file):
             break
 
         if pkg_match:
-            if re.match(r'[\da-z]{40}', str(pkg_match.group('version')), re.I):
-                commit_hash_warning = 'Uses commit hash instead of version number'
+            name = pkg_match.group('name')
+            version = str(pkg_match.group('version'))
+
+            if re.match(r'[\da-z]{40}', version, re.I):
+                version_warning = 'Uses commit hash instead of version number'
             else:
-                commit_hash_warning = None
+                version_warning = None
+
+            pypi_url = None
+            if not version_warning:
+                pypi_url = 'https://pypi.python.org/pypi/{0}/{1}'.format(name, version)
 
             pkg_obj = {
                 'active': not bool(pkg_match.group('disabled')),
-                'name': pkg_match.group('name'),
-                'version': pkg_match.group('version'),
-                'notes': pkg_match.group('notes') or commit_hash_warning,
-                'url': None,
+                'name': name,
+                'version': version,
+                'notes': pkg_match.group('notes') or version_warning,
+                'url': pypi_url,
+                'install': pkg_match.group('install') if not version_warning else None,
             }
         elif pkg_vcs_match:
             vcs = pkg_vcs_match.group('vcs')
@@ -97,6 +106,7 @@ def export_file_as_json(in_file, out_file):
                 'version': version,
                 'notes': pkg_vcs_match.group('notes'),
                 'url': repo_url,
+                'install': pkg_vcs_match.group('install'),
             }
 
         if pkg_obj:
@@ -106,8 +116,7 @@ def export_file_as_json(in_file, out_file):
         return False
 
     reqs.sort(key=lambda x: x['name'].translate(None, '.-_[]').lower())
-    _write(out_file, json.dumps(reqs, indent=4, sort_keys=True, separators=(',', ': ')))
-    return True
+    return reqs
 
 
 if __name__ == '__main__':
@@ -130,6 +139,9 @@ if __name__ == '__main__':
     else:
         new_file = args.file.rpartition('.')[0] + '.json'
         print('Exporting [{0}] as [{1}]...'.format(args.file, new_file))
-        result = export_file_as_json(args.file, new_file)
+        data = file_to_dict(args.file)
+        if data:
+            _write(new_file, json.dumps(data, indent=4, sort_keys=True, separators=(',', ': ')))
+            result = True
 
     print('Done' if result else 'Failed')
