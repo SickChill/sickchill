@@ -1225,6 +1225,11 @@ td.col-name {
     text-align: left;
 }
 
+th.col-network,
+td.col-network {
+    width: 95px;
+}
+
 th.col-subtitles,
 td.col-subtitles {
     width: 150px;
