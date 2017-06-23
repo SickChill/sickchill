@@ -21,6 +21,7 @@ babelfish=0.5.5
 beautifulsoup4==4.5.3
 bencode==1.0
 # certgen.py==d52975c # source: https://github.com/pyca/pyopenssl/blob/d52975cef3a36e18552aeb23de7c06aa73d76454/examples/certgen.py
+git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
 html5lib==0.999999999
   - six [required: Any, installed: 1.10.0]
   - webencodings [required: Any, installed: 0.5.1]
