@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 """
 Use setup tools to install sickrage
 """
@@ -41,7 +42,9 @@ setup(
         'rednose',
         'mock',
         'vcrpy-unittest',
-        'babel'
+        'babel',
+        'flake8-coding',
+        'isort'
     ],
 
     classifiers=[

@@ -19,17 +19,15 @@
 
 from __future__ import unicode_literals
 
-
 from datetime import datetime
-from feedparser.util import FeedParserDict
-from hachoir_parser import createParser
 
 import sickbeard
+from feedparser.util import FeedParserDict
+from hachoir_parser import createParser
 from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
-
 from sickrage.helper.common import try_int
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider

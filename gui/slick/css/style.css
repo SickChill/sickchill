@@ -1233,6 +1233,11 @@ td.col-name {
     text-align: left;
 }
 
+th.col-network,
+td.col-network {
+    width: 95px;
+}
+
 th.col-subtitles,
 td.col-subtitles {
     width: 150px;
@@ -1394,7 +1399,7 @@ schedule.mako
 ========================================================================== */
 
 .key {
-    margin-bottom: 20px;
+    line-height: 30px;
 }
 
 .listing-key {
@@ -1416,6 +1421,10 @@ schedule.mako
     background-color: #FFDDDD;
 }
 
+.listing-snatched {
+    background-color: #EBC1EA;
+}
+
 .listing-toofar {
     background-color: #BEDEED;
 }
@@ -1433,6 +1442,11 @@ span.listing-current {
 span.listing-overdue {
     color: #890000;
     border: 1px solid #890000;
+}
+
+span.listing-snatched {
+    color: #652164;
+    border: 1px solid #652164;
 }
 
 span.listing-toofar {
@@ -2364,6 +2378,20 @@ pre {
 
 .navbar-brand {
     padding: 0;
+}
+
+.floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    padding: 0px 4px;
+    background-color: #777777;
+    border: 2px solid #959595;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
 }
 
 /* navbar styling */

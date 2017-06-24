@@ -21,15 +21,14 @@
 from __future__ import print_function, unicode_literals
 
 import os
+
 import sickbeard
-
 from requests.compat import urlencode
-from six.moves.urllib.error import HTTPError
-from six.moves.urllib.request import Request, urlopen
-
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.request import Request, urlopen
 
 
 class Notifier(object):

@@ -22,9 +22,8 @@ from __future__ import unicode_literals
 
 import datetime
 
-from requests.compat import urljoin
-
 import sickbeard
+from requests.compat import urljoin
 from sickbeard import helpers, logger
 
 session = helpers.make_session()

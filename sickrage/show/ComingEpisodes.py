@@ -17,30 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import unicode_literals
 
 from datetime import date, timedelta
-from sickbeard.common import WANTED, UNAIRED
+from operator import itemgetter
+
+import sickbeard
+from sickbeard.common import Quality, UNAIRED, WANTED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
 from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
-from operator import itemgetter
 
+SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
 class ComingEpisodes(object):
     """
-    Missed:   yesterday...(less than 1 week)
+    Snatched: snatched but not yet processed (no re-downloads)
+    Missed:   yesterday...(less than sickbeard.COMING_EPS_MISSED_RANGE)
     Today:    today
     Soon:     tomorrow till next week
     Later:    later than next week
     """
-    categories = ['later', 'missed', 'soon', 'today']
+    categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        'date': (lambda a, b: a[b'localtime'] < b[b'localtime']),
-        'network': (lambda a, b: (a[b'network'], a[b'localtime']) < (b[b'network'], b[b'localtime'])),
-        'show': (lambda a, b: (a[b'show_name'], a[b'localtime']) < (b[b'show_name'], b[b'localtime'])),
+        'date': itemgetter(b'snatchedsort', b'localtime', b'episode'),
+        'network': itemgetter(b'network', b'localtime', b'episode'),
+        'show': itemgetter(b'show_name', b'localtime', b'episode'),
     }
 
     def __init__(self):
@@ -65,9 +69,12 @@ class ComingEpisodes(object):
 
         db = DBConnection(row_type='dict')
         fields_to_select = ', '.join(
-            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id', 'name', 'network',
-             'paused', 'quality', 'runtime', 'season', 'show_name', 'showid', 's.status']
+            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id',
+             'e.location', 'name', 'network', 'paused', 'quality', 'runtime', 'season', 'show_name', 'showid',
+             'e.status as epstatus', 's.status']
         )
+
+        status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
         for show_obj in sickbeard.showList:
@@ -80,8 +87,8 @@ class ComingEpisodes(object):
                     'AND airdate <= ? '
                     'AND airdate >= ? '
                     'AND s.indexer_id = e.showid '
-                    'AND e.status IN (' + ','.join(['?'] * 2) + ')',
-                    [show_obj.indexerid, next_air_date or today, recently, WANTED, UNAIRED]
+                    'AND e.status IN (' + ','.join(['?'] * len(status_list)) + ')',
+                    [show_obj.indexerid, next_air_date or today, recently] + status_list
                 ]
             )
 
@@ -95,9 +102,9 @@ class ComingEpisodes(object):
         for index, item in enumerate(results):
             results[index][b'localtime'] = sbdatetime.convert_to_setting(
                 parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
+            results[index][b'snatchedsort'] = int(not results[index][b'epstatus'] in SNATCHED)
 
-        results.sort(key=itemgetter(b'localtime'))
-        results.sort(ComingEpisodes.sorts[sort])
+        results.sort(key=ComingEpisodes.sorts[sort])
 
         if not group:
             return results
@@ -111,7 +118,12 @@ class ComingEpisodes(object):
             result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             result[b'airdate'] = result[b'localtime'].toordinal()
 
-            if result[b'airdate'] < today:
+            if result[b'epstatus'] in SNATCHED:
+                if result[b'location']:
+                    continue
+                else:
+                    category = 'snatched'
+            elif result[b'airdate'] < today:
                 category = 'missed'
             elif result[b'airdate'] >= next_week:
                 category = 'later'

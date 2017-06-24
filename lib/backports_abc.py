@@ -21,6 +21,20 @@ except ImportError:
     import collections as _collections_abc
 
 
+def get_mro(cls):
+    try:
+        return cls.__mro__
+    except AttributeError:
+        return old_style_mro(cls)
+
+
+def old_style_mro(cls):
+    yield cls
+    for base in cls.__bases__:
+        for c in old_style_mro(base):
+            yield c
+
+
 def mk_gen():
     from abc import abstractmethod
 
@@ -63,7 +77,7 @@ def mk_gen():
         @classmethod
         def __subclasshook__(cls, C):
             if cls is Generator:
-                mro = C.__mro__
+                mro = get_mro(C)
                 for method in required_methods:
                     for base in mro:
                         if method in base.__dict__:
@@ -88,7 +102,7 @@ def mk_awaitable():
     @classmethod
     def __subclasshook__(cls, C):
         if cls is Awaitable:
-            for B in C.__mro__:
+            for B in get_mro(C):
                 if '__await__' in B.__dict__:
                     if B.__dict__['__await__']:
                         return True
@@ -144,7 +158,7 @@ def mk_coroutine():
         @classmethod
         def __subclasshook__(cls, C):
             if cls is Coroutine:
-                mro = C.__mro__
+                mro = get_mro(C)
                 for method in ('__await__', 'send', 'throw', 'close'):
                     for base in mro:
                         if method in base.__dict__:

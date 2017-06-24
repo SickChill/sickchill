@@ -4,10 +4,7 @@ from __future__ import print_function, unicode_literals
 
 import os
 import threading
-
-from tornado.ioloop import IOLoop
-from tornado.routes import route
-from tornado.web import Application, RedirectHandler, StaticFileHandler
+from socket import errno, error as SocketError
 
 import sickbeard
 from sickbeard import logger
@@ -15,6 +12,9 @@ from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.webapi import ApiHandler
 from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickrage.helper.encoding import ek
+from tornado.ioloop import IOLoop
+from tornado.routes import route
+from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
@@ -82,27 +82,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             login_url='{0}/login/'.format(self.options['web_root']),
         )
 
-        # Main Handlers
-        self.app.add_handlers('.*$', [
-            # webapi handler
-            (r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler),
-
-            # webapi key retrieval
-            (r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler),
-
-            # webapi builder redirect
-            (r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
-
-            # webui login/logout handlers
-            (r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler),
-            (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
-
-            # Web calendar handler (Needed because option Unprotected calendar)
-            (r'{0}/calendar'.format(self.options['web_root']), CalendarHandler),
-
-            # webui handlers
-        ] + route.get_routes(self.options['web_root']))
-
         # Static File Handlers
         self.app.add_handlers(".*$", [
             # favicon
@@ -134,6 +113,27 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
              {"path": self.video_root})
         ])
 
+        # Main Handlers
+        self.app.add_handlers('.*$', [
+            # webapi handler
+            (r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler),
+
+            # webapi key retrieval
+            (r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler),
+
+            # webapi builder redirect
+            (r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
+
+            # webui login/logout handlers
+            (r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler),
+            (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
+
+            # Web calendar handler (Needed because option Unprotected calendar)
+            (r'{0}/calendar'.format(self.options['web_root']), CalendarHandler),
+
+            # webui handlers
+        ] + route.get_routes(self.options['web_root']))
+
     def run(self):
         if self.enable_https:
             protocol = "https"
@@ -148,11 +148,18 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         try:
             self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
                                           xheaders=sickbeard.HANDLE_REVERSE_PROXY, protocol=protocol)
-        except Exception:
-            if sickbeard.LAUNCH_BROWSER and not self.daemon:
-                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
-                logger.log("Launching browser and exiting")
-            logger.log("Could not start webserver on port {0}, already in use!".format(self.options['port']))
+        except SocketError as ex:
+            err_msg = ""
+            if ex.errno == errno.EADDRINUSE:  # Address/port combination already in use
+                if sickbeard.LAUNCH_BROWSER and not self.daemon:
+                    sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
+                    logger.log("Launching browser and exiting")
+                err_msg = "already in use!"
+
+            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
+            os._exit(1)  # pylint: disable=protected-access
+        except Exception as ex:
+            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
             os._exit(1)  # pylint: disable=protected-access
 
         try:
@@ -162,6 +169,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 
-    def shutDown(self):
+    def shutdown(self):
         self.alive = False
         self.io_loop.stop()

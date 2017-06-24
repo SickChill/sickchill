@@ -7,9 +7,8 @@ import posixpath
 import re
 from datetime import date
 
-from bs4 import BeautifulSoup
-
 import sickbeard
+from bs4 import BeautifulSoup
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
 
@@ -39,7 +38,7 @@ class imdbPopular(object):
         if not data:
             return None
 
-        soup = BeautifulSoup(data, 'html.parser')
+        soup = BeautifulSoup(data, 'html5lib')
         results = soup.find_all("div", {"class": "lister-item"})
 
         for row in results:

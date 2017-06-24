@@ -1,5 +1,5 @@
 # mako/lexer.py
-# Copyright (C) 2006-2015 the Mako authors and contributors <see AUTHORS file>
+# Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -95,31 +95,37 @@ class Lexer(object):
         #          (match and "TRUE" or "FALSE")
         return match
 
-    def parse_until_text(self, *text):
+    def parse_until_text(self, watch_nesting, *text):
         startpos = self.match_position
         text_re = r'|'.join(text)
         brace_level = 0
+        paren_level = 0
+        bracket_level = 0
         while True:
             match = self.match(r'#.*\n')
             if match:
                 continue
-            match = self.match(r'(\"\"\"|\'\'\'|\"|\')((?<!\\)\\\1|.)*?\1',
+            match = self.match(r'(\"\"\"|\'\'\'|\"|\')[^\\]*?(\\.[^\\]*?)*\1',
                                re.S)
             if match:
                 continue
             match = self.match(r'(%s)' % text_re)
-            if match:
-                if match.group(1) == '}' and brace_level > 0:
-                    brace_level -= 1
-                    continue
+            if match and not (watch_nesting
+                              and (brace_level > 0 or paren_level > 0
+                                   or bracket_level > 0)):
                 return \
                     self.text[startpos:
                               self.match_position - len(match.group(1))],\
                     match.group(1)
-            match = self.match(r"(.*?)(?=\"|\'|#|%s)" % text_re, re.S)
+            elif not match:
+                match = self.match(r"(.*?)(?=\"|\'|#|%s)" % text_re, re.S)
             if match:
                 brace_level += match.group(1).count('{')
                 brace_level -= match.group(1).count('}')
+                paren_level += match.group(1).count('(')
+                paren_level -= match.group(1).count(')')
+                bracket_level += match.group(1).count('[')
+                bracket_level -= match.group(1).count(']')
                 continue
             raise exceptions.SyntaxException(
                 "Expected: %s" %
@@ -368,7 +374,7 @@ class Lexer(object):
         match = self.match(r"<%(!)?")
         if match:
             line, pos = self.matched_lineno, self.matched_charpos
-            text, end = self.parse_until_text(r'%>')
+            text, end = self.parse_until_text(False, r'%>')
             # the trailing newline helps
             # compiler.parse() not complain about indentation
             text = adjust_whitespace(text) + "\n"
@@ -384,9 +390,9 @@ class Lexer(object):
         match = self.match(r"\${")
         if match:
             line, pos = self.matched_lineno, self.matched_charpos
-            text, end = self.parse_until_text(r'\|', r'}')
+            text, end = self.parse_until_text(True, r'\|', r'}')
             if end == '|':
-                escapes, end = self.parse_until_text(r'}')
+                escapes, end = self.parse_until_text(True, r'}')
             else:
                 escapes = ""
             text = text.replace('\r\n', '\n')

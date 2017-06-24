@@ -79,6 +79,9 @@ Public Methods:
     pretty_time_delta
     is_file_locked
     disk_usage
+    sortable_name
+    manage_torrents_url
+    bdecode
 Private Methods:
     _check_against_names
     _setUpSession
@@ -95,6 +98,8 @@ from shutil import rmtree
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import sickbeard
+from bencode.BTL import BTFailure
 from sickbeard import helpers
 from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
@@ -504,12 +509,59 @@ class HelpersEncryptionTests(unittest.TestCase):
     """
     Test encryption and decryption
     """
-    @unittest.skip('Not yet implemented')
     def test_create_https_certificates(self):
         """
-        Test create_https_certificates
+        Test that create_https_certificates successfully generates certificate and private key
         """
-        pass
+        try:
+            import OpenSSL
+        except ImportError:
+            self.skipTest('pyOpenSSL is not installed')
+            return False
+
+        base_path = os.path.dirname(__file__)
+        cert_path = os.path.abspath(os.path.join(base_path, 'test.crt'))
+        pkey_path = os.path.abspath(os.path.join(base_path, 'test.key'))
+
+        def removeTestFiles():
+            try:
+                os.remove(cert_path)
+                os.remove(pkey_path)
+            except OSError:
+                pass
+
+        removeTestFiles()  # always remove existing
+        self.assertTrue(helpers.create_https_certificates(cert_path, pkey_path))
+        self.assertTrue(os.path.isfile(cert_path))
+        self.assertTrue(os.path.isfile(pkey_path))
+
+        FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
+        try:
+            with open(cert_path, 'rt') as f:
+                cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load certificate')
+
+        try:
+            with open(pkey_path, 'rt') as f:
+                pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load private key')
+
+        context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+        context.use_privatekey(pkey)
+        context.use_certificate(cert)
+        failed = False
+        try:
+            context.check_privatekey()
+        except OpenSSL.SSL.Error:
+            failed = True
+        finally:
+            removeTestFiles()
+
+        self.assertFalse(failed, 'private key does not match certificate')
 
     @unittest.skip('Not yet implemented')
     def test_encrypt(self):
@@ -714,6 +766,40 @@ class HelpersMiscTests(unittest.TestCase):
         Test pretty_time_delta
         """
         pass
+
+    def test_sortable_name(self):
+        """
+        Test that sortable_name returns the correct show name
+        """
+        cases = [
+            # raw_name, SORT_ARTICLE, expected
+            ('The Big Bang Theory', False, 'big bang theory'),
+            ('A Big World', False, 'big world'),
+            ('An Unexpected Journey', False, 'unexpected journey'),
+            ('The Big Bang Theory', True, 'the big bang theory'),
+            ('A Big World', True, 'a big world'),
+            ('An Unexpected Journey', True, 'an unexpected journey'),
+        ]
+        for raw_name, option, expected in cases:
+            sickbeard.SORT_ARTICLE = option
+            self.assertEqual(helpers.sortable_name(raw_name), expected)
+
+    @unittest.skip('Not yet implemented')
+    def test_manage_torrents_url(self):
+        """
+        Test manage_torrents_url
+        """
+        pass
+
+    def test_bdecode(self):
+        """
+        Test the custom bdecode function
+        """
+        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
+        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
+        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
+        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
+
 
 if __name__ == '__main__':
     print("==================")

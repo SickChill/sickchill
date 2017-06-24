@@ -21,7 +21,6 @@
 from __future__ import unicode_literals
 
 from requests.compat import urljoin
-
 from sickbeard import logger, tvcache
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider

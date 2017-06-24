@@ -20,14 +20,13 @@
 
 from __future__ import print_function, unicode_literals
 
-from requests.auth import AuthBase
-import six
 import time
 import traceback
 
+import six
+from requests.auth import AuthBase
 from sickbeard import logger, tvcache
-from sickrage.helper.common import try_int
-from sickrage.helper.common import convert_size
+from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -44,11 +43,11 @@ class T411Provider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll T411 every 10 minutes max
 
-        self.urls = {'base_url': 'https://www.t411.ai/',
-                     'search': 'https://api.t411.ai/torrents/search/%s*?cid=%s&limit=100',
-                     'rss': 'https://api.t411.ai/torrents/top/today',
-                     'login_page': 'https://api.t411.ai/auth',
-                     'download': 'https://api.t411.ai/torrents/download/%s'}
+        self.urls = {'base_url': 'https://www.t411.al/',
+                     'search': 'https://api.t411.al/torrents/search/%s*?cid=%s&limit=100',
+                     'rss': 'https://api.t411.al/torrents/top/today',
+                     'login_page': 'https://api.t411.al/auth',
+                     'download': 'https://api.t411.al/torrents/download/%s'}
 
         self.url = self.urls['base_url']
 

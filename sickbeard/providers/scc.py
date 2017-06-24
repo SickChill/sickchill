@@ -22,17 +22,16 @@ from __future__ import print_function, unicode_literals
 
 import re
 import time
-from requests.compat import urljoin
-from requests.utils import dict_from_cookiejar
 
 import sickbeard
+from requests.compat import urljoin
+from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from six.moves.urllib.parse import quote
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves.urllib.parse import quote
 
 
 class SCCProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes

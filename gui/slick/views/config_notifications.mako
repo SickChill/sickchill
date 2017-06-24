@@ -2168,6 +2168,11 @@
                                             <label for="telegram_id">${_('contact @myidbot on Telegram to get an ID')}</label>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>${_('Note: Don\'t forget to talk with your bot at least one time if you get a 403 error.')}</label>
+                                        </div>
+                                   </div>
                                 </div>
                             </div>
 

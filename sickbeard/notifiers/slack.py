@@ -19,14 +19,12 @@
 from __future__ import unicode_literals
 
 import json
+
 import requests
-
 import sickbeard
-from sickbeard import logger, common
-from sickrage.helper.exceptions import ex
-
-
 import six
+from sickbeard import common, logger
+from sickrage.helper.exceptions import ex
 
 
 class Notifier(object):

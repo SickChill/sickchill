@@ -28,19 +28,18 @@ import subprocess
 import threading
 import traceback
 
+import sickbeard
 import six
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
-from subliminal import Episode, ProviderPool, provider_manager
-
-import sickbeard
 from sickbeard import db, history, logger
 from sickbeard.common import Quality
 from sickbeard.helpers import is_media_file
 from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+from subliminal import Episode, provider_manager, ProviderPool
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -48,6 +47,12 @@ if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in provider_manager.names():
     provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
+if 'thewiz' not in provider_manager.names():
+    provider_manager.register('thewiz = sickrage.providers.subtitle.thewiz:TheWizProvider')
+# We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
+# Until it gets an update in subliminal, we'll use a fixed provider.
+if 'subscenter' not in provider_manager.names():
+    provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
@@ -58,8 +63,9 @@ PROVIDER_URLS = {
     'napiprojekt': 'http://www.napiprojekt.pl',
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
-    'subscenter': 'http://www.subscenter.org',
+    'subscenter': 'http://www.subscenter.info',
     'thesubdb': 'http://www.thesubdb.com',
+    'thewiz': 'http://subs.thewiz.info',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
@@ -89,6 +95,10 @@ class SubtitleProviderPool(object):  # pylint: disable=too-few-public-methods
                 'opensubtitles': {
                     'username': sickbeard.OPENSUBTITLES_USER,
                     'password': sickbeard.OPENSUBTITLES_PASS
+                },
+                'subscenter': {
+                    'username': sickbeard.SUBSCENTER_USER,
+                    'password': sickbeard.SUBSCENTER_PASS
                 }
             }
 

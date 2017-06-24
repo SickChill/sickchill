@@ -22,14 +22,13 @@
 from __future__ import print_function, unicode_literals
 
 import re
-from requests.utils import dict_from_cookiejar
+
 from bs4 import BeautifulSoup
-
+from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
-from six.moves.urllib.parse import quote_plus
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves.urllib.parse import quote_plus
 
 
 class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes

@@ -27,9 +27,8 @@ from collections import OrderedDict
 from threading import Lock
 
 import dateutil
-import six
-
 import sickbeard
+import six
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickrage.helper.common import remove_extension
@@ -147,8 +146,7 @@ class NameParser(object):
                 if 'extra_ep_num' in named_groups and match.group('extra_ep_num'):
                     tmp_episodes = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
                     if len(tmp_episodes) > 4:
-                        matches = []
-                        break
+                        continue
                 else:
                     tmp_episodes = [ep_num]
 
