@@ -42,7 +42,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="text" id="show-name" value="${default_show_name}"
-                                               placeholder="Show name"
+                                               placeholder="Show name" autofocus
                                                class="form-control form-control-inline input-sm input350"
                                                autocapitalize="off"/>
                                     </div>
@@ -97,59 +97,68 @@
                         </div>
                     </div>
 
-                    <legend class="legendStep">#2 ${_('Pick the folder')}</legend>
-                    <div class="row stepDiv">
-                        <div class="col-md-12">
-                            % if provided_show_dir:
-                                <p>${_('Pre-chosen Destination Folder')}:</p>
-                                <b style="font-size: 15px;">${provided_show_dir}</b>
-                                <br>
-                                <input type="hidden" id="fullShowPath" name="fullShowPath"
-                                       value="${provided_show_dir}"/>
-                                <br/>
-                            % else:
-                                <%include file="/inc_rootDirs.mako"/>
-                            % endif
-                        </div>
-                    </div>
-
-                    <legend class="legendStep">#3 ${_('Customize options')}</legend>
-                    <div class="row stepDiv">
-                        <div class="col-md-12">
-                            <%include file="/inc_addShowOptions.mako"/>
-                        </div>
-                    </div>
-
-                    <legend class="legendStep">#4 ${_('Verify your input')}</legend>
-                    <div class="row stepDiv">
-                        <div class="col-md-12">
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <span class="component-title">${_('Show name')}</span>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <span id="desc-show-name"></span>
-                                </div>
-                            </div>
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <span class="component-title">${_('Directory')}</span>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc desc-directory">
-                                    <span id="desc-directory-name"></span>
-                                </div>
+                    <div class="next-steps" style="display: none;">
+                        <legend class="legendStep">#2 ${_('Pick the folder')}</legend>
+                        <div class="row stepDiv">
+                            <div class="col-lg-6 col-sm-12">
+                                % if provided_show_dir:
+                                    <p>${_('Pre-chosen Destination Folder')}:</p>
+                                    <b style="font-size: 15px;">${provided_show_dir}</b>
+                                    <br>
+                                    <input type="hidden" id="fullShowPath" name="fullShowPath"
+                                           value="${provided_show_dir}"/>
+                                    <br/>
+                                % else:
+                                    <%include file="/inc_rootDirs.mako"/>
+                                % endif
                             </div>
                         </div>
-                    </div>
 
-                    % for curNextDir in other_shows:
-                        <input type="hidden" name="other_shows" value="${curNextDir}"/>
-                    % endfor
-                    <input type="hidden" name="skipShow" id="skipShow"/>
+                        <legend class="legendStep">#3 ${_('Customize options')}</legend>
+                        <div class="row stepDiv">
+                            <div class="col-md-12">
+                                    <%include file="/inc_addShowOptions.mako"/>
+                            </div>
+                        </div>
+
+                        <legend class="legendStep">#4 ${_('Verify your input')}</legend>
+                        <div class="row stepDiv">
+                            <div class="col-md-12">
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Show name')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <span id="desc-show-name"></span>
+                                    </div>
+                                </div>
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Directory')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc desc-directory">
+                                        <span id="desc-directory-name"></span>
+                                    </div>
+                                </div>
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Quality')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc desc-quality">
+                                        <span id="desc-quality-name"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        % for curNextDir in other_shows:
+                            <input type="hidden" name="other_shows" value="${curNextDir}"/>
+                        % endfor
+                        <input type="hidden" name="skipShow" id="skipShow"/>
+                    </div>
                 </form>
             </div>
         </div>
-        <br/>
         <div class="row">
             <div class="col-md-12">
                 <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled"/>

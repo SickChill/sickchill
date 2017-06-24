@@ -3752,6 +3752,7 @@ var SICKRAGE = {
                     $('#desc-show-name').text(object.showName);
                     $('#desc-directory-name').html(object.dir);
                 }
+                $('#desc-quality-name').text($("#qualityPreset option:selected").text());
 
                 // also toggle the add show button
                 if (($("#rootDirs option:selected").length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) &&
@@ -3762,13 +3763,17 @@ var SICKRAGE = {
                 }
             }
 
+            function showGroupPicker() {
+                $('#blackwhitelist').toggle($('#anime').prop('checked'));
+            }
+
             var searchRequestXhr = null;
             function searchIndexers() {
                 if (!$('#show-name').val()) { return; }
 
                 if (searchRequestXhr) { searchRequestXhr.abort(); }
 
-                var searchingFor = $('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+                var searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
                 $('#searchResults').empty().html(
                     '<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
                     _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor)
@@ -3788,7 +3793,6 @@ var SICKRAGE = {
                     },
                     success: function (data) {
                         var resultStr = '<legend class="legendStep">Search Results</legend>';
-                        var disabled = '';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
@@ -3820,13 +3824,14 @@ var SICKRAGE = {
                                     resultStr += ' [' + obj[0] + ']';
                                 }
 
-                                if (inShowList) {
-                                    resultStr += ' &mdash; <a href="' + srRoot + '/home/displayShow?show=' + obj[3] + '"><strong>Already in your show list</strong></a>';
-                                }
+                                // if (inShowList) {
+                                //     resultStr += ' &mdash; <a href="' + srRoot + '/home/displayShow?show=' + obj[3] + '"><strong>Already in your show list</strong></a>';
+                                // }
 
                                 resultStr += '</span><br/>';
                             });
                             resultStr += '</ul>';
+                            $(".next-steps").show();
                         }
 
                         $('#searchResults').html(resultStr);
@@ -3848,12 +3853,18 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
+            $("#anime").click(function() {
+                showGroupPicker();
+                updateSampleText();
+            });
+
             $('#skipShowButton').click(function () {
                 $('#skipShow').val('1');
                 $('#addShowForm').submit();
             });
 
             $('#rootDirText').change(updateSampleText);
+            $('#qualityPreset').change(updateSampleText);
             $('#searchResults').on('change', '.whichSeries', updateSampleText);
 
             $('#show-name').focus().keyup(function(event) {
@@ -3867,6 +3878,7 @@ var SICKRAGE = {
             }
 
             updateSampleText();
+            showGroupPicker();
         },
         addExistingShow: function(){
             $('#tableDiv').on('click', '#checkAll', function() {
