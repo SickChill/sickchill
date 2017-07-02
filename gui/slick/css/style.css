@@ -2029,6 +2029,11 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-webhook {
+    background: url("../images/blank.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-kodi {
     background-position: 0 0;
 }

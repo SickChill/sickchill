@@ -2473,6 +2473,120 @@
                     </fieldset>
                 </div>
             </div>
+
+            <div class="config-group-divider"></div>
+
+            <!-- /custom-notification component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-webhook" title="${_('Webhook')}"></span>
+                        <h3>Webhook</h3>
+                        <p>${_('Set a URL to receive noitifcations under the form of POST requests in a JSON object format.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_webhook" id="use_webhook" ${('', 'checked="checked"')[bool(sickbeard.USE_WEBHOOK)]}/>
+                                        <label for="use_webhook">${_('send notifications through a webhook?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_webhook">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="webhook_notify_onsnatch" id="webhook_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.WEBHOOK_NOTIFY_ONSNATCH)]}/>
+                                    <label for="webhook_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="webhook_notify_ondownload" id="webhook_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.WEBHOOK_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="webhook_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="webhook_notify_onsubtitledownload" id="webhook_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="webhook_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Webhook POST URL')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="webhook_post_url" id="webhook_post_url" value="${sickbeard.WEBHOOK_POST_URL}" class="form-control input-sm input300" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="webhook_post_url">${_('URL to which SickRage should send the request.')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Webhook POST Token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="webhook_post_token" id="webhook_post_token" value="${sickbeard.WEBHOOK_POST_TOKEN}" class="form-control input-sm input300" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="webhook_post_token">${_('Optional token for POST request authentication. Sent as value in the X-SICKRAGE-AUTH header.')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testWebhook-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test webhook" id="testWebhook" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
         </div>
 
         <!-- /Social //-->

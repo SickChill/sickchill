@@ -976,6 +976,20 @@ class Home(WebRoot):
             return _('Error sending sms')
 
     @staticmethod
+    def testWebhook(url=None, token=None, **kwargs):
+        is_valid_url = notifiers.webhook_notifier.validate_url(url)
+
+        if not is_valid_url:
+            return _("Error: Please enter a valid URL")
+
+        result = notifiers.webhook_notifier.test_webhook(url, token)
+
+        if result:
+            return _("Webhook notification succeeded")
+        else:
+            return _("Error sending Webhook notification. Please check verify that the provided information is correct")
+
+    @staticmethod
     def testSlack():
         result = notifiers.slack_notifier.test_notify()
         if result:
@@ -4924,6 +4938,8 @@ class ConfigNotifications(Config):
             twitter_notify_onsubtitledownload=None, twitter_usedm=None, twitter_dmto=None,
             use_twilio=None, twilio_notify_onsnatch=None, twilio_notify_ondownload=None, twilio_notify_onsubtitledownload=None,
             twilio_phone_sid=None, twilio_account_sid=None, twilio_auth_token=None, twilio_to_number=None,
+            use_webhook=None, webhook_notify_onsnatch=None, webhook_notify_ondownload=None,
+            webhook_notify_onsubtitledownload=None, webhook_post_url=None, webhook_post_token=None,
             use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
             boxcar2_notify_onsubtitledownload=None, boxcar2_accesstoken=None,
             use_pushover=None, pushover_notify_onsnatch=None, pushover_notify_ondownload=None,
@@ -5042,6 +5058,13 @@ class ConfigNotifications(Config):
         sickbeard.TWILIO_ACCOUNT_SID = twilio_account_sid
         sickbeard.TWILIO_AUTH_TOKEN = twilio_auth_token
         sickbeard.TWILIO_TO_NUMBER = twilio_to_number
+
+        sickbeard.USE_WEBHOOK = config.checkbox_to_value(use_webhook)
+        sickbeard.WEBHOOK_NOTIFY_ONSNATCH = config.checkbox_to_value(webhook_notify_onsnatch)
+        sickbeard.WEBHOOK_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(webhook_notify_ondownload)
+        sickbeard.WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(webhook_notify_onsubtitledownload)
+        sickbeard.WEBHOOK_POST_URL = webhook_post_url
+        sickbeard.WEBHOOK_POST_TOKEN = webhook_post_token
 
         sickbeard.USE_SLACK = config.checkbox_to_value(use_slack)
         sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)

@@ -453,6 +453,13 @@ TWILIO_ACCOUNT_SID = ''
 TWILIO_AUTH_TOKEN = ''
 TWILIO_TO_NUMBER = ''
 
+USE_WEBHOOK = False
+WEBHOOK_NOTIFY_ONSNATCH = False
+WEBHOOK_NOTIFY_ONDOWNLOAD = False
+WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD = False
+WEBHOOK_POST_URL = None
+WEBHOOK_POST_TOKEN = ''
+
 USE_BOXCAR2 = False
 BOXCAR2_NOTIFY_ONSNATCH = False
 BOXCAR2_NOTIFY_ONDOWNLOAD = False
@@ -700,6 +707,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             providerList, newznabProviderList, torrentRssProviderList, \
             EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, DAILYSEARCH_FREQUENCY, TWITTER_DMTO, TWITTER_USEDM, \
             USE_TWILIO, TWILIO_NOTIFY_ONSNATCH, TWILIO_NOTIFY_ONDOWNLOAD, TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD, TWILIO_PHONE_SID, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_TO_NUMBER, \
+            USE_WEBHOOK, WEBHOOK_NOTIFY_ONSNATCH, WEBHOOK_NOTIFY_ONDOWNLOAD, WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD, WEBHOOK_POST_URL, WEBHOOK_POST_TOKEN, \
             USE_BOXCAR2, BOXCAR2_ACCESSTOKEN, BOXCAR2_NOTIFY_ONDOWNLOAD, BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD, BOXCAR2_NOTIFY_ONSNATCH, \
             USE_PUSHOVER, PUSHOVER_USERKEY, PUSHOVER_APIKEY, PUSHOVER_DEVICE, PUSHOVER_NOTIFY_ONDOWNLOAD, PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHOVER_NOTIFY_ONSNATCH, PUSHOVER_SOUND, PUSHOVER_PRIORITY, \
             USE_LIBNOTIFY, LIBNOTIFY_NOTIFY_ONSNATCH, LIBNOTIFY_NOTIFY_ONDOWNLOAD, LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD, USE_NMJ, NMJ_HOST, NMJ_DATABASE, NMJ_MOUNT, USE_NMJv2, NMJv2_HOST, NMJv2_DATABASE, NMJv2_DBLOC, USE_SYNOINDEX, \
@@ -1189,6 +1197,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TWILIO_ACCOUNT_SID = check_setting_str(CFG, 'Twilio', 'twilio_account_sid', censor_log=True)
         TWILIO_AUTH_TOKEN = check_setting_str(CFG, 'Twilio', 'twilio_auth_token', censor_log=True)
         TWILIO_TO_NUMBER = check_setting_str(CFG, 'Twilio', 'twilio_to_number', censor_log=True)
+
+        USE_WEBHOOK = check_setting_bool(CFG, 'Webhook', 'use_webhook')
+        WEBHOOK_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Webhook', 'webhook_notify_onsnatch')
+        WEBHOOK_NOTIFY_ONDOWNLOAD = check_setting_bool(CFG, 'Webhook', 'webhook_notify_ondownload')
+        WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Webhook', 'webhook_notify_onsubtitledownload')
+        WEBHOOK_POST_URL = check_setting_str(CFG, 'Webhook', 'webhook_post_url')
+        WEBHOOK_POST_TOKEN = check_setting_str(CFG, 'Webhook', 'webhook_post_token', censor_log=True)
 
         USE_BOXCAR2 = check_setting_bool(CFG, 'Boxcar2', 'use_boxcar2')
         BOXCAR2_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Boxcar2', 'boxcar2_notify_onsnatch')
@@ -2175,6 +2190,15 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'twilio_account_sid': helpers.encrypt(TWILIO_ACCOUNT_SID, ENCRYPTION_VERSION),
             'twilio_auth_token': helpers.encrypt(TWILIO_AUTH_TOKEN, ENCRYPTION_VERSION),
             'twilio_to_number': helpers.encrypt(TWILIO_TO_NUMBER, ENCRYPTION_VERSION),
+        },
+
+        'Webhook': {
+            'use_webhook': int(USE_WEBHOOK),
+            'webhook_notify_onsnatch': int(WEBHOOK_NOTIFY_ONSNATCH),
+            'webhook_notify_ondownload': int(WEBHOOK_NOTIFY_ONDOWNLOAD),
+            'webhook_notify_onsubtitledownload': int(WEBHOOK_NOTIFY_ONSUBTITLEDOWNLOAD),
+            'webhook_post_url': WEBHOOK_POST_URL,
+            'webhook_post_token': helpers.encrypt(WEBHOOK_POST_TOKEN, ENCRYPTION_VERSION)
         },
 
         'Boxcar2': {

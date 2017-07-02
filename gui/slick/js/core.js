@@ -697,6 +697,18 @@ var SICKRAGE = {
                 });
             });
 
+            $('#testWebhook').on('click', function() {
+                $('#testWebhook').addClass('disabled');
+                $.post(srRoot + '/home/testWebhook', {
+                    url: $.trim($("#webhook_post_url").val()),
+                    token: $.trim($("#webhook_post_token").val())
+                }).done(function(data) {
+                    $('#testWebhook-result').html(data);
+                }).always(function() {
+                    $('#testWebhook').removeClass('disabled');
+                });
+            });
+
             $('#testSlack').on('click', function() {
                 $.post(srRoot + '/home/testSlack', function(data) {
                     $('#testSlack-result').html(data);
