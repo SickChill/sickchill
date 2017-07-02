@@ -1,8 +1,8 @@
 List of dependencies [![Requirements Status](https://requires.io/github/SickRage/SickRage/requirements.svg?branch=develop)](https://requires.io/github/SickRage/SickRage/requirements/?branch=develop)
 ======================
 
- Status   |  Package  |  Version / Commit  | Notes
-:-------: | :-------: | :----------------: | -----
+ Status  |  Package  |  Version / Commit  | Notes
+:------: | :-------: | :----------------: | -----
 :exclamation: | adba | ??? | **Modified**<br>not on PYPI - [GH:lad1337/adba](https://github.com/lad1337/adba)
 :ok: | babelfish | 0.5.5 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | backports_abc | 0.5 | 
@@ -41,7 +41,6 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | MarkupSafe | 1.0
 :ok: | ndg-httpsclient | 0.3.3
 :ok: | oauthlib | 2.0.2 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
-:heavy_minus_sign: | oauth2 | - | Removed in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :question: | pgi | 0.0.11.1 | Can't verify, unable to install this using pip.<br>Only being used by `sickbeard.notifiers.libnotify` as far as I can tell.
 :exclamation: | pkg_resources.py | - | Copied from setuptools and looks to be modified.<br>Maybe we don't really need this?<br>Used to load the egg files for `pymediainfo` and `pytz`.
 :ok: | profilehooks | 1.5
@@ -63,10 +62,8 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | requests-oauthlib | 0.8.0 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :exclamation: | rtorrent-python | 0.2.9  | **Modified**<br>See [commits log for `lib/rtorrent`](https://github.com/SickRage/SickRage/commits/master/lib/rtorrent)
 :exclamation: | send2trash | 1.3.0  | **Modified**<br>See [`9ad8114`](https://github.com/SickRage/SickRage/commit/9ad811432ab0ca3292410d29464ce2532361eb55)
-:heavy_minus_sign: | simplejson | - | Removed in [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | singledispatch | 3.4.0.3
 :ok: | six | 1.10.0
-:heavy_minus_sign: | SocksiPy | - | Replaced with PySocks in [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :warning: | sqlalchemy | [ccc0c44](https://github.com/zzzeek/sqlalchemy/tree/ccc0c44c3a60fc4906e5e3b26cc6d2b7a69d33bf)
 :ok: | stevedore | 1.10.0
 :warning: | subliminal | [7eb7a53](https://github.com/Diaoul/subliminal/tree/7eb7a53fe6bcaf3e01a6b44c8366faf7c96f7f1b) | **Modified**<br>Subscenter provider disabled until fixed upstream, [#3825 `diff-ab7eb9b`](https://github.com/SickRage/SickRage/pull/3825/files#diff-ab7eb9ba0a2d4c74c16795ff40f2bd62)
@@ -83,3 +80,16 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | webencodings | 0.5.1
 :ok: | win-inet-pton | 1.0.1 | Required for PySocks on Windows systems<br>Added in [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | xmltodict | 0.11.0 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
+
+***
+
+:heavy_minus_sign: Removed libs:
+-------------
+
+ Package  |  Reason  | Reference
+:-------: | :------: | ---------
+MultipartPostHandler.py | Unused | Removed in [#3716](https://github.com/SickRage/SickRage/pull/3716)
+oauth2 | Outdated | Removed in [#3870](https://github.com/SickRage/SickRage/pull/3870)
+simplejson | Unused | Removed in [#3877](https://github.com/SickRage/SickRage/pull/3877)
+SocksiPy | Outdated | Replaced with PySocks in [#3877](https://github.com/SickRage/SickRage/pull/3877)
+sqliteshelf.py | Unused | Removed in [#3716](https://github.com/SickRage/SickRage/pull/3716)
