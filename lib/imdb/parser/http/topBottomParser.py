@@ -7,7 +7,7 @@ E.g.:
     http://akas.imdb.com/chart/top
     http://akas.imdb.com/chart/bottom
 
-Copyright 2009 Davide Alberani <da@erlug.linux.it>
+Copyright 2009-2015 Davide Alberani <da@erlug.linux.it>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from imdb.utils import analyze_title
@@ -43,14 +43,15 @@ class DOMHTMLTop250Parser(DOMParserBase):
 
     def _init(self):
         self.extractors = [Extractor(label=self.label,
-                        path="//div[@id='main']//table//tr",
+                        path="//div[@id='main']//div[1]//div//table//tbody//tr",
                         attrs=Attribute(key=None,
                                 multi=True,
-                                path={self.ranktext: "./td[1]//text()",
-                                        'rating': "./td[2]//text()",
-                                        'title': "./td[3]//text()",
-                                        'movieID': "./td[3]//a/@href",
-                                        'votes': "./td[4]//text()"
+                                path={self.ranktext: "./td[2]//text()",
+                                        'rating': "./td[3]//strong//text()",
+                                        'title': "./td[2]//a//text()",
+                                        'year': "./td[2]//span//text()",
+                                        'movieID': "./td[2]//a/@href",
+                                        'votes': "./td[3]//strong/@title"
                                         }))]
 
     def postprocess_data(self, data):
@@ -72,12 +73,16 @@ class DOMHTMLTop250Parser(DOMParserBase):
             if theID in seenIDs:
                 continue
             seenIDs.append(theID)
-            minfo = analyze_title(d['title'])
+            minfo = analyze_title(d['title']+" "+d['year'])
             try: minfo[self.ranktext] = int(d[self.ranktext].replace('.', ''))
             except: pass
             if 'votes' in d:
-                try: minfo['votes'] = int(d['votes'].replace(',', ''))
-                except: pass
+                try:
+                    votes = d['votes'].replace(' votes','')
+                    votes = votes.split(' based on ')[1]
+                    minfo['votes'] = int(votes.replace(',', ''))
+                except:
+                    pass
             if 'rating' in d:
                 try: minfo['rating'] = float(d['rating'])
                 except: pass
