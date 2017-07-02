@@ -1,15 +1,15 @@
 # Gettext message file for imdbpy
 # Translators:
-# lukophron, 2014
-# Rajaa Gutknecht <rajaa@hilltx.com>, 2013
+# lukophron, 2014-2016
+# Rajaa Jalil <rajaa@hilltx.com>, 2013
 # lkppo, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: IMDbPY\n"
 "POT-Creation-Date: 2010-03-18 14:35+0000\n"
-"PO-Revision-Date: 2014-10-08 02:52+0000\n"
+"PO-Revision-Date: 2016-03-20 05:27+0000\n"
 "Last-Translator: lukophron\n"
-"Language-Team: French (http://www.transifex.com/projects/p/imdbpy/language/fr/)\n"
+"Language-Team: French (http://www.transifex.com/davide_alberani/imdbpy/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,7 +38,7 @@ msgstr "information-additionnelle"
 
 # Default: Admissions
 msgid "admissions"
-msgstr "admissions"
+msgstr "entrées"
 
 # Default: Agent address
 msgid "agent-address"
@@ -46,15 +46,15 @@ msgstr ""
 
 # Default: Airing
 msgid "airing"
-msgstr ""
+msgstr "en-diffusion"
 
 # Default: Akas
 msgid "akas"
-msgstr ""
+msgstr "alias"
 
 # Default: Akas from release info
 msgid "akas-from-release-info"
-msgstr ""
+msgstr "alias-depuis-info-sortie"
 
 # Default: All products
 msgid "all-products"
@@ -70,7 +70,7 @@ msgstr ""
 
 # Default: Amazon reviews
 msgid "amazon-reviews"
-msgstr ""
+msgstr "critiques-amazon"
 
 # Default: Analog left
 msgid "analog-left"
@@ -82,7 +82,7 @@ msgstr ""
 
 # Default: Animation department
 msgid "animation-department"
-msgstr ""
+msgstr "département-animation"
 
 # Default: Archive footage
 msgid "archive-footage"
@@ -178,7 +178,7 @@ msgstr "livre"
 
 # Default: Books
 msgid "books"
-msgstr "vres"
+msgstr "livres"
 
 # Default: Bottom 100 rank
 msgid "bottom-100-rank"
