@@ -331,10 +331,10 @@ class FBDDLCompiler(sql.compiler.DDLCompiler):
         # no syntax for these
         # http://www.firebirdsql.org/manual/generatorguide-sqlsyntax.html
         if create.element.start is not None:
-            raise NotImplemented(
+            raise NotImplementedError(
                         "Firebird SEQUENCE doesn't support START WITH")
         if create.element.increment is not None:
-            raise NotImplemented(
+            raise NotImplementedError(
                         "Firebird SEQUENCE doesn't support INCREMENT BY")
 
         if self.dialect._version_two:
