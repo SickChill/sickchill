@@ -30,8 +30,8 @@ class GIUnionInfo(GIRegisteredTypeInfo):
     def n_methods(self):
         return lib.g_union_info_get_n_methods(self._ptr)
 
-    def get_method(self):
-        return lib.g_union_info_get_method(self._ptr)
+    def get_method(self, n):
+        return lib.g_union_info_get_method(self._ptr, n)
 
     def get_methods(self):
         for i in xrange(self.n_methods):
