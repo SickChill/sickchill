@@ -534,6 +534,9 @@ class ParseResult(object):  # pylint: disable=too-many-instance-attributes
             self.quality == other.quality,
             self.version == other.version
         ])
+        
+    def __ne__(self, other):
+        return not self == other        
 
     def __unicode__(self):
         if self.series_name is not None:
