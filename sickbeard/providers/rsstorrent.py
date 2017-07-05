@@ -24,8 +24,8 @@ import io
 import os
 import re
 
-import bencode
 import sickbeard
+from bencode.BTL import BTFailure
 from requests.utils import add_dict_to_cookiejar
 from sickbeard import helpers, logger, tvcache
 from sickrage.helper.encoding import ek
@@ -172,8 +172,8 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 torrent_file = self.get_url(url, returns='content')
                 try:
-                    bencode.bdecode(torrent_file)
-                except (bencode.BTL.BTFailure, Exception) as error:
+                    helpers.bdecode(torrent_file, True)
+                except (BTFailure, Exception) as error:
                     self.dumpHTML(torrent_file)
                     return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 

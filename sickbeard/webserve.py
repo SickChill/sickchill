@@ -608,13 +608,15 @@ class UI(WebRoot):
     def get_messages(self):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
+        notifications = ui.notifications.get_notifications(self.request.remote_ip)
         messages = {}
-        cur_notification_num = 1
-        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
-            messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                     'message': cur_notification.message,
-                                                                     'type': cur_notification.type}
-            cur_notification_num += 1
+        for index, cur_notification in enumerate(notifications, 1):
+            messages['notification-' + str(index)] = {
+                'hash': hash(cur_notification),
+                'title': cur_notification.title,
+                'message': cur_notification.message,
+                'type': cur_notification.type
+            }
 
         return json.dumps(messages)
 
@@ -2492,7 +2494,7 @@ class HomeAddShows(Home):
 
         for i, shows in six.iteritems(results):
             final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired']) for show in shows})
+                                   show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id})

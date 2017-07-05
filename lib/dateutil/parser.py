@@ -56,6 +56,10 @@ class _timelex(object):
         if isinstance(instream, text_type):
             instream = StringIO(instream)
 
+        if getattr(instream, 'read', None) is None:
+            raise TypeError('Parser must be a string or character stream, not '
+                            '{itype}'.format(itype=instream.__class__.__name__))
+
         self.instream = instream
         self.charstack = []
         self.tokenstack = []
@@ -464,7 +468,10 @@ class _ymd(list):
                     self.find_probable_year_index(_timelex.split(self.tzstr)) == 0 or \
                    (yearfirst and self[1] <= 12 and self[2] <= 31):
                     # 99-01-01
-                    year, month, day = self
+                    if dayfirst and self[2] <= 12:
+                        year, day, month = self
+                    else:
+                        year, month, day = self
                 elif self[0] > 12 or (dayfirst and self[1] <= 12):
                     # 13-01-01
                     day, month, year = self

@@ -2,25 +2,45 @@ from __future__ import with_statement
 import os
 import pytz
 import subprocess
+import sys
 
 _cache_tz = None
 
+if sys.version_info[0] == 2:
 
-def _get_localzone():
-    pipe = subprocess.Popen(
+    class Popen(subprocess.Popen):
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, type, value, traceback):
+            if self.stdout:
+                self.stdout.close()
+            if self.stderr:
+                self.stderr.close()
+            if self.stdin:
+                self.stdin.close()
+            # Wait for the process to terminate, to avoid zombies.
+            self.wait()
+
+else:
+    from subprocess import Popen
+
+
+def _get_localzone(_root='/'):
+    with Popen(
         "systemsetup -gettimezone",
         shell=True,
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
-    )
-    tzname = pipe.stdout.read().replace(b'Time Zone: ', b'').strip()
+    ) as pipe:
+        tzname = pipe.stdout.read().replace(b'Time Zone: ', b'').strip()
 
     if not tzname or tzname not in pytz.all_timezones_set:
         # link will be something like /usr/share/zoneinfo/America/Los_Angeles.
-        link = os.readlink("/etc/localtime")
+        link = os.readlink(os.path.join(_root, "etc/localtime"))
         tzname = link[link.rfind("zoneinfo/") + 9:]
-    pipe.stdout.close()
-    pipe.stderr.close()
+
     return pytz.timezone(tzname)
 
 

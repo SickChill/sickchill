@@ -294,7 +294,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                                             else:
                                                 continue
 
-                                except (AttributeError, TypeError):
+                                except (AttributeError, IndexError, TypeError):
                                     continue
 
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
