@@ -5,9 +5,6 @@ services:
     image: sickrage:v2017.06.05-1
     container_name: sickrage
     restart: unless-stopped
-    environment:
-      - PUID=200
-      - PGID=200
     ports:
       - 8081:8081
     volumes:
