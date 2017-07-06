@@ -2019,21 +2019,6 @@ div.metadataDiv .disabled {
     float: left;
 }
 
-.icon-notifiers-slack {
-    background: url("../images/Slack_Mark_Web.png");
-    background-size: 32px;
-}
-
-.icon-notifiers-discord {
-    background: url("../images/32px_discord_notifier.png");
-    background-size: 32px;
-}
-
-.icon-notifiers-webhook {
-    background: url("../images/blank.png");
-    background-size: 32px;
-}
-
 .icon-notifiers-kodi {
     background-position: 0 0;
 }
@@ -2132,6 +2117,18 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-look {
     background-position: -769px 0;
+}
+
+.icon-notifiers-slack {
+    background-position: -870px 0;
+}
+
+.icon-notifiers-discord {
+    background-position: -904px 0;
+}
+
+.icon-notifiers-webhook {
+    background-position: -938px 0;
 }
 
 /* =======================================================================
