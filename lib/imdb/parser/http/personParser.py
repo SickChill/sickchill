@@ -23,7 +23,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import re
@@ -204,7 +204,7 @@ class DOMHTMLBioParser(DOMParserBase):
     _birth_attrs = [Attribute(key='birth date',
                         path={
                             'day': "./a[starts-with(@href, " \
-                                    "'/date/')]/text()",
+                                    "'/search/name?birth_monthday=')]/text()",
                             'year': "./a[starts-with(@href, " \
                                     "'/search/name?birth_year=')]/text()"
                             },
@@ -215,7 +215,7 @@ class DOMHTMLBioParser(DOMParserBase):
     _death_attrs = [Attribute(key='death date',
                         path={
                             'day': "./a[starts-with(@href, " \
-                                    "'/date/')]/text()",
+                                    "'/search/name?death_monthday=')]/text()",
                             'year': "./a[starts-with(@href, " \
                                     "'/search/name?death_date=')]/text()"
                             },
@@ -396,7 +396,7 @@ class DOMHTMLResumeParser(DOMParserBase):
         ]
 
     def postprocess_data(self, data):
-        
+
         for key in data.keys():
             if data[key] == '':
                 del data[key]

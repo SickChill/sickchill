@@ -508,7 +508,7 @@ class GitUpdateManager(UpdateManager):
         self.update_remote_origin()
 
         # get all new info from github
-        output, errors_, exit_status = self._run_git(self._git_path, 'fetch {0}'.format(sickbeard.GIT_REMOTE))
+        output, errors_, exit_status = self._run_git(self._git_path, 'fetch {0} --prune'.format(sickbeard.GIT_REMOTE))
         if exit_status != 0:
             logger.log("Unable to contact github, can't check for update", logger.WARNING)
             return

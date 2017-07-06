@@ -6,11 +6,23 @@ import os
 
 from babel.messages import frontend as babel
 from setuptools import find_packages, setup
+from requirements.sort import file_to_dict
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
 with open(os.path.join(ROOT, 'readme.md'), 'r') as r:
     long_description = r.read()
+
+
+def get_requirements(rel_file_path):
+    file_path = os.path.join(ROOT, rel_file_path)
+    data = [pkg['install'] for pkg in file_to_dict(file_path) if pkg['active'] and pkg['install']]
+    return data
+
+
+requirements = get_requirements('requirements/requirements.txt')
+if not requirements:
+    raise AssertionError('get_requirements failed')
 
 setup(
     name="sickrage",
@@ -28,6 +40,7 @@ setup(
     license='GPLv2',
 
     packages=find_packages(),
+    # install_requires=requirements,  # Commented-out for now
     install_requires=[
         'pytz',
         'requests',

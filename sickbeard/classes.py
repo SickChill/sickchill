@@ -155,11 +155,8 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
                     continue
 
                 try:
-                    # Skip it if its in our show list already
-                    if int(curShow.get('id')) in show_id_list:
-                        sickbeard.logger.log('Skipping {show_name} in the search results because it\'s already in your show list'.format(show_name=curShow.get(
-                            'seriesname')))
-                        continue
+                    # We need to know if it's in our show list already
+                    curShow['in_show_list'] = int(curShow.get('id')) in show_id_list
                 except Exception:  # If it doesnt have an id, we cant use it anyways.
                     continue
 

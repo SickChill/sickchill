@@ -8,7 +8,8 @@
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -32,6 +33,9 @@ class UserKey(github.GithubObject.CompletableGithubObject):
     """
     This class represents UserKeys. The reference can be found here http://developer.github.com/v3/users/keys/
     """
+
+    def __repr__(self):
+        return self.get__repr__({"id": self._id.value, "title": self._title.value})
 
     @property
     def id(self):
