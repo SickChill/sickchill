@@ -23,6 +23,7 @@ import re
 
 import six
 from requests.compat import quote_plus, urljoin
+
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
