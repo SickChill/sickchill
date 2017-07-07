@@ -61,8 +61,6 @@ disabled_provider_tests = {
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # Not working on CIs for some weird unknown reason
     'SkyTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # Not working on CIs because of a SSL error
-    'ilCorsaroNero': ['test_rss_search', 'test_episode_search', 'test_season_search'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
