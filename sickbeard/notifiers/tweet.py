@@ -20,10 +20,11 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
 import twitter
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
+
+import sickbeard
 from sickbeard import common, logger
 from sickrage.helper.exceptions import ex
 

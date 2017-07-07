@@ -21,8 +21,9 @@ from __future__ import unicode_literals
 import json
 
 import requests
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, logger
 from sickrage.helper.exceptions import ex
 
