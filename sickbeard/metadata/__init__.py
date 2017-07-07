@@ -18,10 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import sys
-from sickbeard.metadata import kodi, kodi_12plus, mediabrowser, ps3, wdtv, tivo, mede8er, generic, helpers
 
 __all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
+from sickbeard.metadata import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
+
 
 
 def available_generators():
