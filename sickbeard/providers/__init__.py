@@ -31,16 +31,12 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  torrentproject, torrentz, tvchaosuk, xthor)
 
 __all__ = [
-    'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
-    'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'nyaa', 'torrentbytes', 'cpasbien',
-    'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
-    'shazbat', 'rarbg', 'tntvillage', 'binsearch',
-    'xthor', 'abnormal', 'scenetime', 'nebulance', 'tvchaosuk',
-    'torrentproject', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
-    'hdspace', 'newpct', 'elitetorrent', 'danishbits', 'hd4free', 'limetorrents',
-    'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it',
-    'immortalseed', 'ilcorsaronero'
+    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'btn', 'cpasbien', 'danishbits',
+    'elitetorrent', 'filelist', 'gftracker', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
+    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'morethantv',
+    'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
+    'shazbat', 'skytorrents', 'speedcd', 't411', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
+    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor'
 ]
 
 
