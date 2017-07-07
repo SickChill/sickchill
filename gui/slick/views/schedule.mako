@@ -12,8 +12,8 @@
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+    <script type="text/javascript" src="${ static_url('js/ajaxEpSearch.js') }"></script>
+    <script type="text/javascript" src="${ static_url('js/plotTooltip.js') }"></script>
 </%block>
 
 <%block name="content">
@@ -172,10 +172,10 @@
                                     </td>
                                     <td>
                                         % if cur_result[b'description']:
-                                            <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo"
+                                            <img alt="" src="${ static_url('images/info32.png') }" height="16" width="16" class="plotInfo"
                                                  id="plot_info_${'%s_%s_%s' % (cur_result[b'showid'], cur_result[b'season'], cur_result[b'episode'])}"/>
                                         % else:
-                                            <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"/>
+                                            <img alt="" src="${ static_url('images/info32.png') }" width="16" height="16" class="plotInfoNone"/>
                                         % endif
                                         ${cur_result[b'name']}
                                     </td>
@@ -200,7 +200,7 @@
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                            title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result[b'showid']}">
                                             <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                 src="${ static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon']) }"/>
                                         </a>
                                     </td>
                                     <td align="center">
@@ -439,7 +439,7 @@
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                                title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
                                                     alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                    src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                    src="${ static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon']) }"/>
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
@@ -476,12 +476,12 @@
                                         <div>
                                             % if cur_result[b'description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTrigger" src="${srRoot}/images/plus.png" height="16" width="16" alt=""
+                                                <img class="ep_summaryTrigger" src="${ static_url('images/plus.png') }" height="16" width="16" alt=""
                                                      title="Toggle Summary"/>
                                                 <div class="ep_summary">${cur_result[b'description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTriggerNone" src="${srRoot}/images/plus.png" height="16" width="16"
+                                                <img class="ep_summaryTriggerNone" src="${ static_url('images/plus.png') }" height="16" width="16"
                                                      alt=""/>
                                             % endif
                                         </div>
