@@ -80,6 +80,8 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
+            static_path=self.options['data_root'],
+            static_url_prefix='{0}/'.format(self.options['web_root']),
         )
 
         # Static File Handlers
