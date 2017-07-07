@@ -34,7 +34,6 @@ from operator import attrgetter
 
 import adba
 import markdown2
-import sickbeard
 import six
 from dateutil import tz
 from libtrakt import TraktAPI
@@ -44,6 +43,18 @@ from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
 from requests.compat import urljoin
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import unquote_plus
+from tornado.concurrent import run_on_executor
+from tornado.gen import coroutine
+from tornado.ioloop import IOLoop
+from tornado.process import cpu_count
+from tornado.routes import route
+from tornado.web import authenticated, HTTPError, RequestHandler, StaticFileHandler
+
+import sickbeard
 from sickbeard import classes, clients, config, db, helpers, logger, naming, network_timezones, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
@@ -72,16 +83,6 @@ from sickrage.show.History import History as HistoryTool
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import unquote_plus
-from tornado.concurrent import run_on_executor
-from tornado.gen import coroutine
-from tornado.ioloop import IOLoop
-from tornado.process import cpu_count
-from tornado.routes import route
-from tornado.web import authenticated, HTTPError, RequestHandler, StaticFileHandler
 
 try:
     import json

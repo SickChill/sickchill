@@ -31,8 +31,12 @@ import re
 import time
 import traceback
 
-import sickbeard
 import six
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+from tornado.web import RequestHandler
+
+import sickbeard
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
@@ -51,10 +55,6 @@ from sickrage.show.History import History
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
-# pylint: disable=import-error
-from tornado.web import RequestHandler
 
 try:
     import json
