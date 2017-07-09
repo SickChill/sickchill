@@ -25,10 +25,11 @@ from base64 import b16encode, b32decode
 from hashlib import sha1
 
 import bencode
-import sickbeard
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
+
+import sickbeard
 from sickbeard import helpers, logger
 
 

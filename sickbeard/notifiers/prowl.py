@@ -26,11 +26,12 @@ import ast
 import socket
 import time
 
-import sickbeard
 from requests.compat import urlencode
+from six.moves.http_client import HTTPException, HTTPSConnection
+
+import sickbeard
 from sickbeard import common, db, logger
 from sickrage.helper.encoding import ss
-from six.moves.http_client import HTTPException, HTTPSConnection
 
 try:
     # this only exists in 2.6

@@ -24,10 +24,11 @@ import os
 import shutil
 import stat
 
-import sickbeard
 from rarfile import (BadRarFile, BadRarName, Error, NeedFirstVolume, NoCrypto, NoRarEntry, NotRarFile, PasswordRequired, RarCannotExec, RarCRCError,
                      RarCreateError, RarExecError, RarFatalError, RarFile, RarLockedArchiveError, RarMemoryError, RarNoFilesError, RarOpenError, RarSignalExit,
                      RarUnknownError, RarUserBreak, RarUserError, RarWarning, RarWriteError, RarWrongPassword)
+
+import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file

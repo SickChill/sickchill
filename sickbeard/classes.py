@@ -23,10 +23,11 @@ from __future__ import print_function, unicode_literals
 import datetime
 import sys
 
+from six.moves import urllib
+
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
-from six.moves import urllib
 
 
 class SickBeardURLopener(urllib.request.FancyURLopener, object):

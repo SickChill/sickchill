@@ -28,8 +28,9 @@ import time
 import warnings
 from sqlite3 import OperationalError
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex

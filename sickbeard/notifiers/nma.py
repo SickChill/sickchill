@@ -2,8 +2,9 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
 from pynma import pynma
+
+import sickbeard
 from sickbeard import common, logger
 
 
