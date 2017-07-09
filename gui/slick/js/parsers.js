@@ -30,7 +30,8 @@ $.tablesorter.addParser({
             'hd': 3,
             'sd': 2,
             'any': 1,
-            'best': 0
+            'best': 0,
+            'unknown': -1
         };
         return replacements[s.toLowerCase()];
     },
