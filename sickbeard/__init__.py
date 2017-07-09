@@ -31,6 +31,9 @@ import sys
 from threading import Lock
 
 import rarfile
+import requests
+from configobj import ConfigObj
+from tornado.locale import load_gettext_translations
 
 try:
     import pytz  # pylint: disable=unused-import
@@ -40,33 +43,22 @@ except ImportError:
     require('pytz')
 
 
+from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers, scheduler,
+                       search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
+from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.indexers import indexer_api
-from sickbeard.common import SD, SKIPPED, ARCHIVED, IGNORED, WANTED, MULTI_EP_STRINGS
-from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, indexer_episodenotfound, indexer_error, indexer_exception, indexer_seasonnotfound,
+                                                   indexer_showincomplete, indexer_shownotfound, indexer_userabort)
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
-from sickbeard.config import check_section, check_setting_int, check_setting_str, \
-    check_setting_float, check_setting_bool, ConfigMigrator
-from sickbeard import db, helpers, scheduler, search_queue, show_queue, logger, \
-    naming, dailysearcher, metadata, providers
-from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, \
-    auto_postprocessor, post_processing_queue, subtitles, traktChecker
-from sickbeard.indexers.indexer_exceptions import indexer_shownotfound, \
-    indexer_showincomplete, indexer_exception, indexer_error, \
-    indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, \
-    indexer_userabort
-
 from sickrage.helper import setup_github
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
 from sickrage.system.Shutdown import Shutdown
 
-from configobj import ConfigObj
-
-import requests
-
-from tornado.locale import load_gettext_translations
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 

@@ -22,9 +22,10 @@ from __future__ import print_function, unicode_literals
 import datetime
 import re
 
-import sickbeard
 import six
 from babelfish import Country
+
+import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickrage.helper.common import dateFormat

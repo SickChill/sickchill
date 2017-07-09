@@ -21,11 +21,8 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
-
-from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
-    synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
-    nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, \
-    slack, discord, join, twilio_notify, webhook
+from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, nma, nmj, nmjv2, plex, prowl, pushalot,
+                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify, webhook)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()

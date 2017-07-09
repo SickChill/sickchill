@@ -36,16 +36,17 @@ import threading
 import traceback
 from logging import NullHandler
 
-import sickbeard
 import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import quote
+
+import sickbeard
 from sickbeard import classes
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import ex
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import quote
 
 # pylint: disable=line-too-long
 

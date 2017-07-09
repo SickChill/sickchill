@@ -22,9 +22,10 @@ from __future__ import unicode_literals
 
 from time import sleep
 
-import sickbeard
 from requests.auth import HTTPDigestAuth
 from requests.compat import urljoin
+
+import sickbeard
 from sickbeard.clients.generic import GenericClient
 
 

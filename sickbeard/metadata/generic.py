@@ -25,16 +25,17 @@ import os
 import re
 
 import fanart as fanart_module
-import sickbeard
 import six
 from fanart.core import Request as fanartRequest
+from tmdb_api.tmdb_api import TMDB
+
+import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.helper.common import replace_extension, try_int
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-from tmdb_api.tmdb_api import TMDB
 
 try:
     import xml.etree.cElementTree as etree
