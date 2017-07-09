@@ -41,7 +41,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | MarkupSafe | 1.0
 :ok: | ndg-httpsclient | 0.3.3
 :ok: | oauthlib | 2.0.2 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
-:question: | pgi | 0.0.11.1 | Can't verify, unable to install this using pip.<br>Only being used by `sickbeard.notifiers.libnotify` as far as I can tell.
+:warning: | pgi | [38f8349](https://github.com/pygobject/pgi/tree/38f834902247a5851cb4c72ba018f160ae26d612) | 
 :exclamation: | pkg_resources.py | - | Copied from setuptools and looks to be modified.<br>Maybe we don't really need this?<br>Used to load the egg files for `pymediainfo` and `pytz`.
 :ok: | profilehooks | 1.5
 :ok: | putio.py | 6.1.0
