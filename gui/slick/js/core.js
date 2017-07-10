@@ -2320,11 +2320,11 @@ var SICKRAGE = {
                         network: '[data-network]',
                         date: function(itemElem) {
                             var date = $(itemElem).attr('data-date');
-                            return date.length && parseInt(date, 10) || Number.POSITIVE_INFINITY;
+                            return (date.length && parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress: function(itemElem) {
                             var progress = $(itemElem).attr('data-progress');
-                            return progress.length && parseInt(progress, 10) || Number.NEGATIVE_INFINITY;
+                            return (progress.length && parseInt(progress, 10)) || Number.NEGATIVE_INFINITY;
                         }
                     }
                 });
@@ -2359,10 +2359,10 @@ var SICKRAGE = {
                         });
                         popup.appendTo('body');
 
-                        var height = 438,
-                            width = 250;
-                        var newTop = (origTop + poster.height() / 2) - (height / 2);
-                        var newLeft = (origLeft + poster.width() / 2) - (width / 2);
+                        const height = 438;
+                        const width = 250;
+                        var newTop = ((origTop + poster.height()) / 2) - (height / 2);
+                        var newLeft = ((origLeft + poster.width()) / 2) - (width / 2);
 
                         // Make sure the popup isn't outside the viewport
                         var margin = 5;
@@ -2428,11 +2428,11 @@ var SICKRAGE = {
             $('.displayShowTable').tablesorter({
                 widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
                 widgetOptions: {
-                    columnSelector_saveColumns: true,
-                    columnSelector_layout: '<label><input type="checkbox"/>{name}</label>',
-                    columnSelector_mediaquery: false,
-                    columnSelector_cssChecked: 'checked',
-                    stickyHeaders_offset: 50
+                    columnSelector_saveColumns: true, // eslint-disable-line camelcase
+                    columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
+                    columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                    columnSelector_cssChecked: 'checked', // eslint-disable-line camelcase
+                    stickyHeaders_offset: 50 // eslint-disable-line camelcase
                 }
             });
 
@@ -2581,11 +2581,12 @@ var SICKRAGE = {
                 var found = 0;
 
                 $('.epCheck').each(function() {
-                    switch (found) {
-                        case 2:
-                            return false;
-                        case 1:
-                            this.checked = lastCheck.checked;
+                    if (found === 2) {
+                        return false;
+                    }
+
+                    if (found === 1) {
+                        this.checked = lastCheck.checked;
                     }
 
                     if (this === check || this === lastCheck) {
@@ -2749,13 +2750,14 @@ var SICKRAGE = {
             $('.sceneSeasonXEpisode').on('change', function() {
                 // Strip non-numeric characters
                 $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
-                var forSeason = $(this).attr('data-for-season');
-                var forEpisode = $(this).attr('data-for-episode');
-                var m = $(this).val().match(/^(\d+)x(\d+)$/i);
-                var onlyEpisode = $(this).val().match(/^(\d+)$/i);
-                var sceneSeason = null,
-                    sceneEpisode = null;
-                var isValid = false;
+                let forSeason = $(this).attr('data-for-season');
+                let forEpisode = $(this).attr('data-for-episode');
+                let m = $(this).val().match(/^(\d+)x(\d+)$/i);
+                let onlyEpisode = $(this).val().match(/^(\d+)$/i);
+
+                let sceneSeason = null;
+                let sceneEpisode = null;
+                let isValid = false;
                 if (m) {
                     sceneSeason = m[1];
                     sceneEpisode = m[2];
@@ -2777,10 +2779,10 @@ var SICKRAGE = {
             $('.sceneAbsolute').on('change', function() {
                 // Strip non-numeric characters
                 $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
-                var forAbsolute = $(this).attr('data-for-absolute');
+                let forAbsolute = $(this).attr('data-for-absolute');
 
-                var m = $(this).val().match(/^(\d{1,3})$/i);
-                var sceneAbsolute = null;
+                let m = $(this).val().match(/^(\d{1,3})$/i);
+                let sceneAbsolute = null;
                 if (m) {
                     sceneAbsolute = m[1];
                 }
@@ -2819,13 +2821,13 @@ var SICKRAGE = {
             // Season to Show Episodes or Hide Episodes.
             $(function() {
                 $('.collapse.toggle').on('hide.bs.collapse', function() {
-                    var reg = /collapseSeason-([0-9]+)/g;
-                    var result = reg.exec(this.id);
+                    const reg = /collapseSeason-([0-9]+)/g;
+                    const result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Show Episodes'));
                 });
                 $('.collapse.toggle').on('show.bs.collapse', function() {
-                    var reg = /collapseSeason-([0-9]+)/g;
-                    var result = reg.exec(this.id);
+                    const reg = /collapseSeason-([0-9]+)/g;
+                    const result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Hide Episodes'));
                 });
             });
@@ -2852,7 +2854,7 @@ var SICKRAGE = {
                 $('#exceptions_list').val(allExceptions);
 
                 if (metaToBool('show.is_anime')) {
-                    generateBlackWhiteList();
+                    generateBlackWhiteList(); // eslint-disable-line no-undef
                 }
             });
 
@@ -2939,7 +2941,8 @@ var SICKRAGE = {
                             $('#restart_loading').hide();
                             $('#restart_success').show();
                             $('#refresh_message').show();
-                            srPID = currentPid = data.msg;
+                            srPID = data.msg;
+                            currentPid = data.msg;
                             checkIsAlive = setInterval(function() {
                                 $.post(srRoot + '/home/is-alive/', function() {
                                     clearInterval(checkIsAlive);
@@ -3055,7 +3058,7 @@ var SICKRAGE = {
                     17: {sorter: false}
                 },
                 widgetOptions: {
-                    columnSelector_mediaquery: false
+                    columnSelector_mediaquery: false // eslint-disable-line camelcase
                 }
             });
             $('#popover').popover({
@@ -3185,11 +3188,11 @@ var SICKRAGE = {
                     var found = 0;
 
                     $(name).each(function() {
-                        switch (found) {
-                            case 2: return false;
-                            case 1: if (!this.disabled) {
-                                this.checked = lastCheck.checked;
-                            }
+                        if (found === 2) {
+                            return false;
+                        }
+                        if(found === 1 && !this.disabled) {
+                            this.checked = lastCheck.checked;
                         }
                         if (this === check || this === lastCheck) {
                             found++;
@@ -3247,11 +3250,12 @@ var SICKRAGE = {
                         var found = 0;
 
                         $(name + ':visible').each(function() {
-                            switch (found) {
-                                case 2: return false;
-                                case 1: this.checked = lastCheck.checked;
+                            if (found === 2) {
+                                return false;
                             }
-
+                            if(found === 1) {
+                                this.checked = lastCheck.checked;
+                            }
                             if (this === check || this === lastCheck) {
                                 found++;
                             }
@@ -3305,7 +3309,7 @@ var SICKRAGE = {
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showEpisodeStatuses', {
-                        indexer_id: curIndexerId,
+                        indexer_id: curIndexerId, // eslint-disable-line camelcase
                         whichStatus: $('#oldStatus').val()
                     }, function(data) {
                         $.each(data, function(season, eps) {
@@ -3360,7 +3364,7 @@ var SICKRAGE = {
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showSubtitleMissed', {
-                        indexer_id: indexerId,
+                        indexer_id: indexerId, // eslint-disable-line camelcase
                         whichSubs: $('#selectSubLang').val()
                     }, function(data) {
                         $.each(data, function(season, eps) {
@@ -3574,10 +3578,7 @@ var SICKRAGE = {
                         $('pre').html($(data).find('pre').html());
                     });
                 }
-                setTimeout(function() {
-                    'use strict';
-                    updateLogData();
-                }, 500);
+                setTimeout(updateLogData, 500);
             }
             updateLogData();
 
@@ -3630,11 +3631,11 @@ var SICKRAGE = {
                         9: {sorter: false}
                     },
                     widgetOptions: {
-                        filter_columnFilters: true,
-                        filter_hideFilters: true,
-                        filter_saveFilters: true,
-                        columnSelector_mediaquery: false,
-                        stickyHeaders_offset: 50
+                        filter_columnFilters: true, // eslint-disable-line camelcase
+                        filter_hideFilters: true, // eslint-disable-line camelcase
+                        filter_saveFilters: true, // eslint-disable-line camelcase
+                        columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                        stickyHeaders_offset: 50 // eslint-disable-line camelcase
                     }
                 });
 
@@ -3798,7 +3799,8 @@ var SICKRAGE = {
             function updateSampleText() {
                 // If something's selected then we have some behavior to figure out
 
-                var showName, sepChar;
+                let showName = null;
+                let sepChar = null;
                 // If they've picked a radio button then use that
                 if ($('input:radio[name=whichSeries]:checked').length) {
                     showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
@@ -3846,8 +3848,7 @@ var SICKRAGE = {
                 }
 
                 // Also toggle the add show button
-                if (($('#rootDirs option:selected').length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) &&
-                    ($('input:radio[name=whichSeries]:checked').length) || ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)) {
+                if (($('#rootDirs option:selected').length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) && ($('input:radio[name=whichSeries]:checked').length) || ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)) {
                     $('#addShowButton').attr('disabled', false);
                 } else {
                     $('#addShowButton').attr('disabled', true);
@@ -3870,7 +3871,7 @@ var SICKRAGE = {
                 searchRequestXhr = $.ajax({
                     url: srRoot + '/addShows/searchIndexersForShowName',
                     data: {
-                        search_term: $('#nameToSearch').val().trim(),
+                        search_term: $('#nameToSearch').val().trim(), // eslint-disable-line camelcase
                         lang: $('#indexerLangSelect').val(),
                         indexer: $('#providedIndexer').val()},
                     timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
@@ -3932,7 +3933,7 @@ var SICKRAGE = {
                         resultStr += '</fieldset>';
                         $('#searchResults').html(resultStr);
                         updateSampleText();
-                        myform.loadsection(0);
+                        myform.loadsection(0); // eslint-disable-line no-use-before-define
                     }
                 });
             }
@@ -3951,7 +3952,7 @@ var SICKRAGE = {
                     notifyModal('You must choose a show to continue');
                     return false;
                 }
-                generateBlackWhiteList();
+                generateBlackWhiteList(); // eslint-disable-line no-undef
                 $('#addShowForm').submit();
             });
 
@@ -3977,7 +3978,7 @@ var SICKRAGE = {
             $('#nameToSearch').focus();
 
             // @TODO we need to move to real forms instead of this
-            var myform = new formtowizard({
+            var myform = new formtowizard({ // eslint-disable-line new-cap,no-undef
                 formid: 'addShowForm',
                 revealfx: ['slide', 500],
                 oninit: function() {
@@ -4146,8 +4147,8 @@ var UTIL = {
 };
 
 // Handle js-gettext + load javascript functions
-var gt = null,
-    _n = null;
+let gt = null;
+let _n = null;
 $.getJSON(srRoot + '/ui/locale.json', function(data) {
     if (data === undefined) {
         gt = new Gettext();
