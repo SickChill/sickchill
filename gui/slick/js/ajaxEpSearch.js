@@ -118,7 +118,7 @@ function updateImages(data) {
 function checkManualSearches() {
     let pollInterval = 5000;
     const showId = $('#showID').val();
-    const url = showId !== undefined ? searchStatusUrl + '?show=' + showId : searchStatusUrl;
+    const url = showId !== undefined ? searchStatusUrl + '?show=' + showId : searchStatusUrl; // eslint-disable-line no-negated-condition
     $.ajax({
         url,
         success(data) {
@@ -166,8 +166,8 @@ $(document).ready(checkManualSearches);
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
         $.getJSON(url, function(data) {
-            let imageName = null; // eslint-disable-line no-undef
-            let imageResult = null; // eslint-disable-line no-undef
+            let imageName = null;  // eslint-disable-line no-unused-vars
+            let imageResult = null; // eslint-disable-line no-unused-vars
             // If they failed then just put the red X
             if (data.result.toLowerCase() === 'failure') {
                 imageName = stupidOptions.noImage;

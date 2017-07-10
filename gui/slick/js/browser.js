@@ -55,7 +55,7 @@
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function(i, entry) {
-                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) {
+                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
                 }
                 link = $('<a href="javascript:void(0)">').on('click', function() {
