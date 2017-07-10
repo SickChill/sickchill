@@ -9,7 +9,6 @@ module.exports = function(grunt) {
         'bower_concat',
         'copy',
         'uglify',
-        'sass',
         'cssmin'
     ]);
 
@@ -177,16 +176,6 @@ module.exports = function(grunt) {
             core: {
                 files: {
                     './gui/slick/js/core.min.js': ['./gui/slick/js/core.js']
-                }
-            }
-        },
-        sass: {
-            options: {
-                sourceMap: true
-            },
-            core: {
-                files: {
-                    './dist/core.css': ['./gui/slick/scss/core.scss']
                 }
             }
         },
