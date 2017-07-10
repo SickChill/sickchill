@@ -40,7 +40,6 @@
                 "error",
                 "never"
             ],
-            "no-console": "error",
             "unicorn/no-new-buffer": "off",
             "unicorn/filename-case": "off",
             "unicorn/custom-error-definition": "off",
