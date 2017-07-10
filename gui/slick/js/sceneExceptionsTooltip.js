@@ -10,7 +10,7 @@ $(function() {
                     data: {
                         show: match[1]
                     },
-                    success: function(data) { // eslint-disable-line object-shorthand
+                    success: function(data) {
                         this.set('content.text', data);
                     }
                 }

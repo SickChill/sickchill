@@ -244,7 +244,7 @@ $(document).ready(function() {
     $.fn.makeNewznabProviderString = function() {
         const provStrings = [];
 
-        for (const id in newznabProviders) {
+        for (let id = 0; id < newznabProviders.length; id++) {
             if ({}.hasOwnProperty.call(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
@@ -288,7 +288,7 @@ $(document).ready(function() {
 
     $.fn.makeTorrentRssProviderString = function() {
         const provStrings = [];
-        for (const id in torrentRssProviders) {
+        for (let id = 0; id < torrentRssProviders.length; id++) {
             if ({}.hasOwnProperty.call(torrentRssProviders, id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
@@ -301,7 +301,7 @@ $(document).ready(function() {
         const idArr = $('#provider_order_list').sortable('toArray');
         const finalArr = [];
         $.each(idArr, function(key, val) {
-            const checked = Number($('#enable_' + val).prop('checked')) ? '1' : '0';
+            const checked = $('#enable_' + val).is(':checked') ? '1' : '0';
             finalArr.push(val + ':' + checked);
         });
 

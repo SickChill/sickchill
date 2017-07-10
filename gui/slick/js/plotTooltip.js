@@ -12,7 +12,7 @@ $(function() {
                         episode: match[3],
                         season: match[2]
                     },
-                    success: function(data) { // eslint-disable-line object-shorthand
+                    success: function(data) {
                         this.set('content.text', data);
                     }
                 }
