@@ -70,7 +70,10 @@
         "ignores": [
             "core.min.js",
             "vender.min.js",
-            "lib/**/*"
+            "lib/**/*",
+            "gui/slick/js/lib/*",
+            "gui/slick/js/core.js",
+            "Gruntfile.js"
         ]
     }
 }
