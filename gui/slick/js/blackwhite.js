@@ -1,30 +1,30 @@
-function generateBlackWhiteList() {
-    var realvalues = [];
+function generateBlackWhiteList() { // eslint-disable-line no-unused-vars
+    let realvalues = [];
 
     $('#white option').each(function(i, selected) {
         realvalues[i] = $(selected).val();
     });
-    $("#whitelist").val(realvalues.join(","));
+    $('#whitelist').val(realvalues.join(','));
 
     realvalues = [];
     $('#black option').each(function(i, selected) {
         realvalues[i] = $(selected).val();
     });
-    $("#blacklist").val(realvalues.join(","));
+    $('#blacklist').val(realvalues.join(','));
 }
 
-function updateBlackWhiteList(showName) {
+function updateBlackWhiteList(showName) { // eslint-disable-line no-unused-vars
     $('#pool').children().remove();
 
     $('#blackwhitelist').show();
     if (showName) {
         $.getJSON(srRoot + '/home/fetch_releasegroups', {
-            'show_name': showName
-        }, function (data) {
+            show_name: showName // eslint-disable-line camelcase
+        }, function(data) {
             if (data.result === 'success') {
                 $.each(data.groups, function(i, group) {
-                    var option = $("<option>");
-                    option.attr("value", group.name);
+                    const option = $('<option>');
+                    option.attr('value', group.name);
                     option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
                     option.appendTo('#pool');
                 });
@@ -34,30 +34,30 @@ function updateBlackWhiteList(showName) {
 }
 
 $('#removeW').click(function() {
-    !$('#white option:selected').remove().appendTo('#pool');
+    !$('#white option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addW').click(function() {
-    !$('#pool option:selected').remove().appendTo('#white');
+    !$('#pool option:selected').remove().appendTo('#white'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addB').click(function() {
-    !$('#pool option:selected').remove().appendTo('#black');
+    !$('#pool option:selected').remove().appendTo('#black'); // eslint-disable-line no-unused-expressions
 });
 
 $('#removeP').click(function() {
-    !$('#pool option:selected').remove();
+    !$('#pool option:selected').remove(); // eslint-disable-line no-unused-expressions
 });
 
 $('#removeB').click(function() {
-    !$('#black option:selected').remove().appendTo('#pool');
+    !$('#black option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
 $('#addToWhite').click(function() {
-    var group = $('#addToPoolText').val();
-    if(group !== '') {
-        var option = $('<option>');
-        option.attr('value',group);
+    const group = $('#addToPoolText').val();
+    if (group !== '') {
+        const option = $('<option>');
+        option.attr('value', group);
         option.html(group);
         option.appendTo('#white');
         $('#addToPoolText').val('');
@@ -65,10 +65,10 @@ $('#addToWhite').click(function() {
 });
 
 $('#addToBlack').click(function() {
-    var group = $('#addToPoolText').val();
-    if(group !== '') {
-        var option = $('<option>');
-        option.attr('value',group);
+    const group = $('#addToPoolText').val();
+    if (group !== '') {
+        const option = $('<option>');
+        option.attr('value', group);
         option.html(group);
         option.appendTo('#black');
         $('#addToPoolText').val('');
