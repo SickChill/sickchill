@@ -4,11 +4,12 @@ function getMeta(pyVar) {
 
 const srRoot = getMeta('srRoot');
 const srDefaultPage = getMeta('srDefaultPage');
-const srPID = getMeta('srPID');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
 const topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
 const loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+
+let srPID = getMeta('srPID');
 
 var configSuccess = function() {
     $('.config_submitter').each(function() {
@@ -82,14 +83,14 @@ function shiftReturn(array) {
 }
 
 var __ = _; // Moves `underscore` to __
-_ = function(str) {
+_ = function(str) { // eslint-disable-line no-global-assign
     return str;
 }; // Temporary (gets replaced)
 
 var SICKRAGE = {
     common: {
         init: function() {
-            (function init() {
+            (function() {
                 var imgDefer = document.getElementsByTagName('img');
                 for (var i = 0; i < imgDefer.length; i++) {
                     if (imgDefer[i].getAttribute('data-src')) {
@@ -353,10 +354,7 @@ var SICKRAGE = {
                     });
                 },
                 success: function() {
-                    setTimeout(function() {
-                        'use strict';
-                        configSuccess();
-                    }, 2000);
+                    setTimeout(configSuccess, 2000);
                 }
             });
 
@@ -409,13 +407,9 @@ var SICKRAGE = {
 
             setupGithubAuthTypes();
 
-            $('input[name="git_auth_type"]').on('click', function() {
-                setupGithubAuthTypes();
-            });
+            $('input[name="git_auth_type"]').on('click', setupGithubAuthTypes);
 
-            $('#git_token').on('click', function() {
-                $('#git_token').select();
-            });
+            $('#git_token').on('click', $('#git_token').select());
 
             $('#create_access_token').on('click', function() {
                 notifyModal(
@@ -496,7 +490,7 @@ var SICKRAGE = {
                 $('#testProwl-result').html(loading);
                 $.get(srRoot + '/home/testProwl', {
                     prowl_api: prowl.api, // eslint-disable-line camelcase
-                    prowl_priority: prowl.priority
+                    prowl_priority: prowl.priority // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testProwl-result').html(data);
                     $('#testProwl').prop('disabled', false);
@@ -569,7 +563,7 @@ var SICKRAGE = {
                     host: plex.server.host,
                     username: plex.server.username,
                     password: plex.server.password,
-                    plex_server_token: plex.server.token
+                    plex_server_token: plex.server.token // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testPMS-result').html(data);
                     $('#testPMS').prop('disabled', false);
@@ -599,7 +593,7 @@ var SICKRAGE = {
                 $('#testEMBY-result').html(loading);
                 $.get(srRoot + '/home/testEMBY', {
                     host: emby.host,
-                    emby_apikey: emby.apikey
+                    emby_apikey: emby.apikey // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testEMBY-result').html(data);
                     $('#testEMBY').prop('disabled', false);
@@ -851,8 +845,8 @@ var SICKRAGE = {
                 $(this).prop('disabled', true);
                 $('#testFreeMobile-result').html(loading);
                 $.post(srRoot + '/home/testFreeMobile', {
-                    freemobile_id: freemobile.id,
-                    freemobile_apikey: freemobile.apikey
+                    freemobile_id: freemobile.id, // eslint-disable-line camelcase
+                    freemobile_apikey: freemobile.apikey // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testFreeMobile-result').html(data);
                     $('#testFreeMobile').prop('disabled', false);
@@ -881,8 +875,8 @@ var SICKRAGE = {
                 $(this).prop('disabled', true);
                 $('#testTelegram-result').html(loading);
                 $.post(srRoot + '/home/testTelegram', {
-                    telegram_id: telegram.id,
-                    telegram_apikey: telegram.apikey
+                    telegram_id: telegram.id, // eslint-disable-line camelcase
+                    telegram_apikey: telegram.apikey // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testTelegram-result').html(data);
                     $('#testTelegram').prop('disabled', false);
@@ -911,8 +905,8 @@ var SICKRAGE = {
                 $(this).prop('disabled', true);
                 $('#testJoin-result').html(loading);
                 $.post(srRoot + '/home/testJoin', {
-                    join_id: join.id,
-                    join_apikey: join.apikey
+                    join_id: join.id, // eslint-disable-line camelcase
+                    join_apikey: join.apikey // eslint-disable-line camelcase
                 }).done(function(data) {
                     $('#testJoin-result').html(data);
                     $('#testJoin').prop('disabled', false);
@@ -939,7 +933,7 @@ var SICKRAGE = {
                 trakt.pin = $('#trakt_pin').val();
                 if (trakt.pin.length !== 0) {
                     $.post(srRoot + '/home/getTraktToken', {
-                        trakt_pin: trakt.pin
+                        trakt_pin: trakt.pin // eslint-disable-line camelcase
                     }).done(function(data) {
                         $('#testTrakt-result').html(data);
                         $('#authTrakt').addClass('hide');
@@ -1559,12 +1553,12 @@ var SICKRAGE = {
                 fillAnimeExamples();
             }
 
-            if (parseInt($('#unpack').val()) !== 1) {
+            if (parseInt($('#unpack').val(), 10) !== 1) {
                 $('#content_unpack').hide();
             }
 
             $('#unpack').on('change', function() {
-                switch (parseInt(this.value)) {
+                switch(parseInt(this.value, 10)) {
                     case 0: // Ignore
                     case 2: // Treat as video
                         $('#content_unpack').fadeOut('fast', 'linear');
@@ -1577,40 +1571,17 @@ var SICKRAGE = {
                 }
             });
 
-            // @TODO all of these on change funcitons should be able to be rolled into a generic jQuery function or maybe we could
+            // @TODO all of these on change functions should be able to be rolled into a generic jQuery function or maybe we could
             //       move all of the setup functions into these handlers?
 
-            $('#name_presets').on('change', function() {
-                setupNaming();
-            });
-
-            $('#name_abd_presets').on('change', function() {
-                setupAbdNaming();
-            });
-
-            $('#naming_custom_abd').on('change', function() {
-                setupAbdNaming();
-            });
-
-            $('#name_sports_presets').on('change', function() {
-                setupSportsNaming();
-            });
-
-            $('#naming_custom_sports').on('change', function() {
-                setupSportsNaming();
-            });
-
-            $('#name_anime_presets').on('change', function() {
-                setupAnimeNaming();
-            });
-
-            $('#naming_custom_anime').on('change', function() {
-                setupAnimeNaming();
-            });
-
-            $('input[name="naming_anime"]').on('click', function() {
-                setupAnimeNaming();
-            });
+            $('#name_presets').on('change', setupNaming);
+            $('#name_abd_presets').on('change', setupAbdNaming);
+            $('#naming_custom_abd').on('change', setupAbdNaming);
+            $('#name_sports_presets').on('change', setupSportsNaming);
+            $('#naming_custom_sports').on('change', setupSportsNaming);
+            $('#name_anime_presets').on('change', setupAnimeNaming);
+            $('#naming_custom_anime').on('change', setupAnimeNaming);
+            $('input[name="naming_anime"]').on('click', setupAnimeNaming);
 
             // @TODO We might be able to change these from typewatch to __.debounce like we've done on the log page
             //       The main reason for doing this would be to use only open source stuff that's still being maintained
@@ -1618,38 +1589,28 @@ var SICKRAGE = {
             $('#naming_multi_ep').on('change', fillExamples);
             $('#naming_pattern').on('focusout', fillExamples);
             $('#naming_pattern').on('keyup', function() {
-                typewatch(function() {
-                    fillExamples();
-                }, 500);
+                typewatch(fillExamples, 500);
             });
 
             $('#naming_anime_multi_ep').on('change', fillAnimeExamples);
             $('#naming_anime_pattern').on('focusout', fillAnimeExamples);
             $('#naming_anime_pattern').on('keyup', function() {
-                typewatch(function() {
-                    fillAnimeExamples();
-                }, 500);
+                typewatch(fillAnimeExamples, 500);
             });
 
             $('#naming_abd_pattern').on('focusout', fillExamples);
             $('#naming_abd_pattern').on('keyup', function() {
-                typewatch(function() {
-                    fillAbdExamples();
-                }, 500);
+                typewatch(fillAbdExamples, 500);
             });
 
             $('#naming_sports_pattern').on('focusout', fillExamples);
             $('#naming_sports_pattern').on('keyup', function() {
-                typewatch(function() {
-                    fillSportsExamples();
-                }, 500);
+                typewatch(fillSportsExamples, 500);
             });
 
             $('#naming_anime_pattern').on('focusout', fillExamples);
             $('#naming_anime_pattern').on('keyup', function() {
-                typewatch(function() {
-                    fillAnimeExamples();
-                }, 500);
+                typewatch(fillAnimeExamples, 500);
             });
 
             $('#show_naming_key').on('click', function() {
@@ -1816,15 +1777,15 @@ var SICKRAGE = {
             $('#torrent_path').fileBrowser({title: _('Select .torrent download location')});
 
             $.fn.nzbMethodHandler = function() {
-                var selectedProvider = $('#nzb_method :selected').val(),
-                    blackholeSettings = '#blackhole_settings',
-                    sabnzbdSettings = '#sabnzbd_settings',
-                    testSABnzbd = '#testSABnzbd',
-                    testSABnzbdResult = '#testSABnzbd_result',
-                    nzbgetSettings = '#nzbget_settings',
-                    downloadStationSettings = '#download_station_settings',
-                    testDSM = '#testDSM',
-                    testDSMResult = '#testDSM_result';
+                const selectedProvider = $('#nzb_method :selected').val();
+                const blackholeSettings = '#blackhole_settings';
+                const sabnzbdSettings = '#sabnzbd_settings';
+                const testSABnzbd = '#testSABnzbd';
+                const testSABnzbdResult = '#testSABnzbd_result';
+                const nzbgetSettings = '#nzbget_settings';
+                const downloadStationSettings = '#download_station_settings';
+                const testDSM = '#testDSM';
+                const testDSMResult = '#testDSM_result';
 
                 $('#nzb_method_icon').removeClass(function(index, css) {
                     return (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' ');
@@ -1859,13 +1820,14 @@ var SICKRAGE = {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();
 
-                var selectedProvider = $('#torrent_method :selected').val(),
-                    host = ' host:port',
-                    username = ' username',
-                    password = ' password',
-                    client = '',
-                    optionPanel = '#options_torrent_blackhole',
-                    rpcurl = ' RPC URL';
+                const selectedProvider = $('#torrent_method :selected').val();
+                const host = ' host:port';
+                const username = ' username';
+                const password = ' password';
+                const rpcurl = ' RPC URL';
+
+                let optionPanel = '#options_torrent_blackhole';
+                let client = '';
 
                 $('#torrent_method_icon').removeClass(function(index, css) {
                     return (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' ');
@@ -2054,7 +2016,7 @@ var SICKRAGE = {
                 torrent.password = $('#torrent_password').val();
 
                 $.post(srRoot + '/home/testTorrent', {
-                    torrent_method: torrent.method,
+                    torrent_method: torrent.method, // eslint-disable-line camelcase
                     host: torrent.host,
                     username: torrent.username,
                     password: torrent.password
@@ -2077,7 +2039,7 @@ var SICKRAGE = {
                 });
             };
 
-            $.fn.addService = function(id, name, url, key, isDefault, showService) {
+            $.fn.addService = function(id, name, url, key, isDefault, showService) { // eslint-disable-line max-params
                 if (url.match('/$') === null) {
                     url += '/';
                 }
@@ -2098,7 +2060,7 @@ var SICKRAGE = {
                 var idArr = $('#service_order_list').sortable('toArray');
                 var finalArr = [];
                 $.each(idArr, function(key, val) {
-                    var checked = Number($('#enable_' + val).prop('checked')) ? '1' : '0';
+                    var checked = $('#enable_' + val).is(':checked') ? '1' : '0';
                     finalArr.push(val + ':' + checked);
                 });
                 $('#service_order').val(finalArr.join(' '));
@@ -2158,7 +2120,11 @@ var SICKRAGE = {
             }, 500));
 
             function resizePosters(newSize) {
-                var fontSize, logoWidth, borderRadius, borderWidth;
+                let fontSize = 0;
+                let logoWidth = 0;
+                let borderRadius = 0;
+                let borderWidth = 0;
+
                 if (newSize < 125) { // Small
                     borderRadius = 3;
                     borderWidth = 4;
@@ -2194,7 +2160,7 @@ var SICKRAGE = {
 
             var posterSize;
             if (typeof (Storage) !== 'undefined') {
-                posterSize = parseInt(localStorage.getItem('posterSize'));
+                posterSize = parseInt(localStorage.getItem('posterSize'), 10);
             }
             if (typeof (posterSize) !== 'number' || isNaN(posterSize)) {
                 posterSize = 188;
@@ -2270,12 +2236,13 @@ var SICKRAGE = {
                     7: {filter: 'parsed'}
                 },
                 widgetOptions: {
-                    filter_columnFilters: true,
-                    filter_hideFilters: true,
-                    stickyHeaders_offset: 50,
-                    filter_saveFilters: true,
-                    filter_functions: {
-                        5: function(e, n, f) {
+                    filter_columnFilters: true, // eslint-disable-line camelcase
+                    filter_hideFilters: true, // eslint-disable-line camelcase
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                    filter_saveFilters: true, // eslint-disable-line camelcase
+                    filter_functions: { // eslint-disable-line camelcase
+                        // @TODO: The fuck is e, n, f? We need to start naming variables properly.
+                        5: function(e, n, f) { // eslint-disable-line complexity
                             var test = false;
                             var pct = Math.floor((n % 1) * 1000);
                             if (f === '') {
@@ -2284,19 +2251,19 @@ var SICKRAGE = {
                                 var result = f.match(/(<|<=|>=|>)\s+(\d+)/i);
                                 if (result) {
                                     if (result[1] === '<') {
-                                        if (pct < parseInt(result[2])) {
+                                        if (pct < parseInt(result[2], 10)) {
                                             test = true;
                                         }
                                     } else if (result[1] === '<=') {
-                                        if (pct <= parseInt(result[2])) {
+                                        if (pct <= parseInt(result[2], 10)) {
                                             test = true;
                                         }
                                     } else if (result[1] === '>=') {
-                                        if (pct >= parseInt(result[2])) {
+                                        if (pct >= parseInt(result[2], 10)) {
                                             test = true;
                                         }
                                     } else if (result[1] === '>') {
-                                        if (pct > parseInt(result[2])) {
+                                        if (pct > parseInt(result[2], 10)) {
                                             test = true;
                                         }
                                     }
@@ -2305,7 +2272,7 @@ var SICKRAGE = {
                                 result = f.match(/(\d+)\s(-|to)\s+(\d+)/i);
                                 if (result) {
                                     if ((result[2] === '-') || (result[2] === 'to')) {
-                                        if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                        if ((pct >= parseInt(result[1], 10)) && (pct <= parseInt(result[3], 10))) {
                                             test = true;
                                         }
                                     }
@@ -2314,14 +2281,14 @@ var SICKRAGE = {
                                 result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
                                 if (result) {
                                     if ((result[1] === '=') || (result[3] === '=')) {
-                                        if (parseInt(result[2]) === pct) {
+                                        if (parseInt(result[2], 10) === pct) {
                                             test = true;
                                         }
                                     }
                                 }
 
                                 if (!isNaN(parseFloat(f)) && isFinite(f)) {
-                                    if (parseInt(f) === pct) {
+                                    if (parseInt(f, 10) === pct) {
                                         test = true;
                                     }
                                 }
@@ -2329,7 +2296,7 @@ var SICKRAGE = {
                             return test;
                         }
                     },
-                    columnSelector_mediaquery: false
+                    columnSelector_mediaquery: false // eslint-disable-line camelcase
                 },
                 sortStable: true,
                 sortAppend: [[2, 0]]
@@ -2870,7 +2837,7 @@ var SICKRAGE = {
 
             SICKRAGE.common.QualityChooser.init();
 
-            // TODO: Make anime button work like in addShow (opens the groups list without a refresh)
+            // @TODO: Make anime button work like in addShow (opens the groups list without a refresh)
             /* $('#anime').change (function() {
                 SICKRAGE.common.updateBlackWhiteList(getMeta('show.name'));
             }); */
@@ -3935,9 +3902,9 @@ var SICKRAGE = {
 
                                 resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '') + '"' + disabled + checked + ' /> ';
                                 if (data.langid && data.langid !== '') {
-                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '&lid=' + data.langid + '" onclick="window.open(this.href, \'_blank\'); return false;" ><b>' + obj[4] + '</b></a>';
                                 } else {
-                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                                    resultStr += '<a href="' + anonURL + obj[2] + obj[3] + '" onclick="window.open(this.href, \'_blank\'); return false;" ><b>' + obj[4] + '</b></a>';
                                 }
 
                                 if (obj[5] !== null) {
@@ -4168,9 +4135,9 @@ var UTIL = {
         }
     },
     init: function() {
-        var body = document.body,
-            controller = body.getAttribute('data-controller'),
-            action = body.getAttribute('data-action');
+        const body = document.body;
+        const controller = body.getAttribute('data-controller');
+        const action = body.getAttribute('data-action');
 
         UTIL.exec('common');
         UTIL.exec(controller);
@@ -4182,10 +4149,10 @@ var UTIL = {
 var gt = null,
     _n = null;
 $.getJSON(srRoot + '/ui/locale.json', function(data) {
-    if (data !== undefined) {
-        gt = new Gettext(data.messages);
-    } else {
+    if (data === undefined) {
         gt = new Gettext();
+    } else {
+        gt = new Gettext(data.messages);
     }
     _ = function(str) {
         return gt.gettext(str);
