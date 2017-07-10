@@ -15,7 +15,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-# Matches .travis.yml
+# Matches configuration files for services like Travis, AppVeyor and Codecov
 [{*.yml}]
 indent_style = space
 indent_size = 2
