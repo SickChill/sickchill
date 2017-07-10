@@ -28,11 +28,8 @@
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^2.0.0",
-    "grunt-mocha": "^1.0.4",
     "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
-    "grunt-sass": "^2.0.0",
     "load-grunt-tasks": "^3.5.2",
-    "mocha": "^3.2.0",
     "npm-check-updates": "^2.10.5",
     "snyk": "^1.28.1"
   }
