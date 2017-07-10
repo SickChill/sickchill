@@ -64,7 +64,9 @@
             "$",
             "metaToBool",
             "getMeta",
-            "PNotify"
+            "PNotify",
+            "themeSpinner",
+            "anonURL"
         ],
         "ignores": [
             "core.min.js",

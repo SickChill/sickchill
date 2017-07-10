@@ -4,7 +4,7 @@ $(document).ready(function() {
             const providerName = $(this).attr('id');
             const selectedProvider = $('#editAProvider :selected').val();
 
-            if (selectedProvider + 'Div' == providerName) {
+            if (selectedProvider + 'Div' === providerName) {
                 $(this).show();
             } else {
                 $(this).hide();
@@ -54,7 +54,7 @@ $(document).ready(function() {
     const newznabProviders = [];
     const torrentRssProviders = [];
 
-    $.fn.addProvider = function(id, name, url, key, cat, isDefault, showProvider) {
+    $.fn.addProvider = function(id, name, url, key, cat, isDefault, showProvider) { // eslint-disable-line max-params
         url = $.trim(url);
         if (!url) {
             return;
@@ -84,7 +84,7 @@ $(document).ready(function() {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.addTorrentRssProvider = function(id, name, url, cookies, titleTAG) {
+    $.fn.addTorrentRssProvider = function(id, name, url, cookies, titleTAG) { // eslint-disable-line max-params
         const newData = [name, url, cookies, titleTAG];
         torrentRssProviders[id] = newData;
 
@@ -245,7 +245,7 @@ $(document).ready(function() {
         const provStrings = [];
 
         for (const id in newznabProviders) {
-            if (newznabProviders.hasOwnProperty(id)) {
+            if ({}.hasOwnProperty.call(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
         }
@@ -289,7 +289,7 @@ $(document).ready(function() {
     $.fn.makeTorrentRssProviderString = function() {
         const provStrings = [];
         for (const id in torrentRssProviders) {
-            if (torrentRssProviders.hasOwnProperty(id)) {
+            if ({}.hasOwnProperty.call(torrentRssProviders, id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
         }
@@ -447,7 +447,7 @@ $(document).ready(function() {
         // Send to the form with ajax, get a return value
         $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', params, function(data) {
             if (data.error !== undefined) {
-                alert(data.error);
+                alert(data.error); // eslint-disable-line no-alert
                 return;
             }
             $(this).addProvider(data.success, name, url, key, cat, 0);
@@ -469,7 +469,7 @@ $(document).ready(function() {
         // Send to the form with ajax, get a return value
         $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', params, function(data) {
             if (data.error !== undefined) {
-                alert(data.error);
+                alert(data.error); // eslint-disable-line no-alert
                 return;
             }
 
@@ -484,8 +484,8 @@ $(document).ready(function() {
     });
 
     $(this).on('change', '[class=\'providerDiv_tip\'] input', function() {
-        $('div .providerDiv ' + '[name=' + $(this).attr('name') + ']').replaceWith($(this).clone());
-        $('div .providerDiv ' + '[newznab_name=' + $(this).attr('id') + ']').replaceWith($(this).clone());
+        $('div .providerDiv [name=' + $(this).attr('name') + ']').replaceWith($(this).clone());
+        $('div .providerDiv [newznab_name=' + $(this).attr('id') + ']').replaceWith($(this).clone());
     });
 
     $(this).on('change', '[class=\'providerDiv_tip\'] select', function() {
@@ -496,7 +496,7 @@ $(document).ready(function() {
                 $(this).prop('defaultSelected', false);
             }
         });
-        $('div .providerDiv ' + '[name=' + $(this).attr('name') + ']').empty().replaceWith($(this).clone());
+        $('div .providerDiv [name=' + $(this).attr('name') + ']').empty().replaceWith($(this).clone());
     });
 
     $.fn.makeTorrentOptionString = function(providerId) {
@@ -514,13 +514,11 @@ $(document).ready(function() {
     });
 
     $.fn.replaceOptions = function(options) {
-        let self, $option;
-
         this.empty();
-        self = this;
+        const self = this;
 
         $.each(options, function(index, option) {
-            $option = $('<option></option>').attr('value', option.value).text(option.text);
+            const $option = $('<option></option>').attr('value', option.value).text(option.text);
             self.append($option);
         });
     };
