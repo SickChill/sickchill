@@ -22,9 +22,10 @@ from __future__ import unicode_literals
 
 from os import name
 
-import sickbeard
 import six
 from chardet import detect
+
+import sickbeard
 
 
 def ek(function, *args, **kwargs):

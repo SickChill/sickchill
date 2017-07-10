@@ -6,15 +6,16 @@ import os
 import threading
 from socket import errno, error as SocketError
 
+from tornado.ioloop import IOLoop
+from tornado.routes import route
+from tornado.web import Application, RedirectHandler, StaticFileHandler
+
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.webapi import ApiHandler
 from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickrage.helper.encoding import ek
-from tornado.ioloop import IOLoop
-from tornado.routes import route
-from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
@@ -80,6 +81,8 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
+            static_path=self.options['data_root'],
+            static_url_prefix='{0}/'.format(self.options['web_root']),
         )
 
         # Static File Handlers

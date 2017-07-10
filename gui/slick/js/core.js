@@ -10,7 +10,7 @@ var srRoot = getMeta('srRoot'),
     srPID = getMeta('srPID'),
     themeSpinner = getMeta('themeSpinner'),
     anonURL = getMeta('anonURL'),
-    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />', // jshint ignore:line
+    topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />',
     loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
 var configSuccess = function(){
@@ -255,12 +255,12 @@ var SICKRAGE = {
                 }
 
                 $('#anyQualities').find('option').each(function() {
-                    var result = preset & $(this).val(); // jshint ignore:line
+                    var result = preset & $(this).val();
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
 
                 $('#bestQualities').find('option').each(function() {
-                    var result = preset & ($(this).val() << 16); // jshint ignore:line
+                    var result = preset & ($(this).val() << 16);
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
             },
@@ -1167,7 +1167,7 @@ var SICKRAGE = {
                 var key = parseInt($('#prowl_show').val(), 10);
                 $.getJSON(srRoot + "/home/loadShowNotifyLists", function(notifyData) {
                     if (notifyData._size > 0) {
-                        $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list  : '');   // jshint ignore:line
+                        $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list  : '');  
                     }
                 });
             });
@@ -4023,9 +4023,9 @@ var UTIL = {
 var gt = null, _n = null;
 $.getJSON(srRoot + '/ui/locale.json', function(data) {
     if (data !== undefined) {
-        gt = new Gettext(data.messages); // jshint ignore:line
+        gt = new Gettext(data.messages);
     } else {
-        gt = new Gettext(); // jshint ignore:line
+        gt = new Gettext();
     }
     _ = function(str) { return gt.gettext(str); }; // Shortcut for normal gettext
     _n = function(str, pluralStr, num) { return gt.ngettext(str, pluralStr, num); }; // Shortcut for plural gettext

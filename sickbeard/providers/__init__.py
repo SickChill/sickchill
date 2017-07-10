@@ -18,27 +18,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 from os import sys
 from random import shuffle
 
 import sickbeard
-from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaa, xthor, abnormal, torrentbytes, cpasbien, \
-    torrent9, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, \
-    scenetime, nebulance, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, danishbits, hd4free, limetorrents, \
-    norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it, immortalseed, ilcorsaronero
+from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, btn, cpasbien, danishbits, elitetorrent, filelist, gftracker,
+                                 hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed, iptorrents,
+                                 limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat,
+                                 skytorrents, speedcd, t411, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech,
+                                 torrentproject, torrentz, tvchaosuk, xthor)
 
 __all__ = [
-    'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
-    'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'nyaa', 'torrentbytes', 'cpasbien',
-    'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
-    'shazbat', 'rarbg', 'tntvillage', 'binsearch',
-    'xthor', 'abnormal', 'scenetime', 'nebulance', 'tvchaosuk',
-    'torrentproject', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
-    'hdspace', 'newpct', 'elitetorrent', 'danishbits', 'hd4free', 'limetorrents',
-    'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it',
-    'immortalseed', 'ilcorsaronero'
+    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'btn', 'cpasbien', 'danishbits',
+    'elitetorrent', 'filelist', 'gftracker', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
+    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'morethantv',
+    'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
+    'shazbat', 'skytorrents', 'speedcd', 't411', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
+    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor'
 ]
 
 

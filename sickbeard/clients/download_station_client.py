@@ -23,9 +23,10 @@ from __future__ import unicode_literals
 import os
 import re
 
-import sickbeard
 import six
 from requests.compat import urljoin
+
+import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 

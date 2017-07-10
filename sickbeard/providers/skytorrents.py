@@ -21,9 +21,9 @@ from __future__ import unicode_literals
 
 import re
 
-import feedparser
 import validators
 from requests.compat import urljoin
+
 from sickbeard import logger, tvcache
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -79,17 +79,12 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                data = self.get_url(search_url, returns="text")
+                data = self.cache.get_rss_feed(search_url)['entries']
                 if not data:
-                    logger.log("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one", logger.DEBUG)
+                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 
-                if not data.startswith("<rss"):
-                    logger.log("Expected rss but got something else, is your mirror failing?", logger.INFO)
-                    continue
-
-                feed = feedparser.parse(data)
-                for item in feed.entries:
+                for item in data:
                     try:
                         title = item.title
                         download_url = item.link

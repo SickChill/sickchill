@@ -30,8 +30,9 @@ import tarfile
 import time
 import traceback
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import db, helpers, logger, notifiers, ui
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
