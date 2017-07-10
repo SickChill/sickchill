@@ -1,18 +1,18 @@
-$(function () {
-    $('.plotInfo').each(function () {
-        var match = $(this).attr("id").match(/^plot_info_(\d+)_(\d+)_(\d+)$/);
+$(function() {
+    $('.plotInfo').each(function() {
+        const match = $(this).attr('id').match(/^plot_info_(\d+)_(\d+)_(\d+)$/);
         $(this).qtip({
             content: {
                 text: _('Loading...'),
                 ajax: {
-                    url: $("#srRoot").val() + '/home/plotDetails',
+                    url: $('#srRoot').val() + '/home/plotDetails',
                     type: 'GET',
                     data: {
                         show: match[1],
                         episode: match[3],
                         season: match[2]
                     },
-                    success: function (data) {
+                    success: function(data) {
                         this.set('content.text', data);
                     }
                 }

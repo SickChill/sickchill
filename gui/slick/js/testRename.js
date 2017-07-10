@@ -1,22 +1,22 @@
-$(document).ready(function(){
-    $('.seriesCheck').click(function(){
-        var serCheck = this;
+$(document).ready(function() {
+    $('.seriesCheck').click(function() {
+        const serCheck = this;
 
-        $('.seasonCheck:visible').each(function(){
+        $('.seasonCheck:visible').each(function() {
             this.checked = serCheck.checked;
         });
 
-        $('.epCheck:visible').each(function(){
+        $('.epCheck:visible').each(function() {
             this.checked = serCheck.checked;
         });
     });
 
-    $('.seasonCheck').click(function(){
-        var seasCheck = this;
-        var seasNo = $(seasCheck).attr('id');
+    $('.seasonCheck').click(function() {
+        const seasCheck = this;
+        const seasNo = $(seasCheck).attr('id');
 
-        $('.epCheck:visible').each(function(){
-            var epParts = $(this).attr('id').split('x');
+        $('.epCheck:visible').each(function() {
+            const epParts = $(this).attr('id').split('x');
 
             if (epParts[0] === seasNo) {
                 this.checked = seasCheck.checked;
@@ -24,8 +24,8 @@ $(document).ready(function(){
         });
     });
 
-    $('input[type=submit]').click(function(){
-        var epArr = [];
+    $('input[type=submit]').click(function() {
+        const epArr = [];
 
         $('.epCheck').each(function() {
             if (this.checked === true) {
@@ -33,8 +33,9 @@ $(document).ready(function(){
             }
         });
 
-        if (epArr.length === 0) { return false; }
+        if (epArr.length === 0) {
+            return false;
+        }
         $.redirect(srRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArr.join('|')}, 'POST');
     });
-
 });

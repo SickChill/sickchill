@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(grunt) {
-    var IsTravis = Boolean(process.env.TRAVIS);
+    const isTravis = Boolean(process.env.TRAVIS);
 
     grunt.registerTask('default', [
         'clean',
@@ -9,34 +9,24 @@ module.exports = function(grunt) {
         'bower_concat',
         'copy',
         'uglify',
-        'sass',
-        'cssmin',
-        'jshint',
-        'mocha'
+        'cssmin'
     ]);
 
-    grunt.registerTask('ci', 'Alias for "jshint", "mocha" tasks.', function(update) {
-        if (!update) {
-            grunt.task.run([
-                'jshint',
-                'mocha'
-            ]);
-        } else {
-            if (IsTravis) {
-                grunt.log.writeln('Running grunt and updating translations...'.magenta);
-                grunt.task.run([
-                    'exec:git:checkout:master',
-                    'default', // Run default task
-                    'update_trans', // Update translations
-                    'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-                    'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
-                    'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
-                    'exec:git_push:origin:master develop' // Push master and develop
-                ]);
-            } else {
-                grunt.fatal('This task is only for Travis-CI!');
-            }
+    grunt.registerTask('auto_update_trans', 'Update translations on master and push to master & develop', function() {
+        if (!isTravis) {
+            grunt.fatal('This task is only for Travis-CI!');
+            return false;
         }
+        grunt.log.writeln('Running grunt and updating translations...'.magenta);
+        grunt.task.run([
+            'exec:git:checkout:master',
+            'default', // Run default task
+            'update_trans', // Update translations
+            'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
+            'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
+            'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
+            'exec:git_push:origin:master develop' // Push master and develop
+        ]);
     });
 
     grunt.registerTask('update_trans', 'Update translations', function() {
@@ -189,16 +179,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        sass: {
-            options: {
-                sourceMap: true
-            },
-            core: {
-                files: {
-                    './dist/core.css': ['./gui/slick/scss/core.scss']
-                }
-            }
-        },
         cssmin: {
             options: {
                 shorthandCompacting: false,
@@ -213,25 +193,6 @@ module.exports = function(grunt) {
                 files: {
                     './gui/slick/css/core.min.css': ['./dist/core.css']
                 }
-            }
-        },
-        jshint: {
-            options: {
-                jshintrc: './.jshintrc'
-            },
-            all: [
-                './gui/slick/js/**/*.js',
-                '!./gui/slick/js/lib/**/*.js',
-                '!./gui/slick/js/ajaxNotifications.js',
-                '!./gui/slick/js/**/*.min.js' // We use this because ignores doesn't seem to work :(
-            ]
-        },
-        mocha: {
-            all: {
-                src: ['tests/mocha/testrunner.html']
-            },
-            options: {
-                run: true
             }
         },
         po2json: {
@@ -315,7 +276,7 @@ module.exports = function(grunt) {
                 },
                 callback: function(err) {
                     if (!err) {
-                        if (!IsTravis) {
+                        if (!isTravis) {
                             grunt.task.run('exec:git:commit:-m "' + grunt.config('commit_msg') + '"');
                         } else { // Workaround for Travis (with -m "text" the quotes are within the message)
                             var msgFilePath = 'commit-msg.txt';

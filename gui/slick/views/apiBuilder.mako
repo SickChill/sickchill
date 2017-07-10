@@ -1,4 +1,6 @@
 <%!
+    import json
+
     import sickbeard
 %>
 <!DOCTYPE html>
@@ -219,8 +221,8 @@
         </div>
 
         <script type="text/javascript">
-            var episodes = ${episodes};
-            // var commands = ${sorted(commands)};  // Dont know why this is breaking the apibuilder
+            var episodes = ${ json.dumps(episodes) };
+            var commands = ${ json.dumps(sorted(commands)) };
         </script>
         <script type="text/javascript" src="${ static_url('js/vender.min.js') }"></script>
         <script type="text/javascript" src="${ static_url('js/core.min.js') }"></script>
