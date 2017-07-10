@@ -4,7 +4,7 @@ $(document).ready(function(){
             var providerName = $(this).attr('id');
             var selectedProvider = $('#editAProvider :selected').val();
 
-            if (selectedProvider + 'Div' == providerName) { // jshint ignore:line
+            if (selectedProvider + 'Div' == providerName) {
                 $(this).show();
             } else {
                 $(this).hide();
@@ -45,7 +45,7 @@ $(document).ready(function(){
         $(".updating_categories").wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
         var jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', params, function(data){
             $(this).updateNewznabCaps( data, selectedProvider );
-            console.debug(data.tv_categories); // jshint ignore:line
+            console.debug(data.tv_categories);
         });
         jqxhr.always(function() {
             $(".updating_categories").empty();
@@ -224,7 +224,7 @@ $(document).ready(function(){
      */
     $.fn.updateNewznabCaps = function( newzNabCaps, selectedProvider ) {
         if (newzNabCaps && !ifExists($.fn.newznabProvidersCapabilities, selectedProvider[0])) {
-            $.fn.newznabProvidersCapabilities.push({'name' : selectedProvider[0], 'categories' : newzNabCaps.tv_categories}); // jshint ignore:line
+            $.fn.newznabProvidersCapabilities.push({'name' : selectedProvider[0], 'categories' : newzNabCaps.tv_categories});
         }
 
         //Loop through the array and if currently selected newznab provider name matches one in the array, use it to

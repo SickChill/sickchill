@@ -1,4 +1,4 @@
-function generateBlackWhiteList() { // jshint ignore:line
+function generateBlackWhiteList() {
     var realvalues = [];
 
     $('#white option').each(function(i, selected) {
@@ -13,7 +13,7 @@ function generateBlackWhiteList() { // jshint ignore:line
     $("#blacklist").val(realvalues.join(","));
 }
 
-function updateBlackWhiteList(showName) { // jshint ignore:line
+function updateBlackWhiteList(showName) {
     $('#pool').children().remove();
 
     $('#blackwhitelist').show();
@@ -34,23 +34,23 @@ function updateBlackWhiteList(showName) { // jshint ignore:line
 }
 
 $('#removeW').click(function() {
-    !$('#white option:selected').remove().appendTo('#pool'); // jshint ignore:line
+    !$('#white option:selected').remove().appendTo('#pool');
 });
 
 $('#addW').click(function() {
-    !$('#pool option:selected').remove().appendTo('#white'); // jshint ignore:line
+    !$('#pool option:selected').remove().appendTo('#white');
 });
 
 $('#addB').click(function() {
-    !$('#pool option:selected').remove().appendTo('#black'); // jshint ignore:line
+    !$('#pool option:selected').remove().appendTo('#black');
 });
 
 $('#removeP').click(function() {
-    !$('#pool option:selected').remove(); // jshint ignore:line
+    !$('#pool option:selected').remove();
 });
 
 $('#removeB').click(function() {
-    !$('#black option:selected').remove().appendTo('#pool'); // jshint ignore:line
+    !$('#black option:selected').remove().appendTo('#pool');
 });
 
 $('#addToWhite').click(function() {

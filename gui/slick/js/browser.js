@@ -29,61 +29,61 @@
 
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
-        currentRequest = $.getJSON(endpoint,
-            {path, includeFiles, fileTypes: fileTypes.join(',')}, data => {
-                fileBrowserDialog.empty();
-                const firstVal = data[0];
-                let i = 0;
-                let list = null;
-                let link = null;
-                data = $.grep(data, () => {
-                    return i++ !== 0;
-                });
-
-                $('<input type="text" class="form-control input-sm">')
-                .val(firstVal.currentPath)
-                .on('keypress', e => {
-                    if (e.which === 13) {
-                        browse(e.target.value, endpoint, includeFiles, fileTypes);
-                    }
-                })
-                .appendTo(fileBrowserDialog)
-                .fileBrowser({showBrowseButton: false})
-                .on('autocompleteselect', (e, ui) => {
-                    browse(ui.item.value, endpoint, includeFiles, fileTypes);
-                });
-
-                list = $('<ul>').appendTo(fileBrowserDialog);
-                $.each(data, (i, entry) => {
-                    if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) {
-                        return true;
-                    }
-                    link = $('<a href="javascript:void(0)">').on('click', () => {
-                        if (entry.isFile) {
-                            currentBrowserPath = entry.path;
-                            $('.browserDialog .ui-button:contains("Ok")').click();
-                        } else {
-                            browse(entry.path, endpoint, includeFiles, fileTypes);
-                        }
-                    }).text(entry.name);
-                    if (entry.isImage) {
-                        link.prepend('<span class="ui-icon ui-icon-image"></span>');
-                    } else if (entry.isFile) {
-                        link.prepend('<span class="ui-icon ui-icon-document"></span>');
-                    } else {
-                        link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
-                        .on('mouseenter', function() {
-                            $('span', this).addClass('ui-icon-folder-open');
-                        })
-                        .on('mouseleave', function() {
-                            $('span', this).removeClass('ui-icon-folder-open');
-                        });
-                    }
-                    link.appendTo(list);
-                });
-                $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
-                fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
+        currentRequest = $.getJSON(endpoint, {
+            path,
+            includeFiles,
+            fileTypes: fileTypes.join(',')
+        }, function(data) {
+            fileBrowserDialog.empty();
+            const firstVal = data[0];
+            let i = 0;
+            let list = null;
+            let link = null;
+            data = $.grep(data, function() {
+                return i++ !== 0;
             });
+
+            $('<input type="text" class="form-control input-sm">').val(firstVal.currentPath).on('keypress', function(e) {
+                if (e.which === 13) {
+                    browse(e.target.value, endpoint, includeFiles, fileTypes);
+                }
+            }).appendTo(fileBrowserDialog).fileBrowser({
+                showBrowseButton: false
+            }).on('autocompleteselect', function(e, ui) {
+                browse(ui.item.value, endpoint, includeFiles, fileTypes);
+            });
+
+            list = $('<ul>').appendTo(fileBrowserDialog);
+            $.each(data, function(i, entry) {
+                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) {
+                    return true;
+                }
+                link = $('<a href="javascript:void(0)">').on('click', function() {
+                    if (entry.isFile) {
+                        currentBrowserPath = entry.path;
+                        $('.browserDialog .ui-button:contains("Ok")').click();
+                    } else {
+                        browse(entry.path, endpoint, includeFiles, fileTypes);
+                    }
+                }).text(entry.name);
+                if (entry.isImage) {
+                    link.prepend('<span class="ui-icon ui-icon-image"></span>');
+                } else if (entry.isFile) {
+                    link.prepend('<span class="ui-icon ui-icon-document"></span>');
+                } else {
+                    link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
+                    .on('mouseenter', function() {
+                        $('span', this).addClass('ui-icon-folder-open');
+                    })
+                    .on('mouseleave', function() {
+                        $('span', this).removeClass('ui-icon-folder-open');
+                    });
+                }
+                link.appendTo(list);
+            });
+            $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
+            fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
+        });
     }
 
     $.fn.nFileBrowser = function(callback, options) {
@@ -155,7 +155,7 @@
                         success(data) {
                             // Implement a startsWith filter for the results
                             const matcher = new RegExp('^' + query, 'i');
-                            const a = $.grep(data, item => {
+                            const a = $.grep(data, function(item) {
                                 return matcher.test(item);
                             });
                             response(a);
@@ -169,7 +169,7 @@
                 // Highlight the matched search term from the item -- note that this is global and will match anywhere
                 let resultItem = item.label;
                 const x = new RegExp('(?![^&;]+;)(?!<[^<>]*)(' + query + ')(?![^<>]*>)(?![^&;]+;)', 'gi');
-                resultItem = resultItem.replace(x, fullMatch => {
+                resultItem = resultItem.replace(x, function(fullMatch) {
                     return '<b>' + fullMatch + '</b>';
                 });
                 return $('<li></li>')

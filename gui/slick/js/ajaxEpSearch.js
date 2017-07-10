@@ -19,7 +19,7 @@ function disableLink(link) {
 }
 
 function updateImages(data) {
-    $.each(data.episodes, (name, ep) => {
+    $.each(data.episodes, function(name, ep) {
         // Get td element for current ep
         const loadingClass = 'loading-spinner16';
         const queuedClass = 'displayshow-icon-clock';
@@ -104,7 +104,7 @@ function updateImages(data) {
 
                     if (actionElement.length) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', (i, value) => {
+                        actionElement.attr('class', function(i, value) {
                             return value.replace(/(^|\s)listing-\S+/g, '');
                         }).addClass('listing-snatched');
                     }
@@ -141,9 +141,7 @@ function checkManualSearches() {
     });
 }
 
-$(document).ready(() => {
-    checkManualSearches();
-});
+$(document).ready(checkManualSearches);
 
 (function() {
     let stupidOptions;
@@ -167,9 +165,9 @@ $(document).ready(() => {
 
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
-        $.getJSON(url, data => {
-            let imageName = null;
-            let imageResult = null;
+        $.getJSON(url, function(data) {
+            let imageName = null; // eslint-disable-line no-undef
+            let imageResult = null; // eslint-disable-line no-undef
             // If they failed then just put the red X
             if (data.result.toLowerCase() === 'failure') {
                 imageName = stupidOptions.noImage;
