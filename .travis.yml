@@ -22,8 +22,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - xo
-  - grunt ci
+  - npm run test
   - tox -v --recreate
 
 cache:
@@ -46,7 +45,7 @@ after_success:
   - git remote rm origin
   - git remote add origin https://$GH_CRED@github.com/$TRAVIS_REPO_SLUG.git
   - git fetch origin master develop --no-tags
-  - grunt ci:update
+  - grunt auto_update_trans
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"
