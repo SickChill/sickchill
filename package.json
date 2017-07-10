@@ -61,7 +61,15 @@
             "_",
             "srRoot",
             "jQuery",
-            "$"
+            "$",
+            "metaToBool",
+            "getMeta",
+            "PNotify"
+        ],
+        "ignores": [
+            "core.min.js",
+            "vender.min.js",
+            "lib/**/*"
         ]
     }
 }
