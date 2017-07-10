@@ -101,7 +101,7 @@ $(document).ready(function() {
             scrollTop: $(this).offset().top - $('nav').outerHeight(true) + 'px'
         }, 'fast');
         return this;
-    }
+    };
 
     $('#command-search').typeahead({
         source: commands // eslint-disable-line no-undef
@@ -110,12 +110,12 @@ $(document).ready(function() {
         const command = $(this).typeahead('getActive');
 
         if (command) {
-            const commandObj = $('[href="#command-' + command.replace('.', '-') + '"]')
+            const commandObj = $('[href="#command-' + command.replace('.', '-') + '"]');
             commandObj.click();
 
-            setTimeout(function () {
+            setTimeout(function() {
                 commandObj.goTo();
-            }, 250)
+            }, 250);
         }
     });
 });
