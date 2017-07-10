@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // Perform an API call
     $('[data-action=api-call]').on('click', function() {
-        const parameters = $('[data-command=' + $(this).data('command-name') + ']');
+        const parameters = $('[data-command="' + $(this).data('command-name') + '"]');
         const profile = $('#option-profile').is(':checked');
         const targetId = $(this).data('target');
         const timeId = $(this).data('time');
@@ -59,9 +59,9 @@ $(document).ready(function() {
     // Update the list of episodes
     $('[data-action=update-episodes').on('change', function() {
         const command = $(this).data('command');
-        const select = $('[data-command=' + command + '][name=episode]');
+        const select = $('[data-command="' + command + '"][name="episode"]');
         const season = $(this).val();
-        const show = $('[data-command=' + command + '][name=indexerid]').val();
+        const show = $('[data-command="' + command + '"][name="indexerid"]').val();
 
         if (select !== undefined) {
             select.removeClass('hidden');
@@ -79,7 +79,7 @@ $(document).ready(function() {
     // Update the list of seasons
     $('[data-action=update-seasons').on('change', function() {
         const command = $(this).data('command');
-        const select = $('[data-command=' + command + '][name=season]');
+        const select = $('[data-command="' + command + '"][name="season"]');
         const show = $(this).val();
 
         if (select !== undefined) {
@@ -104,7 +104,7 @@ $(document).ready(function() {
 
         if (command) {
             const commandId = command.replace('.', '-');
-            $('[href=#command-' + commandId + ']').click();
+            $('[href="#command-' + commandId + '"]').click();
         }
     });
 });
