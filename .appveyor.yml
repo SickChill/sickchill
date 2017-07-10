@@ -68,8 +68,8 @@ install:
   - bower install
 
 test_script:
-  - npm run test
-  - tox -v --recreate
+  - npm run test || exit /b
+  - tox -v --recreate || exit /b
 
 before_test:
   - echo Starting Tests
