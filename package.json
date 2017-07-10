@@ -78,7 +78,6 @@
             "vender.min.js",
             "lib/**/*",
             "gui/slick/js/lib/*",
-            "gui/slick/js/core.js",
             "Gruntfile.js"
         ]
     }
