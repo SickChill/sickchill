@@ -63,14 +63,12 @@ install:
   # Install node/npm
   - ps: Install-Product node $env:7
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install npm
-  - npm -g install bower
-  - npm -g install grunt-cli
-  - npm install
+  - npm -g install npm bower grunt-cli
+  - npm install --quiet
   - bower install
 
 test_script:
-  - grunt ci
+  - npm run test
   - tox -v --recreate
 
 before_test:

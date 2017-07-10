@@ -7,7 +7,7 @@
     <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/trendingShows.js"></script>
+    <script type="text/javascript" src="${ static_url('js/trendingShows.js') }"></script>
 </%block>
 <%block name="content">
     <div id="container">

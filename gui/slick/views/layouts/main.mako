@@ -42,8 +42,8 @@
         <![endif]-->
 
         <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
-        <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
+        <meta name="msapplication-TileImage" content="${ static_url('images/ico/favicon-144.png') }">
+        <meta name="msapplication-config" content="${ static_url('css/browserconfig.xml') }">
 
         <meta data-var="srRoot" data-content="${srRoot}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
@@ -69,39 +69,39 @@
         <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
 
-        <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${srRoot}/images/ico/favicon.ico">
-        <link rel="icon" type="image/png" sizes="196x196" href="${srRoot}/images/ico/favicon-196.png">
-        <link rel="icon" type="image/png" sizes="160x160" href="${srRoot}/images/ico/favicon-160.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="${srRoot}/images/ico/favicon-96.png">
-        <link rel="icon" type="image/png" sizes="64x64" href="${srRoot}/images/ico/favicon-64.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="${srRoot}/images/ico/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="${srRoot}/images/ico/favicon-16.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="${srRoot}/images/ico/favicon-152.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="${srRoot}/images/ico/favicon-144.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="${srRoot}/images/ico/favicon-120.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="${srRoot}/images/ico/favicon-114.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="${srRoot}/images/ico/favicon-76.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
-        <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
+        <link rel="shortcut icon" href="${ static_url('images/ico/favicon.ico') }">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="${ static_url('images/ico/favicon.ico') }">
+        <link rel="icon" type="image/png" sizes="196x196" href="${ static_url('images/ico/favicon-196.png') }">
+        <link rel="icon" type="image/png" sizes="160x160" href="${ static_url('images/ico/favicon-160.png') }">
+        <link rel="icon" type="image/png" sizes="96x96" href="${ static_url('images/ico/favicon-96.png') }">
+        <link rel="icon" type="image/png" sizes="64x64" href="${ static_url('images/ico/favicon-64.png') }">
+        <link rel="icon" type="image/png" sizes="32x32" href="${ static_url('images/ico/favicon-32.png') }">
+        <link rel="icon" type="image/png" sizes="16x16" href="${ static_url('images/ico/favicon-16.png') }">
+        <link rel="apple-touch-icon" sizes="152x152" href="${ static_url('images/ico/favicon-152.png') }">
+        <link rel="apple-touch-icon" sizes="144x144" href="${ static_url('images/ico/favicon-144.png') }">
+        <link rel="apple-touch-icon" sizes="120x120" href="${ static_url('images/ico/favicon-120.png') }">
+        <link rel="apple-touch-icon" sizes="114x114" href="${ static_url('images/ico/favicon-114.png') }">
+        <link rel="apple-touch-icon" sizes="76x76" href="${ static_url('images/ico/favicon-76.png') }">
+        <link rel="apple-touch-icon" sizes="72x72" href="${ static_url('images/ico/favicon-72.png') }">
+        <link rel="apple-touch-icon" href="${ static_url('images/ico/favicon-57.png') }">
 
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/font-awesome.min.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/country-flags.css?${sbPID}"/>
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/vender.min.css') }"/>
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/browser.css') }" />
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/font-awesome.min.css') }" />
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/lib/jquery-ui-1.10.4.custom.min.css') }" />
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/lib/jquery.qtip-2.2.1.min.css') }"/>
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/style.css') }"/>
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/print.css') }" />
+        <link rel="stylesheet" type="text/css" href="${ static_url('css/country-flags.css') }"/>
 
         % if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+            <link rel="stylesheet" type="text/css" href="${ static_url('css/${sickbeard.THEME_NAME}.css') }" />
         % endif
 
         <%block name="css" />
 
         % if sickbeard.CUSTOM_CSS:
-            <link rel="stylesheet" type="text/css" href="${srRoot}/ui/custom.css" />
+            <link rel="stylesheet" type="text/css" href="${ static_url('ui/custom.css') }" />
         % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
@@ -127,7 +127,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;padding: 3px;" class="img-responsive pull-left" /></a>
+                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${ static_url('images/sickrage.png') }" style="height: 50px;padding: 3px;" class="img-responsive pull-left" /></a>
                 </div>
                 % if srLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
@@ -190,7 +190,7 @@
                             </li>
 
                             <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                                <a href="${srRoot}/config/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${srRoot}/images/menu/system18.png" class="navbaricon hidden-xs" />
+                                <a href="${srRoot}/config/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png') }" class="navbaricon hidden-xs" />
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -219,7 +219,7 @@
                                     toolsBadge = ''
                             %>
                             <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                                <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${srRoot}/images/menu/system18-2.png" class="navbaricon hidden-xs" />${toolsBadge}
+                                <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png') }" class="navbaricon hidden-xs" />${toolsBadge}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -341,20 +341,20 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/lib/jquery.form.min.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/lib/jquery.selectboxes.min.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/lib/formwizard.js?${sbPID}"></script><!-- Can't be added to bower -->
-                <script type="text/javascript" src="${srRoot}/js/parsers.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/rootDirs.js?${sbPID}"></script>
+                <script type="text/javascript" src="${ static_url('js/vender.min.js') }"></script>
+                <script type="text/javascript" src="${ static_url('js/lib/jquery.form.min.js') }"></script>
+                <script type="text/javascript" src="${ static_url('js/lib/jquery.selectboxes.min.js') }"></script>
+                <script type="text/javascript" src="${ static_url('js/lib/formwizard.js') }"></script><!-- Can't be added to bower -->
+                <script type="text/javascript" src="${ static_url('js/parsers.js') }"></script>
+                <script type="text/javascript" src="${ static_url('js/rootDirs.js') }"></script>
                 % if sickbeard.DEVELOPER:
-                    <script type="text/javascript" src="${srRoot}/js/core.js?${sbPID}"></script>
+                    <script type="text/javascript" src="${ static_url('js/core.js') }"></script>
                 % else:
-                    <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
+                    <script type="text/javascript" src="${ static_url('js/core.min.js') }"></script>
                 % endif
-                <script type="text/javascript" src="${srRoot}/js/lib/jquery.scrolltopcontrol-1.1.js?${sbPID}"></script>
-                <script type="text/javascript" src="${srRoot}/js/browser.js?${sbPID}" charset="utf-8"></script>
-                <script type="text/javascript" src="${srRoot}/js/ajaxNotifications.js?${sbPID}"></script>
+                <script type="text/javascript" src="${ static_url('js/lib/jquery.scrolltopcontrol-1.1.js') }"></script>
+                <script type="text/javascript" src="${ static_url('js/browser.js') }" charset="utf-8"></script>
+                <script type="text/javascript" src="${ static_url('js/ajaxNotifications.js') }"></script>
             % endif
             <%block name="scripts" />
         </div>
