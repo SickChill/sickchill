@@ -39,7 +39,7 @@ $(document).ready(function() {
             return;
         }
 
-        const params = {url, name, key};
+        const params = {url: url, name: name, key: key};
 
         $('.updating_categories').wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
         const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', params, function(data) {
@@ -442,7 +442,7 @@ $(document).ready(function() {
             return;
         }
 
-        const params = {name};
+        const params = {name: name};
 
         // Send to the form with ajax, get a return value
         $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', params, function(data) {
@@ -464,7 +464,7 @@ $(document).ready(function() {
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
         const titleTAG = $('#torrentrss_titleTAG').val();
-        const params = {name, url, cookies, titleTAG};
+        const params = {name: name, url: url, cookies: cookies, titleTAG: titleTAG};
 
         // Send to the form with ajax, get a return value
         $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', params, function(data) {
@@ -530,7 +530,7 @@ $(document).ready(function() {
 
     $('#provider_order_list').sortable({
         placeholder: 'ui-state-highlight',
-        update() {
+        update: function() {
             $(this).refreshProviderList();
         }
     });

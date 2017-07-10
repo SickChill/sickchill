@@ -52,8 +52,13 @@
             "unicorn/prefer-type-error": "off",
             "unicorn/explicit-length-check": "off",
             "unicorn/no-abusive-eslint-disable": "off",
-            "prefer-arrow-callback": "off"
+            "prefer-arrow-callback": "off",
+            "object-shorthand": [
+                "error",
+                "never"
+            ]
         },
+        "esnext": false,
         "envs": [
             "browser"
         ],

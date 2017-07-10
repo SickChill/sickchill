@@ -17,8 +17,8 @@ function displayPNotify(type, title, message, id) {
         desktop: {
             tag: id
         },
-        type,
-        title,
+        type: type,
+        title: title,
         text: message.replace(/<br[\s/]*(?:\s[^>]*)?>/ig, '\n')
             .replace(/<[/]?b(?:\s[^>]*)?>/ig, '*')
             .replace(/<i(?:\s[^>]*)?>/ig, '[').replace(/<[/]i>/ig, ']')

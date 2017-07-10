@@ -1,9 +1,9 @@
 $.tablesorter.addParser({
     id: 'loadingNames',
-    is() {
+    is: function() {
         return false;
     },
-    format(s) {
+    format: function(s) {
         if (s.indexOf(_('Loading...')) === 0) {
             return s.replace(_('Loading...'), '000');
         }
@@ -13,10 +13,10 @@ $.tablesorter.addParser({
 });
 $.tablesorter.addParser({
     id: 'quality',
-    is() {
+    is: function() {
         return false;
     },
-    format(s) {
+    format: function(s) {
         const replacements = {
             custom: 11,
             bluray: 10, // Custom: Only bluray
@@ -37,10 +37,10 @@ $.tablesorter.addParser({
 });
 $.tablesorter.addParser({
     id: 'realISODate',
-    is() {
+    is: function() {
         return false;
     },
-    format(s) {
+    format: function(s) {
         return new Date(s).getTime();
     },
     type: 'numeric'
@@ -48,20 +48,20 @@ $.tablesorter.addParser({
 
 $.tablesorter.addParser({
     id: 'cDate',
-    is() {
+    is: function() {
         return false;
     },
-    format(s) {
+    format: function(s) {
         return s;
     },
     type: 'numeric'
 });
 $.tablesorter.addParser({
     id: 'eps',
-    is() {
+    is: function() {
         return false;
     },
-    format(s) {
+    format: function(s) {
         const match = s.match(/^(.*)/);
 
         if (match === null || match[1] === '?') {
