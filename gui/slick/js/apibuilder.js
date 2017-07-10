@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // Perform an API call
-    $('[data-action=api-call]').on('click', function() {
+    $('[data-action="api-call"]').on('click', function() {
         const parameters = $('[data-command="' + $(this).data('command-name') + '"]');
         const profile = $('#option-profile').is(':checked');
         const targetId = $(this).data('target');
@@ -52,12 +52,12 @@ $(document).ready(function() {
     });
 
     // Remove the result of an API call
-    $('[data-action=clear-result]').on('click', function() {
+    $('[data-action="clear-result"]').on('click', function() {
         $($(this).data('target')).html('').parents('.result-wrapper').addClass('hidden');
     });
 
     // Update the list of episodes
-    $('[data-action=update-episodes').on('change', function() {
+    $('[data-action="update-episodes"').on('change', function() {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="episode"]');
         const season = $(this).val();
@@ -77,7 +77,7 @@ $(document).ready(function() {
     });
 
     // Update the list of seasons
-    $('[data-action=update-seasons').on('change', function() {
+    $('[data-action="update-seasons"').on('change', function() {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="season"]');
         const show = $(this).val();
@@ -96,6 +96,13 @@ $(document).ready(function() {
     });
 
     // Enable command search
+    $.fn.goTo = function() {
+        $('html, body').animate({
+            scrollTop: $(this).offset().top - $('nav').outerHeight(true) + 'px'
+        }, 'fast');
+        return this;
+    }
+
     $('#command-search').typeahead({
         source: commands // eslint-disable-line no-undef
     });
@@ -103,8 +110,12 @@ $(document).ready(function() {
         const command = $(this).typeahead('getActive');
 
         if (command) {
-            const commandId = command.replace('.', '-');
-            $('[href="#command-' + commandId + '"]').click();
+            const commandObj = $('[href="#command-' + command.replace('.', '-') + '"]')
+            commandObj.click();
+
+            setTimeout(function () {
+                commandObj.goTo();
+            }, 250)
         }
     });
 });
