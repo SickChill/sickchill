@@ -2246,35 +2246,38 @@ var SICKRAGE = {
                     stickyHeaders_offset: 50, // eslint-disable-line camelcase
                     filter_saveFilters: true, // eslint-disable-line camelcase
                     filter_functions: { // eslint-disable-line camelcase
-                        // @TODO: The fuck is e, n, f? We need to start naming variables properly.
-                        5: function(e, n, f) { // eslint-disable-line complexity
-                            var test = false;
-                            var pct = Math.floor((n % 1) * 1000);
-                            if (f === '') {
+                        // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
+                        5: function(exact, normalized, filterInput) {
+                            let test = false;
+                            const pct = Math.floor((normalized % 1) * 1000);
+                            const doCompare = {
+                                '<': function(a, b) {
+                                    return a < b;
+                                },
+                                '<=': function(a, b) {
+                                    return a <= b;
+                                },
+                                '>=': function(a, b) {
+                                    return a >= b;
+                                },
+                                '>': function(a, b) {
+                                    return a > b;
+                                }
+                            };
+
+                            if (filterInput === '') {
                                 test = true;
                             } else {
-                                var result = f.match(/(<|<=|>=|>)\s+(\d+)/i);
+                                let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/i);
                                 if (result) {
-                                    if (result[1] === '<') {
-                                        if (pct < parseInt(result[2], 10)) {
-                                            test = true;
-                                        }
-                                    } else if (result[1] === '<=') {
-                                        if (pct <= parseInt(result[2], 10)) {
-                                            test = true;
-                                        }
-                                    } else if (result[1] === '>=') {
-                                        if (pct >= parseInt(result[2], 10)) {
-                                            test = true;
-                                        }
-                                    } else if (result[1] === '>') {
-                                        if (pct > parseInt(result[2], 10)) {
-                                            test = true;
-                                        }
+                                    // Compare using the matched operator
+                                    const comp = doCompare[result[1]];
+                                    if (comp(pct, parseInt(result[2], 10))) {
+                                        test = true;
                                     }
                                 }
 
-                                result = f.match(/(\d+)\s(-|to)\s+(\d+)/i);
+                                result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
                                 if (result) {
                                     if ((result[2] === '-') || (result[2] === 'to')) {
                                         if ((pct >= parseInt(result[1], 10)) && (pct <= parseInt(result[3], 10))) {
@@ -2283,7 +2286,7 @@ var SICKRAGE = {
                                     }
                                 }
 
-                                result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/i);
                                 if (result) {
                                     if ((result[1] === '=') || (result[3] === '=')) {
                                         if (parseInt(result[2], 10) === pct) {
@@ -2292,8 +2295,8 @@ var SICKRAGE = {
                                     }
                                 }
 
-                                if (!isNaN(parseFloat(f)) && isFinite(f)) {
-                                    if (parseInt(f, 10) === pct) {
+                                if (!isNaN(parseFloat(filterInput)) && isFinite(filterInput)) {
+                                    if (parseInt(filterInput, 10) === pct) {
                                         test = true;
                                     }
                                 }
