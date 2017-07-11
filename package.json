@@ -71,7 +71,10 @@
             "getMeta",
             "PNotify",
             "themeSpinner",
-            "anonURL"
+            "anonURL",
+            "Gettext",
+            "gt",
+            "_n"
         ],
         "ignores": [
             "core.min.js",
