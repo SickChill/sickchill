@@ -11,7 +11,7 @@ const loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.g
 
 let srPID = getMeta('srPID');
 
-var configSuccess = function() {
+function configSuccess() {
     $('.config_submitter').each(function() {
         $(this).removeAttr('disabled');
         $(this).next().remove();
@@ -25,10 +25,10 @@ var configSuccess = function() {
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
-};
+}
 
 function metaToBool(pyVar) {
-    var meta = $('meta[data-var="' + pyVar + '"]').data('content');
+    let meta = $('meta[data-var="' + pyVar + '"]').data('content');
     if (meta === undefined) {
         console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
         return meta;
@@ -38,7 +38,7 @@ function metaToBool(pyVar) {
 }
 
 function isMeta(pyVar, result) {
-    var reg = new RegExp(result.length > 1 ? result.join('|') : result);
+    const reg = new RegExp(result.length > 1 ? result.join('|') : result);
     return (reg).test($('meta[data-var="' + pyVar + '"]').data('content'));
 }
 
@@ -52,7 +52,7 @@ function addSiteMessage(level, tag, message) {
     tag = tag || '';
     message = message || '';
     $.post(srRoot + '/ui/set_site_message', {level: level, tag: tag, message: message}, function(siteMessages) {
-        var messagesDiv = $('#site-messages');
+        const messagesDiv = $('#site-messages');
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
             for (let key in siteMessages) {
@@ -66,7 +66,7 @@ function addSiteMessage(level, tag, message) {
     });
 
     $('#site-messages').on('click', '.site-message-dismiss', function() {
-        var messageID = $(this).data('id');
+        const messageID = $(this).data('id');
         $('#site-message-' + messageID).hide();
         $.post(srRoot + '/ui/dismiss-site-message', {index: messageID});
     });
@@ -83,16 +83,17 @@ function shiftReturn(array) {
 }
 
 var __ = _; // Moves `underscore` to __
-_ = function(str) { // eslint-disable-line no-global-assign
+// Temporary (gets replaced)
+window._ = function(str) {
     return str;
-}; // Temporary (gets replaced)
+};
 
 var SICKRAGE = {
     common: {
         init: function() {
             (function() {
-                var imgDefer = document.getElementsByTagName('img');
-                for (var i = 0; i < imgDefer.length; i++) {
+                const imgDefer = document.getElementsByTagName('img');
+                for (let i = 0; i < imgDefer.length; i++) {
                     if (imgDefer[i].getAttribute('data-src')) {
                         imgDefer[i].setAttribute('src', imgDefer[i].getAttribute('data-src'));
                     }
@@ -153,7 +154,7 @@ var SICKRAGE = {
 
             $('#config-components').tabs({
                 activate: function(event, ui) {
-                    var lastOpenedPanel = $(this).data('lastOpenedPanel');
+                    let lastOpenedPanel = $(this).data('lastOpenedPanel');
 
                     if (!lastOpenedPanel) {
                         lastOpenedPanel = $(ui.oldPanel);
@@ -190,7 +191,7 @@ var SICKRAGE = {
             // hack alert: if we don't have a touchscreen, and we are already hovering the mouse, then click should link instead of toggle
             if ((navigator.maxTouchPoints || 0) < 2) {
                 $('.dropdown-toggle').on('click', function() {
-                    var $this = $(this);
+                    const $this = $(this);
                     if ($this.attr('aria-expanded') === 'true') {
                         window.location.href = $this.attr('href');
                     }
@@ -228,8 +229,8 @@ var SICKRAGE = {
             });
 
             $(document.body).on('click', '.bulkCheck', function() {
-                var bulkCheck = this;
-                var whichBulkCheck = $(bulkCheck).attr('id');
+                const bulkCheck = this;
+                const whichBulkCheck = $(bulkCheck).attr('id');
 
                 $('.' + whichBulkCheck + ':visible').each(function() {
                     $(this).prop('checked', $(bulkCheck).prop('checked'));
@@ -261,18 +262,18 @@ var SICKRAGE = {
                 $('#customQuality').hide();
 
                 $('#anyQualities').find('option').each(function() {
-                    var result = preset & $(this).val();
+                    const result = preset & $(this).val();
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
 
                 $('#bestQualities').find('option').each(function() {
-                    var result = preset & ($(this).val() << 16);
+                    const result = preset & ($(this).val() << 16);
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
             },
             init: function() {
-                var selfObj = this;
-                var qualityPresets = $('#qualityPreset');
+                const selfObj = this;
+                const qualityPresets = $('#qualityPreset');
 
                 qualityPresets.on('change', function() {
                     selfObj.setFromPresets(qualityPresets.find(':selected').val());
@@ -294,7 +295,7 @@ var SICKRAGE = {
                     }, function(data) {
                         if (data.result === 'success') {
                             $.each(data.groups, function(i, group) {
-                                var option = $('<option>');
+                                const option = $('<option>');
                                 option.attr('value', group.name);
                                 option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
                                 option.appendTo('#pool');
@@ -322,7 +323,7 @@ var SICKRAGE = {
             });
 
             $('.datePresets').on('click', function() {
-                var def = $('#date_presets').val();
+                let def = $('#date_presets').val();
                 if ($(this).prop('checked') && def === '%x') {
                     def = '%a, %b %d, %Y';
                     $('#date_use_system_default').html('1');
@@ -373,14 +374,14 @@ var SICKRAGE = {
             });
 
             $('#branchCheckout').on('click', function() {
-                var url = srRoot + '/home/branchCheckout?branch=' + $('#branchVersion').val();
-                var checkDBversion = srRoot + '/home/getDBcompare';
+                const url = srRoot + '/home/branchCheckout?branch=' + $('#branchVersion').val();
+                const checkDBversion = srRoot + '/home/getDBcompare';
                 $.getJSON(checkDBversion, function(data) {
                     if (data.status === 'success') {
                         if (data.message === 'downgrade') {
                             notifyModal('Can\'t switch branch as this will result in a database downgrade.');
                         } else {
-                            var doUpgrade = true;
+                            let doUpgrade = true;
                             if (data.message === 'upgrade') {
                                 doUpgrade = confirm('Changing branch will upgrade your database.\nYou won\'t be able to downgrade afterward.\nDo you want to continue?');  // eslint-disable-line no-alert
                             }
@@ -394,7 +395,7 @@ var SICKRAGE = {
 
             // GitHub Auth Types
             function setupGithubAuthTypes() {
-                var selected = parseInt($('input[name="git_auth_type"]').filter(':checked').val(), 10);
+                const selected = parseInt($('input[name="git_auth_type"]').filter(':checked').val(), 10);
 
                 $('div[name="content_github_auth_type"]').each(function(index) {
                     if (index === selected) {
@@ -432,7 +433,7 @@ var SICKRAGE = {
             $('#Backup').on('click', function() {
                 $('#Backup').attr('disabled', true);
                 $('#Backup-result').html(loading);
-                var backupDir = $('#backupDir').val();
+                const backupDir = $('#backupDir').val();
                 $.get(srRoot + '/config/backuprestore/backup', {backupDir: backupDir})
                     .done(function(data) {
                         $('#Backup-result').html(data);
@@ -442,7 +443,7 @@ var SICKRAGE = {
             $('#Restore').on('click', function() {
                 $('#Restore').attr('disabled', true);
                 $('#Restore-result').html(loading);
-                var backupFile = $('#backupFile').val();
+                const backupFile = $('#backupFile').val();
                 $.post(srRoot + '/config/backuprestore/restore', {backupFile: backupFile})
                     .done(function(data) {
                         $('#Restore-result').html(data);
@@ -456,7 +457,7 @@ var SICKRAGE = {
         },
         notifications: function() {
             $('#testGrowl').on('click', function() {
-                var growl = {};
+                const growl = {};
                 growl.host = $.trim($('#growl_host').val());
                 growl.password = $.trim($('#growl_password').val());
                 if (!growl.host) {
@@ -477,7 +478,7 @@ var SICKRAGE = {
             });
 
             $('#testProwl').on('click', function() {
-                var prowl = {};
+                const prowl = {};
                 prowl.api = $.trim($('#prowl_api').val());
                 prowl.priority = $('#prowl_priority').val();
                 if (!prowl.api) {
@@ -498,7 +499,7 @@ var SICKRAGE = {
             });
 
             $('#testKODI').on('click', function() {
-                var kodi = {};
+                const kodi = {};
                 kodi.host = $.trim($('#kodi_host').val());
                 kodi.username = $.trim($('#kodi_username').val());
                 kodi.password = $.trim($('#kodi_password').val());
@@ -521,7 +522,7 @@ var SICKRAGE = {
             });
 
             $('#testPHT').on('click', function() {
-                var plex = {};
+                const plex = {};
                 plex.client = {};
                 plex.client.host = $.trim($('#plex_client_host').val());
                 plex.client.username = $.trim($('#plex_client_username').val());
@@ -545,7 +546,7 @@ var SICKRAGE = {
             });
 
             $('#testPMS').on('click', function() {
-                var plex = {};
+                const plex = {};
                 plex.server = {};
                 plex.server.host = $.trim($('#plex_server_host').val());
                 plex.server.username = $.trim($('#plex_server_username').val());
@@ -571,7 +572,7 @@ var SICKRAGE = {
             });
 
             $('#testEMBY').on('click', function() {
-                var emby = {};
+                const emby = {};
                 emby.host = $('#emby_host').val();
                 emby.apikey = $('#emby_apikey').val();
                 if (!emby.host || !emby.apikey) {
@@ -601,7 +602,7 @@ var SICKRAGE = {
             });
 
             $('#testBoxcar2').on('click', function() {
-                var boxcar2 = {};
+                const boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
                 if (!boxcar2.accesstoken) {
                     $('#testBoxcar2-result').html(_('Please fill out the necessary fields above.'));
@@ -620,7 +621,7 @@ var SICKRAGE = {
             });
 
             $('#testPushover').on('click', function() {
-                var pushover = {};
+                const pushover = {};
                 pushover.userkey = $('#pushover_userkey').val();
                 pushover.apikey = $('#pushover_apikey').val();
                 if (!pushover.userkey || !pushover.apikey) {
@@ -666,7 +667,7 @@ var SICKRAGE = {
             });
 
             $('#twitterStep2').on('click', function() {
-                var twitter = {};
+                const twitter = {};
                 twitter.key = $.trim($('#twitter_key').val());
                 if (!twitter.key) {
                     $('#testTwitter-result').html(_('Please fill out the necessary fields above.'));
@@ -710,7 +711,7 @@ var SICKRAGE = {
             });
 
             $('#settingsNMJ').on('click', function() {
-                var nmj = {};
+                const nmj = {};
                 if (!$('#nmj_host').val()) {
                     $('#nmj_host').focus();
                     notifyModal('Please fill in the Popcorn IP address');
@@ -724,7 +725,7 @@ var SICKRAGE = {
                         $('#nmj_database').removeAttr('readonly');
                         $('#nmj_mount').removeAttr('readonly');
                     }
-                    var JSONData = $.parseJSON(data);
+                    const JSONData = $.parseJSON(data);
                     $('#testNMJ-result').html(JSONData.message);
                     $('#nmj_database').val(JSONData.database);
                     $('#nmj_mount').val(JSONData.mount);
@@ -743,7 +744,7 @@ var SICKRAGE = {
             });
 
             $('#testNMJ').on('click', function() {
-                var nmj = {};
+                const nmj = {};
                 nmj.host = $.trim($('#nmj_host').val());
                 nmj.database = $('#nmj_database').val();
                 nmj.mount = $('#nmj_mount').val();
@@ -766,7 +767,7 @@ var SICKRAGE = {
             });
 
             $('#settingsNMJv2').on('click', function() {
-                var nmjv2 = {};
+                const nmjv2 = {};
                 if (!$('#nmjv2_host').val()) {
                     $('#nmjv2_host').focus();
                     notifyModal('Please fill in the Popcorn IP address', 'modal');
@@ -775,8 +776,8 @@ var SICKRAGE = {
                 $('#testNMJv2-result').html(loading);
                 nmjv2.host = $('#nmjv2_host').val();
                 nmjv2.dbloc = '';
-                var radios = document.getElementsByName('nmjv2_dbloc');
-                for (var i = 0, len = radios.length; i < len; i++) {
+                const radios = document.getElementsByName('nmjv2_dbloc');
+                for (let i = 0; i < radios.length; i++) {
                     if (radios[i].checked) {
                         nmjv2.dbloc = radios[i].value;
                         break;
@@ -792,7 +793,7 @@ var SICKRAGE = {
                     if (data === null) {
                         $('#nmjv2_database').removeAttr('readonly');
                     }
-                    var JSONData = $.parseJSON(data);
+                    const JSONData = $.parseJSON(data);
                     $('#testNMJv2-result').html(JSONData.message);
                     $('#nmjv2_database').val(JSONData.database);
 
@@ -805,7 +806,7 @@ var SICKRAGE = {
             });
 
             $('#testNMJv2').on('click', function() {
-                var nmjv2 = {};
+                const nmjv2 = {};
                 nmjv2.host = $.trim($('#nmjv2_host').val());
                 if (!nmjv2.host) {
                     $('#testNMJv2-result').html(_('Please fill out the necessary fields above.'));
@@ -824,7 +825,7 @@ var SICKRAGE = {
             });
 
             $('#testFreeMobile').on('click', function() {
-                var freemobile = {};
+                const freemobile = {};
                 freemobile.id = $.trim($('#freemobile_id').val());
                 freemobile.apikey = $.trim($('#freemobile_apikey').val());
                 if (!freemobile.id || !freemobile.apikey) {
@@ -854,7 +855,7 @@ var SICKRAGE = {
             });
 
             $('#testTelegram').on('click', function() {
-                var telegram = {};
+                const telegram = {};
                 telegram.id = $.trim($('#telegram_id').val());
                 telegram.apikey = $.trim($('#telegram_apikey').val());
                 if (!telegram.id || !telegram.apikey) {
@@ -884,7 +885,7 @@ var SICKRAGE = {
             });
 
             $('#testJoin').on('click', function() {
-                var join = {};
+                const join = {};
                 join.id = $.trim($('#join_id').val());
                 join.apikey = $.trim($('#join_apikey').val());
                 if (!join.id || !join.apikey) {
@@ -929,7 +930,7 @@ var SICKRAGE = {
             });
 
             $('#authTrakt').on('click', function() {
-                var trakt = {};
+                const trakt = {};
                 trakt.pin = $('#trakt_pin').val();
                 if (trakt.pin.length !== 0) {
                     $.post(srRoot + '/home/getTraktToken', {
@@ -944,7 +945,7 @@ var SICKRAGE = {
             });
 
             $('#testTrakt').on('click', function() {
-                var trakt = {};
+                const trakt = {};
                 trakt.username = $.trim($('#trakt_username').val());
                 trakt.trendingBlacklist = $.trim($('#trakt_blacklist_name').val());
                 if (!trakt.username) {
@@ -1018,7 +1019,7 @@ var SICKRAGE = {
             });
 
             $('#testNMA').on('click', function() {
-                var nma = {};
+                const nma = {};
                 nma.api = $.trim($('#nma_api').val());
                 nma.priority = $('#nma_priority').val();
                 if (!nma.api) {
@@ -1039,7 +1040,7 @@ var SICKRAGE = {
             });
 
             $('#testPushalot').on('click', function() {
-                var pushalot = {};
+                const pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
                 if (!pushalot.authToken) {
                     $('#testPushalot-result').html(_('Please fill out the necessary fields above.'));
@@ -1058,7 +1059,7 @@ var SICKRAGE = {
             });
 
             $('#testPushbullet').on('click', function() {
-                var pushbullet = {};
+                const pushbullet = {};
                 pushbullet.api = $.trim($('#pushbullet_api').val());
                 if (!pushbullet.api) {
                     $('#testPushbullet-result').html(_('Please fill out the necessary fields above.'));
@@ -1077,7 +1078,7 @@ var SICKRAGE = {
             });
 
             function getPushbulletDevices(msg) {
-                var pushbullet = {};
+                const pushbullet = {};
                 pushbullet.api = $('#pushbullet_api').val();
 
                 if (msg) {
@@ -1096,7 +1097,7 @@ var SICKRAGE = {
                     pushbullet.devices = $.parseJSON(data).devices;
                     pushbullet.currentDevice = $('#pushbullet_device').val();
                     $('#pushbullet_device_list').html('');
-                    for (var i = 0, len = pushbullet.devices.length; i < len; i++) {
+                    for (let i = 0; i < pushbullet.devices.length; i++) {
                         if (pushbullet.devices[i].active === true) {
                             if (pushbullet.currentDevice === pushbullet.devices[i].iden) {
                                 $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected>' + pushbullet.devices[i].nickname + '</option>');
@@ -1123,7 +1124,7 @@ var SICKRAGE = {
                     pushbullet.currentChannel = $('#pushbullet_channel').val();
                     $('#pushbullet_channel_list').html('');
                     if (pushbullet.channels.length > 0) {
-                        for (var i = 0, len = pushbullet.channels.length; i < len; i++) {
+                        for (let i = 0; i < pushbullet.channels.length; i++) {
                             if (pushbullet.channels[i].active === true) {
                                 $('#pushbullet_channel_list').append('<option value="' + pushbullet.channels[i].tag + '" selected>' + pushbullet.channels[i].name + '</option>');
                             } else {
@@ -1155,7 +1156,7 @@ var SICKRAGE = {
             getPushbulletDevices();
 
             $('#email_show').on('change', function() {
-                var key = parseInt($('#email_show').val(), 10);
+                const key = parseInt($('#email_show').val(), 10);
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(notifyData) {
                     if (notifyData._size > 0) {
                         $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
@@ -1163,7 +1164,7 @@ var SICKRAGE = {
                 });
             });
             $('#prowl_show').on('change', function() {
-                var key = parseInt($('#prowl_show').val(), 10);
+                const key = parseInt($('#prowl_show').val(), 10);
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(notifyData) {
                     if (notifyData._size > 0) {
                         $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list : '');
@@ -1180,13 +1181,13 @@ var SICKRAGE = {
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
-                    var _list = [];
+                    const _list = [];
                     for (s in list) {
                         if (s.charAt(0) !== '_') {
                             _list.push(list[s]);
                         }
                     }
-                    var sortedList = _list.sort(function(a, b) {
+                    const sortedList = _list.sort(function(a, b) {
                         if (a.name < b.name) {
                             return -1;
                         }
@@ -1253,8 +1254,8 @@ var SICKRAGE = {
             $('#unpack_dir').fileBrowser({title: _('Select Unpack Directory')});
 
             // http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
-            var typewatch = (function() {
-                var timer = 0;
+            const typewatch = (function() {
+                let timer = 0;
                 return function(callback, ms) {
                     clearTimeout(timer);
                     timer = setTimeout(callback, ms);
@@ -1275,7 +1276,7 @@ var SICKRAGE = {
             }
 
             function fillExamples() {
-                var example = {};
+                const example = {};
 
                 example.pattern = $('#naming_pattern').val();
                 example.multi = $('#naming_multi_ep :selected').val();
@@ -1311,7 +1312,7 @@ var SICKRAGE = {
                     multi: example.multi,
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, function(data) {
-                    var info;
+                    let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_pattern').qtip('option', {
@@ -1342,7 +1343,7 @@ var SICKRAGE = {
             }
 
             function fillAbdExamples() {
-                var pattern = $('#naming_abd_pattern').val();
+                const pattern = $('#naming_abd_pattern').val();
 
                 $.post(srRoot + '/config/postProcessing/testNaming', {
                     pattern: pattern,
@@ -1360,7 +1361,7 @@ var SICKRAGE = {
                     pattern: pattern,
                     abd: 'True'
                 }, function(data) {
-                    var info;
+                    let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_abd_pattern').qtip('option', {
@@ -1391,7 +1392,7 @@ var SICKRAGE = {
             }
 
             function fillSportsExamples() {
-                var pattern = $('#naming_sports_pattern').val();
+                const pattern = $('#naming_sports_pattern').val();
 
                 $.post(srRoot + '/config/postProcessing/testNaming', {
                     pattern: pattern,
@@ -1409,7 +1410,7 @@ var SICKRAGE = {
                     pattern: pattern,
                     sports: 'True' // @TODO does this actually need to be a string or can it be a boolean?
                 }, function(data) {
-                    var info;
+                    let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_sports_pattern').qtip('option', {
@@ -1440,7 +1441,7 @@ var SICKRAGE = {
             }
 
             function fillAnimeExamples() {
-                var example = {};
+                const example = {};
                 example.pattern = $('#naming_anime_pattern').val();
                 example.multi = $('#naming_anime_multi_ep :selected').val();
                 example.animeType = $('input[name="naming_anime"]:checked').val();
@@ -1475,7 +1476,7 @@ var SICKRAGE = {
                     multi: example.multi,
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, function(data) {
-                    var info;
+                    let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_pattern').qtip('option', {
@@ -1558,12 +1559,12 @@ var SICKRAGE = {
             $('#unpack').on('change', function() {
                 const value = parseInt(this.value, 10);
 
-                // Treat as video
-                if (value === 2) {
+                // 'Treat as video' or 'Ignore'
+                if (value === 2 || value === 0) {
                     $('#content_unpack').fadeOut('fast', 'linear');
                     $('#unpack').qtip('toggle', false);
                 }
-                // Unpack
+                // 'Unpack'
                 if (value === 1) {
                     $('#content_unpack').fadeIn('fast', 'linear');
                     isRarSupported();
@@ -1643,8 +1644,8 @@ var SICKRAGE = {
 
             $.fn.showHideMetadata = function() {
                 $('.metadataDiv').each(function() {
-                    var targetName = $(this).attr('id');
-                    var selectedTarget = $('#metadataType :selected').val();
+                    const targetName = $(this).attr('id');
+                    const selectedTarget = $('#metadataType :selected').val();
 
                     if (selectedTarget === targetName) {
                         $(this).show();
@@ -1662,23 +1663,23 @@ var SICKRAGE = {
             });
 
             $.fn.refreshMetadataConfig = function(first) {
-                var curMost = 0;
-                var curMostProvider = '';
+                let curMost = 0;
+                let curMostProvider = '';
 
                 $('.metadataDiv').each(function() {  // eslint-disable-line complexity
-                    var generatorName = $(this).attr('id');
+                    const generatorName = $(this).attr('id');
 
-                    var configArray = [];
-                    var showMetadata = $('#' + generatorName + '_show_metadata').prop('checked');
-                    var episodeMetadata = $('#' + generatorName + '_episode_metadata').prop('checked');
-                    var fanart = $('#' + generatorName + '_fanart').prop('checked');
-                    var poster = $('#' + generatorName + '_poster').prop('checked');
-                    var banner = $('#' + generatorName + '_banner').prop('checked');
-                    var episodeThumbnails = $('#' + generatorName + '_episode_thumbnails').prop('checked');
-                    var seasonPosters = $('#' + generatorName + '_season_posters').prop('checked');
-                    var seasonBanners = $('#' + generatorName + '_season_banners').prop('checked');
-                    var seasonAllPoster = $('#' + generatorName + '_season_all_poster').prop('checked');
-                    var seasonAllBanner = $('#' + generatorName + '_season_all_banner').prop('checked');
+                    const configArray = [];
+                    const showMetadata = $('#' + generatorName + '_show_metadata').prop('checked');
+                    const episodeMetadata = $('#' + generatorName + '_episode_metadata').prop('checked');
+                    const fanart = $('#' + generatorName + '_fanart').prop('checked');
+                    const poster = $('#' + generatorName + '_poster').prop('checked');
+                    const banner = $('#' + generatorName + '_banner').prop('checked');
+                    const episodeThumbnails = $('#' + generatorName + '_episode_thumbnails').prop('checked');
+                    const seasonPosters = $('#' + generatorName + '_season_posters').prop('checked');
+                    const seasonBanners = $('#' + generatorName + '_season_banners').prop('checked');
+                    const seasonAllPoster = $('#' + generatorName + '_season_all_poster').prop('checked');
+                    const seasonAllBanner = $('#' + generatorName + '_season_all_banner').prop('checked');
 
                     configArray.push(showMetadata ? '1' : '0');
                     configArray.push(episodeMetadata ? '1' : '0');
@@ -1691,8 +1692,8 @@ var SICKRAGE = {
                     configArray.push(seasonAllPoster ? '1' : '0');
                     configArray.push(seasonAllBanner ? '1' : '0');
 
-                    var curNumber = 0;
-                    for (var i = 0, len = configArray.length; i < len; i++) {
+                    let curNumber = 0;
+                    for (let i = 0; i < configArray.length; i++) {
                         curNumber += parseInt(configArray[i], 10);
                     }
                     if (curNumber > curMost) {
@@ -1946,8 +1947,8 @@ var SICKRAGE = {
 
             $('#torrent_host').on('input', function() {
                 if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent') {
-                    var hostname = $('#torrent_host').val();
-                    var isMatch = hostname.substr(0, 7) === 'scgi://';
+                    const hostname = $('#torrent_host').val();
+                    const isMatch = hostname.substr(0, 7) === 'scgi://';
 
                     if (isMatch) {
                         $('#torrent_username_option').hide();
@@ -1969,7 +1970,7 @@ var SICKRAGE = {
             $(this).nzbMethodHandler();
 
             $('#testSABnzbd').on('click', function() {
-                var sab = {};
+                const sab = {};
                 $('#testSABnzbd_result').html(loading);
                 sab.host = $('#sab_host').val();
                 sab.username = $('#sab_username').val();
@@ -1987,7 +1988,7 @@ var SICKRAGE = {
             });
 
             $('#testDSM').on('click', function() {
-                var dsm = {};
+                const dsm = {};
                 $('#testDSM_result').html(loading);
                 dsm.host = $('#syno_dsm_host').val();
                 dsm.username = $('#syno_dsm_user').val();
@@ -2007,7 +2008,7 @@ var SICKRAGE = {
             $.torrentMethodHandler();
 
             $('#test_torrent').on('click', function() {
-                var torrent = {};
+                const torrent = {};
                 $('#test_torrent_result').html(loading);
                 torrent.method = $('#torrent_method :selected').val();
                 torrent.host = $('#torrent_host').val();
@@ -2027,8 +2028,8 @@ var SICKRAGE = {
         subtitles: function() {
             $.fn.showHideServices = function() {
                 $('.serviceDiv').each(function() {
-                    var serviceName = $(this).attr('id');
-                    var selectedService = $('#editAService :selected').val();
+                    const serviceName = $(this).attr('id');
+                    const selectedService = $('#editAService :selected').val();
 
                     if (selectedService + 'Div' === serviceName) {
                         $(this).show();
@@ -2044,7 +2045,12 @@ var SICKRAGE = {
                 }
 
                 if ($('#service_order_list > #' + id).length === 0 && showService !== false) {
-                    var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
+                    let toAdd = '';
+                    toAdd += '<li class="ui-state-default" id="' + id + '"> ';
+                    toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> ';
+                    toAdd += '<a href="' + anonURL + url + '" class="imgLink" target="_new">';
+                    toAdd += '<img src="' + srRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
+                    toAdd += name + '</li>';
 
                     $('#service_order_list').append(toAdd);
                     $('#service_order_list').sortable('refresh');
@@ -2056,10 +2062,10 @@ var SICKRAGE = {
             };
 
             $.fn.refreshServiceList = function() {
-                var idArr = $('#service_order_list').sortable('toArray');
-                var finalArr = [];
+                const idArr = $('#service_order_list').sortable('toArray');
+                const finalArr = [];
                 $.each(idArr, function(key, val) {
-                    var checked = $('#enable_' + val).is(':checked') ? '1' : '0';
+                    const checked = $('#enable_' + val).is(':checked') ? '1' : '0';
                     finalArr.push(val + ':' + checked);
                 });
                 $('#service_order').val(finalArr.join(' '));
@@ -2112,7 +2118,7 @@ var SICKRAGE = {
             $('#filterShowName').on('input', __.debounce(function() {
                 $('.show-grid').isotope({
                     filter: function() {
-                        var name = $(this).find('.show-title').html().trim().toLowerCase();
+                        const name = $(this).find('.show-title').html().trim().toLowerCase();
                         return name.indexOf($('#filterShowName').val().toLowerCase()) > -1;
                     }
                 });
@@ -2157,7 +2163,7 @@ var SICKRAGE = {
                 });
             }
 
-            var posterSize;
+            let posterSize;
             if (typeof (Storage) !== 'undefined') {
                 posterSize = parseInt(localStorage.getItem('posterSize'), 10);
             }
@@ -2185,8 +2191,8 @@ var SICKRAGE = {
 
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function() {
-                var percentage = $(this).data('progress-percentage');
-                var classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+                const percentage = $(this).data('progress-percentage');
+                const classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
                 $(this).progressbar({value: percentage});
                 if ($(this).data('progress-text')) {
                     $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
@@ -2313,16 +2319,16 @@ var SICKRAGE = {
                     },
                     getSortData: {
                         name: function(itemElem) {
-                            var name = $(itemElem).attr('data-name') || '';
+                            const name = $(itemElem).attr('data-name') || '';
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
                         },
                         network: '[data-network]',
                         date: function(itemElem) {
-                            var date = $(itemElem).attr('data-date');
+                            const date = $(itemElem).attr('data-date');
                             return (date.length && parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress: function(itemElem) {
-                            var progress = $(itemElem).attr('data-progress');
+                            const progress = $(itemElem).attr('data-progress');
                             return (progress.length && parseInt(progress, 10)) || Number.NEGATIVE_INFINITY;
                         }
                     }
@@ -2330,20 +2336,20 @@ var SICKRAGE = {
 
                 // When posters are small enough to not display the .show-details
                 // table, display a larger poster when hovering.
-                var posterHoverTimer = null;
+                let posterHoverTimer = null;
                 $('.show-container').on('mouseenter', function() {
-                    var poster = $(this);
+                    const poster = $(this);
                     if (poster.find('.show-details').css('display') !== 'none') {
                         return;
                     }
                     posterHoverTimer = setTimeout(function() {
                         posterHoverTimer = null;
                         $('#posterPopup').remove();
-                        var popup = poster.clone().attr({
+                        const popup = poster.clone().attr({
                             id: 'posterPopup'
                         });
-                        var origLeft = poster.offset().left;
-                        var origTop = poster.offset().top;
+                        const origLeft = poster.offset().left;
+                        const origTop = poster.offset().top;
                         popup.css({
                             position: 'absolute',
                             margin: 0,
@@ -2360,15 +2366,15 @@ var SICKRAGE = {
 
                         const height = 438;
                         const width = 250;
-                        var newTop = ((origTop + poster.height()) / 2) - (height / 2);
-                        var newLeft = ((origLeft + poster.width()) / 2) - (width / 2);
+                        let newTop = ((origTop + poster.height()) / 2) - (height / 2);
+                        let newLeft = ((origLeft + poster.width()) / 2) - (width / 2);
 
                         // Make sure the popup isn't outside the viewport
-                        var margin = 5;
-                        var scrollTop = $(window).scrollTop();
-                        var scrollLeft = $(window).scrollLeft();
-                        var scrollBottom = scrollTop + $(window).innerHeight();
-                        var scrollRight = scrollLeft + $(window).innerWidth();
+                        const margin = 5;
+                        const scrollTop = $(window).scrollTop();
+                        const scrollLeft = $(window).scrollLeft();
+                        const scrollBottom = scrollTop + $(window).innerHeight();
+                        const scrollRight = scrollLeft + $(window).innerWidth();
                         if (newTop < scrollTop + margin) {
                             newTop = scrollTop + margin;
                         }
@@ -2455,17 +2461,17 @@ var SICKRAGE = {
                 }
                 disableLink($(this));
 
-                var parent = $(this).parent();
-                var subtitlesTd = parent.siblings('.col-subtitles');
+                const parent = $(this).parent();
+                const subtitlesTd = parent.siblings('.col-subtitles');
 
-                var icon = $(this).children('span');
+                const icon = $(this).children('span');
                 icon.prop('class', 'loading-spinner16');
                 icon.prop('title', 'Searching');
 
                 $.getJSON($(this).attr('href'), function(data) {
                     if (data.result.toLowerCase() !== 'failure' && data.result.toLowerCase() !== 'no subtitles downloaded') {
                         // Clear and update the subtitles column with new information
-                        var subtitles = data.subtitles.split(',');
+                        const subtitles = data.subtitles.split(',');
                         subtitlesTd.empty();
                         $.each(subtitles, function(index, language) {
                             if (language !== '') {
@@ -2487,18 +2493,18 @@ var SICKRAGE = {
                     return false;
                 }
 
-                var selectedEpisode = $(this);
-                var subtitleModal = $('#confirmSubtitleDownloadModal');
+                const selectedEpisode = $(this);
+                const subtitleModal = $('#confirmSubtitleDownloadModal');
 
                 $('#confirmSubtitleDownloadModal .btn.btn-success').on('click', function() {
                     disableLink(selectedEpisode);
                     subtitleModal.modal('hide');
 
-                    var img = selectedEpisode.children('img');
+                    const img = selectedEpisode.children('img');
                     img.hide();
 
                     selectedEpisode.append($('<span/>').attr({class: 'loading-spinner16', title: 'Searching'}));
-                    var icon = selectedEpisode.children('span');
+                    const icon = selectedEpisode.children('span');
 
                     $.getJSON(selectedEpisode.prop('href'), function(data) {
                         if (data.result.toLowerCase() === 'failure') {
@@ -2519,9 +2525,9 @@ var SICKRAGE = {
             });
 
             $('#seasonJump').on('change', function() {
-                var id = $('#seasonJump option:selected').val();
+                const id = $('#seasonJump option:selected').val();
                 if (id && id !== 'jump') {
-                    var season = $('#seasonJump option:selected').data('season');
+                    const season = $('#seasonJump option:selected').data('season');
                     $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
                     $('#collapseSeason-' + season).collapse('show');
                     location.hash = id;
@@ -2540,8 +2546,7 @@ var SICKRAGE = {
             });
 
             $('#changeStatus').on('click', function() {
-                var srRoot = $('#srRoot').val();
-                var epArr = [];
+                const epArr = [];
 
                 $('.epCheck').each(function() {
                     if (this.checked === true) {
@@ -2553,31 +2558,31 @@ var SICKRAGE = {
                     return false;
                 }
 
-                var url = srRoot + '/home/setStatus';
-                var params = 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
+                const url = srRoot + '/home/setStatus';
+                const params = 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
                 $.post(url, params, function() {
                     location.reload(true);
                 });
             });
 
             $('.seasonCheck').on('click', function() {
-                var seasCheck = this;
-                var seasNo = $(seasCheck).attr('id');
+                const seasCheck = this;
+                const seasNo = $(seasCheck).attr('id');
                 $('#collapseSeason-' + seasNo).collapse('show');
                 $('.epCheck:visible[id^="' + seasNo + 'x"]').each(function() {
                     this.checked = seasCheck.checked;
                 });
             });
 
-            var lastCheck = null;
+            let lastCheck = null;
             $('.epCheck').on('click', function(event) {
                 if (!lastCheck || !event.shiftKey) {
                     lastCheck = this;
                     return;
                 }
 
-                var check = this;
-                var found = 0;
+                const check = this;
+                let found = 0;
 
                 $('.epCheck').each(function() {
                     if (found === 2) {
@@ -2616,8 +2621,7 @@ var SICKRAGE = {
 
             // Handle the show selection dropbox
             $('#pickShow').on('change', function() {
-                var srRoot = $('#srRoot').val();
-                var val = $(this).val();
+                const val = $(this).val();
                 if (val === 0) {
                     return;
                 }
@@ -2626,13 +2630,13 @@ var SICKRAGE = {
 
             // Show/hide different types of rows when the checkboxes are changed
             $('#checkboxControls input').on('change', function() {
-                var whichClass = $(this).attr('id');
+                const whichClass = $(this).attr('id');
                 $(this).showHideRows(whichClass);
             });
 
             // Initially show/hide all the rows according to the checkboxes
             $('#checkboxControls input').each(function() {
-                var status = $(this).prop('checked');
+                const status = $(this).prop('checked');
                 $('tr.' + $(this).attr('id')).each(function() {
                     if (status) {
                         $(this).show();
@@ -2643,7 +2647,7 @@ var SICKRAGE = {
             });
 
             $.fn.showHideRows = function(whichClass) {
-                var status = $('#checkboxControls > input, #' + whichClass).prop('checked');
+                const status = $('#checkboxControls > input, #' + whichClass).prop('checked');
                 $('tr.' + whichClass).each(function() {
                     if (status) {
                         $(this).show();
@@ -2654,8 +2658,8 @@ var SICKRAGE = {
 
                 // Hide season headers with no episodes under them
                 $('tr.seasonheader').each(function() {
-                    var numRows = 0;
-                    var seasonNo = $(this).attr('id');
+                    let numRows = 0;
+                    const seasonNo = $(this).attr('id');
                     $('tr.' + seasonNo + ' :visible').each(function() {
                         numRows++;
                     });
@@ -2670,9 +2674,8 @@ var SICKRAGE = {
             };
 
             function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
-                var srRoot = $('#srRoot').val();
-                var showId = $('#showID').val();
-                var indexer = $('#indexer').val();
+                const showId = $('#showID').val();
+                const indexer = $('#indexer').val();
 
                 if (sceneSeason === '') {
                     sceneSeason = null;
@@ -2706,9 +2709,8 @@ var SICKRAGE = {
             }
 
             function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
-                var srRoot = $('#srRoot').val();
-                var showId = $('#showID').val();
-                var indexer = $('#indexer').val();
+                const showId = $('#showID').val();
+                const indexer = $('#indexer').val();
 
                 if (sceneAbsolute === '') {
                     sceneAbsolute = null;
@@ -2832,7 +2834,7 @@ var SICKRAGE = {
             });
         },
         editShow: function() {
-            var allExceptions = [];
+            let allExceptions = [];
 
             $('#location').fileBrowser({title: _('Select Show Location')});
 
@@ -2844,7 +2846,7 @@ var SICKRAGE = {
             }); */
 
             $('#submit').click(function() {
-                var allExceptions = [];
+                allExceptions = [];
 
                 $('#exceptions_list option').each(function() {
                     allExceptions.push($(this).val());
@@ -2858,8 +2860,8 @@ var SICKRAGE = {
             });
 
             $('#addSceneName').click(function() {
-                var sceneEx = $('#SceneName').val();
-                var option = $('<option>');
+                const sceneEx = $('#SceneName').val();
+                const option = $('<option>');
                 allExceptions = [];
 
                 $('#exceptions_list option').each(function() {
@@ -2926,8 +2928,8 @@ var SICKRAGE = {
             });
         },
         restart: function() {
-            var currentPid = srPID;
-            var checkIsAlive = setTimeout(function() {
+            let currentPid = srPID;
+            let checkIsAlive = setTimeout(function() {
                 setInterval(function() {
                     $.post(srRoot + '/home/is-alive/', function(data) {
                         if (data === undefined || data.msg !== currentPid) {
@@ -2963,7 +2965,7 @@ var SICKRAGE = {
     manage: {
         init: function() {
             $.makeEpisodeRow = function(indexerId, season, episode, name, checked) { // eslint-disable-line max-params
-                var row = '';
+                let row = '';
                 row += ' <tr class="' + $('#row_class').val() + ' show-' + indexerId + '">';
                 row += '  <td class="tableleft" align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
                 row += '  <td>' + season + 'x' + episode + '</td>';
@@ -2974,14 +2976,14 @@ var SICKRAGE = {
             };
 
             $.makeSubtitleRow = function(indexerId, season, episode, name, subtitles, checked) { // eslint-disable-line max-params
-                var row = '';
+                let row = '';
                 row += '<tr class="good show-' + indexerId + '">';
                 row += '<td align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
                 row += '<td style="width: 2%;">' + season + 'x' + episode + '</td>';
                 if (subtitles.length > 0) {
                     row += '<td style="width: 8%;">';
                     subtitles = subtitles.split(',');
-                    for (var i in subtitles) {
+                    for (let i in subtitles) {
                         if ({}.hasOwnProperty.call(subtitles, i)) {
                             row += '<img src="' + srRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
                         }
@@ -3004,36 +3006,36 @@ var SICKRAGE = {
             $('#massUpdateTable:has(tbody tr)').tablesorter({
                 sortList: [[1, 0]],
                 textExtraction: {
-                    2: function(node) {
+                    2: function(node) { // Network
                         return ($(node).find('img').attr('alt') || 'unknown').toLowerCase();
-                    },  // Network
-                    3: function(node) {
+                    },
+                    3: function(node) { // Quality
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Quality
-                    4: function(node) {
+                    },
+                    4: function(node) { // Sports
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Sports
-                    5: function(node) {
+                    },
+                    5: function(node) { // Scene
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Scene
-                    6: function(node) {
+                    },
+                    6: function(node) { // Anime
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Anime
-                    7: function(node) {
+                    },
+                    7: function(node) { // Season Folders
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Season Folders
-                    8: function(node) {
+                    },
+                    8: function(node) { // Paused
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Paused
-                    9: function(node) {
+                    },
+                    9: function(node) { // Subtitle
                         return $(node).find('span').attr('title').toLowerCase();
-                    },  // Subtitle
-                    10: function(node) {
+                    },
+                    10: function(node) { // Default Episode Status
                         return $(node).text().toLowerCase();
-                    },  // Default Episode Status
-                    11: function(node) {
+                    },
+                    11: function(node) { // Show Status
                         return $(node).text().toLowerCase();
-                    }  // Show Status
+                    }
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
@@ -3070,7 +3072,7 @@ var SICKRAGE = {
             });
 
             $('.submitMassEdit').on('click', function() {
-                var editArr = [];
+                const editArr = [];
 
                 $('.editCheck').each(function() {
                     if (this.checked === true) {
@@ -3082,7 +3084,7 @@ var SICKRAGE = {
                     return;
                 }
 
-                var submitForm = $(
+                const submitForm = $(
                     '<form method=\'post\' action=\'' + srRoot + '/manage/massEdit\'>' +
                         '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArr.join('|') + '\'/>' +
                     '</form>'
@@ -3093,13 +3095,13 @@ var SICKRAGE = {
             });
 
             $('.submitMassUpdate').on('click', function() {
-                var updateArr = [];
-                var refreshArr = [];
-                var renameArr = [];
-                var subtitleArr = [];
-                var deleteArr = [];
-                var removeArr = [];
-                var metadataArr = [];
+                const updateArr = [];
+                const refreshArr = [];
+                const renameArr = [];
+                const subtitleArr = [];
+                const deleteArr = [];
+                const removeArr = [];
+                const metadataArr = [];
 
                 $('.updateCheck').each(function() {
                     if (this.checked === true) {
@@ -3131,7 +3133,7 @@ var SICKRAGE = {
                     }
                 });
 
-                var deleteCount = 0;
+                let deleteCount = 0;
 
                 $('.deleteCheck').each(function() {
                     if (this.checked === true) {
@@ -3156,8 +3158,8 @@ var SICKRAGE = {
                             if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                                 return false;
                             }
-                            var url = srRoot + '/manage/massUpdate';
-                            var params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
+                            const url = srRoot + '/manage/massUpdate';
+                            const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
                             $.post(url, params, function() {
                                 location.reload(true);
                             });
@@ -3167,15 +3169,15 @@ var SICKRAGE = {
                 if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                     return false;
                 }
-                var url = srRoot + '/manage/massUpdate';
-                var params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
+                const url = srRoot + '/manage/massUpdate';
+                const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
                 $.post(url, params, function() {
                     location.reload(true);
                 });
             });
 
             ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
-                var lastCheck = null;
+                let lastCheck = null;
 
                 $(name).on('click', function(event) {
                     if (!lastCheck || !event.shiftKey) {
@@ -3183,8 +3185,8 @@ var SICKRAGE = {
                         return;
                     }
 
-                    var check = this;
-                    var found = 0;
+                    const check = this;
+                    let found = 0;
 
                     $(name).each(function() {
                         if (found === 2) {
@@ -3202,7 +3204,7 @@ var SICKRAGE = {
         },
         backlogOverview: function() {
             $('#pickShow').on('change', function() {
-                var id = $(this).val();
+                const id = $(this).val();
                 if (id) {
                     $('html,body').animate({scrollTop: $('#show-' + id).offset().top - 25}, 'slow');
                 }
@@ -3219,7 +3221,7 @@ var SICKRAGE = {
             });
 
             $('#submitMassRemove').on('click', function() {
-                var removeArr = [];
+                const removeArr = [];
 
                 $('.removeCheck').each(function() {
                     if (this.checked === true) {
@@ -3238,15 +3240,15 @@ var SICKRAGE = {
 
             if ($('.removeCheck').length) {
                 $('.removeCheck').each(function(name) {
-                    var lastCheck = null;
+                    let lastCheck = null;
                     $(name).click(function(event) {
                         if (!lastCheck || !event.shiftKey) {
                             lastCheck = this;
                             return;
                         }
 
-                        var check = this;
-                        var found = 0;
+                        const check = this;
+                        let found = 0;
 
                         $(name + ':visible').each(function() {
                             if (found === 2) {
@@ -3265,7 +3267,7 @@ var SICKRAGE = {
         },
         massEdit: function() {
             function findDirIndex(which) {
-                var dirParts = which.split('_');
+                const dirParts = which.split('_');
                 return dirParts[dirParts.length - 1];
             }
 
@@ -3275,18 +3277,18 @@ var SICKRAGE = {
             }
 
             $('.new_root_dir').change(function() {
-                var curIndex = findDirIndex($(this).attr('id'));
+                const curIndex = findDirIndex($(this).attr('id'));
                 $('#display_new_root_dir_' + curIndex).html('<b>' + $(this).val() + '</b>');
             });
 
             $('.edit_root_dir').click(function() {
-                var curIndex = findDirIndex($(this).attr('id'));
-                var initialDir = $('#new_root_dir_' + curIndex).val();
+                const curIndex = findDirIndex($(this).attr('id'));
+                const initialDir = $('#new_root_dir_' + curIndex).val();
                 $(this).nFileBrowser(editRootDir, {initialDir: initialDir, whichId: curIndex});
             });
 
             $('.delete_root_dir').click(function() {
-                var curIndex = findDirIndex($(this).attr('id'));
+                const curIndex = findDirIndex($(this).attr('id'));
                 $('#new_root_dir_' + curIndex).val(null);
                 $('#display_new_root_dir_' + curIndex).html('<b>' + _('DELETED') + '</b>');
             });
@@ -3295,16 +3297,16 @@ var SICKRAGE = {
         },
         episodeStatuses: function() {
             $('.allCheck').on('click', function() {
-                var indexerId = $(this).attr('id').split('-')[1];
+                const indexerId = $(this).attr('id').split('-')[1];
                 $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
             });
 
             $('.get_more_eps').on('click', function() {
-                var curIndexerId = $(this).attr('id');
-                var checked = $('#allCheck-' + curIndexerId).prop('checked');
-                var lastRow = $('tr#' + curIndexerId);
-                var clicked = $(this).attr('data-clicked');
-                var action = $(this).attr('value');
+                const curIndexerId = $(this).attr('id');
+                const checked = $('#allCheck-' + curIndexerId).prop('checked');
+                const lastRow = $('tr#' + curIndexerId);
+                const clicked = $(this).attr('data-clicked');
+                const action = $(this).attr('value');
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showEpisodeStatuses', {
@@ -3350,16 +3352,16 @@ var SICKRAGE = {
         },
         subtitleMissed: function() {
             $('.allCheck').on('click', function() {
-                var indexerId = $(this).attr('id').split('-')[1];
+                const indexerId = $(this).attr('id').split('-')[1];
                 $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
             });
 
             $('.get_more_eps').on('click', function() {
-                var indexerId = $(this).attr('id');
-                var checked = $('#allCheck-' + indexerId).prop('checked');
-                var lastRow = $('tr#' + indexerId);
-                var clicked = $(this).attr('data-clicked');
-                var action = $(this).attr('value');
+                const indexerId = $(this).attr('id');
+                const checked = $('#allCheck-' + indexerId).prop('checked');
+                const lastRow = $('tr#' + indexerId);
+                const clicked = $(this).attr('data-clicked');
+                const action = $(this).attr('value');
 
                 if (!clicked) {
                     $.getJSON(srRoot + '/manage/showSubtitleMissed', {
@@ -3417,34 +3419,34 @@ var SICKRAGE = {
                 textExtraction: (function() {
                     if (isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])) {
                         return {
-                            0: function(node) {
+                            0: function(node) { // Time
                                 return $(node).find('time').attr('datetime');
-                            }, // Time
-                            4: function(node) {
+                            },
+                            4: function(node) { // Quality
                                 return $(node).find('span').text().toLowerCase();
-                            } // Quality
+                            }
                         };
                     }
-                    var compactExtract = {
-                        0: function(node) {
+                    const compactExtract = {
+                        0: function(node) { // Time
                             return $(node).find('time').attr('datetime');
-                        }, // Time
-                        2: function(node) {
+                        },
+                        2: function(node) { // Provider
                             return $(node).attr('provider').toLowerCase();
                         }
                     };
 
                     if (isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
-                        compactExtract[4] = function(node) {
+                        compactExtract[4] = function(node) { // Subtitles
                             return $(node).find('img').attr('title');
-                        };  // Subtitles
-                        compactExtract[5] = function(node) {
+                        };
+                        compactExtract[5] = function(node) { // Quality
                             return $(node).find('span').text().toLowerCase();
-                        }; // Quality
+                        };
                     } else {
-                        compactExtract[4] = function(node) {
+                        compactExtract[4] = function(node) { // Quality
                             return $(node).find('span').text().toLowerCase();
-                        }; // Quality
+                        };
                     }
 
                     return compactExtract;
@@ -3477,13 +3479,13 @@ var SICKRAGE = {
             });
 
             $('#history_limit').on('change', function() {
-                var url = srRoot + '/history/?limit=' + $(this).val();
+                const url = srRoot + '/history/?limit=' + $(this).val();
                 window.location.href = url;
             });
 
             $('a.removehistory').on('click', function() {
-                var removeArr = [];
-                var removeCount = 0;
+                const removeArr = [];
+                let removeCount = 0;
 
                 $('.removeCheck').each(function() {
                     if (this.checked === true) {
@@ -3504,8 +3506,8 @@ var SICKRAGE = {
                     dialogClass: 'modal-dialog',
                     post: false,
                     confirm: function() {
-                        var url = srRoot + '/history/removeHistory';
-                        var params = 'toRemove=' + removeArr.join('|');
+                        const url = srRoot + '/history/removeHistory';
+                        const params = 'toRemove=' + removeArr.join('|');
                         $.post(url, params, function() {
                             location.reload(true);
                         });
@@ -3516,7 +3518,7 @@ var SICKRAGE = {
             });
 
             ['.removeCheck'].forEach(function(name) {
-                var lastCheck = null;
+                let lastCheck = null;
 
                 $(name).on('click', function(event) {
                     if (!lastCheck || !event.shiftKey) {
@@ -3524,8 +3526,8 @@ var SICKRAGE = {
                         return;
                     }
 
-                    var check = this;
-                    var found = 0;
+                    const check = this;
+                    let found = 0;
 
                     $(name).each(function() {
                         if (found === 1 && !this.disabled) {
@@ -3558,8 +3560,8 @@ var SICKRAGE = {
                 $('#min_level').prop('disabled', true);
                 $('#log_filter').prop('disabled', true);
                 document.body.style.cursor = 'wait';
-                var url = srRoot + '/errorlogs/viewlog/';
-                var postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
+                const url = srRoot + '/errorlogs/viewlog/';
+                const postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
                 $.post(url, postData, function(data) {
                     history.pushState('data', '', url);
                     $('pre').html($(data).find('pre').html());
@@ -3571,8 +3573,8 @@ var SICKRAGE = {
 
             function updateLogData() {
                 if ($('#log_update_toggle').data('state') === 'active') {
-                    var postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
-                    var url = srRoot + '/errorlogs/viewlog/';
+                    const postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
+                    const url = srRoot + '/errorlogs/viewlog/';
                     $.post(url, postData, function(data) {
                         $('pre').html($(data).find('pre').html());
                     });
@@ -3582,7 +3584,7 @@ var SICKRAGE = {
             updateLogData();
 
             $('#log_update_toggle').click(function() {
-                var wasActive = $(this).data('state') === 'active'; // State before clicking
+                const wasActive = $(this).data('state') === 'active'; // State before clicking
                 $(this).data('state', wasActive ? 'paused' : 'active');
                 $(this).find('i').toggleClass('fa-pause fa-play');
                 $(this).find('span').text(wasActive ? _('Resume') : _('Pause'));
@@ -3598,9 +3600,9 @@ var SICKRAGE = {
         },
         index: function() {
             if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])) {
-                var sortCodes = {date: 0, show: 2, network: 5};
-                var sort = getMeta('sickbeard.COMING_EPS_SORT');
-                var sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
+                const sortCodes = {date: 0, show: 2, network: 5};
+                const sort = getMeta('sickbeard.COMING_EPS_SORT');
+                const sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
                 $('.resetsorting').on('click', function() {
                     $('#showListTable').trigger('filterReset');
@@ -3676,7 +3678,7 @@ var SICKRAGE = {
                 $('#showsortdirection').val('asc');
 
                 $('#showsort').on('change', function() {
-                    var sortCriteria;
+                    let sortCriteria;
                     switch (this.value) {
                         case 'original':
                             sortCriteria = 'original-order';
@@ -3714,7 +3716,7 @@ var SICKRAGE = {
                     layoutMode: 'fitRows',
                     getSortData: {
                         name: function(itemElem) {
-                            var name = $(itemElem).attr('data-name') || '';
+                            const name = $(itemElem).attr('data-name') || '';
                             return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
@@ -3724,11 +3726,11 @@ var SICKRAGE = {
             };
 
             $.loadTraktImages = function() {
-                var url = srRoot + '/addShows/getTrendingShowImage';
-                var ajaxCount = 0;
+                const url = srRoot + '/addShows/getTrendingShowImage';
+                let ajaxCount = 0;
                 $('img.trakt-image').each(function() {
                     // Only load image from indexer when there is a indexer_id present in data-src-indexer-id
-                    var indexerId = $(this).attr('data-src-indexer-id');
+                    const indexerId = $(this).attr('data-src-indexer-id');
                     if (indexerId) {
                         // Use setTimemout to delay lookup for each lookup
                         // if this is not done, all retrieval of cache urls (by changing the src value) will be done after all retrieval of images
@@ -3762,8 +3764,8 @@ var SICKRAGE = {
             };
 
             $('#saveDefaultsButton').on('click', function() {
-                var anyQualArray = [];
-                var bestQualArray = [];
+                const anyQualArray = [];
+                const bestQualArray = [];
                 $('#anyQualities option:selected').each(function(i, d) {
                     anyQualArray.push($(d).val());
                 });
@@ -3809,11 +3811,11 @@ var SICKRAGE = {
                     showName = '';
                 }
                 SICKRAGE.common.updateBlackWhiteList(showName);
-                var sampleText = 'Adding show <b>' + showName + '</b> into <b>';
+                let sampleText = 'Adding show <b>' + showName + '</b> into <b>';
 
                 // If we have a root dir selected, figure out the path
                 if ($('#rootDirs option:selected').length) {
-                    var rootDirectoryText = $('#rootDirs option:selected').val();
+                    let rootDirectoryText = $('#rootDirs option:selected').val();
                     if (rootDirectoryText.indexOf('/') >= 0) {
                         sepChar = '/';
                     } else if (rootDirectoryText.indexOf('\\') >= 0) {
@@ -3854,7 +3856,7 @@ var SICKRAGE = {
                 }
             }
 
-            var searchRequestXhr = null;
+            let searchRequestXhr = null;
             function searchIndexers() {
                 if (!$('#nameToSearch').val().length) {
                     return;
@@ -3864,7 +3866,7 @@ var SICKRAGE = {
                     searchRequestXhr.abort();
                 }
 
-                var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+                const searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
                 $('#searchResults').empty().html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
 
                 searchRequestXhr = $.ajax({
@@ -3879,16 +3881,16 @@ var SICKRAGE = {
                         $('#searchResults').empty().html(_('search timed out, try again or try another indexer'));
                     },
                     success: function(data) {
-                        var firstResult = true;
-                        var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
-                        var checked = '';
-                        var disabled = '';
+                        let firstResult = true;
+                        let resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
+                        let checked = '';
+                        let disabled = '';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
                         } else {
                             $.each(data.results, function(index, obj) {
-                                var inShowList = obj[6];
+                                const inShowList = obj[6];
                                 disabled = inShowList ? ' title="Already in your show list" disabled' : '';
 
                                 if (firstResult && !inShowList) {
@@ -3898,7 +3900,7 @@ var SICKRAGE = {
                                     checked = '';
                                 }
 
-                                var whichSeries = obj.join('|');
+                                const whichSeries = obj.join('|');
 
                                 resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries.replace(/"/g, '') + '"' + disabled + checked + ' /> ';
                                 if (data.langid && data.langid !== '') {
@@ -3908,8 +3910,8 @@ var SICKRAGE = {
                                 }
 
                                 if (obj[5] !== null) {
-                                    var startDate = new Date(obj[5]);
-                                    var today = new Date();
+                                    const startDate = new Date(obj[5]);
+                                    const today = new Date();
                                     if (startDate > today) {
                                         resultStr += ' (will debut on ' + obj[5] + ')';
                                     } else {
@@ -3977,7 +3979,7 @@ var SICKRAGE = {
             $('#nameToSearch').focus();
 
             // @TODO we need to move to real forms instead of this
-            var myform = new formtowizard({ // eslint-disable-line new-cap,no-undef
+            const myform = new formtowizard({ // eslint-disable-line new-cap,no-undef
                 formid: 'addShowForm',
                 revealfx: ['slide', 500],
                 oninit: function() {
@@ -4008,19 +4010,19 @@ var SICKRAGE = {
         },
         addExistingShow: function() {
             $('#tableDiv').on('click', '#checkAll', function() {
-                var seasCheck = this;
+                const seasCheck = this;
                 $('.dirCheck').each(function() {
                     this.checked = seasCheck.checked;
                 });
             });
 
             $('#submitShowDirs').on('click', function() {
-                var submitForm = $('#addShowForm');
-                var selectedShows = false;
+                const submitForm = $('#addShowForm');
+                let selectedShows = false;
                 $('.dirCheck').each(function() {
                     if (this.checked === true) {
-                        var show = $(this).attr('id');
-                        var indexer = $(this).closest('tr').find('select').val();
+                        const show = $(this).attr('id');
+                        const indexer = $(this).closest('tr').find('select').val();
                         $('<input>', {
                             type: 'hidden',
                             name: 'shows_to_add',
@@ -4044,7 +4046,7 @@ var SICKRAGE = {
             });
 
             function loadContent() {
-                var url = '';
+                let url = '';
                 $('.dir_check').each(function(i, w) {
                     if ($(w).is(':checked')) {
                         if (url.length) {
@@ -4067,10 +4069,10 @@ var SICKRAGE = {
                 });
             }
 
-            var lastTxt = '';
-            // @TODO this needs a real name, for now this fixes the issue of the page not loading at all,
-            //       before I added this I couldn't get the directories to show in the table
-            var a = function() {
+            let lastTxt = '';
+            // @TODO This fixes the issue of the page not loading at all,
+            //       before I added this I couldn't get the directories to show in the table.
+            const rootDirsWorkaround = function() {
                 if (lastTxt === $('#rootDirText').val()) {
                     return false;
                 }
@@ -4083,9 +4085,9 @@ var SICKRAGE = {
                 loadContent();
             };
 
-            a();
+            rootDirsWorkaround();
 
-            $('#rootDirText').on('change', a);
+            $('#rootDirText').on('change', rootDirsWorkaround);
 
             $('#rootDirStaticList').on('click', '.dir_check', loadContent);
 
@@ -4110,7 +4112,7 @@ var SICKRAGE = {
             );
 
             $('#traktlistselection').on('change', function(e) {
-                var traktList = e.target.value;
+                const traktList = e.target.value;
                 window.history.replaceState({}, document.title, '?traktList=' + traktList);
                 $('#trendingShows').loadRemoteShows(
                     '/addShows/getTrendingShows/?traktList=' + traktList,
@@ -4125,9 +4127,9 @@ var SICKRAGE = {
     }
 };
 
-var UTIL = {
+const UTIL = {
     exec: function(controller, action) {
-        var ns = SICKRAGE;
+        const ns = SICKRAGE;
         action = (action === undefined) ? 'init' : action;
 
         if (controller !== '' && ns[controller] && typeof ns[controller][action] === 'function') {
