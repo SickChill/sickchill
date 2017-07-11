@@ -976,14 +976,14 @@ var SICKRAGE = {
             });
 
             $('#testEmail').on('click', function() {
-                let status = $('#testEmail-result');
+                const status = $('#testEmail-result');
                 status.html(loading);
-                let host = $('#email_host').val().length > 0 ? $('#email_host').val() : null;
-                let port = $('#email_port').val().length > 0 ? $('#email_port').val() : null;
-                let tls = $('#email_tls').is(':checked') ? 1 : 0;
-                let from = $('#email_from').val().length > 0 ? $('#email_from').val() : 'root@localhost';
-                let user = $('#email_user').val().trim();
-                let pwd = $('#email_password').val();
+                const host = $('#email_host').val().length > 0 ? $('#email_host').val() : null;
+                const port = $('#email_port').val().length > 0 ? $('#email_port').val() : null;
+                const tls = $('#email_tls').is(':checked') ? 1 : 0;
+                const from = $('#email_from').val().length > 0 ? $('#email_from').val() : 'root@localhost';
+                const user = $('#email_user').val().trim();
+                const pwd = $('#email_password').val();
                 let err = '';
                 let to = '';
                 if (host === null) {
