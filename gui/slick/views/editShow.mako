@@ -12,7 +12,7 @@
 
 <%block name="scripts">
     % if show.is_anime:
-        <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
+        <script type="text/javascript" src="${ static_url('js/blackwhite.js') }"></script>
     % endif
 </%block>
 

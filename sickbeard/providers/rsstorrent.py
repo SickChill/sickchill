@@ -24,9 +24,10 @@ import io
 import os
 import re
 
-import sickbeard
 from bencode.BTL import BTFailure
 from requests.utils import add_dict_to_cookiejar
+
+import sickbeard
 from sickbeard import helpers, logger, tvcache
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex

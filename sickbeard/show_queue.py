@@ -23,10 +23,11 @@ import os
 import traceback
 from collections import namedtuple
 
-import sickbeard
 import six
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
+
+import sickbeard
 from sickbeard import generic_queue, logger, name_cache, notifiers, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
