@@ -145,7 +145,7 @@
                                     % if curShow.network:
                                         <span title="${curShow.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
                                     % else:
-                                        <span title="${_('No Network')}"><img class="show-network-image" src="" data-src="${ static_url('images/network/nonetwork.png') }" alt="No Network" title="No Network" /></span>
+                                        <span title="${_('No Network')}"><img class="show-network-image" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
                                     % endif
                                 </td>
                                 <td class="show-table">
@@ -176,7 +176,7 @@
             </thead>
             <tfoot class="hidden-print">
                 <tr>
-                    <th rowspan="1" colspan="1" align="center"><a href="${ static_url("addShows", include_version=False) }">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
+                    <th rowspan="1" colspan="1" align="center"><a href="${static_url("addShows", include_version=False)}">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
@@ -345,7 +345,7 @@
                                     <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
                                     <span class="visible-print-inline">${curShow.network}</span>
                                 % else:
-                                    <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="" data-src="${ static_url('images/network/nonetwork.png') }" alt="No Network" title="No Network" /></span>
+                                    <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
                                     <span class="visible-print-inline">${_('No Network')}</span>
                                 % endif
                             </td>

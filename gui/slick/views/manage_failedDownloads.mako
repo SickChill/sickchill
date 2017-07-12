@@ -52,9 +52,9 @@
                                 <td>
                                     <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                                     % if provider is not None:
-                                        <img src="${ static_url('images/providers/' + provider.image_name()) }" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
+                                        <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
                                     % else:
-                                        <img src="${ static_url('images/providers/missing.png') }" width="16" height="16" alt="Missing provider" title="Missing provider"/>
+                                        <img src="${static_url('images/providers/missing.png')}" width="16" height="16" alt="Missing provider" title="Missing provider"/>
                                     % endif
                                 </td>
                                 <td>

@@ -41,8 +41,8 @@
         <![endif]-->
 
         <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${ static_url('images/ico/favicon-144.png') }">
-        <meta name="msapplication-config" content="${ static_url('css/browserconfig.xml') }">
+        <meta name="msapplication-TileImage" content="${static_url('images/ico/favicon-144.png')}">
+        <meta name="msapplication-config" content="${static_url('css/browserconfig.xml')}">
 
         <meta data-var="srRoot" data-content="${sickbeard.WEB_ROOT}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
@@ -68,40 +68,40 @@
         <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
 
-        <link rel="shortcut icon" href="${ static_url('images/ico/favicon.ico') }">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${ static_url('images/ico/favicon.ico') }">
-        <link rel="icon" type="image/png" sizes="196x196" href="${ static_url('images/ico/favicon-196.png') }">
-        <link rel="icon" type="image/png" sizes="160x160" href="${ static_url('images/ico/favicon-160.png') }">
-        <link rel="icon" type="image/png" sizes="96x96" href="${ static_url('images/ico/favicon-96.png') }">
-        <link rel="icon" type="image/png" sizes="64x64" href="${ static_url('images/ico/favicon-64.png') }">
-        <link rel="icon" type="image/png" sizes="32x32" href="${ static_url('images/ico/favicon-32.png') }">
-        <link rel="icon" type="image/png" sizes="16x16" href="${ static_url('images/ico/favicon-16.png') }">
-        <link rel="apple-touch-icon" sizes="152x152" href="${ static_url('images/ico/favicon-152.png') }">
-        <link rel="apple-touch-icon" sizes="144x144" href="${ static_url('images/ico/favicon-144.png') }">
-        <link rel="apple-touch-icon" sizes="120x120" href="${ static_url('images/ico/favicon-120.png') }">
-        <link rel="apple-touch-icon" sizes="114x114" href="${ static_url('images/ico/favicon-114.png') }">
-        <link rel="apple-touch-icon" sizes="76x76" href="${ static_url('images/ico/favicon-76.png') }">
-        <link rel="apple-touch-icon" sizes="72x72" href="${ static_url('images/ico/favicon-72.png') }">
-        <link rel="apple-touch-icon" href="${ static_url('images/ico/favicon-57.png') }">
+        <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="${static_url('images/ico/favicon.ico')}">
+        <link rel="icon" type="image/png" sizes="196x196" href="${static_url('images/ico/favicon-196.png')}">
+        <link rel="icon" type="image/png" sizes="160x160" href="${static_url('images/ico/favicon-160.png')}">
+        <link rel="icon" type="image/png" sizes="96x96" href="${static_url('images/ico/favicon-96.png')}">
+        <link rel="icon" type="image/png" sizes="64x64" href="${static_url('images/ico/favicon-64.png')}">
+        <link rel="icon" type="image/png" sizes="32x32" href="${static_url('images/ico/favicon-32.png')}">
+        <link rel="icon" type="image/png" sizes="16x16" href="${static_url('images/ico/favicon-16.png')}">
+        <link rel="apple-touch-icon" sizes="152x152" href="${static_url('images/ico/favicon-152.png')}">
+        <link rel="apple-touch-icon" sizes="144x144" href="${static_url('images/ico/favicon-144.png')}">
+        <link rel="apple-touch-icon" sizes="120x120" href="${static_url('images/ico/favicon-120.png')}">
+        <link rel="apple-touch-icon" sizes="114x114" href="${static_url('images/ico/favicon-114.png')}">
+        <link rel="apple-touch-icon" sizes="76x76" href="${static_url('images/ico/favicon-76.png')}">
+        <link rel="apple-touch-icon" sizes="72x72" href="${static_url('images/ico/favicon-72.png')}">
+        <link rel="apple-touch-icon" href="${static_url('images/ico/favicon-57.png')}">
 
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/vender.min.css') }"/>
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/browser.css') }" />
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/font-awesome.min.css') }" />
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/lib/jquery-ui-1.10.4.custom.min.css') }" />
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/lib/jquery.qtip-2.2.1.min.css') }"/>
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/style.css') }"/>
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/print.css') }" />
-        <link rel="stylesheet" type="text/css" href="${ static_url('css/country-flags.css') }"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/vender.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery.qtip-2.2.1.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/country-flags.css')}"/>
 
         % if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${ static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css')))) }" />
+            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css'))))}" />
         % endif
 
         <%block name="css" />
 
         % if sickbeard.CUSTOM_CSS:
             ## TODO: check if this exists first
-            <link rel="stylesheet" type="text/css" href="${ static_url('ui/custom.css') }" />
+            <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css')}" />
         % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
@@ -127,7 +127,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${static_url("home", include_version=False)}" title="SickRage"><img alt="SickRage" src="${ static_url('images/sickrage.png') }"
+                    <a class="navbar-brand" href="${static_url("home", include_version=False)}" title="SickRage"><img alt="SickRage" src="${static_url('images/sickrage.png')}"
                                                                                          style="height: 50px;padding: 3px;"
                                                                                  class="img-responsive pull-left" /></a>
                 </div>
@@ -153,58 +153,58 @@
                             </li>
 
                             <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
-                                <a href="${ static_url("schedule", include_version=False) }">${_('Schedule')}</a>
+                                <a href="${static_url("schedule", include_version=False)}">${_('Schedule')}</a>
                             </li>
 
                             <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>
-                                <a href="${ static_url("history", include_version=False) }">${_('History')}</a>
+                                <a href="${static_url("history", include_version=False)}">${_('History')}</a>
                             </li>
 
                             <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                                <a href="${ static_url("manage/episodeStatuses", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Manage')}</span>
+                                <a href="${static_url("manage/episodeStatuses", include_version=False)}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Manage')}</span>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${ static_url("manage", include_version=False) }"><i class="fa fa-fw fa-pencil"></i>&nbsp;${_('Mass Update')}</a></li>
-                                    <li><a href="${ static_url("manage/backlogOverview", include_version=False) }"><i class="fa fa-fw fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
-                                    <li><a href="${ static_url("manage/manageSearches", include_version=False) }"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
-                                    <li><a href="${ static_url("manage/episodeStatuses", include_version=False) }"><i class="fa fa-fw fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
+                                    <li><a href="${static_url("manage", include_version=False)}"><i class="fa fa-fw fa-pencil"></i>&nbsp;${_('Mass Update')}</a></li>
+                                    <li><a href="${static_url("manage/backlogOverview", include_version=False)}"><i class="fa fa-fw fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
+                                    <li><a href="${static_url("manage/manageSearches", include_version=False)}"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
+                                    <li><a href="${static_url("manage/episodeStatuses", include_version=False)}"><i class="fa fa-fw fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
                                     % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
-                                        <li><a href="${ static_url("home/updatePLEX", include_version=False) }"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
+                                        <li><a href="${static_url("home/updatePLEX", include_version=False)}"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
                                     % endif
                                     % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
-                                        <li><a href="${ static_url("home/updateKODI", include_version=False) }"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
+                                        <li><a href="${static_url("home/updateKODI", include_version=False)}"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
                                     % endif
                                     % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
-                                        <li><a href="${ static_url("home/updateEMBY", include_version=False) }"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
+                                        <li><a href="${static_url("home/updateEMBY", include_version=False)}"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                                     % endif
                                     % if manage_torrents_url:
                                         <li><a href="${manage_torrents_url}" target="_blank"><i class="fa fa-fw fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
                                     % endif
                                     % if sickbeard.USE_FAILED_DOWNLOADS:
-                                        <li><a href="${ static_url("manage/failedDownloads", include_version=False) }"><i class="fa fa-fw fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
+                                        <li><a href="${static_url("manage/failedDownloads", include_version=False)}"><i class="fa fa-fw fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
                                     % endif
                                     % if sickbeard.USE_SUBTITLES:
-                                        <li><a href="${ static_url("manage/subtitleMissed", include_version=False) }"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
+                                        <li><a href="${static_url("manage/subtitleMissed", include_version=False)}"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                                     % endif
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
 
                             <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                                <a href="${ static_url("config", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png') }" class="navbaricon hidden-xs" />
+                                <a href="${static_url("config", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png')}" class="navbaricon hidden-xs" />
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${ static_url("config", include_version=False) }"><i class="fa fa-fw fa-question"></i>&nbsp;${_('Help &amp; Info')}</a></li>
-                                    <li><a href="${ static_url("config/general", include_version=False) }"><i class="fa fa-fw fa-cog"></i>&nbsp;${_('General')}</a></li>
-                                    <li><a href="${ static_url("config/backuprestore", include_version=False) }"><i class="fa fa-fw fa-floppy-o"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
-                                    <li><a href="${ static_url("config/search", include_version=False) }"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Search Settings')}</a></li>
-                                    <li><a href="${ static_url("config/providers", include_version=False) }"><i class="fa fa-fw fa-plug"></i>&nbsp;${_('Search Providers')}</a></li>
-                                    <li><a href="${ static_url("config/subtitles", include_version=False) }"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Subtitles Settings')}</a></li>
-                                    <li><a href="${ static_url("config/postProcessing", include_version=False) }"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
-                                    <li><a href="${ static_url("config/notifications", include_version=False) }"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
-                                    <li><a href="${ static_url("config/anime", include_version=False) }"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li><a href="${static_url("config", include_version=False)}"><i class="fa fa-fw fa-question"></i>&nbsp;${_('Help &amp; Info')}</a></li>
+                                    <li><a href="${static_url("config/general", include_version=False)}"><i class="fa fa-fw fa-cog"></i>&nbsp;${_('General')}</a></li>
+                                    <li><a href="${static_url("config/backuprestore", include_version=False)}"><i class="fa fa-fw fa-floppy-o"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
+                                    <li><a href="${static_url("config/search", include_version=False)}"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Search Settings')}</a></li>
+                                    <li><a href="${static_url("config/providers", include_version=False)}"><i class="fa fa-fw fa-plug"></i>&nbsp;${_('Search Providers')}</a></li>
+                                    <li><a href="${static_url("config/subtitles", include_version=False)}"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Subtitles Settings')}</a></li>
+                                    <li><a href="${static_url("config/postProcessing", include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
+                                    <li><a href="${static_url("config/notifications", include_version=False)}"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
+                                    <li><a href="${static_url("config/anime", include_version=False)}"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -221,34 +221,34 @@
                                     toolsBadge = ''
                             %>
                             <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                                <a href="${ static_url("home/status", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png') }" class="navbaricon hidden-xs" />${toolsBadge}
+                                <a href="${static_url("home/status", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png')}" class="navbaricon hidden-xs" />${toolsBadge}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${ static_url("news", include_version=False) }"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
-                                    <li><a href="${ static_url("IRC", include_version=False) }"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
-                                    <li><a href="${ static_url("changes", include_version=False) }"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
+                                    <li><a href="${static_url("news", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
+                                    <li><a href="${static_url("IRC", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
+                                    <li><a href="${static_url("changes", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
-                                        <li><a href="${ static_url("errorlogs", include_version=False) }"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
+                                        <li><a href="${static_url("errorlogs", include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                     %endif
                                     %if numWarnings:
-                                        <li><a href="${ static_url("errorlogs/?level=" + sickbeard.logger.WARNING, include_version=False) }"><i class="fa fa-fw
+                                        <li><a href="${static_url("errorlogs/?level=" + sickbeard.logger.WARNING, include_version=False)}"><i class="fa fa-fw
                                         fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
                                     %endif
-                                    <li><a href="${ static_url("errorlogs/viewlog", include_version=False) }"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
+                                    <li><a href="${static_url("errorlogs/viewlog", include_version=False)}"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${ static_url("home/updateCheck?pid=" + sbPID, include_version=False) }><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
-                                    <li><a href="${ static_url("home/restart/?pid=" + sbPID, include_version=False) }" class="confirm restart"><i class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${ static_url("home/shutdown/?pid=" + sbPID, include_version=False) }" class="confirm shutdown"><i class="fa \
+                                    <li><a href="${static_url("home/updateCheck?pid=" + sbPID, include_version=False)}><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${static_url("home/restart/?pid=" + sbPID, include_version=False)}" class="confirm restart"><i class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
+                                    <li><a href="${static_url("home/shutdown/?pid=" + sbPID, include_version=False)}" class="confirm shutdown"><i class="fa \
                                     fa-fw \
                                     fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin:
-                                        <li><a href="${ static_url("logout", include_version=False) } class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
+                                        <li><a href="${static_url("logout", include_version=False)} class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${ static_url("home/status", include_version=False) }"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
+                                    <li><a href="${static_url("home/status", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -350,20 +350,20 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${ static_url('js/vender.min.js') }"></script>
-                <script type="text/javascript" src="${ static_url('js/lib/jquery.form.min.js') }"></script>
-                <script type="text/javascript" src="${ static_url('js/lib/jquery.selectboxes.min.js') }"></script>
-                <script type="text/javascript" src="${ static_url('js/lib/formwizard.js') }"></script><!-- Can't be added to bower -->
-                <script type="text/javascript" src="${ static_url('js/parsers.js') }"></script>
-                <script type="text/javascript" src="${ static_url('js/rootDirs.js') }"></script>
+                <script type="text/javascript" src="${static_url('js/vender.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
+                <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
                 % if sickbeard.DEVELOPER:
-                    <script type="text/javascript" src="${ static_url('js/core.js') }"></script>
+                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
                 % else:
-                    <script type="text/javascript" src="${ static_url('js/core.min.js') }"></script>
+                    <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
                 % endif
-                <script type="text/javascript" src="${ static_url('js/lib/jquery.scrolltopcontrol-1.1.js') }"></script>
-                <script type="text/javascript" src="${ static_url('js/browser.js') }" charset="utf-8"></script>
-                <script type="text/javascript" src="${ static_url('js/ajaxNotifications.js') }"></script>
+                <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
+                <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>
             % endif
             <%block name="scripts" />
         </div>
