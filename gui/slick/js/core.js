@@ -111,8 +111,8 @@ var SICKRAGE = {
                 cancelButton: 'Cancel',
                 dialogClass: 'modal-dialog',
                 post: false,
-                confirm: function(e) {
-                    location.href = e.context.href;
+                confirm: function(event) {
+                    location.href = event.context.href;
                 }
             };
 
@@ -132,8 +132,8 @@ var SICKRAGE = {
                     '</span> from the database?<br><br>' +
                     '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;' +
                     '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
-                confirm: function(e) {
-                    location.href = e.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
+                confirm: function(event) {
+                    location.href = event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
                 }
             });
 
@@ -222,29 +222,30 @@ var SICKRAGE = {
                 $('[datetime]').timeago();
             }
 
-            $(document.body).on('click', 'a[data-no-redirect]', function(e) {
-                e.preventDefault();
-                $.get($(this).attr('href'));
+            $(document.body).on('click', 'a[data-no-redirect]', function(event) {
+                const element = $(event.currentTarget).preventDefault();
+                $.get(element.attr('href'));
+
                 return false;
             });
 
-            $(document.body).on('click', '.bulkCheck', function() {
-                const bulkCheck = this;
-                const whichBulkCheck = $(bulkCheck).attr('id');
+            $(document.body).on('click', '.bulkCheck', function(event) {
+                const element = $(event.currentTarget);
+                const whichBulkCheck = element.attr('id');
 
                 $('.' + whichBulkCheck + ':visible').each(function() {
-                    $(this).prop('checked', $(bulkCheck).prop('checked'));
+                    $(this).prop('checked', element.checked);
                 });
             });
 
             $('.enabler').each(function() {
-                if (!$(this).prop('checked')) {
+                if (!$(this).checked) {
                     $('#content_' + $(this).attr('id')).hide();
                 }
             });
 
             $('.enabler').on('change', function() {
-                if ($(this).prop('checked')) {
+                if ($(this).checked) {
                     $('#content_' + $(this).attr('id')).fadeIn('fast', 'linear');
                 } else {
                     $('#content_' + $(this).attr('id')).fadeOut('fast', 'linear');
@@ -287,7 +288,7 @@ var SICKRAGE = {
             $('#black').children().remove();
             $('#pool').children().remove();
 
-            if ($('#anime').prop('checked')) {
+            if ($('#anime').checked) {
                 $('#blackwhitelist').show();
                 if (showName) {
                     $.getJSON(srRoot + '/home/fetch_releasegroups', {
@@ -313,7 +314,7 @@ var SICKRAGE = {
             $('#config-components').tabs();
 
             $('.viewIf').on('click', function() {
-                if ($(this).prop('checked')) {
+                if ($(this).checked) {
                     $('.hide_if_' + $(this).attr('id')).css('display', 'none');
                     $('.show_if_' + $(this).attr('id')).fadeIn('fast', 'linear');
                 } else {
@@ -324,10 +325,10 @@ var SICKRAGE = {
 
             $('.datePresets').on('click', function() {
                 let def = $('#date_presets').val();
-                if ($(this).prop('checked') && def === '%x') {
+                if ($(this).checked && def === '%x') {
                     def = '%a, %b %d, %Y';
                     $('#date_use_system_default').html('1');
-                } else if (!$(this).prop('checked') && $('#date_use_system_default').html() === '1') {
+                } else if (!$(this).checked && $('#date_use_system_default').html() === '1') {
                     def = '%x';
                 }
 
@@ -1670,16 +1671,16 @@ var SICKRAGE = {
                     const generatorName = $(this).attr('id');
 
                     const configArray = [];
-                    const showMetadata = $('#' + generatorName + '_show_metadata').prop('checked');
-                    const episodeMetadata = $('#' + generatorName + '_episode_metadata').prop('checked');
-                    const fanart = $('#' + generatorName + '_fanart').prop('checked');
-                    const poster = $('#' + generatorName + '_poster').prop('checked');
-                    const banner = $('#' + generatorName + '_banner').prop('checked');
-                    const episodeThumbnails = $('#' + generatorName + '_episode_thumbnails').prop('checked');
-                    const seasonPosters = $('#' + generatorName + '_season_posters').prop('checked');
-                    const seasonBanners = $('#' + generatorName + '_season_banners').prop('checked');
-                    const seasonAllPoster = $('#' + generatorName + '_season_all_poster').prop('checked');
-                    const seasonAllBanner = $('#' + generatorName + '_season_all_banner').prop('checked');
+                    const showMetadata = $('#' + generatorName + '_show_metadata').checked;
+                    const episodeMetadata = $('#' + generatorName + '_episode_metadata').checked;
+                    const fanart = $('#' + generatorName + '_fanart').checked;
+                    const poster = $('#' + generatorName + '_poster').checked;
+                    const banner = $('#' + generatorName + '_banner').checked;
+                    const episodeThumbnails = $('#' + generatorName + '_episode_thumbnails').checked;
+                    const seasonPosters = $('#' + generatorName + '_season_posters').checked;
+                    const seasonBanners = $('#' + generatorName + '_season_banners').checked;
+                    const seasonAllPoster = $('#' + generatorName + '_season_all_poster').checked;
+                    const seasonAllBanner = $('#' + generatorName + '_season_all_banner').checked;
 
                     configArray.push(showMetadata ? '1' : '0');
                     configArray.push(episodeMetadata ? '1' : '0');
@@ -2639,7 +2640,7 @@ var SICKRAGE = {
 
             // Initially show/hide all the rows according to the checkboxes
             $('#checkboxControls input').each(function() {
-                const status = $(this).prop('checked');
+                const status = $(this).checked;
                 $('tr.' + $(this).attr('id')).each(function() {
                     if (status) {
                         $(this).show();
@@ -2650,7 +2651,7 @@ var SICKRAGE = {
             });
 
             $.fn.showHideRows = function(whichClass) {
-                const status = $('#checkboxControls > input, #' + whichClass).prop('checked');
+                const status = $('#checkboxControls > input, #' + whichClass).checked;
                 $('tr.' + whichClass).each(function() {
                     if (status) {
                         $(this).show();
@@ -3304,12 +3305,12 @@ var SICKRAGE = {
         episodeStatuses: function() {
             $('.allCheck').on('click', function() {
                 const indexerId = $(this).attr('id').split('-')[1];
-                $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
+                $('.' + indexerId + '-epcheck').prop('checked', $(this).checked);
             });
 
             $('.get_more_eps').on('click', function() {
                 const curIndexerId = $(this).attr('id');
-                const checked = $('#allCheck-' + curIndexerId).prop('checked');
+                const checked = $('#allCheck-' + curIndexerId).checked;
                 const lastRow = $('tr#' + curIndexerId);
                 const clicked = $(this).attr('data-clicked');
                 const action = $(this).attr('value');
@@ -3359,12 +3360,12 @@ var SICKRAGE = {
         subtitleMissed: function() {
             $('.allCheck').on('click', function() {
                 const indexerId = $(this).attr('id').split('-')[1];
-                $('.' + indexerId + '-epcheck').prop('checked', $(this).prop('checked'));
+                $('.' + indexerId + '-epcheck').prop('checked', $(this).checked);
             });
 
             $('.get_more_eps').on('click', function() {
                 const indexerId = $(this).attr('id');
-                const checked = $('#allCheck-' + indexerId).prop('checked');
+                const checked = $('#allCheck-' + indexerId).checked;
                 const lastRow = $('tr#' + indexerId);
                 const clicked = $(this).attr('data-clicked');
                 const action = $(this).attr('value');
@@ -3783,10 +3784,10 @@ var SICKRAGE = {
                     defaultStatus: $('#statusSelect').val(),
                     anyQualities: anyQualArray.join(','),
                     bestQualities: bestQualArray.join(','),
-                    defaultSeasonFolders: $('#season_folders').prop('checked'),
-                    subtitles: $('#subtitles').prop('checked'),
-                    anime: $('#anime').prop('checked'),
-                    scene: $('#scene').prop('checked'),
+                    defaultSeasonFolders: $('#season_folders').checked,
+                    subtitles: $('#subtitles').checked,
+                    anime: $('#anime').checked,
+                    scene: $('#scene').checked,
                     defaultStatusAfter: $('#statusSelectAfter').val()
                 });
 
@@ -4045,7 +4046,7 @@ var SICKRAGE = {
                 $('<input>', {
                     type: 'hidden',
                     name: 'promptForSettings',
-                    value: $('#promptForSettings').prop('checked') ? 'on' : 'off'
+                    value: $('#promptForSettings').checked ? 'on' : 'off'
                 }).appendTo(submitForm);
 
                 submitForm.submit();
