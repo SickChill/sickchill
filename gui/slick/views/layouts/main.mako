@@ -234,15 +234,20 @@
                                         <li><a href="${static_url("errorlogs", include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                     %endif
                                     %if numWarnings:
-                                        <li><a href="${static_url("errorlogs/?level=" + sickbeard.logger.WARNING, include_version=False)}"><i class="fa fa-fw
-                                        fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
+                                        <li>
+                                          <a href="${static_url("errorlogs/?level={}".format(sickbeard.logger.WARNING), include_version=False)}">
+                                            <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span>
+                                          </a>
+                                        </li>
                                     %endif
                                     <li><a href="${static_url("errorlogs/viewlog", include_version=False)}"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${static_url("home/updateCheck?pid=" + sbPID, include_version=False)}><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
-                                    <li><a href="${static_url("home/restart/?pid=" + sbPID, include_version=False)}" class="confirm restart"><i class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${static_url("home/shutdown/?pid=" + sbPID, include_version=False)}" class="confirm shutdown"><i class="fa \
+                                    <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${static_url("home/restart/?pid={}".format(sbPID), include_version=False)}" class="confirm restart"><i
+                                        class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
+                                    <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown"><i class="fa \
                                     fa-fw \
+
                                     fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin:
                                         <li><a href="${static_url("logout", include_version=False)} class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
