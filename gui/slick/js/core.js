@@ -2177,7 +2177,7 @@ var SICKRAGE = {
                 min: 75,
                 max: 250,
                 value: posterSize,
-                change: function(e, ui) {
+                change: function(event, ui) {
                     if (typeof (Storage) !== 'undefined') {
                         localStorage.setItem('posterSize', ui.value);
                     }
@@ -4118,8 +4118,8 @@ var SICKRAGE = {
                 'Trakt timed out, refresh page to try again'
             );
 
-            $('#traktlistselection').on('change', function(e) {
-                const traktList = e.target.value;
+            $('#traktlistselection').on('change', function(event) {
+                const traktList = event.target.value;
                 window.history.replaceState({}, document.title, '?traktList=' + traktList);
                 $('#trendingShows').loadRemoteShows(
                     '/addShows/getTrendingShows/?traktList=' + traktList,
