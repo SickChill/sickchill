@@ -2848,7 +2848,7 @@ var SICKRAGE = {
                 SICKRAGE.common.updateBlackWhiteList(getMeta('show.name'));
             }); */
 
-            $('#submit').click(function() {
+            $('#submit').on('click', function() {
                 allExceptions = [];
 
                 $('#exceptions_list option').each(function() {
@@ -2862,7 +2862,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#addSceneName').click(function() {
+            $('#addSceneName').on('click', function() {
                 const sceneEx = $('#SceneName').val();
                 const option = $('<option>');
                 allExceptions = [];
@@ -2884,7 +2884,7 @@ var SICKRAGE = {
                 return option.appendTo('#exceptions_list');
             });
 
-            $('#removeSceneName').click(function() {
+            $('#removeSceneName').on('click', function() {
                 $('#exceptions_list option:selected').remove();
 
                 $(this).toggleSceneException();
@@ -3244,7 +3244,7 @@ var SICKRAGE = {
             if ($('.removeCheck').length) {
                 $('.removeCheck').each(function(name) {
                     let lastCheck = null;
-                    $(name).click(function(event) {
+                    $(name).on('click', function(event) {
                         if (!lastCheck || !event.shiftKey) {
                             lastCheck = this;
                             return;
@@ -3279,18 +3279,18 @@ var SICKRAGE = {
                 $('#new_root_dir_' + options.whichId).change();
             }
 
-            $('.new_root_dir').change(function() {
+            $('.new_root_dir').on('change', function() {
                 const curIndex = findDirIndex($(this).attr('id'));
                 $('#display_new_root_dir_' + curIndex).html('<b>' + $(this).val() + '</b>');
             });
 
-            $('.edit_root_dir').click(function() {
+            $('.edit_root_dir').on('click', function() {
                 const curIndex = findDirIndex($(this).attr('id'));
                 const initialDir = $('#new_root_dir_' + curIndex).val();
                 $(this).nFileBrowser(editRootDir, {initialDir: initialDir, whichId: curIndex});
             });
 
-            $('.delete_root_dir').click(function() {
+            $('.delete_root_dir').on('click', function() {
                 const curIndex = findDirIndex($(this).attr('id'));
                 $('#new_root_dir_' + curIndex).val(null);
                 $('#display_new_root_dir_' + curIndex).html('<b>' + _('DELETED') + '</b>');
@@ -3586,7 +3586,7 @@ var SICKRAGE = {
             }
             updateLogData();
 
-            $('#log_update_toggle').click(function() {
+            $('#log_update_toggle').on('click', function() {
                 const wasActive = $(this).data('state') === 'active'; // State before clicking
                 $(this).data('state', wasActive ? 'paused' : 'active');
                 $(this).find('i').toggleClass('fa-pause fa-play');
@@ -3649,7 +3649,7 @@ var SICKRAGE = {
             if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])) {
                 $('#srRoot').ajaxEpSearch();
                 $('.ep_summary').hide();
-                $('.ep_summaryTrigger').click(function() {
+                $('.ep_summaryTrigger').on('click', function() {
                     $(this).next('.ep_summary').slideToggle('normal', function() {
                         $(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
                             return $(this).next('.ep_summary').is(':visible') ? src.replace('plus', 'minus') : src.replace('minus', 'plus');
@@ -3790,7 +3790,7 @@ var SICKRAGE = {
                 $(this).attr('disabled', true);
             });
 
-            $('#statusSelect, #qualityPreset, #season_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function() {
+            $('#statusSelect, #qualityPreset, #season_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').on('change', function() {
                 $('#saveDefaultsButton').attr('disabled', false);
             });
 
@@ -3942,7 +3942,7 @@ var SICKRAGE = {
                 });
             }
 
-            $('#searchName').click(function() {
+            $('#searchName').on('click', function() {
                 searchIndexers();
             });
 
@@ -3950,7 +3950,7 @@ var SICKRAGE = {
                 $('#searchName').click();
             }
 
-            $('#addShowButton').click(function() {
+            $('#addShowButton').on('click', function() {
                 // If they haven't picked a show don't let them submit
                 if (!$('input:radio[name="whichSeries"]:checked').val() && !$('input:hidden[name="whichSeries"]').val().length) {
                     notifyModal('You must choose a show to continue');
@@ -3960,7 +3960,7 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            $('#skipShowButton').click(function() {
+            $('#skipShowButton').on('click', function() {
                 $('#skipShow').val('1');
                 $('#addShowForm').submit();
             });
@@ -4002,12 +4002,12 @@ var SICKRAGE = {
                 }
             });
 
-            $('#anime').change(function() {
+            $('#anime').on('change', function() {
                 updateSampleText();
                 myform.loadsection(2);
             });
 
-            $('#qualityPreset').change(function() {
+            $('#qualityPreset').on('change', function() {
                 myform.loadsection(2);
             });
         },
