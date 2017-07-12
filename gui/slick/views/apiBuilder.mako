@@ -109,7 +109,7 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href = "${ static_url("home", include_version=False) }">${_('Back to SickRage')}</a></li>
+                        <li><a href="${ static_url("home", include_version=False) }">${_('Back to SickRage')}</a></li>
                     </ul>
 
                     <form class="navbar-form navbar-right">
