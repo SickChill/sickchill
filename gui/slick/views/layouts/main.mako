@@ -101,7 +101,7 @@
 
         % if sickbeard.CUSTOM_CSS:
             ## TODO: check if this exists first
-            <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css')}" />
+            <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css', include_version=False)}" />
         % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
