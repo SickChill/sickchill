@@ -660,7 +660,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('you can try all the features of the API')} <a href="${ static_url("apibuilder") }">${_('here')}</a></label>
+                                        <label>${_('you can try all the features of the API')} <a href="${ static_url("apibuilder", include_version=False) }">${_('here')}</a></label>
                                     </div>
                                 </div>
                             </div>
