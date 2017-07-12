@@ -2884,10 +2884,10 @@ var SICKRAGE = {
                 return option.appendTo('#exceptions_list');
             });
 
-            $('#removeSceneName').on('click', function() {
+            $('#removeSceneName').on('click', function(event) {
                 $('#exceptions_list option:selected').remove();
 
-                $(this).toggleSceneException();
+                $(event.currentTarget).toggleSceneException();
             });
 
             $.fn.toggleSceneException = function() {
@@ -2907,7 +2907,10 @@ var SICKRAGE = {
             $(this).toggleSceneException();
         },
         postProcess: function() {
-            $('#episodeDir').fileBrowser({title: _('Select Unprocessed Episode Folder'), key: 'postprocessPath'});
+            $('#episodeDir').fileBrowser({
+                title: _('Select Unprocessed Episode Folder'),
+                key: 'postprocessPath'
+            });
         },
         status: function() {
             $('#schedulerStatusTable').tablesorter({
@@ -3206,8 +3209,8 @@ var SICKRAGE = {
             });
         },
         backlogOverview: function() {
-            $('#pickShow').on('change', function() {
-                const id = $(this).val();
+            $('#pickShow').on('change', function(event) {
+                const id = $(event.currentTarget).val();
                 if (id) {
                     $('html,body').animate({scrollTop: $('#show-' + id).offset().top - 25}, 'slow');
                 }
@@ -3219,8 +3222,8 @@ var SICKRAGE = {
                 sortList: [[1, 0]],
                 headers: {3: {sorter: false}}
             });
-            $('#limit').on('change', function() {
-                window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(this).val();
+            $('#limit').on('change', function(event) {
+                window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val();
             });
 
             $('#submitMassRemove').on('click', function() {
