@@ -1,6 +1,7 @@
 <%!
     import re
     import datetime
+    from requests.compat import urljoin
     import sickbeard
     from sickrage.helper.common import pretty_file_size
     from sickrage.show.Show import Show
@@ -12,8 +13,6 @@
         import resource
     except ImportError:
         has_resource_module = False
-
-    srRoot = sickbeard.WEB_ROOT
 %>
 <!DOCTYPE html>
 <html lang="${sickbeard.GUI_LANG}">
@@ -95,7 +94,7 @@
         <link rel="stylesheet" type="text/css" href="${ static_url('css/country-flags.css') }"/>
 
         % if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${ static_url('css/${sickbeard.THEME_NAME}.css') }" />
+            <link rel="stylesheet" type="text/css" href="${ static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css')))) }" />
         % endif
 
         <%block name="css" />
@@ -127,19 +126,21 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${srRoot}/home/" title="SickRage"><img alt="SickRage" src="${ static_url('images/sickrage.png') }" style="height: 50px;padding: 3px;" class="img-responsive pull-left" /></a>
+                    <a class="navbar-brand" href="${static_url("home")}" title="SickRage"><img alt="SickRage" src="${ static_url('images/sickrage.png') }"
+                                                                                         style="height: 50px;padding: 3px;"
+                                                                                 class="img-responsive pull-left" /></a>
                 </div>
                 % if srLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
                             <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
-                                <a href="${srRoot}/home/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
+                                <a href="${static_url("home")}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/home/"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Show List')}</a></li>
-                                    <li><a href="${srRoot}/addShows/"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
-                                    <li><a href="${srRoot}/home/postprocess/"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
+                                    <li><a href="${static_url("home")}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Show List')}</a></li>
+                                    <li><a href="${static_url("addShows")}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
+                                    <li><a href="${static_url("home/postprocess")}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
                                     % if sickbeard.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
                                         % for recentShow in sickbeard.SHOWS_RECENT:
@@ -151,58 +152,58 @@
                             </li>
 
                             <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
-                                <a href="${srRoot}/schedule/">${_('Schedule')}</a>
+                                <a href="${ static_url("schedule") }">${_('Schedule')}</a>
                             </li>
 
                             <li id="NAVhistory"${('', ' class="active"')[topmenu == 'history']}>
-                                <a href="${srRoot}/history/">${_('History')}</a>
+                                <a href="${ static_url("history") }">${_('History')}</a>
                             </li>
 
                             <li id="NAVmanage" class="navbar-split dropdown${('', ' active')[topmenu == 'manage']}">
-                                <a href="${srRoot}/manage/episodeStatuses/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Manage')}</span>
+                                <a href="${ static_url("manage/episodeStatuses") }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Manage')}</span>
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/manage/"><i class="fa fa-fw fa-pencil"></i>&nbsp;${_('Mass Update')}</a></li>
-                                    <li><a href="${srRoot}/manage/backlogOverview/"><i class="fa fa-fw fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
-                                    <li><a href="${srRoot}/manage/manageSearches/"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
-                                    <li><a href="${srRoot}/manage/episodeStatuses/"><i class="fa fa-fw fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
+                                    <li><a href="${ static_url("manage") }"><i class="fa fa-fw fa-pencil"></i>&nbsp;${_('Mass Update')}</a></li>
+                                    <li><a href="${ static_url("manage/backlogOverview") }"><i class="fa fa-fw fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
+                                    <li><a href="${ static_url("manage/manageSearches") }"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
+                                    <li><a href="${ static_url("manage/episodeStatuses") }"><i class="fa fa-fw fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
                                     % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
-                                        <li><a href="${srRoot}/home/updatePLEX/"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
+                                        <li><a href="${ static_url("home/updatePLEX") }"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
                                     % endif
                                     % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
-                                        <li><a href="${srRoot}/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
+                                        <li><a href="${ static_url("home/updateKODI") }"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
                                     % endif
                                     % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
-                                        <li><a href="${srRoot}/home/updateEMBY/"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
+                                        <li><a href="${ static_url("home/updateEMBY") }"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                                     % endif
                                     % if manage_torrents_url:
                                         <li><a href="${manage_torrents_url}" target="_blank"><i class="fa fa-fw fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
                                     % endif
                                     % if sickbeard.USE_FAILED_DOWNLOADS:
-                                        <li><a href="${srRoot}/manage/failedDownloads/"><i class="fa fa-fw fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
+                                        <li><a href="${ static_url("manage/failedDownloads") }"><i class="fa fa-fw fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
                                     % endif
                                     % if sickbeard.USE_SUBTITLES:
-                                        <li><a href="${srRoot}/manage/subtitleMissed/"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
+                                        <li><a href="${ static_url("manage/subtitleMissed") }"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                                     % endif
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
 
                             <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                                <a href="${srRoot}/config/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png') }" class="navbaricon hidden-xs" />
+                                <a href="${ static_url("config") }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png') }" class="navbaricon hidden-xs" />
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/config/"><i class="fa fa-fw fa-question"></i>&nbsp;${_('Help &amp; Info')}</a></li>
-                                    <li><a href="${srRoot}/config/general/"><i class="fa fa-fw fa-cog"></i>&nbsp;${_('General')}</a></li>
-                                    <li><a href="${srRoot}/config/backuprestore/"><i class="fa fa-fw fa-floppy-o"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
-                                    <li><a href="${srRoot}/config/search/"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Search Settings')}</a></li>
-                                    <li><a href="${srRoot}/config/providers/"><i class="fa fa-fw fa-plug"></i>&nbsp;${_('Search Providers')}</a></li>
-                                    <li><a href="${srRoot}/config/subtitles/"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Subtitles Settings')}</a></li>
-                                    <li><a href="${srRoot}/config/postProcessing/"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
-                                    <li><a href="${srRoot}/config/notifications/"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
-                                    <li><a href="${srRoot}/config/anime/"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li><a href="${ static_url("config") }"><i class="fa fa-fw fa-question"></i>&nbsp;${_('Help &amp; Info')}</a></li>
+                                    <li><a href="${ static_url("config/general") }"><i class="fa fa-fw fa-cog"></i>&nbsp;${_('General')}</a></li>
+                                    <li><a href="${ static_url("config/backuprestore") }"><i class="fa fa-fw fa-floppy-o"></i>&nbsp;${_('Backup &amp; Restore')}</a></li>
+                                    <li><a href="${ static_url("config/search") }"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Search Settings')}</a></li>
+                                    <li><a href="${ static_url("config/providers") }"><i class="fa fa-fw fa-plug"></i>&nbsp;${_('Search Providers')}</a></li>
+                                    <li><a href="${ static_url("config/subtitles") }"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Subtitles Settings')}</a></li>
+                                    <li><a href="${ static_url("config/postProcessing") }"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
+                                    <li><a href="${ static_url("config/notifications") }"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
+                                    <li><a href="${ static_url("config/anime") }"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -219,22 +220,22 @@
                                     toolsBadge = ''
                             %>
                             <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                                <a href="${srRoot}/home/status/" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png') }" class="navbaricon hidden-xs" />${toolsBadge}
+                                <a href="${ static_url("home/status") }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png') }" class="navbaricon hidden-xs" />${toolsBadge}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${srRoot}/news/"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
-                                    <li><a href="${srRoot}/IRC/"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
-                                    <li><a href="${srRoot}/changes/"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
+                                    <li><a href="${ static_url("news") }"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
+                                    <li><a href="${ static_url("IRC") }"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
+                                    <li><a href="${ static_url("changes") }"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
-                                        <li><a href="${srRoot}/errorlogs/"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
+                                        <li><a href="${ static_url("errorlogs") }"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                     %endif
                                     %if numWarnings:
                                         <li><a href="${srRoot}/errorlogs/?level=${sickbeard.logger.WARNING}"><i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span></a></li>
                                     %endif
-                                    <li><a href="${srRoot}/errorlogs/viewlog/"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
+                                    <li><a href="${ static_url("errorlogs/viewlog") }"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li><a href="${srRoot}/home/updateCheck?pid=${sbPID}"><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     <li><a href="${srRoot}/home/restart/?pid=${sbPID}" class="confirm restart"><i class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
@@ -243,7 +244,7 @@
                                         <li><a href="${srRoot}/logout" class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${srRoot}/home/status/"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
+                                    <li><a href="${ static_url("home/status") }"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>

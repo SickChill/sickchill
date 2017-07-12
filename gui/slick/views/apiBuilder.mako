@@ -1,5 +1,6 @@
 <%!
     import json
+    from requests.compat import urljoin
 
     import sickbeard
 %>
@@ -76,7 +77,7 @@
         <link rel="stylesheet" type="text/css" href="${ static_url('css/print.css') }" />
 
         %if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${ static_url('css/${sickbeard.THEME_NAME}.css') }" />
+            <link rel="stylesheet" type="text/css" href="${ static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css')))) }" />
         %endif
         <%block name="css" />
     </head>
@@ -91,7 +92,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${srRoot}/apibuilder/" title="SickRage">
+                    <a class="navbar-brand" href="${ static_url("apibuilder") }" title="SickRage">
                         <img alt="SickRage" src="${ static_url('images/sickrage.png') }" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
                         <p class="navbar-text hidden-xs">${title}</p>
                     </a>
@@ -108,7 +109,7 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="${srRoot}/home/">${_('Back to SickRage')}</a></li>
+                        <li><a href="${ static_url("home") }">${_('Back to SickRage')}</a></li>
                     </ul>
 
                     <form class="navbar-form navbar-right">

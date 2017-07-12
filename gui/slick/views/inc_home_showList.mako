@@ -176,7 +176,7 @@
             </thead>
             <tfoot class="hidden-print">
                 <tr>
-                    <th rowspan="1" colspan="1" align="center"><a href="${srRoot}/addShows/">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
+                    <th rowspan="1" colspan="1" align="center"><a href="${ static_url("addShows") }">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>

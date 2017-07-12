@@ -132,7 +132,7 @@ class PageTemplate(MakoTemplate):
             sbHttpPort = rh.request.headers['X-Forwarded-Port']
             self.arguments['sbHttpsPort'] = sbHttpPort
         if "X-Forwarded-Proto" in rh.request.headers:
-            self.arguments['sbHttpsEnabled'] = True if rh.request.headers['X-Forwarded-Proto'] == 'https' else False
+            self.arguments['sbHttpsEnabled'] = rh.request.headers['X-Forwarded-Proto'].lower() == 'https'
 
         self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
         self.arguments['numWarnings'] = len(classes.WarningViewer.errors)
@@ -169,6 +169,7 @@ class BaseHandler(RequestHandler):
         self.startTime = time.time()
 
         super(BaseHandler, self).__init__(*args, **kwargs)
+        self.include_host = True
 
     # def set_default_headers(self):
     #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
