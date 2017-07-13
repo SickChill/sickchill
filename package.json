@@ -80,7 +80,6 @@
             "core.min.js",
             "vender.min.js",
             "lib/**/*",
-            "gui/slick/js/lib/*",
             "Gruntfile.js"
         ]
     }
