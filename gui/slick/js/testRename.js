@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('.seriesCheck').click(function() {
+    $('.seriesCheck').on('click', function() {
         const serCheck = this;
 
         $('.seasonCheck:visible').each(function() {
@@ -11,7 +11,7 @@ $(document).ready(function() {
         });
     });
 
-    $('.seasonCheck').click(function() {
+    $('.seasonCheck').on('click', function() {
         const seasCheck = this;
         const seasNo = $(seasCheck).attr('id');
 
@@ -24,7 +24,7 @@ $(document).ready(function() {
         });
     });
 
-    $('input[type=submit]').click(function() {
+    $('input[type=submit]').on('click', function() {
         const epArr = [];
 
         $('.epCheck').each(function() {

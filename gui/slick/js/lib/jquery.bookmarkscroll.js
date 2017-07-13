@@ -37,7 +37,7 @@ var bookmarkscroll={
 					if ($bookmark.length==1 || this.hash==mainobj.topkeyword){ //if HTML anchor with given ID exists or href==topkeyword
 						if ($bookmark.length==1 && !document.all) //non IE, or IE7+
 							$bookmark.html('.').css({position:'absolute', fontSize:1, visibility:'hidden'})
-						$(this).click(function(e){
+						$(this).on('click', function(e){
 							mainobj.scrollTo((this.hash==mainobj.topkeyword)? mainobj.topkeyword : $bookmark.get(0), {}, this.hash)
 							e.preventDefault()
 						})

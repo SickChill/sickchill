@@ -141,7 +141,7 @@ formtowizard.prototype={
                 $section.data('elements', []); //empty array to contain elements within this section that should be validated for data (applicable only if validate option is defined)
                 //create each "step" DIV and add it to main Steps Container:
                 var $thestep=$('<div class="step disabledstep" />').data('section', i).html('Step '+(i+1)+'<div class="smalltext">'+$section.find('legend:eq(0)').text()+'<p></p></div>').appendTo($stepsguide);
-                $thestep.click(function(){ //assign behavior to each step div
+                $thestep.on('click', function(){ //assign behavior to each step div
                     thiswizard.loadsection($(this).data('section'));
                 });
             });
@@ -164,7 +164,7 @@ formtowizard.prototype={
             }
             thiswizard.$thesteps=$thesteps; //remember this ref
             thiswizard.paginatediv={$main:$paginatediv, $navlinks:$paginatediv.find('span.prev, span.next'), $status:$paginatediv.find('span.status')}; //remember various parts of pagination DIV
-            thiswizard.paginatediv.$main.click(function(e){ //assign behavior to pagination buttons
+            thiswizard.paginatediv.$main.on('click', function(e){ //assign behavior to pagination buttons
                 if (/(prev)|(next)/.test(e.target.className)) thiswizard.loadsection(e.target.className);
             });
             var i=(setting.persistsection)? formtowizard.routines.getCookie(setting.formid+"_persist") : 0;
