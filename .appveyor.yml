@@ -61,14 +61,15 @@ install:
   - "pip install --upgrade tox"
 
   # Install node/npm
-  - ps: Install-Product node $env:7
+  - ps: Install-Product node $env:8
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install npm bower grunt-cli
+  - npm -g install xo
   - npm install --quiet
   - bower install
 
 test_script:
-  - npm run test
+  - xo
+  - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
   - tox -v --recreate
 
 before_test:
