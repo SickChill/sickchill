@@ -1,8 +1,10 @@
-class traktException(Exception):
+class TraktException(Exception):
     pass
 
-class traktAuthException(traktException):
+
+class TraktAuthException(TraktException):
     pass
 
-class traktServerBusy(traktException):
+
+class TraktServerBusy(TraktException):
     pass

@@ -37,7 +37,7 @@ import markdown2
 import six
 from dateutil import tz
 from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException
+from libtrakt.exceptions import TraktException
 from mako.exceptions import RichTraceback
 from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
@@ -1110,10 +1110,15 @@ class Home(WebRoot):
                 "dbloc": dbloc})
 
     @staticmethod
+    def getTraktAuthUrl():
+        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        return trakt_api.get_auth_url()
+
+    @staticmethod
     def getTraktToken(trakt_pin=None):
 
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-        response = trakt_api.traktToken(trakt_pin)
+        response = trakt_api.fetch_token(trakt_pin)
         if response:
             return _("Trakt Authorized")
         return _("Trakt Not Authorized!")
@@ -2738,7 +2743,7 @@ class HomeAddShows(Home):
 
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
-        trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
+        trakt_api.trakt_request("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
 
         return self.redirect('/addShows/trendingShows/')
 
