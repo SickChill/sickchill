@@ -1,1 +1,1 @@
-from trakt import TraktAPI
+from .trakt import TraktAPI

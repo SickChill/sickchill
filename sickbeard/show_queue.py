@@ -385,7 +385,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 else:
                     data[b'shows'][0][b'ids'][b'tvrage'] = self.indexer_id
 
-                trakt_api.traktRequest('sync/watchlist/remove', data, method='POST')
+                trakt_api.trakt_request('sync/watchlist/remove', data, method='POST')
 
             self._finish_early()
             return

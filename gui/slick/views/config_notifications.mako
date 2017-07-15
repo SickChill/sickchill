@@ -2667,7 +2667,6 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
                                             <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
                                         </div>
                                     </div>
