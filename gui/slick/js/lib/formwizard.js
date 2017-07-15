@@ -74,9 +74,7 @@ formtowizard.prototype = {
             } // Enable persistence?
             this.currentsection = i;
             if (i === 0) {
-                setTimeout(function() {
-                    $('#nameToSearch').focus();
-                }, 250);
+                setTimeout($('#nameToSearch').focus, 250);
             }
         }
     },
@@ -155,14 +153,14 @@ formtowizard.prototype = {
                 $sectionsWrapper = $('<div style="position:relative;overflow:hidden;"></div>').insertBefore($sections.eq(0)); // Add DIV above the first fieldset.sectionwrap element
                 $sectionsWrapperInner = $('<div style="position:absolute;left:0;top:0;"></div>'); // Create inner DIV of $sectionswrapper that will scroll to reveal a fieldset element
             }
-            var maxfieldsetwidth = $sections.eq(0).outerWidth(); // Variable to get width of widest fieldset.sectionwrap
+            let maxfieldsetwidth = $sections.eq(0).outerWidth(); // Variable to get width of widest fieldset.sectionwrap
             $sections.slice(1).each(function() { // Loop through $sections (starting from 2nd one)
                 maxfieldsetwidth = Math.max($(this).outerWidth(), maxfieldsetwidth);
             });
             maxfieldsetwidth += 2; // Add 2px to final width to reveal fieldset border (if not removed via CSS)
             thiswizard.maxfieldsetwidth = maxfieldsetwidth;
             $sections.each(function(i) { // Loop through $sections again
-                var $section = $(this);
+                const $section = $(this);
                 if (setting.revealfx[0] === 'slide') {
                     $section.data('page', i).css({position: 'absolute', top: 0, left: maxfieldsetwidth * i}).appendTo($sectionsWrapperInner); // Set fieldset position to "absolute" and move it to inside sectionswrapper_inner DIV
                 }
@@ -179,9 +177,9 @@ formtowizard.prototype = {
             }
             $theform.prepend($stepsguide); // Add $thesteps div to the beginning of the form
             // $stepsguide.insertBefore($sectionswrapper) //add Steps Container before sectionswrapper container
-            var $thesteps = $stepsguide.find('div.step');
+            const $thesteps = $stepsguide.find('div.step');
             // Create pagination DIV and add it to end of form:
-            var $paginatediv = $('<div class="formpaginate" style="overflow:hidden;"><span class="prev" style="float:left">Prev</span> <span class="status">Step 1 of </span> <span class="next" style="float:right">Next</span></div>');
+            const $paginatediv = $('<div class="formpaginate" style="overflow:hidden;"><span class="prev" style="float:left">Prev</span> <span class="status">Step 1 of </span> <span class="next" style="float:right">Next</span></div>');
             $theform.append($paginatediv);
             thiswizard.$theform = $theform;
             if (setting.revealfx[0] === 'slide') {
@@ -217,9 +215,9 @@ formtowizard.prototype = {
                     thiswizard.loadsection(event.target.className);
                 }
             });
-            const i = (setting.persistsection) ? formtowizard.routines.getCookie(setting.formid + '_persist') : 0;
-            thiswizard.loadsection(i || 0, true); // Show the first section
-            thiswizard.setting.oninit($, i, $sections.eq(i)); // Call oninit event handler
+            const sectionId = (setting.persistsection) ? formtowizard.routines.getCookie(setting.formid + '_persist') : 0;
+            thiswizard.loadsection(sectionId || 0, true); // Show the first section
+            thiswizard.setting.oninit($, sectionId, $sections.eq(sectionId)); // Call oninit event handler
             if (setting.validate) { // If validate array defined
                 thiswizard.addvalidatefields(); // Seek out and cache form elements that should be validated
                 thiswizard.$theform.submit(function() {
