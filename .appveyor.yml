@@ -65,7 +65,6 @@ install:
   - set PATH=%APPDATA%\npm;%PATH%
   - npm -g install xo
   - npm install --quiet
-  - bower install
 
 test_script:
   - xo
