@@ -83,7 +83,10 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
                 torrent.set_custom(1, label)
 
             if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
+                if sickbeard.TORRENT_PATH_APPEND_LABEL:
+                    torrent.set_directory(os.path.join(sickbeard.TORRENT_PATH, label))
+                else:
+                    torrent.set_directory(sickbeard.TORRENT_PATH)
 
             if not sickbeard.TORRENT_PAUSED:
                 # Start torrent
@@ -124,7 +127,10 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
                 torrent.set_custom(1, label)
 
             if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
+                if sickbeard.TORRENT_PATH_APPEND_LABEL and label:
+                    torrent.set_directory(os.path.join(sickbeard.TORRENT_PATH, label))
+                else:
+                    torrent.set_directory(sickbeard.TORRENT_PATH)
 
             # Set Ratio Group
             # torrent.set_visible(group_name)

@@ -1092,6 +1092,21 @@
                                         </div>
                                     </div>
 
+                                    <div class="field-pair row" id="torrent_path_append_label_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Append label to path')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" name="torrent_path_append_label" class="enabler"
+                                                           id="torrent_path_append_label" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_PATH_APPEND_LABEL)]}/>
+                                                    <label for="torrent_path_append_label">${_('append label to Downloaded files location when adding torrent')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="field-pair row" id="torrent_seed_time_option">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="torrent_seed_time_label">${_('Minimum seeding time')}</label>

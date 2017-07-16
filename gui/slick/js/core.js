@@ -1845,6 +1845,7 @@ var SICKRAGE = {
                     $('#torrent_auth_type_option').hide();
                     $('#torrent_path_option').show();
                     $('#torrent_path_option').find('.fileBrowser').show();
+                    $('#torrent_path_append_label_option').hide();
                     $('#torrent_seed_time_option').hide();
                     $('#torrent_high_bandwidth_option').hide();
                     $('#torrent_label_option').show();
@@ -1873,6 +1874,7 @@ var SICKRAGE = {
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_verify_deluge').show();
                         $('#torrent_verify_rtorrent').hide();
+                        $('#torrent_path_append_label_option').show();
                         $('#label_warning_deluge').show();
                         $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').hide();
@@ -1883,6 +1885,7 @@ var SICKRAGE = {
                         $('#torrent_verify_cert_option').hide();
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').hide();
+                        $('#torrent_path_append_label_option').show();
                         $('#label_warning_deluge').show();
                         $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').show();
@@ -1903,6 +1906,7 @@ var SICKRAGE = {
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').show();
                         $('#torrent_auth_type_option').show();
+                        $('#torrent_path_append_label_option').show();
                     } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
                         client = 'qbittorrent';
                         $('#torrent_path_option').hide();

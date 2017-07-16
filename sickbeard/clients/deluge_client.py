@@ -196,8 +196,13 @@ class DelugeAPI(GenericClient):
 
             self._request(method='post', data=post_data)
 
+            if sickbeard.TORRENT_PATH_APPEND_LABEL:
+                label = sickbeard.TORRENT_LABEL_ANIME if result.show.is_anime else sickbeard.TORRENT_LABEL
+                path = os.path.join(sickbeard.TORRENT_PATH, label)
+            else
+                path = sickbeard.TORRENT_PATH
             post_data = json.dumps({"method": "core.set_torrent_move_completed_path",
-                                    "params": [result.hash, sickbeard.TORRENT_PATH],
+                                    "params": [result.hash, path],
                                     "id": 8})
 
             self._request(method='post', data=post_data)
