@@ -95,13 +95,13 @@
         <link rel="stylesheet" type="text/css" href="${ static_url('css/country-flags.css') }"/>
 
         % if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${ static_url('css/${sickbeard.THEME_NAME}.css') }" />
+            <link rel="stylesheet" type="text/css" href="${ static_url('css/' + sickbeard.THEME_NAME + '.css') }" />
         % endif
 
         <%block name="css" />
 
         % if sickbeard.CUSTOM_CSS:
-            <link rel="stylesheet" type="text/css" href="${ static_url('ui/custom.css') }" />
+            <link rel="stylesheet" type="text/css" href="${srRoot}/ui/custom.css" />
         % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
