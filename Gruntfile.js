@@ -299,7 +299,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_changes': {
-                cmd: function() { return 'git log --oneline --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
+                cmd: function() { return 'git log --oneline --first-parent --pretty=format:%s ' + grunt.config('last_tag') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
                     var commits = stdout.trim()
