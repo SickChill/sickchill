@@ -344,7 +344,7 @@ $(document).ready(function() {
         $(this).updateProvider(providerId, url, key, cat);
     });
 
-    $('#newznab_key,#newznab_url').change(function() {
+    $('#newznab_key,#newznab_url').on('change', function() {
         const selectedProvider = $('#editANewznabProvider :selected').val();
 
         if (selectedProvider === 'addNewznab') {
@@ -361,7 +361,7 @@ $(document).ready(function() {
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_titleTAG').change(function() {
+    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_titleTAG').on('change', function() {
         const selectedProvider = $('#editATorrentRssProvider :selected').val();
 
         if (selectedProvider === 'addTorrentRss') {
@@ -379,11 +379,11 @@ $(document).ready(function() {
         $(this).showHideProviders();
     });
 
-    $('#editANewznabProvider').change(function() {
+    $('#editANewznabProvider').on('change', function() {
         $(this).populateNewznabSection();
     });
 
-    $('#editATorrentRssProvider').change(function() {
+    $('#editATorrentRssProvider').on('change', function() {
         $(this).populateTorrentRssSection();
     });
 
@@ -391,7 +391,7 @@ $(document).ready(function() {
         $(this).refreshProviderList();
     });
 
-    $('#newznab_cat_update').click(function() {
+    $('#newznab_cat_update').on('click', function() {
         console.debug('Clicked Button');
 
         // Maybe check if there is anything selected?
@@ -428,7 +428,7 @@ $(document).ready(function() {
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#newznab_add').click(function() {
+    $('#newznab_add').on('click', function() {
         const name = $.trim($('#newznab_name').val());
         const url = $.trim($('#newznab_url').val());
         const key = $.trim($('#newznab_key').val());
@@ -454,12 +454,12 @@ $(document).ready(function() {
         });
     });
 
-    $('.newznab_delete').click(function() {
+    $('.newznab_delete').on('click', function() {
         const selectedProvider = $('#editANewznabProvider :selected').val();
         $(this).deleteProvider(selectedProvider);
     });
 
-    $('#torrentrss_add').click(function() {
+    $('#torrentrss_add').on('click', function() {
         const name = $('#torrentrss_name').val();
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
