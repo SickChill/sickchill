@@ -3,7 +3,7 @@
     import sickbeard
 %>
 <%block name="scripts">
-<script type="text/javascript" src="${ static_url('js/plotTooltip.js') }"></script>
+<script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
 </%block>
 <%block name="content">
     <div class="row">

@@ -33,6 +33,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         self.options.setdefault('username', '')
         self.options.setdefault('password', '')
         self.options.setdefault('web_root', '/')
+
         assert isinstance(self.options['port'], int)
         assert 'data_root' in self.options
 
