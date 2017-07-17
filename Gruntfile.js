@@ -51,7 +51,7 @@ module.exports = function(grunt) {
     *  Admin only tasks                     *
     ****************************************/
     grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
-        'ci',
+        'exec:test', // Run tests
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);
@@ -216,6 +216,9 @@ module.exports = function(grunt) {
             'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
             'crowdin_download': {cmd: 'crowdin-cli-py download'},
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
+		
+            // Run tests
+            'test': {cmd: 'yarn run test || npm run test'},
 
             // Publish/Releases
             'git': {
