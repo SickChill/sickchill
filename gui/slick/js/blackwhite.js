@@ -33,27 +33,27 @@ function updateBlackWhiteList(showName) { // eslint-disable-line no-unused-vars
     }
 }
 
-$('#removeW').click(function() {
+$('#removeW').on('click', function() {
     !$('#white option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
-$('#addW').click(function() {
+$('#addW').on('click', function() {
     !$('#pool option:selected').remove().appendTo('#white'); // eslint-disable-line no-unused-expressions
 });
 
-$('#addB').click(function() {
+$('#addB').on('click', function() {
     !$('#pool option:selected').remove().appendTo('#black'); // eslint-disable-line no-unused-expressions
 });
 
-$('#removeP').click(function() {
+$('#removeP').on('click', function() {
     !$('#pool option:selected').remove(); // eslint-disable-line no-unused-expressions
 });
 
-$('#removeB').click(function() {
+$('#removeB').on('click', function() {
     !$('#black option:selected').remove().appendTo('#pool'); // eslint-disable-line no-unused-expressions
 });
 
-$('#addToWhite').click(function() {
+$('#addToWhite').on('click', function() {
     const group = $('#addToPoolText').val();
     if (group !== '') {
         const option = $('<option>');
@@ -64,7 +64,7 @@ $('#addToWhite').click(function() {
     }
 });
 
-$('#addToBlack').click(function() {
+$('#addToBlack').on('click', function() {
     const group = $('#addToPoolText').val();
     if (group !== '') {
         const option = $('<option>');
