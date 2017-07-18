@@ -11,7 +11,7 @@
     },
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
-        "test": "xo --verbose && ava --verbose && grunt",
+        "test": "xo --verbose && ava tests/js/**/* --verbose",
         "security": "snyk test"
     },
     "dependencies": {},
@@ -39,7 +39,16 @@
     },
     "ava": {
         "require": [
-            "./test/helpers/setup-browser-env.js"
+            "./tests/js/helpers/setup-browser-env.js"
+        ],
+        "files": [
+            "tests/js/**/*.js"
+        ],
+        "source": [
+            "gui/slick/js/**/*.{js,jsx}",
+            "!dist/**/*",
+            "!lib/**/*",
+            "!**/*.min.js"
         ]
     },
     "xo": {
