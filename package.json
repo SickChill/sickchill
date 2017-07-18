@@ -11,7 +11,7 @@
     },
     "homepage": "https://github.com/SickRage/SickRage#readme",
     "scripts": {
-        "test": "xo --verbose && ava tests/js/**/* --verbose",
+        "test": "xo --verbose && ava --verbose",
         "security": "snyk test"
     },
     "dependencies": {},
