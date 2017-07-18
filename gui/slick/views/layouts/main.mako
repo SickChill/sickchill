@@ -145,7 +145,7 @@
                                     % if sickbeard.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
                                         % for recentShow in sickbeard.SHOWS_RECENT:
-                                            <li><a href="${static_url("home/displayShow?show=${recentShow['indexerid']}", include_version=False)}><i class="fa fa-fw fa-television"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
+                                            <li><a href="${static_url("home/displayShow?show={}".format(recentShow['indexerid']), include_version=False)}"><i class="fa fa-fw fa-television"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
                                         % endfor
                                     % endif
                                 </ul>
@@ -245,10 +245,8 @@
                                     <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     <li><a href="${static_url("home/restart/?pid={}".format(sbPID), include_version=False)}" class="confirm restart"><i
                                         class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown"><i class="fa \
-                                    fa-fw \
-
-                                    fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
+                                    <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown"><i
+                                        class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin:
                                         <li><a href="${static_url("logout", include_version=False)} class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
