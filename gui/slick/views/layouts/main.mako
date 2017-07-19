@@ -242,13 +242,13 @@
                                     %endif
                                     <li><a href="${static_url("errorlogs/viewlog/", include_version=False)}"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}"><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     <li><a href="${static_url("home/restart/?pid={}".format(sbPID), include_version=False)}" class="confirm restart"><i
                                         class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
                                     <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown"><i
                                         class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin:
-                                        <li><a href="${static_url("logout", include_version=False)} class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
+                                        <li><a href="${static_url("logout", include_version=False)}" class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
                                     <li><a href="${static_url("home/status/", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
@@ -331,7 +331,7 @@
                                 <span class="footerhighlight">${ep_downloaded}</span>
                                 % if ep_snatched:
                                     <span class="footerhighlight">
-                                      <a href="${static_url("manage/episodeStatuses?whichStatus=2", include_version=False)} title="${_('View overview of snatched episodes')}">
+                                      <a href="${static_url("manage/episodeStatuses?whichStatus=2", include_version=False)}" title="${_('View overview of snatched episodes')}">
                                         +${ep_snatched}
                                       </a>
                                     </span>&nbsp;${_('Snatched')}
