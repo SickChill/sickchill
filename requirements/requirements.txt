@@ -36,7 +36,7 @@ markdown2 == 2.3.4
 MarkupSafe == 1.0
 ndg-httpsclient == 0.3.3
 oauthlib == 2.0.2
-git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi; platform_system!="Windows"
+git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
 #! pkg_resources.py  # Copied from setuptools and looks to be modified. Maybe we don't really need this? Used to load the egg files for pymediainfo and pytz.
 profilehooks == 1.5
 putio.py == 6.1.0
@@ -73,5 +73,5 @@ Unidecode == 0.04.20
 urllib3 == 1.21.1
 validators == 0.10
 webencodings == 0.5.1
-win-inet-pton == 1.0.1  # Required on Windows systems
+win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
 xmltodict == 0.11.0
