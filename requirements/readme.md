@@ -74,7 +74,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :exclamation: | tvdb_api | 1.9 | **Heavily Modified**<br>Deprecated API, will be disabled by October 1st, 2017
 :warning: | twilio | [f91e1a9](https://github.com/twilio/twilio-python/tree/f91e1a9e6f4e0a60589b2b90cb66b89b879b9c3e)
 :ok: | tzlocal | 1.4 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
-:ok: | Unidecode | 0.04.20 | Updated in [#3877](https://github.com/SickRage/SickRage/pull/3877)
+:ok: | Unidecode | 0.04.21 | Updated in [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | urllib3 | 1.21.1 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :ok: | validators | 0.10
 :ok: | webencodings | 0.5.1
