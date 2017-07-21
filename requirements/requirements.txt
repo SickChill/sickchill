@@ -14,7 +14,7 @@ decorator == 4.0.10
 git+https://bitbucket.org/zzzeek/dogpile.cache.git@229615be466d00c9c135a90d8965679ab3e4edaa#egg=dogpile.cache
 dogpile.core == 0.4.1
 enum34 == 1.0.4
-git+https://github.com/Diaoul/enzyme.git@9572bea606a6145dad153cd712653d6cf10ef18e#egg=enzyme
+enzyme == 0.4.1
 fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
 git+https://github.com/agronholm/pythonfutures.git@43bfc41626208d78f4db1839e2808772defdfdca#egg=futures

@@ -19,7 +19,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | dogpile.cache | [229615b](https://bitbucket.org/zzzeek/dogpile.cache/src/229615be466d00c9c135a90d8965679ab3e4edaa/dogpile/) | Bitbucket
 :ok: | dogpile.core | 0.4.1
 :ok: | enum34 | 1.0.4
-:warning: | enzyme | [9572bea](https://github.com/Diaoul/enzyme/tree/9572bea606a6145dad153cd712653d6cf10ef18e)
+:ok: | enzyme | 0.4.1
 :ok: | fake-useragent | 0.1.2 | Note: There's a `ua.json` file that's used by `sickbeard.common`,<br>should be moved to a better location.
 :warning: | feedparser | [f1dd1bb](https://github.com/kurtmckee/feedparser/tree/f1dd1bb923ebfe6482fc2521c1f150b4032289ec) | Vanilla'd by [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :warning: | futures | [43bfc41](https://github.com/agronholm/pythonfutures/tree/43bfc41626208d78f4db1839e2808772defdfdca)
