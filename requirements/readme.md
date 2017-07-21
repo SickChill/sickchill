@@ -42,7 +42,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | ndg-httpsclient | 0.3.3
 :ok: | oauthlib | 2.0.2 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 :warning: | pgi | [38f8349](https://github.com/pygobject/pgi/tree/38f834902247a5851cb4c72ba018f160ae26d612)
-:exclamation: | pkg_resources.py | - | Copied from setuptools and looks to be modified.<br>Maybe we don't really need this?<br>Used to load the egg files for `pymediainfo` and `pytz`.
+:exclamation: | pkg_resources.py | - | Copied from setuptools and looks to be modified.<br>Used to load `pymediainfo*.egg` and `pytz*.egg` as packages.<br>Also explicitly used by: `babelfish`, `dogpile.cache`/`dogpile.util`, `enzyme`, `guessit`, `Mako`, `pymediainfo`, `pytz`, `stevedore`, `subliminal`.
 :ok: | profilehooks | 1.5
 :ok: | putio.py | 6.1.0
 :ok: | pyasn1 | 0.1.7 | + LICENSE

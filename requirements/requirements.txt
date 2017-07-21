@@ -37,7 +37,7 @@ MarkupSafe == 1.0
 ndg-httpsclient == 0.3.3
 oauthlib == 2.0.2
 git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
-#! pkg_resources.py  # Copied from setuptools and looks to be modified. Maybe we don't really need this? Used to load the egg files for pymediainfo and pytz.
+#! pkg_resources.py  # Copied from setuptools and looks to be modified. See readme for more info.
 profilehooks == 1.5
 putio.py == 6.1.0
 pyasn1 == 0.1.7  # + LICENSE
