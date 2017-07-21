@@ -51,7 +51,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | pymediainfo | 2.0 | as an `.egg` file, loaded by `pkg_resources`
 :ok: | pynma | 1.0
 :ok: | PySocks | 1.6.7 | Added in [#3877](https://github.com/SickRage/SickRage/pull/3877)
-:warning: | pysrt | [47aaa59](https://github.com/byroot/pysrt/tree/47aaa592c3bc185cd2bc1d58d1451bf98be3c1ef)
+:ok: | pysrt | 1.1.1
 :ok: | python-dateutil | 2.6.0 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :exclamation: | python-fanart | 1.4.0 | **Modified**<br>API url was updated. No newer version.
 :ok: | python-twitter | 3.3 | Updated in [#3870](https://github.com/SickRage/SickRage/pull/3870)

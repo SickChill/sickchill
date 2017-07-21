@@ -46,7 +46,7 @@ PyJWT == 1.5.0
 pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
 pynma == 1.0
 PySocks == 1.6.7
-git+https://github.com/byroot/pysrt.git@47aaa592c3bc185cd2bc1d58d1451bf98be3c1ef#egg=pysrt
+pysrt == 1.1.1
 python-dateutil == 2.6.0
 #! python-fanart == 1.4.0  # <Modified: API url was updated. No newer version>
 python-twitter == 3.3
