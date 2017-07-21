@@ -72,7 +72,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :ok: | tornado | 4.5.1 | Note: Contains a `routes.py` file,<br>which is not a part of the original package
 :ok: | tus.py | 1.2.0
 :exclamation: | tvdb_api | 1.9 | **Heavily Modified**<br>Deprecated API, will be disabled by October 1st, 2017
-:warning: | twilio | [f91e1a9](https://github.com/twilio/twilio-python/tree/f91e1a9e6f4e0a60589b2b90cb66b89b879b9c3e)
+:ok: | twilio | 5.7.0 | Next version is a major (6.0.0)
 :ok: | tzlocal | 1.4 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | Unidecode | 0.04.21 | Updated in [#3877](https://github.com/SickRage/SickRage/pull/3877)
 :ok: | urllib3 | 1.21.1 | Added in [#3870](https://github.com/SickRage/SickRage/pull/3870)
