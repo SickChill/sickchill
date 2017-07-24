@@ -2,6 +2,9 @@
 <%!
     import os
     import datetime
+
+    from github.GithubException import GithubException
+
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
@@ -1086,7 +1089,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
-                                            <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
+                                            <%
+                                                try:
+                                                    gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches()
+                                                except GithubException:
+                                                    gh_branch = ['']
+                                            %>
                                             <% gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
                                                                   or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN) %>
                                             % if gh_branch:
