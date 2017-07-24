@@ -36,6 +36,7 @@ import adba
 import markdown2
 import six
 from dateutil import tz
+from github.GithubException import GithubException
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 from mako.exceptions import RichTraceback
@@ -1300,6 +1301,29 @@ class Home(WebRoot):
                                             _("Update wasn't successful, not restarting. Check your log for more information."))
         else:
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+
+    @staticmethod
+    def fetchRemoteBranches():
+        response = []
+        try:
+            gh_branches = sickbeard.versionCheckScheduler.action.list_remote_branches()
+        except GithubException:
+            gh_branches = None
+
+        if gh_branches:
+            gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD or
+                              sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
+            for cur_branch in gh_branches:
+                branch_obj = {'name': cur_branch}
+                if cur_branch == sickbeard.BRANCH:
+                    branch_obj['checked'] = True
+
+                if (gh_credentials and sickbeard.DEVELOPER == 1 or
+                    gh_credentials and cur_branch in ['master', 'develop'] or
+                    cur_branch == 'master'):
+                    response.append(branch_obj)
+
+        return json.dumps(response)
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
