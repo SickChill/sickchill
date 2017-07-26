@@ -438,7 +438,6 @@ var SICKRAGE = {
                 if (branches.length) {
                     const baseOptionElem = $('<option></option>');
                     let optionElem = null;
-                    // '<option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>'
                     for (let i = 0; i < branches.length; i++) {
                         optionElem = baseOptionElem.clone().text(branches[i].name).attr('value', branches[i].name);
                         optionElem.prop('selected', Boolean(branches[i].current));

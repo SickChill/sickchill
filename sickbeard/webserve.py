@@ -1316,7 +1316,7 @@ class Home(WebRoot):
             for cur_branch in gh_branches:
                 branch_obj = {'name': cur_branch}
                 if cur_branch == sickbeard.BRANCH:
-                    branch_obj['checked'] = True
+                    branch_obj['current'] = True
 
                 if (gh_credentials and sickbeard.DEVELOPER == 1 or
                     gh_credentials and cur_branch in ['master', 'develop'] or
