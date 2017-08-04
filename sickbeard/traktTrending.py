@@ -5,12 +5,11 @@ from __future__ import print_function, unicode_literals
 import os
 import posixpath
 
-from libtrakt.exceptions import TraktException
-from libtrakt.trakt import TraktAPI
-
 import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickrage.custom.libtrakt import TraktAPI
+from sickrage.custom.libtrakt.exceptions import TraktException
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 

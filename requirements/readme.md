@@ -34,7 +34,6 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 :warning: | js2py | [05e77f0](https://github.com/PiotrDabkowski/Js2Py/tree/05e77f0d4ffe91ef418a93860e666962cfd193b8)
 :warning: | jsonrpclib | [e3a3cde](https://github.com/joshmarshall/jsonrpclib/tree/e3a3cdedc9577b25b91274815b38ba7f3bc43c68)
 :warning: | libgrowl | - | **Custom by Sick-Beard's midgetspy**<br>Some of the code is from [GH:kfdm/gntp](https://github.com/kfdm/gntp)
-:warning: | libtrakt | - | **Custom**<br>Just a small note -<br>if needed, [GH:fuzeman/trakt.py](https://github.com/fuzeman/trakt.py) is a great implementation of Trakt.tv's API.
 :ok: | lockfile | 0.11.0
 :ok: | Mako | 1.0.6
 :ok: | markdown2 | 2.3.4 | Resolved by [#3877](https://github.com/SickRage/SickRage/pull/3877)
@@ -88,6 +87,7 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickRage
 
  Package  |  Reason  | Reference
 :-------: | :------: | ---------
+libtrakt | Moved | Updated and moved into /sickrage/custom in [#3949](https://github.com/SickRage/SickRage/pull/3949)
 MultipartPostHandler.py | Unused | Removed in [#3716](https://github.com/SickRage/SickRage/pull/3716)
 oauth2 | Outdated | Removed in [#3870](https://github.com/SickRage/SickRage/pull/3870)
 simplejson | Unused | Removed in [#3877](https://github.com/SickRage/SickRage/pull/3877)

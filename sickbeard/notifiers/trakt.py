@@ -20,11 +20,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from libtrakt import TraktAPI
-from libtrakt.exceptions import TraktAuthException, TraktException, TraktServerBusy
-
 import sickbeard
 from sickbeard import logger
+from sickrage.custom.libtrakt import TraktAPI
+from sickrage.custom.libtrakt.exceptions import TraktAuthException, TraktException, TraktServerBusy
 from sickrage.helper.exceptions import ex
 
 

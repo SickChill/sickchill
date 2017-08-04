@@ -23,12 +23,11 @@ import datetime
 import os
 import traceback
 
-from libtrakt import TraktAPI
-from libtrakt.exceptions import TraktException
-
 import sickbeard
 from sickbeard import db, helpers, logger, search_queue
 from sickbeard.common import Quality, SKIPPED, UNKNOWN, WANTED
+from sickrage.custom.libtrakt import TraktAPI
+from sickrage.custom.libtrakt.exceptions import TraktException
 from sickrage.helper.common import episode_num, sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex

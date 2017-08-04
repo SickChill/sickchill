@@ -25,7 +25,6 @@ from collections import namedtuple
 
 import six
 from imdb import _exceptions as imdb_exceptions
-from libtrakt import TraktAPI
 
 import sickbeard
 from sickbeard import generic_queue, logger, name_cache, notifiers, ui
@@ -33,6 +32,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
 from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
 from sickbeard.tv import TVShow
+from sickrage.custom.libtrakt import TraktAPI
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
