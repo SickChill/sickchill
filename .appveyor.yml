@@ -69,7 +69,7 @@ install:
 test_script:
   - xo
   - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
-  - tox -v --recreate
+  - tox -v --recreate -e "py27-windows"
 
 before_test:
   - echo Starting Tests
