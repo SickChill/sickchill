@@ -916,8 +916,11 @@ var SICKRAGE = {
             });
 
             $('#TraktGetPin').on('click', function() {
-                window.open($('#trakt_pin_url').val(), 'popUp', 'toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550');
-                $('#trakt_pin').removeClass('hide');
+                // Generate the auth url and open a webpage
+                $.get(srRoot + '/home/getTraktAuthUrl', function(url) {
+                    window.open(url, 'popUp', 'toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=610');
+                    $('#trakt_pin').removeClass('hide');
+                });
             });
 
             $('#trakt_pin').on('keyup change', function() {

@@ -21,7 +21,7 @@
 from __future__ import print_function, unicode_literals
 
 from libtrakt import TraktAPI
-from libtrakt.exceptions import traktAuthException, traktException, traktServerBusy
+from libtrakt.exceptions import TraktAuthException, TraktException, TraktServerBusy
 
 import sickbeard
 from sickbeard import logger
@@ -77,7 +77,7 @@ class Notifier(object):
                     data['shows'][0]['ids']['tvrage'] = ep_obj.show.indexerid
 
                 if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
-                        trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                        trakt_api.trakt_request("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
                 data['shows'][0]['seasons'] = [{'number': ep_obj.season, 'episodes': []}]
@@ -86,12 +86,12 @@ class Notifier(object):
                     data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
 
                 if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
-                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                    trakt_api.trakt_request("sync/watchlist/remove", data, method='POST')
 
                 # update library
-                trakt_api.traktRequest("sync/collection", data, method='POST')
+                trakt_api.trakt_request("sync/collection", data, method='POST')
 
-            except (traktException, traktAuthException, traktServerBusy) as e:
+            except (TraktException, TraktAuthException, TraktServerBusy) as e:
                 logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
     def update_watchlist(self, show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
@@ -167,9 +167,9 @@ class Notifier(object):
                 if update == "remove":
                     trakt_url += "/remove"
 
-                trakt_api.traktRequest(trakt_url, data, method='POST')
+                trakt_api.trakt_request(trakt_url, data, method='POST')
 
-            except (traktException, traktAuthException, traktServerBusy) as e:
+            except (TraktException, TraktAuthException, TraktServerBusy) as e:
                 logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
                 return False
 
@@ -225,9 +225,11 @@ class Notifier(object):
         """
         try:
             trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-            trakt_api.validateAccount()
+            validate = trakt_api.validate_account()
+            if not validate:
+                return "Unable to validate Trakt account."
             if blacklist_name and blacklist_name is not None:
-                trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
+                trakt_lists = trakt_api.trakt_request("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:
                     if trakt_list['ids']['slug'] == blacklist_name:
@@ -236,6 +238,6 @@ class Notifier(object):
                     return "Trakt blacklist doesn't exists"
             else:
                 return "Test notice sent successfully to Trakt"
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except (TraktException, TraktAuthException, TraktServerBusy) as e:
             logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
             return "Test notice failed to Trakt: {0}".format(ex(e))

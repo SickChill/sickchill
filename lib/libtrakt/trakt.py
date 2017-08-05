@@ -1,128 +1,178 @@
-import requests
-import certifi
+from __future__ import unicode_literals
+
 import json
+
+import certifi
+import requests
+from oauthlib.oauth2 import TokenExpiredError
+from requests.compat import urljoin
+from requests_oauthlib import OAuth2Session
+
 import sickbeard
-import time
 from sickbeard import logger
 
-from exceptions import traktException, traktAuthException, traktServerBusy
+from .exceptions import TraktAuthException, TraktException, TraktServerBusy
 
 
-class TraktAPI:
+class TraktAPI(object):
     def __init__(self, ssl_verify=True, timeout=30):
-        self.session = requests.Session()
+        self.api_url = sickbeard.TRAKT_API_URL
+        self.auth_url = urljoin(self.api_url, 'oauth/authorize')
+        self.token_url = urljoin(self.api_url, 'oauth/token')
+
         self.verify = certifi.where() if ssl_verify else False
         self.timeout = timeout if timeout else None
-        self.auth_url = sickbeard.TRAKT_OAUTH_URL
-        self.api_url = sickbeard.TRAKT_API_URL
+
+        current_tokens = {}
+        if sickbeard.TRAKT_ACCESS_TOKEN:
+            current_tokens.update({
+                'access_token': sickbeard.TRAKT_ACCESS_TOKEN,
+                'refresh_token': sickbeard.TRAKT_REFRESH_TOKEN,
+                'token_type': 'bearer'
+            })
+
+        self.session = OAuth2Session(
+            client_id=sickbeard.TRAKT_API_KEY,
+            redirect_uri='urn:ietf:wg:oauth:2.0:oob',
+            token=current_tokens
+        )
+        # Extra headers that Trakt API requires
         self.headers = {
-          'Content-Type': 'application/json',
-          'trakt-api-version': '2',
-          'trakt-api-key': sickbeard.TRAKT_API_KEY
+            'Content-Type': 'application/json',
+            'trakt-api-version': '2',
+            'trakt-api-key': sickbeard.TRAKT_API_KEY  # (client_id)
         }
 
-    def traktToken(self, trakt_pin=None, refresh=False, count=0):
+    def get_auth_url(self):
+        """ Generate an oauth url """
+        auth_url, state = self.session.authorization_url(self.auth_url)
+        return auth_url
 
-        if count > 3:
-            sickbeard.TRAKT_ACCESS_TOKEN = ''
+    def fetch_token(self, pin_code):
+        """ Authenticate using the user-supplied Trakt PIN code """
+        try:
+            tokens = self.session.fetch_token(
+                token_url=self.token_url,
+                code=pin_code,
+                client_secret=sickbeard.TRAKT_API_SECRET,
+                verify=self.verify,
+                timeout=self.timeout
+            )
+            self._update_tokens(tokens)
+        except Exception as error:
+            logger.log('Failed to authorize Trakt: {0}'.format(error), logger.ERROR)
             return False
-        elif count > 0:
-            time.sleep(2)
 
-        data = {
-            'client_id': sickbeard.TRAKT_API_KEY,
-            'client_secret': sickbeard.TRAKT_API_SECRET,
-            'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob'
-        }
+        return True
 
-        if refresh:
-            data['grant_type'] = 'refresh_token'
-            data['refresh_token'] = sickbeard.TRAKT_REFRESH_TOKEN
-        else:
-            data['grant_type'] = 'authorization_code'
-            if not None == trakt_pin:
-                data['code'] = trakt_pin
+    def refresh_token(self):
+        try:
+            tokens = self.session.refresh_token(
+                token_url=self.token_url,
+                refresh_token=sickbeard.TRAKT_REFRESH_TOKEN,
+                verify=self.verify,
+                timeout=self.timeout
+            )
+            self._update_tokens(tokens)
+        except Exception as error:
+            logger.log('Failed to refresh Trakt tokens: {0}'.format(error), logger.ERROR)
+            return False
 
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        return True
 
-        resp = self.traktRequest('oauth/token', data=data,  headers=headers, url=self.auth_url , method='POST', count=count)
-
-        if 'access_token' in resp:
-            sickbeard.TRAKT_ACCESS_TOKEN  = resp['access_token']
-            if 'refresh_token' in resp:
-                sickbeard.TRAKT_REFRESH_TOKEN = resp['refresh_token']
-            return True
-        return False
-
-    def validateAccount(self):
-
-        resp = self.traktRequest('users/settings')
+    def validate_account(self):
+        resp = self.trakt_request('users/settings')
 
         if 'account' in resp:
             return True
         return False
 
-    def traktRequest(self, path, data=None, headers=None, url=None, method='GET', count=0):
-        if url is None:
-            url = self.api_url
+    def trakt_request(self, path, data=None, headers=None, url=None, method='GET', attempt=0):
+        if not self.session.authorized or not sickbeard.TRAKT_ACCESS_TOKEN:
+            logger.log('You are not authenticated with Trakt. Check your Trakt settings.', logger.WARNING)
+            return {}
 
-        count = count + 1
+        base_url = url or self.api_url
+        headers = headers or self.headers
+        data = json.dumps(data) if data else []
 
-        if headers is None:
-            headers = self.headers
+        request_url = urljoin(base_url, path)
 
-        if sickbeard.TRAKT_ACCESS_TOKEN == '' and count >= 2:
+        if attempt > 2:
             logger.log(u'You must get a Trakt TOKEN. Check your Trakt settings', logger.WARNING)
             return {}
 
-        if sickbeard.TRAKT_ACCESS_TOKEN != '':
-            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+        attempt += 1
 
         try:
-            resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,
-                data=json.dumps(data) if data else [], verify=self.verify)
+            resp = self.session.request(
+                method=method,
+                url=request_url,
+                headers=headers,
+                data=data,
+                verify=self.verify,
+                timeout=self.timeout
+            )
 
             # check for http errors and raise if any are present
             resp.raise_for_status()
 
             # convert response to json
             resp = resp.json()
-        except requests.RequestException as e:
-            code = getattr(e.response, 'status_code', None)
+
+        except TokenExpiredError as err:
+            # Manually refresh the tokens and try again
+            logger.log('Trakt API token expired, refreshing...', logger.DEBUG)
+            if self.refresh_token():
+                return self.trakt_request(path, data, headers, url, method, attempt)
+
+            logger.log('Unauthorized. Please check your Trakt settings', logger.WARNING)
+            return {}
+
+        except requests.RequestException as err:
+            code = getattr(err.response, 'status_code', None)
             if not code:
-                if 'timed out' in e:
-                    logger.log(u'Timeout connecting to Trakt. Try to increase timeout value in Trakt settings', logger.WARNING)
+                if 'timed out' in err:
+                    logger.log('Timeout connecting to Trakt. Try to increase timeout value in Trakt settings',
+                               logger.WARNING)
                 # This is pretty much a fatal error if there is no status_code
                 # It means there basically was no response at all
                 else:
-                    logger.log(u'Could not connect to Trakt. Error: {0}'.format(e), logger.DEBUG)
+                    logger.log('Could not connect to Trakt. Error: {0}'.format(err), logger.DEBUG)
+            # Test for specific codes: (http://docs.trakt.apiary.io/#introduction/status-codes)
             elif code == 502:
-                # Retry the request, cloudflare had a proxying issue
-                logger.log(u'Retrying trakt api request: %s' % path, logger.DEBUG)
-                return self.traktRequest(path, data, headers, url, method)
+                # Retry the request, Cloudflare had a proxying issue
+                logger.log('Retrying Trakt API request (attempt #{0}): {1}'.format(attempt, path), logger.DEBUG)
+                return self.trakt_request(path, data, headers, url, method, attempt)
             elif code == 401:
-                if self.traktToken(refresh=True, count=count):
-                    return self.traktRequest(path, data, headers, url, method)
+                # Manually refresh the tokens and try again
+                logger.log('Trying to refresh Trakt API token...', logger.DEBUG)
+                if self.refresh_token():
+                    return self.trakt_request(path, data, headers, url, method, attempt)
                 else:
-                    logger.log(u'Unauthorized. Please check your Trakt settings', logger.WARNING)
-            elif code in (500,501,503,504,520,521,522):
-                # http://docs.trakt.apiary.io/#introduction/status-codes
-                logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.DEBUG)
+                    logger.log('Unauthorized. Please check your Trakt settings', logger.WARNING)
+            elif code in (500, 501, 503, 504, 520, 521, 522):
+                logger.log('Trakt may have some issues and it\'s unavailable. Try again later please', logger.DEBUG)
             elif code == 404:
-                logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.DEBUG)
+                logger.log('Trakt error (404) the resource does not exist: {0}'.format(request_url), logger.DEBUG)
             else:
-                logger.log(u'Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)
+                logger.log('Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)
+
             return {}
 
-        # check and confirm trakt call did not fail
+        # Check and confirm trakt call did not fail
         if isinstance(resp, dict) and resp.get('status', False) == 'failure':
             if 'message' in resp:
-                raise traktException(resp['message'])
+                raise TraktException(resp['message'])
             if 'error' in resp:
-                raise traktException(resp['error'])
+                raise TraktException(resp['error'])
             else:
-                raise traktException('Unknown Error')
+                raise TraktException('Unknown Error')
 
         return resp
+
+    @staticmethod
+    def _update_tokens(tokens):
+        """ Update the stored access and refresh token """
+        sickbeard.TRAKT_ACCESS_TOKEN = tokens['access_token']
+        sickbeard.TRAKT_REFRESH_TOKEN = tokens['refresh_token']
