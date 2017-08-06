@@ -73,7 +73,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             logger.log('Unable to connect to provider', logger.WARNING)
             return False
 
-        if not re.search('logout', response):
+        if 'logout' not in response:
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -117,20 +117,16 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if len(cells) < 5:
                                 continue
 
-                            try:
-                                title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                                download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
-                                if not (title and download_url):
-                                    continue
-
-                                seeders = try_int(cells[3].get_text(strip=True))
-                                leechers = try_int(cells[4].get_text(strip=True))
-
-                                torrent_size = cells[2].get_text()
-                                size = convert_size(torrent_size) or -1
-
-                            except (AttributeError, TypeError, KeyError, ValueError):
+                            title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
+                            download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
+                            if not (title and download_url):
                                 continue
+
+                            seeders = try_int(cells[3].get_text(strip=True))
+                            leechers = try_int(cells[4].get_text(strip=True))
+
+                            torrent_size = cells[2].get_text()
+                            size = convert_size(torrent_size) or -1
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
