@@ -53,7 +53,7 @@ from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.routes import route
-from tornado.web import authenticated, HTTPError, RequestHandler, StaticFileHandler
+from tornado.web import addslash, authenticated, HTTPError, RequestHandler, StaticFileHandler
 
 import sickbeard
 from sickbeard import classes, clients, config, db, helpers, logger, naming, network_timezones, notifiers, sab, search_queue, subtitles as subtitle_module, ui
@@ -2431,6 +2431,7 @@ class HomePostProcess(Home):
     def __init__(self, *args, **kwargs):
         super(HomePostProcess, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
@@ -3817,6 +3818,7 @@ class Config(WebRoot):
 
         return menu
 
+    @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
 
@@ -3862,6 +3864,7 @@ class ConfigShares(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigShares, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self):
 
         t = PageTemplate(rh=self, filename="config_shares.mako")
@@ -3900,6 +3903,7 @@ class ConfigGeneral(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigGeneral, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="config_general.mako")
 
@@ -4095,6 +4099,7 @@ class ConfigBackupRestore(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigBackupRestore, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_backuprestore.mako")
 
@@ -4158,6 +4163,7 @@ class ConfigSearch(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSearch, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_search.mako")
 
@@ -4295,6 +4301,7 @@ class ConfigPostProcessing(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigPostProcessing, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_postProcessing.mako")
 
@@ -4472,6 +4479,7 @@ class ConfigProviders(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigProviders, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
@@ -4918,6 +4926,7 @@ class ConfigNotifications(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigNotifications, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 
@@ -5198,6 +5207,7 @@ class ConfigSubtitles(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSubtitles, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_subtitles.mako")
 
@@ -5264,6 +5274,7 @@ class ConfigAnime(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigAnime, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
 
         t = PageTemplate(rh=self, filename="config_anime.mako")
@@ -5319,6 +5330,7 @@ class ErrorLogs(WebRoot):
 
         return menu
 
+    @addslash
     def index(self, level=logger.ERROR):  # pylint: disable=arguments-differ
         level = try_int(level, logger.ERROR)
 

@@ -92,7 +92,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${static_url("apibuilder", include_version=False)}" title="SickRage">
+                    <a class="navbar-brand" href="${static_url("apibuilder/", include_version=False)}" title="SickRage">
                         <img alt="SickRage" src="${static_url('images/sickrage.png')}" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
                         <p class="navbar-text hidden-xs">${title}</p>
                     </a>
@@ -109,7 +109,7 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="${static_url("home", include_version=False)}">${_('Back to SickRage')}</a></li>
+                        <li><a href="${static_url("home/", include_version=False)}">${_('Back to SickRage')}</a></li>
                     </ul>
 
                     <form class="navbar-form navbar-right">

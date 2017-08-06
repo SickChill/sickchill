@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/newShow", include_version=False)}" id="btnNewShow" class="btn btn-large">
+            <a href="${static_url("addShows/newShow/", include_version=False)}" id="btnNewShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addnewshow"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add New Show')}</h3>
@@ -36,7 +36,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/popularShows", include_version=False)}" id="btnNewShow" class="btn btn-large">
+            <a href="${static_url("addShows/popularShows/", include_version=False)}" id="btnNewShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addimdb"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add From IMDB\'s Popular Shows')}</h3>
@@ -48,7 +48,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/existingShows", include_version=False)}" id="btnExistingShow" class="btn btn-large">
+            <a href="${static_url("addShows/existingShows/", include_version=False)}" id="btnExistingShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addexistingshow"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add Existing Shows')}</h3>
