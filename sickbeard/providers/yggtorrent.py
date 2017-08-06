@@ -84,9 +84,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if not self.login():
             return results
 
-        # Units
-        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-
         for mode in search_strings:
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
@@ -97,37 +94,43 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
 
-                search_params = {
-                    'q': re.sub(r'[()]', '', search_string)
-                }
-                data = self.get_url(self.urls['search'], params=search_params, returns='text')
-                if not data:
-                    continue
-
-                with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find(class_='table table-striped')
-                    torrent_rows = torrent_table('tr') if torrent_table else []
-
-                    # Continue only if at least one Release is found
-                    if len(torrent_rows) < 2:
-                        logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                try:
+                    search_params = {
+                        'q': re.sub(r'[()]', '', search_string)
+                    }
+                    data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                    if not data:
                         continue
 
-                    # Skip column headers
-                    for result in torrent_rows[1:]:
-                        cells = result('td')
-                        if len(cells) < 5:
-                            logger.log('len(cells) < len(labels)', logger.DEBUG)
+                    with BS4Parser(data, 'html5lib') as html:
+                        torrent_table = html.find(class_='table table-striped')
+                        torrent_rows = torrent_table('tr') if torrent_table else []
+
+                        # Continue only if at least one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                             continue
 
-                        try:
-                            title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
-                            if not all([title, download_url]):
+                        # Skip column headers
+                        for result in torrent_rows[1:]:
+                            cells = result('td')
+                            if len(cells) < 5:
                                 continue
 
-                            seeders = try_int(cells[3].get_text(strip=True))
-                            leechers = try_int(cells[4].get_text(strip=True))
+                            try:
+                                title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
+                                download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
+                                if not (title and download_url):
+                                    continue
+
+                                seeders = try_int(cells[3].get_text(strip=True))
+                                leechers = try_int(cells[4].get_text(strip=True))
+
+                                torrent_size = cells[2].get_text()
+                                size = convert_size(torrent_size) or -1
+
+                            except (AttributeError, TypeError, KeyError, ValueError):
+                                continue
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -136,17 +139,15 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
-                            torrent_size = cells[2].get_text()
-                            size = convert_size(torrent_size, units=units) or -1
-
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
                                 logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
                                            (title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
-                        except StandardError:
-                            continue
+
+                except (AttributeError, TypeError, KeyError, ValueError):
+                    logger.log('Failed parsing provider {}.'.format(self.name), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
