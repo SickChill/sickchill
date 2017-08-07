@@ -428,6 +428,28 @@
                             </div>
                         </div>
 
+                        % if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD in ('transmission'):
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                    <label class="component-title">${_('Remove finished torrents')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="checkbox" name="processor_remove_finished_torrents" id="processor_remove_finished_torrents"
+                                                ${('', 'checked="checked"')[bool(sickbeard.PROCESSOR_REMOVE_FINISHED_TORRENTS)]}/>
+                                            <label for="processor_remove_finished_torrents">${_('remove finished torrents from the torrent client after processing?')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>${_('only works for transmission torrent client')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        % endif
+
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Use icacls')}</label>

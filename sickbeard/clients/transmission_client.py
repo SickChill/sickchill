@@ -55,6 +55,19 @@ class TransmissionAPI(GenericClient):
 
         return self.auth
 
+    def _get_finished_torrents(self):
+
+        arguments = {
+            'fields': ['id', 'files', 'isFinished']
+        }
+
+        post_data = json.dumps({'arguments': arguments,
+                                'method': 'torrent-get'})
+
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == "success" ? self.response.json()['arguments'] : None
+
     def _add_torrent_uri(self, result):
 
         arguments = {

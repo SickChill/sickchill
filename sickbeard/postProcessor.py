@@ -1184,6 +1184,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
 
+        if sickbeard.TORRENT_METHOD == 'transmission' and sickbeard.PROCESSOR_REMOVE_FINISHED_TORRENTS:
+            logger.log("Remove finished torrents here!")
+
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
                 cur_ep.location = ek(os.path.join, dest_path, new_file_name)
