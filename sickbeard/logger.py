@@ -324,7 +324,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\]).*$'.format(re.escape(cur_error.time))
+                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{{7}}\]).*$'.format(re.escape(cur_error.time))
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
