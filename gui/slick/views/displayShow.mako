@@ -27,7 +27,6 @@
 
             <div class="row">
                 <div class="col-md-12" style="margin: 5px 0;">
-                    <input type="hidden" id="srRoot" value="${static_url('')}" />
                     <div class="form-inline">
                         <label for="pickShow">${_('Change Show')}:</label>
                         <div class="pick-show-group input350">

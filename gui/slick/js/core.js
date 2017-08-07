@@ -2,8 +2,7 @@ function getMeta(pyVar) {
     return $('meta[data-var="' + pyVar + '"]').data('content');
 }
 
-srRoot = getMeta('srRoot');
-
+const srRoot = getMeta('srRoot');
 const srDefaultPage = getMeta('srDefaultPage');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
