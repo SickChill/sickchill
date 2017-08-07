@@ -37,7 +37,6 @@ __all__ = [
     'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
     'shazbat', 'skytorrents', 'speedcd', 't411', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
     'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
-]
 
 
 def sortedProviderList(randomize=False):
