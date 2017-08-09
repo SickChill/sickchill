@@ -31,7 +31,7 @@ import adba
 import six
 
 import sickbeard
-from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
 from sickbeard.helpers import verify_freespace
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper import glob
@@ -1184,8 +1184,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
 
-        if sickbeard.TORRENT_METHOD == 'transmission' and sickbeard.PROCESSOR_REMOVE_FINISHED_TORRENTS:
-            logger.log("Remove finished torrents here!")
+        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD == 'transmission' and sickbeard.PROCESSOR_REMOVE_FINISHED_TORRENTS:
+            client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
+            client.removeTorrentsFromFileNames([self.file_name])
 
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:

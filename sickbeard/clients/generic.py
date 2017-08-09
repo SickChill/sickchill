@@ -140,6 +140,20 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
         return None
 
+    def _get_torrents(self, fields):  # pylint:disable=unused-argument, no-self-use
+        """
+        This should be overridden should return a list from the client
+        of the finished torrents given list of fields
+        """
+        return []
+
+    def _remove_torrents(self, ids):  # pylint:disable=unused-argument, no-self-use
+        """
+        This should be overridden should return the True/False from the client
+        when a list of torrents is removed via ids
+        """
+        return False
+
     def _add_torrent_uri(self, result):  # pylint:disable=unused-argument, no-self-use
         """
         This should be overridden should return the True/False from the client
@@ -236,6 +250,42 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 raise
 
         return result
+
+    def removeTorrentsFromFileNames(self, file_names):
+        """
+        Gets the current torrents in the client, finds the torrents that are
+        completed containing the given files, and removes the torrents
+        """
+
+        r_code = False
+
+        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
+
+        if not (self.auth or self._get_auth()):
+            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            return r_code
+
+        try:
+            torrents = self._get_torrents(['id', 'files', 'isFinished'])
+            torrents_to_remove = []
+            for file_name in file_names:
+                for torrent in torrents:
+                    if torrent['isFinished']:
+                        for file_in_torrent in torrent['files']:
+                            if file_name in file_in_torrent['name'] and torrent['id'] not in torrents_to_remove:
+                                torrents_to_remove.append(torrent['id'])
+            if len(torrents_to_remove) > 0:
+                if self._remove_torrents(torrents_to_remove):
+                    logger.log("{0} torrents sucessfully removed from {1}".format(len(torrents_to_remove), self.name))
+                else:
+                    logger.log("{0} torrents not removed successfully from {1}".format(len(torrents_to_remove), self.name), logger.ERROR)
+
+        except Exception as error:
+            logger.log('{0}: Failed Removing Torrents'.format(self.name), logger.ERROR)
+            logger.log('{0}: Exception raised when removing torrents: {1}. Error {2}'.format(self.name, result, error), logger.DEBUG)
+            return r_code
+
+        return r_code
 
     def sendTORRENT(self, result):
         """
