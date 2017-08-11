@@ -17,16 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import unicode_literals
 
 from datetime import date, timedelta
-from sickbeard.common import WANTED, UNAIRED, Quality
+from operator import itemgetter
+
+import sickbeard
+from sickbeard.common import Quality, UNAIRED, WANTED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
 from sickrage.helper.common import dateFormat, timeFormat
 from sickrage.helper.quality import get_quality_string
-from operator import itemgetter
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
@@ -40,9 +42,9 @@ class ComingEpisodes(object):
     """
     categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        'date': itemgetter(b'snatchedsort', b'localtime'),
-        'network': itemgetter(b'network', b'localtime'),
-        'show': itemgetter(b'show_name', b'localtime'),
+        'date': itemgetter(b'snatchedsort', b'localtime', b'episode'),
+        'network': itemgetter(b'network', b'localtime', b'episode'),
+        'show': itemgetter(b'show_name', b'localtime', b'episode'),
     }
 
     def __init__(self):

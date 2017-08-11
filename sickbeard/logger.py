@@ -36,17 +36,15 @@ import threading
 import traceback
 from logging import NullHandler
 
+import sickbeard
 import six
 from github import InputFileContent, RateLimitExceededException, TwoFactorException
-
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import quote
-
-import sickbeard
 from sickbeard import classes
 from sickrage.helper.common import dateTimeFormat
 from sickrage.helper.encoding import ek, ss
 from sickrage.helper.exceptions import ex
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import quote
 
 # pylint: disable=line-too-long
 
@@ -314,7 +312,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 try:
                     title_error = ss(str(cur_error.title))
                     if not title_error or title_error == 'None':
-                        title_error = re.match(r'^[A-Z0-9\-\[\] :]+::\s*(.*)(?: \[[\w]{7}\])$', ss(cur_error.message)).group(1)
+                        title_error = re.match(r'^[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\])\s*(.*)$', ss(cur_error.message)).group(1)
 
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
@@ -324,11 +322,11 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
+                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\]).*$'.format(re.escape(cur_error.time))
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
-                        level = match.group(2)
+                        level = match.group(1)
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:

@@ -19,19 +19,21 @@
 
 from __future__ import unicode_literals
 
+import datetime
+import threading
+import time
+
+import sickbeard
+from sickbeard import db, helpers, logger, network_timezones, ui
+from sickbeard.indexers.indexer_config import INDEXER_TVDB, INDEXER_TVRAGE
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
-import time
-import datetime
-import threading
 
-import sickbeard
-from sickbeard import logger, ui, db, network_timezones, helpers
-from sickbeard.indexers.indexer_config import INDEXER_TVRAGE, INDEXER_TVDB
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 
 class ShowUpdater(object):  # pylint: disable=too-few-public-methods

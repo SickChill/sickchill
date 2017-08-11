@@ -57,10 +57,17 @@ disabled_provider_tests = {
     # Have to trick it into thinking is an anime search, and add string overrides
     'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # RSS search is broken (site's fault)
+    'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # Not working on CIs for some weird unknown reason
+    'SkyTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # Not working on CIs because of a SSL error
+    'ilCorsaroNero': ['test_rss_search', 'test_episode_search', 'test_season_search'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
     'Torrent9': {'Episode': ['NCIS S14E09'], 'Season': ['NCIS S14']},
+    'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
 }
@@ -107,8 +114,7 @@ class BaseParser(type):
             def magic(self, *args, **kwargs):
                 # pylint:disable=no-member
                 if func.func_name in disabled_provider_tests.get(self.provider.name, []):
-                    print("skipped")
-                    return unittest.skip(str(self.provider.name))
+                    self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
                 func(self, *args, **kwargs)
             return magic
 

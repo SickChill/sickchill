@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Clinton Collins <clinton.collins@gmail.com>
 # Medicine: Dustyn Gibson <miigotu@gmail.com>
 # This file is part of SickRage.
@@ -15,8 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from putiopy import Client as PutioClient, ClientError
+from __future__ import unicode_literals
 
+from putiopy import Client as PutioClient, ClientError
 from sickbeard import helpers
 from sickbeard.clients.generic import GenericClient
 

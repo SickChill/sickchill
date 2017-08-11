@@ -24,10 +24,8 @@ import re
 
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
-
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 

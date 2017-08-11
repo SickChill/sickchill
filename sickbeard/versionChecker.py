@@ -31,11 +31,10 @@ import time
 import traceback
 
 import sickbeard
+import six
 from sickbeard import db, helpers, logger, notifiers, ui
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
-
-import six
 
 
 class CheckVersion(object):
@@ -773,7 +772,7 @@ class SourceUpdateManager(UpdateManager):
             commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
                                       self._num_commits_behind).format(num_commits=self._num_commits_behind)
             newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
-                            'newer version available</a> (you\'re {commits_behind} behind) &mdash; '
+                            'newer version available</a> {commits_behind} &mdash; '
                             '<a href="{update_url}">Update Now</a>').format(
                 compare_url=url, commits_behind=commits_behind, update_url=self.get_update_url())
         else:

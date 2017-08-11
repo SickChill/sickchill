@@ -27,10 +27,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickrage.helper.common import try_int
-from six.moves import xmlrpc_client
-
-
-from six.moves import http_client
+from six.moves import http_client, xmlrpc_client
 
 
 def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements

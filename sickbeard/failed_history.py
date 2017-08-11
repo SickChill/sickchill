@@ -28,8 +28,6 @@ from sickbeard.common import FAILED, Quality, WANTED
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History
-
-
 from six.moves import urllib
 
 

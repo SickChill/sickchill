@@ -19,18 +19,16 @@
 
 from __future__ import print_function, unicode_literals
 
-import re
 import datetime
-from babelfish import Country
+import re
 
 import sickbeard
+import six
+from babelfish import Country
+from sickbeard import helpers, logger
 from sickbeard.metadata import generic
-from sickbeard import logger, helpers
 from sickrage.helper.common import dateFormat
 from sickrage.helper.exceptions import ex, ShowNotFoundException
-
-import six
-
 
 try:
     import xml.etree.cElementTree as etree

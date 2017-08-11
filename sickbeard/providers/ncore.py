@@ -14,8 +14,8 @@
 
 from __future__ import print_function, unicode_literals
 
-import re
 import json
+import re
 
 from sickbeard import logger, tvcache
 from sickrage.helper.common import convert_size, try_int

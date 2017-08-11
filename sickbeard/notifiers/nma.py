@@ -3,9 +3,8 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
-
-from sickbeard import logger, common
 from pynma import pynma
+from sickbeard import common, logger
 
 
 class Notifier(object):

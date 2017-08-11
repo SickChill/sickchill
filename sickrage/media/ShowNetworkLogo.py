@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 from os.path import join
+
 from sickrage.helper.encoding import ek
 from sickrage.media.GenericMedia import GenericMedia
 

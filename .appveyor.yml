@@ -78,3 +78,6 @@ before_test:
 
 after_test:
   - echo Finished Tests
+
+on_failure:
+  - type .\\tests\\Logs\\sickrage.log

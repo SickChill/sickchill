@@ -21,9 +21,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-import sickbeard
 
-from sickbeard import logger, common
+import sickbeard
+from sickbeard import common, logger
 
 
 class Notifier(object):

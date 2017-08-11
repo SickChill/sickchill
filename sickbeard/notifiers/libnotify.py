@@ -20,12 +20,11 @@
 
 from __future__ import print_function, unicode_literals
 
-import os
 import cgi
+import os
 import warnings
 
 import sickbeard
-
 from sickbeard import common
 from sickrage.helper.encoding import ek
 

@@ -28,20 +28,16 @@ import stat
 import subprocess
 
 import adba
-
 import sickbeard
+import six
 from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
 from sickbeard.helpers import verify_freespace
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper import glob
-from sickrage.helper.common import SUBTITLE_EXTENSIONS, remove_extension, replace_extension
+from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, \
-    ShowDirectoryNotFoundException, ex
+from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex, ShowDirectoryNotFoundException
 from sickrage.show.Show import Show
-
-
-import six
 
 METHOD_COPY = "copy"
 METHOD_MOVE = "move"

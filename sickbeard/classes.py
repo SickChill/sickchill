@@ -26,8 +26,6 @@ import sys
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
-
-
 from six.moves import urllib
 
 

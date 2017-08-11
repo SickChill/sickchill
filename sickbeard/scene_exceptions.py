@@ -25,9 +25,8 @@ import threading
 import time
 
 import adba
-import six
-
 import sickbeard
+import six
 from sickbeard import db, helpers, logger
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
 

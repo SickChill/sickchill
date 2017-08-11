@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import copy
 import io
 import logging
 import re
+from zipfile import is_zipfile, ZipFile
 
 from babelfish import Language
 from guessit import guessit
+from requests import Session
+from subliminal import __version__
+from subliminal.cache import EPISODE_EXPIRATION_TIME, region, SHOW_EXPIRATION_TIME
+from subliminal.exceptions import AuthenticationError, ConfigurationError, TooManyRequests
+from subliminal.providers import Provider
+from subliminal.subtitle import fix_line_ending, guess_matches, sanitize, Subtitle
+from subliminal.video import Episode
+
 try:
     from lxml import etree
 except ImportError:  # pragma: no cover
@@ -14,15 +25,7 @@ except ImportError:  # pragma: no cover
     except ImportError:
         import xml.etree.ElementTree as etree
 
-from requests import Session
-from zipfile import ZipFile, is_zipfile
 
-from subliminal.providers import Provider
-from subliminal import __version__
-from subliminal.cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
-from subliminal.exceptions import AuthenticationError, ConfigurationError, TooManyRequests
-from subliminal.subtitle import (Subtitle, fix_line_ending, guess_matches, sanitize)
-from subliminal.video import Episode
 
 logger = logging.getLogger(__name__)
 

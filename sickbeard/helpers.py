@@ -31,7 +31,6 @@ import operator
 import os
 import platform
 import random
-import rarfile
 import re
 import shutil
 import socket
@@ -48,23 +47,29 @@ from itertools import cycle, izip
 import adba
 import certifi
 import cfscrape
+import rarfile
 import requests
-from cachecontrol import CacheControl
-from requests.utils import urlparse
-from requests.compat import urljoin
-import six
-
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
-
 import sickbeard
+import six
+from cachecontrol import CacheControl
+from requests.compat import urljoin
+from requests.utils import urlparse
 from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
+from sickrage.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+# noinspection PyProtectedMember
+from tornado._locale_data import LOCALE_NAMES
 
+# Add some missing languages
+LOCALE_NAMES.update({
+    "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
+    "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
+})
 
 # pylint: disable=protected-access
 # Access to a protected member of a client class
@@ -839,22 +844,25 @@ def create_https_certificates(ssl_cert, ssl_key):
     # assert isinstance(ssl_cert, unicode)
 
     try:
-        from OpenSSL import crypto  # noinspection PyUnresolvedReferences
-        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
-            serial  # @UnresolvedImport
+        # noinspection PyUnresolvedReferences
+        from OpenSSL import crypto
+        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
     except Exception:
         logger.log("pyopenssl module missing, please install for https access", logger.WARNING)
         return False
 
+    import time
+    serial = int(time.time())
+    validity_period = (0, 60 * 60 * 24 * 365 * 10)  # ten years
     # Create the CA Certificate
     cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    cacert = createCertificate(careq, (careq, cakey), serial, validity_period, b'sha256')
 
     cname = 'SickRage'
     pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    cert = createCertificate(req, (cacert, cakey), serial, validity_period, b'sha256')
 
     # Save the key and certificate to disk
     try:

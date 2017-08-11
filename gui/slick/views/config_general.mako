@@ -5,10 +5,7 @@
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard.helpers import anon_url
-
-    # noinspection PyProtectedMember
-    from tornado._locale_data import LOCALE_NAMES
+    from sickbeard.helpers import anon_url, LOCALE_NAMES
 
     def lang_name(code):
         return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")

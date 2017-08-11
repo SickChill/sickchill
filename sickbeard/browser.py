@@ -24,9 +24,8 @@ import os
 import string
 from operator import itemgetter
 
-import six
-
 import sickbeard
+import six
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*
-# Author: miigotu <miigotu@gmail.com>
+# Author: Nic Wolfe <nic@wolfeden.ca>
+# URL: http://code.google.com/p/sickbeard/
+#
+# Rewrite Author: miigotu <miigotu@gmail.com>
 # URL: https://sickrage.github.io
 #
 # This file is part of SickRage.

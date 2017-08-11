@@ -27,8 +27,7 @@ import threading
 import traceback
 
 import sickbeard
-from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbSplitter, nzbget, \
-    sab, show_name_helpers, ui
+from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import AuthException, ex

@@ -18,13 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import os
+
 import sickbeard
+from indexer_config import indexerConfig, initConfig
 from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
-
-from indexer_config import initConfig
-from indexer_config import indexerConfig
 
 
 class indexerApi(object):

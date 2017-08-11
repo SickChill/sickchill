@@ -21,23 +21,22 @@ from __future__ import print_function, unicode_literals
 
 import re
 import traceback
-from requests.utils import dict_from_cookiejar
-from requests.compat import urljoin
 
+from requests.compat import urljoin
+from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class NebulanceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "TransmitTheNet")
+        TorrentProvider.__init__(self, "Nebulance")
 
         # Credentials
         self.username = None
@@ -49,7 +48,7 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         self.freeleech = None
 
         # URLs
-        self.url = 'https://transmithe.net/'
+        self.url = 'https://nebulance.io/'
         self.urls = {
             'login': urljoin(self.url, '/login.php'),
             'search': urljoin(self.url, '/torrents.php'),
@@ -190,4 +189,4 @@ class TransmitTheNetProvider(TorrentProvider):  # pylint: disable=too-many-insta
         return results
 
 
-provider = TransmitTheNetProvider()
+provider = NebulanceProvider()

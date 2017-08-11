@@ -18,10 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import os
 
-from sickbeard.metadata import generic
-from sickbeard.metadata import kodi_12plus
+from sickbeard.metadata import generic, kodi_12plus
 from sickrage.helper.common import replace_extension
 from sickrage.helper.encoding import ek
 
