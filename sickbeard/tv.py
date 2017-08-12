@@ -973,7 +973,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM imdb_info WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
-                 ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
+                 ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]
+                 ["DELETE FROM season_exceptions WHERE show_id = ?", [self.indexerid]]]
 
         main_db_con = db.DBConnection()
         main_db_con.mass_action(sql_l)
@@ -1310,6 +1311,43 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def __setstate__(self, d):
         d[b'lock'] = threading.Lock()
         self.__dict__.update(d)
+
+    def getSeasonExceptions(self):
+        sql_selection = 'SELECT * FROM season_exceptions WHERE show_id = {0}'.format(self.indexerid)
+
+        main_db_con = db.DBConnection()
+        results = main_db_con.select(sql_selection)
+
+        exceptions = {}
+
+        for cur_result in results:
+            cur_exception = SeasonException(self.indexerid, int(cur_result[b"season"]))
+            cur_exception.name = cur_result[b"name"]
+
+            exceptions[int(cur_result[b"season"])] = cur_exception
+
+        return exceptions
+
+
+class SeasonException(object):
+    def __init__(self, showid, season):
+        self._show_id = showid
+        self._season = season
+        self._name = ""
+
+    showid = property(lambda self: self._show_id, dirty_setter("_show_id"))
+    season = property(lambda self: self._season, dirty_setter("_season"))
+    name = property(lambda self: self._name, dirty_setter("_name"))
+
+    @staticmethod
+    def saveExceptions(showid, exceptions):
+        delete_sql = 'DELETE FROM season_exceptions WHERE show_id = {0}'.format(showid)
+
+        main_db_con = db.DBConnection()
+        main_db_con.action(delete_sql)
+
+        for season, name in exceptions.iteritems():
+            main_db_con.action('INSERT INTO season_exceptions VALUES ({0}, {1}, \'{2}\');'.format(showid, season, name))
 
 
 class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-many-public-methods

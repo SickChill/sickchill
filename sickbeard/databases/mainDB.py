@@ -34,7 +34,7 @@ from sickrage.helper.common import dateTimeFormat, episode_num
 from sickrage.helper.encoding import ek
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 44
+MAX_DB_VERSION = 45
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -219,7 +219,7 @@ class MainSanityCheck(db.DBSanityCheck):
     def fix_unaired_episodes(self):
 
         curDate = datetime.date.today()
-        
+
         if curDate.year >= 2017:
 
             sql_results = self.connection.select(
@@ -330,6 +330,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER);",
                 "CREATE TABLE indexer_mapping (indexer_id INTEGER, indexer NUMERIC, mindexer_id INTEGER, mindexer NUMERIC, PRIMARY KEY (indexer_id, indexer));",
+                "CREATE TABLE season_exceptions (show_id INTEGER, season INTEGER, name TEXT, PRIMARY KEY(show_id, season));",
                 "CREATE UNIQUE INDEX idx_indexer_id ON tv_shows(indexer_id);",
                 "CREATE INDEX idx_showid ON tv_episodes(showid);",
                 "CREATE INDEX idx_sta_epi_air ON tv_episodes(status, episode, airdate);",
@@ -1175,3 +1176,20 @@ class ResetDBVersion(UseSickRageMetadataForSubtitle):
 
     def execute(self):
         self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 0])
+
+
+class AddSeasonException(AlterTVShowsFieldTypes):
+    """
+    Add Season Exception table
+    """
+
+    def test(self):
+        return self.checkDBVersion() >= 44
+
+    def execute(self):
+        backupDatabase(self.checkDBVersion())
+
+        logger.log("Adding season_exceptions table")
+        self.connection.execute("CREATE TABLE season_exceptions (show_id INTEGER, season INTEGER, name TEXT, PRIMARY KEY(show_id, season));")
+
+        self.incDBVersion()

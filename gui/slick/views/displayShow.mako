@@ -400,8 +400,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <br/>
-                            <h3 style="display: inline;"><a name="season-${epResult[b"season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult[b"season"]))[int
-                            (epResult[b"season"]) > 0]}</h3>
+                            <h3 style="display: inline;">
+                                <a name="season-${epResult[b"season"]}"></a>
+                                ${(_("Specials"), _("Season") + ' ' + str(epResult[b"season"]))[int(epResult[b"season"]) > 0]}
+                                % if int(epResult[b"season"]) in season_exceptions:
+                                    &mdash; ${season_exceptions[int(epResult[b"season"])].name}
+                                % endif
+                            </h3>
                             % if not sickbeard.DISPLAY_ALL_SEASONS:
                                 % if curSeason == -1:
                                     <button id="showseason-${epResult[b'season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult[b'season']}" aria-expanded="true">${_('Hide Episodes')}</button>
