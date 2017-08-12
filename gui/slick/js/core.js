@@ -2871,15 +2871,15 @@ var SICKRAGE = {
             }); */
 
             $('#submit').on('click', function() {
-                var season_exceptions = '';
+                var seasonExceptions = '';
 
                 $('.exception').each(function(index, item) {
                     if ($(item).val()) {
-                        season_exceptions += $(item).data('season') + ':' + $(item).val() + ',';
+                        seasonExceptions += $(item).data('season') + ':' + $(item).val() + ',';
                     }
                 });
 
-                $('#exceptions').val(season_exceptions.replace(/(,$)/g, ''));
+                $('#exceptions').val(seasonExceptions.replace(/(,$)/g, ''));
 
                 allExceptions = [];
 
