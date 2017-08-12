@@ -375,26 +375,23 @@
 
                             <fieldset class="component-group-list">
 
-                                <div class="field-pair row">
-                                    <div class="col-md-12">
-                                        <input type="hidden" name="exceptions" id="exceptions"/>
-                                        <table class="table table-responsive">
-                                            <tr>
-                                                <th style="width:50px;">Season</th>
-                                                <th>Custom name</th>
-                                            </tr>
-                                            % for season in range(1, len(seasons)):
-                                                <tr>
-                                                    <td><label for="exception-${season}">${season}</label></td>
-                                                    <td>
-                                                        <input type="text" id="exception-${season}" class="exception" data-season="${season}"
-                                                               value="${season_exceptions[season].name if season in season_exceptions else ''}"/>
-                                                    </td>
-                                                </tr>
-                                            % endfor
-                                        </table>
-                                    </div>
-                                </div>
+                                <input type="hidden" name="exceptions" id="exceptions"/>
+                                <table class="table">
+                                    <tr>
+                                        <th style="width:50px;">Season</th>
+                                        <th>Custom name</th>
+                                    </tr>
+                                    % for season in range(1, len(seasons)):
+                                        <tr>
+                                            <td><label class="component-title" for="exception-${season}">${season}</label></td>
+                                            <td>
+                                                <input type="text" id="exception-${season}" class="exception form-control input-sm input350"
+                                                       data-season="${season}" placeholder="${_('None')}"
+                                                       value="${season_exceptions[season].name if season in season_exceptions else ''}"/>
+                                            </td>
+                                        </tr>
+                                    % endfor
+                                </table>
 
                             </fieldset>
                         </div>
