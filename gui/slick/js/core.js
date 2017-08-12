@@ -2871,6 +2871,16 @@ var SICKRAGE = {
             }); */
 
             $('#submit').on('click', function() {
+                var season_exceptions = '';
+
+                $('.exception').each(function(index, item) {
+                    if ($(item).val()) {
+                        season_exceptions += $(item).data('season') + ':' + $(item).val() + ',';
+                    }
+                });
+
+                $('#exceptions').val(season_exceptions.replace(/(,$)/g, ''));
+
                 allExceptions = [];
 
                 $('#exceptions_list option').each(function() {

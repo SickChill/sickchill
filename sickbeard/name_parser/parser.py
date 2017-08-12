@@ -226,6 +226,13 @@ class NameParser(object):
             new_episode_numbers = []
             new_season_numbers = []
             new_absolute_numbers = []
+            exception_season = None
+
+            season_exceptions = bestResult.show.getSeasonExceptions()
+
+            for season, exception in season_exceptions.iteritems():
+                if exception.name == bestResult.series_name:
+                    exception_season = exception.season
 
             # if we have an air-by-date show then get the real season/episode numbers
             if bestResult.is_air_by_date:
@@ -331,7 +338,11 @@ class NameParser(object):
 
             if new_season_numbers and new_episode_numbers:
                 bestResult.episode_numbers = new_episode_numbers
-                bestResult.season_number = new_season_numbers[0]
+
+                if exception_season:
+                    bestResult.season_number = exception_season
+                else:
+                    bestResult.season_number = new_season_numbers[0]
 
             if bestResult.show.is_scene and not skip_scene_detection:
                 logger.log(

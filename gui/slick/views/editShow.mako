@@ -37,6 +37,7 @@
                             <li><a href="#main">${_('Main')}</a></li>
                             <li><a href="#format">${_('Format')}</a></li>
                             <li><a href="#advanced">${_('Advanced')}</a></li>
+                            <li><a href="#season-exceptions">${_('Season Exceptions')}</a></li>
                         </ul>
 
                         <!-- Main -->
@@ -358,6 +359,40 @@
                                                 <label>${_('this list appends to the original show name.')}</label>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
+
+                        <!-- Season exceptions -->
+                        <div id="season-exceptions">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>${_('Season exceptions')}</h3>
+                                </div>
+                            </div>
+
+                            <fieldset class="component-group-list">
+
+                                <div class="field-pair row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" name="exceptions" id="exceptions"/>
+                                        <table class="table table-responsive">
+                                            <tr>
+                                                <th style="width:50px;">Season</th>
+                                                <th>Custom name</th>
+                                            </tr>
+                                            % for season in range(1, len(seasons)):
+                                                <tr>
+                                                    <td><label for="exception-${season}">${season}</label></td>
+                                                    <td>
+                                                        <input type="text" id="exception-${season}" class="exception" data-season="${season}"
+                                                               value="${season_exceptions[season].name if season in season_exceptions else ''}"/>
+                                                    </td>
+                                                </tr>
+                                            % endfor
+                                        </table>
                                     </div>
                                 </div>
 

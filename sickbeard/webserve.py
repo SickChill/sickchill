@@ -69,6 +69,7 @@ from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_a
 from sickbeard.traktTrending import trakt_trending
 from sickbeard.versionChecker import CheckVersion
 from sickbeard.webapi import function_mapper
+from sickbeard.tv import SeasonException
 from sickrage.helper import episode_num, sanitize_filename, setup_github, try_int
 from sickrage.helper.common import pretty_file_size
 from sickrage.helper.encoding import ek, ss
@@ -1501,7 +1502,7 @@ class Home(WebRoot):
             xem_numbering=get_xem_numbering_for_show(indexerid, indexer),
             scene_absolute_numbering=get_scene_absolute_numbering_for_show(indexerid, indexer),
             xem_absolute_numbering=get_xem_absolute_numbering_for_show(indexerid, indexer),
-            title=show_obj.name,
+            title=show_obj.name, season_exceptions=show_obj.getSeasonExceptions(),
             controller="home",
             action="displayShow"
         )
@@ -1532,7 +1533,7 @@ class Home(WebRoot):
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
-                 defaultEpStatus=None, quality_preset=None):
+                 defaultEpStatus=None, quality_preset=None, exceptions=None):
 
         anidb_failed = False
         if not show:
@@ -1552,6 +1553,15 @@ class Home(WebRoot):
                 return self._genericMessage(_("Error"), errString)
 
         show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+
+        if exceptions is not None:
+            new_exceptions = {}
+            for exception in exceptions.split(','):
+                split = exception.split(':')
+                if split[1] is not '':
+                    new_exceptions[split[0]] = split[1]
+
+            SeasonException.saveExceptions(int(show), new_exceptions)
 
         if try_int(quality_preset, None):
             bestQualities = []
@@ -1577,11 +1587,19 @@ class Home(WebRoot):
                 show = show_obj
                 scene_exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
+            seasons = db.DBConnection().select(
+                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season IS NOT NULL ORDER BY season DESC",
+                [show_obj.indexerid]
+            )
+
             if show_obj.is_anime:
-                return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
-                                blacklist=blacklist, title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
+                return t.render(show=show, scene_exceptions=scene_exceptions, blacklist=blacklist, seasons=seasons,
+                                season_exceptions=show.getSeasonExceptions(), groups=groups, whitelist=whitelist,
+                                title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title=_('Edit Show'), header=_('Edit Show'),
+                return t.render(show=show, scene_exceptions=scene_exceptions,
+                                season_exceptions=show.getSeasonExceptions(), seasons=seasons,
+                                title=_('Edit Show'), header=_('Edit Show'),
                                 controller="home", action="editShow")
 
         season_folders = config.checkbox_to_value(season_folders)
