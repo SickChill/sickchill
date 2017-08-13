@@ -3825,9 +3825,9 @@ var SICKRAGE = {
 
         },
         newShow: function() {
-            function updateSampleText() {
+            const updateSampleText = function() {
                 // If something's selected then we have some behavior to figure out
-                var object = {
+                let object = {
                     showName: '',
                     dir: 'unknown dir.',
                     sepChar: ''
@@ -3845,6 +3845,7 @@ var SICKRAGE = {
                 // If we have a root dir selected, figure out the path
                 if ($('#rootDirs option:selected').length) {
                     object.dir = $('#rootDirs option:selected').val();
+
                     if (object.dir.indexOf('/') >= 0) {
                         object.sepChar = '/';
                     } else if (object.dir.indexOf('\\') >= 0) {
@@ -3870,19 +3871,74 @@ var SICKRAGE = {
                 $('#desc-quality-name').text($("#qualityPreset option:selected").text());
 
                 // Also toggle the add show button
-                if (($('#rootDirs option:selected').length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) && ($('input:radio[name=whichSeries]:checked').length) || ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)) { // eslint-disable-line no-mixed-operators
+                if (
+                    ($('#rootDirs option:selected').length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) &&
+                    ($('input:radio[name=whichSeries]:checked').length) ||
+                    ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)
+                ) { // eslint-disable-line no-mixed-operators
                     $('#addShowButton').attr('disabled', false);
                 } else {
                     $('#addShowButton').attr('disabled', true);
                 }
             }
 
-            function showGroupPicker() {
+            const showGroupPicker = function() {
                 $('#blackwhitelist').toggle($('#anime').prop('checked'));
-            }
+            };
 
-            var searchRequestXhr = null;
-            function searchIndexers() {
+            const buildTable = function(shows) {
+                let table =
+                    '<div class="row">' +
+                    '<div class="col-lg-6 col-md-12">' +
+                    '<table class="table new-show-table">' +
+                    '<thead>' +
+                    '<tr>' +
+                    '<th>&nbsp;</th>' +
+                    '<th>Show Name</th>' +
+                    '<th>Premiere</th>' +
+                    '<th>Indexer</th>' +
+                    '</tr>' +
+                    '<thead>';
+
+                const selectedIndex = shows.findIndex(function(show) {
+                    return !show.inShowList;
+                });
+
+                shows.forEach(function(show, index) {
+                    table +=
+                        '<tr class="' + (show.inShowList ? 'in-list': '') + '">' +
+                        '<td>' +
+                        '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj  + '" ' +
+                        (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>' +
+                        '</td>' +
+                        '<td>' +
+                        (function () {
+                            let string = '<a href=';
+                            if (show.inShowList) {
+                                string += '"/home/displayShow?show=' + show.id + '"';
+                            } else {
+                                string += '"' + show.url + '" target="_blank"';
+                            }
+                            string += '>' + show.title + '</a>';
+
+                            return string;
+                        })() +
+                        '</td>' +
+                        '<td>' + show.debut + '</td>' +
+                        '<td>' + show.indexer + '</td>' +
+                        '</tr>'
+                });
+
+                table +=
+                    '</table>' +
+                    '</div>' +
+                    '</div>';
+
+                return table
+            };
+
+            let searchRequestXhr = null;
+            const searchIndexers = function() {
                 if (!$('#show-name').val()) {
                     return;
                 }
@@ -3908,47 +3964,39 @@ var SICKRAGE = {
                     dataType: 'json',
                     error: function() {
                         $('#searchResults').empty().html(_('search timed out, try again or try another indexer'));
+                        $(".next-steps").hide();
                     },
                     success: function (data) {
-                        var resultStr = '<legend class="legendStep">Search Results</legend>';
+                        let resultStr = '<legend class="legendStep">#2 Pick a Show</legend>';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
+                            $(".next-steps").hide();
                         } else {
+                            let shows = [];
+
                             $.each(data.results, function(index, obj) {
-                                var whichSeries = obj.join('|').replace(/"/g, '');
+                                let whichSeries = obj.join('|').replace(/"/g, '');
 
-                                resultStr += '<input type="radio" class="whichSeries" name="whichSeries" value="' + whichSeries  + '"' + (!index ? 'checked' : '') + ' />';
+                                let show = {
+                                    obj: whichSeries,
+                                    indexer: obj[0],
+                                    id: obj[3],
+                                    title: obj[4],
+                                    debut: obj[5],
+                                    inShowList: obj[6],
+                                    url: anonURL + obj[2] + obj[3]
+                                };
 
-                                resultStr += '<span>&nbsp;<a href="' + anonURL + obj[2] + obj[3];
                                 if (data.langid) {
-                                    resultStr += '&lid=' + data.langid;
-                                }
-                                resultStr += '" target="_blank"><b>' + obj[4] + '</b></a>';
-
-                                // Debut text
-                                if (obj[5] !== null) {
-                                    resultStr += ' (';
-                                    if (new Date(obj[5]) > new Date()) {
-                                        resultStr += _('will debut on');
-                                    } else {
-                                        resultStr += _('started on');
-                                    }
-                                    resultStr += ' ' + obj[5] + ')';
+                                    show.url += '&lid=' + data.langid;
                                 }
 
-                                // Indexer name
-                                if (obj[0] !== null) {
-                                    resultStr += ' [' + obj[0] + ']';
-                                }
-
-                                // if (inShowList) {
-                                //     resultStr += ' &mdash; <a href="' + srRoot + '/home/displayShow?show=' + obj[3] + '"><strong>Already in your show list</strong></a>';
-                                // }
-
-                                resultStr += '</span><br/>';
+                                shows.push(show);
                             });
-                            resultStr += '</ul>';
+
+                            resultStr += buildTable(shows);
+
                             $(".next-steps").show();
                         }
 
@@ -3956,9 +4004,9 @@ var SICKRAGE = {
                         updateSampleText();
                     }
                 });
-            }
+            };
 
-            $('#search-button').click(searchIndexers);
+            $('#search-button').on('click', searchIndexers);
 
             $('#addShowButton').on('click', function() {
                 // If they haven't picked a show don't let them submit
@@ -3971,7 +4019,7 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            $("#anime").click(function() {
+            $("#anime").on('click', function() {
                 showGroupPicker();
                 updateSampleText();
             });
@@ -3985,7 +4033,7 @@ var SICKRAGE = {
             $('#qualityPreset').change(updateSampleText);
             $('#searchResults').on('change', '.whichSeries', updateSampleText);
 
-            $('#show-name').focus().keyup(function(event) {
+            $('#show-name').on('focus keyup', function(event) {
                 if (event.keyCode === 13) { // Enter
                     $('#search-button').click();
                 }

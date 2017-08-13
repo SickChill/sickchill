@@ -20,7 +20,7 @@
             <div class="col-md-12">
                 <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
 
-                    <legend class="legendStep">#1 ${_('Search for a show')}</legend>
+                    <legend class="legendStep">#1 ${_('Search for a Show')}</legend>
                     <div class="row stepDiv">
                         <div class="col-md-12">
                             <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}"/>
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="next-steps" style="display: none;">
-                        <legend class="legendStep">#2 ${_('Pick the folder')}</legend>
+                        <legend class="legendStep">#3 ${_('Pick the Folder')}</legend>
                         <div class="row stepDiv">
                             <div class="col-lg-6 col-sm-12">
                                 % if provided_show_dir:
@@ -114,14 +114,14 @@
                             </div>
                         </div>
 
-                        <legend class="legendStep">#3 ${_('Customize options')}</legend>
+                        <legend class="legendStep">#4 ${_('Customize options')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                     <%include file="/inc_addShowOptions.mako"/>
                             </div>
                         </div>
 
-                        <legend class="legendStep">#4 ${_('Verify your input')}</legend>
+                        <legend class="legendStep">#5 ${_('Verify Your Input')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                 <div class="field-pair row">
