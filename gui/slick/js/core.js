@@ -3871,13 +3871,14 @@ var SICKRAGE = {
                 $('#desc-quality-name').text($('#qualityPreset option:selected').text());
 
                 // Also toggle the add show button
+                // eslint-disable
                 if (
                     ($('#rootDirs option:selected').length ||
                         ($('#fullShowPath').length && $('#fullShowPath').val().length)
                     ) &&
-                    $('input:radio[name=whichSeries]:checked').length ||
+                    $('input:radio[name=whichSeries]:checked').length || // eslint-disable-line no-mixed-operators
                     ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)
-                ) { // eslint-disable-line no-mixed-operators
+                ) { // eslint-enable
                     $('#addShowButton').attr('disabled', false);
                 } else {
                     $('#addShowButton').attr('disabled', true);
@@ -3908,7 +3909,7 @@ var SICKRAGE = {
 
                 shows.forEach(function(show, index) {
                     table +=
-                        '<tr class="' + (show.inShowList ? 'in-list': '') + '">' +
+                        '<tr class="' + (show.inShowList ? 'in-list' : '') + '">' +
                         '<td>' +
                         '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" ' +
                         (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>' +
