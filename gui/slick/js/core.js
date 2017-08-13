@@ -3833,7 +3833,7 @@ var SICKRAGE = {
                     sepChar: ''
                 };
 
-                // if they've picked a radio button then use that
+                // If they've picked a radio button then use that
                 if ($('input:radio[name=whichSeries]:checked').length) {
                     object.showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
                 } else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) { // If we provided a show in the hidden field, use that
@@ -3860,7 +3860,7 @@ var SICKRAGE = {
 
                 // If we have a show name then sanitize and use it for the dir name
                 if (object.showName.length) {
-                    $.post(srRoot + '/addShows/sanitizeFileName', { name: object.showName }, function(data) {
+                    $.post(srRoot + '/addShows/sanitizeFileName', {name: object.showName}, function(data) {
                         $('#desc-show-name').text(object.showName);
                         $('#desc-directory-name').html(object.dir + data + object.sepChar);
                     });
@@ -3868,19 +3868,21 @@ var SICKRAGE = {
                     $('#desc-show-name').text(object.showName);
                     $('#desc-directory-name').html(object.dir);
                 }
-                $('#desc-quality-name').text($("#qualityPreset option:selected").text());
+                $('#desc-quality-name').text($('#qualityPreset option:selected').text());
 
                 // Also toggle the add show button
                 if (
-                    ($('#rootDirs option:selected').length || ($('#fullShowPath').length && $('#fullShowPath').val().length)) &&
-                    ($('input:radio[name=whichSeries]:checked').length) ||
+                    ($('#rootDirs option:selected').length ||
+                        ($('#fullShowPath').length && $('#fullShowPath').val().length)
+                    ) &&
+                    $('input:radio[name=whichSeries]:checked').length ||
                     ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length)
                 ) { // eslint-disable-line no-mixed-operators
                     $('#addShowButton').attr('disabled', false);
                 } else {
                     $('#addShowButton').attr('disabled', true);
                 }
-            }
+            };
 
             const showGroupPicker = function() {
                 $('#blackwhitelist').toggle($('#anime').prop('checked'));
@@ -3908,11 +3910,11 @@ var SICKRAGE = {
                     table +=
                         '<tr class="' + (show.inShowList ? 'in-list': '') + '">' +
                         '<td>' +
-                        '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj  + '" ' +
+                        '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" ' +
                         (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>' +
                         '</td>' +
                         '<td>' +
-                        (function () {
+                        (function() {
                             let string = '<a href=';
                             if (show.inShowList) {
                                 string += '"/home/displayShow?show=' + show.id + '"';
@@ -3926,7 +3928,7 @@ var SICKRAGE = {
                         '</td>' +
                         '<td>' + show.debut + '</td>' +
                         '<td>' + show.indexer + '</td>' +
-                        '</tr>'
+                        '</tr>';
                 });
 
                 table +=
@@ -3934,7 +3936,7 @@ var SICKRAGE = {
                     '</div>' +
                     '</div>';
 
-                return table
+                return table;
             };
 
             let searchRequestXhr = null;
@@ -3964,14 +3966,14 @@ var SICKRAGE = {
                     dataType: 'json',
                     error: function() {
                         $('#searchResults').empty().html(_('search timed out, try again or try another indexer'));
-                        $(".next-steps").hide();
+                        $('.next-steps').hide();
                     },
-                    success: function (data) {
+                    success: function(data) {
                         let resultStr = '<legend class="legendStep">#2 Pick a Show</legend>';
 
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
-                            $(".next-steps").hide();
+                            $('.next-steps').hide();
                         } else {
                             let shows = [];
 
@@ -3997,7 +3999,7 @@ var SICKRAGE = {
 
                             resultStr += buildTable(shows);
 
-                            $(".next-steps").show();
+                            $('.next-steps').show();
                         }
 
                         $('#searchResults').html(resultStr);
@@ -4019,7 +4021,7 @@ var SICKRAGE = {
                 $('#addShowForm').submit();
             });
 
-            $("#anime").on('click', function() {
+            $('#anime').on('click', function() {
                 showGroupPicker();
                 updateSampleText();
             });
