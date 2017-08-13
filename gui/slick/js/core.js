@@ -3890,10 +3890,10 @@ var SICKRAGE = {
                 let table =
                     '<div class="row">' +
                     '<div class="col-lg-6 col-md-12">' +
-                    '<table class="table new-show-table">' +
+                    '<table class="sickbeardTable new-show-table">' +
                     '<thead>' +
                     '<tr>' +
-                    '<th>&nbsp;</th>' +
+                    '<th style="width:40px;">&nbsp;</th>' +
                     '<th>Show Name</th>' +
                     '<th>Premiere</th>' +
                     '<th>Indexer</th>' +
