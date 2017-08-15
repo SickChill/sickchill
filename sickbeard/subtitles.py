@@ -265,7 +265,7 @@ def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-lo
                                                        min_score=user_score, only_one=not sickbeard.SUBTITLES_MULTI)
 
         subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path,
-                                  single=not sickbeard.SUBTITLES_MULTI)
+                                  single=not sickbeard.SUBTITLES_MULTI, encoding='utf8')
     except IOError as error:
         if 'No space left on device' in ex(error):
             logger.log('Not enough space on the drive to save subtitles', logger.WARNING)
