@@ -15,6 +15,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
+import os.path
+
 
 class DelugeDAPI(GenericClient):
 

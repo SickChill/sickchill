@@ -32,6 +32,8 @@ import sickbeard
 from sickbeard import ex, logger
 from sickbeard.clients.generic import GenericClient
 
+import os.path
+
 
 class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
     def __init__(self, host=None, username=None, password=None):

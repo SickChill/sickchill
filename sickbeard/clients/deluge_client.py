@@ -26,6 +26,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
+import os.path
+
 
 class DelugeAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
