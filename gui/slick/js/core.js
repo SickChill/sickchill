@@ -429,6 +429,27 @@ var SICKRAGE = {
             $('#log_dir').fileBrowser({title: _('Select log file folder location')});
             $('#sickrage_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
             $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
+
+            // List remote branches available for checkout
+            const branchVersion = $('#branchVersion');
+            const branchVersionLabel = $('#branchVersionLabel');
+            const branchCheckout = $('#branchCheckout');
+            $.getJSON(srRoot + '/home/fetchRemoteBranches', function(branches) {
+                if (branches.length) {
+                    const baseOptionElem = $('<option></option>');
+                    let optionElem = null;
+                    for (let i = 0; i < branches.length; i++) {
+                        optionElem = baseOptionElem.clone().text(branches[i].name).attr('value', branches[i].name);
+                        optionElem.prop('selected', Boolean(branches[i].current));
+                        optionElem.appendTo(branchVersion);
+                    }
+                    branchCheckout.prop('disabled', false);
+                    branchVersionLabel.html(_('select branch to use (restart required)'));
+                } else {
+                    branchCheckout.prop('disabled', true);
+                    branchVersionLabel.html(_('error: No branches found.')).css({color: '#FF0000'});
+                }
+            });
         },
         backupRestore: function() {
             $('#Backup').on('click', function() {
@@ -3607,7 +3628,7 @@ var SICKRAGE = {
     schedule: {
         init: function() {
             // Set webcal link for calendar subscription
-            $('.btn-cal-subscribe').attr('href', document.location.href.replace(/https?/, 'webcal').replace('schedule', 'calendar'));
+            $('.btn-cal-subscribe').attr('href', document.location.href.replace(/https?/, 'webcal').replace(/schedule.*/, 'calendar'));
         },
         index: function() {
             if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])) {
