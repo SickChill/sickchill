@@ -63,11 +63,10 @@ install:
   # Install node/npm
   - ps: Install-Product node $env:8
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install xo
   - npm install --quiet
 
 test_script:
-  - xo
+  - npm run xo
   - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
   - tox -v --recreate -e "py27-windows"
 
