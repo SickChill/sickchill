@@ -2859,8 +2859,6 @@ var SICKRAGE = {
             });
         },
         editShow: function() {
-            let allExceptions = [];
-
             $('#location').fileBrowser({title: _('Select Show Location')});
 
             SICKRAGE.common.QualityChooser.init();
@@ -2880,7 +2878,9 @@ var SICKRAGE = {
                         currentSeason.push($(this).val());
                     });
 
-                    if (currentSeason.length < 1) return;
+                    if (currentSeason.length < 1) {
+                        return;
+                    }
 
                     allExceptions.push($(this).data('season') + ':' + currentSeason.join('|'));
                 });
@@ -2903,7 +2903,9 @@ var SICKRAGE = {
                     return $(option).val();
                 });
 
-                if (items.toArray().indexOf(sceneEx) > -1) return;
+                if (items.toArray().indexOf(sceneEx) > -1) {
+                    return;
+                }
 
                 const option = $('<option>');
 
