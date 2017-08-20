@@ -83,6 +83,7 @@
         <link rel="apple-touch-icon" sizes="76x76" href="${static_url('images/ico/favicon-76.png')}">
         <link rel="apple-touch-icon" sizes="72x72" href="${static_url('images/ico/favicon-72.png')}">
         <link rel="apple-touch-icon" href="${static_url('images/ico/favicon-57.png')}">
+        <link rel="mask-icon" href="${srRoot}/images/ico/safari-pinned-tab.svg" color="#15528F">
 
         <link rel="stylesheet" type="text/css" href="${static_url('css/vender.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
