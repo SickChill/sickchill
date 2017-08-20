@@ -336,7 +336,7 @@
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif
-                                                        <option data-season="${season}">${'Show' if season == -1 else 'Season ' + str(season)}</option>
+                                                        <option data-season="${season}">${_('Show') if season == -1 else _('Season ') + str(season)}</option>
                                                     %endfor
                                                 </select>
                                                 <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName"/>
@@ -351,10 +351,12 @@
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif
-                                                        <optgroup id="scene-group-${season}" data-season="${season}" label="${'Show' if season == -1 else 'Season ' + str(season)}">
+                                                        <optgroup id="scene-group-${season}" data-season="${season}" label="${_('Show') if season == -1 else _('Season ') + str(season)}">
                                                             %if season in scene_exceptions:
                                                                 %for exception in scene_exceptions[season]:
-                                                                    <option ${'disabled' if exception[u"custom"] == False else ''} value="${exception[u"show_name"]}">${exception[u"show_name"]}</option>
+                                                                    <option ${'disabled' if exception["custom"] == False else ''} value="${exception["show_name"]}">
+                                                                        ${exception["show_name"]}
+                                                                    </option>
                                                                 %endfor
                                                             % else:
                                                             <option class="empty" disabled>${_('None')}</option>
