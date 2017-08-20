@@ -99,7 +99,6 @@
                 <!-- start list view //-->
                 <% show_div = 'listing-default' %>
 
-                <input type="hidden" id="srRoot" value="${srRoot}"/>
                 <div class="horizontal-scroll">
                     <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
                         <thead>
@@ -229,7 +228,6 @@
                     <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
                     <% tbl_day = 0 %>
                     <div class="calendarWrapper">
-                        <input type="hidden" id="srRoot" value="${srRoot}"/>
                         % for day in dates:
                         <% tbl_day += 1 %>
                             <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}"
