@@ -330,17 +330,36 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" id="SceneName"
-                                                       class="form-control input-sm input200" autocapitalize="off"/>
+                                                <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off"/>
+                                                <select id="SceneSeason" class="form-control input-sm" style="width: 95px">
+                                                    % for season in range(0, len(seasonResults)):
+                                                        %if season == 0:
+                                                            <% season = -1 %>
+                                                        %endif
+                                                        <option data-season="${season}">${'Show' if season == -1 else 'Season ' + str(season)}</option>
+                                                    %endfor
+                                                </select>
                                                 <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName"/>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <select id="exceptions_list" name="exceptions_list" multiple="multiple"
-                                                        style="height:99px;width:200px;" title="exceptions_list">
-                                                    % for cur_exception in show.exceptions:
-                                                        <option value="${cur_exception}">${cur_exception}</option>
+                                                <input type="hidden" id="exceptions" name="exceptions_list"/>
+                                                <select id="exceptions_list" multiple
+                                                        style="height:200px;" class="form-control input350" title="exceptions_list">
+                                                    % for season in range(0, len(seasonResults)):
+                                                        %if season == 0:
+                                                            <% season = -1 %>
+                                                        %endif
+                                                        <optgroup id="scene-group-${season}" data-season="${season}" label="${'Show' if season == -1 else 'Season ' + str(season)}">
+                                                            %if season in scene_exceptions:
+                                                                %for exception in scene_exceptions[season]:
+                                                                    <option ${'disabled' if exception[u"custom"] == False else ''} value="${exception[u"show_name"]}">${exception[u"show_name"]}</option>
+                                                                %endfor
+                                                            % else:
+                                                            <option class="empty" disabled>${_('None')}</option>
+                                                        %endif
+                                                        </optgroup>
                                                     % endfor
                                                 </select>
                                                 <div>
@@ -356,6 +375,11 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label>${_('this list appends to the original show name.')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickrage/sickrage.github.io/issues">here</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>

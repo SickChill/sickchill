@@ -2871,13 +2871,21 @@ var SICKRAGE = {
             }); */
 
             $('#submit').on('click', function() {
-                allExceptions = [];
+                const allExceptions = [];
 
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
+                $('#exceptions_list').find('optgroup').each(function() {
+                    let currentSeason = [];
+
+                    $(this).find('option:enabled').each(function() {
+                        currentSeason.push($(this).val());
+                    });
+
+                    if (currentSeason.length < 1) return;
+
+                    allExceptions.push($(this).data('season') + ':' + currentSeason.join('|'));
                 });
 
-                $('#exceptions_list').val(allExceptions);
+                $('#exceptions').val(allExceptions);
 
                 if (metaToBool('show.is_anime')) {
                     generateBlackWhiteList(); // eslint-disable-line no-undef
@@ -2885,48 +2893,44 @@ var SICKRAGE = {
             });
 
             $('#addSceneName').on('click', function() {
+                const season = $('#SceneSeason').find(':selected').data('season');
                 const sceneEx = $('#SceneName').val();
-                const option = $('<option>');
-                allExceptions = [];
 
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
+                const group = $('#exceptions_list').find('#scene-group-' + season);
+                const emptyPlaceholder = group.find('option.empty');
+
+                const items = group.find('option:not(.empty)').map(function(index, option) {
+                    return $(option).val();
                 });
+
+                if (items.toArray().indexOf(sceneEx) > -1) return;
+
+                const option = $('<option>');
+
+                option.text(sceneEx).val(sceneEx);
+
+                if (emptyPlaceholder) {
+                    emptyPlaceholder.remove();
+                }
+
+                group.append(option);
 
                 $('#SceneName').val('');
-
-                if ($.inArray(sceneEx, allExceptions) > -1 || (sceneEx === '')) {
-                    return;
-                }
-
-                $('#SceneException').show();
-
-                option.attr('value', sceneEx);
-                option.html(sceneEx);
-                return option.appendTo('#exceptions_list');
             });
 
-            $('#removeSceneName').on('click', function(event) {
-                $('#exceptions_list option:selected').remove();
+            $('#removeSceneName').on('click', function() {
+                const option = $('#exceptions_list').find('option:selected');
+                const group = option.closest('optgroup');
 
-                $(event.currentTarget).toggleSceneException();
-            });
+                if (group.find('option').length < 2) {
+                    const newOption = $('<option disabled class="empty">');
+                    newOption.text(_('None'));
 
-            $.fn.toggleSceneException = function() {
-                allExceptions = [];
-
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
-                });
-
-                if (allExceptions === '') {
-                    $('#SceneException').hide();
-                } else {
-                    $('#SceneException').show();
+                    group.append(newOption);
                 }
-            };
 
-            $(this).toggleSceneException();
+                option.remove();
+            });
         },
         postProcess: function() {
             $('#episodeDir').fileBrowser({
