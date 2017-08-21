@@ -5,12 +5,11 @@ from __future__ import print_function, unicode_literals
 import os
 import posixpath
 
-from libtrakt.exceptions import traktException
-from libtrakt.trakt import TraktAPI
-
 import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickrage.custom.libtrakt import TraktAPI
+from sickrage.custom.libtrakt.exceptions import TraktException
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, MultipleShowObjectsException
 
@@ -31,9 +30,9 @@ class traktTrending(object):
         try:
             not_liked_show = ""
             if sickbeard.TRAKT_ACCESS_TOKEN != '':
-                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+                library_shows = trakt_api.trakt_request("sync/collection/shows?extended=full") or []
                 if sickbeard.TRAKT_BLACKLIST_NAME:
-                    not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+                    not_liked_show = trakt_api.trakt_request("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
                 else:
                     logger.log("Trakt blacklist name is empty", logger.DEBUG)
 
@@ -42,10 +41,10 @@ class traktTrending(object):
             else:
                 limit_show = "?"
 
-            shows = trakt_api.traktRequest(page_url + limit_show + "extended=full") or []
+            shows = trakt_api.trakt_request(page_url + limit_show + "extended=full") or []
 
             if sickbeard.TRAKT_ACCESS_TOKEN != '':
-                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+                library_shows = trakt_api.trakt_request("sync/collection/shows?extended=full") or []
 
             for show in shows:
                 try:
@@ -74,7 +73,7 @@ class traktTrending(object):
             else:
                 black_list = False
 
-        except traktException as e:
+        except TraktException as e:
             logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
         for trending_show in trending_shows:
@@ -116,7 +115,7 @@ class traktTrending(object):
 
     @staticmethod
     def get_image_name(indexer_id):
-         return str(indexer_id) + ".jpg"
+        return str(indexer_id) + ".jpg"
 
     @staticmethod
     def get_image_path(image_name):
@@ -131,5 +130,6 @@ class traktTrending(object):
         # Only cache if the file does not exist yet
         if not ek(os.path.isfile, image_path):
             helpers.download_file(image_url, image_path, session=self.session)
+
 
 trakt_trending = traktTrending()
