@@ -283,16 +283,12 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 
     logger.log("Updating scene exceptions", logger.INFO)
 
-    # A change has been made to the scene exception list. Let's clear the cache, to make this visible
-    if indexer_id in exceptionsCache:
-        exceptionsCache[indexer_id] = {}
-
     for season in scene_exceptions:
-        exceptionsCache[indexer_id][season] = [d["show_name"] for d in scene_exceptions[season]]
-
         for cur_exception in scene_exceptions[season]:
             cache_db_con.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
                                 [indexer_id, cur_exception["show_name"], season, cur_exception["custom"]])
+
+    rebuild_exception_cache(indexer_id)
 
 
 def _anidb_exceptions_fetcher():
@@ -347,3 +343,17 @@ def getSceneSeasons(indexer_id):
     cache_db_con = db.DBConnection('cache.db')
     seasons = cache_db_con.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     return [cur_exception[b"season"] for cur_exception in seasons]
+
+
+def rebuild_exception_cache(indexer_id):
+    if indexer_id in exceptionsCache:
+        exceptionsCache[indexer_id] = {}
+
+    cache_db_con = db.DBConnection('cache.db')
+    results = cache_db_con.action('SELECT show_name, season FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
+
+    for result in results:
+        if result[b"season"] not in exceptionsCache[indexer_id]:
+            exceptionsCache[indexer_id][result[b"season"]] = []
+
+        exceptionsCache[indexer_id][result[b"season"]].append(result[b"show_name"])
