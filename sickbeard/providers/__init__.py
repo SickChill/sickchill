@@ -28,7 +28,7 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed, iptorrents,
                                  limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat,
                                  skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech,
-                                 torrentproject, torrentz, tvchaosuk, xthor)
+                                 torrentproject, torrentz, tvchaosuk, xthor, elitetrackerfr)
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'btn', 'cpasbien', 'danishbits',
