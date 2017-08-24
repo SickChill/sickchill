@@ -2466,7 +2466,7 @@ var SICKRAGE = {
                 }
             });
 
-            $('#srRoot').ajaxEpSearch({colorRow: true});
+            $('.displayShowTable').ajaxEpSearch({colorRow: true});
 
             function enableLink(link) {
                 link.on('click.disabled', false);
@@ -3674,11 +3674,11 @@ var SICKRAGE = {
                     }
                 });
 
-                $('#srRoot').ajaxEpSearch();
+                $(document).ajaxEpSearch();
             }
 
             if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])) {
-                $('#srRoot').ajaxEpSearch();
+                $(document).ajaxEpSearch();
                 $('.ep_summary').hide();
                 $('.ep_summaryTrigger').on('click', function() {
                     $(this).next('.ep_summary').slideToggle('normal', function() {
