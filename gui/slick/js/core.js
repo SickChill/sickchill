@@ -2870,16 +2870,14 @@ var SICKRAGE = {
 
             $('#submit').on('click', function() {
                 const allExceptions = $('#exceptions_list').find('optgroup').get().map(function(group) {
-                    return $(group).find('option:enabled').get().map(function(el, index) {
-                        const season = $(el).data('season');
-                        const exception = encodeURIComponent($(el).val());
+                    const season = $(group).data('season');
+                    const exceptions = $(group).find('option:enabled').get().map(function(option) {
+                        const exception = $(option).val();
 
-                        if (index === 0) {
-                            return [season, exception].join(':');
-                        }
-
-                        return exception;
+                        return encodeURIComponent(exception);
                     }).join('|');
+
+                    return [season, exceptions].join(':');
                 }).filter(function(item) {
                     return item;
                 });
