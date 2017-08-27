@@ -2869,20 +2869,16 @@ var SICKRAGE = {
             }); */
 
             $('#submit').on('click', function() {
-                const allExceptions = [];
+                const allExceptions = $('#exceptions_list').find('optgroup').get().map(function(group) {
+                    return $(group).find('option').get().map(function(el, index) {
+                        const season = $(el).attr('season');
+                        const exception = $(el).val();
 
-                $('#exceptions_list').find('optgroup').each(function() {
-                    let currentSeason = [];
-
-                    $(this).find('option:enabled').each(function() {
-                        currentSeason.push($(this).val());
-                    });
-
-                    if (currentSeason.length < 1) {
-                        return;
-                    }
-
-                    allExceptions.push($(this).data('season') + ':' + currentSeason.join('|'));
+                        if (index === 0) {
+                            return [season, exception].join(':');
+                        }
+                        return exception;
+                    }).join('|');
                 });
 
                 $('#exceptions').val(allExceptions);
@@ -2896,26 +2892,23 @@ var SICKRAGE = {
                 const season = $('#SceneSeason').find(':selected').data('season');
                 const sceneEx = $('#SceneName').val();
 
-                const group = $('#exceptions_list').find('#scene-group-' + season);
-                const emptyPlaceholder = group.find('option.empty');
+                const group = $('#exceptions_list').find('[data-season="' + season + '"]').get()[0];
+                const placeholder = $(group).find('option.empty');
 
-                const items = group.find('option:not(.empty)').map(function(index, option) {
-                    return $(option).val();
+                const exceptions = $(group).find('option:not(.empty)').get().map(function(el) {
+                    return $(el).val();
                 });
 
-                if (items.toArray().indexOf(sceneEx) > -1) {
+                // If we already have the exception or the field is empty return
+                if (exceptions.indexOf(sceneEx) > -1 || sceneEx.trim() === '') {
+                    $('#SceneName').val('');
                     return;
                 }
 
-                const option = $('<option>');
+                const newException = $('<option data-season=' + season + '>').text(sceneEx).val(sceneEx);
 
-                option.text(sceneEx).val(sceneEx);
-
-                if (emptyPlaceholder) {
-                    emptyPlaceholder.remove();
-                }
-
-                group.append(option);
+                $(group).append(newException);
+                placeholder.remove();
 
                 $('#SceneName').val('');
             });
