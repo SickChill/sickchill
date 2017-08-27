@@ -2872,7 +2872,7 @@ var SICKRAGE = {
                 const allExceptions = $('#exceptions_list').find('optgroup').get().map(function(group) {
                     return $(group).find('option:enabled').get().map(function(el, index) {
                         const season = $(el).data('season');
-                        const exception = $(el).val();
+                        const exception = encodeURIComponent($(el).val());
 
                         if (index === 0) {
                             return [season, exception].join(':');

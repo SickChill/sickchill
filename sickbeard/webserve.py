@@ -1640,7 +1640,7 @@ class Home(WebRoot):
                 show_list = []
 
                 for cur_show in shows.split('|'):
-                    show_list.append({'show_name': cur_show, 'custom': True})
+                    show_list.append({'show_name': unquote_plus(cur_show), 'custom': True})
 
                 exceptions[int(season)] = show_list
 
