@@ -2880,7 +2880,7 @@ var SICKRAGE = {
 
                         return exception;
                     }).join('|');
-                }).filter(function (item) {
+                }).filter(function(item) {
                     return item;
                 });
 
