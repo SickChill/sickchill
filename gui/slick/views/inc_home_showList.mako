@@ -23,6 +23,7 @@
                     <div class="show-image">
                         <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" />
                     </div>
+                    <div class="show-information">
                     <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id | u}" data-progress-percentage="0"></div>
                     <div class="show-title">${_('Loading')} (${loading_show.name})</div>
                     <div class="show-date">&nbsp;</div>
@@ -40,6 +41,7 @@
                                 </td>
                             </tr>
                         </table>
+                    </div>
                     </div>
                 </div>
             % endfor
@@ -103,6 +105,7 @@
                         <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
                     </div>
 
+                    <div class="show-information">
                     <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
 
                     <div class="show-title">
@@ -153,6 +156,7 @@
                                 </td>
                             </tr>
                         </table>
+                    </div>
                     </div>
                 </div>
             % endfor
