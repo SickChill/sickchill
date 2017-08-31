@@ -5,7 +5,7 @@ $(function() {
             content: {
                 text: _('Loading...'),
                 ajax: {
-                    url: $('#srRoot').val() + '/home/plotDetails',
+                    url: srRoot + '/home/plotDetails',
                     type: 'GET',
                     data: {
                         show: match[1],
