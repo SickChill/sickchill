@@ -1521,10 +1521,10 @@ class Home(WebRoot):
             return _("No scene exceptions")
 
         out = []
-        for season, names in iter(sorted(six.iteritems(exceptionsList))):
+        for season, object in iter(sorted(six.iteritems(exceptionsList))):
             if season == -1:
                 season = "*"
-            out.append("S" + str(season) + ": " + ", ".join(names))
+            out.append("S" + str(season) + ": " + ", ".join(object.names))
         return "<br>".join(out)
 
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
@@ -1551,7 +1551,13 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errString)
 
-        show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
+
+        main_db_con = db.DBConnection()
+        seasonResults = main_db_con.select(
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season IS NOT NULL ORDER BY season DESC",
+            [show_obj.indexerid]
+        )
 
         if try_int(quality_preset, None):
             bestQualities = []
@@ -1575,14 +1581,14 @@ class Home(WebRoot):
 
             with show_obj.lock:
                 show = show_obj
-                scene_exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
             if show_obj.is_anime:
-                return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
-                                blacklist=blacklist, title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
+                return t.render(show=show, scene_exceptions=show_obj.exceptions, seasonResults=seasonResults,
+                                groups=groups, whitelist=whitelist, blacklist=blacklist,
+                                title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title=_('Edit Show'), header=_('Edit Show'),
-                                controller="home", action="editShow")
+                return t.render(show=show, scene_exceptions=show_obj.exceptions, seasonResults=seasonResults,
+                                title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
 
         season_folders = config.checkbox_to_value(season_folders)
         dvdorder = config.checkbox_to_value(dvdorder)
@@ -1618,18 +1624,28 @@ class Home(WebRoot):
         if not isinstance(bestQualities, list):
             bestQualities = [bestQualities]
 
-        if not isinstance(exceptions_list, list):
-            exceptions_list = [exceptions_list]
+        if isinstance(exceptions_list, list):
+            if len(exceptions_list) > 0:
+                exceptions_list = exceptions_list[0]
+            else:
+                exceptions_list = None
+
+        # Map custom exceptions
+        exceptions = {}
+
+        if exceptions_list is not None:
+            for season in exceptions_list.split(','):
+                (season, shows) = season.split(':')
+
+                show_list = []
+
+                for cur_show in shows.split('|'):
+                    show_list.append({'show_name': unquote_plus(cur_show), 'custom': True})
+
+                exceptions[int(season)] = show_list
 
         # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
-        if directCall:
-            do_update_exceptions = False
-        else:
-            if set(exceptions_list) == set(show_obj.exceptions):
-                do_update_exceptions = False
-            else:
-                do_update_exceptions = True
-
+        if not directCall:
             with show_obj.lock:
                 if anime:
                     if not show_obj.release_groups:
@@ -1710,12 +1726,11 @@ class Home(WebRoot):
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
 
-        if do_update_exceptions:
-            try:
-                sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions_list)  # @UndefinedVdexerid)
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except CantUpdateShowException as e:
-                errors.append(_("Unable to force an update on scene exceptions of the show."))
+        try:
+            sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+        except CantUpdateShowException as e:
+            errors.append(_("Unable to force an update on scene exceptions of the show."))
 
         if do_update_scene_numbering:
             try:

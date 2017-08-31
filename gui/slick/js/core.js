@@ -2859,8 +2859,6 @@ var SICKRAGE = {
             });
         },
         editShow: function() {
-            let allExceptions = [];
-
             $('#location').fileBrowser({title: _('Select Show Location')});
 
             SICKRAGE.common.QualityChooser.init();
@@ -2871,13 +2869,20 @@ var SICKRAGE = {
             }); */
 
             $('#submit').on('click', function() {
-                allExceptions = [];
+                const allExceptions = $('#exceptions_list').find('optgroup').get().map(function(group) {
+                    const season = $(group).data('season');
+                    const exceptions = $(group).find('option:enabled').get().map(function(option) {
+                        const exception = $(option).val();
 
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
+                        return encodeURIComponent(exception);
+                    }).join('|');
+
+                    return [season, exceptions].join(':');
+                }).filter(function(item) {
+                    return item;
                 });
 
-                $('#exceptions_list').val(allExceptions);
+                $('#exceptions').val(allExceptions);
 
                 if (metaToBool('show.is_anime')) {
                     generateBlackWhiteList(); // eslint-disable-line no-undef
@@ -2885,48 +2890,43 @@ var SICKRAGE = {
             });
 
             $('#addSceneName').on('click', function() {
+                const season = $('#SceneSeason').find(':selected').data('season');
                 const sceneEx = $('#SceneName').val();
-                const option = $('<option>');
-                allExceptions = [];
 
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
+                const group = $('#exceptions_list').find('[data-season="' + season + '"]').get()[0];
+                const placeholder = $(group).find('option.empty');
+
+                const exceptions = $(group).find('option:not(.empty)').get().map(function(el) {
+                    return $(el).val();
                 });
 
-                $('#SceneName').val('');
-
-                if ($.inArray(sceneEx, allExceptions) > -1 || (sceneEx === '')) {
+                // If we already have the exception or the field is empty return
+                if (exceptions.indexOf(sceneEx) > -1 || sceneEx.trim() === '') {
+                    $('#SceneName').val('');
                     return;
                 }
 
-                $('#SceneException').show();
+                const newException = $('<option data-season=' + season + '>').text(sceneEx).val(sceneEx);
 
-                option.attr('value', sceneEx);
-                option.html(sceneEx);
-                return option.appendTo('#exceptions_list');
+                $(group).append(newException);
+                placeholder.remove();
+
+                $('#SceneName').val('');
             });
 
-            $('#removeSceneName').on('click', function(event) {
-                $('#exceptions_list option:selected').remove();
+            $('#removeSceneName').on('click', function() {
+                const option = $('#exceptions_list').find('option:selected');
+                const group = option.closest('optgroup');
 
-                $(event.currentTarget).toggleSceneException();
-            });
+                if (group.find('option').length < 2) {
+                    const newOption = $('<option disabled class="empty">');
+                    newOption.text(_('None'));
 
-            $.fn.toggleSceneException = function() {
-                allExceptions = [];
-
-                $('#exceptions_list option').each(function() {
-                    allExceptions.push($(this).val());
-                });
-
-                if (allExceptions === '') {
-                    $('#SceneException').hide();
-                } else {
-                    $('#SceneException').show();
+                    group.append(newOption);
                 }
-            };
 
-            $(this).toggleSceneException();
+                option.remove();
+            });
         },
         postProcess: function() {
             $('#episodeDir').fileBrowser({
