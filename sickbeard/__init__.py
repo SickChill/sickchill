@@ -214,6 +214,7 @@ SORT_ARTICLE = False
 DEBUG = False
 DBDEBUG = False
 DISPLAY_ALL_SEASONS = True
+DISPLAY_UNAIRED = True
 DEFAULT_PAGE = 'home'
 
 
@@ -708,7 +709,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, \
-            DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
+            DEVELOPER, DISPLAY_ALL_SEASONS, DISPLAY_UNAIRED, SSL_VERIFY, NEWS_LAST_READ, NEWS_LATEST, SOCKET_TIMEOUT, \
             SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, SICKRAGE_BACKGROUND_PATH, \
             FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, \
             USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
@@ -1379,6 +1380,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
+        DISPLAY_UNAIRED = check_setting_bool(CFG, 'General', 'display_unaired', True)
 
         if check_section(CFG, 'Shares'):
             WINDOWS_SHARES.update(CFG['Shares'])
@@ -2000,6 +2002,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'no_restart': int(NO_RESTART),
             'developer': int(DEVELOPER),
             'display_all_seasons': int(DISPLAY_ALL_SEASONS),
+            'display_unaired': int(DISPLAY_UNAIRED),
             'news_last_read': NEWS_LAST_READ,
         },
 

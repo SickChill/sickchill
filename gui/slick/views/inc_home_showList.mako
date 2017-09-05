@@ -275,6 +275,10 @@
 
                             show_size = show_stat[curShow.indexerid]['show_size']
 
+                        if (not cur_total) or (cur_total == 0):
+                            if sickbeard.DISPLAY_UNAIRED is False:
+                                continue
+
                         download_stat = str(cur_downloaded)
                         download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
 

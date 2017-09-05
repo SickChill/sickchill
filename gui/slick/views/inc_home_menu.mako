@@ -61,6 +61,11 @@
                     <span class="show-option">${_('Poster Size')}:</span>
                     <div style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></div>
                 </label>
+            % else:
+                <label>
+                    <span class="show-option">Unaired: </span>
+                    <input type="checkbox" name="display_unaired" id="display_unaired" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_UNAIRED)]} onclick="location.href='${srRoot}/toggleUnaired/'"/>
+                </label>
             % endif
         </div>
     </div>

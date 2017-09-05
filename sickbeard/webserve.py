@@ -417,6 +417,10 @@ class WebRoot(WebHandler):
         # Don't redirect to default page so user can see new layout
         return self.redirect("/home/")
 
+    def toggleUnaired(self):
+        sickbeard.DISPLAY_UNAIRED = not sickbeard.DISPLAY_UNAIRED
+        return self.redirect("/home/")
+
     @staticmethod
     def setPosterSortBy(sort):
 
@@ -3977,7 +3981,7 @@ class ConfigGeneral(Config):
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             sickrage_background=None, sickrage_background_path=None, custom_css=None, custom_css_path=None,
             git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
-            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
+            display_all_seasons=None, display_unaired=None, gui_language=None, ignore_broken_symlinks=None):
 
         results = []
 
@@ -4042,6 +4046,7 @@ class ConfigGeneral(Config):
         sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
 
         sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
+        sickbeard.DISPLAY_UNAIRED = config.checkbox_to_value(display_unaired)
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
