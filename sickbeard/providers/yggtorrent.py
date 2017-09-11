@@ -69,11 +69,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response:
-            logger.log('Unable to connect to provider', logger.WARNING)
-            return False
-
-        if 'logout' not in response:
+        if response: # Yggtorrent return empty response if user is logged, so ...
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -122,8 +118,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(cells[3].get_text(strip=True))
-                            leechers = try_int(cells[4].get_text(strip=True))
+                            seeders = try_int(cells[4].get_text(strip=True))
+                            leechers = try_int(cells[5].get_text(strip=True))
 
                             torrent_size = cells[2].get_text()
                             size = convert_size(torrent_size) or -1
