@@ -48,9 +48,9 @@ class XbitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
         # URLs
         self.url = 'https://xbit.pw/'
         self.urls = {
-            'search': 'api?search=' 
+            'search': 'api?search='
         }
- 
+
         # Proper Strings
         self.proper_strings = ['PROPER']
 
@@ -74,7 +74,7 @@ class XbitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     search_params = {
                         'q': re.sub(r'[()]', '', search_string)
                     }
-                    
+
                     url_search = self.url + self.urls['search'] + quote(search_params['q'])
                     logger.log('Searching with ' + url_search, logger.DEBUG)
                     data = self.get_url(url_search, returns='text')
