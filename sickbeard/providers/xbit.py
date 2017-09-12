@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import re
 import json
 
+from urllib import quote
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size, try_int
@@ -74,7 +75,7 @@ class XbitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                         'q': re.sub(r'[()]', '', search_string)
                     }
                     
-                    url_search = self.url + self.urls['search'] + search_params['q']
+                    url_search = self.url + self.urls['search'] + quote(search_params['q'])
                     logger.log('Searching with ' + url_search, logger.DEBUG)
                     data = self.get_url(url_search, returns='text')
                     if not data:
