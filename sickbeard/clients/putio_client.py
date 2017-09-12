@@ -20,6 +20,7 @@
 from __future__ import unicode_literals
 
 from putiopy import Client as PutioClient, ClientError
+
 from sickbeard import helpers
 from sickbeard.clients.generic import GenericClient
 

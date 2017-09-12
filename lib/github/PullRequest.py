@@ -9,7 +9,8 @@
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -36,12 +37,17 @@ import github.PullRequestComment
 import github.File
 import github.IssueComment
 import github.Commit
+import github.PullRequestReview
+import github.PullRequestReviewerRequest
 
 
 class PullRequest(github.GithubObject.CompletableGithubObject):
     """
     This class represents PullRequests. The reference can be found here http://developer.github.com/v3/pulls/
     """
+
+    def __repr__(self):
+        return self.get__repr__({"number": self._number.value, "title": self._title.value})
 
     @property
     def additions(self):
@@ -58,6 +64,14 @@ class PullRequest(github.GithubObject.CompletableGithubObject):
         """
         self._completeIfNotSet(self._assignee)
         return self._assignee.value
+
+    @property
+    def assignees(self):
+        """
+        :type: list of :class:`github.NamedUser.NamedUser`
+        """
+        self._completeIfNotSet(self._assignees)
+        return self._assignees.value
 
     @property
     def base(self):
@@ -483,6 +497,46 @@ class PullRequest(github.GithubObject.CompletableGithubObject):
             None
         )
 
+    def get_review(self, id):
+        """
+        :calls: `GET /repos/:owner/:repo/pulls/:number/reviews/:id <https://developer.github.com/v3/pulls/reviews>`_
+        :param id: integer
+        :rtype: :class:`github.PullRequestReview.PullRequestReview`
+        """
+        assert isinstance(id, (int, long)), id
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET",
+            self.url + "/reviews/" + str(id),
+            headers={'Accept': 'application/vnd.github.black-cat-preview+json'}
+        )
+        return github.PullRequestReview.PullRequestReview(self._requester, headers, data, completed=True)
+
+    def get_reviews(self):
+        """
+        :calls: `GET /repos/:owner/:repo/pulls/:number/reviews <https://developer.github.com/v3/pulls/reviews/>`_
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.PullRequestReview.PullRequestReview`
+        """
+        return github.PaginatedList.PaginatedList(
+            github.PullRequestReview.PullRequestReview,
+            self._requester,
+            self.url + "/reviews",
+            None,
+            headers={'Accept': 'application/vnd.github.black-cat-preview+json'}
+        )
+
+    def get_reviewer_requests(self):
+        """
+        :calls: `GET /repos/:owner/:repo/pulls/:number/requested_reviewers <https://developer.github.com/v3/pulls/review_requests/>`_
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.InspectionReviewers.InspectionReviewers`
+        """
+        return github.PaginatedList.PaginatedList(
+            github.PullRequestReviewerRequest.PullRequestReviewerRequest,
+            self._requester,
+            self.url + "/requested_reviewers",
+            None,
+            headers={'Accept': 'application/vnd.github.black-cat-preview+json'}
+        )
+        
     def is_merged(self):
         """
         :calls: `GET /repos/:owner/:repo/pulls/:number/merge <http://developer.github.com/v3/pulls>`_
@@ -514,6 +568,7 @@ class PullRequest(github.GithubObject.CompletableGithubObject):
     def _initAttributes(self):
         self._additions = github.GithubObject.NotSet
         self._assignee = github.GithubObject.NotSet
+        self._assignees = github.GithubObject.NotSet
         self._base = github.GithubObject.NotSet
         self._body = github.GithubObject.NotSet
         self._changed_files = github.GithubObject.NotSet
@@ -552,6 +607,13 @@ class PullRequest(github.GithubObject.CompletableGithubObject):
             self._additions = self._makeIntAttribute(attributes["additions"])
         if "assignee" in attributes:  # pragma no branch
             self._assignee = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["assignee"])
+        if "assignees" in attributes:  # pragma no branch
+            self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["assignees"])
+        elif "assignee" in attributes:
+            if attributes["assignee"] is not None:
+                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [attributes["assignee"]])
+            else:
+                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [])
         if "base" in attributes:  # pragma no branch
             self._base = self._makeClassAttribute(github.PullRequestPart.PullRequestPart, attributes["base"])
         if "body" in attributes:  # pragma no branch

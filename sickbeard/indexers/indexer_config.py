@@ -2,8 +2,9 @@
 
 from __future__ import unicode_literals
 
-from sickbeard import helpers
 from tvdb_api.tvdb_api import Tvdb
+
+from sickbeard import helpers
 
 initConfig = {
     'valid_languages': [

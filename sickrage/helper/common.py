@@ -28,9 +28,11 @@ import os
 import re
 from fnmatch import fnmatch
 
-import sickbeard
 import six
-from github import BadCredentialsException, Github, TwoFactorException
+from github import Github
+from github.GithubException import BadCredentialsException, TwoFactorException
+
+import sickbeard
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'

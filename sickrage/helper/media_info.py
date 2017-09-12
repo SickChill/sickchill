@@ -23,11 +23,11 @@ from __future__ import print_function, unicode_literals
 import binascii
 import io
 
+import six
+from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
 import sickbeard
-import six
-from enzyme import MKV
 
 try:
     get_distribution('pymediainfo')

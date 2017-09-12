@@ -24,8 +24,9 @@ import re
 import time
 import traceback
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets

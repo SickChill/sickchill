@@ -9,10 +9,11 @@ from __future__ import print_function, unicode_literals
 
 from base64 import b64encode
 
+from synchronousdeluge import DelugeClient
+
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-from synchronousdeluge import DelugeClient
 
 
 class DelugeDAPI(GenericClient):

@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  sickrage:
+    image: sickrage:v2017.06.05-1
+    container_name: sickrage
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    volumes:
+      - /docker/sickrage/config:/config
+      - /docker/sickrage/data:/data
