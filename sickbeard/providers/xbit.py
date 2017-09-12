@@ -1,5 +1,5 @@
 # coding=utf-8
-# Author: adaur <adaur.underground@gmail.com>
+# Author: Naufrage7 <naufrage7@gmail.com>
 #
 # URL: https://sickrage.github.io
 #
@@ -22,8 +22,6 @@ from __future__ import unicode_literals
 
 import re
 import json
-
-from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -70,8 +68,6 @@ class XbitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                 if mode != 'RSS':
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
-                else:
-                    continue
 
                 try:
                     search_params = {
@@ -87,7 +83,6 @@ class XbitProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
                     data = json.loads(data)
                     dht_results = data['dht_results']
 
-                    logger.log(dht_results, logger.DEBUG)
                     for result in dht_results:
                         if len(result):
                             title = result['NAME']
