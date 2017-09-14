@@ -31,20 +31,14 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
         self.password = None
         self.minseed = None
         self.minleech = None
-        categories = [
-            'xvidser_hun', 'xvidser',
-            'dvd_hun', 'dvd',
-            'dvd9_hun', 'dvd9',
-            'hd_hun', 'hd'
-        ]
-        categories = '&'.join(['kivalasztott_tipus[]=' + x for x in categories])
+
         self.url = 'https://ncore.cc/'
         self.urls = {
             'login': 'https://ncore.cc/login.php',
-            'search': ('https://ncore.cc/torrents.php?{cats}&mire=%s&miben=name'
-                       '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
-                       '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories),
+            'search': ('https://ncore.cc/torrents.php?mire=%s&miben=name&tipus=all'
+			'&submit.x=0&submit.y=0&submit=Ok&tags=&searchedfrompotato=true&jsons=true'),
         }
+        
         self.cache = tvcache.TVCache(self)
 
     def login(self):
