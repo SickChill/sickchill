@@ -31,15 +31,20 @@ import re
 import time
 import traceback
 
+import six
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+from tornado.web import RequestHandler
+
 import sickbeard
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, \
-    ui
-from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
-    SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
+from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
+from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
+                              WANTED)
+from sickbeard.postProcessor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
 from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException, ex
+from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
@@ -57,13 +62,8 @@ except ImportError:
     # pylint: disable=import-error
     import simplejson as json
 
-# pylint: disable=import-error
-from tornado.web import RequestHandler
 
-import six
 
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
 
 
 indexer_ids = ["indexerid", "tvdbid"]
@@ -1311,7 +1311,7 @@ class CMDPostProcess(ApiCall):
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
-                                                      ["copy", "symlink", "hardlink", "move"])
+                                                      PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
         self.delete, args = self.check_params(args, kwargs, "delete", False, False, "bool", [])
@@ -1622,8 +1622,8 @@ class CMDSickBeardSearchIndexers(ApiCall):
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
             "indexerid": {"desc": "Unique ID of a show"},
-            "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
             "lang": {"desc": "The 2-letter language code of the desired show"},
+            "only_new": {"desc": "Discard shows that are already in your show list"},
         }
     }
 
@@ -1634,6 +1634,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
+        self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
 
     def run(self):
         """ Search for a show with a given name on all the indexers, in a specific language """
@@ -1659,10 +1660,14 @@ class CMDSickBeardSearchIndexers(ApiCall):
                     continue
 
                 for curSeries in api_data:
+                    # Skip it if it's in our show list already, and we only want new shows
+                    if curSeries['in_show_list'] and self.only_new:
+                        continue
                     results.append({indexer_ids[_indexer]: int(curSeries['id']),
                                     "name": curSeries['seriesname'],
                                     "first_aired": curSeries['firstaired'],
-                                    "indexer": int(_indexer)})
+                                    "indexer": int(_indexer),
+                                    "in_show_list": curSeries['in_show_list']})
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
@@ -1955,7 +1960,7 @@ class CMDShowAddExisting(ApiCall):
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
@@ -2044,7 +2049,7 @@ class CMDShowAddNew(ApiCall):
         self.archive, args = self.check_params(
             args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",

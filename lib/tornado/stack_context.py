@@ -67,7 +67,7 @@ Here are a few rules of thumb for when it's necessary:
   block that references your `StackContext`.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import sys
 import threading
@@ -82,6 +82,8 @@ class StackContextInconsistentError(Exception):
 class _State(threading.local):
     def __init__(self):
         self.contexts = (tuple(), None)
+
+
 _state = _State()
 
 

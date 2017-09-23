@@ -23,14 +23,13 @@ from __future__ import print_function, unicode_literals
 import datetime
 import re
 
+from six.moves import urllib
+
 from sickbeard import db, logger
 from sickbeard.common import FAILED, Quality, WANTED
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import EpisodeNotFoundException, ex
 from sickrage.show.History import History
-
-
-from six.moves import urllib
 
 
 def prepareFailedName(release):

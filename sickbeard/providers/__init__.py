@@ -18,27 +18,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 from os import sys
 from random import shuffle
 
 import sickbeard
-from sickbeard.providers import btn, thepiratebay, torrentleech, iptorrents, torrentz, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, speedcd, nyaatorrents, xthor, abnormal, torrentbytes, cpasbien,\
-    torrent9, freshontv, morethantv, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch, torrentproject, extratorrent, \
-    scenetime, transmitthenet, tvchaosuk, bitcannon, pretome, gftracker, hdspace, newpct, elitetorrent, danishbits, hd4free, limetorrents, \
-    norbits, horriblesubs, filelist, skytorrents, ncore, archetorrent, hdtorrents_it, immortalseed, ilcorsaronero
+from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, btn, cpasbien, danishbits, elitetorrent, filelist, gftracker,
+                                 hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed, iptorrents,
+                                 limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat,
+                                 skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech,
+                                 torrentproject, torrentz, tvchaosuk, xthor)
 
 __all__ = [
-    'btn', 'thepiratebay', 'torrentleech', 'scc', 'hdtorrents',
-    'torrentday', 'hdbits', 'hounddawgs', 'iptorrents', 'omgwtfnzbs',
-    'speedcd', 'nyaatorrents', 'torrentbytes', 'freshontv', 'cpasbien',
-    'torrent9','morethantv', 't411', 'tokyotoshokan', 'alpharatio',
-    'shazbat', 'rarbg', 'tntvillage', 'binsearch',
-    'xthor', 'abnormal', 'scenetime', 'transmitthenet', 'tvchaosuk',
-    'torrentproject', 'extratorrent', 'bitcannon', 'torrentz', 'pretome', 'gftracker',
-    'hdspace', 'newpct', 'elitetorrent', 'danishbits', 'hd4free', 'limetorrents',
-    'norbits', 'horriblesubs', 'filelist', 'skytorrents', 'ncore', 'archetorrent', 'hdtorrents_it',
-    'immortalseed', 'ilcorsaronero'
+    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'btn', 'cpasbien', 'danishbits',
+    'elitetorrent', 'filelist', 'gftracker', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
+    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'morethantv',
+    'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
+    'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
+    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor'
 ]
 
 
@@ -108,9 +106,11 @@ def check_enabled_providers():
                     break
 
         if not (daily_enabled and backlog_enabled):
-            formatted_msg = "No NZB/Torrent providers found or enabled for {0}.<br/>".format(
-                (("daily searches and backlog searches", "daily searches")[backlog_enabled], "backlog searches")[daily_enabled])
-            formatted_msg += "Please <a href=\"" + sickbeard.WEB_ROOT + "/config/providers/\">check your settings</a>."
-            sickbeard.helpers.add_site_message(formatted_msg, 'danger')
+            searches = ((_('daily searches and backlog searches'), _('daily searches'))[backlog_enabled],
+                        _('backlog searches'))[daily_enabled]
+            formatted_msg = _('No NZB/Torrent providers found or enabled for {searches}.<br/>'
+                              'Please <a href="{web_root}/config/providers/">check your settings</a>.')
+            sickbeard.helpers.add_site_message(formatted_msg.format(searches=searches, web_root=sickbeard.WEB_ROOT),
+                                               tag='no_providers_enabled', level='danger')
         else:
-            sickbeard.helpers.remove_site_message(begins="No NZB/Torrent providers found or enabled for")
+            sickbeard.helpers.remove_site_message(tag='no_providers_enabled')

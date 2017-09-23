@@ -1,32 +1,38 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
-    from sickbeard.helpers import anon_url
-    from sickbeard import sbdatetime
     import datetime
     import time
     import re
+
+    import sickbeard
+    from sickbeard.helpers import anon_url
+    from sickbeard import sbdatetime
+    from sickbeard.common import Quality
+
+    SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+    <script type="text/javascript" src="${static_url('js/ajaxEpSearch.js')}"></script>
+    <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
 </%block>
 
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
     <div class="row">
         <div class="col-md-12">
-            <div class="pull-right">
+            <div class="pull-right key">
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
+                    % if sickbeard.COMING_EPS_DISPLAY_SNATCHED:
+                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
                 % endif
-                <a class="btn btn-inline forceBacklog" href="webcal://${sbHost}:${sbHttpPort}/calendar">
-                    <i class="icon-calendar icon-white"></i>
-                    ${_('Subscribe')}
+                <a class="btn btn-inline btn-cal-subscribe" href="">
+                    <i class="fa fa-calendar"></i>${_('Subscribe')}
                 </a>
             </div>
         </div>
@@ -62,7 +68,16 @@
                     </select>
                     &nbsp;
                 </label>
-
+                % if layout != 'calendar':
+                <label>
+                    <span>${_('View Snatched')}:</span>
+                    <select name="viewsnatched" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View snatched">
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                    </select>
+                    &nbsp;
+                </label>
+                % endif
                 <label>
                     <span>${_('Layout')}:</span>
                     <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Layout">
@@ -84,7 +99,6 @@
                 <!-- start list view //-->
                 <% show_div = 'listing-default' %>
 
-                <input type="hidden" id="srRoot" value="${srRoot}"/>
                 <div class="horizontal-scroll">
                     <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
                         <thead>
@@ -107,8 +121,12 @@
                                 <%
                                     cur_indexer = int(cur_result[b'indexer'])
                                     run_time = cur_result[b'runtime']
+                                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
 
                                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                                        continue
+
+                                    if snatched_status and not sickbeard.COMING_EPS_DISPLAY_SNATCHED:
                                         continue
 
                                     cur_ep_airdate = cur_result[b'localtime'].date()
@@ -116,7 +134,12 @@
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
 
-                                    if cur_ep_enddate < today:
+                                    if snatched_status:
+                                        if cur_result[b'location']:
+                                            continue
+                                        else:
+                                            show_div = 'listing-snatched'
+                                    elif cur_ep_enddate < today:
                                         show_div = 'listing-overdue'
                                     elif cur_ep_airdate >= next_week.date():
                                         show_div = 'listing-toofar'
@@ -137,8 +160,8 @@
                                         <time datetime="${ends.isoformat('T')}"
                                               class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
                                     </td>
-                                    <td class="tvShow" nowrap="nowrap"><a
-                                            href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}</a>
+                                    <td class="tvShow">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}</a>
                                         % if int(cur_result[b'paused']):
                                             <span class="pause">[paused]</span>
                                         % endif
@@ -148,10 +171,10 @@
                                     </td>
                                     <td>
                                         % if cur_result[b'description']:
-                                            <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo"
+                                            <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
                                                  id="plot_info_${'%s_%s_%s' % (cur_result[b'showid'], cur_result[b'season'], cur_result[b'episode'])}"/>
                                         % else:
-                                            <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"/>
+                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
                                         % endif
                                         ${cur_result[b'name']}
                                     </td>
@@ -176,7 +199,7 @@
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                            title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result[b'showid']}">
                                             <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                 src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
                                         </a>
                                     </td>
                                     <td align="center">
@@ -205,7 +228,6 @@
                     <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
                     <% tbl_day = 0 %>
                     <div class="calendarWrapper">
-                        <input type="hidden" id="srRoot" value="${srRoot}"/>
                         % for day in dates:
                         <% tbl_day += 1 %>
                             <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}"
@@ -219,6 +241,10 @@
                                     <% day_has_show = False %>
                                     % for cur_result in results:
                                         % if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                                            <% continue %>
+                                        % endif
+
+                                        % if int(cur_result[b'epstatus']) in SNATCHED:
                                             <% continue %>
                                         % endif
 
@@ -273,17 +299,23 @@
                 <!-- start non list view //-->
                 <%
                     cur_segment = None
-                    too_late_header = False
-                    missed_header = False
-                    today_header = False
                     show_div = 'ep_listing listing-default'
+                    headers = {
+                        'snatched': _('Snatched'),
+                        'missed': _('Missed'),
+                        'later': _('Later')
+                    }
                 %>
 
                 % for cur_result in results:
                 <%
                     cur_indexer = int(cur_result[b'indexer'])
+                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
 
                     if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                        continue
+
+                    if snatched_status and (cur_result[b'location'] or not sickbeard.COMING_EPS_DISPLAY_SNATCHED):
                         continue
 
                     run_time = cur_result[b'runtime']
@@ -293,6 +325,8 @@
                         cur_ep_enddate = cur_result[b'localtime'] + datetime.timedelta(minutes = run_time)
                     else:
                         cur_ep_enddate = cur_result[b'localtime']
+
+                    this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()
                 %>
                 % if sickbeard.COMING_EPS_SORT == 'network':
                     <% show_network = ('no network', cur_result[b'network'])[bool(cur_result[b'network'])] %>
@@ -303,7 +337,9 @@
                         </div>
                     % endif
 
-                    % if cur_ep_enddate < today:
+                    % if snatched_status:
+                        <% show_div = 'ep_listing listing-snatched' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar' %>
@@ -315,36 +351,36 @@
                         % endif
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'date':
-                    <div>
-                        % if cur_segment != cur_ep_airdate:
-                            % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
-                                <h2 class="day">${_('Missed')}</h2>
-                            <% missed_header = True %>
-                            % elif cur_ep_airdate >= next_week.date() and not too_late_header:
-                                <h2 class="day">${_('Later')}</h2>
-                            <% too_late_header = True %>
-                            % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
-                                % if cur_ep_airdate == today.date():
-                                    <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
-                                        <span style="font-size: 14px; vertical-align: top;">[Today]</span>
-                                    </h2>
-                                <% today_header = True %>
-                                % else:
-                                    <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
+                    % if snatched_status:
+                        <% cur_category = 'snatched' %>
+                    % elif cur_ep_enddate < today and cur_ep_airdate != today.date():
+                        <% cur_category = 'missed' %>
+                    % elif cur_ep_airdate >= next_week.date():
+                        <% cur_category = 'later' %>
+                    % elif cur_ep_airdate == today.date():
+                        <% cur_category = 'today' %>
+                    % elif cur_ep_enddate > today and cur_ep_airdate < next_week.date():
+                        <% cur_category = this_day_name %>
+                    % endif
+
+                    % if cur_segment != cur_category:
+                        <div>
+                        % if cur_category in ('snatched', 'missed', 'later'):
+                            <h2 class="day">${headers[cur_category]}</h2>
+                        % else:
+                            <h2 class="day">${this_day_name}
+                                % if cur_category == 'today':
+                                    <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
                                 % endif
-                            % endif
-                            <% cur_segment = cur_ep_airdate %>
-                        % endif
-
-                        % if cur_ep_airdate == today.date() and not today_header:
-                            <h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}
-                                <span style="font-size: 14px; vertical-align: top;">[Today]</span>
                             </h2>
-                        <% today_header = True %>
                         % endif
-                    </div>
+                        <% cur_segment = cur_category %>
+                        </div>
+                    % endif
 
-                    % if cur_ep_enddate < today:
+                    % if snatched_status:
+                        <% show_div = 'ep_listing listing-snatched' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar' %>
@@ -356,7 +392,9 @@
                         % endif
                     % endif
                 % elif sickbeard.COMING_EPS_SORT == 'show':
-                    % if cur_ep_enddate < today:
+                    % if snatched_status:
+                        <% show_div = 'ep_listing listing-snatched listingradius' %>
+                    % elif cur_ep_enddate < today:
                         <% show_div = 'ep_listing listing-overdue listingradius' %>
                     % elif cur_ep_airdate >= next_week.date():
                         <% show_div = 'ep_listing listing-toofar listingradius' %>
@@ -399,7 +437,7 @@
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                                title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
                                                     alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                    src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                                    src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
@@ -436,12 +474,12 @@
                                         <div>
                                             % if cur_result[b'description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTrigger" src="${srRoot}/images/plus.png" height="16" width="16" alt=""
+                                                <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
                                                      title="Toggle Summary"/>
                                                 <div class="ep_summary">${cur_result[b'description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTriggerNone" src="${srRoot}/images/plus.png" height="16" width="16"
+                                                <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
                                                      alt=""/>
                                             % endif
                                         </div>

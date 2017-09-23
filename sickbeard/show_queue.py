@@ -19,10 +19,11 @@
 
 from __future__ import unicode_literals
 
-from collections import namedtuple
 import os
 import traceback
+from collections import namedtuple
 
+import six
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
 
@@ -34,12 +35,9 @@ from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir,
 from sickbeard.tv import TVShow
 from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, \
-    EpisodeDeletedException, MultipleShowObjectsException, ShowDirectoryNotFoundException
+from sickrage.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
+                                        MultipleShowObjectsException, ShowDirectoryNotFoundException)
 from sickrage.show.Show import Show
-
-
-import six
 
 
 class ShowQueue(generic_queue.GenericQueue):

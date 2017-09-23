@@ -17,13 +17,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-import threading
+from __future__ import unicode_literals
 
-import sickbeard
-from sickbeard import db
+import threading
 
 import six
 
+import sickbeard
+from sickbeard import db
 
 # from sickbeard import logger
 

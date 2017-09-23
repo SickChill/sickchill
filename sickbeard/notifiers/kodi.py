@@ -20,18 +20,17 @@
 
 from __future__ import print_function, unicode_literals
 
-import socket
 import base64
+import socket
 import time
 
-import sickbeard
-from sickbeard import logger, common
-from sickrage.helper.exceptions import ex
-from sickrage.helper.encoding import ss
 import six
-from six.moves import urllib
-from six.moves import http_client
+from six.moves import http_client, urllib
 
+import sickbeard
+from sickbeard import common, logger
+from sickrage.helper.encoding import ss
+from sickrage.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree

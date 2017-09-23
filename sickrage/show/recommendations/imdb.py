@@ -2,11 +2,12 @@
 
 from __future__ import print_function, unicode_literals
 
-import re
 import os
 import posixpath
-from bs4 import BeautifulSoup
+import re
 from datetime import date
+
+from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import helpers

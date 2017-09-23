@@ -2,13 +2,11 @@
 <%!
     import os
     import datetime
+
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard.helpers import anon_url
-
-    # noinspection PyProtectedMember
-    from tornado._locale_data import LOCALE_NAMES
+    from sickbeard.helpers import anon_url, LOCALE_NAMES
 
     def lang_name(code):
         return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
@@ -663,7 +661,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('you can try all the features of the API')} <a href="${srRoot}/apibuilder/">${_('here')}</a></label>
+                                        <label>${_('you can try all the features of the API')} <a href="${static_url("apibuilder/", include_version=False)}">${_('here')}</a></label>
                                     </div>
                                 </div>
                             </div>
@@ -1004,6 +1002,20 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Ignore Broken Symbolic Links')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="ignore_broken_symlinks" id="ignore_broken_symlinks" ${('', 'checked="checked"')[bool(sickbeard.IGNORE_BROKEN_SYMLINKS)]}/>
+                                        <label for="ignore_broken_symlinks">${_('If checked, broken symbolic links warnings generated when calculating show size will be logged as debug')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Default deleted episode status')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -1074,36 +1086,14 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
-                                            <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
-                                            <% gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
-                                                                  or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN) %>
-                                            % if gh_branch:
-                                                % for cur_branch in gh_branch:
-                                                    % if gh_credentials and sickbeard.DEVELOPER == 1:
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % elif gh_credentials and cur_branch in ['master', 'develop']:
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % elif cur_branch == 'master':
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % endif
-                                                % endfor
-                                            % endif
-                                        </select>
-                                        % if not gh_branch:
-                                            <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                        % else:
-                                            <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-                                        % endif
+                                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version"></select>
+                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        % if not gh_branch:
-                                            <div class="clear-left" style="color:#FF0000"><label>${_('error: No branches found.')}</label></div>
-                                        % else:
-                                            <div class="clear-left"><label>${_('select branch to use (restart required)')}</label></div>
-                                        % endif
+                                        <% loading_spinner = static_url('images/loading16' + ('', '-dark')[sickbeard.THEME_NAME == 'dark'] + '.gif') %>
+                                        <div class="clear-left"><label id="branchVersionLabel"><img src="${loading_spinner}" height="16" width="16" /> Loading...</label></div>
                                     </div>
                                 </div>
                             </div>

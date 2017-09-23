@@ -21,13 +21,12 @@ from __future__ import unicode_literals
 
 import re
 from collections import OrderedDict
+
+import six
 from requests.compat import urljoin
 
 import sickbeard
 from sickbeard.clients.generic import GenericClient
-
-
-import six
 
 
 class uTorrentAPI(GenericClient):

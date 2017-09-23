@@ -18,13 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import unicode_literals
 
-from chardet import detect
 from os import name
 
-
 import six
+from chardet import detect
+
+import sickbeard
 
 
 def ek(function, *args, **kwargs):

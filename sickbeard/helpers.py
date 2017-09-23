@@ -31,7 +31,6 @@ import operator
 import os
 import platform
 import random
-import rarfile
 import re
 import shutil
 import socket
@@ -46,24 +45,33 @@ from contextlib import closing
 from itertools import cycle, izip
 
 import adba
+import bencode
 import certifi
 import cfscrape
+import rarfile
 import requests
-from cachecontrol import CacheControl
-from requests.utils import urlparse
-from requests.compat import urljoin
 import six
-
+from cachecontrol import CacheControl
+from requests.compat import urljoin
+from requests.utils import urlparse
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
+# noinspection PyProtectedMember
+from tornado._locale_data import LOCALE_NAMES
 
 import sickbeard
 from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
+from sickrage.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
 
+# Add some missing languages
+LOCALE_NAMES.update({
+    "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
+    "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
+})
 
 # pylint: disable=protected-access
 # Access to a protected member of a client class
@@ -80,6 +88,14 @@ def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, 
 if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     logger.log("Patching socket to IPv4 only", logger.DEBUG)
     socket.getaddrinfo = getaddrinfo_wrapper
+
+# Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
+copyfileobj_orig = shutil.copyfileobj
+
+def _copyfileobj(fsrc, fdst, length=10485760):
+    """ Run shutil.copyfileobj with a bigger buffer """
+    return copyfileobj_orig(fsrc, fdst, length)
+shutil.copyfileobj = _copyfileobj
 
 
 def indentXML(elem, level=0):
@@ -830,22 +846,25 @@ def create_https_certificates(ssl_cert, ssl_key):
     # assert isinstance(ssl_cert, unicode)
 
     try:
-        from OpenSSL import crypto  # noinspection PyUnresolvedReferences
-        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
-            serial  # @UnresolvedImport
+        # noinspection PyUnresolvedReferences
+        from OpenSSL import crypto
+        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
     except Exception:
         logger.log("pyopenssl module missing, please install for https access", logger.WARNING)
         return False
 
+    import time
+    serial = int(time.time())
+    validity_period = (0, 60 * 60 * 24 * 365 * 10)  # ten years
     # Create the CA Certificate
     cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    cacert = createCertificate(careq, (careq, cakey), serial, validity_period, b'sha256')
 
     cname = 'SickRage'
     pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, (0, 60 * 60 * 24 * 365 * 10))  # ten years
+    cert = createCertificate(req, (cacert, cakey), serial, validity_period, b'sha256')
 
     # Save the key and certificate to disk
     try:
@@ -1496,7 +1515,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
             logger.log("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+".format(error.request.url, ssl.OPENSSL_VERSION))
         if sickbeard.SSL_VERIFY:
-            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general")
+            logger.log("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general".format(error.request.url))
         logger.log(default.format(error), logger.DEBUG)
         logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -1558,6 +1577,10 @@ def get_size(start_path='.'):
     for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
             fp = ek(os.path.join, dirpath, f)
+            if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
+                logger.log("Unable to get size for file {0} because the link to the file is not valid".format(fp),
+                           logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
+                continue
             try:
                 total_size += ek(os.path.getsize, fp)
             except OSError as error:
@@ -1790,16 +1813,21 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 
 def get_showname_from_indexer(indexer, indexer_id, lang='en'):
-    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-    lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
+    try:
+        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+        lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-    logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
+        logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
 
-    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-    s = t[int(indexer_id)]
+        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+        s = t[int(indexer_id)]
 
-    if hasattr(s, 'data'):
-        return s.data.get('seriesname')
+        if hasattr(s, 'data'):
+            return s.data.get('seriesname')
+    except (sickbeard.indexer_error, IOError) as e:
+        logger.log("Show id " + str(indexer_id) + " not found on " + sickbeard.indexerApi(indexer).name +
+                   ", not adding show: " + ex(e), logger.WARNING)
+        return None
 
     return None
 
@@ -1821,24 +1849,15 @@ def recursive_listdir(path):
 MESSAGE_COUNTER = 0
 
 
-def add_site_message(message, level='danger'):
+def add_site_message(message, tag=None, level='danger'):
     with sickbeard.MESSAGES_LOCK:
-        to_add = dict(level=level, message=message)
+        to_add = dict(level=level, tag=tag, message=message)
 
-        basic_update_url = sickbeard.versionChecker.UpdateManager.get_update_url().split('?')[0]
-        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES):
-            if basic_update_url in existing['message'] and basic_update_url in message:
-                sickbeard.SITE_MESSAGES[index] = to_add
-                return
-
-            if message.endswith('Please use \'master\' unless specifically asked') and \
-                    existing['message'].endswith('Please use \'master\' unless specifically asked'):
-                sickbeard.SITE_MESSAGES[index] = to_add
-                return
-
-            if message.startswith('No NZB/Torrent providers found or enabled for') and \
-                    existing['message'].startswith('No NZB/Torrent providers found or enabled for'):
-                sickbeard.SITE_MESSAGES[index] = to_add
+        if tag:  # prevent duplicate messages of the same type
+            # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
+            existing = next((x for x, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag), None)
+            if existing:
+                sickbeard.SITE_MESSAGES[existing] = to_add
                 return
 
         global MESSAGE_COUNTER
@@ -1846,22 +1865,14 @@ def add_site_message(message, level='danger'):
         sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
 
 
-def remove_site_message(begins='', ends='', contains='', key=None):
+def remove_site_message(key=None, tag=None):
     with sickbeard.MESSAGES_LOCK:
         if key is not None and int(key) in sickbeard.SITE_MESSAGES:
             del sickbeard.SITE_MESSAGES[int(key)]
-
-        for index, existing in six.iteritems(sickbeard.SITE_MESSAGES.copy()):
-            checks = []
-            if begins and isinstance(begins, six.string_types):
-                checks.append(existing['message'].startswith(begins))
-            if ends and isinstance(ends, six.string_types):
-                checks.append(existing['message'].endsswith(ends))
-            if contains and isinstance(ends, six.string_types):
-                checks.append(contains in existing['message'])
-
-            if all(checks):
-                del sickbeard.SITE_MESSAGES[index]
+        elif tag is not None:
+            found = [idx for idx, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag]
+            for key in found:
+                del sickbeard.SITE_MESSAGES[key]
 
 
 def sortable_name(name):
@@ -1897,3 +1908,19 @@ def manage_torrents_url(reset=False):
     sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
 
     return sickbeard.CLIENT_WEB_URLS.get('torrent')
+
+
+def bdecode(x, allow_extra_data=False):
+    """
+    Custom bdecode function to ignore the 'data after valid prefix' exception.
+
+    :param allow_extra_data: Set to True to allow extra data after valid prefix
+    :return: bdecoded data
+    """
+    try:
+        r, l = bencode.decode_func[x[0]](x, 0)
+    except (IndexError, KeyError, ValueError):
+        raise bencode.BTL.BTFailure("not a valid bencoded string")
+    if not allow_extra_data and l != len(x):
+        raise bencode.BTL.BTFailure("invalid bencoded value (data after valid prefix)")
+    return r

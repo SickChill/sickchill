@@ -9,10 +9,11 @@ from __future__ import print_function, unicode_literals
 
 from base64 import b64encode
 
+from synchronousdeluge import DelugeClient
+
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-from synchronousdeluge import DelugeClient
 
 
 class DelugeDAPI(GenericClient):
@@ -179,7 +180,11 @@ class DelugeRPC(object):
             self.connect()
             self.client.label.set_torrent(torrent_id, label).get()  # pylint:disable=no-member
         except Exception:
-            return False
+            try:
+                self.connect()
+                self.client.labelplus.set_torrent_labels([torrent_id], label).get() # pylint:disable=no-member
+            except Exception:
+                return False
         finally:
             if self.client:
                 self.disconnect()

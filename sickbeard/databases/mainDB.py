@@ -22,21 +22,16 @@
 from __future__ import print_function, unicode_literals
 
 import datetime
-
-import warnings
-import sickbeard
 import os.path
-
-from sickbeard import db, common, helpers, logger
-
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickrage.helper.common import dateTimeFormat, episode_num
-from sickrage.helper.encoding import ek
-
-from sickbeard import subtitles
+import warnings
 
 import six
 
+import sickbeard
+from sickbeard import common, db, helpers, logger, subtitles
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper.common import dateTimeFormat, episode_num
+from sickrage.helper.encoding import ek
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44
@@ -224,15 +219,17 @@ class MainSanityCheck(db.DBSanityCheck):
     def fix_unaired_episodes(self):
 
         curDate = datetime.date.today()
+        
+        if curDate.year >= 2017:
 
-        sql_results = self.connection.select(
-            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
-            [curDate.toordinal(), common.SKIPPED, common.WANTED])
+            sql_results = self.connection.select(
+                "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
+                [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
-        for cur_unaired in sql_results:
-            logger.log("Fixing unaired episode status for episode_id: {0}".format(cur_unaired[b"episode_id"]))
-            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
-                                   [common.UNAIRED, cur_unaired[b"episode_id"]])
+            for cur_unaired in sql_results:
+                logger.log("Fixing unaired episode status for episode_id: {0}".format(cur_unaired[b"episode_id"]))
+                self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
+                                       [common.UNAIRED, cur_unaired[b"episode_id"]])
 
     def fix_tvrage_show_statues(self):
         status_map = {

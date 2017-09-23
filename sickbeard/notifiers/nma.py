@@ -2,10 +2,10 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
-
-from sickbeard import logger, common
 from pynma import pynma
+
+import sickbeard
+from sickbeard import common, logger
 
 
 class Notifier(object):
@@ -66,7 +66,8 @@ class Notifier(object):
         response = p.push(application=title, event=event, description=message, priority=nma_priority, batch_mode=batch)
 
         if not response[nma_api]['code'] == '200':
-            logger.log('Could not send notification to NotifyMyAndroid', logger.ERROR)
+            logger.log('Could not send notification to NotifyMyAndroid: {}'.format(response[nma_api]['message']),
+                       logger.WARNING)
             return False
         else:
             logger.log("NMA: Notification sent to NotifyMyAndroid", logger.INFO)

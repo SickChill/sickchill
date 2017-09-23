@@ -24,7 +24,6 @@ import re
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -38,7 +37,7 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "http://www.torrent9.biz"
+        self.url = "http://www.torrent9.cc"
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
@@ -49,6 +48,8 @@ class Torrent9Provider(TorrentProvider):
             items = []
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
+                if mode == 'Season':
+                    search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
                 if mode != 'RSS':
                     logger.log("Search string: {0}".format

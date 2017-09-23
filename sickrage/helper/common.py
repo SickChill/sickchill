@@ -23,13 +23,14 @@ Common helper functions
 
 from __future__ import print_function, unicode_literals
 
+import glob
 import os
 import re
-import glob
 from fnmatch import fnmatch
 
-from github import Github, BadCredentialsException, TwoFactorException
 import six
+from github import Github
+from github.GithubException import BadCredentialsException, TwoFactorException
 
 import sickbeard
 

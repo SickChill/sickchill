@@ -61,20 +61,21 @@ install:
   - "pip install --upgrade tox"
 
   # Install node/npm
-  - ps: Install-Product node $env:7
+  - ps: Install-Product node $env:8
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install npm
-  - npm -g install bower
-  - npm -g install grunt-cli
-  - npm install
-  - bower install
+  - npm -g install xo
+  - npm install --quiet
 
 test_script:
-  - grunt travis
-  - tox -v --recreate
+  - xo
+  - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
+  - tox -v --recreate -e "py27-windows"
 
 before_test:
   - echo Starting Tests
 
 after_test:
   - echo Finished Tests
+
+on_failure:
+  - type .\\tests\\Logs\\sickrage.log

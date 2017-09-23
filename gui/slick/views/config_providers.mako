@@ -6,7 +6,7 @@
 %>
 
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/configProviders.js?${sbPID}"></script>
+    <script type="text/javascript" src="${static_url('js/configProviders.js')}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#config-components').tabs();
@@ -70,7 +70,7 @@
                             % for curProvider in sickbeard.providers.sortedProviderList():
                             <%
                                 ## These will show the '!' not saying they are broken
-                                broken_providers = {}
+                                broken_providers = {'torrentproject', 'cpasbien'}
                                 if curProvider.provider_type == GenericProvider.NZB and not sickbeard.USE_NZBS:
                                     continue
                                 elif curProvider.provider_type == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
@@ -86,7 +86,7 @@
                                     <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled() is True]}/>
                                     <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer"
                                        onclick="window.open(this.href, '_blank'); return false;">
-                                        <img src="${srRoot}/images/providers/${curProvider.image_name()}"
+                                        <img src="${static_url('images/providers/' + curProvider.image_name())}"
                                             alt="${curProvider.name}" title="${curProvider.name}" width="16"
                                             height="16" style="vertical-align:middle;"/>
                                     </a>

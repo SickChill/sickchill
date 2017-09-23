@@ -19,16 +19,16 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 from __future__ import unicode_literals
-from requests.compat import urljoin
+
 import os
 import re
+
+import six
+from requests.compat import urljoin
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-
-
-import six
 
 
 class DownloadStationAPI(GenericClient):

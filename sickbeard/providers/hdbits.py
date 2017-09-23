@@ -20,10 +20,10 @@
 from __future__ import print_function, unicode_literals
 
 import datetime
+
 from requests.compat import urlencode, urljoin
 
 from sickbeard import classes, logger, tvcache
-
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 

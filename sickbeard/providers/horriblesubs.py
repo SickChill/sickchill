@@ -22,7 +22,6 @@ from __future__ import print_function, unicode_literals
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -93,8 +92,13 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             label = torrent_row.find('td', class_='dl-label')
                             title = label.get_text(strip=True)
 
-                            torrent_link = torrent_row.find('td', class_='hs-torrent-link')
-                            download_url = torrent_link.find('a')['href'] if torrent_link else None
+                            link = torrent_row.find('td', class_='hs-torrent-link')
+                            download_url = link.find('a')['href'] if link and link.find('a') else None
+
+                            if not download_url:
+                                # fallback to magnet link
+                                link = torrent_row.find('td', class_='hs-magnet-link')
+                                download_url = link.find('a')['href'] if link and link.find('a') else None
 
                         except StandardError:
                             continue
@@ -102,7 +106,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         if not all([title, download_url]):
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
+                        item = {'title': '[HorribleSubs] ' + title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
                                 'hash': ''}
 
                         if mode != 'RSS':

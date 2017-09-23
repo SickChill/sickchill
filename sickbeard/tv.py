@@ -23,11 +23,29 @@ from __future__ import unicode_literals
 import datetime
 import os.path
 import re
+import shutil
 import stat
 import threading
 import traceback
 
+import six
+from imdb import imdb
 from unidecode import unidecode
+
+import sickbeard
+from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
+from sickbeard.blackandwhitelist import BlackAndWhiteList
+from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
+                              NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
+from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickrage.helper import glob
+from sickrage.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
+from sickrage.helper.encoding import ek
+from sickrage.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, ex, MultipleEpisodesInDatabaseException,
+                                        MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
+                                        ShowNotFoundException)
+from sickrage.show.Show import Show
 
 try:
     import xml.etree.cElementTree as etree
@@ -38,38 +56,6 @@ try:
     from send2trash import send2trash
 except ImportError:
     pass
-
-from imdb import imdb
-
-import sickbeard
-from sickbeard import db
-from sickbeard import helpers, logger
-from sickbeard import image_cache
-from sickbeard import notifiers
-from sickbeard import postProcessor
-from sickbeard import subtitles
-from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickbeard import network_timezones
-from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
-from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-
-from sickrage.helper import glob
-from sickrage.helper.common import dateTimeFormat, remove_extension, replace_extension, sanitize_filename, try_int, episode_num
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeDeletedException, EpisodeNotFoundException, ex
-from sickrage.helper.exceptions import MultipleEpisodesInDatabaseException, MultipleShowsInDatabaseException
-from sickrage.helper.exceptions import MultipleShowObjectsException, NoNFOException, ShowDirectoryNotFoundException
-from sickrage.helper.exceptions import ShowNotFoundException
-from sickrage.show.Show import Show
-
-from sickbeard.common import Quality, Overview, statusStrings
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED, IGNORED, UNAIRED, WANTED, SKIPPED, \
-                             UNKNOWN, FAILED
-from sickbeard.common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
-    NAMING_LIMITED_EXTEND_E_PREFIXED
-
-import shutil
-import six
 
 
 def dirty_setter(attr_name):

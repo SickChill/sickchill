@@ -1,6 +1,9 @@
 # coding=utf-8
 
+from __future__ import unicode_literals
+
 from tvdb_api.tvdb_api import Tvdb
+
 from sickbeard import helpers
 
 initConfig = {

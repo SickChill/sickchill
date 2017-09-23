@@ -431,13 +431,13 @@ def analyze_title(title, canonical=None, canonicalSeries=None,
             yi = [(yiy, yii)]
             if yk == 'TV episode':
                 kind = u'episode'
-            elif yk == 'TV':
+            elif yk in ('TV', 'TV Movie'):
                 kind = u'tv movie'
             elif yk == 'TV Series':
                 kind = u'tv series'
             elif yk == 'Video':
                 kind = u'video movie'
-            elif yk == 'TV mini-series':
+            elif yk in ('TV mini-series', 'TV Mini-Series'):
                 kind = u'tv mini series'
             elif yk == 'Video Game':
                 kind = u'video game'
@@ -960,7 +960,7 @@ def _tag4TON(ton, addAccessSystem=False, _containerOnly=False):
             crl = [crl]
         for cr in crl:
             crTag = cr.__class__.__name__.lower()
-            crValue = cr['long imdb name']
+            crValue = cr.get('long imdb name') or u''
             crValue = _normalizeValue(crValue)
             crID = cr.getID()
             if crID is not None:

@@ -20,26 +20,26 @@
 from __future__ import print_function, unicode_literals
 
 import re
-from datetime import datetime
-
 from base64 import b16encode, b32decode
+from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
+
 import six
+from requests.utils import add_dict_to_cookiejar
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickbeard.db import DBConnection
-from sickbeard.helpers import download_file, getURL, remove_file_failed, make_session
+from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickrage.helper.common import replace_extension, sanitize_filename
 from sickrage.helper.encoding import ek
-from requests.utils import add_dict_to_cookiejar
 
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
@@ -214,6 +214,12 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                         [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
                         (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
                         (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                    ]) and not all([
+                        # fallback for anime on absolute numbering
+                        parse_result.is_anime,
+                        parse_result.ab_episode_numbers is not None,
+                        [ep for ep in episodes if ep.show.is_anime and
+                        ep.absolute_number in parse_result.ab_episode_numbers]
                     ]):
 
                         logger.log(

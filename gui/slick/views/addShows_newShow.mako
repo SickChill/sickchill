@@ -4,8 +4,8 @@
     from sickbeard.helpers import anon_url
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/blackwhite.js?${sbPID}"></script>
+    <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
+    <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
 </%block>
 
 <%block name="tabs">

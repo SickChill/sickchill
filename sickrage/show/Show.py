@@ -17,13 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import unicode_literals
 
 from datetime import date
+
+import sickbeard
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
-from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex
-from sickrage.helper.exceptions import MultipleShowObjectsException
+from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex, MultipleShowObjectsException
 
 
 class Show(object):

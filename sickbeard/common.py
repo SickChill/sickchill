@@ -32,8 +32,7 @@ import re
 import uuid
 from os import path
 
-from fake_useragent import UserAgent, settings as UA_SETTINGS
-
+from fake_useragent import settings as UA_SETTINGS, UserAgent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
@@ -43,7 +42,7 @@ from sickrage.helper.encoding import ek
 from sickrage.recompiled import tags
 from sickrage.tagger.episode import EpisodeTags
 
-gettext.install('messages', unicode=1, codeset='UTF-8')
+gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.

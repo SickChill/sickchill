@@ -19,13 +19,13 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
-from requests.compat import urljoin
+
 import re
 
-from sickbeard import helpers
-from sickbeard import logger, tvcache
-from sickbeard.bs4_parser import BS4Parser
+from requests.compat import urljoin
 
+from sickbeard import helpers, logger, tvcache
+from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 

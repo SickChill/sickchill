@@ -23,8 +23,8 @@ from __future__ import print_function, unicode_literals
 import datetime
 import re
 
-from dateutil import tz
 import six
+from dateutil import tz
 
 from sickbeard import db, helpers, logger
 from sickrage.helper.common import try_int

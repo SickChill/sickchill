@@ -31,6 +31,7 @@ from sickbeard import helpers, logger
 from sickbeard.metadata.generic import GenericMetadata
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ShowDirectoryNotFoundException
+
 log.use_print = False
 
 

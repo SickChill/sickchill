@@ -25,12 +25,10 @@ import os.path
 import platform
 import re
 
+import rarfile
 import six
-
 # noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
-
-import rarfile
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming

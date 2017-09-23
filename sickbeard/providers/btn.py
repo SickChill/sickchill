@@ -20,18 +20,18 @@
 
 from __future__ import print_function, unicode_literals
 
-from datetime import datetime
-import jsonrpclib
 import math
 import socket
 import time
+from datetime import datetime
+
+import jsonrpclib
+import six
 
 import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
-import six
-
 from sickrage.helper.common import episode_num
 from sickrage.helper.exceptions import AuthException, ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -173,6 +173,16 @@ class BTNProvider(TorrentProvider):
 
         if 'ReleaseName' in parsed_json and parsed_json['ReleaseName']:
             title = parsed_json['ReleaseName']
+            append = ''
+            if 'Resolution' in parsed_json and parsed_json['Resolution'].lower() not in title.lower():
+                append += parsed_json['Resolution']
+            if 'Source' in parsed_json and parsed_json['Source'].lower() not in title.lower():
+                append += parsed_json['Source']
+            if 'Codec' in parsed_json and parsed_json['Codec'].lower() not in title.lower():
+                append += parsed_json['Codec']
+
+            if append:
+                title += ' [' + append + ']'
 
         else:
             # If we don't have a release name we need to get creative
@@ -207,9 +217,8 @@ class BTNProvider(TorrentProvider):
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             # Search for the year of the air by date show
             current_params['name'] = str(ep_obj.airdate).split('-')[0]
-        elif ep_obj.show.is_anime:
-            current_params['name'] = "{0:d}".format(ep_obj.scene_absolute_number)
         else:
+            # BTN uses the same format for both Anime and TV
             current_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
         # search
@@ -241,9 +250,8 @@ class BTNProvider(TorrentProvider):
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
-        elif ep_obj.show.anime:
-            search_params['name'] = "{0:d}".format(int(ep_obj.scene_absolute_number))
         else:
+            # BTN uses the same format for both Anime and TV
             # Do a general name search for the episode, formatted like SXXEYY
             search_params['name'] = "{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
 
@@ -281,7 +289,8 @@ class BTNProvider(TorrentProvider):
 
                     if result_date and (not search_date or result_date > search_date):
                         title, url = self._get_title_and_url(item)
-                        results.append(classes.Proper(title, url, result_date, self.show))
+                        if title and url:
+                            results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
