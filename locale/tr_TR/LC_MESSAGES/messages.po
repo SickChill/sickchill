@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2017-03-28 09:10-0700\n"
-"PO-Revision-Date: 2017-03-28 12:13-0400\n"
-"Last-Translator: miigotu <miigotu@gmail.com>\n"
+"PO-Revision-Date: 2017-09-24 22:51-0400\n"
+"Last-Translator: mzeyrek <mzeyrek@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,7 +35,7 @@ msgstr "Suç"
 
 #: gui/slick/views/history.mako:62 sickbeard/__init__.py:76
 msgid "Action"
-msgstr "Eylem"
+msgstr "Aksiyon"
 
 #: sickbeard/__init__.py:77
 msgid "Comedy"
@@ -100,7 +100,7 @@ msgstr "Müzik"
 
 #: sickbeard/__init__.py:79
 msgid "Western"
-msgstr "Batılı"
+msgstr "Western"
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:221
 #: sickbeard/__init__.py:80 sickbeard/webserve.py:2384
@@ -149,7 +149,7 @@ msgstr "SickRage Güncellendi"
 
 #: sickbeard/common.py:84
 msgid "SickRage Updated To Commit#: "
-msgstr "SickRage: # Commit Güncellendi"
+msgstr "SickRage Güncellendi Commit#:"
 
 #: sickbeard/common.py:85
 msgid "SickRage new login"
@@ -169,15 +169,15 @@ msgstr "Tekrar (Ayrılmış)"
 
 #: sickbeard/common.py:114
 msgid "Extend"
-msgstr ""
+msgstr "Genişlet"
 
 #: sickbeard/common.py:115
 msgid "Extend (Limited)"
-msgstr ""
+msgstr "Genişlet (Sınırlı)"
 
 #: sickbeard/common.py:116
 msgid "Extend (Limited, E-prefixed)"
-msgstr ""
+msgstr "Genişlet (Sınırlı, E-önek)"
 
 #: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:72
 #: gui/slick/views/inc_home_showList.mako:275 sickbeard/common.py:220
@@ -240,7 +240,7 @@ msgstr "Altyazılı"
 
 #: sickbeard/helpers.py:1887
 msgid "For best results please set the Download Station alias as"
-msgstr "En iyi sonuçlar için lütfen Download İstasyonu takma adını bu şekilde ayarla"
+msgstr "En iyi sonuçlar için lütfen İndirme İstasyonu takma adını şu şekilde ayarla"
 
 #: sickbeard/helpers.py:1888
 msgid "You can check this setting in the Synology DSM"
@@ -256,7 +256,7 @@ msgstr "Uygulama Merkezi"
 
 #: sickbeard/helpers.py:1889
 msgid "Make sure you allow DSM to be embedded with iFrames too in"
-msgstr ""
+msgstr "iFrame içinde gömülü olması için DSM'e izin verdiğinizden emin olun"
 
 #: sickbeard/helpers.py:1890
 msgid "DSM Settings"
@@ -277,7 +277,7 @@ msgstr "Günlük Arama"
 #: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:13
 #: sickbeard/logger.py:476
 msgid "Backlog"
-msgstr "Biriktirme Listesi"
+msgstr "İşlem Bekleyen"
 
 #: sickbeard/logger.py:477
 msgid "Show Updater"
@@ -302,35 +302,35 @@ msgstr "Arama Kuyruğu (Günlük Arama)"
 
 #: sickbeard/logger.py:482
 msgid "Search Queue (Backlog)"
-msgstr "Arama Kuyruğu (Arka Biriktirici)"
+msgstr "Arama Kuyruğu (İşlem Bekleyen)"
 
 #: sickbeard/logger.py:483
 msgid "Search Queue (Manual)"
-msgstr "Arama Günlüğü (El ile)"
+msgstr "Arama Kuyruğu (El ile)"
 
 #: sickbeard/logger.py:484
 msgid "Search Queue (Retry/Failed)"
-msgstr ""
+msgstr "Arama Kuyruğu (Tekrar Dene/Başarısız)"
 
 #: sickbeard/logger.py:485
 msgid "Search Queue (RSS)"
-msgstr ""
+msgstr "Arama Kuyruğu (RSS)"
 
 #: sickbeard/logger.py:486
 msgid "Find Propers"
-msgstr ""
+msgstr "Proper'ları Bul"
 
 #: sickbeard/logger.py:487
 msgid "Postprocessor"
-msgstr ""
+msgstr "Son İşlemci"
 
 #: sickbeard/logger.py:488
 msgid "Find Subtitles"
-msgstr "Alt yazıları Bul"
+msgstr "Altyazıları Bul"
 
 #: gui/slick/views/status.mako:21 sickbeard/logger.py:489
 msgid "Trakt Checker"
-msgstr ""
+msgstr "Trakt Kontrolü"
 
 #: sickbeard/logger.py:490
 msgid "Event"
@@ -364,7 +364,7 @@ msgstr "Ana"
 #: gui/slick/js/ajaxEpSearch.js:146 gui/slick/js/ajaxEpSearch.js:147
 #: gui/slick/views/inc_home_showList.mako:27 sickbeard/show_queue.py:298
 msgid "Loading"
-msgstr ""
+msgstr "Yükleniyor"
 
 #: sickbeard/versionChecker.py:70
 msgid "New update found for SickRage, starting auto-updater"
@@ -448,7 +448,7 @@ msgstr "2 numaralı denemedir"
 
 #: sickbeard/webserve.py:633
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
-msgstr ""
+msgstr "Kullanmak olduğunuz kısım {branch}. Özellikle istenilmediyse lütfen 'master' kullanın"
 
 #: sickbeard/webserve.py:697 sickbeard/webserve.py:702
 msgid "Invalid show parameters"
@@ -456,7 +456,7 @@ msgstr "Geçersiz dizi değişkenleri"
 
 #: sickbeard/webserve.py:709
 msgid "Invalid parameters"
-msgstr ""
+msgstr "Geçersiz parametreler"
 
 #: sickbeard/webserve.py:712 sickbeard/webserve.py:1898
 msgid "Episode couldn't be retrieved"
@@ -464,7 +464,7 @@ msgstr "Bölüm getirilemedi"
 
 #: sickbeard/webserve.py:758 sickbeard/webserve.py:1267 sickbeard/webserve.py:1296
 msgid "Home"
-msgstr "Ana Sayfa"
+msgstr "Anasayfa"
 
 #: gui/slick/views/layouts/main.mako:127 sickbeard/webserve.py:758
 msgid "Show List"
@@ -492,7 +492,7 @@ msgstr "Sunucuya bağlanılamadı"
 
 #: sickbeard/webserve.py:875
 msgid "SMS sent successfully"
-msgstr "SMS gönderimi başarılı"
+msgstr "SMS başarıyla gönderildi"
 
 #: sickbeard/webserve.py:877
 msgid "Problem sending SMS: {message}"
@@ -500,19 +500,19 @@ msgstr "Problemi SMS ile ilet: {message}"
 
 #: sickbeard/webserve.py:884
 msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
-msgstr "Telegram bildirimi başarılı. Çalıştığından emin olmak için aygıtınızı kontrol edin"
+msgstr "Telegram bildirimi başarılı. Çalıştığından emin olmak için Telegram istemcilerini kontrol edin"
 
 #: sickbeard/webserve.py:886
 msgid "Error sending Telegram notification: {message}"
-msgstr "Telgram bildirim gönderme hatası: {message}"
+msgstr "Telegram bildirim gönderme hatası: {message}"
 
 #: sickbeard/webserve.py:893
 msgid "join notification succeeded. Check your join clients to make sure it worked"
-msgstr ""
+msgstr "join bildirimi başarılı. Çalıştığından emin olmak için join istemcilerini kontrol edin"
 
 #: sickbeard/webserve.py:895
 msgid "Error sending join notification: {message}"
-msgstr "Katılım bildirimi gönderme hatası:{message}"
+msgstr "join bildirimi gönderme hatası:{message}"
 
 #: sickbeard/webserve.py:905
 msgid " with password"
@@ -536,7 +536,7 @@ msgstr "Deneme amaçlı prowl bildirim gönderimi başarısız"
 
 #: sickbeard/webserve.py:925
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr ""
+msgstr "Boxcar2 bildirimi başarılı. Çalıştığından emin olmak için Boxcar2 istemcilerini kontrol edin"
 
 #: sickbeard/webserve.py:927
 msgid "Error sending Boxcar2 notification"
@@ -544,7 +544,7 @@ msgstr "Boxcar2 bildirim gönderme hatası"
 
 #: sickbeard/webserve.py:934
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr ""
+msgstr "Pushover bildirimi başarılı. Çalıştığından emin olmak için Pushover istemcilerini kontrol edin"
 
 #: sickbeard/webserve.py:936
 msgid "Error sending Pushover notification"
@@ -568,79 +568,79 @@ msgstr "Tweet gönderimi başarısız"
 
 #: sickbeard/webserve.py:964
 msgid "Please enter a valid account sid"
-msgstr ""
+msgstr "Lütfen geçerli bir sid hesabı girin"
 
 #: sickbeard/webserve.py:967
 msgid "Please enter a valid auth token"
-msgstr ""
+msgstr "Lütfen geçerli bir token girin"
 
 #: sickbeard/webserve.py:970
 msgid "Please enter a valid phone sid"
-msgstr ""
+msgstr "Lütfen geçerli bir telefon sid girin"
 
 #: sickbeard/webserve.py:973
 msgid "Please format the phone number as \"+1-###-###-####\""
-msgstr ""
+msgstr "Lütfen telefon numaranızı \"+1-###-###-####\" şeklinde düzeltiniz"
 
 #: sickbeard/webserve.py:977
 msgid "Authorization successful and number ownership verified"
-msgstr ""
+msgstr "Doğrulama başarılı ve numara sahibi teyit edildi"
 
 #: sickbeard/webserve.py:979
 msgid "Error sending sms"
-msgstr ""
+msgstr "Sms gönderme başarısız"
 
 #: sickbeard/webserve.py:985
 msgid "Slack message successful"
-msgstr ""
+msgstr "Slack mesajı başarılı"
 
 #: sickbeard/webserve.py:987
 msgid "Slack message failed"
-msgstr ""
+msgstr "Slack mesajı başarısız"
 
 #: sickbeard/webserve.py:993
 msgid "Discord message successful"
-msgstr ""
+msgstr "Discord mesajı başarılı"
 
 #: sickbeard/webserve.py:995
 msgid "Discord message failed"
-msgstr ""
+msgstr "Discord mesajı başarısız"
 
 #: sickbeard/webserve.py:1005
 msgid "Test KODI notice sent successfully to {kodi_host}"
-msgstr "KODI bildirisi gönderimi başarılı {kodi_host}"
+msgstr "KODI test bildirisi gönderimi başarılı {kodi_host}"
 
 #: sickbeard/webserve.py:1007
 msgid "Test KODI notice failed to {kodi_host}"
-msgstr "Test KODI bildirimi {kodi_host} için başarısız oldu"
+msgstr "KODI test bildirimi {kodi_host} için başarısız oldu"
 
 #: sickbeard/webserve.py:1022
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
-msgstr "Plex ev sineması için gönderilen test bildirimi başarılı ... {plex_clients}"
+msgstr "Plex için gönderilen test bildirimi başarılı ... {plex_clients}"
 
 #: sickbeard/webserve.py:1024
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
-msgstr "Test Plex ev sineması için başarısız oldu... {plex_clients}"
+msgstr "Plex Ev Sineması için test başarısız oldu... {plex_clients}"
 
 #: sickbeard/webserve.py:1027
 msgid "Tested Plex Home Theater(s)"
-msgstr "Test edilmiş Plex Ev Sinemaları"
+msgstr "Plex Ev Sinema(ları) test edildi"
 
 #: sickbeard/webserve.py:1041
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
-msgstr "Plex ortam Sunucuları testi başarılı ... {plex_servers}"
+msgstr "Plex Ortam Sunucu(ları) testi başarılı ... {plex_servers}"
 
 #: sickbeard/webserve.py:1043
 msgid "Test failed, No Plex Media Server host specified"
-msgstr "Test başarısız, hiçbir Plex Ortam Sunucusu adresi belirtilmemiş"
+msgstr "Test başarısız, hiçbir Plex Ortam Sunucu adresi belirtilmemiş"
 
 #: sickbeard/webserve.py:1045
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
-msgstr ""
+msgstr "Plex Ortam Sunucu(ları) testi başarısız ... {plex_servers}"
 
 #: sickbeard/webserve.py:1048
 msgid "Tested Plex Media Server host(s)"
-msgstr ""
+msgstr "Plex Ortam Sunucu adres(leri) testi başarılı"
 
 #: sickbeard/webserve.py:1056
 msgid "Tried sending desktop notification via libnotify"
@@ -6980,17 +6980,17 @@ msgstr "İndirilen Bölümler"
 
 #: gui/slick/views/layouts/main.mako:330
 msgid "Memory used"
-msgstr ""
+msgstr "Kullanılan hafıza"
 
 #: gui/slick/views/layouts/main.mako:332
 msgid "Load time"
-msgstr ""
+msgstr "Yükleme zamanı"
 
 #: gui/slick/views/layouts/main.mako:334
 msgid "Branch"
-msgstr ""
+msgstr "Dal"
 
 #: gui/slick/views/layouts/main.mako:335
 msgid "Now"
-msgstr ""
+msgstr "Şimdi"
 
