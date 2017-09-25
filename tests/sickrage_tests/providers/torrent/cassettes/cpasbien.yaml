@@ -7,7 +7,7 @@ interactions:
       Connection: [keep-alive]
       User-Agent: [!!python/unicode Mozilla/1.22 (compatible; MSIE 10.0; Windows 3.1)]
     method: GET
-    uri: http://www.cpasbien.cm/view_cat.php?categorie=series&trie=date-d
+    uri: http://www.cpasbien.tv/view_cat.php?categorie=series&trie=date-d
   response:
     body:
       string: !!binary |
@@ -43,7 +43,7 @@ interactions:
       expires: ['Thu, 07 Apr 2016 07:07:58 GMT']
       server: [cloudflare-nginx]
       set-cookie: ['__cfduid=d55cfbf304363a9a862784f2274cc86671460012868; expires=Fri,
-          07-Apr-17 07:07:48 GMT; path=/; domain=.cpasbien.cm; HttpOnly']
+          07-Apr-17 07:07:48 GMT; path=/; domain=.cpasbien.tv; HttpOnly']
       x-frame-options: [SAMEORIGIN]
     status: {code: 403, message: Forbidden}
 - request:
@@ -56,7 +56,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36']
     method: GET
-    uri: http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d
+    uri: http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d
   response:
     body: {string: !!python/unicode "<!DOCTYPE HTML>\n<html lang=\"en-US\">\n<head>\n
         \ <meta charset=\"UTF-8\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html;
@@ -98,7 +98,7 @@ interactions:
         style=\"display:none\">\n    <div>\n      <div class=\"bubbles\"></div>\n
         \     <div class=\"bubbles\"></div>\n      <div class=\"bubbles\"></div>\n
         \   </div>\n    <h1><span data-translate=\"checking_browser\">Checking your
-        browser before accessing</span> cpasbien.cm.</h1>\n    <p data-translate=\"process_is_automatic\">This
+        browser before accessing</span> cpasbien.tv.</h1>\n    <p data-translate=\"process_is_automatic\">This
         process is automatic. Your browser will redirect to your requested content
         shortly.</p>\n    <p data-translate=\"allow_5_secs\">Please allow up to 5
         seconds&hellip;</p>\n  </div>\n  <form id=\"challenge-form\" action=\"/cdn-cgi/l/chk_jschl\"
@@ -125,11 +125,11 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=d55cfbf304363a9a862784f2274cc86671460012868]
-      Referer: [!!python/unicode 'http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      Referer: [!!python/unicode 'http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36']
     method: GET
-    uri: http://www.cpasbien.cm/cdn-cgi/l/chk_jschl?pass=1473291956.094-8w42Av%2F63g&jschl_answer=2195&jschl_vc=37dba84a5bd7fdf66d05431b73591d33
+    uri: http://www.cpasbien.tv/cdn-cgi/l/chk_jschl?pass=1473291956.094-8w42Av%2F63g&jschl_answer=2195&jschl_vc=37dba84a5bd7fdf66d05431b73591d33
   response:
     body: {string: !!python/unicode "<html>\r\n<head><title>302 Found</title></head>\r\n<body
         bgcolor=\"white\">\r\n<center><h1>302 Found</h1></center>\r\n<hr><center>cloudflare-nginx</center>\r\n</body>\r\n</html>\r\n"}
@@ -139,7 +139,7 @@ interactions:
       content-length: ['165']
       content-type: [text/html]
       date: ['Wed, 19 Oct 2016 07:10:01 GMT']
-      location: ['http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      location: ['http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       server: [cloudflare-nginx]
       x-frame-options: [SAMEORIGIN]
     status: {code: 302, message: Moved Temporarily}
@@ -150,11 +150,11 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=d55cfbf304363a9a862784f2274cc86671460012868]
-      Referer: [!!python/unicode 'http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      Referer: [!!python/unicode 'http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36']
     method: GET
-    uri: http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d
+    uri: http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d
   response:
     body: {string: !!python/unicode "<!DOCTYPE HTML>\n<html lang=\"en-US\">\n<head>\n
         \ <meta charset=\"UTF-8\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html;
@@ -196,7 +196,7 @@ interactions:
         style=\"display:none\">\n    <div>\n      <div class=\"bubbles\"></div>\n
         \     <div class=\"bubbles\"></div>\n      <div class=\"bubbles\"></div>\n
         \   </div>\n    <h1><span data-translate=\"checking_browser\">Checking your
-        browser before accessing</span> cpasbien.cm.</h1>\n    <p data-translate=\"process_is_automatic\">This
+        browser before accessing</span> cpasbien.tv.</h1>\n    <p data-translate=\"process_is_automatic\">This
         process is automatic. Your browser will redirect to your requested content
         shortly.</p>\n    <p data-translate=\"allow_5_secs\">Please allow up to 5
         seconds&hellip;</p>\n  </div>\n  <form id=\"challenge-form\" action=\"/cdn-cgi/l/chk_jschl\"
@@ -223,11 +223,11 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=d55cfbf304363a9a862784f2274cc86671460012868]
-      Referer: [!!python/unicode 'http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      Referer: [!!python/unicode 'http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36']
     method: GET
-    uri: http://www.cpasbien.cm/cdn-cgi/l/chk_jschl?pass=1476861005.204-Ge9iwfOINm&jschl_answer=4490&jschl_vc=b61080136d6b07449c80b240ee09cb1f
+    uri: http://www.cpasbien.tv/cdn-cgi/l/chk_jschl?pass=1476861005.204-Ge9iwfOINm&jschl_answer=4490&jschl_vc=b61080136d6b07449c80b240ee09cb1f
   response:
     body: {string: !!python/unicode "<html>\r\n<head><title>302 Found</title></head>\r\n<body
         bgcolor=\"white\">\r\n<center><h1>302 Found</h1></center>\r\n<hr><center>cloudflare-nginx</center>\r\n</body>\r\n</html>\r\n"}
@@ -237,10 +237,10 @@ interactions:
       content-length: ['165']
       content-type: [text/html]
       date: ['Wed, 19 Oct 2016 07:10:06 GMT']
-      location: ['http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      location: ['http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       server: [cloudflare-nginx]
       set-cookie: ['cf_clearance=c424ba4076e8981b16669bcc1608097d1baf88c1-1476861006-1800;
-          expires=Wed, 19-Oct-16 08:40:06 GMT; path=/; domain=.cpasbien.cm; HttpOnly']
+          expires=Wed, 19-Oct-16 08:40:06 GMT; path=/; domain=.cpasbien.tv; HttpOnly']
       x-frame-options: [SAMEORIGIN]
     status: {code: 302, message: Moved Temporarily}
 - request:
@@ -251,11 +251,11 @@ interactions:
       Connection: [keep-alive]
       Cookie: [cf_clearance=c424ba4076e8981b16669bcc1608097d1baf88c1-1476861006-1800;
           __cfduid=d55cfbf304363a9a862784f2274cc86671460012868]
-      Referer: [!!python/unicode 'http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d']
+      Referer: [!!python/unicode 'http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d']
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36']
     method: GET
-    uri: http://www.cpasbien.cm/recherche/The-100-S02E16.html,trie-seeds-d
+    uri: http://www.cpasbien.tv/recherche/The-100-S02E16.html,trie-seeds-d
   response:
     body:
       string: !!binary |
