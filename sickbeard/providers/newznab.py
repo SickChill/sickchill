@@ -24,9 +24,10 @@ import os
 import re
 import time
 
-import sickbeard
 import validators
 from requests.compat import urljoin
+
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets

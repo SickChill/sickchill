@@ -17,13 +17,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import argparse
 import sys
-from io import open
 
 from chardet import __version__
 from chardet.compat import PY2
 from chardet.universaldetector import UniversalDetector
-
-
 
 
 def description_of(lines, name='stdin'):
@@ -38,7 +35,11 @@ def description_of(lines, name='stdin'):
     """
     u = UniversalDetector()
     for line in lines:
+        line = bytearray(line)
         u.feed(line)
+        # shortcut out of the loop to save reading further - particularly useful if we read a BOM.
+        if u.done:
+            break
     u.close()
     result = u.result
     if PY2:

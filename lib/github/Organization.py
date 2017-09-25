@@ -9,7 +9,8 @@
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -42,6 +43,9 @@ class Organization(github.GithubObject.CompletableGithubObject):
     """
     This class represents Organizations. The reference can be found here http://developer.github.com/v3/orgs/
     """
+
+    def __repr__(self):
+        return self.get__repr__({"id": self._id.value, "name": self._name.value})
 
     @property
     def avatar_url(self):
@@ -522,7 +526,7 @@ class Organization(github.GithubObject.CompletableGithubObject):
     def get_repos(self, type=github.GithubObject.NotSet):
         """
         :calls: `GET /orgs/:org/repos <http://developer.github.com/v3/repos>`_
-        :param type: string
+        :param type: string ('all', 'public', 'private', 'forks', 'sources', 'member')
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
         assert type is github.GithubObject.NotSet or isinstance(type, (str, unicode)), type
@@ -572,6 +576,11 @@ class Organization(github.GithubObject.CompletableGithubObject):
             "GET",
             self.url + "/members/" + member._identity
         )
+        if status == 302:
+            status, headers, data = self._requester.requestJson(
+                "GET",
+                headers['location']
+            )
         return status == 204
 
     def has_in_public_members(self, public_member):
