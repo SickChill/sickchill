@@ -114,7 +114,10 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                                        'Title={title}'.format(cat=category, title=title), logger.ERROR)
 
                         size = convert_size(info.group('size')) or -1
-                        info_hash = download_url.rsplit('/', 2)[1]
+                        if download_url.startswith('magnet'):
+                            info_hash = download_url.split(':', 4)[3][:40]
+                        else:
+                            info_hash = download_url.rsplit('/', 2)[1]
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != "RSS":
