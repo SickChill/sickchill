@@ -65,6 +65,7 @@ unrar/*
 bower_components
 node_modules
 dist
+package-lock.json
 
 # Unit test/Coverage #
 ######################
