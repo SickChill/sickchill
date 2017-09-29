@@ -50,6 +50,8 @@ overwrite_cassettes = False
 disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    # Based on cpasbien
+    'T411.si': ['test_season_search'],
     # api_maintenance still
     'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # Have to trick it into thinking is an anime search, and add string overrides
