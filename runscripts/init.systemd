@@ -23,6 +23,8 @@
 
 ### Example Using SickRage as daemon with pid file
 # Type=forking
+# RuntimeDirectory=sickrage
+# RuntimeDirectoryMode=0750
 # PIDFile=/var/run/sickrage/sickrage.pid
 # ExecStart=/usr/bin/python2.7 /opt/sickrage/SickBeard.py -q --daemon --nolaunch --pidfile=/var/run/sickrage/sickrage.pid --datadir=/opt/sickrage
 

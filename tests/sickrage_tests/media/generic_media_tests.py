@@ -21,7 +21,7 @@
 Test GenericMedia
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -31,6 +31,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from sickrage.media.GenericMedia import GenericMedia
 
@@ -78,37 +79,37 @@ class GenericMediaTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            (u'', None): (0, 'normal'),
-            (u'123', None): (123, 'normal'),
-            (u'12.3', None): (0, 'normal'),
-            (None, u''): (0, 'normal'),
-            (u'', u''): (0, 'normal'),
-            (u'123', u''): (123, 'normal'),
-            (u'12.3', u''): (0, 'normal'),
-            (123, u''): (123, 'normal'),
-            (12.3, u''): (12, 'normal'),
-            (None, u'normal'): (0, 'normal'),
-            (u'', u'normal'): (0, 'normal'),
-            (u'123', u'normal'): (123, 'normal'),
-            (u'12.3', u'normal'): (0, 'normal'),
-            (123, u'normal'): (123, 'normal'),
-            (12.3, u'normal'): (12, 'normal'),
-            (None, u'thumb'): (0, 'thumb'),
-            (u'', u'thumb'): (0, 'thumb'),
-            (u'123', u'thumb'): (123, 'thumb'),
-            (u'12.3', u'thumb'): (0, 'thumb'),
-            (123, u'thumb'): (123, 'thumb'),
-            (12.3, u'thumb'): (12, 'thumb'),
-            (None, u'foo'): (0, 'normal'),
-            (u'', u'foo'): (0, 'normal'),
-            (u'123', u'foo'): (123, 'normal'),
-            (u'12.3', u'foo'): (0, 'normal'),
-            (123, u'foo'): (123, 'normal'),
-            (12.3, u'foo'): (12, 'normal'),
+            ('', None): (0, 'normal'),
+            ('123', None): (123, 'normal'),
+            ('12.3', None): (0, 'normal'),
+            (None, ''): (0, 'normal'),
+            ('', ''): (0, 'normal'),
+            ('123', ''): (123, 'normal'),
+            ('12.3', ''): (0, 'normal'),
+            (123, ''): (123, 'normal'),
+            (12.3, ''): (12, 'normal'),
+            (None, 'normal'): (0, 'normal'),
+            ('', 'normal'): (0, 'normal'),
+            ('123', 'normal'): (123, 'normal'),
+            ('12.3', 'normal'): (0, 'normal'),
+            (123, 'normal'): (123, 'normal'),
+            (12.3, 'normal'): (12, 'normal'),
+            (None, 'thumb'): (0, 'thumb'),
+            ('', 'thumb'): (0, 'thumb'),
+            ('123', 'thumb'): (123, 'thumb'),
+            ('12.3', 'thumb'): (0, 'thumb'),
+            (123, 'thumb'): (123, 'thumb'),
+            (12.3, 'thumb'): (12, 'thumb'),
+            (None, 'foo'): (0, 'normal'),
+            ('', 'foo'): (0, 'normal'),
+            ('123', 'foo'): (123, 'normal'),
+            ('12.3', 'foo'): (0, 'normal'),
+            (123, 'foo'): (123, 'normal'),
+            (12.3, 'foo'): (12, 'normal'),
         }
 
         for test in test_cases, unicode_test_cases:
-            for ((indexer_id, media_format), (expected_indexer_id, expected_media_format)) in test.iteritems():
+            for ((indexer_id, media_format), (expected_indexer_id, expected_media_format)) in six.iteritems(test):
                 generic_media = GenericMedia(indexer_id, media_format)
 
                 self.assertEqual(generic_media.indexer_id, expected_indexer_id)

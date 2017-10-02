@@ -13,7 +13,7 @@
                 showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
                 totalWanted = totalQual = totalQualSnatched = 0
-                backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.name)
+                backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
                 for curShow in backLogShows:
                     totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
                     totalQual += showCounts[curShow.indexerid][Overview.QUAL]
@@ -93,7 +93,7 @@
 
                         % for curResult in showSQLResults[curShow.indexerid]:
                             <%
-                                whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
+                                whichStr = episode_num(curResult[b'season'], curResult[b'episode']) or episode_num(curResult[b'season'], curResult[b'episode'], numbering='absolute')
                                 if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
                                     continue
 
@@ -103,17 +103,17 @@
                             <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
                                 <td class="tableleft" align="center">${whichStr}</td>
                                 <td class="tableright" align="center" class="nowrap">
-                                    ${curResult["name"]}
+                                    ${curResult[b"name"]}
                                 </td>
                                 <td>
                                     <% epResult = curResult %>
                                     <% show = curShow %>
-                                    % if int(epResult['airdate']) != 1:
+                                    % if int(epResult[b'airdate']) != 1:
                                     ## Lets do this exactly like ComingEpisodes and History
                                     ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                    <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
+                                    <% airDate = datetime.datetime.fromordinal(epResult[b'airdate']) %>
                                     % if airDate.year >= 1970 or show.network:
-                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult[b'airdate'], show.airs, show.network)) %>
                                     % endif
                                         <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                                     % else:

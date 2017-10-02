@@ -28,7 +28,7 @@ These streams may be configured independently using the standard library's
 `logging` module.  For example, you may wish to send ``tornado.access`` logs
 to a separate file for analysis.
 """
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import logging
 import logging.handlers
@@ -38,7 +38,12 @@ from tornado.escape import _unicode
 from tornado.util import unicode_type, basestring_type
 
 try:
-    import curses
+    import colorama
+except ImportError:
+    colorama = None
+
+try:
+    import curses  # type: ignore
 except ImportError:
     curses = None
 
@@ -49,15 +54,21 @@ gen_log = logging.getLogger("tornado.general")
 
 
 def _stderr_supports_color():
-    color = False
-    if curses and hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
-        try:
-            curses.setupterm()
-            if curses.tigetnum("colors") > 0:
-                color = True
-        except Exception:
-            pass
-    return color
+    try:
+        if hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
+            if curses:
+                curses.setupterm()
+                if curses.tigetnum("colors") > 0:
+                    return True
+            elif colorama:
+                if sys.stderr is getattr(colorama.initialise, 'wrapped_stderr',
+                                         object()):
+                    return True
+    except Exception:
+        # Very broad exception handling because it's always better to
+        # fall back to non-colored logs than to break at startup.
+        pass
+    return False
 
 
 def _safe_unicode(s):
@@ -77,8 +88,19 @@ class LogFormatter(logging.Formatter):
     * Robust against str/bytes encoding problems.
 
     This formatter is enabled automatically by
-    `tornado.options.parse_command_line` (unless ``--logging=none`` is
-    used).
+    `tornado.options.parse_command_line` or `tornado.options.parse_config_file`
+    (unless ``--logging=none`` is used).
+
+    Color support on Windows versions that do not support ANSI color codes is
+    enabled by use of the colorama__ library. Applications that wish to use
+    this must first initialize colorama with a call to ``colorama.init``.
+    See the colorama documentation for details.
+
+    __ https://pypi.python.org/pypi/colorama
+
+    .. versionchanged:: 4.5
+       Added support for ``colorama``. Changed the constructor
+       signature to be compatible with `logging.config.dictConfig`.
     """
     DEFAULT_FORMAT = '%(color)s[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d]%(end_color)s %(message)s'
     DEFAULT_DATE_FORMAT = '%y%m%d %H:%M:%S'
@@ -89,8 +111,8 @@ class LogFormatter(logging.Formatter):
         logging.ERROR: 1,  # Red
     }
 
-    def __init__(self, color=True, fmt=DEFAULT_FORMAT,
-                 datefmt=DEFAULT_DATE_FORMAT, colors=DEFAULT_COLORS):
+    def __init__(self, fmt=DEFAULT_FORMAT, datefmt=DEFAULT_DATE_FORMAT,
+                 style='%', color=True, colors=DEFAULT_COLORS):
         r"""
         :arg bool color: Enables color support.
         :arg string fmt: Log message format.
@@ -111,21 +133,28 @@ class LogFormatter(logging.Formatter):
 
         self._colors = {}
         if color and _stderr_supports_color():
-            # The curses module has some str/bytes confusion in
-            # python3.  Until version 3.2.3, most methods return
-            # bytes, but only accept strings.  In addition, we want to
-            # output these strings with the logging module, which
-            # works with unicode strings.  The explicit calls to
-            # unicode() below are harmless in python2 but will do the
-            # right conversion in python 3.
-            fg_color = (curses.tigetstr("setaf") or
-                        curses.tigetstr("setf") or "")
-            if (3, 0) < sys.version_info < (3, 2, 3):
-                fg_color = unicode_type(fg_color, "ascii")
+            if curses is not None:
+                # The curses module has some str/bytes confusion in
+                # python3.  Until version 3.2.3, most methods return
+                # bytes, but only accept strings.  In addition, we want to
+                # output these strings with the logging module, which
+                # works with unicode strings.  The explicit calls to
+                # unicode() below are harmless in python2 but will do the
+                # right conversion in python 3.
+                fg_color = (curses.tigetstr("setaf") or
+                            curses.tigetstr("setf") or "")
+                if (3, 0) < sys.version_info < (3, 2, 3):
+                    fg_color = unicode_type(fg_color, "ascii")
 
-            for levelno, code in colors.items():
-                self._colors[levelno] = unicode_type(curses.tparm(fg_color, code), "ascii")
-            self._normal = unicode_type(curses.tigetstr("sgr0"), "ascii")
+                for levelno, code in colors.items():
+                    self._colors[levelno] = unicode_type(curses.tparm(fg_color, code), "ascii")
+                self._normal = unicode_type(curses.tigetstr("sgr0"), "ascii")
+            else:
+                # If curses is not present (currently we'll only get here for
+                # colorama on windows), assume hard-coded ANSI color codes.
+                for levelno, code in colors.items():
+                    self._colors[levelno] = '\033[2;3%dm' % code
+                self._normal = '\033[0m'
         else:
             self._normal = ''
 
@@ -183,17 +212,30 @@ def enable_pretty_logging(options=None, logger=None):
     and `tornado.options.parse_config_file`.
     """
     if options is None:
-        from tornado.options import options
+        import tornado.options
+        options = tornado.options.options
     if options.logging is None or options.logging.lower() == 'none':
         return
     if logger is None:
         logger = logging.getLogger()
     logger.setLevel(getattr(logging, options.logging.upper()))
     if options.log_file_prefix:
-        channel = logging.handlers.RotatingFileHandler(
-            filename=options.log_file_prefix,
-            maxBytes=options.log_file_max_size,
-            backupCount=options.log_file_num_backups)
+        rotate_mode = options.log_rotate_mode
+        if rotate_mode == 'size':
+            channel = logging.handlers.RotatingFileHandler(
+                filename=options.log_file_prefix,
+                maxBytes=options.log_file_max_size,
+                backupCount=options.log_file_num_backups)
+        elif rotate_mode == 'time':
+            channel = logging.handlers.TimedRotatingFileHandler(
+                filename=options.log_file_prefix,
+                when=options.log_rotate_when,
+                interval=options.log_rotate_interval,
+                backupCount=options.log_file_num_backups)
+        else:
+            error_message = 'The value of log_rotate_mode option should be ' +\
+                            '"size" or "time", not "%s".' % rotate_mode
+            raise ValueError(error_message)
         channel.setFormatter(LogFormatter(color=False))
         logger.addHandler(channel)
 
@@ -216,7 +258,8 @@ def define_logging_options(options=None):
     """
     if options is None:
         # late import to prevent cycle
-        from tornado.options import options
+        import tornado.options
+        options = tornado.options.options
     options.define("logging", default="info",
                    help=("Set the Python log level. If 'none', tornado won't touch the "
                          "logging configuration."),
@@ -234,5 +277,14 @@ def define_logging_options(options=None):
                    help="max size of log files before rollover")
     options.define("log_file_num_backups", type=int, default=10,
                    help="number of log files to keep")
+
+    options.define("log_rotate_when", type=str, default='midnight',
+                   help=("specify the type of TimedRotatingFileHandler interval "
+                         "other options:('S', 'M', 'H', 'D', 'W0'-'W6')"))
+    options.define("log_rotate_interval", type=int, default=1,
+                   help="The interval value of timed rotating")
+
+    options.define("log_rotate_mode", type=str, default='size',
+                   help="The mode of rotating files(time or size)")
 
     options.add_parse_callback(lambda: enable_pretty_logging(options))

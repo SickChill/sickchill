@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import json
 from base64 import b64encode
 
@@ -31,6 +33,7 @@ class DelugeAPI(GenericClient):
         super(DelugeAPI, self).__init__('Deluge', host, username, password)
 
         self.url = self.host + 'json'
+        self.session.headers.update({'Content-Type': 'application/json'})
 
     def _get_auth(self):
 
@@ -67,7 +70,7 @@ class DelugeAPI(GenericClient):
 
             hosts = self.response.json()['result']
             if not hosts:
-                logger.log(self.name + u': WebUI does not contain daemons', logger.ERROR)
+                logger.log(self.name + ': WebUI does not contain daemons', logger.ERROR)
                 return None
 
             post_data = json.dumps({"method": "web.connect",
@@ -90,7 +93,7 @@ class DelugeAPI(GenericClient):
 
             connected = self.response.json()['result']
             if not connected:
-                logger.log(self.name + u': WebUI could not connect to daemon', logger.ERROR)
+                logger.log(self.name + ': WebUI could not connect to daemon', logger.ERROR)
                 return None
 
         return self.auth
@@ -125,7 +128,7 @@ class DelugeAPI(GenericClient):
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
-            logger.log(self.name + u': Invalid label. Label must not contain a space', logger.ERROR)
+            logger.log(self.name + ': Invalid label. Label must not contain a space', logger.ERROR)
             return False
 
         if label:
@@ -139,14 +142,14 @@ class DelugeAPI(GenericClient):
 
             if labels is not None:
                 if label not in labels:
-                    logger.log(self.name + ': ' + label + u" label does not exist in Deluge we must add it",
+                    logger.log(self.name + ': ' + label + " label does not exist in Deluge we must add it",
                                logger.DEBUG)
                     post_data = json.dumps({"method": 'label.add',
                                             "params": [label],
                                             "id": 4})
 
                     self._request(method='post', data=post_data)
-                    logger.log(self.name + ': ' + label + u" label added to Deluge", logger.DEBUG)
+                    logger.log(self.name + ': ' + label + " label added to Deluge", logger.DEBUG)
 
                 # add label to torrent
                 post_data = json.dumps({"method": 'label.set_torrent',
@@ -154,9 +157,9 @@ class DelugeAPI(GenericClient):
                                         "id": 5})
 
                 self._request(method='post', data=post_data)
-                logger.log(self.name + ': ' + label + u" label added to torrent", logger.DEBUG)
+                logger.log(self.name + ': ' + label + " label added to torrent", logger.DEBUG)
             else:
-                logger.log(self.name + ': ' + u"label plugin not detected", logger.DEBUG)
+                logger.log(self.name + ': ' + "label plugin not detected", logger.DEBUG)
                 return False
 
         return not self.response.json()['error']

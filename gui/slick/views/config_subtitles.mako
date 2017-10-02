@@ -14,10 +14,10 @@
                 preventDuplicates: true,
                 prePopulate: [${','.join("{\"id\": \"" + code + "\", name: \"" + subtitles.name_from_code(code) + "\"}" for code in subtitles.wanted_languages())}],
                 resultsFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${srRoot}/images/flags/unknown.png\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 },
                 tokenFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${srRoot}/images/flags/unknown.png\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 }
             });
         });
@@ -80,12 +80,15 @@
                                             <input type="text" value="${sickbeard.SUBTITLES_DIR}" id="subtitles_dir"
                                                    name="subtitles_dir" class="form-control input-sm input300" title="Subtitle Directory">
                                         </div>
-                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-12">
-                                            <span>${_('The directory where SickRage should store your <i>Subtitles</i> files.')}</span>
+                                            <span>${_('the directory where SickRage should store your <i>Subtitles</i> files.')}</span>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-12">
-                                            <span><b>${_('Note')}:</b>&nbsp;${_('Leave empty if you want store subtitle in episode path.')}</span>
+                                            <span><b>${_('note')}:</b>&nbsp;${_('leave empty if you want store subtitle in episode path.')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -96,10 +99,34 @@
                                     <span class="component-title">${_('Subtitle Find Frequency')}</span>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="number" name="subtitles_finder_frequency"
-                                           value="${sickbeard.SUBTITLES_FINDER_FREQUENCY}" hours="1" min="1"
-                                           step="1" class="form-control input-sm input75" title="Frequency"/>
-                                    <label for="subtitles_finder_frequency">${_('time in hours between scans (default: 1)')}</label>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="number" name="subtitles_finder_frequency"
+                                                   value="${sickbeard.SUBTITLES_FINDER_FREQUENCY}" hours="1" min="1"
+                                                   step="1" class="form-control input-sm input75" title="Frequency"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="subtitles_finder_frequency">${_('time in hours between scans (default: 1)')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <span class="component-title">${_('Include Specials')}</span>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="checkbox"
+                                                   class="enabler" ${('', ' checked="checked"')[bool(sickbeard.SUBTITLES_INCLUDE_SPECIALS)]}
+                                                   id="subtitles_include_specials" name="subtitles_include_specials">
+                                            <label for="subtitles_include_specials">${_('include the show\'s specials when searching for subtitles?')}</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -113,12 +140,12 @@
                                             <input type="checkbox"
                                                    class="enabler" ${('', ' checked="checked"')[bool(sickbeard.SUBTITLES_PERFECT_MATCH)]}
                                                    id="subtitles_perfect_match" name="subtitles_perfect_match">
-                                            <label for="subtitles_perfect_match">${_('Only download subtitles that match: release group, video codec, audio codec and resolution')}</label>
+                                            <label for="subtitles_perfect_match">${_('only download subtitles that match: release group, video codec, audio codec and resolution')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <p>${_('If disabled you may get out of sync subtitles')}</p>
+                                            <p>${_('if disabled you may get out of sync subtitles')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +158,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="subtitles_history"
                                            id="subtitles_history" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HISTORY)]}/>
-                                    <label for="subtitles_history">${_('Log downloaded Subtitle on History page?')}</label>
+                                    <label for="subtitles_history">${_('log downloaded Subtitle on History page?')}</label>
                                 </div>
                             </div>
 
@@ -144,12 +171,12 @@
                                         <div class="col-md-12">
                                             <input type="checkbox" name="subtitles_multi"
                                                    id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]}/>
-                                            <label for="subtitles_multi">${_('Append language codes to subtitle filenames?')}</label>
+                                            <label for="subtitles_multi">${_('append language codes to subtitle filenames?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label><b>${_('Note')}:</b> ${_('This option is required if you use multiple subtitle languages.')}</label>
+                                            <label><b>${_('note')}:</b>&nbsp;${_('this option is required if you use multiple subtitle languages')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -164,7 +191,7 @@
                                         <div class="col-md-12">
                                             <input type="checkbox" name="subtitles_keep_only_wanted"
                                                    id="subtitles_keep_only_wanted" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_KEEP_ONLY_WANTED)]}/>
-                                            <label for="subtitles_keep_only_wanted">${_('Enable to delete unwanted subtitle languages bundled with release')}</label>
+                                            <label for="subtitles_keep_only_wanted">${_('enable to delete unwanted subtitle languages bundled with release')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -179,12 +206,12 @@
                                         <div class="col-md-12">
                                             <input type="checkbox" name="embedded_subtitles_all"
                                                    id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(sickbeard.EMBEDDED_SUBTITLES_ALL)]}/>
-                                            <label for="embedded_subtitles_all">${_('Ignore subtitles embedded inside video file?')}</label>
+                                            <label for="embedded_subtitles_all">${_('ignore subtitles embedded inside video file?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label><b>${_('Warning')}: </b>${_('this will ignore <u>all</u> embedded subtitles for every video file!')}</label>
+                                            <label><b>${_('warning')}:&nbsp;</b>${_('this will ignore <u>all</u> embedded subtitles for every video file!')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -197,7 +224,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="subtitles_hearing_impaired"
                                            id="subtitles_hearing_impaired" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_HEARING_IMPAIRED)]}/>
-                                    <label for="subtitles_hearing_impaired">${_('Download hearing impaired style subtitles?')}</label>
+                                    <label for="subtitles_hearing_impaired">${_('download hearing impaired style subtitles?')}</label>
                                 </div>
                             </div>
 
@@ -216,9 +243,13 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <ul>
-                                                <li>${_('See')} <a
-                                                        href="https://github.com/SickRage/SickRage/wiki/Subtitle%20Scripts"><font
-                                                        color='red'><b>Wiki</b></font></a> ${_('for a script arguments description.')}</li>
+                                                <li>
+                                                    ${_('See')}
+                                                    <a href="https://github.com/SickRage/SickRage/wiki/Subtitle%20Scripts">
+                                                        <span style="color:red"><b>Wiki</b></span>
+                                                    </a>
+                                                    ${_('for a script arguments description.')}
+                                                </li>
                                                 <li>${_('Additional scripts separated by <b>|</b>.')}</li>
                                                 <li>${_('Scripts are called after each episode has searched and downloaded subtitles.')}</li>
                                                 <li>${_('For any scripted languages, include the interpreter executable before the script. See the following example')}:</li>
@@ -264,7 +295,7 @@
                                             <input type="checkbox" id="enable_${curService['name']}"
                                                    class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
                                             <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
-                                                <img src="${srRoot}/images/subtitles/${curService['image']}"
+                                                <img src="${static_url('images/subtitles/' + curService['image'])}"
                                                      alt="${curService['url']}" title="${curService['url']}" width="16"
                                                      height="16" style="vertical-align:middle;"/>
                                             </a>
@@ -297,7 +328,8 @@
                                 'legendastv': {'user': sickbeard.LEGENDASTV_USER, 'pass': sickbeard.LEGENDASTV_PASS},
                                 'addic7ed': {'user': sickbeard.ADDIC7ED_USER, 'pass': sickbeard.ADDIC7ED_PASS},
                                 'itasa': {'user': sickbeard.ITASA_USER, 'pass': sickbeard.ITASA_PASS},
-                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS}
+                                'opensubtitles': {'user': sickbeard.OPENSUBTITLES_USER, 'pass': sickbeard.OPENSUBTITLES_PASS},
+                                'subscenter': {'user': sickbeard.SUBSCENTER_USER, 'pass': sickbeard.SUBSCENTER_PASS}
                             }
                         %>
                         % for curService in sickbeard.subtitles.sorted_service_list():

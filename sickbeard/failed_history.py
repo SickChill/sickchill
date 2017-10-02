@@ -18,9 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import re
-import urllib
+
+from six.moves import urllib
 
 from sickbeard import db, logger
 from sickbeard.common import FAILED, Quality, WANTED
@@ -32,7 +35,7 @@ from sickrage.show.History import History
 def prepareFailedName(release):
     """Standardizes release name for failed DB"""
 
-    fixed = urllib.unquote(release)
+    fixed = urllib.parse.unquote(release)
     if fixed.endswith(".nzb"):
         fixed = fixed.rpartition(".")[0]
 
@@ -43,7 +46,7 @@ def prepareFailedName(release):
 
 
 def logFailed(release):
-    log_str = u""
+    log_str = ""
     size = -1
     provider = ""
 
@@ -54,27 +57,27 @@ def logFailed(release):
 
     if not sql_results:
         logger.log(
-            u"Release not found in snatch history.", logger.WARNING)
+            "Release not found in snatch history.", logger.WARNING)
     elif len(sql_results) > 1:
-        logger.log(u"Multiple logged snatches found for release", logger.WARNING)
-        sizes = len(set(x["size"] for x in sql_results))
-        providers = len(set(x["provider"] for x in sql_results))
+        logger.log("Multiple logged snatches found for release", logger.WARNING)
+        sizes = len(set(x[b"size"] for x in sql_results))
+        providers = len(set(x[b"provider"] for x in sql_results))
         if sizes == 1:
-            logger.log(u"However, they're all the same size. Continuing with found size.", logger.WARNING)
-            size = sql_results[0]["size"]
+            logger.log("However, they're all the same size. Continuing with found size.", logger.WARNING)
+            size = sql_results[0][b"size"]
         else:
             logger.log(
-                u"They also vary in size. Deleting the logged snatches and recording this release with no size/provider",
+                "They also vary in size. Deleting the logged snatches and recording this release with no size/provider",
                 logger.WARNING)
             for result in sql_results:
-                deleteLoggedSnatch(result["release"], result["size"], result["provider"])
+                deleteLoggedSnatch(result[b"release"], result[b"size"], result[b"provider"])
 
         if providers == 1:
-            logger.log(u"They're also from the same provider. Using it as well.")
-            provider = sql_results[0]["provider"]
+            logger.log("They're also from the same provider. Using it as well.")
+            provider = sql_results[0][b"provider"]
     else:
-        size = sql_results[0]["size"]
-        provider = sql_results[0]["provider"]
+        size = sql_results[0][b"size"]
+        provider = sql_results[0][b"provider"]
 
     if not hasFailed(release, size, provider):
         failed_db_con = db.DBConnection('failed.db')
@@ -122,22 +125,22 @@ def revertEpisode(epObj):
     sql_results = failed_db_con.select("SELECT episode, old_status FROM history WHERE showid=? AND season=?",
                                        [epObj.show.indexerid, epObj.season])
 
-    history_eps = {res["episode"]: res for res in sql_results}
+    history_eps = {res[b"episode"]: res for res in sql_results}
 
     try:
-        logger.log(u"Reverting episode ({0}, {1}): {2}".format(epObj.season, epObj.episode, epObj.name))
+        logger.log("Reverting episode ({0}, {1}): {2}".format(epObj.season, epObj.episode, epObj.name))
         with epObj.lock:
             if epObj.episode in history_eps:
-                logger.log(u"Found in history")
-                epObj.status = history_eps[epObj.episode]['old_status']
+                logger.log("Found in history")
+                epObj.status = history_eps[epObj.episode][b'old_status']
             else:
-                logger.log(u"Episode don't have a previous snatched status to revert. Setting it back to WANTED",
+                logger.log("Episode don't have a previous snatched status to revert. Setting it back to WANTED",
                            logger.DEBUG)
                 epObj.status = WANTED
                 epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.log(u"Unable to create episode, please set its status manually: " + ex(e),
+        logger.log("Unable to create episode, please set its status manually: " + ex(e),
                    logger.WARNING)
 
 
@@ -148,7 +151,7 @@ def markFailed(epObj):
     :param epObj: Episode object to mark as failed
     :return: empty string
     """
-    log_str = u""
+    log_str = ""
 
     try:
         with epObj.lock:
@@ -157,7 +160,7 @@ def markFailed(epObj):
             epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.log(u"Unable to get episode, please set its status manually: " + ex(e), logger.WARNING)
+        logger.log("Unable to get episode, please set its status manually: " + ex(e), logger.WARNING)
 
     return log_str
 
@@ -232,17 +235,17 @@ def findRelease(epObj):
                                    [epObj.show.indexerid, epObj.season, epObj.episode])
 
     for result in results:
-        release = str(result["release"])
-        provider = str(result["provider"])
-        date = result["date"]
+        release = str(result[b"release"])
+        provider = str(result[b"provider"])
+        date = result[b"date"]
 
         # Clear any incomplete snatch records for this release if any exist
         failed_db_con.action("DELETE FROM history WHERE release=? AND date!=?", [release, date])
 
         # Found a previously failed release
-        logger.log(u"Failed release found for season ({0}): ({1})".format(epObj.season, result["release"]), logger.DEBUG)
+        logger.log("Failed release found for season ({0}): ({1})".format(epObj.season, result[b"release"]), logger.DEBUG)
         return release, provider
 
     # Release was not found
-    logger.log(u"No releases found for season ({0}) of ({1})".format(epObj.season, epObj.show.indexerid), logger.DEBUG)
+    logger.log("No releases found for season ({0}) of ({1})".format(epObj.season, epObj.show.indexerid), logger.DEBUG)
     return release, provider

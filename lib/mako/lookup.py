@@ -1,5 +1,5 @@
 # mako/lookup.py
-# Copyright (C) 2006-2015 the Mako authors and contributors <see AUTHORS file>
+# Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -180,7 +180,8 @@ class TemplateLookup(TemplateCollection):
                  enable_loop=True,
                  input_encoding=None,
                  preprocessor=None,
-                 lexer_cls=None):
+                 lexer_cls=None,
+                 include_error_handler=None):
 
         self.directories = [posixpath.normpath(d) for d in
                             util.to_list(directories, ())
@@ -203,6 +204,7 @@ class TemplateLookup(TemplateCollection):
         self.template_args = {
             'format_exceptions': format_exceptions,
             'error_handler': error_handler,
+            'include_error_handler': include_error_handler,
             'disable_unicode': disable_unicode,
             'bytestring_passthrough': bytestring_passthrough,
             'output_encoding': output_encoding,

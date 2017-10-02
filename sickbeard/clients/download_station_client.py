@@ -19,9 +19,12 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 from __future__ import unicode_literals
-from requests.compat import urljoin
+
 import os
 import re
+
+import six
+from requests.compat import urljoin
 
 import sickbeard
 from sickbeard import logger
@@ -138,8 +141,8 @@ class DownloadStationAPI(GenericClient):
             'api': 'SYNO.API.Auth',
             'version': 2,
             'method': 'login',
-            'account': self.username.encode('utf-8') if isinstance(self.username, unicode) else self.username,
-            'passwd': self.password.encode('utf-8') if isinstance(self.password, unicode) else self.password,
+            'account': self.username.encode('utf-8') if isinstance(self.username, six.text_type) else self.username,
+            'passwd': self.password.encode('utf-8') if isinstance(self.password, six.text_type) else self.password,
             'session': 'DownloadStation',
             'format': 'cookie'
         }

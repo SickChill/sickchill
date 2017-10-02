@@ -1,6 +1,6 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -35,6 +35,9 @@ import sickbeard
 import sickbeard.search as search
 import sickbeard.common as common
 import tests.test_lib as test
+
+import six
+
 
 TESTS = {
     "Dexter": {"a": 1, "q": common.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
@@ -136,14 +139,14 @@ def generator(tvdb_id, show_name, cur_data, force_search):
     return do_test
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - Snatch TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - Snatch TESTS")
+    print("==================")
+    print("######################################################################")
     # create the test methods
     cur_tvdb_id = 1
     for forceSearch in (True, False):
-        for name, data in TESTS.items():
+        for name, data in six.iteritems(TESTS):
             if not data["a"]:
                 continue
             filename = name.replace(' ', '_')

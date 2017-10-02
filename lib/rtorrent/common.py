@@ -62,8 +62,6 @@ def find_torrent(info_hash, torrent_list):
         if t.info_hash == info_hash:
             return t
 
-    return None
-
 
 def is_valid_port(port):
     """Check if given port is valid"""

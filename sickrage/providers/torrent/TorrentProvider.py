@@ -19,8 +19,8 @@
 
 from __future__ import unicode_literals
 
-
 from datetime import datetime
+
 from feedparser.util import FeedParserDict
 from hachoir_parser import createParser
 
@@ -29,7 +29,6 @@ from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
-
 from sickrage.helper.common import try_int
 from sickrage.helper.exceptions import ex
 from sickrage.providers.GenericProvider import GenericProvider
@@ -63,10 +62,11 @@ class TorrentProvider(GenericProvider):
                 for term in self.proper_strings:
                     search_strings = self._get_episode_search_strings(episode, add_string=term)
 
-                    for item in self.search(search_strings[0]):
-                        title, url = self._get_title_and_url(item)
+                    for search_string in search_strings:
+                        for item in self.search(search_string):
+                            title, url = self._get_title_and_url(item)
 
-                        results.append(Proper(title, url, datetime.today(), show))
+                            results.append(Proper(title, url, datetime.today(), show))
 
         return results
 

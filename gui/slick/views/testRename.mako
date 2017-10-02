@@ -3,7 +3,7 @@
     import sickbeard
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/testRename.js" xmlns="http://www.w3.org/1999/html"></script>
+    <script type="text/javascript" src="${static_url('js/testRename.js')}" xmlns="http://www.w3.org/1999/html"></script>
 </%block>
 
 <%block name="content">
@@ -45,8 +45,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="checkbox" class="seriesCheck" id="${_('SelectAll')}" title="Check"/>
-            <label for="Check">${_('Select All')}</label>
+            <input type="checkbox" class="seriesCheck" id="select-all" title="Check"/>
+            <label for="select-all">${_('select all')}</label>
         </div>
     </div>
     <div class="row">

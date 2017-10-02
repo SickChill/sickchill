@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 
 import sickbeard
 from sickbeard import logger, tvcache
-
 from sickrage.helper.common import try_int
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
@@ -36,10 +35,10 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         self.cache = OmgwtfnzbsCache(self)
 
-        self.url = 'https://omgwtfnzbs.org/'
+        self.url = 'https://omgwtfnzbs.me/'
         self.urls = {
-            'rss': 'https://rss.omgwtfnzbs.org/rss-download.php',
-            'api': 'https://api.omgwtfnzbs.org/json/'
+            'rss': 'https://rss.omgwtfnzbs.me/rss-download.php',
+            'api': 'https://api.omgwtfnzbs.me/json/'
         }
 
         self.proper_strings = ['.PROPER.', '.REPACK.']
@@ -52,7 +51,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsed_data, is_XML=True):
+    def _check_auth_from_data(self, parsed_data, is_XML=True):
 
         if not parsed_data:
             return self._check_auth()
@@ -104,7 +103,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     logger.log('No data returned from provider', logger.DEBUG)
                     continue
 
-                if not self._checkAuthFromData(data, is_XML=False):
+                if not self._check_auth_from_data(data, is_XML=False):
                     continue
 
                 for item in data:
@@ -131,13 +130,13 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         return title, url
 
-    def _getRSSData(self):
+    def _get_rss_data(self):
         search_params = {
             'user': provider.username,
             'api': provider.api_key,
             'eng': 1,
             'catid': '19,20'  # SD,HD
         }
-        return self.getRSSFeed(self.provider.urls['rss'], params=search_params)
+        return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
 
 provider = OmgwtfnzbsProvider()

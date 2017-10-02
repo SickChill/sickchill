@@ -1,5 +1,8 @@
 """Use the HTMLParser library to parse HTML files that aren't too bad."""
 
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 __all__ = [
     'HTMLParserTreeBuilder',
     ]

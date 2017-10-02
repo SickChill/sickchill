@@ -17,13 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import unicode_literals
 
 from datetime import date
+
+import sickbeard
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
-from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex
-from sickrage.helper.exceptions import MultipleShowObjectsException
+from sickrage.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex, MultipleShowObjectsException
 
 
 class Show(object):
@@ -48,7 +49,7 @@ class Show(object):
 
         if show:
             try:
-                sickbeard.showQueueScheduler.action.removeShow(show, bool(remove_files))
+                sickbeard.showQueueScheduler.action.remove_show(show, bool(remove_files))
             except CantRemoveShowException as exception:
                 return ex(exception), show
 
@@ -109,13 +110,13 @@ class Show(object):
         }
 
         for result in results:
-            if result['status'] in downloaded_status:
+            if result[b'status'] in downloaded_status:
                 stats['episodes']['downloaded'] += 1
                 stats['episodes']['total'] += 1
-            elif result['status'] in snatched_status:
+            elif result[b'status'] in snatched_status:
                 stats['episodes']['snatched'] += 1
                 stats['episodes']['total'] += 1
-            elif result['airdate'] <= today and result['status'] in total_status:
+            elif result[b'airdate'] <= today and result[b'status'] in total_status:
                 stats['episodes']['total'] += 1
 
         return stats
@@ -161,7 +162,7 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refreshShow(show)
+            sickbeard.showQueueScheduler.action.refresh_show(show)
         except CantRefreshShowException as exception:
             return ex(exception), show
 

@@ -18,10 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import validators
 
 from sickbeard import logger, tvcache
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -62,12 +63,12 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 search_params['s'] = search_string
@@ -82,7 +83,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
                 torrents = self.get_url(search_url, params=search_params, returns='json')
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
-                    logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                     continue
 
                 del torrents["total_found"]
@@ -94,7 +95,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log(u"Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title), logger.DEBUG)
+                            logger.log("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title), logger.DEBUG)
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
@@ -110,7 +111,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
                     item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
 
                     if mode != 'RSS':
-                        logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format
+                        logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                    (title, seeders, leechers), logger.DEBUG)
 
                     items.append(item)

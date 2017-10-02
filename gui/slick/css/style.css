@@ -540,6 +540,15 @@ span.show-option {
     display: inline-block;
 }
 
+.loading-spinner16 {
+    background-image: url("../images/loading16.gif");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+
 .show-container {
     margin: 4px;
     background-color: #F3F3F3;
@@ -806,6 +815,14 @@ home_newShow.mako
     border: 1px solid #DFDEDE;
 }
 
+#searchResults {
+    height: 100%;
+}
+
+#searchResults .legendStep {
+    margin-bottom: 5px;
+}
+
 #searchResults input[type="radio"] {
     vertical-align: -2px;
 }
@@ -877,12 +894,16 @@ home_trendingShows.mako
     border-radius: 6px;
 }
 
-.trakt-image {
+.trakt-image, .trakt-image img {
     height: 273px;
     width: 186px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom: 1px solid #111111;
+}
+
+.trakt-image img {
+    background-image: url(../images/trakt-placeholder.png);
 }
 
 /* =======================================================================
@@ -1212,6 +1233,11 @@ td.col-name {
     text-align: left;
 }
 
+th.col-network,
+td.col-network {
+    width: 95px;
+}
+
 th.col-subtitles,
 td.col-subtitles {
     width: 150px;
@@ -1373,7 +1399,7 @@ schedule.mako
 ========================================================================== */
 
 .key {
-    margin-bottom: 20px;
+    line-height: 30px;
 }
 
 .listing-key {
@@ -1395,6 +1421,10 @@ schedule.mako
     background-color: #FFDDDD;
 }
 
+.listing-snatched {
+    background-color: #EBC1EA;
+}
+
 .listing-toofar {
     background-color: #BEDEED;
 }
@@ -1412,6 +1442,11 @@ span.listing-current {
 span.listing-overdue {
     color: #890000;
     border: 1px solid #890000;
+}
+
+span.listing-snatched {
+    color: #652164;
+    border: 1px solid #652164;
 }
 
 span.listing-toofar {
@@ -2028,6 +2063,11 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-discord {
+    background: url("../images/32px_discord_notifier.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-kodi {
     background-position: 0 0;
 }
@@ -2106,6 +2146,10 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-twitter {
     background-position: -624px 0;
+}
+
+.icon-notifiers-twilio {
+    background-position: -836px 0;
 }
 
 .icon-notifiers-trakt {
@@ -2365,6 +2409,20 @@ pre {
 
 .navbar-brand {
     padding: 0;
+}
+
+.floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    padding: 0px 4px;
+    background-color: #777777;
+    border: 2px solid #959595;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
 }
 
 /* navbar styling */
@@ -3110,10 +3168,10 @@ tablesorter.css
     vertical-align: middle;
 }
 
-/* remove extra border from left edge */
-.tablesorter th:first-child,
-.tablesorter td:first-child {
-    border-left: none;
+/* add extra border at right edge */
+.tablesorter th:last-child,
+.tablesorter td:last-child {
+    border-right: #FFFFFF 1px solid;
 }
 
 .tablesorter th {
@@ -3177,6 +3235,16 @@ thead.tablesorter-stickyHeader {
     text-align: center;
     background: #EEEEEE;
     border-bottom: 1px solid #DDDDDD;
+}
+
+/* add extra border at left edge */
+.tablesorter tr.tablesorter-filter-row td:first-child {
+    border-left: #FFFFFF 1px solid;
+}
+
+/* add extra border at right edge */
+.tablesorter tr.tablesorter-filter-row td:last-child {
+    border-right: #FFFFFF 1px solid;
 }
 
 /* hidden filter row */
@@ -3368,12 +3436,6 @@ span.token-input-delete-token {
 
 .nextline-block {
     display: block
-}
-
-.trakt-image {
-    display: block;
-    z-index: 0;
-    background-image: url(../images/poster-dark.jpg)
 }
 
 /* =======================================================================

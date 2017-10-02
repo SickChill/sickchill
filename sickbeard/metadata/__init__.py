@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,10 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-from sickbeard.metadata import kodi, kodi_12plus, mediabrowser, ps3, wdtv, tivo, mede8er, generic, helpers
+from __future__ import unicode_literals
 
-__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
+import sys
+
+from sickbeard.metadata import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
+
+__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']
 
 
 def available_generators():

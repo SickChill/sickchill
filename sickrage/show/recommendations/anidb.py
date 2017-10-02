@@ -1,10 +1,12 @@
 # coding=utf-8
+from __future__ import unicode_literals
+
 from anidbhttp import anidbquery
 from anidbhttp.query import QUERY_HOT
+from recommended import RecommendedShow
+
 from sickbeard import helpers
 from sickrage.helper.common import try_int
-
-from recommended import RecommendedShow
 
 
 class AnidbPopular(object):
@@ -28,7 +30,7 @@ class AnidbPopular(object):
                 recommended_show.cache_image("http://img7.anidb.net/pics/anime/{0}".format(show.image_path))
 
                 result.append(recommended_show)
-            except:
+            except Exception:
                 pass
 
         return result

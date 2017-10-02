@@ -2,7 +2,7 @@
 
 # Author: Jasper Lanting
 # Based on nmj.py by Nico Berlee: http://nico.berlee.nl/
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,11 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib2
-from xml.dom.minidom import parseString
-import sickbeard
-import time
+from __future__ import print_function, unicode_literals
 
+import time
+from xml.dom.minidom import parseString
+
+from six.moves import urllib
+
+import sickbeard
 from sickbeard import logger
 
 try:
@@ -65,8 +68,8 @@ class Notifier(object):
         """
         try:
             url_loc = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(host, instance)
-            req = urllib2.Request(url_loc)
-            handle1 = urllib2.urlopen(req)
+            req = urllib.request.Request(url_loc)
+            handle1 = urllib.request.urlopen(req)
             response1 = handle1.read()
             xml = parseString(response1)
             time.sleep(300.0 / 1000.0)
@@ -74,8 +77,8 @@ class Notifier(object):
                 xmlTag = node.toxml()
                 xmlData = xmlTag.replace('<path>', '').replace('</path>', '').replace('[=]', '')
                 url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1=" + xmlData
-                reqdb = urllib2.Request(url_db)
-                handledb = urllib2.urlopen(reqdb)
+                reqdb = urllib.request.Request(url_db)
+                handledb = urllib.request.urlopen(reqdb)
                 responsedb = handledb.read()
                 xmldb = parseString(responsedb)
                 returnvalue = xmldb.getElementsByTagName('returnValue')[0].toxml().replace('<returnValue>', '').replace(
@@ -93,7 +96,7 @@ class Notifier(object):
                         return True
 
         except IOError as e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
+            logger.log("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
             return False
         return False
 
@@ -111,30 +114,30 @@ class Notifier(object):
         # if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
-            logger.log(u"NMJ scan update command sent to host: {0}".format(host), logger.DEBUG)
+            logger.log("NMJ scan update command sent to host: {0}".format(host), logger.DEBUG)
             url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
-            logger.log(u"Try to mount network drive via url: {0}".format(host), logger.DEBUG)
-            prereq = urllib2.Request(url_scandir)
-            req = urllib2.Request(url_updatedb)
-            handle1 = urllib2.urlopen(prereq)
+            logger.log("Try to mount network drive via url: {0}".format(host), logger.DEBUG)
+            prereq = urllib.request.Request(url_scandir)
+            req = urllib.request.Request(url_updatedb)
+            handle1 = urllib.request.urlopen(prereq)
             response1 = handle1.read()
             time.sleep(300.0 / 1000.0)
-            handle2 = urllib2.urlopen(req)
+            handle2 = urllib.request.urlopen(req)
             response2 = handle2.read()
         except IOError as e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
+            logger.log("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e), logger.WARNING)
             return False
         try:
             et = etree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e), logger.ERROR)
+            logger.log("Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e), logger.ERROR)
             return False
         try:
             et = etree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e), logger.ERROR)
+            logger.log("Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e), logger.ERROR)
             return False
 
         # if the result was a number then consider that an error
@@ -148,15 +151,15 @@ class Notifier(object):
                           "Read only file system"]
         if int(result1) > 0:
             index = error_codes.index(result1)
-            logger.log(u"Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
+            logger.log("Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
             return False
         else:
             if int(result2) > 0:
                 index = error_codes.index(result2)
-                logger.log(u"Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
+                logger.log("Popcorn Hour returned an error: {0}".format((error_messages[index])), logger.ERROR)
                 return False
             else:
-                logger.log(u"NMJv2 started background scan", logger.INFO)
+                logger.log("NMJv2 started background scan", logger.INFO)
                 return True
 
     def _notifyNMJ(self, host=None, force=False):
@@ -169,13 +172,13 @@ class Notifier(object):
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
         if not sickbeard.USE_NMJv2 and not force:
-            logger.log(u"Notification for NMJ scan update not enabled, skipping this notification", logger.DEBUG)
+            logger.log("Notification for NMJ scan update not enabled, skipping this notification", logger.DEBUG)
             return False
 
         # fill in omitted parameters
         if not host:
             host = sickbeard.NMJv2_HOST
 
-        logger.log(u"Sending scan command for NMJ ", logger.DEBUG)
+        logger.log("Sending scan command for NMJ ", logger.DEBUG)
 
         return self._sendNMJ(host)

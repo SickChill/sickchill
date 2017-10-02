@@ -21,12 +21,13 @@
 Recommend shows based on lists from indexers
 """
 
+from __future__ import print_function, unicode_literals
+
 import os
 import posixpath
 
 import sickbeard
 from sickbeard import helpers
-
 from sickrage.helper.encoding import ek
 
 
@@ -34,7 +35,7 @@ class RecommendedShow(object):
     """
     Base class for show recommendations
     """
-    def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder=u'recommended',
+    def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder='recommended',
                  rating=None, votes=None, image_href=None, image_src=None):
         """
         Create a show recommendation
@@ -72,9 +73,9 @@ class RecommendedShow(object):
         if not self.cache_subfolder:
             return
 
-        self.image_src = ek(posixpath.join, u'images', self.cache_subfolder, ek(os.path.basename, image_url))
+        self.image_src = ek(posixpath.join, 'images', self.cache_subfolder, ek(os.path.basename, image_url))
 
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, u'images', self.cache_subfolder))
+        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', self.cache_subfolder))
 
         if not ek(os.path.exists, path):
             ek(os.makedirs, path)

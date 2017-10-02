@@ -22,7 +22,7 @@
 Custom Logger for SickRage
 """
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import io
 import locale
@@ -35,9 +35,12 @@ import sys
 import threading
 import traceback
 from logging import NullHandler
-from urllib import quote
 
+import six
 from github import InputFileContent
+from github.GithubException import RateLimitExceededException, TwoFactorException
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import quote
 
 import sickbeard
 from sickbeard import classes
@@ -81,17 +84,17 @@ class CensoredFormatter(logging.Formatter, object):
         """
         msg = super(CensoredFormatter, self).format(record)
 
-        if not isinstance(msg, unicode):
+        if not isinstance(msg, six.text_type):
             msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
 
         # set of censored items
-        censored = {item for _, item in censored_items.iteritems() if item}
+        censored = {item for _, item in six.iteritems(censored_items) if item}
         # set of censored items and urlencoded counterparts
         censored = censored | {quote(item) for item in censored}
         # convert set items to unicode and typecast to list
         censored = list({
             item.decode(self.encoding, 'replace')
-            if not isinstance(item, unicode) else item
+            if not isinstance(item, six.text_type) else item
             for item in censored
         })
         # sort the list in order of descending length so that entire item is censored
@@ -119,6 +122,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             logging.getLogger('tornado.application'),
             # logging.getLogger('subliminal'),
             # logging.getLogger('tornado.access'),
+            # logging.getLogger('tvdb_api'),
+            # logging.getLogger("requests.packages.urllib3")
         ]
 
         self.console_logging = False
@@ -139,6 +144,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param database_logging: True if logging database access
         """
         self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
+
+        global log_file
+        log_file = self.log_file
+
         self.debug_logging = debug_logging
         self.console_logging = console_logging
         self.file_logging = file_logging
@@ -159,6 +168,8 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         for logger in self.loggers:
             logger.setLevel(log_level)
 
+        logging.getLogger("tornado.general").setLevel('ERROR')
+
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()
@@ -170,7 +181,9 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         # rotating log file handler
         if self.file_logging:
-            rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8')
+            rfh = logging.handlers.RotatingFileHandler(
+                self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8'
+            )
             rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
             rfh.setLevel(log_level)
 
@@ -215,7 +228,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             thread=cur_thread, hash=cur_hash, message=msg)
 
         # Change the SSL error to a warning with a link to information about how to fix it.
-        # Check for u'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
+        # Check for 'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
 
         ssl_errors = [
             r'error \[Errno \d+\] _ssl.c:\d+: error:\d+\s*:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error',
@@ -232,10 +245,14 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         elif level == WARNING:
             classes.WarningViewer.add(classes.UIError(message))
 
-        if level == ERROR:
-            self.logger.exception(message, *args, **kwargs)
-        else:
-            self.logger.log(level, message, *args, **kwargs)
+        try:
+            if level == ERROR:
+                self.logger.exception(message, *args, **kwargs)
+            else:
+                self.logger.log(level, message, *args, **kwargs)
+        except Exception:
+            if msg and msg.strip():  # Otherwise creates empty messages in log...
+                print(msg.strip())
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -250,8 +267,11 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         submitter_result = ''
         issue_id = None
 
-        if not all((sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
-            submitter_result = 'Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
+        gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
+            or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
+
+        if not all((gh_credentials, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
+            submitter_result = 'Please set your GitHub token or username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
         try:
@@ -275,26 +295,26 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
         try:
             # read log file
-            log_data = None
+            __log_data = None
 
             if ek(os.path.isfile, self.log_file):
                 with io.open(self.log_file, encoding='utf-8') as log_f:
-                    log_data = log_f.readlines()
+                    __log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
                 f_name = '{0}.{1:d}'.format(self.log_file, i)
-                if ek(os.path.isfile, f_name) and (len(log_data) <= 500):
+                if ek(os.path.isfile, f_name) and (len(__log_data) <= 500):
                     with io.open(f_name, encoding='utf-8') as log_f:
-                        log_data += log_f.readlines()
+                        __log_data += log_f.readlines()
 
-            log_data = [line for line in reversed(log_data)]
+            __log_data = list(reversed(__log_data))
 
             # parse and submit errors to issue tracker
             for cur_error in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
                     title_error = ss(str(cur_error.title))
                     if not title_error or title_error == 'None':
-                        title_error = re.match(r'^[A-Z0-9\-\[\] :]+::\s*(.*)(?: \[[\w]{7}\])$', ss(cur_error.message)).group(1)
+                        title_error = re.match(r'^[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\])\s*(.*)$', ss(cur_error.message)).group(1)
 
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
@@ -304,13 +324,13 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^({0})\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)(?: \[[\w]{{7}}\])$'.format(cur_error.time)
-                for i, data in enumerate(log_data):
+                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{{7}}\]).*$'.format(re.escape(cur_error.time))
+                for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
-                        level = match.group(2)
+                        level = match.group(1)
                         if LOGGING_LEVELS[level] == ERROR:
-                            paste_data = ''.join(log_data[i:i + 50])
+                            paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:
                                 gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
                             break
@@ -390,6 +410,13 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 if issue_id and cur_error in classes.ErrorViewer.errors:
                     # clear error from error list
                     classes.ErrorViewer.errors.remove(cur_error)
+        except RateLimitExceededException:
+            submitter_result = 'Your Github user has exceeded its API rate limit, please try again later'
+            issue_id = None
+        except TwoFactorException:
+            submitter_result = ('Your Github account requires Two-Factor Authentication, '
+                                'please change your auth method in the config')
+            issue_id = None
         except Exception:  # pylint: disable=broad-except
             self.log(traceback.format_exc(), ERROR)
             submitter_result = 'Exception generated in issue submitter, please check the log'
@@ -417,5 +444,111 @@ class Wrapper(object):
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
 
 
+def init_logging(*args, **kwargs):
+    return Wrapper.instance.init_logging(*args, **kwargs)
+
+
 def log(*args, **kwargs):
     return Wrapper.instance.log(*args, **kwargs)
+
+
+def log_error_and_exit(*args, **kwargs):
+    return Wrapper.instance.log_error_and_exit(*args, **kwargs)
+
+
+def set_level(*args, **kwargs):
+    return Wrapper.instance.set_level(*args, **kwargs)
+
+
+def shutdown():
+    return Wrapper.instance.shutdown()
+
+
+def submit_errors(*args, **kwargs):
+    return Wrapper.instance.submit_errors(*args, **kwargs)
+
+log_file = None
+
+LOG_FILTERS = {
+    '<NONE>': _('&lt;No Filter&gt;'),
+    'DAILYSEARCHER': _('Daily Searcher'),
+    'BACKLOG': _('Backlog'),
+    'SHOWUPDATER': _('Show Updater'),
+    'CHECKVERSION': _('Check Version'),
+    'SHOWQUEUE': _('Show Queue'),
+    'SEARCHQUEUE': _('Search Queue (All)'),
+    'SEARCHQUEUE-DAILY-SEARCH': _('Search Queue (Daily Searcher)'),
+    'SEARCHQUEUE-BACKLOG': _('Search Queue (Backlog)'),
+    'SEARCHQUEUE-MANUAL': _('Search Queue (Manual)'),
+    'SEARCHQUEUE-RETRY': _('Search Queue (Retry/Failed)'),
+    'SEARCHQUEUE-RSS': _('Search Queue (RSS)'),
+    'FINDPROPERS': _('Find Propers'),
+    'POSTPROCESSOR': _('Postprocessor'),
+    'FINDSUBTITLES': _('Find Subtitles'),
+    'TRAKTCHECKER': _('Trakt Checker'),
+    'EVENT': _('Event'),
+    'ERROR': _('Error'),
+    'TORNADO': _('Tornado'),
+    'Thread': _('Thread'),
+    'MAIN': _('Main'),
+}
+
+
+def log_data(min_level, log_filter, log_search, max_lines):
+    regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+    if log_filter not in LOG_FILTERS:
+        log_filter = '<NONE>'
+
+    final_data = []
+
+    log_files = []
+    if ek(os.path.isfile, Wrapper.instance.log_file):
+        log_files.append(Wrapper.instance.log_file)
+
+        for i in range(1, int(sickbeard.LOG_NR)):
+            name = Wrapper.instance.log_file + "." + str(i)
+            if not ek(os.path.isfile, name):
+                break
+            log_files.append(name)
+    else:
+        return final_data
+
+    data = []
+    for _log_file in log_files:
+        if len(data) < max_lines:
+            with io.open(_log_file, 'r', encoding='utf-8') as f:
+                data += [line.strip() + '\n' for line in reversed(f.readlines()) if line.strip()]
+        else:
+            break
+
+    found_lines = 0
+    for x in data:
+        match = re.match(regex, x)
+
+        if match:
+            level = match.group(7)
+            log_name = match.group(8)
+
+            if not sickbeard.DEBUG and level == 'DEBUG':
+                continue
+
+            if not sickbeard.DBDEBUG and level == 'DB':
+                continue
+
+            if level not in LOGGING_LEVELS:
+                final_data.append('AA ' + x)
+                found_lines += 1
+            elif log_search and log_search.lower() in x.lower():
+                final_data.append(x)
+                found_lines += 1
+            elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == '<NONE>' or log_name.startswith(log_filter)):
+                final_data.append(x)
+                found_lines += 1
+        else:
+            final_data.append('AA ' + x)
+            found_lines += 1
+
+        if found_lines >= max_lines:
+            break
+
+    return final_data

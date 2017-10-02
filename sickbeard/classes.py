@@ -18,16 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import sys
-import urllib
+
+from six.moves import urllib
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
 from sickrage.helper.common import dateTimeFormat
 
 
-class SickBeardURLopener(urllib.FancyURLopener, object):
+class SickBeardURLopener(urllib.request.FancyURLopener, object):
     version = USER_AGENT
 
 
@@ -43,7 +46,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         self.show = None
 
         # URL to the NZB/torrent file
-        self.url = u''
+        self.url = ''
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -55,13 +58,13 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         self.quality = Quality.UNKNOWN
 
         # release name
-        self.name = u''
+        self.name = ''
 
         # size of the release (-1 = n/a)
         self.size = -1
 
         # release group
-        self.release_group = u''
+        self.release_group = ''
 
         # version
         self.version = -1
@@ -72,31 +75,31 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         # content
         self.content = None
 
-        self.resultType = u''
+        self.resultType = ''
 
     def __str__(self):
 
         if self.provider is None:
-            return u'Invalid provider, unable to print self'
+            return 'Invalid provider, unable to print self'
 
-        my_string = u'{0} @ {1}\n'.format(self.provider.name, self.url)
-        my_string += u'Extra Info:\n'
+        my_string = '{0} @ {1}\n'.format(self.provider.name, self.url)
+        my_string += 'Extra Info:\n'
         for extra in self.extraInfo:
-            my_string += u' {0}\n'.format(extra)
+            my_string += ' {0}\n'.format(extra)
 
-        my_string += u'Episodes:\n'
+        my_string += 'Episodes:\n'
         for ep in self.episodes:
-            my_string += u' {0}\n'.format(ep)
+            my_string += ' {0}\n'.format(ep)
 
-        my_string += u'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
-        my_string += u'Name: {0}\n'.format(self.name)
-        my_string += u'Size: {0}\n'.format(self.size)
-        my_string += u'Release Group: {0}\n'.format(self.release_group)
+        my_string += 'Quality: {0}\n'.format(Quality.qualityStrings[self.quality])
+        my_string += 'Name: {0}\n'.format(self.name)
+        my_string += 'Size: {0}\n'.format(self.size)
+        my_string += 'Release Group: {0}\n'.format(self.release_group)
 
         return my_string
 
     def fileName(self):
-        return u'{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
+        return '{0}.{1}'.format(self.episodes[0].prettyName(), self.resultType)
 
 
 class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -105,7 +108,7 @@ class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
     def __init__(self, episodes):
         super(NZBSearchResult, self).__init__(episodes)
-        self.resultType = u'nzb'
+        self.resultType = 'nzb'
 
 
 class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -114,7 +117,7 @@ class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
     """
     def __init__(self, episodes):
         super(NZBDataSearchResult, self).__init__(episodes)
-        self.resultType = u'nzbdata'
+        self.resultType = 'nzbdata'
 
 
 class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
@@ -123,7 +126,7 @@ class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
     """
     def __init__(self, episodes):
         super(TorrentSearchResult, self).__init__(episodes)
-        self.resultType = u'torrent'
+        self.resultType = 'torrent'
 
 class DDLSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
     """
@@ -146,30 +149,30 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
         self.config = config
         self.log = log
 
-    def selectSeries(self, allSeries):
+    def selectSeries(self, all_results):
         search_results = []
-        series_names = []
 
         # get all available shows
-        if allSeries and 'searchterm' in self.config:
-            search_term = self.config['searchterm']
-            # try to pick a show that's in my show list
-            for curShow in allSeries:
+        if all_results and 'searchterm' in self.config:
+            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
+            for curShow in all_results:
                 if curShow in search_results:
                     continue
 
-                if 'seriesname' in curShow:
-                    series_names.append(curShow['seriesname'])
-                if 'aliasnames' in curShow:
-                    series_names.extend(curShow['aliasnames'].split('|'))
+                if 'seriesname' not in curShow:
+                    continue
 
-                for name in series_names:
-                    if search_term.lower() in name.lower():
-                        if 'firstaired' not in curShow:
-                            curShow['firstaired'] = 'Unknown'
+                try:
+                    # We need to know if it's in our show list already
+                    curShow['in_show_list'] = int(curShow.get('id')) in show_id_list
+                except Exception:  # If it doesnt have an id, we cant use it anyways.
+                    continue
 
-                        if curShow not in search_results:
-                            search_results += [curShow]
+                if 'firstaired' not in curShow:
+                    curShow['firstaired'] = 'Unknown'
+
+                if curShow not in search_results:
+                    search_results += [curShow]
 
         return search_results
 
@@ -188,19 +191,18 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
         self.log = log
 
     @staticmethod
-    def selectSeries(allSeries):
-        try:
-            # try to pick a show that's in my show list
-            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
-            for curShow in allSeries:
-                if int(curShow['id']) in show_id_list:
+    def selectSeries(all_results):
+        # try to pick a show that's in my show list
+        show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
+        for curShow in all_results:
+            try:
+                if int(curShow.get('id')) in show_id_list:
                     return curShow
-        except Exception:
-            # Maybe curShow doesnt have id? Ignore it
-            pass
+            except Exception:
+                pass
 
         # if nothing matches then return first result
-        return allSeries[0]
+        return all_results[0]
 
 
 class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
@@ -222,7 +224,7 @@ class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instan
         self.scene_episode = -1
 
     def __str__(self):
-        return u'{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
+        return '{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
             date=self.date, name=self.name, season=self.season, episode=self.episode,
             series_id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name)
 

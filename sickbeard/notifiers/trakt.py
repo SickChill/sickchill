@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Dieter Blomme <dieterblomme@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,12 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
+from libtrakt import TraktAPI
+from libtrakt.exceptions import traktAuthException, traktException, traktServerBusy
+
 import sickbeard
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
-
-from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException, traktServerBusy, traktAuthException
 
 
 class Notifier(object):
@@ -74,8 +76,7 @@ class Notifier(object):
                 else:
                     data['shows'][0]['ids']['tvrage'] = ep_obj.show.indexerid
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST:
-                    if sickbeard.TRAKT_REMOVE_SERIESLIST:
+                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
                         trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
@@ -84,15 +85,14 @@ class Notifier(object):
                 for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
                     data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST:
-                    if sickbeard.TRAKT_REMOVE_WATCHLIST:
-                        trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
+                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # update library
                 trakt_api.traktRequest("sync/collection", data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+                logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
     def update_watchlist(self, show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
 
@@ -133,7 +133,7 @@ class Notifier(object):
                 elif data_show is not None:
                     data.update(data_show)
                 else:
-                    logger.log(u"there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj", logger.WARNING)
+                    logger.log("there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj", logger.WARNING)
                     return False
 
                 if data_episode is not None:
@@ -170,7 +170,7 @@ class Notifier(object):
                 trakt_api.traktRequest(trakt_url, data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+                logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
                 return False
 
         return True
@@ -237,5 +237,5 @@ class Notifier(object):
             else:
                 return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+            logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
             return "Test notice failed to Trakt: {0}".format(ex(e))

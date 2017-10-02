@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard import logger, tvcache
+from __future__ import print_function, unicode_literals
 
+from sickbeard import logger, tvcache
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -58,34 +59,34 @@ class XThorProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log(u'Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u'Search string: ' + search_string.strip(), logger.DEBUG)
+                    logger.log('Search string: ' + search_string.strip(), logger.DEBUG)
                     search_params['search'] = search_string
                 else:
                     search_params.pop('search', '')
 
                 jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
                 if not jdata:
-                    logger.log(u'No data returned from provider', logger.DEBUG)
+                    logger.log('No data returned from provider', logger.DEBUG)
                     continue
 
-                error_code = jdata.pop('error')
-                if error_code['code']:
-                    if error_code['code'] != 2:
-                        logger.log(u'{0}'.format(error_code['descr']), logger.WARNING)
+                error_code = jdata.pop('error', {})
+                if error_code.get('code'):
+                    if error_code.get('code') != 2:
+                        logger.log('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')), logger.WARNING)
                         return results
                     continue
 
-                account_ok = jdata.pop('user')['can_leech']
+                account_ok = jdata.pop('user', {}).get('can_leech')
                 if not account_ok:
-                    logger.log(u'Sorry, your account is not allowed to download, check your ratio', logger.WARNING)
+                    logger.log('Sorry, your account is not allowed to download, check your ratio', logger.WARNING)
                     return results
 
-                torrents = jdata.pop('torrents')
+                torrents = jdata.pop('torrents', None)
                 if not torrents:
-                    logger.log(u'Provider has no results for this search', logger.DEBUG)
+                    logger.log('Provider has no results for this search', logger.DEBUG)
                     continue
 
                 for torrent in torrents:
@@ -98,7 +99,7 @@ class XThorProvider(TorrentProvider):
                         seeders = torrent.get('seeders')
                         leechers = torrent.get('leechers')
                         if not seeders and mode != 'RSS':
-                            logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                            logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                        (title, seeders, leechers), logger.DEBUG)
                             continue
 
@@ -106,7 +107,7 @@ class XThorProvider(TorrentProvider):
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log(u'Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
                     except StandardError:

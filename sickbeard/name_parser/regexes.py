@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,6 +18,8 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 # all regexes are case insensitive
+
+from __future__ import print_function, unicode_literals
 
 normal_regexes = [
     ('standard_repeat',
@@ -80,15 +82,15 @@ normal_regexes = [
      # Show_Name.1x02x03x04.Source_Quality_Etc-Group
      # Show Name - 1x02-03-04 - My Ep Name
      r'''
-     ^((?P<series_name>.+?)[\[. _-]+)?           # Show_Name and separator
-     (?P<season_num>\d+)x                        # 1x
-     (?P<ep_num>\d+)                             # 02 and separator
-     (([. _-]*x|-)                               # linking x/- char
+     ^((?!\[.+?\])(?P<series_name>.+?)[\[. _-]+)?  # Show_Name and separator if no brackets group
+     (?P<season_num>\d+)x                          # 1x
+     (?P<ep_num>\d+)                               # 02 and separator
+     (([. _-]*x|-)                                 # linking x/- char
      (?P<extra_ep_num>
-     (?!(1080|720|480)[pi])(?!(?<=x)264)         # ignore obviously wrong multi-eps
-     \d+))*                                      # additional x03/etc
-     [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
-     ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
+     (?!(1080|720|480)[pi])(?!(?<=x)264)           # ignore obviously wrong multi-eps
+     \d+))*                                        # additional x03/etc
+     [\]. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
     ('scene_date_format',
@@ -323,6 +325,23 @@ anime_regexes = [
      (?:\[(?P<crc>\w{8})\])?
      .*?
      '''),
+    ('anime SxEE',
+     # Show_Name.1x02.Source_Quality_Etc-Group
+     # Show Name - 1x02 - My Ep Name
+     # Show_Name.1x02x03x04.Source_Quality_Etc-Group
+     # Show Name - 1x02-03-04 - My Ep Name
+     r'''
+     ^((?!\[.+?\])(?P<series_name>.+?)[\[. _-]+)?  # Show_Name and separator if no brackets group
+     (?P<season_num>\d+)x                          # 1x
+     (?P<ep_num>\d+)                               # 02 and separator
+     (([. _-]*x|-)                                 # linking x/- char
+     (?P<extra_ep_num>
+     (?!(1080|720|480)[pi])(?!(?<=x)264)           # ignore obviously wrong multi-eps
+     \d+))*                                        # additional x03/etc
+     [\]. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
+     -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
+     '''),
     ('anime_SxxExx',
      # Show.Name.S01E02.Source.Quality.Etc-Group
      # Show Name - S01E02 - My Ep Name
@@ -330,13 +349,15 @@ anime_regexes = [
      # Show.Name.S01E02E03.Source.Quality.Etc-Group
      # Show Name - S01E02-03 - My Ep Name
      # Show.Name.S01.E02.E03
+     # Show Name - S01E02
+     # Show Name - S01E02-03
      r'''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
      (\()?s(?P<season_num>\d+)[. _-]*            # S01 and optional separator
      e(?P<ep_num>\d+)(\))?                       # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
-     [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ([. _-]+((?P<extra_info>.+?))?              # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
@@ -427,5 +448,5 @@ anime_regexes = [
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?264))\d{1,3}))?  # E02
      (v(?P<version>[0-9]))?                                                  # v2
      .*?                                                                     # Separator and EOL
-     ''')
+     '''),
 ]

@@ -51,37 +51,37 @@
                         </div>
                     % else:
                         % for cur_result in popular_shows:
-                            % if cur_result['imdb_tt'] in imdb_tt:
+                            % if cur_result[b'imdb_tt'] in imdb_tt:
                                 <% continue %>
                             % endif
 
-                        % if 'rating' in cur_result and cur_result['rating']:
-                            <% cur_rating = cur_result['rating'] %>
-                            <% cur_votes = cur_result['votes'] %>
+                        % if 'rating' in cur_result and cur_result[b'rating']:
+                            <% cur_rating = cur_result[b'rating'] %>
+                            <% cur_votes = cur_result[b'votes'] %>
                         % else:
                             <% cur_rating = '0' %>
                             <% cur_votes = '0' %>
                         % endif
 
-                            <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}"
+                            <div class="trakt_show" data-name="${cur_result[b'name']}" data-rating="${cur_rating}"
                                  data-votes="${cur_votes.replace(',', '')}">
                                 <div class="traktContainer">
                                     <div class="trakt-image">
-                                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}"
+                                        <a class="trakt-image" href="${anon_url(cur_result[b'imdb_url'])}" target="_blank">
+                                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result[b'image_path']}"
                                                  height="273px" width="186px"/>
                                         </a>
                                     </div>
 
                                     <div class="show-title">
-                                        ${(cur_result['name'], '<span>&nbsp;</span>')['' == cur_result['name']]}
+                                        ${(cur_result[b'name'], '<span>&nbsp;</span>')['' == cur_result[b'name']]}
                                     </div>
 
                                     <div class="clearfix">
                                         <p>${int(float(cur_rating)*10)}%&nbsp;<span class="displayshow-icon-heart"></span></p>
                                         <i>${cur_votes}</i>
                                         <div class="traktShowTitleIcons">
-                                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB"
+                                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result[b'imdb_tt']}&amp;show_name=${cur_result[b'name'] | u}&amp;indexer=IMDB"
                                                class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                                         </div>
                                     </div>

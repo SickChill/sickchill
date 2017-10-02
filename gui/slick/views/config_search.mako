@@ -1,5 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
+    import six
     import sickbeard
 %>
 
@@ -199,7 +200,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="usenet_retention">${_('''Trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"''')}</label>
+                                            <label for="usenet_retention">${_('''trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"''')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -218,7 +219,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="usenet_retention">${_('''Ignore subbed releases based on language names <br>
+                                            <label for="usenet_retention">${_('''ignore subbed releases based on language names <br>
                             Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br>
                             separate languages with a comma, e.g. "lang1,lang2,lang3''')}</label>
                                         </div>
@@ -251,7 +252,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label>${_('Will only work with snatched/downloaded episodes after enabling this')}</label>
+                                            <label>${_('will only work with snatched/downloaded episodes after enabling this')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -268,12 +269,12 @@
                                             <div class="col-md-12">
                                                 <input id="delete_failed" type="checkbox"
                                                        name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
-                                                <label for="delete_failed">${_('Delete files left over from a failed download?')}</label>
+                                                <label for="delete_failed">${_('delete files left over from a failed download?')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('Note')}:</b> ${_('This only works if Use Failed Downloads is enabled.')}</label>
+                                                <label><b>${_('note')}:</b> ${_('this only works if Use Failed Downloads is enabled.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -307,7 +308,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_nzbs" class="enabler"
                                            id="use_nzbs" ${('', 'checked="checked"')[bool(sickbeard.USE_NZBS)]}/>
-                                    <label for="use_nzbs">${_('enable NZB search providers</p>')}</label>
+                                    <label for="use_nzbs">${_('enable NZB search providers')}</label>
                                 </div>
                             </div>
 
@@ -320,7 +321,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="nzb_method" id="nzb_method" class="form-control input-sm input150" title="nzb_method">
                                             <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
-                                            % for curAction in ('sabnzbd', 'blackhole', 'nzbget', 'download_station'):
+                                            % for curAction in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
                                                 <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
                                             % endfor
                                         </select>
@@ -536,7 +537,11 @@
                                                 <div class="col-md-12">
                                                     <input id="nzbget_use_https" type="checkbox" class="enabler"
                                                            name="nzbget_use_https" ${('', 'checked="checked"')[bool(sickbeard.NZBGET_USE_HTTPS)]}/>
-                                                    <label for="nzbget_use_https"><b>${_('Note')}:</b> ${_('enable Secure control in NZBGet and set the correct Secure Port here')}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="nzbget_use_https"><b>${_('note')}:</b> ${_('enable Secure control in NZBGet and set the correct Secure Port here')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -731,7 +736,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="syno_dsm_host">${_('URL to your Synology DS (e.g. http://localhost:5000/)')}</label>
+                                                    <label for="syno_dsm_host">${_('URL to your Synology DSM (e.g. http://localhost:5000/)')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -798,7 +803,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <span id="path_synology"> <b>${_('Note')}:</b> ${_('the destination has to be a shared folder for Synology DS')}</span>
+                                                    <span id="path_synology"> <b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -934,7 +939,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="torrent_rpcurl" id="rpcurl_desc_">${_('The path without leading and trailing slashes (e.g. transmission)')}</label>
+                                                    <label for="torrent_rpcurl" id="rpcurl_desc_">${_('the path without leading and trailing slashes (e.g. transmission)')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -947,7 +952,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm input150" title="torrent_auth_type">
                                                 <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
-                                                % for authvalue, authname in http_authtype.iteritems():
+                                                % for authvalue, authname in six.iteritems(http_authtype):
                                                     <option id="torrent_auth_type_value"
                                                             value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                                 % endfor
@@ -963,7 +968,7 @@
                                             <input type="checkbox" name="torrent_verify_cert" class="enabler"
                                                    id="torrent_verify_cert" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_VERIFY_CERT)]}/>
                                             <label for="torrent_verify_cert" id="torrent_verify_deluge">${_('disable if you get "Deluge: Authentication Error" in your log')}</label>
-                                            <label for="torrent_verify_cert" id="torrent_verify_rtorrent">${_('Verify SSL certificates for HTTPS requests')}</label>
+                                            <label for="torrent_verify_cert" id="torrent_verify_rtorrent">${_('verify SSL certificates for HTTPS requests')}</label>
                                         </div>
                                     </div>
 
@@ -1025,11 +1030,11 @@
                                                 <div class="col-md-12">
                                                     <span id="label_warning_deluge" style="display:none">
                                                         <label for="torrent_label">${_('(blank spaces are not allowed)')}</label>
-                                                        <p>${_('note: label plugin must be enabled in Deluge clients')}</p>
+                                                        <label><b>${_('note')}:</b> ${_('label plugin must be enabled in Deluge clients')}</label>
                                                     </span>
                                                     <span id="label_warning_qbittorrent" style="display:none">
                                                         <label for="torrent_label">${_('(blank spaces are not allowed)')}</label>
-                                                        <p>${_('note: for QBitTorrent 3.3.1 and up')}</p>
+                                                        <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up')}</>
                                                     </span>
                                                 </div>
                                             </div>
@@ -1052,11 +1057,11 @@
                                                 <div class="col-md-12">
                                                     <span id="label_anime_warning_deluge" style="display:none">
                                                         <label for="torrent_label_anime">${_('(blank spaces are not allowed)')}</label>
-                                                        <p>${_('note: label plugin must be enabled in Deluge clients')}</p>
+                                                        <label><b>${_('note')}:</b> ${_('label plugin must be enabled in Deluge clients')}</label>
                                                     </span>
                                                     <span id="label_anime_warning_qbittorrent" style="display:none">
                                                         <label for="torrent_label_anime">${_('(blank spaces are not allowed)')}</label>
-                                                        <p>${_('note: for QBitTorrent 3.3.1 and up ')}</p>
+                                                        <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up ')}</label>
                                                     </span>
                                                 </div>
                                             </div>
@@ -1077,12 +1082,12 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="torrent_path">${_('<p>where <span id="torrent_client">the torrent client</span> will save downloaded files (blank for client default)')}</label>
+                                                    <label for="torrent_path">${_('where <span id="torrent_client">the torrent client</span> will save downloaded files (blank for client default)')}</label>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label id="path_synology"><b>${_('Note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
+                                                    <label id="path_synology"><b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1090,7 +1095,7 @@
 
                                     <div class="field-pair row" id="torrent_seed_time_option">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                            <label class="component-title" id="torrent_seed_time_label">${_('Minimum seeding time is')}</label>
+                                            <label class="component-title" id="torrent_seed_time_label">${_('Minimum seeding time')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
@@ -1101,7 +1106,12 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="torrent_seed_time">${_('hours. (default:\'0\' passes blank to client and \'-1\' passes nothing)')}</label>
+                                                    <label for="torrent_seed_time">${_('time in hours')}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="torrent_seed_time">${_('(default:\'0\' passes blank to client and \'-1\' passes nothing)')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1178,7 +1188,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_ddls" class="enabler"
-                                           id="use_ddls" ${('', 'checked="checked"')[bool(sickbeard.USE_DDLS)]}/>
+                                           id="use_ddls" ${('', 'checked="checked"')[sickbeard.USE_DDLS]}/>
                                     <label for="use_ddls">${_('enable ddl search providers')}</label>
                                 </div>
                             </div>

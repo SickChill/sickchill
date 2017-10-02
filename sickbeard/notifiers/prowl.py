@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -20,9 +20,18 @@
 #
 ##############################################################################
 
+from __future__ import unicode_literals
+
+import ast
 import socket
-from httplib import HTTPSConnection, HTTPException
+import time
+
 from requests.compat import urlencode
+from six.moves.http_client import HTTPException, HTTPSConnection
+
+import sickbeard
+from sickbeard import common, db, logger
+from sickrage.helper.encoding import ss
 
 try:
     # this only exists in 2.6
@@ -32,12 +41,7 @@ except ImportError:
     class SSLError(Exception):
         pass
 
-import sickbeard
-import time
-import ast
 
-from sickbeard import logger, common, db
-from sickrage.helper.encoding import ss
 
 
 class Notifier(object):
@@ -97,13 +101,13 @@ class Notifier(object):
     @staticmethod
     def _generate_recipients(show=None):
         apis = []
-        mydb = db.DBConnection()
+        mydb = db.DBConnection(row_type='dict')
 
         # Grab the global recipient(s)
         if sickbeard.PROWL_API:
             for api in sickbeard.PROWL_API.split(','):
-                if len(api.strip()) > 0:
-                    apis.append(api)
+                if api.strip():
+                    apis.append(api.strip())
 
         # Grab the per-show-notification recipients
         if show is not None:
@@ -112,8 +116,8 @@ class Notifier(object):
                     if subs['notify_list'] and subs['notify_list'][0] == '{':               # legacy format handling
                         entries = dict(ast.literal_eval(subs['notify_list']))
                         for api in entries['prowlAPIs'].split(','):
-                            if len(api.strip()) > 0:
-                                apis.append(api)
+                            if api.strip():
+                                apis.append(api.strip())
 
         apis = set(apis)
         return apis
@@ -134,7 +138,7 @@ class Notifier(object):
 
         title = sickbeard.PROWL_MESSAGE_TITLE
 
-        logger.log(u"PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.log("PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -150,19 +154,19 @@ class Notifier(object):
                                  headers={'Content-type': "application/x-www-form-urlencoded"},
                                  body=urlencode(data))
         except (SSLError, HTTPException, socket.error):
-            logger.log(u"Prowl notification failed.", logger.ERROR)
+            logger.log("Prowl notification failed.", logger.ERROR)
             return False
         response = http_handler.getresponse()
         request_status = response.status
 
         if request_status == 200:
-            logger.log(u"Prowl notifications sent.", logger.INFO)
+            logger.log("Prowl notifications sent.", logger.INFO)
             return True
         elif request_status == 401:
-            logger.log(u"Prowl auth failed: {0}".format(response.reason), logger.ERROR)
+            logger.log("Prowl auth failed: {0}".format(response.reason), logger.ERROR)
             return False
         else:
-            logger.log(u"Prowl notification failed.", logger.ERROR)
+            logger.log("Prowl notification failed.", logger.ERROR)
             return False
 
     @staticmethod

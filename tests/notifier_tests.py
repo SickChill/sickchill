@@ -281,6 +281,13 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         """
         pass
 
+    @unittest.skip('Not yet implemented')
+    def test_twilio(self):
+        """
+        Test twilio notifications
+        """
+        pass
+
     @staticmethod
     def _debug_spew(text):
         """
@@ -290,7 +297,7 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         :return:
         """
         if __name__ == '__main__' and text is not None:
-            print text
+            print(text)
 
     def _get_showid_by_showname(self, showname):
         """
@@ -302,14 +309,14 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         if showname is not None:
             rows = self.mydb.select("SELECT show_id FROM tv_shows WHERE show_name = ?", [showname])
             if len(rows) == 1:
-                return rows[0]['show_id']
+                return rows[0][b'show_id']
         return -1
 
 if __name__ == '__main__':
-    print "=================="
-    print "STARTING - NOTIFIER TESTS"
-    print "=================="
-    print "######################################################################"
+    print("==================")
+    print("STARTING - NOTIFIER TESTS")
+    print("==================")
+    print("######################################################################")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(NotifierTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

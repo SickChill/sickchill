@@ -13,7 +13,8 @@
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
 # Copyright 2015 Dan Vanderkam <danvdk@gmail.com>                              #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -38,6 +39,10 @@ class Stargazer(github.GithubObject.NonCompletableGithubObject):
     This class represents Stargazers with the date of starring as returned by
     https://developer.github.com/v3/activity/starring/#alternative-response-with-star-creation-timestamps
     """
+
+    def __repr__(self):
+        return self.get__repr__({"user": self._user.value._login.value})
+
     @property
     def starred_at(self):
         """

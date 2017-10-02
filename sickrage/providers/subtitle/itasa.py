@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import copy
 import io
 import logging
 import re
+from zipfile import is_zipfile, ZipFile
 
 from babelfish import Language
 from guessit import guessit
+from requests import Session
+from subliminal import __version__
+from subliminal.cache import EPISODE_EXPIRATION_TIME, region, SHOW_EXPIRATION_TIME
+from subliminal.exceptions import AuthenticationError, ConfigurationError, TooManyRequests
+from subliminal.providers import Provider
+from subliminal.subtitle import fix_line_ending, guess_matches, sanitize, Subtitle
+from subliminal.video import Episode
+
 try:
     from lxml import etree
 except ImportError:  # pragma: no cover
@@ -14,15 +25,7 @@ except ImportError:  # pragma: no cover
     except ImportError:
         import xml.etree.ElementTree as etree
 
-from requests import Session
-from zipfile import ZipFile, is_zipfile
 
-from subliminal.providers import Provider
-from subliminal import __version__
-from subliminal.cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
-from subliminal.exceptions import AuthenticationError, ConfigurationError, TooManyRequests
-from subliminal.subtitle import (Subtitle, fix_line_ending, guess_matches, sanitize)
-from subliminal.video import Episode
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +66,7 @@ class ItaSASubtitle(Subtitle):
         if video.year and self.year == video.year:
             matches.add('year')
         if video.series_tvdb_id and self.tvdb_id == video.series_tvdb_id:
-            matches.add('tvdb_id')
+            matches.add('series_tvdb_id')
 
         # other properties
         matches |= guess_matches(video, guessit(self.full_data), partial=True)
@@ -112,15 +115,18 @@ class ItaSAProvider(Provider):
 
             self.auth_code = root.find('data/user/authcode').text
 
-            data = {
-                'username': self.username,
-                'passwd': self.password,
-                'remember': 'yes',
-                'option': 'com_user',
-                'task': 'login',
-                'silent': 'true'
-            }
-            r = self.session.post('http://www.italiansubs.net/index.php', data=data, allow_redirects=False, timeout=30)
+            r = self.session.get('https://www.italiansubs.net/', allow_redirects=True, timeout=30)
+            form = re.search('<form.*?id="form-login".*?>.*?</form>', r.content, re.DOTALL)
+            input_matcher = re.finditer('<input.*?name="(.*?)".*?value="(.*?)".*?/>', form.group())
+
+            data = {}
+
+            for inputMatch in input_matcher:
+                data[inputMatch.group(1)] = inputMatch.group(2)
+            data['username'] = self.username
+            data['passwd'] = self.password
+
+            r = self.session.post('https://www.italiansubs.net/index.php', data=data, allow_redirects=True, timeout=30)
             r.raise_for_status()
 
             self.logged_in = True

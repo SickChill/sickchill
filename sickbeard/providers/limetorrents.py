@@ -18,13 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
 import traceback
+
 from bs4 import BeautifulSoup
+
 import sickbeard
-
 from sickbeard import logger, tvcache
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -37,8 +39,8 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.urls = {
             'index': 'https://www.limetorrents.cc/',
-            'search': 'https://www.limetorrents.cc/searchrss/20/',
-            'rss': 'https://www.limetorrents.cc/rss/20/'
+            'search': 'https://www.limetorrents.cc/searchrss/tv/',
+            'rss': 'https://www.limetorrents.cc/rss/tv/'
         }
 
         self.url = self.urls['index']
@@ -55,11 +57,11 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         results = []
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
@@ -67,18 +69,18 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
-                        logger.log(u"No data returned from provider", logger.DEBUG)
+                        logger.log("No data returned from provider", logger.DEBUG)
                         continue
 
                     if not data.startswith('<?xml'):
-                        logger.log(u'Expected xml but got something else, is your mirror failing?', logger.INFO)
+                        logger.log('Expected xml but got something else, is your mirror failing?', logger.INFO)
                         continue
 
                     data = BeautifulSoup(data, 'html5lib')
 
                     entries = data('item')
                     if not entries:
-                        logger.log(u'Returned xml contained no results', logger.INFO)
+                        logger.log('Returned xml contained no results', logger.INFO)
                         continue
 
                     for item in entries:
@@ -122,18 +124,18 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log(u"Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()), logger.ERROR)
+                    logger.log("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

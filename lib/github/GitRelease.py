@@ -4,7 +4,8 @@
 #                                                                              #
 # Copyright 2015 Ed Holland <eholland@alertlogic.com>                          #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -29,6 +30,9 @@ class GitRelease(github.GithubObject.CompletableGithubObject):
     """
     This class represents GitRelease as returned for example by https://developer.github.com/v3/repos/releases
     """
+
+    def __repr__(self):
+        return self.get__repr__({"title": self._title.value})
 
     @property
     def body(self):
@@ -78,6 +82,14 @@ class GitRelease(github.GithubObject.CompletableGithubObject):
         self._completeIfNotSet(self._upload_url)
         return self._upload_url.value
 
+    @property
+    def html_url(self):
+        """
+        :type: string
+        """
+        self._completeIfNotSet(self._html_url)
+        return self._html_url.value
+
     def delete_release(self):
         headers, data = self._requester.requestJsonAndCheck(
             "DELETE",
@@ -111,6 +123,7 @@ class GitRelease(github.GithubObject.CompletableGithubObject):
         self._author = github.GithubObject.NotSet
         self._url = github.GithubObject.NotSet
         self._upload_url = github.GithubObject.NotSet
+        self._html_url = github.GithubObject.NotSet
 
     def _useAttributes(self, attributes):
         if "body" in attributes:
@@ -125,3 +138,5 @@ class GitRelease(github.GithubObject.CompletableGithubObject):
             self._url = self._makeStringAttribute(attributes["url"])
         if "upload_url" in attributes:
             self._upload_url = self._makeStringAttribute(attributes["upload_url"])
+        if "html_url" in attributes:
+            self._html_url = self._makeStringAttribute(attributes["html_url"])

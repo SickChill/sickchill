@@ -26,8 +26,9 @@ In addition to I/O events, the `IOLoop` can also schedule time-based events.
 `IOLoop.add_timeout` is a non-blocking alternative to `time.sleep`.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
+import collections
 import datetime
 import errno
 import functools
@@ -45,20 +46,20 @@ import math
 
 from tornado.concurrent import TracebackFuture, is_future
 from tornado.log import app_log, gen_log
+from tornado.platform.auto import set_close_exec, Waker
 from tornado import stack_context
-from tornado.util import Configurable, errno_from_exception, timedelta_to_seconds
+from tornado.util import PY3, Configurable, errno_from_exception, timedelta_to_seconds
 
 try:
     import signal
 except ImportError:
     signal = None
 
-try:
-    import thread  # py2
-except ImportError:
-    import _thread as thread  # py3
 
-from tornado.platform.auto import set_close_exec, Waker
+if PY3:
+    import _thread as thread
+else:
+    import thread
 
 
 _POLL_TIMEOUT = 3600.0
@@ -172,6 +173,10 @@ class IOLoop(Configurable):
         This is normally not necessary as `instance()` will create
         an `IOLoop` on demand, but you may want to call `install` to use
         a custom subclass of `IOLoop`.
+
+        When using an `IOLoop` subclass, `install` must be called prior
+        to creating any objects that implicitly create their own
+        `IOLoop` (e.g., :class:`tornado.httpclient.AsyncHTTPClient`).
         """
         assert not IOLoop.initialized()
         IOLoop._instance = self
@@ -249,7 +254,7 @@ class IOLoop(Configurable):
             if IOLoop.current(instance=False) is None:
                 self.make_current()
         elif make_current:
-            if IOLoop.current(instance=False) is None:
+            if IOLoop.current(instance=False) is not None:
                 raise RuntimeError("current IOLoop already exists")
             self.make_current()
 
@@ -400,10 +405,12 @@ class IOLoop(Configurable):
     def run_sync(self, func, timeout=None):
         """Starts the `IOLoop`, runs the given function, and stops the loop.
 
-        If the function returns a `.Future`, the `IOLoop` will run
-        until the future is resolved.  If it raises an exception, the
-        `IOLoop` will stop and the exception will be re-raised to the
-        caller.
+        The function must return either a yieldable object or
+        ``None``. If the function returns a yieldable object, the
+        `IOLoop` will run until the yieldable is resolved (and
+        `run_sync()` will return the yieldable's result). If it raises
+        an exception, the `IOLoop` will stop and the exception will be
+        re-raised to the caller.
 
         The keyword-only argument ``timeout`` may be used to set
         a maximum duration for the function.  If the timeout expires,
@@ -418,12 +425,18 @@ class IOLoop(Configurable):
 
             if __name__ == '__main__':
                 IOLoop.current().run_sync(main)
+
+        .. versionchanged:: 4.3
+           Returning a non-``None``, non-yieldable value is now an error.
         """
         future_cell = [None]
 
         def run():
             try:
                 result = func()
+                if result is not None:
+                    from tornado.gen import convert_yielded
+                    result = convert_yielded(result)
             except Exception:
                 future_cell[0] = TracebackFuture()
                 future_cell[0].set_exc_info(sys.exc_info())
@@ -590,14 +603,27 @@ class IOLoop(Configurable):
         """
         try:
             ret = callback()
-            if ret is not None and is_future(ret):
+            if ret is not None:
+                from tornado import gen
                 # Functions that return Futures typically swallow all
                 # exceptions and store them in the Future.  If a Future
                 # makes it out to the IOLoop, ensure its exception (if any)
                 # gets logged too.
-                self.add_future(ret, lambda f: f.result())
+                try:
+                    ret = gen.convert_yielded(ret)
+                except gen.BadYieldError:
+                    # It's not unusual for add_callback to be used with
+                    # methods returning a non-None and non-yieldable
+                    # result, which should just be ignored.
+                    pass
+                else:
+                    self.add_future(ret, self._discard_future_result)
         except Exception:
             self.handle_callback_exception(callback)
+
+    def _discard_future_result(self, future):
+        """Avoid unhandled-exception warnings from spawned coroutines."""
+        future.result()
 
     def handle_callback_exception(self, callback):
         """This method is called whenever a callback run by the `IOLoop`
@@ -668,8 +694,7 @@ class PollIOLoop(IOLoop):
         self.time_func = time_func or time.time
         self._handlers = {}
         self._events = {}
-        self._callbacks = []
-        self._callback_lock = threading.Lock()
+        self._callbacks = collections.deque()
         self._timeouts = []
         self._cancellations = 0
         self._running = False
@@ -687,11 +712,10 @@ class PollIOLoop(IOLoop):
                          self.READ)
 
     def close(self, all_fds=False):
-        with self._callback_lock:
-            self._closing = True
+        self._closing = True
         self.remove_handler(self._waker.fileno())
         if all_fds:
-            for fd, handler in self._handlers.values():
+            for fd, handler in list(self._handlers.values()):
                 self.close_fd(fd)
         self._waker.close()
         self._impl.close()
@@ -775,9 +799,7 @@ class PollIOLoop(IOLoop):
             while True:
                 # Prevent IO event starvation by delaying new callbacks
                 # to the next iteration of the event loop.
-                with self._callback_lock:
-                    callbacks = self._callbacks
-                    self._callbacks = []
+                ncallbacks = len(self._callbacks)
 
                 # Add any timeouts that have come due to the callback list.
                 # Do not run anything until we have determined which ones
@@ -797,8 +819,8 @@ class PollIOLoop(IOLoop):
                             due_timeouts.append(heapq.heappop(self._timeouts))
                         else:
                             break
-                    if (self._cancellations > 512
-                            and self._cancellations > (len(self._timeouts) >> 1)):
+                    if (self._cancellations > 512 and
+                            self._cancellations > (len(self._timeouts) >> 1)):
                         # Clean up the timeout queue when it gets large and it's
                         # more than half cancellations.
                         self._cancellations = 0
@@ -806,14 +828,14 @@ class PollIOLoop(IOLoop):
                                           if x.callback is not None]
                         heapq.heapify(self._timeouts)
 
-                for callback in callbacks:
-                    self._run_callback(callback)
+                for i in range(ncallbacks):
+                    self._run_callback(self._callbacks.popleft())
                 for timeout in due_timeouts:
                     if timeout.callback is not None:
                         self._run_callback(timeout.callback)
                 # Closures may be holding on to a lot of memory, so allow
                 # them to be freed before we go into our poll wait.
-                callbacks = callback = due_timeouts = timeout = None
+                due_timeouts = timeout = None
 
                 if self._callbacks:
                     # If any callbacks or timeouts called add_callback,
@@ -857,7 +879,7 @@ class PollIOLoop(IOLoop):
                 # Pop one fd at a time from the set of pending fds and run
                 # its handler. Since that handler may perform actions on
                 # other file descriptors, there may be reentrant calls to
-                # this IOLoop that update self._events
+                # this IOLoop that modify self._events
                 self._events.update(event_pairs)
                 while self._events:
                     fd, events = self._events.popitem()
@@ -909,64 +931,48 @@ class PollIOLoop(IOLoop):
         self._cancellations += 1
 
     def add_callback(self, callback, *args, **kwargs):
-        with self._callback_lock:
-            if self._closing:
-                raise RuntimeError("IOLoop is closing")
-            list_empty = not self._callbacks
-            self._callbacks.append(functools.partial(
-                stack_context.wrap(callback), *args, **kwargs))
-            if list_empty and thread.get_ident() != self._thread_ident:
-                # If we're in the IOLoop's thread, we know it's not currently
-                # polling.  If we're not, and we added the first callback to an
-                # empty list, we may need to wake it up (it may wake up on its
-                # own, but an occasional extra wake is harmless).  Waking
-                # up a polling IOLoop is relatively expensive, so we try to
-                # avoid it when we can.
-                self._waker.wake()
+        if self._closing:
+            return
+        # Blindly insert into self._callbacks. This is safe even
+        # from signal handlers because deque.append is atomic.
+        self._callbacks.append(functools.partial(
+            stack_context.wrap(callback), *args, **kwargs))
+        if thread.get_ident() != self._thread_ident:
+            # This will write one byte but Waker.consume() reads many
+            # at once, so it's ok to write even when not strictly
+            # necessary.
+            self._waker.wake()
+        else:
+            # If we're on the IOLoop's thread, we don't need to wake anyone.
+            pass
 
     def add_callback_from_signal(self, callback, *args, **kwargs):
         with stack_context.NullContext():
-            if thread.get_ident() != self._thread_ident:
-                # if the signal is handled on another thread, we can add
-                # it normally (modulo the NullContext)
-                self.add_callback(callback, *args, **kwargs)
-            else:
-                # If we're on the IOLoop's thread, we cannot use
-                # the regular add_callback because it may deadlock on
-                # _callback_lock.  Blindly insert into self._callbacks.
-                # This is safe because the GIL makes list.append atomic.
-                # One subtlety is that if the signal interrupted the
-                # _callback_lock block in IOLoop.start, we may modify
-                # either the old or new version of self._callbacks,
-                # but either way will work.
-                self._callbacks.append(functools.partial(
-                    stack_context.wrap(callback), *args, **kwargs))
+            self.add_callback(callback, *args, **kwargs)
 
 
 class _Timeout(object):
     """An IOLoop timeout, a UNIX timestamp and a callback"""
 
     # Reduce memory overhead when there are lots of pending callbacks
-    __slots__ = ['deadline', 'callback', 'tiebreaker']
+    __slots__ = ['deadline', 'callback', 'tdeadline']
 
     def __init__(self, deadline, callback, io_loop):
         if not isinstance(deadline, numbers.Real):
             raise TypeError("Unsupported deadline %r" % deadline)
         self.deadline = deadline
         self.callback = callback
-        self.tiebreaker = next(io_loop._timeout_counter)
+        self.tdeadline = (deadline, next(io_loop._timeout_counter))
 
     # Comparison methods to sort by deadline, with object id as a tiebreaker
     # to guarantee a consistent ordering.  The heapq module uses __le__
     # in python2.5, and __lt__ in 2.6+ (sort() and most other comparisons
     # use __lt__).
     def __lt__(self, other):
-        return ((self.deadline, self.tiebreaker) <
-                (other.deadline, other.tiebreaker))
+        return self.tdeadline < other.tdeadline
 
     def __le__(self, other):
-        return ((self.deadline, self.tiebreaker) <=
-                (other.deadline, other.tiebreaker))
+        return self.tdeadline <= other.tdeadline
 
 
 class PeriodicCallback(object):
@@ -1029,6 +1035,7 @@ class PeriodicCallback(object):
 
             if self._next_timeout <= current_time:
                 callback_time_sec = self.callback_time / 1000.0
-                self._next_timeout += (math.floor((current_time - self._next_timeout) / callback_time_sec) + 1) * callback_time_sec
+                self._next_timeout += (math.floor((current_time - self._next_timeout) /
+                                                  callback_time_sec) + 1) * callback_time_sec
 
             self._timeout = self.io_loop.add_timeout(self._next_timeout, self._run)

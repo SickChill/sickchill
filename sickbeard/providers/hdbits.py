@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
+
 from requests.compat import urlencode, urljoin
 
 from sickbeard import classes, logger, tvcache
-
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -56,11 +58,12 @@ class HDBitsProvider(TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsedJSON):
+    @staticmethod
+    def _check_auth_from_data(parsed_json):
+        """ Check that we are authenticated. """
 
-        if 'status' in parsedJSON and 'message' in parsedJSON:
-            if parsedJSON.get('status') == 5:
-                logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+        if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 5:
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
 
         return True
 
@@ -83,20 +86,20 @@ class HDBitsProvider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.log(u"Search string: {0}".format
+        logger.log("Search string: {0}".format
                    (search_params.decode('utf-8')), logger.DEBUG)
 
         self._check_auth()
 
-        parsedJSON = self.get_url(self.urls['search'], post_data=search_params, returns='json')
-        if not parsedJSON:
+        parsed_json = self.get_url(self.urls['search'], post_data=search_params, returns='json')
+        if not parsed_json:
             return []
 
-        if self._checkAuthFromData(parsedJSON):
-            if parsedJSON and 'data' in parsedJSON:
-                items = parsedJSON['data']
+        if self._check_auth_from_data(parsed_json):
+            if parsed_json and 'data' in parsed_json:
+                items = parsed_json['data']
             else:
-                logger.log(u"Resulting JSON from provider isn't correct, not parsing it", logger.ERROR)
+                logger.log("Resulting JSON from provider isn't correct, not parsing it", logger.ERROR)
                 items = []
 
             for item in items:
@@ -117,10 +120,9 @@ class HDBitsProvider(TorrentProvider):
                     except Exception:
                         result_date = None
 
-                    if result_date:
-                        if not search_date or result_date > search_date:
-                            title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date, self.show))
+                    if result_date and (not search_date or result_date > search_date):
+                        title, url = self._get_title_and_url(item)
+                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
@@ -180,15 +182,15 @@ class HDBitsProvider(TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-    def _getRSSData(self):
+    def _get_rss_data(self):
         self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 
         try:
-            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
+            parsed_json = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
-            if self.provider._checkAuthFromData(parsedJSON):
-                results = parsedJSON['data']
+            if self.provider._check_auth_from_data(parsed_json):
+                results = parsed_json['data']
         except Exception:
             pass
 

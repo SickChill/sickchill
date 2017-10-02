@@ -21,14 +21,16 @@
 Common helper functions
 """
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
+import glob
 import os
 import re
-import glob
 from fnmatch import fnmatch
 
+import six
 from github import Github
+from github.GithubException import BadCredentialsException, TwoFactorException
 
 import sickbeard
 
@@ -113,7 +115,7 @@ HTTP_STATUS_CODES = {
     599: 'Network connect timeout error',
 }
 MEDIA_EXTENSIONS = [
-    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'img', 'iso', 'm2ts', 'm4v',
+    '3gp', 'avi', 'divx', 'dvr-ms', 'f4v', 'flv', 'm2ts', 'm4v',
     'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'rmvb', 'tp', 'ts', 'vob',
     'webm', 'wmv', 'wtv',
 ]
@@ -144,7 +146,7 @@ def is_sync_file(filename):
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
 
-    if isinstance(filename, (str, unicode)):
+    if isinstance(filename, six.string_types):
         extension = filename.rpartition('.')[2].lower()
 
         return extension in sickbeard.SYNC_FILES.split(',') or \
@@ -161,7 +163,7 @@ def is_torrent_or_nzb_file(filename):
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
 
-    if not isinstance(filename, (str, unicode)):
+    if not isinstance(filename, six.string_types):
         return False
 
     return filename.rpartition('.')[2].lower() in ['nzb', 'torrent']
@@ -242,8 +244,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     finally:
         try:
             if result != default:
-                result = long(result)
-                result = max(result, 0)
+                result = max(int(result), 0)
         except (TypeError, ValueError):
             pass
 
@@ -258,7 +259,7 @@ def remove_extension(filename):
     :return: The ``filename`` without its extension.
     """
 
-    if isinstance(filename, (str, unicode)) and '.' in filename:
+    if isinstance(filename, six.string_types) and '.' in filename:
         basename, _, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
@@ -275,9 +276,8 @@ def replace_extension(filename, new_extension):
     :return: The ``filename`` with the new extension
     """
 
-    if isinstance(filename, (str, unicode)) and '.' in filename:
-        basename, _, _ = filename.rpartition('.')
-
+    if isinstance(filename, six.string_types) and '.' in filename:
+        basename = filename.rpartition('.')[0]
         if basename:
             return '{0}.{1}'.format(basename, new_extension)
 
@@ -291,10 +291,10 @@ def sanitize_filename(filename):
     :return: The ``filename``cleaned
     """
 
-    if isinstance(filename, (str, unicode)):
+    if isinstance(filename, six.string_types):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
-        filename = re.sub(r'™', '', filename)  # Trade Mark Sign unicode: \u2122
+        filename = re.sub(r'™|-u2122', '', filename)  # Trade Mark Sign unicode: \u2122
         filename = filename.strip(' .')
 
         return filename
@@ -365,14 +365,31 @@ def setup_github():
     """
 
     try:
-        if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+        if sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+            # Basic Username/Password Auth
             sickbeard.gh = Github(
                 login_or_token=sickbeard.GIT_USERNAME,
                 password=sickbeard.GIT_PASSWORD, user_agent="SickRage")
+            # This will trigger BadCredentialsException if user/pass are wrong
+            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
 
-    except Exception as error:
+        elif sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN:
+            # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on Github to connect their account.
+            sickbeard.gh = Github(
+                login_or_token=sickbeard.GIT_TOKEN, user_agent="SickRage")
+            # This will trigger:
+            # * BadCredentialsException if token is invalid
+            # * TwoFactorException if user has enabled Github-2FA
+            #   but didn't set a personal token in the configuration.
+            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
+
+            # Update GIT_USERNAME if it's not the same, so we don't run into problems later on.
+            gh_user = sickbeard.gh.get_user().login
+            sickbeard.GIT_USERNAME = gh_user if sickbeard.GIT_USERNAME != gh_user else sickbeard.GIT_USERNAME
+
+    except (Exception, BadCredentialsException, TwoFactorException) as error:
         sickbeard.gh = None
-        sickbeard.logger.log(u'Unable to setup GitHub properly with your github login. Please'
+        sickbeard.logger.log('Unable to setup GitHub properly with your github login. Please'
                              ' check your credentials. Error: {0}'.format(error), sickbeard.logger.WARNING)
 
     if not sickbeard.gh:
@@ -380,5 +397,5 @@ def setup_github():
             sickbeard.gh = Github(user_agent="SickRage")
         except Exception as error:
             sickbeard.gh = None
-            sickbeard.logger.log(u'Unable to setup GitHub properly. GitHub will not be '
+            sickbeard.logger.log('Unable to setup GitHub properly. GitHub will not be '
                                  'available. Error: {0}'.format(error), sickbeard.logger.WARNING)

@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -56,7 +56,7 @@ def getClientModule(name):
                       (prefix=prefix, name=name), fromlist=_clients)
 
 
-def getClientIstance(name):
+def getClientInstance(name):
     module = getClientModule(name)
     class_name = module.api.__class__.__name__
 

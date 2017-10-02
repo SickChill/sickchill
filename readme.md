@@ -1,5 +1,5 @@
-SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=develop)](https://travis-ci.org/SickRage/SickRage) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Percentage of issues still open") [![Coverage Status](https://coveralls.io/repos/SickRage/SickRage/badge.svg?branch=develop&service=github)](https://coveralls.io/github/SickRage/SickRage?branch=develop)  
-=====
+SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=master)](https://travis-ci.org/SickRage/SickRage) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/sickrage/branch/master) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Percentage of issues still open") [![Coverage Status](https://codecov.io/gh/SickRage/SickRage/branch/master/graph/badge.svg)](https://codecov.io/gh/SickRage/SickRage) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+====================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
 #### Features
@@ -33,7 +33,7 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 
 ##### [SickRage Issue Tracker](https://github.com/SickRage/SickRage/issues)
 
-##### [FAQ](https://github.com/SickRage/SickRage/wiki/Frequently-Asked-Questions)
+##### [FAQ](https://github.com/SickRage/SickRage/wiki/FAQ%27s-and-Fixes)
 
 ##### [Wiki](https://github.com/SickRage/SickRage/wiki)
 

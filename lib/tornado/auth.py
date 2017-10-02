@@ -65,7 +65,7 @@ Example usage for Google OAuth:
    errors are more consistently reported through the ``Future`` interfaces.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import base64
 import binascii
@@ -75,29 +75,22 @@ import hmac
 import time
 import uuid
 
-from tornado.concurrent import TracebackFuture, return_future
+from tornado.concurrent import TracebackFuture, return_future, chain_future
 from tornado import gen
 from tornado import httpclient
 from tornado import escape
 from tornado.httputil import url_concat
 from tornado.log import gen_log
 from tornado.stack_context import ExceptionStackContext
-from tornado.util import u, unicode_type, ArgReplacer
+from tornado.util import unicode_type, ArgReplacer, PY3
 
-try:
-    import urlparse  # py2
-except ImportError:
-    import urllib.parse as urlparse  # py3
-
-try:
-    import urllib.parse as urllib_parse  # py3
-except ImportError:
-    import urllib as urllib_parse  # py2
-
-try:
-    long  # py2
-except NameError:
-    long = int  # py3
+if PY3:
+    import urllib.parse as urlparse
+    import urllib.parse as urllib_parse
+    long = int
+else:
+    import urlparse
+    import urllib as urllib_parse
 
 
 class AuthError(Exception):
@@ -188,7 +181,7 @@ class OpenIdMixin(object):
         """
         # Verify the OpenID response via direct request to the OP
         args = dict((k, v[-1]) for k, v in self.request.arguments.items())
-        args["openid.mode"] = u("check_authentication")
+        args["openid.mode"] = u"check_authentication"
         url = self._OPENID_ENDPOINT
         if http_client is None:
             http_client = self.get_auth_http_client()
@@ -255,13 +248,13 @@ class OpenIdMixin(object):
         ax_ns = None
         for name in self.request.arguments:
             if name.startswith("openid.ns.") and \
-                    self.get_argument(name) == u("http://openid.net/srv/ax/1.0"):
+                    self.get_argument(name) == u"http://openid.net/srv/ax/1.0":
                 ax_ns = name[10:]
                 break
 
         def get_ax_arg(uri):
             if not ax_ns:
-                return u("")
+                return u""
             prefix = "openid." + ax_ns + ".type."
             ax_name = None
             for name in self.request.arguments.keys():
@@ -270,8 +263,8 @@ class OpenIdMixin(object):
                     ax_name = "openid." + ax_ns + ".value." + part
                     break
             if not ax_name:
-                return u("")
-            return self.get_argument(ax_name, u(""))
+                return u""
+            return self.get_argument(ax_name, u"")
 
         email = get_ax_arg("http://axschema.org/contact/email")
         name = get_ax_arg("http://axschema.org/namePerson")
@@ -290,7 +283,7 @@ class OpenIdMixin(object):
         if name:
             user["name"] = name
         elif name_parts:
-            user["name"] = u(" ").join(name_parts)
+            user["name"] = u" ".join(name_parts)
         elif email:
             user["name"] = email.split("@")[0]
         if email:
@@ -621,6 +614,72 @@ class OAuth2Mixin(object):
             args.update(extra_params)
         return url_concat(url, args)
 
+    @_auth_return_future
+    def oauth2_request(self, url, callback, access_token=None,
+                       post_args=None, **args):
+        """Fetches the given URL auth an OAuth2 access token.
+
+        If the request is a POST, ``post_args`` should be provided. Query
+        string arguments should be given as keyword arguments.
+
+        Example usage:
+
+        ..testcode::
+
+            class MainHandler(tornado.web.RequestHandler,
+                              tornado.auth.FacebookGraphMixin):
+                @tornado.web.authenticated
+                @tornado.gen.coroutine
+                def get(self):
+                    new_entry = yield self.oauth2_request(
+                        "https://graph.facebook.com/me/feed",
+                        post_args={"message": "I am posting from my Tornado application!"},
+                        access_token=self.current_user["access_token"])
+
+                    if not new_entry:
+                        # Call failed; perhaps missing permission?
+                        yield self.authorize_redirect()
+                        return
+                    self.finish("Posted a message!")
+
+        .. testoutput::
+           :hide:
+
+        .. versionadded:: 4.3
+        """
+        all_args = {}
+        if access_token:
+            all_args["access_token"] = access_token
+            all_args.update(args)
+
+        if all_args:
+            url += "?" + urllib_parse.urlencode(all_args)
+        callback = functools.partial(self._on_oauth2_request, callback)
+        http = self.get_auth_http_client()
+        if post_args is not None:
+            http.fetch(url, method="POST", body=urllib_parse.urlencode(post_args),
+                       callback=callback)
+        else:
+            http.fetch(url, callback=callback)
+
+    def _on_oauth2_request(self, future, response):
+        if response.error:
+            future.set_exception(AuthError("Error response %s fetching %s" %
+                                           (response.error, response.request.url)))
+            return
+
+        future.set_result(escape.json_decode(response.body))
+
+    def get_auth_http_client(self):
+        """Returns the `.AsyncHTTPClient` instance to be used for auth requests.
+
+        May be overridden by subclasses to use an HTTP client other than
+        the default.
+
+        .. versionadded:: 4.3
+        """
+        return httpclient.AsyncHTTPClient()
+
 
 class TwitterMixin(OAuthMixin):
     """Twitter OAuth authentication.
@@ -791,12 +850,21 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
     """
     _OAUTH_AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/auth"
     _OAUTH_ACCESS_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
+    _OAUTH_USERINFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
     _OAUTH_NO_CALLBACKS = False
     _OAUTH_SETTINGS_KEY = 'google_oauth'
 
     @_auth_return_future
     def get_authenticated_user(self, redirect_uri, code, callback):
-        """Handles the login for the Google user, returning a user object.
+        """Handles the login for the Google user, returning an access token.
+
+        The result is a dictionary containing an ``access_token`` field
+        ([among others](https://developers.google.com/identity/protocols/OAuth2WebServer#handlingtheresponse)).
+        Unlike other ``get_authenticated_user`` methods in this package,
+        this method does not return any additional information about the user.
+        The returned access token can be used with `OAuth2Mixin.oauth2_request`
+        to request additional information (perhaps from
+        ``https://www.googleapis.com/oauth2/v2/userinfo``)
 
         Example usage:
 
@@ -807,10 +875,14 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
                 @tornado.gen.coroutine
                 def get(self):
                     if self.get_argument('code', False):
-                        user = yield self.get_authenticated_user(
+                        access = yield self.get_authenticated_user(
                             redirect_uri='http://your.site.com/auth/google',
                             code=self.get_argument('code'))
-                        # Save the user with e.g. set_secure_cookie
+                        user = yield self.oauth2_request(
+                            "https://www.googleapis.com/oauth2/v1/userinfo",
+                            access_token=access["access_token"])
+                        # Save the user and access token with
+                        # e.g. set_secure_cookie.
                     else:
                         yield self.authorize_redirect(
                             redirect_uri='http://your.site.com/auth/google',
@@ -844,14 +916,6 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
 
         args = escape.json_decode(response.body)
         future.set_result(args)
-
-    def get_auth_http_client(self):
-        """Returns the `.AsyncHTTPClient` instance to be used for auth requests.
-
-        May be overridden by subclasses to use an HTTP client other than
-        the default.
-        """
-        return httpclient.AsyncHTTPClient()
 
 
 class FacebookGraphMixin(OAuth2Mixin):
@@ -890,6 +954,20 @@ class FacebookGraphMixin(OAuth2Mixin):
         .. testoutput::
            :hide:
 
+        This method returns a dictionary which may contain the following fields:
+
+        * ``access_token``, a string which may be passed to `facebook_request`
+        * ``session_expires``, an integer encoded as a string representing
+          the time until the access token expires in seconds. This field should
+          be used like ``int(user['session_expires'])``; in a future version of
+          Tornado it will change from a string to an integer.
+        * ``id``, ``name``, ``first_name``, ``last_name``, ``locale``, ``picture``,
+          ``link``, plus any fields named in the ``extra_fields`` argument. These
+          fields are copied from the Facebook graph API `user object <https://developers.facebook.com/docs/graph-api/reference/user>`_
+
+        .. versionchanged:: 4.5
+           The ``session_expires`` field was updated to support changes made to the
+           Facebook API in March 2017.
         """
         http = self.get_auth_http_client()
         args = {
@@ -914,10 +992,10 @@ class FacebookGraphMixin(OAuth2Mixin):
             future.set_exception(AuthError('Facebook auth error: %s' % str(response)))
             return
 
-        args = escape.parse_qs_bytes(escape.native_str(response.body))
+        args = escape.json_decode(response.body)
         session = {
-            "access_token": args["access_token"][-1],
-            "expires": args.get("expires")
+            "access_token": args.get("access_token"),
+            "expires_in": args.get("expires_in")
         }
 
         self.facebook_request(
@@ -925,6 +1003,9 @@ class FacebookGraphMixin(OAuth2Mixin):
             callback=functools.partial(
                 self._on_get_user_info, future, session, fields),
             access_token=session["access_token"],
+            appsecret_proof=hmac.new(key=client_secret.encode('utf8'),
+                                     msg=session["access_token"].encode('utf8'),
+                                     digestmod=hashlib.sha256).hexdigest(),
             fields=",".join(fields)
         )
 
@@ -937,7 +1018,12 @@ class FacebookGraphMixin(OAuth2Mixin):
         for field in fields:
             fieldmap[field] = user.get(field)
 
-        fieldmap.update({"access_token": session["access_token"], "session_expires": session.get("expires")})
+        # session_expires is converted to str for compatibility with
+        # older versions in which the server used url-encoding and
+        # this code simply returned the string verbatim.
+        # This should change in Tornado 5.0.
+        fieldmap.update({"access_token": session["access_token"],
+                         "session_expires": str(session.get("expires_in"))})
         future.set_result(fieldmap)
 
     @_auth_return_future
@@ -983,40 +1069,21 @@ class FacebookGraphMixin(OAuth2Mixin):
         The given path is relative to ``self._FACEBOOK_BASE_URL``,
         by default "https://graph.facebook.com".
 
+        This method is a wrapper around `OAuth2Mixin.oauth2_request`;
+        the only difference is that this method takes a relative path,
+        while ``oauth2_request`` takes a complete url.
+
         .. versionchanged:: 3.1
            Added the ability to override ``self._FACEBOOK_BASE_URL``.
         """
         url = self._FACEBOOK_BASE_URL + path
-        all_args = {}
-        if access_token:
-            all_args["access_token"] = access_token
-            all_args.update(args)
-
-        if all_args:
-            url += "?" + urllib_parse.urlencode(all_args)
-        callback = functools.partial(self._on_facebook_request, callback)
-        http = self.get_auth_http_client()
-        if post_args is not None:
-            http.fetch(url, method="POST", body=urllib_parse.urlencode(post_args),
-                       callback=callback)
-        else:
-            http.fetch(url, callback=callback)
-
-    def _on_facebook_request(self, future, response):
-        if response.error:
-            future.set_exception(AuthError("Error response %s fetching %s" %
-                                           (response.error, response.request.url)))
-            return
-
-        future.set_result(escape.json_decode(response.body))
-
-    def get_auth_http_client(self):
-        """Returns the `.AsyncHTTPClient` instance to be used for auth requests.
-
-        May be overridden by subclasses to use an HTTP client other than
-        the default.
-        """
-        return httpclient.AsyncHTTPClient()
+        # Thanks to the _auth_return_future decorator, our "callback"
+        # argument is a Future, which we cannot pass as a callback to
+        # oauth2_request. Instead, have oauth2_request return a
+        # future and chain them together.
+        oauth_future = self.oauth2_request(url, access_token=access_token,
+                                           post_args=post_args, **args)
+        chain_future(oauth_future, callback)
 
 
 def _oauth_signature(consumer_token, method, url, parameters={}, token=None):

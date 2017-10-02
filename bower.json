@@ -1,0 +1,36 @@
+{
+  "name": "sickrage",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "<3.0",
+    "bootstrap": "~3.3.6",
+    "bootstrap-hover-dropdown": "~2.2.1",
+    "jquery-ui": "~1.12.1",
+    "jquery-timeago": "~1.5.4",
+    "jquery-tokeninput": "~1.7.0",
+    "bootstrap3-typeahead": "~4.0.2",
+    "underscore": "~1.8.3",
+    "jqueryui-touch-punch": "*",
+    "pnotify": "<3.0",
+    "qtip2": "~2.2.1",
+    "tablesorter": "jquery.tablesorter#~2.28.4",
+    "jquery-confirm": "~2.7.0",
+    "bootstrap-formhelpers": "~2.3.0",
+    "isotope": "<3.0",
+    "openSans": "https://google-fonts.azurewebsites.net/googleFonts/openSans?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic",
+    "jquery-backstretch": "~2.1.15",
+    "jsgettext": "~0.8.1",
+    "jquery.redirect": "^1.0.4"
+  },
+  "resolutions": {
+    "bootstrap": "~3.3.6",
+    "jquery": "<3.0"
+  }
+}

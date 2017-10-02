@@ -21,34 +21,24 @@
         </div>
     </div>
     <div class="row">
-        <%
-            try:
-                themeSpinner = sbThemeName
-            except NameError:
-                themeSpinner = sickbeard.THEME_NAME
-        %>
         <div class="col-md-12">
             <div class="messages">
                 <div id="shut_down_message">
                     ${_('Waiting for SickRage to shut down')}:
-                    <img src="${srRoot}/images/loading16-${themeSpinner}.gif" height="16" width="16"
-                         id="shut_down_loading"/>
-                    <img src="${srRoot}/images/yes16.png" height="16" width="16" id="shut_down_success"
-                         style="display: none;"/>
+                    <span class="loading-spinner16" id="shut_down_loading"></span>
+                    <span class="displayshow-icon-enable" id="shut_down_success" style="display: none;"></span>
                 </div>
 
                 <div id="restart_message" style="display: none;">
                     ${_('Waiting for SickRage to start again')}:
-                    <img src="${srRoot}/images/loading16-${themeSpinner}.gif" height="16" width="16" id="restart_loading"/>
-                    <img src="${srRoot}/images/yes16.png" height="16" width="16" id="restart_success"
-                         style="display: none;"/>
-                    <img src="${srRoot}/images/no16.png" height="16" width="16" id="restart_failure"
-                         style="display: none;"/>
+                    <span class="loading-spinner16" id="restart_loading"></span>
+                    <span class="displayshow-icon-enable" id="restart_success" style="display: none;"></span>
+                    <span class="displayshow-icon-disable" id="restart_failure" style="display: none;"></span>
                 </div>
 
                 <div id="refresh_message" style="display: none;">
                     ${_('Loading the default page')}:
-                    <img src="${srRoot}/images/loading16-${themeSpinner}.gif" height="16" width="16" id="refresh_loading"/>
+                    <span class="loading-spinner16" id="refresh_loading"></span>
                 </div>
 
                 <div id="restart_fail_message" style="display: none;">

@@ -21,14 +21,12 @@
 
 from __future__ import unicode_literals
 
-import urllib
-import urllib2
+from six.moves import urllib
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
-    NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
-
+from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
+                              NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
 from sickrage.helper import HTTP_STATUS_CODES
 
 
@@ -64,14 +62,14 @@ class Notifier(object):
         logger.log('Telegram in use with API KEY: {0}'.format(api_key), logger.DEBUG)
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
-        payload = urllib.urlencode({'chat_id': id, 'text': message})
+        payload = urllib.parse.urlencode({'chat_id': id, 'text': message})
         telegram_api = 'https://api.telegram.org/bot%s/%s'
 
-        req = urllib2.Request(telegram_api % (api_key, 'sendMessage'), payload)
+        req = urllib.request.Request(telegram_api % (api_key, 'sendMessage'), payload)
 
         success = False
         try:
-            urllib2.urlopen(req)
+            urllib.request.urlopen(req)
             message = 'Telegram message sent successfully.'
             success = True
         except IOError as e:

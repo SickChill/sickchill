@@ -24,19 +24,17 @@
 ##############################################################################
 
 from __future__ import unicode_literals
+
+import ast
+import re
 import smtplib
 # import traceback
-import ast
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
-import re
-
 import sickbeard
-
-from sickbeard import logger
-from sickbeard import db
+from sickbeard import db, logger
 from sickrage.helper.encoding import ss
 
 
@@ -75,12 +73,11 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Snatched</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Snatched</h3>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1)),
+                        'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], show[3]),
                         'html'))
 
                 except Exception:
@@ -121,12 +118,11 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Downloaded</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Downloaded</h3>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1)),
+                        'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], show[3]),
                         'html'))
 
                 except Exception:
@@ -167,13 +163,12 @@ class Notifier(object):
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                        '<h3>SickRage Notification - Subtitle Downloaded</h3><br>'
-                        '<p>Show: <b>{}</b></p><br><p>Episode: <b>{}</b></p><br>'
-                        '<p>Language: <b>{}</b></p><br><br>'
-                        '<footer style="margin-top: 2.5em; padding: .7em 0; '
+                        '<h3>SickRage Notification - Subtitle Downloaded</h3>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>'
+                        '<p>Language: <b>{3}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
-                        'Powered by SickRage.</footer></body>'.format
-                        (show, re.search('.+ - (.+?-.+) -.+', ep_name).group(1), lang),
+                        'Powered by SickRage.</h5></body>'.format(show[0], show[1], show[2], lang),
                         'html'))
                 except Exception:
                     try:
@@ -335,6 +330,5 @@ class Notifier(object):
 
         sep = ' - '
         titles = ep_name.split(sep)
-        titles.sort(key=len, reverse=True)
         logger.log('TITLES: {0}'.format(titles), logger.DEBUG)
         return titles

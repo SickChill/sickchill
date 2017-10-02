@@ -18,12 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import sickbeard
+from __future__ import print_function, unicode_literals
 
-from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
-    synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
-    nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, \
-    slack, join
+import sickbeard
+from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, nma, nmj, nmjv2, plex, prowl, pushalot,
+                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -49,9 +48,11 @@ telegram_notifier = telegram.Notifier()
 join_notifier = join.Notifier()
 # social
 twitter_notifier = tweet.Notifier()
+twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
+discord_notifier = discord.Notifier()
 
 notifiers = [
     libnotify_notifier,  # Libnotify notifier goes first because it doesn't involve blocking on network activity.
@@ -72,9 +73,11 @@ notifiers = [
     pushalot_notifier,
     pushbullet_notifier,
     twitter_notifier,
+    twilio_notifier,
     trakt_notifier,
     email_notifier,
     slack_notifier,
+    discord_notifier,
     join_notifier,
 ]
 
@@ -95,12 +98,18 @@ def notify_snatch(ep_name):
 
 
 def notify_git_update(new_version=""):
-    for n in notifiers:
-        if sickbeard.NOTIFY_ON_UPDATE:
-            n.notify_git_update(new_version)
+    if sickbeard.NOTIFY_ON_UPDATE:
+        for n in notifiers:
+            if hasattr(n, 'notify_git_update'):
+                n.notify_git_update(new_version)
+            else:
+                print(n.__module__)
 
 
 def notify_login(ipaddress):
-    for n in notifiers:
-        if sickbeard.NOTIFY_ON_LOGIN:
-            n.notify_login(ipaddress)
+    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_private(ipaddress):
+        for n in notifiers:
+            if hasattr(n, 'notify_login'):
+                n.notify_login(ipaddress)
+            else:
+                print(n.__module__)

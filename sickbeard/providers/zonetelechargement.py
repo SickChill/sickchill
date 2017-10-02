@@ -37,33 +37,53 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
 
         self.cache = tvcache.TVCache(self, min_time=0)  # Only poll ZoneTelechargement every 10 minutes max
 
-        self.urls = {'base_url': 'https://www.zone-telechargement.com',
-                     'search': 'https://www.zone-telechargement.com/telecharger-series.html?q=%s&displaychangeto=list',
-                     'rss': 'https://www.zone-telechargement.com/rss.xml'}
+        self.urls = {'base_url': 'https://www.zone-telechargement.ws',
+                     'search': 'https://www.zone-telechargement.ws/index.php?do=search',
+                     'rss': 'https://www.zone-telechargement.ws/rss.xml'}
 
         self.url = self.urls['base_url']
 
         self.headers.update({'User-Agent': USER_AGENT})
 
-        self.storageProviderAllow = {
-            'Uptobox': False,
-            'Uplea': False,
-            '1fichier': False,
-            'Uploaded': False,
-            'Rapidgator': False,
-            'TurboBit': False
+        self.storageProviderAllow = {}
+
+
+        self.titleVersion = {
+            'vostfr': {
+                'keywords': ["vostfr", "hdtv"],
+                'suffix': 'VOSTFR.HDTV'
+            },
+            'vf': {
+                'keywords': ["french", "hdtv"],
+                'suffix': 'FRENCH.HDTV'
+            },
+            'vostfr-hd': {
+                'keywords': ["720p","vostfr"],
+                'suffix': 'VOSTFR.720P.HDTV.x264'
+            },
+            'vf-hd': {
+                'keywords': ["french", "720p"],
+                'suffix': 'FRENCH.720P.HDTV.x264'
+            },
+            'vostfr-1080p': {
+                'keywords': ["vostfr", "hd1080p"],
+                'suffix': 'VOSTFR.1080P.HDTV.x264'
+            },
+            'vf-1080p': {
+                'keywords': ["french", "hd1080p"],
+                'suffix': 'FRENCH.1080P.HDTV.x264'
+            }
         }
 
+    def getTitleVersion(self, x):
+        return titleVersion.get(x, '')
 
-    def convertTitleVersion(self, x):
-        return {
-            'vostfr': 'VOSTFR.HDTV',
-            'vf': 'FRENCH.HDTV',
-            'vostfr-hd':'VOSTFR.720P.HDTV.x264',
-            'vf-hd': 'FRENCH.720P.HDTV.x264',
-            'vostfr-1080p': 'VOSTFR.1080P.HDTV.x264',
-            'vf-1080p': 'FRENCH.1080P.HDTV.x264'
-        }.get(x, '')
+    def canUseProvider(self, data):
+        for key,value in self.storageProviderAllow.items():
+            if key == data and value:
+                return True
+        return False
+
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
@@ -88,15 +108,58 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                 logger.log(u"Search string: {0}".format
                            (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_urlS = [self.urls['search'] % search_string_for_url]
+                logger.log(u"search_string_for_url: {0}".format
+                           (search_string_for_url.decode("utf-8")), logger.DEBUG)
+
+                # #HEADER BYPASS
+                # dataPage = self.get_url("https://www.zone-telechargement.ws/telecharger-series/26988-telecharger-game-of-thrones-saison-7-vostfr-hdtv-6vbrh4y7el25.html", verify=False)
+                # with BS4Parser(dataPage, 'html5lib') as htmlPage:
+
+                #     #BYPASS HERE
+
+                #     #TRYHARD DATA*
+                #     url = "https://www.zone-telechargement.ws/telecharger-series/26988-telecharger-game-of-thrones-saison-7-vostfr-hdtv-6vbrh4y7el25.html"
+                #     for key, tv in self.titleVersion.items():
+                #         if any(keyword in url for keyword in tv["keywords"]):
+                #             title = search_string.replace(" ",".") +"."+ tv["suffix"]
+                #             break;
+
+
+                #     content_page = htmlPage(class_=re.compile('postinfo'))
+                #     bTags = content_page[0].find_all('b')
+                #     providerDDLName = ""
+                #     for bTag in bTags:
+                #         if self.canUseProvider(bTag.text):
+                #             providerDDLName = bTag.text
+
+                #         if  self.canUseProvider(providerDDLName) and \
+                #             bTag.text.startswith("Episode "+str(int(episodeVersion))):
+                #             providerDDLLink = bTag.find_all('a')[0]['href']
+                #             logger.log(providerDDLName, logger.DEBUG)
+                #             logger.log(providerDDLLink, logger.DEBUG)
+
+                #             item = {'title': title, 'link': providerDDLLink}
+                #             items.append(item)
+                #             providerDDLName = ""
+                
+                # continue
+                # END
+
+                search_urlS = [self.urls['search']]
                 for search_url in search_urlS:
 
-                    dataSearch = self.get_url(search_url, verify=False)
+                    data = {}
+                    data["do"] = "search"
+                    data["subaction"] = "search"
+                    data["story"] = search_string_for_url
+
+                    dataSearch = self.get_url(search_url, post_data=data)
+                    #dataSearch = self.get_url(search_url, verify=False)
                     if not dataSearch:
                         continue
 
                     with BS4Parser(dataSearch, 'html5lib') as html:
-                        serie_rows = html(class_=re.compile('listnews'))
+                        serie_rows = html(class_=re.compile('cover_infos_title'))
 
                         for result_rows in serie_rows:
                             try:
@@ -108,38 +171,55 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                                     continue
 
                                 dataPage = self.get_url(links_page[0].get('href'), verify=False)
-
                                 with BS4Parser(dataPage, 'html5lib') as htmlPage:
+                                    url = links_page[0].get('href')
+                                    for key, tv in self.titleVersion.items():
+                                        if all(keyword in url for keyword in tv["keywords"]):
+                                            title = search_string.replace(" ",".") +"."+ tv["suffix"]
+                                            break;
 
-                                     # TODO
-                                    # Parse 'Nom de la release' to get real name
-                                    finalUrl = htmlPage.find(attrs={"rel":"canonical"}).get('href')
-                                    titleVersion = re.search('.*zone-telechargement.com\/series\/(.*)/.*', finalUrl).group(1)
-                                    title = search_string.replace(" ",".") +"."+ self.convertTitleVersion(titleVersion)
+                                    content_page = htmlPage(class_=re.compile('postinfo'))
+                                    bTags = content_page[0].find_all('b')
+                                    providerDDLName = ""
+                                    for bTag in bTags:
+                                        if self.canUseProvider(bTag.text):
+                                            providerDDLName = bTag.text
 
-                                    content_page = htmlPage(class_=re.compile('contentl'))
+                                        if  self.canUseProvider(providerDDLName) and \
+                                            bTag.text.startswith("Episode "+str(int(episodeVersion))):
+                                            providerDDLLink = bTag.find_all('a')[0]['href']
+                                            logger.log(providerDDLName, logger.DEBUG)
+                                            logger.log(title, logger.DEBUG)
+                                            logger.log(providerDDLLink, logger.DEBUG)
 
-                                    matchesProviderDDL = re.finditer('(<span style="color:.*?>(.*?)</span>)(.*?)(<br/><br/>|<br/></b>)', str(content_page), re.MULTILINE | re.IGNORECASE)
-                                    for matchNum, providerDDL in enumerate(matchesProviderDDL):
-                                        if len(providerDDL.groups()) <= 3:
-                                            continue
+                                            item = {'title': title, 'link': providerDDLLink}
+                                            items.append(item)
+                                            providerDDLName = ""
 
-                                        providerDDLName = providerDDL.group(2)
-                                        providerDDLHrefRaw = providerDDL.group(3)
 
-                                        matchesLinks = re.finditer('<a\s+(?:[^>]*?\s+)?href="([^"]*)"[^>]*?>(.*?)<', providerDDLHrefRaw)
-                                        for matchNum, linksMatched in enumerate(matchesLinks):
-                                            providerDDLLink = linksMatched.group(1)
-                                            providerDDLEpisode = linksMatched.group(2)
 
-                                            if providerDDLName in self.storageProviderAllow and \
-                                            self.storageProviderAllow[providerDDLName] == 1 and \
-                                            providerDDLEpisode.startswith("Episode "+str(int(episodeVersion))):
-                                                logger.log(providerDDLName, logger.DEBUG)
-                                                logger.log(providerDDLLink, logger.DEBUG)
+                                    # OLD
+                                    # matchesProviderDDL = re.finditer('(<span style="color:.*?>(.*?)</span>)(.*?)(<br/><br/>|<br/></b>)', str(content_page), re.MULTILINE | re.IGNORECASE)
+                                    # for matchNum, providerDDL in enumerate(matchesProviderDDL):
+                                    #     if len(providerDDL.groups()) <= 3:
+                                    #         continue
 
-                                                item = {'title': title, 'link': providerDDLLink}
-                                                items.append(item)
+                                    #     providerDDLName = providerDDL.group(2)
+                                    #     providerDDLHrefRaw = providerDDL.group(3)
+
+                                    #     matchesLinks = re.finditer('<a\s+(?:[^>]*?\s+)?href="([^"]*)"[^>]*?>(.*?)<', providerDDLHrefRaw)
+                                    #     for matchNum, linksMatched in enumerate(matchesLinks):
+                                    #         providerDDLLink = linksMatched.group(1)
+                                    #         providerDDLEpisode = linksMatched.group(2)
+
+                                    #         if providerDDLName in self.storageProviderAllow and \
+                                    #         self.storageProviderAllow[providerDDLName] == 1 and \
+                                    #         providerDDLEpisode.startswith("Episode "+str(int(episodeVersion))):
+                                    #             logger.log(providerDDLName, logger.DEBUG)
+                                    #             logger.log(providerDDLLink, logger.DEBUG)
+
+                                    #             item = {'title': title, 'link': providerDDLLink}
+                                    #             items.append(item)
                             except Exception:
                                 logger.log(u'Failed doing webui callback: {0}'.format((traceback.format_exc())), logger.ERROR)
             results += items

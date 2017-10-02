@@ -1,16 +1,16 @@
-$(function () {
-    $('.title a').each(function () {
-        var match = $(this).parent().attr("id").match(/^scene_exception_(\d+)$/);
+$(function() {
+    $('.title a').each(function() {
+        const match = $(this).parent().attr('id').match(/^scene_exception_(\d+)$/);
         $(this).qtip({
             content: {
-                text: 'Loading...',
+                text: _('Loading...'),
                 ajax: {
-                    url: $("#srRoot").val() + '/home/sceneExceptions',
+                    url: srRoot + '/home/sceneExceptions',
                     type: 'GET',
                     data: {
                         show: match[1]
                     },
-                    success: function (data) {
+                    success: function(data) {
                         this.set('content.text', data);
                     }
                 }

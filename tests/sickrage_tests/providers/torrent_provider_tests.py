@@ -21,7 +21,7 @@
 Test TorrentProvider
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -31,6 +31,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
@@ -64,7 +65,7 @@ class TorrentProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_torrents, enabled), result) in test_cases.iteritems():
+        for ((use_torrents, enabled), result) in six.iteritems(test_cases):
             sickbeard.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider('Test Provider')
@@ -94,12 +95,12 @@ class TorrentProviderTests(GenericProviderTests):
         ]
 
         unicode_items_list = [
-            {u'size': None}, {u'size': u''}, {u'size': u'0'}, {u'size': u'123'}, {u'size': u'12.3'}, {u'size': u'-123'},
-            {u'size': u'-12.3'}, {u'size': u'1100000'}, {u'size': 0}, {u'size': 123}, {u'size': 12.3}, {u'size': -123},
-            {u'size': -12.3}, {u'size': 1100000}, [None, None, u''], [None, None, u'0'], [None, None, u'123'],
-            [None, None, u'12.3'], [None, None, u'-123'], [None, None, u'-12.3'], [None, None, u'1100000'],
-            (None, None, u''), (None, None, u'0'), (None, None, u'123'), (None, None, u'12.3'), (None, None, u'-123'),
-            (None, None, u'-12.3'), (None, None, u'1100000'), u'', u'0', u'123', u'12.3', u'-123', u'-12.3', u'1100000'
+            {'size': None}, {'size': ''}, {'size': '0'}, {'size': '123'}, {'size': '12.3'}, {'size': '-123'},
+            {'size': '-12.3'}, {'size': '1100000'}, {'size': 0}, {'size': 123}, {'size': 12.3}, {'size': -123},
+            {'size': -12.3}, {'size': 1100000}, [None, None, ''], [None, None, '0'], [None, None, '123'],
+            [None, None, '12.3'], [None, None, '-123'], [None, None, '-12.3'], [None, None, '1100000'],
+            (None, None, ''), (None, None, '0'), (None, None, '123'), (None, None, '12.3'), (None, None, '-123'),
+            (None, None, '-12.3'), (None, None, '1100000'), '', '0', '123', '12.3', '-123', '-12.3', '1100000'
         ]
         unicode_results_list = [
             -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, 0, 123, -1, -123, -1, 1100000, -1,

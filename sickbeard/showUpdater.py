@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,19 +19,21 @@
 
 from __future__ import unicode_literals
 
+import datetime
+import threading
+import time
+
+import sickbeard
+from sickbeard import db, helpers, logger, network_timezones, ui
+from sickbeard.indexers.indexer_config import INDEXER_TVDB, INDEXER_TVRAGE
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
-import time
-import datetime
-import threading
 
-import sickbeard
-from sickbeard import logger, ui, db, network_timezones, helpers
-from sickbeard.indexers.indexer_config import INDEXER_TVRAGE, INDEXER_TVDB
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 
 class ShowUpdater(object):  # pylint: disable=too-few-public-methods
@@ -52,9 +54,9 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', ['theTVDB'])
         if result:
-            last_update = long(result[0][0])
+            last_update = int(result[0][0])
         else:
-            last_update = long(time.mktime(datetime.datetime.min.timetuple()))
+            last_update = int(time.mktime(datetime.datetime.min.timetuple()))
             cache_db_con.action('INSERT INTO lastUpdate (provider, `time`) VALUES (?, ?)', ['theTVDB', last_update])
 
         network_timezones.update_network_dict()
@@ -84,9 +86,9 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                 cur_show.nextEpisode()
                 if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
                     if cur_show.indexerid in updated_shows:
-                        pi_list.append(sickbeard.showQueueScheduler.action.updateShow(cur_show, True))
+                        pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                     else:
-                        pi_list.append(sickbeard.showQueueScheduler.action.refreshShow(cur_show, False))
+                        pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
                 logger.log('Automatic update failed: {0}'.format(ex(error)), logger.DEBUG)
 

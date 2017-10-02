@@ -24,13 +24,12 @@ Test sickbeard.helpers
 Public Methods:
     indentXML
     remove_non_release_groups
-    isMediaFile
-    isRarFile
-    isBeingWritten
+    is_media_file
+    is_rar_file
     remove_file_failed
     makeDir
     searchIndexerForShowID
-    listMediaFiles
+    list_media_files
     copyFile
     moveFile
     link
@@ -61,12 +60,13 @@ Public Methods:
     get_show
     is_hidden_folder
     real_path
+    is_subdirectory
     validateShow
     set_up_anidb_connection
     makeZip
     extractZip
-    backupConfigZip
-    restoreConfigZip
+    backup_config_zip
+    restore_config_zip
     mapIndexersToShow
     touchFile
     getURL
@@ -77,8 +77,11 @@ Public Methods:
     generateCookieSecret
     verify_freespace
     pretty_time_delta
-    isFileLocked
-    getDiskSpaceUsage
+    is_file_locked
+    disk_usage
+    sortable_name
+    manage_torrents_url
+    bdecode
 Private Methods:
     _check_against_names
     _setUpSession
@@ -86,15 +89,22 @@ Private Methods:
 
 from __future__ import print_function
 
-import os.path
+import os
 import sys
 import unittest
+
+from shutil import rmtree
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import sickbeard
+from bencode.BTL import BTFailure
 from sickbeard import helpers
 from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
+
+import six
+
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -172,41 +182,88 @@ class HelpersZipTests(unittest.TestCase):
     """
     Test zip methods
     """
-    @unittest.skip('Not yet implemented')
     def test_make_zip(self):
         """
         Test makeZip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] == ".py"]
+        zip_path = os.path.join(here, '_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        self.assertTrue(helpers.makeZip(files, zip_path))
+        self.assertFalse(helpers.makeZip(files, '/:/_test.zip'))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+
     def test_extract_zip(self):
         """
         Test extractZip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] == ".py"]
+        zip_path = os.path.join(here, '_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        helpers.makeZip(files, zip_path)
+        extract_path = os.path.join(here, '_extract_test')
+        self.assertTrue(helpers.extractZip(zip_path, extract_path))
+        self.assertFalse(helpers.extractZip(zip_path, '/:/_extract'))
+        # Test skip directories:
+        files += [os.path.join(here, 'Logs')]
+        helpers.makeZip(files, zip_path)
+        self.assertTrue(helpers.extractZip(zip_path, extract_path))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+        if os.path.isdir(extract_path):
+            rmtree(extract_path)
+
     def test_backup_config_zip(self):
         """
-        Test backupConfigZip
+        Test backup_config_zip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_backup_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        self.assertTrue(helpers.backup_config_zip(files, zip_path, here))
+        self.assertFalse(helpers.backup_config_zip(files, '/:/_backup_test.zip'))
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+
     def test_restore_config_zip(self):
         """
-        Test restoreConfigZip
+        Test restore_config_zip
         """
-        pass
+        here = os.path.dirname(__file__)
+        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_restore_test.zip')
 
-    @unittest.skip('Not yet implemented')
+        helpers.backup_config_zip(files, zip_path, here)
+        restore_container = os.path.join(here, '_restore_tests')
+        os.mkdir(restore_container)
+        restore_path = os.path.join(restore_container, 'test')
+        self.assertFalse(helpers.restore_config_zip(os.path.abspath(files[1]), restore_path))  # test invalid zip
+        self.assertTrue(helpers.restore_config_zip(zip_path, restore_path))
+        self.assertTrue(helpers.restore_config_zip(zip_path, restore_path)) # test extractDir exists
+
+        if os.path.isfile(zip_path):
+            os.remove(zip_path)
+        if os.path.isdir(restore_container):
+            rmtree(restore_container)
+
     def test_is_rar_file(self):
         """
-        Test isRarFile
+        Test is_rar_file
         """
-        pass
-
+        self.assertTrue(helpers.is_rar_file('lala.rar'))
+        self.assertFalse(helpers.is_rar_file('lala.zip'))
+        self.assertFalse(helpers.is_rar_file('lala.iso'))
+        self.assertFalse(helpers.is_rar_file('lala.wmv'))
+        self.assertFalse(helpers.is_rar_file('lala.avi'))
+        self.assertFalse(helpers.is_rar_file('lala.mkv'))
+        self.assertFalse(helpers.is_rar_file('lala.mp4'))
 
 class HelpersDirectoryTests(unittest.TestCase):
     """
@@ -240,13 +297,19 @@ class HelpersDirectoryTests(unittest.TestCase):
         """
         pass
 
-    @unittest.skip('Not yet implemented')
     def test_real_path(self):
         """
         Test real_path
         """
-        pass
+        self.assertEqual(helpers.real_path('/usr/SickRage/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
 
+    def test_is_subdirectory(self):
+        """
+        Test is_subdirectory
+        """
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/Unpack', topdir_path='/usr/SickRage/Downloads'))
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/testfile.tst', topdir_path='/usr/SickRage/Downloads/'))
+        self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickRage/Unpack', topdir_path='/usr/SickRage/Downloads'))
 
 class HelpersFileTests(unittest.TestCase):
     """
@@ -255,7 +318,7 @@ class HelpersFileTests(unittest.TestCase):
 
     def test_is_media_file(self):
         """
-        Test isMediaFile
+        Test is_media_file
         """
         # TODO: Add unicode tests
         # TODO: Add MAC OS resource fork tests
@@ -283,6 +346,9 @@ class HelpersFileTests(unittest.TestCase):
             'Show.Name.S01E01.HDTV.sample1.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sample12.mkv': False,  # numbered samples are ok
             'Show.Name.S01E01.HDTV.sampleA.mkv': True,  # samples should not be indexed alphabetically
+            'RARBG.mp4': False,
+            'rarbg.MP4': False,
+            '/TV/Sample.Show.Name.S01E01.HDTV-RARBG/RARBG.mp4': False
         }
 
         edge_cases = {
@@ -297,20 +363,13 @@ class HelpersFileTests(unittest.TestCase):
         }
 
         for cur_test in extension_tests, sample_tests, edge_cases:
-            for cur_name, expected_result in cur_test.items():
-                self.assertEqual(helpers.isMediaFile(cur_name), expected_result, cur_name)
+            for cur_name, expected_result in six.iteritems(cur_test):
+                self.assertEqual(helpers.is_media_file(cur_name), expected_result, cur_name)
 
     @unittest.skip('Not yet implemented')
     def test_is_file_locked(self):
         """
-        Test isFileLocked
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_is_being_written(self):
-        """
-        Test isBeingWritten
+        Test is_file_locked
         """
         pass
 
@@ -324,7 +383,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_list_media_files(self):
         """
-        Test listMediaFiles
+        Test list_media_files
         """
         pass
 
@@ -387,7 +446,7 @@ class HelpersFileTests(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_get_disk_space_usage(self):
         """
-        Test getDiskSpaceUsage
+        Test disk_usage
         """
         pass
 
@@ -450,12 +509,59 @@ class HelpersEncryptionTests(unittest.TestCase):
     """
     Test encryption and decryption
     """
-    @unittest.skip('Not yet implemented')
     def test_create_https_certificates(self):
         """
-        Test create_https_certificates
+        Test that create_https_certificates successfully generates certificate and private key
         """
-        pass
+        try:
+            import OpenSSL
+        except ImportError:
+            self.skipTest('pyOpenSSL is not installed')
+            return False
+
+        base_path = os.path.dirname(__file__)
+        cert_path = os.path.abspath(os.path.join(base_path, 'test.crt'))
+        pkey_path = os.path.abspath(os.path.join(base_path, 'test.key'))
+
+        def removeTestFiles():
+            try:
+                os.remove(cert_path)
+                os.remove(pkey_path)
+            except OSError:
+                pass
+
+        removeTestFiles()  # always remove existing
+        self.assertTrue(helpers.create_https_certificates(cert_path, pkey_path))
+        self.assertTrue(os.path.isfile(cert_path))
+        self.assertTrue(os.path.isfile(pkey_path))
+
+        FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
+        try:
+            with open(cert_path, 'rt') as f:
+                cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load certificate')
+
+        try:
+            with open(pkey_path, 'rt') as f:
+                pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
+        except Exception as error:
+            removeTestFiles()
+            self.fail('Unable to load private key')
+
+        context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+        context.use_privatekey(pkey)
+        context.use_certificate(cert)
+        failed = False
+        try:
+            context.check_privatekey()
+        except OpenSSL.SSL.Error:
+            failed = True
+        finally:
+            removeTestFiles()
+
+        self.assertFalse(failed, 'private key does not match certificate')
 
     @unittest.skip('Not yet implemented')
     def test_encrypt(self):
@@ -661,12 +767,46 @@ class HelpersMiscTests(unittest.TestCase):
         """
         pass
 
+    def test_sortable_name(self):
+        """
+        Test that sortable_name returns the correct show name
+        """
+        cases = [
+            # raw_name, SORT_ARTICLE, expected
+            ('The Big Bang Theory', False, 'big bang theory'),
+            ('A Big World', False, 'big world'),
+            ('An Unexpected Journey', False, 'unexpected journey'),
+            ('The Big Bang Theory', True, 'the big bang theory'),
+            ('A Big World', True, 'a big world'),
+            ('An Unexpected Journey', True, 'an unexpected journey'),
+        ]
+        for raw_name, option, expected in cases:
+            sickbeard.SORT_ARTICLE = option
+            self.assertEqual(helpers.sortable_name(raw_name), expected)
+
+    @unittest.skip('Not yet implemented')
+    def test_manage_torrents_url(self):
+        """
+        Test manage_torrents_url
+        """
+        pass
+
+    def test_bdecode(self):
+        """
+        Test the custom bdecode function
+        """
+        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
+        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
+        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
+        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
+
+
 if __name__ == '__main__':
     print("==================")
     print("STARTING - Helpers TESTS")
     print("==================")
     print("######################################################################")
-    for name, test_data in TEST_CASES.items():
+    for name, test_data in six.iteritems(TEST_CASES):
         test_name = 'test_{0}'.format(name)
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)

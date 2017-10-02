@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -54,7 +55,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         for mode in search_strings:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             for search_string in search_strings[mode]:
                 next_id = 0
@@ -63,7 +64,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 }
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format(search_string.decode("utf-8")), logger.DEBUG)
+                    logger.log("Search string: {0}".format(search_string.decode("utf-8")), logger.DEBUG)
                     search_params["value"] = search_string
                     target_url = self.urls['search']
                 else:
@@ -83,7 +84,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 1:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     for torrent_row in torrent_rows:
@@ -91,8 +92,13 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                             label = torrent_row.find('td', class_='dl-label')
                             title = label.get_text(strip=True)
 
-                            torrent_link = torrent_row.find('td', class_='hs-torrent-link')
-                            download_url = torrent_link.find('a')['href'] if torrent_link else None
+                            link = torrent_row.find('td', class_='hs-torrent-link')
+                            download_url = link.find('a')['href'] if link and link.find('a') else None
+
+                            if not download_url:
+                                # fallback to magnet link
+                                link = torrent_row.find('td', class_='hs-magnet-link')
+                                download_url = link.find('a')['href'] if link and link.find('a') else None
 
                         except StandardError:
                             continue
@@ -100,11 +106,11 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                         if not all([title, download_url]):
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
+                        item = {'title': '[HorribleSubs] ' + title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1,
                                 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0}".format(title), logger.DEBUG)
+                            logger.log("Found result: {0}".format(title), logger.DEBUG)
 
                         items.append(item)
 

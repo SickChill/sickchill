@@ -21,11 +21,12 @@
 from __future__ import unicode_literals
 
 import re
+
+import validators
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -47,7 +48,8 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.freeleech = False
 
         # URLs
-        self.url = 'https://classic.torrentday.com'
+        self.custom_url = None
+        self.url = 'https://www.torrentday.com'
         self.urls = {
             'login': urljoin(self.url, '/t'),
             'search': urljoin(self.url, '/V3/API/API.php'),
@@ -77,9 +79,16 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 return False
 
             login_params = {'username': self.username, 'password': self.password, 'submit.x': 0, 'submit.y': 0}
+            login_url = self.urls['login']
+            if self.custom_url:
+                if not validators.url(self.custom_url):
+                    logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                    return False
 
-            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
-            if response.status_code not in [200]:
+                login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+
+            response = self.get_url(login_url, post_data=login_params, returns='response')
+            if not response or response.status_code != 200:
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
 
@@ -92,9 +101,23 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 logger.log('Failed to login, check your cookies', logger.WARNING)
                 return False
+        else:
+            logger.log('You need to set your cookies to use torrentday')
+            return False
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
+
+        search_url = self.urls['search']
+        download_url = self.urls['download']
+        if self.custom_url:
+            if not validators.url(self.custom_url):
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                return results
+
+            search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+            download_url = urljoin(self.custom_url, download_url.split(self.url)[1])
+
         if not self.login():
             return results
 
@@ -113,14 +136,14 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                parsedJSON = self.get_url(self.urls['search'], post_data=post_data, returns='json')
-                if not parsedJSON:
+                parsed_json = self.get_url(search_url, post_data=post_data, returns='json')
+                if not parsed_json:
                     logger.log('No data returned from provider', logger.DEBUG)
                     self.session.cookies.clear()
                     continue
 
                 try:
-                    torrents = parsedJSON.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
+                    torrents = parsed_json.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except Exception:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
@@ -128,8 +151,9 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 for torrent in torrents:
 
                     title = re.sub(r'\[.*\=.*\].*\[/.*\]', '', torrent['name']) if torrent['name'] else None
-                    download_url = urljoin(self.urls['download'], '{0}/{1}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else None
-                    if not all([title, download_url]):
+                    torrent_url = urljoin(download_url, '{0}/{1}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else \
+                        None
+                    if not all([title, torrent_url]):
                         continue
 
                     seeders = try_int(torrent['seed'])
@@ -144,7 +168,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     torrent_size = torrent['size']
                     size = convert_size(torrent_size) or -1
 
-                    item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                    item = {'title': title, 'link': torrent_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                     if mode != 'RSS':
                         logger.log('Found result: {0} with {1} seeders and {2} leechers'.format

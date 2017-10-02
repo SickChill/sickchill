@@ -13,8 +13,6 @@
 
         anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
     %>
-    <script type="text/javascript" src="${srRoot}/js/qualityChooser.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/massEdit.js?${sbPID}"></script>
 </%block>
 
 <%block name="tabs">
@@ -22,7 +20,7 @@
 </%block>
 
 <%block name="pages">
-    <form id="configForm" action="massEditSubmit" method="post">
+    <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
         <input type="hidden" name="toEdit" value="${showList}" />
 
         <div id="main">
@@ -147,12 +145,12 @@
                         <span class="component-title">Season folders (<span class="separator">*</span>)</span>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                        <select id="flatten_folders" name="flatten_folders" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${('', 'selected="selected"')[flatten_folders_value is None]}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${('', 'selected="selected"')[flatten_folders_value == 0]}>${_('Yes')}</option>
-                            <option value="disable" ${('', 'selected="selected"')[flatten_folders_value == 1]}>${_('No')}</option>
+                        <select id="season_folders" name="season_folders" class="form-control form-control-inline input-sm">
+                            <option value="keep" ${('', 'selected="selected"')[season_folders_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected="selected"')[season_folders_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected="selected"')[season_folders_value == 0]}>${_('No')}</option>
                         </select>
-                        <label for="flatten_folders">${_('Group episodes by season folder (set to "No" to store in a single folder).')}</label>
+                        <label for="season_folders">${_('Group episodes by season folder (set to "No" to store in a single folder).')}</label>
                     </div>
                 </div>
 

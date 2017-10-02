@@ -52,51 +52,39 @@ name_sports_presets = (
 )
 
 
-class TVShow(object):  # pylint: disable=too-few-public-methods
+class TVShow(object):
     def __init__(self):
         self.name = "Show Name"
         self.genre = "Comedy"
-        self.indexerid = 00001
+        self.indexerid = 1
         self.air_by_date = 0
         self.sports = 0
         self.anime = 0
         self.scene = 0
 
-    def _is_anime(self):
+    @property
+    def is_anime(self):
         """
         Find out if show is anime
         :return: True if show is anime, False if not
         """
-        if self.anime > 0:
-            return True
-        else:
-            return False
+        return self.anime > 0
 
-    is_anime = property(_is_anime)
-
-    def _is_sports(self):
+    @property
+    def is_sports(self):
         """
         Find out if show is sports
         :return: True if show is sports, False if not
         """
-        if self.sports > 0:
-            return True
-        else:
-            return False
+        return self.sports > 0
 
-    is_sports = property(_is_sports)
-
-    def _is_scene(self):
+    @property
+    def is_scene(self):
         """
         Find out if show is scene numbering
         :return: True if show is scene numbering, False if not
         """
-        if self.scene > 0:
-            return True
-        else:
-            return False
-
-    is_scene = property(_is_scene)
+        return self.scene > 0
 
 
 class TVEpisode(tv.TVEpisode):  # pylint: disable=too-many-instance-attributes
@@ -205,7 +193,7 @@ def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-m
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
     new_name = ep.formatted_filename(pattern, multi, anime_type) + '.ext'
-    new_path = ep.formatted_dir(pattern, multi)
+    new_path = ep.formatted_dir(pattern, multi, anime_type)
     if not file_only:
         new_name = ek(os.path.join, new_path, new_name)
 
@@ -296,4 +284,4 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
 def test_name(pattern, multi=None, abd=False, sports=False, anime_type=None):
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
-    return {'name': ep.formatted_filename(pattern, multi, anime_type), 'dir': ep.formatted_dir(pattern, multi)}
+    return {'name': ep.formatted_filename(pattern, multi, anime_type), 'dir': ep.formatted_dir(pattern, multi, anime_type)}

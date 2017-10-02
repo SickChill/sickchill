@@ -18,6 +18,7 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+
 import re
 
 from requests.compat import urljoin
@@ -25,7 +26,6 @@ from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -130,19 +130,22 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                     labels = []
 
                     columns = html.find_all("div", class_="colhead")
-                    for column in columns:
+                    for index, column in enumerate(columns):
                         lbl = column.get_text(strip=True)
                         if lbl:
-                          labels.append(str(lbl))
+                            labels.append(str(lbl))
                         else:
-                          lbl = column.find("img")
-                          if lbl:
-                            if lbl.has_attr("alt"):
-                              lbl = lbl['alt']
-                              labels.append(str(lbl))
-                          else:
-                            lbl = "Download"
-                            labels.append(lbl)
+                            lbl = column.find("img")
+                            if lbl:
+                                if lbl.has_attr("alt"):
+                                    lbl = lbl['alt']
+                                    labels.append(str(lbl))
+                            else:
+                                if index == 3:
+                                    lbl = "Download"
+                                else:
+                                    lbl = str(index)
+                                labels.append(lbl)
 
                     # Skip column headers
                     for result in torrent_rows:

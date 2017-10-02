@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-pythoncompat
+requests.compat
+~~~~~~~~~~~~~~~
+
+This module handles import compatibility issues between Python 2 and
+Python 3.
 """
 
-from .packages import chardet
+import chardet
 
 import sys
 
@@ -33,23 +37,27 @@ except (ImportError, SyntaxError):
 # ---------
 
 if is_py2:
-    from urllib import quote, unquote, quote_plus, unquote_plus, urlencode, getproxies, proxy_bypass
+    from urllib import (
+        quote, unquote, quote_plus, unquote_plus, urlencode, getproxies,
+        proxy_bypass, proxy_bypass_environment, getproxies_environment)
     from urlparse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
     from urllib2 import parse_http_list
     import cookielib
     from Cookie import Morsel
     from StringIO import StringIO
-    from .packages.urllib3.packages.ordered_dict import OrderedDict
+
+    from urllib3.packages.ordered_dict import OrderedDict
 
     builtin_str = str
     bytes = str
     str = unicode
     basestring = basestring
     numeric_types = (int, long, float)
+    integer_types = (int, long)
 
 elif is_py3:
     from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote, quote_plus, unquote_plus, urldefrag
-    from urllib.request import parse_http_list, getproxies, proxy_bypass
+    from urllib.request import parse_http_list, getproxies, proxy_bypass, proxy_bypass_environment, getproxies_environment
     from http import cookiejar as cookielib
     from http.cookies import Morsel
     from io import StringIO
@@ -60,3 +68,4 @@ elif is_py3:
     bytes = bytes
     basestring = (str, bytes)
     numeric_types = (int, float)
+    integer_types = (int,)

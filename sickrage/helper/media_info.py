@@ -18,13 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
 
-import io
 import binascii
-from enzyme import MKV
+import io
 
-from pkg_resources import get_distribution, DistributionNotFound
+import six
+from enzyme import MKV
+from pkg_resources import DistributionNotFound, get_distribution
+
 import sickbeard
 
 try:
@@ -38,7 +40,7 @@ def _avi_screen_size(filename):
     """
     Parses avi file header for width and height
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -65,7 +67,7 @@ def _mkv_screen_size(filename):
     """
     Parses mkv file for width and height
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -84,7 +86,7 @@ def _mediainfo_screen_size(filename):
     """
     Attempts to read the width and height of a video file, using mediainfo
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
     try:
@@ -109,11 +111,11 @@ def video_screen_size(filename):
     first using mediainfo and then enzyme, and then a custom avi reader
 
     :param filename: full path and filename to a video file
-    :type: unicode
+    :type: six.text_type
     :returns tuple: (width, height)
     """
 
-    if filename in bad_files or not sickbeard.helpers.isMediaFile(filename):
+    if filename in bad_files or not sickbeard.helpers.is_media_file(filename):
         return None, None
 
     # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults

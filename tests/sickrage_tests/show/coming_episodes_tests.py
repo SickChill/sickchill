@@ -23,7 +23,7 @@ Test coming episodes
 
 # pylint: disable=line-too-long
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -35,19 +35,22 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from sickrage.show.ComingEpisodes import ComingEpisodes
 
 
+import six
+
+
 class ComingEpisodesTests(unittest.TestCase):
     """
     Test comping episodes
     """
     def test_get_categories(self):
         """
-        Test get categories
+        Tests if get_categories returns the valid format and the right values
         """
         categories_list = [
-            None, [], ['A', 'B'], [u'A', u'B'], '', 'A|B', u'A|B',
+            None, [], ['A', 'B'], ['A', 'B'], '', 'A|B', 'A|B',
         ]
         results_list = [
-            [], [], ['A', 'B'], [u'A', u'B'], [], ['A', 'B'], ['A', 'B']
+            [], [], ['A', 'B'], ['A', 'B'], [], ['A', 'B'], ['A', 'B']
         ]
 
         self.assertEqual(
@@ -60,13 +63,13 @@ class ComingEpisodesTests(unittest.TestCase):
 
     def test_get_categories_map(self):
         """
-        Test get categories map
+        Tests if get_categories_map returns the valid format and the right values
         """
         categories_list = [
-            None, [], ['A', 'B'], [u'A', u'B']
+            None, [], ['A', 'B'], ['A', 'B']
         ]
         results_list = [
-            {}, {}, {'A': [], 'B': []}, {u'A': [], u'B': []}
+            {}, {}, {'A': [], 'B': []}, {'A': [], 'B': []}
         ]
 
         self.assertEqual(
@@ -79,7 +82,7 @@ class ComingEpisodesTests(unittest.TestCase):
 
     def test_get_sort(self):
         """
-        Test get sort
+        Tests if get_sort returns the right sort of coming episode
         """
         test_cases = {
             None: 'date',
@@ -94,18 +97,18 @@ class ComingEpisodesTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': 'date',
-            u'wrong': 'date',
-            u'date': 'date',
-            u'Date': 'date',
-            u'network': 'network',
-            u'NetWork': 'network',
-            u'show': 'show',
-            u'Show': 'show',
+            '': 'date',
+            'wrong': 'date',
+            'date': 'date',
+            'Date': 'date',
+            'network': 'network',
+            'NetWork': 'network',
+            'show': 'show',
+            'Show': 'show',
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (sort, result) in tests.iteritems():
+            for (sort, result) in six.iteritems(tests):
                 self.assertEqual(ComingEpisodes._get_sort(sort), result)  # pylint: disable=protected-access
 
 

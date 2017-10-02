@@ -18,16 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import re
+
 import validators
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
-from sickrage.helper.exceptions import AuthException, ex
 from sickrage.helper.common import convert_size, try_int
+from sickrage.helper.exceptions import ex
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -36,6 +38,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
+        self.enable_cookies = True
 
         self.username = None
         self.password = None
@@ -47,42 +50,55 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {'base_url': 'https://iptorrents.eu',
-                     'login': 'https://iptorrents.eu/torrents/',
+                     'login': 'https://iptorrents.eu/take_login.php',
                      'search': 'https://iptorrents.eu/t?%s%s&q=%s&qf=#torrents'}
 
         self.url = self.urls['base_url']
 
         self.categories = '73=&60='
 
-    def _check_auth(self):
-
-        if not self.username or not self.password:
-            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
-
-        return True
-
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+        cookie_dict = dict_from_cookiejar(self.session.cookies)
+        if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
+
+        if self.cookies:
+            success, status = self.add_cookies_from_ui()
+            if not success:
+                logger.log(status, logger.INFO)
+                return False
 
         login_params = {'username': self.username,
                         'password': self.password,
                         'login': 'submit'}
 
-        self.get_url(self.urls['login'], returns='text')
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        login_url = self.urls['login']
+        if self.custom_url:
+            if not validators.url(self.custom_url):
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                return False
+
+            login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+
+        self.get_url(login_url, returns='text')
+        response = self.get_url(login_url, post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         # Invalid username and password combination
         if re.search('Invalid username and password combination', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         # You tried too often, please try again after 2 hours!
         if re.search('You tried too often', response):
-            logger.log(u"You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
+            logger.log("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
+            return False
+
+        # Captcha!
+        if re.search('Captcha verification failed.', response):
+            logger.log("Stupid captcha", logger.WARNING)
             return False
 
         return True
@@ -96,10 +112,10 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         for mode in search_params:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
@@ -120,11 +136,11 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     data = re.sub(r'(?im)<button.+?</button>', '', data, 0)
                     with BS4Parser(data, 'html5lib') as html:
                         if not html:
-                            logger.log(u"No data returned from provider", logger.DEBUG)
+                            logger.log("No data returned from provider", logger.DEBUG)
                             continue
 
                         if html.find(text='No Torrents Found!'):
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         torrent_table = html.find('table', id='torrents')
@@ -132,7 +148,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                         # Continue only if one Release is found
                         if len(torrents) < 2:
-                            logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
                         for result in torrents[1:]:
@@ -152,18 +168,18 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                             items.append(item)
 
                 except Exception as e:
-                    logger.log(u"Failed parsing provider. Error: {0!r}".format(ex(e)), logger.ERROR)
+                    logger.log("Failed parsing provider. Error: {0!r}".format(ex(e)), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

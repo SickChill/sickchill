@@ -204,7 +204,7 @@ class DOMHTMLBioParser(DOMParserBase):
     _birth_attrs = [Attribute(key='birth date',
                         path={
                             'day': "./a[starts-with(@href, " \
-                                    "'/date/')]/text()",
+                                    "'/search/name?birth_monthday=')]/text()",
                             'year': "./a[starts-with(@href, " \
                                     "'/search/name?birth_year=')]/text()"
                             },
@@ -215,7 +215,7 @@ class DOMHTMLBioParser(DOMParserBase):
     _death_attrs = [Attribute(key='death date',
                         path={
                             'day': "./a[starts-with(@href, " \
-                                    "'/date/')]/text()",
+                                    "'/search/name?death_monthday=')]/text()",
                             'year': "./a[starts-with(@href, " \
                                     "'/search/name?death_date=')]/text()"
                             },
@@ -396,7 +396,7 @@ class DOMHTMLResumeParser(DOMParserBase):
         ]
 
     def postprocess_data(self, data):
-        
+
         for key in data.keys():
             if data[key] == '':
                 del data[key]

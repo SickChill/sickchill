@@ -21,7 +21,7 @@
 Test NZBProvider
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
@@ -31,6 +31,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
+import six
 
 from generic_provider_tests import GenericProviderTests
 from sickrage.providers.GenericProvider import GenericProvider
@@ -64,7 +65,7 @@ class NZBProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_nzb, enabled), result) in test_cases.iteritems():
+        for ((use_nzb, enabled), result) in six.iteritems(test_cases):
             sickbeard.USE_NZBS = use_nzb
 
             provider = NZBProvider('Test Provider')
@@ -96,19 +97,19 @@ class NZBProviderTests(GenericProviderTests):
         ]
 
         unicode_items_list = [
-            {u'links': None}, {u'links': []}, {u'links': [{}]},
-            {u'links': [{u'length': 1}, {u'length': None}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u''}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u'0'}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u'123'}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u'12.3'}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u'-123'}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': u'-12.3'}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': 0}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': 123}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': 12.3}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': -123}, {u'length': 3}]},
-            {u'links': [{u'length': 1}, {u'length': -12.3}, {u'length': 3}]},
+            {'links': None}, {'links': []}, {'links': [{}]},
+            {'links': [{'length': 1}, {'length': None}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': ''}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': '0'}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': '123'}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': '12.3'}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': '-123'}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': '-12.3'}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': 0}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': 123}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': 12.3}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': -123}, {'length': 3}]},
+            {'links': [{'length': 1}, {'length': -12.3}, {'length': 3}]},
         ]
         unicode_results_list = [
             -1, -1, -1, -1, -1, 0, 123, -1, -123, -1, 0, 123, 12, -123, -12

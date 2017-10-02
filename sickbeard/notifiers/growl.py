@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,14 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import socket
 
-import sickbeard
-from sickbeard import logger, common
-from sickrage.helper.exceptions import ex
 from libgrowl import gntp
+
+import sickbeard
+from sickbeard import common, logger
+from sickrage.helper.exceptions import ex
 
 
 class Notifier(object):
@@ -139,7 +140,7 @@ class Notifier(object):
         for pc in growlHosts:
             opts['host'] = pc[0]
             opts['port'] = pc[1]
-            logger.log(u"GROWL: Sending message '" + message + "' to " + opts['host'] + ":" + str(opts['port']), logger.DEBUG)
+            logger.log("GROWL: Sending message '" + message + "' to " + opts['host'] + ":" + str(opts['port']), logger.DEBUG)
             try:
                 if self._send_growl(opts, message):
                     return True
@@ -149,7 +150,7 @@ class Notifier(object):
                     else:
                         return False
             except Exception as e:
-                logger.log(u"GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
+                logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
                 return False
 
     def _sendRegistration(self, host=None, password=None, name='SickRage Notification'):
@@ -192,5 +193,5 @@ class Notifier(object):
         try:
             return self._send(opts['host'], opts['port'], register.encode(), opts['debug'])
         except Exception as e:
-            logger.log(u"GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
+            logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
             return False

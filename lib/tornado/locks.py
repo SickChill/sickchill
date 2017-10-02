@@ -12,21 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""
-.. testsetup:: *
-
-    from tornado import ioloop, gen, locks
-    io_loop = ioloop.IOLoop.current()
-"""
-
-from __future__ import absolute_import, division, print_function, with_statement
-
-__all__ = ['Condition', 'Event', 'Semaphore', 'BoundedSemaphore', 'Lock']
+from __future__ import absolute_import, division, print_function
 
 import collections
 
 from tornado import gen, ioloop
 from tornado.concurrent import Future
+
+__all__ = ['Condition', 'Event', 'Semaphore', 'BoundedSemaphore', 'Lock']
 
 
 class _TimeoutGarbageCollector(object):
@@ -61,7 +54,11 @@ class Condition(_TimeoutGarbageCollector):
 
     .. testcode::
 
-        condition = locks.Condition()
+        from tornado import gen
+        from tornado.ioloop import IOLoop
+        from tornado.locks import Condition
+
+        condition = Condition()
 
         @gen.coroutine
         def waiter():
@@ -80,7 +77,7 @@ class Condition(_TimeoutGarbageCollector):
             # Yield two Futures; wait for waiter() and notifier() to finish.
             yield [waiter(), notifier()]
 
-        io_loop.run_sync(runner)
+        IOLoop.current().run_sync(runner)
 
     .. testoutput::
 
@@ -92,7 +89,7 @@ class Condition(_TimeoutGarbageCollector):
     `wait` takes an optional ``timeout`` argument, which is either an absolute
     timestamp::
 
-        io_loop = ioloop.IOLoop.current()
+        io_loop = IOLoop.current()
 
         # Wait up to 1 second for a notification.
         yield condition.wait(timeout=io_loop.time() + 1)
@@ -161,7 +158,11 @@ class Event(object):
 
     .. testcode::
 
-        event = locks.Event()
+        from tornado import gen
+        from tornado.ioloop import IOLoop
+        from tornado.locks import Event
+
+        event = Event()
 
         @gen.coroutine
         def waiter():
@@ -180,7 +181,7 @@ class Event(object):
         def runner():
             yield [waiter(), setter()]
 
-        io_loop.run_sync(runner)
+        IOLoop.current().run_sync(runner)
 
     .. testoutput::
 
@@ -210,7 +211,7 @@ class Event(object):
 
     def clear(self):
         """Reset the internal flag to ``False``.
-        
+
         Calls to `.wait` will block until `.set` is called.
         """
         if self._future.done():
@@ -261,7 +262,8 @@ class Semaphore(_TimeoutGarbageCollector):
 
        from collections import deque
 
-       from tornado import gen, ioloop
+       from tornado import gen
+       from tornado.ioloop import IOLoop
        from tornado.concurrent import Future
 
        # Ensure reliable doctest output: resolve Futures one at a time.
@@ -273,14 +275,18 @@ class Semaphore(_TimeoutGarbageCollector):
                yield gen.moment
                f.set_result(None)
 
-       ioloop.IOLoop.current().add_callback(simulator, list(futures_q))
+       IOLoop.current().add_callback(simulator, list(futures_q))
 
        def use_some_resource():
            return futures_q.popleft()
 
     .. testcode:: semaphore
 
-        sem = locks.Semaphore(2)
+        from tornado import gen
+        from tornado.ioloop import IOLoop
+        from tornado.locks import Semaphore
+
+        sem = Semaphore(2)
 
         @gen.coroutine
         def worker(worker_id):
@@ -297,7 +303,7 @@ class Semaphore(_TimeoutGarbageCollector):
             # Join all workers.
             yield [worker(i) for i in range(3)]
 
-        io_loop.run_sync(runner)
+        IOLoop.current().run_sync(runner)
 
     .. testoutput:: semaphore
 
@@ -321,6 +327,20 @@ class Semaphore(_TimeoutGarbageCollector):
 
             # Now the semaphore has been released.
             print("Worker %d is done" % worker_id)
+
+    In Python 3.5, the semaphore itself can be used as an async context
+    manager::
+
+        async def worker(worker_id):
+            async with sem:
+                print("Worker %d is working" % worker_id)
+                await use_some_resource()
+
+            # Now the semaphore has been released.
+            print("Worker %d is done" % worker_id)
+
+    .. versionchanged:: 4.3
+       Added ``async with`` support in Python 3.5.
     """
     def __init__(self, value=1):
         super(Semaphore, self).__init__()
@@ -383,6 +403,14 @@ class Semaphore(_TimeoutGarbageCollector):
 
     __exit__ = __enter__
 
+    @gen.coroutine
+    def __aenter__(self):
+        yield self.acquire()
+
+    @gen.coroutine
+    def __aexit__(self, typ, value, tb):
+        self.release()
+
 
 class BoundedSemaphore(Semaphore):
     """A semaphore that prevents release() being called too many times.
@@ -412,7 +440,7 @@ class Lock(object):
 
     Releasing an unlocked lock raises `RuntimeError`.
 
-    `acquire` supports the context manager protocol:
+    `acquire` supports the context manager protocol in all Python versions:
 
     >>> from tornado import gen, locks
     >>> lock = locks.Lock()
@@ -424,6 +452,22 @@ class Lock(object):
     ...        pass
     ...
     ...    # Now the lock is released.
+
+    In Python 3.5, `Lock` also supports the async context manager
+    protocol. Note that in this case there is no `acquire`, because
+    ``async with`` includes both the ``yield`` and the ``acquire``
+    (just as it does with `threading.Lock`):
+
+    >>> async def f():  # doctest: +SKIP
+    ...    async with lock:
+    ...        # Do something holding the lock.
+    ...        pass
+    ...
+    ...    # Now the lock is released.
+
+    .. versionchanged:: 4.3
+       Added ``async with`` support in Python 3.5.
+
     """
     def __init__(self):
         self._block = BoundedSemaphore(value=1)
@@ -458,3 +502,11 @@ class Lock(object):
             "Use Lock like 'with (yield lock)', not like 'with lock'")
 
     __exit__ = __enter__
+
+    @gen.coroutine
+    def __aenter__(self):
+        yield self.acquire()
+
+    @gen.coroutine
+    def __aexit__(self, typ, value, tb):
+        self.release()

@@ -1,4 +1,5 @@
 <%!
+    import six
     import sickbeard
     from sickbeard.helpers import anon_url
 %>
@@ -41,7 +42,7 @@
                 % endif
                 <td align="center">
                     <select name="indexer">
-                        % for curIndexer in sickbeard.indexerApi().indexers.iteritems():
+                        % for curIndexer in six.iteritems(sickbeard.indexerApi().indexers):
                             <option value="${curIndexer[0]}" ${('', 'selected="selected"')[curIndexer[0] == indexer]}>${curIndexer[1]}</option>
                         % endfor
                     </select>

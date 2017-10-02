@@ -5,6 +5,8 @@ Test name parsing
 
 # pylint: disable=line-too-long
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import os.path
 import sys
@@ -16,6 +18,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sickbeard import tv
 from sickbeard.name_parser import parser
 import tests.test_lib as test
+
+import six
+
 
 SYS_ENCODING = 'UTF-8'
 
@@ -123,6 +128,15 @@ SIMPLE_TEST_CASES = {
     },
 }
 
+ANIME_TEST_CASES = {
+    'anime_SxxExx': {
+        'Show Name - S01E02 - Ep Name': parser.ParseResult(None, 'Show Name', 1, [2], 'Ep Name'),
+        'Show Name - S01E02-03 - My Ep Name': parser.ParseResult(None, 'Show Name', 1, [2, 3]),
+        'Show Name - S01E02': parser.ParseResult(None, 'Show Name', 1, [2]),
+        'Show Name - S01E02-03': parser.ParseResult(None, 'Show Name', 1, [2, 3]),
+    },
+}
+
 COMBINATION_TEST_CASES = [
     ('/test/path/to/Season 02/03 - Ep Name.avi',
      parser.ParseResult(None, None, 2, [3], 'Ep Name'),
@@ -158,10 +172,10 @@ COMBINATION_TEST_CASES = [
 ]
 
 UNICODE_TEST_CASES = [
-    (u'The.Big.Bang.Theory.2x07.The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
-     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON')),
-    ('The.Big.Bang.Theory.2x07.The.Panty.Pi\xc3\xb1ata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
-     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], u'The.Panty.Pi\xf1ata.Polarization.720p.HDTV.x264.AC3', 'SHELDON'))
+    ('The.Big.Bang.Theory.2x07.The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
+     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], 'The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3', 'SHELDON')),
+    ('The.Big.Bang.Theory.2x07.The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3-SHELDON.mkv',
+     parser.ParseResult(None, 'The.Big.Bang.Theory', 2, [7], 'The.Panty.Piñata.Polarization.720p.HDTV.x264.AC3', 'SHELDON'))
 ]
 
 FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
@@ -169,7 +183,7 @@ FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
 
 class UnicodeTests(test.SickbeardTestDBCase):
     """
-    Test unicode
+    Test six.text_type
     """
     def __init__(self, something):
         super(UnicodeTests, self).__init__(something)
@@ -179,7 +193,7 @@ class UnicodeTests(test.SickbeardTestDBCase):
 
     def _test_unicode(self, name, result):
         """
-        Test unicode
+        Test six.text_type
 
         :param name:
         :param result:
@@ -189,12 +203,12 @@ class UnicodeTests(test.SickbeardTestDBCase):
         parse_result = name_parser.parse(name)
 
         # this shouldn't raise an exception
-        repr(str(parse_result))
+        repr(six.text_type(parse_result))
         self.assertEqual(parse_result.extra_info, result.extra_info)
 
     def test_unicode(self):
         """
-        Test unicode
+        Test six.text_type
         """
         for (name, result) in UNICODE_TEST_CASES:
             self._test_unicode(name, result)
@@ -219,7 +233,7 @@ class FailureCaseTests(test.SickbeardTestDBCase):
             return True
 
         if VERBOSE:
-            print 'Actual: ', parse_result.which_regex, parse_result
+            print('Actual: ', parse_result.which_regex, parse_result)
         return False
 
     def test_failures(self):
@@ -246,8 +260,8 @@ class ComboTests(test.SickbeardTestDBCase):
         """
 
         if VERBOSE:
-            print
-            print 'Testing', name
+            print()
+            print('Testing', name)
 
         name_parser = parser.NameParser(True)
 
@@ -257,8 +271,8 @@ class ComboTests(test.SickbeardTestDBCase):
             return False
 
         if DEBUG:
-            print test_result, test_result.which_regex
-            print result, which_regexes
+            print(test_result, test_result.which_regex)
+            print(result, which_regexes)
 
         self.assertEqual(test_result, result)
         for cur_regex in which_regexes:
@@ -296,8 +310,8 @@ class BasicTests(test.SickbeardTestDBCase):
         """
 
         if VERBOSE or verbose:
-            print
-            print 'Running', section, 'tests'
+            print()
+            print('Running', section, 'tests')
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
@@ -305,7 +319,7 @@ class BasicTests(test.SickbeardTestDBCase):
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
-                print 'Testing', cur_test
+                print('Testing', cur_test)
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
@@ -319,12 +333,12 @@ class BasicTests(test.SickbeardTestDBCase):
                 test_result = name_parser.parse(cur_test)
 
             if DEBUG or verbose:
-                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
-                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
-                print test_result
-                print result
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
 
     def test_standard_names(self):
         """
@@ -439,6 +453,64 @@ class BasicTests(test.SickbeardTestDBCase):
         self._test_names(name_parser, 'season_only', lambda x: x + '.avi')
 
 
+class AnimeTests(test.SickbeardTestDBCase):
+    """
+    Basic tests for anime
+    """
+    def __init__(self, something):
+        super(AnimeTests, self).__init__(something)
+        super(AnimeTests, self).setUp()
+        self.show = tv.TVShow(1, 1, 'en')
+
+    def _test_names(self, name_parser, section, transform=None, verbose=False):
+        """
+        Performs a test
+
+        :param name_parser: to use for test
+        :param section:
+        :param transform:
+        :param verbose:
+        :return:
+        """
+        if VERBOSE or verbose:
+            print()
+            print('Running', section, 'tests')
+        for cur_test_base in ANIME_TEST_CASES[section]:
+            if transform:
+                cur_test = transform(cur_test_base)
+                name_parser.file_name = cur_test
+            else:
+                cur_test = cur_test_base
+            if VERBOSE or verbose:
+                print('Testing', cur_test)
+
+            result = ANIME_TEST_CASES[section][cur_test_base]
+
+            self.show.name = result.series_name if result else None
+            name_parser.showObj = self.show
+            if not result:
+                self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
+                return
+            else:
+                result.which_regex = [section]
+                test_result = name_parser.parse(cur_test)
+
+            if DEBUG or verbose:
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
+            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
+
+    def test_anime_sxxexx_file_names(self):
+        """
+        Test anime SxxExx file names
+        """
+        name_parser = parser.NameParser(parse_method='anime')
+        self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi')
+
+
 # TODO: Make these work or document why they shouldn't
 class BasicFailedTests(test.SickbeardTestDBCase):
     """
@@ -460,8 +532,8 @@ class BasicFailedTests(test.SickbeardTestDBCase):
         :return:
         """
         if VERBOSE or verbose:
-            print
-            print 'Running', section, 'tests'
+            print()
+            print('Running', section, 'tests')
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
@@ -469,7 +541,7 @@ class BasicFailedTests(test.SickbeardTestDBCase):
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
-                print 'Testing', cur_test
+                print('Testing', cur_test)
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
@@ -483,12 +555,12 @@ class BasicFailedTests(test.SickbeardTestDBCase):
                 test_result = name_parser.parse(cur_test)
 
             if DEBUG or verbose:
-                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
-                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
-                print test_result
-                print result
+                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
+                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
+                print(test_result)
+                print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
 
     def test_no_s_names(self):
         """

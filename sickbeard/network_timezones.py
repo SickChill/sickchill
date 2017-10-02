@@ -18,9 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import re
 
+import six
 from dateutil import tz
 
 from sickbeard import db, helpers, logger
@@ -45,21 +48,21 @@ def update_network_dict():
     url = 'http://sickrage.github.io/sb_network_timezones/network_timezones.txt'
     data = helpers.getURL(url, session=helpers.make_session(), returns='text')
     if not data:
-        logger.log(u'Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)
+        logger.log('Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)
         load_network_dict()
         return
 
     d = {}
     try:
         for line in data.splitlines():
-            (key, val) = line.strip().rsplit(u':', 1)
+            (key, val) = line.strip().rsplit(':', 1)
             if key and val:
-                d[key] = val
+                d[key.lower()] = val
     except (IOError, OSError):
         pass
 
     if not d:
-        logger.log(u'Parsing network timezones failed, not going to touch the db', logger.WARNING)
+        logger.log('Parsing network timezones failed, not going to touch the db', logger.WARNING)
         load_network_dict()
         return
 
@@ -68,7 +71,7 @@ def update_network_dict():
     network_list = dict(cache_db_con.select('SELECT * FROM network_timezones;'))
 
     queries = []
-    for network, timezone in d.iteritems():
+    for network, timezone in six.iteritems(d):
         existing = network in network_list
         if not existing:
             queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])
@@ -78,9 +81,8 @@ def update_network_dict():
         if existing:
             del network_list[network]
 
-    if network_list:
-        purged = [x for x in network_list]
-        queries.append(['DELETE FROM network_timezones WHERE network_name IN ({0});'.format(','.join(['?'] * len(purged))), purged])
+    for network in network_list:
+        queries.append(['DELETE FROM network_timezones WHERE network_name = ?;', [network]])
 
     if queries:
         cache_db_con.mass_action(queries)
@@ -112,10 +114,15 @@ def get_network_timezone(network):
     :return: network timezone if found, or sb_timezone
     """
 
+    orig_network = network
+    if network:
+        network = network.lower()
+
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log(u'Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(network), logger.ERROR)
+        logger.log('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network),
+                   logger.ERROR)
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone

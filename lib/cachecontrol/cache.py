@@ -27,7 +27,7 @@ class DictCache(BaseCache):
         self.data = init_dict or {}
 
     def get(self, key):
-        return self.data.get(key, None)
+        return self.data.get(key)
 
     def set(self, key, value):
         with self.lock:

@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,12 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import os
-import sickbeard
 
 from requests.compat import urlencode
-from urllib2 import Request, urlopen, HTTPError
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.request import Request, urlopen
 
+import sickbeard
 from sickbeard import logger
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
@@ -88,7 +91,7 @@ class Notifier(object):
         requestUrl = "http://" + host + "/TiVoConnect?" + urlencode(
             {'Command': 'Push', 'Container': container, 'File': filename, 'tsn': tsn})
 
-        logger.log(u"pyTivo notification: Requesting " + requestUrl, logger.DEBUG)
+        logger.log("pyTivo notification: Requesting " + requestUrl, logger.DEBUG)
 
         request = Request(requestUrl)
 
@@ -96,14 +99,14 @@ class Notifier(object):
             urlopen(request)
         except HTTPError as e:
             if hasattr(e, 'reason'):
-                logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
+                logger.log("pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
                 return False
             elif hasattr(e, 'code'):
-                logger.log(u"pyTivo notification: Error, the server couldn't fulfill the request - " + e.code, logger.ERROR)
+                logger.log("pyTivo notification: Error, the server couldn't fulfill the request - " + e.code, logger.ERROR)
             return False
         except Exception as e:
-            logger.log(u"PYTIVO: Unknown exception: " + ex(e), logger.ERROR)
+            logger.log("PYTIVO: Unknown exception: " + ex(e), logger.ERROR)
             return False
         else:
-            logger.log(u"pyTivo notification: Successfully requested transfer of file")
+            logger.log("pyTivo notification: Successfully requested transfer of file")
             return True

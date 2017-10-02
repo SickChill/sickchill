@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import threading
 
@@ -47,12 +49,12 @@ class GenericQueue(object):
 
     def pause(self):
         """Pauses this queue"""
-        logger.log(u"Pausing queue")
+        logger.log("Pausing queue")
         self.min_priority = 999999999999
 
     def unpause(self):
         """Unpauses this queue"""
-        logger.log(u"Unpausing queue")
+        logger.log("Unpausing queue")
         self.min_priority = 0
 
     def add_item(self, item):

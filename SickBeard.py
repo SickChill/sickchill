@@ -3,6 +3,9 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
+# Rewrite Author: miigotu <miigotu@gmail.com>
+# URL: https://sickrage.github.io
+#
 # This file is part of SickRage.
 #
 # SickRage is free software: you can redistribute it and/or modify
@@ -18,38 +21,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-
-"""
-Usage: SickBeard.py [OPTION]...
-
-Options:
-  -h,  --help            Prints this message
-  -q,  --quiet           Disables logging to console
-       --nolaunch        Suppress launching web browser on startup
-
-  -d,  --daemon          Run as double forked daemon (with --quiet --nolaunch)
-                         On Windows and MAC, this option is ignored but still
-                         applies --quiet --nolaunch
-       --pidfile=[FILE]  Combined with --daemon creates a pid file
-
-  -p,  --port=[PORT]     Override default/configured port to listen on
-       --datadir=[PATH]  Override folder (full path) as location for
-                         storing database, config file, cache, and log files
-                         Default SickRage directory
-       --config=[FILE]   Override config filename for loading configuration
-                         Default config.ini in SickRage directory or
-                         location specified with --datadir
-       --noresize        Prevent resizing of the banner/posters even if PIL
-                         is installed
-"""
-
 from __future__ import print_function, unicode_literals
 
 import codecs
 import datetime
-import getopt
 import io
 import locale
+import platform
 import os
 import shutil
 import signal
@@ -93,9 +71,15 @@ from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.event_queue import Events
+from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
 from configobj import ConfigObj  # pylint: disable=import-error
 
 from sickrage.helper.encoding import ek
+from sickrage.helper.argument_parser import SickRageArgumentParser
+
+# noinspection PyUnresolvedReferences
+from six.moves import reload_module
+
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')
@@ -179,81 +163,42 @@ class SickRage(object):
 
         # TODO: Continue working on making this unnecessary, this hack creates all sorts of hellish problems
         if not hasattr(sys, 'setdefaultencoding'):
-            reload(sys)
+            reload_module(sys)
 
         try:
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
         except (AttributeError, LookupError):
             sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
-                     'or find another way to force Python to use %s for string encoding.' % sickbeard.SYS_ENCODING)
-
-        # Need console logging for SickBeard.py and SickBeard-console.exe
-        self.console_logging = (not hasattr(sys, 'frozen')) or (sickbeard.MY_NAME.lower().find('-console') > 0)
+                     'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
 
-        try:
-            opts, args_ = getopt.getopt(
-                sys.argv[1:], 'hqdp::',
-                ['help', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=', 'datadir=', 'config=', 'noresize']
-            )
-        except getopt.GetoptError:
-            sys.exit(self.help_message())
+        args = SickRageArgumentParser(sickbeard.PROG_DIR).parse_args()
 
-        for option, value in opts:
-            # Prints help message
-            if option in ('-h', '--help'):
-                sys.exit(self.help_message())
+        if args.force_update:
+            result = self.force_update()
+            sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
-            # For now we'll just silence the logging
-            if option in ('-q', '--quiet'):
-                self.console_logging = False
+        # Need console logging for SickBeard.py and SickBeard-console.exe
+        sickbeard.NO_RESIZE = args.noresize
+        self.console_logging = (not hasattr(sys, 'frozen')) or (sickbeard.MY_NAME.lower().find('-console') > 0) and not args.quiet
+        self.no_launch = args.nolaunch
+        self.forced_port = args.port
+        if args.daemon:
+            self.run_as_daemon = platform.system() != 'Windows'
+            self.console_logging = False
+            self.no_launch = True
 
-            # Suppress launching web browser
-            # Needed for OSes without default browser assigned
-            # Prevent duplicate browser window when restarting in the app
-            if option in ('--nolaunch',):
-                self.no_launch = True
+        self.create_pid = bool(args.pidfile)
+        self.pid_file = args.pidfile
+        if self.pid_file and ek(os.path.exists, self.pid_file):
+            # If the pid file already exists, SickRage may still be running, so exit
+            raise SystemExit('PID file: {0} already exists. Exiting.'.format(self.pid_file))
 
-            # Override default/configured port
-            if option in ('-p', '--port'):
-                try:
-                    self.forced_port = int(value)
-                except ValueError:
-                    sys.exit('Port: {0} is not a number. Exiting.'.format(value))
-
-            # Run as a double forked daemon
-            if option in ('-d', '--daemon'):
-                self.run_as_daemon = True
-                # When running as daemon disable console_logging and don't start browser
-                self.console_logging = False
-                self.no_launch = True
-
-                if sys.platform == 'win32' or sys.platform == 'darwin':
-                    self.run_as_daemon = False
-
-            # Write a pid file if requested
-            if option in ('--pidfile',):
-                self.create_pid = True
-                self.pid_file = str(value)
-
-                # If the pid file already exists, SickRage may still be running, so exit
-                if ek(os.path.exists, self.pid_file):
-                    sys.exit('PID file: {0} already exists. Exiting.'.format(self.pid_file))
-
-            # Specify folder to load the config file from
-            if option in ('--config',):
-                sickbeard.CONFIG_FILE = ek(os.path.abspath, value)
-
-            # Specify folder to use as the data directory
-            if option in ('--datadir',):
-                sickbeard.DATA_DIR = ek(os.path.abspath, value)
-
-            # Prevent resizing of the banner/posters even if PIL is installed
-            if option in ('--noresize',):
-                sickbeard.NO_RESIZE = True
+        sickbeard.DATA_DIR = ek(os.path.abspath, args.datadir) if args.datadir else sickbeard.DATA_DIR
+        sickbeard.CONFIG_FILE = ek(os.path.abspath, args.config) if args.config else ek(os.path.join, sickbeard.DATA_DIR, 'config.ini')
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if self.create_pid:
@@ -262,17 +207,11 @@ class SickRage(object):
                 if not ek(os.access, pid_dir, os.F_OK):
                     sys.exit('PID dir: {0} doesn\'t exist. Exiting.'.format(pid_dir))
                 if not ek(os.access, pid_dir, os.W_OK):
-                    sys.exit('PID dir: {0} must be writable (write permissions). Exiting.'.format(pid_dir))
-
+                    raise SystemExit('PID dir: {0} must be writable (write permissions). Exiting.'.format(pid_dir))
             else:
                 if self.console_logging:
                     sys.stdout.write('Not running in daemon mode. PID file creation disabled.\n')
-
                 self.create_pid = False
-
-        # If they don't specify a config file then put it in the data dir
-        if not sickbeard.CONFIG_FILE:
-            sickbeard.CONFIG_FILE = ek(os.path.join, sickbeard.DATA_DIR, 'config.ini')
 
         # Make sure that we can create the data dir
         if not ek(os.access, sickbeard.DATA_DIR, os.F_OK):
@@ -437,10 +376,11 @@ class SickRage(object):
         sys.stdout.flush()
         sys.stderr.flush()
 
+
         devnull = getattr(os, 'devnull', '/dev/null')
-        stdin = file(devnull)
-        stdout = file(devnull, 'a+')
-        stderr = file(devnull, 'a+')
+        stdin = open(devnull)
+        stdout = open(devnull, 'a+')
+        stderr = open(devnull, 'a+')
 
         os.dup2(stdin.fileno(), getattr(sys.stdin, 'device', sys.stdin).fileno())
         os.dup2(stdout.fileno(), getattr(sys.stdout, 'device', sys.stdout).fileno())
@@ -519,7 +459,7 @@ class SickRage(object):
             # shutdown web server
             if self.web_server:
                 logger.log('Shutting down Tornado')
-                self.web_server.shutDown()
+                self.web_server.shutdown()
 
                 try:
                     self.web_server.join(10)
@@ -555,6 +495,52 @@ class SickRage(object):
         # Make sure the logger has stopped, just in case
         logger.shutdown()
         os._exit(0)  # pylint: disable=protected-access
+
+    @staticmethod
+    def force_update():
+        """
+        Forces SickRage to update to the latest version and exit.
+
+        :return: True if successful, False otherwise
+        """
+
+        def update_with_git():
+            def run_git(updater, cmd):
+                stdout_, stderr_, exit_status = updater._run_git(updater._git_path, cmd)
+                if not exit_status == 0:
+                    print('Failed to run command: {0} {1}'.format(updater._git_path, cmd))
+                    return False
+                else:
+                    return True
+
+            updater = GitUpdateManager()
+            if not run_git(updater, 'config remote.origin.url https://github.com/SickRage/SickRage.git'):
+                return False
+            if not run_git(updater, 'fetch origin --prune'):
+                return False
+            if not run_git(updater, 'checkout master'):
+                return False
+            if not run_git(updater, 'reset --hard origin/master'):
+                return False
+
+            return True
+
+        if ek(os.path.isdir, ek(os.path.join, sickbeard.PROG_DIR, '.git')):  # update with git
+            print('Forcing SickRage to update using git...')
+            result = update_with_git()
+            if result:
+                print('Successfully updated to latest commit. You may now run SickRage normally.')
+                return True
+            else:
+                print('Error while trying to force an update using git.')
+
+        print('Forcing SickRage to update using source...')
+        if not SourceUpdateManager().update():
+            print('Failed to force an update.')
+            return False
+
+        print('Successfully updated to latest commit. You may now run SickRage normally.')
+        return True
 
 
 if __name__ == '__main__':

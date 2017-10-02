@@ -23,7 +23,7 @@
 Test sickrage.common
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import unittest
 import os
@@ -36,6 +36,9 @@ import sickbeard
 from sickrage.helper import glob
 from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
 from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
+
+
+import six
 
 
 class CommonTests(unittest.TestCase):
@@ -65,23 +68,23 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': None,
-            u'123': None,
-            u'12.3': None,
-            u'-123': None,
-            u'-12.3': None,
-            u'300': 'Multiple Choices',
+            '': None,
+            '123': None,
+            '12.3': None,
+            '-123': None,
+            '-12.3': None,
+            '300': 'Multiple Choices',
         }
 
         for test in test_cases, unicode_test_cases:
-            for (http_code, result) in test.iteritems():
+            for (http_code, result) in six.iteritems(test):
                 self.assertEqual(http_code_description(http_code), result)
 
     def test_is_sync_file(self):
         """
         Test is sync file
         """
-        sickbeard.SYNC_FILES = '!sync,lftp-pget-status,part'
+        sickbeard.SYNC_FILES = '!sync,lftp-pget-status'
 
         test_cases = {
             None: False,
@@ -97,30 +100,30 @@ class CommonTests(unittest.TestCase):
             '.lftp-pget-status': True,
             'file.lftp-pget-status': True,
             'file.lftp-pget-status.ext': False,
-            '.part': True,
-            'file.part': True,
+            '.part': False,
+            'file.part': False,
             'file.part.ext': False,
         }
 
         unicode_test_cases = {
-            u'': False,
-            u'filename': False,
-            u'.syncthingfilename': True,
-            u'.syncthing.filename': True,
-            u'.syncthing-filename': True,
-            u'.!sync': True,
-            u'file.!sync': True,
-            u'file.!sync.ext': False,
-            u'.lftp-pget-status': True,
-            u'file.lftp-pget-status': True,
-            u'file.lftp-pget-status.ext': False,
-            u'.part': True,
-            u'file.part': True,
-            u'file.part.ext': False,
+            '': False,
+            'filename': False,
+            '.syncthingfilename': True,
+            '.syncthing.filename': True,
+            '.syncthing-filename': True,
+            '.!sync': True,
+            'file.!sync': True,
+            'file.!sync.ext': False,
+            '.lftp-pget-status': True,
+            'file.lftp-pget-status': True,
+            'file.lftp-pget-status.ext': False,
+            '.part': False,
+            'file.part': False,
+            'file.part.ext': False,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.iteritems():
+            for (filename, result) in six.iteritems(tests):
                 self.assertEqual(is_sync_file(filename), result)
 
     def test_is_torrent_or_nzb_file(self):
@@ -141,18 +144,18 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': False,
-            u'filename': False,
-            u'.nzb': True,
-            u'file.nzb': True,
-            u'file.nzb.part': False,
-            u'.torrent': True,
-            u'file.torrent': True,
-            u'file.torrent.part': False,
+            '': False,
+            'filename': False,
+            '.nzb': True,
+            'file.nzb': True,
+            'file.nzb.part': False,
+            '.torrent': True,
+            'file.torrent': True,
+            'file.torrent.part': False,
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.iteritems():
+            for (filename, result) in six.iteritems(tests):
                 self.assertEqual(is_torrent_or_nzb_file(filename), result)
 
     def test_pretty_file_size(self):
@@ -183,13 +186,13 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '0.00 B',
-            u'1024': '1.00 KB',
-            u'1024.5': '1.00 KB',
+            '': '0.00 B',
+            '1024': '1.00 KB',
+            '1024.5': '1.00 KB',
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (size, result) in tests.iteritems():
+            for (size, result) in six.iteritems(tests):
                 self.assertEqual(pretty_file_size(size), result)
 
     def test_remove_extension(self):
@@ -215,22 +218,22 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': u'',
-            u'.': u'.',
-            u'filename': u'filename',
-            u'.bashrc': u'.bashrc',
-            u'.nzb': u'.nzb',
-            u'file.nzb': u'file',
-            u'file.name.nzb': u'file.name',
-            u'.torrent': u'.torrent',
-            u'file.torrent': u'file',
-            u'file.name.torrent': u'file.name',
-            u'.avi': u'.avi',
-            u'file.avi': u'file',
-            u'file.name.avi': u'file.name',
+            '': '',
+            '.': '.',
+            'filename': 'filename',
+            '.bashrc': '.bashrc',
+            '.nzb': '.nzb',
+            'file.nzb': 'file',
+            'file.name.nzb': 'file.name',
+            '.torrent': '.torrent',
+            'file.torrent': 'file',
+            'file.name.torrent': 'file.name',
+            '.avi': '.avi',
+            'file.avi': 'file',
+            'file.name.avi': 'file.name',
         }
         for tests in test_cases, unicode_test_cases:
-            for (extension, result) in tests.iteritems():
+            for (extension, result) in six.iteritems(tests):
                 self.assertEqual(remove_extension(extension), result)
 
     def test_replace_extension(self):
@@ -262,51 +265,51 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            (None, u''): None,
-            (42, u''): 42,
-            ('', u''): '',
-            (u'', None): u'',
-            (u'', ''): u'',
-            (u'', u''): u'',
-            ('.', u''): '.',
-            ('.', u'avi'): '.',
-            (u'.', None): u'.',
-            (u'.', ''): u'.',
-            (u'.', u''): u'.',
-            (u'.', 'avi'): u'.',
-            (u'.', u'avi'): u'.',
-            ('filename', u''): 'filename',
-            ('filename', u'avi'): 'filename',
-            (u'filename', None): u'filename',
-            (u'filename', ''): u'filename',
-            (u'filename', u''): u'filename',
-            (u'filename', 'avi'): u'filename',
-            (u'filename', u'avi'): u'filename',
-            ('.bashrc', u''): '.bashrc',
-            ('.bashrc', u'avi'): '.bashrc',
-            (u'.bashrc', None): u'.bashrc',
-            (u'.bashrc', ''): u'.bashrc',
-            (u'.bashrc', u''): u'.bashrc',
-            (u'.bashrc', 'avi'): u'.bashrc',
-            (u'.bashrc', u'avi'): u'.bashrc',
-            ('file.mkv', u''): 'file.',
-            ('file.mkv', u'avi'): 'file.avi',
-            (u'file.mkv', None): u'file.None',
-            (u'file.mkv', ''): u'file.',
-            (u'file.mkv', u''): u'file.',
-            (u'file.mkv', 'avi'): u'file.avi',
-            (u'file.mkv', u'avi'): u'file.avi',
-            ('file.name.mkv', u''): 'file.name.',
-            ('file.name.mkv', u'avi'): 'file.name.avi',
-            (u'file.name.mkv', None): u'file.name.None',
-            (u'file.name.mkv', ''): u'file.name.',
-            (u'file.name.mkv', u''): u'file.name.',
-            (u'file.name.mkv', 'avi'): u'file.name.avi',
-            (u'file.name.mkv', u'avi'): u'file.name.avi',
+            (None, ''): None,
+            (42, ''): 42,
+            ('', ''): '',
+            ('', None): '',
+            ('', ''): '',
+            ('', ''): '',
+            ('.', ''): '.',
+            ('.', 'avi'): '.',
+            ('.', None): '.',
+            ('.', ''): '.',
+            ('.', ''): '.',
+            ('.', 'avi'): '.',
+            ('.', 'avi'): '.',
+            ('filename', ''): 'filename',
+            ('filename', 'avi'): 'filename',
+            ('filename', None): 'filename',
+            ('filename', ''): 'filename',
+            ('filename', ''): 'filename',
+            ('filename', 'avi'): 'filename',
+            ('filename', 'avi'): 'filename',
+            ('.bashrc', ''): '.bashrc',
+            ('.bashrc', 'avi'): '.bashrc',
+            ('.bashrc', None): '.bashrc',
+            ('.bashrc', ''): '.bashrc',
+            ('.bashrc', ''): '.bashrc',
+            ('.bashrc', 'avi'): '.bashrc',
+            ('.bashrc', 'avi'): '.bashrc',
+            ('file.mkv', ''): 'file.',
+            ('file.mkv', 'avi'): 'file.avi',
+            ('file.mkv', None): 'file.None',
+            ('file.mkv', ''): 'file.',
+            ('file.mkv', ''): 'file.',
+            ('file.mkv', 'avi'): 'file.avi',
+            ('file.mkv', 'avi'): 'file.avi',
+            ('file.name.mkv', ''): 'file.name.',
+            ('file.name.mkv', 'avi'): 'file.name.avi',
+            ('file.name.mkv', None): 'file.name.None',
+            ('file.name.mkv', ''): 'file.name.',
+            ('file.name.mkv', ''): 'file.name.',
+            ('file.name.mkv', 'avi'): 'file.name.avi',
+            ('file.name.mkv', 'avi'): 'file.name.avi',
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((filename, extension), result) in tests.iteritems():
+            for ((filename, extension), result) in six.iteritems(tests):
                 self.assertEqual(replace_extension(filename, extension), result)
 
     def test_sanitize_filename(self):
@@ -316,25 +319,25 @@ class CommonTests(unittest.TestCase):
         test_cases = {
             None: '',
             42: '',
+            b'': '',
+            b'filename': 'filename',
+            b'fi\\le/na*me': 'fi-le-na-me',
+            b'fi:le"na<me': 'filename',
+            b'fi>le|na?me': 'filename',
+            b' . file\u2122name. .': 'filename',
+        }
+
+        unicode_test_cases = {
             '': '',
             'filename': 'filename',
             'fi\\le/na*me': 'fi-le-na-me',
             'fi:le"na<me': 'filename',
             'fi>le|na?me': 'filename',
-            ' . file\u2122name. .': 'file-u2122name',  # pylint: disable=anomalous-unicode-escape-in-string
-        }
-
-        unicode_test_cases = {
-            u'': u'',
-            u'filename': u'filename',
-            u'fi\\le/na*me': u'fi-le-na-me',
-            u'fi:le"na<me': u'filename',
-            u'fi>le|na?me': u'filename',
-            u' . file\u2122name. .': u'filename',
+            ' . file™name. .': 'filename',
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.iteritems():
+            for (filename, result) in six.iteritems(tests):
                 self.assertEqual(sanitize_filename(filename), result)
 
     def test_try_int(self):
@@ -356,15 +359,15 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': 0,
-            u'123': 123,
-            u'-123': -123,
-            u'12.3': 0,
-            u'-12.3': 0,
+            '': 0,
+            '123': 123,
+            '-123': -123,
+            '12.3': 0,
+            '-12.3': 0,
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in test.iteritems():
+            for (candidate, result) in six.iteritems(test):
                 self.assertEqual(try_int(candidate), result)
 
     def test_try_int_with_default(self):
@@ -387,15 +390,15 @@ class CommonTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': default_value,
-            u'123': 123,
-            u'-123': -123,
-            u'12.3': default_value,
-            u'-12.3': default_value,
+            '': default_value,
+            '123': 123,
+            '-123': -123,
+            '12.3': default_value,
+            '-12.3': default_value,
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in test.iteritems():
+            for (candidate, result) in six.iteritems(test):
                 self.assertEqual(try_int(candidate, default_value), result)
 
     def test_convert_size(self):
@@ -472,9 +475,9 @@ class CommonTests(unittest.TestCase):
 
     def test_glob_escape(self):
         self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape(u'S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), u'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
 
 
 if __name__ == '__main__':

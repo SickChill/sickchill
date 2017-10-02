@@ -6,6 +6,8 @@ Test exceptions helpers
 
 # pylint: disable=line-too-long
 
+from __future__ import print_function, unicode_literals
+
 import os.path
 import sys
 import unittest
@@ -14,6 +16,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import ex
+
+
+import six
 
 
 class ExceptionsHelperTestCase(unittest.TestCase):
@@ -25,19 +30,19 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         """
         Test none returns empty
         """
-        self.assertEqual(ex(None), u'')
+        self.assertEqual(ex(None), '')
 
     def test_empty_args_returns_empty(self):
         """
         Test empty args returns empty
         """
-        self.assertEqual(ex(Exception()), u'')
+        self.assertEqual(ex(Exception()), '')
 
     def test_args_of_none_returns_empty(self):
         """
         Test args of none returns empty
         """
-        self.assertEqual(ex(Exception(None, None)), u'')
+        self.assertEqual(ex(Exception(None, None)), '')
 
     def test_ex_ret_args_string(self):
         """
@@ -47,12 +52,12 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         self.assertEqual(ex(Exception('hi')), 'hi')
 
     # TODO why doesn't this work?@
-    @unittest.skip('Errors with unicode conversion')
+    @unittest.skip('Errors with six.text_type conversion')
     def test_ex_ret_args_ustring(self):
         """
         Test exception returns args ustring
         """
-        self.assertEqual(ex(Exception('\xc3\xa4h')), u'äh')
+        self.assertEqual(ex(Exception('\xc3\xa4h')), 'äh')
 
     def test_ex_ret_concat_args_strings(self):
         """

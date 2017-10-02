@@ -18,12 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import re
+from __future__ import print_function, unicode_literals
+
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -67,8 +67,8 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             login_params = {'username': self.username, 'password': self.password}
 
             response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
-            if response.status_code != 200:
-                logger.log(u"Unable to connect to provider", logger.WARNING)
+            if not response or response.status_code != 200:
+                logger.log("Unable to connect to provider", logger.WARNING)
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
@@ -84,15 +84,15 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         for mode in search_params:
             items = []
-            logger.log(u"Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log(u"Search string: {0}".format
+                    logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
-                query.update({"c%s"%i: 1 for i in self.categories})
+                query.update({"c"+str(i): 1 for i in self.categories})
 
                 data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
 
@@ -104,7 +104,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log(u"Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                         continue
 
                     # Scenetime apparently uses different number of cells in #torrenttable based
@@ -137,13 +137,13 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log(u"Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
                         items.append(item)
 

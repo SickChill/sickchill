@@ -18,7 +18,7 @@
 the server into multiple processes and managing subprocesses.
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function
 
 import errno
 import os
@@ -35,7 +35,7 @@ from tornado.iostream import PipeIOStream
 from tornado.log import gen_log
 from tornado.platform.auto import set_close_exec
 from tornado import stack_context
-from tornado.util import errno_from_exception
+from tornado.util import errno_from_exception, PY3
 
 try:
     import multiprocessing
@@ -43,14 +43,18 @@ except ImportError:
     # Multiprocessing is not available on Google App Engine.
     multiprocessing = None
 
-try:
-    long  # py2
-except NameError:
-    long = int  # py3
-
+if PY3:
+    long = int
 
 # Re-export this exception for convenience.
-CalledProcessError = subprocess.CalledProcessError
+try:
+    CalledProcessError = subprocess.CalledProcessError
+except AttributeError:
+    # The subprocess module exists in Google App Engine, but is empty.
+    # This module isn't very useful in that case, but it should
+    # at least be importable.
+    if 'APPENGINE_RUNTIME' not in os.environ:
+        raise
 
 
 def cpu_count():
@@ -63,7 +67,7 @@ def cpu_count():
         pass
     try:
         return os.sysconf("SC_NPROCESSORS_CONF")
-    except ValueError:
+    except (AttributeError, ValueError):
         pass
     gen_log.error("Could not detect number of processors; assuming 1")
     return 1
@@ -140,6 +144,7 @@ def fork_processes(num_processes, max_restarts=100):
         else:
             children[pid] = i
             return None
+
     for i in range(num_processes):
         id = start_child(i)
         if id is not None:
@@ -197,13 +202,19 @@ class Subprocess(object):
       attribute of the resulting Subprocess a `.PipeIOStream`.
     * A new keyword argument ``io_loop`` may be used to pass in an IOLoop.
 
+    The ``Subprocess.STREAM`` option and the ``set_exit_callback`` and
+    ``wait_for_exit`` methods do not work on Windows. There is
+    therefore no reason to use this class instead of
+    ``subprocess.Popen`` on that platform.
+
     .. versionchanged:: 4.1
        The ``io_loop`` argument is deprecated.
+
     """
     STREAM = object()
 
     _initialized = False
-    _waiting = {}
+    _waiting = {}  # type: ignore
 
     def __init__(self, *args, **kwargs):
         self.io_loop = kwargs.pop('io_loop', None) or ioloop.IOLoop.current()
@@ -344,6 +355,10 @@ class Subprocess(object):
         else:
             assert os.WIFEXITED(status)
             self.returncode = os.WEXITSTATUS(status)
+        # We've taken over wait() duty from the subprocess.Popen
+        # object. If we don't inform it of the process's return code,
+        # it will log a warning at destruction in python 3.6+.
+        self.proc.returncode = self.returncode
         if self._exit_callback:
             callback = self._exit_callback
             self._exit_callback = None

@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
+
 import os.path
 import re
 import sqlite3
@@ -25,6 +27,8 @@ import threading
 import time
 import warnings
 from sqlite3 import OperationalError
+
+import six
 
 import sickbeard
 from sickbeard import logger
@@ -76,9 +80,9 @@ class DBConnection(object):
                 self._set_row_factory()
 
         except OperationalError:
-            logger.log(u'Please check your database owner/permissions: {0}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
+            logger.log('Please check your database owner/permissions: {0}'.format(dbFilename(self.filename, self.suffix)), logger.WARNING)
         except Exception as e:
-            logger.log(u"DB error: " + ex(e), logger.ERROR)
+            logger.log("DB error: " + ex(e), logger.ERROR)
             raise
 
     def _set_row_factory(self):
@@ -140,7 +144,7 @@ class DBConnection(object):
             return 0
 
         if result:
-            return int(result[0]["db_version"])
+            return int(result[0][b"db_version"])
         else:
             return 0
 
@@ -159,7 +163,7 @@ class DBConnection(object):
             return 0
 
         if result:
-            return int(result[0]["db_minor_version"])
+            return int(result[0][b"db_minor_version"])
         else:
             return 0
 
@@ -203,7 +207,7 @@ class DBConnection(object):
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
-                    logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
+                    logger.log("Transaction with " + str(len(querylist)) + " queries executed", logger.DEBUG)
 
                     # finished
                     break
@@ -212,17 +216,17 @@ class DBConnection(object):
                     if self.connection:
                         self.connection.rollback()
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
-                        logger.log(u"DB error: " + ex(e), logger.WARNING)
+                        logger.log("DB error: " + ex(e), logger.WARNING)
                         attempt += 1
                         time.sleep(1)
                     else:
-                        logger.log(u"DB error: " + ex(e), logger.ERROR)
+                        logger.log("DB error: " + ex(e), logger.ERROR)
                         raise
                 except sqlite3.DatabaseError as e:
                     sql_results = []
                     if self.connection:
                         self.connection.rollback()
-                    logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                    logger.log("Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
             # time.sleep(0.02)
@@ -261,14 +265,14 @@ class DBConnection(object):
                     break
                 except sqlite3.OperationalError as e:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
-                        logger.log(u"DB error: " + ex(e), logger.WARNING)
+                        logger.log("DB error: " + ex(e), logger.WARNING)
                         attempt += 1
                         time.sleep(1)
                     else:
-                        logger.log(u"DB error: " + ex(e), logger.ERROR)
+                        logger.log("DB error: " + ex(e), logger.ERROR)
                         raise
                 except sqlite3.DatabaseError as e:
-                    logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                    logger.log("Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
             # time.sleep(0.02)
@@ -318,17 +322,17 @@ class DBConnection(object):
 
         changesBefore = self.connection.total_changes
 
-        genParams = lambda myDict: [x + " = ?" for x in myDict.keys()]
+        def genParams(my_dict): return [x + " = ?" for x in my_dict.keys()]
 
         query = "UPDATE [" + tableName + "] SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
             genParams(keyDict))
 
-        self.action(query, valueDict.values() + keyDict.values())
+        self.action(query, list(valueDict.values()) + keyDict.values())
 
         if self.connection.total_changes == changesBefore:
-            query = "INSERT INTO [" + tableName + "] (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
-                    " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
-            self.action(query, valueDict.values() + keyDict.values())
+            query = "INSERT INTO [" + tableName + "] (" + ", ".join(list(valueDict.keys()) + keyDict.keys()) + ")" + \
+                    " VALUES (" + ", ".join(["?"] * len(list(valueDict.keys()) + keyDict.keys())) + ")"
+            self.action(query, list(valueDict.values()) + keyDict.values())
 
     def tableInfo(self, tableName):
         """
@@ -340,22 +344,22 @@ class DBConnection(object):
         sql_results = self.select("PRAGMA table_info(`{0}`)".format(tableName))
         columns = {}
         for column in sql_results:
-            columns[column['name']] = {'type': column['type']}
+            columns[column[b'name']] = {'type': column[b'type']}
         return columns
 
     @staticmethod
     def _unicode_text_factory(x):
         """
-        Convert text to unicode
+        Convert text to six.text_type
 
         :param x: text to parse
-        :return: unicode result
+        :return: six.text_type result
         """
         try:
             # Just revert to the old code for now, until we can fix unicode
-            return unicode(x, 'utf-8')
+            return six.text_type(x, 'utf-8')
         except Exception:
-            return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
+            return six.text_type(x, sickbeard.SYS_ENCODING, errors="ignore")
 
     @staticmethod
     def _dict_factory(cursor, row):
@@ -420,7 +424,7 @@ def upgradeDatabase(connection, schema):
     :param connection: Existing DB Connection to use
     :param schema: New schema to upgrade to
     """
-    logger.log(u"Checking database structure..." + connection.filename, logger.DEBUG)
+    logger.log("Checking database structure..." + connection.filename, logger.DEBUG)
     _processUpgrade(connection, schema)
 
 
@@ -435,9 +439,9 @@ def restoreDatabase(version):
     :param version: Version to restore to
     :return: True if restore succeeds, False if it fails
     """
-    logger.log(u"Restoring database before trying upgrade again")
+    logger.log("Restoring database before trying upgrade again")
     if not sickbeard.helpers.restoreVersionedFile(dbFilename(suffix='v' + str(version)), version):
-        logger.log_error_and_exit(u"Database restore failed, abort upgrading database")
+        logger.log_error_and_exit("Database restore failed, abort upgrading database")
         return False
     else:
         return True
@@ -445,9 +449,9 @@ def restoreDatabase(version):
 
 def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
-    # logger.log(u"Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
+    # logger.log("Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
     if not instance.test():
-        logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
+        logger.log("Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
         try:
             instance.execute()
         except Exception as e:

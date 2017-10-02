@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Author: Clinton Collins <clinton.collins@gmail.com>
 # Medicine: Dustyn Gibson <miigotu@gmail.com>
 # This file is part of SickRage.
@@ -15,8 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
-from requests.compat import urlencode
+from __future__ import unicode_literals
+
+from putiopy import Client as PutioClient, ClientError
 
 from sickbeard import helpers
 from sickbeard.clients.generic import GenericClient
@@ -26,71 +29,41 @@ class PutioAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
         super(PutioAPI, self).__init__('put_io', host, username, password)
-
-        self.client_id = 2392  # sickrage-ng
-        self.redirect_uri = 'https://sickrage.github.io'
         self.url = 'https://api.put.io/login'
 
     def _get_auth(self):
-        self.url = 'https://api.put.io/login'
-        self.session.headers['Accept'] = 'application/json'
-        next_params = {
-            'client_id': self.client_id,
-            'response_type': 'token',
-            'redirect_uri': self.redirect_uri
-        }
-
-        post_data = {
-            'name': self.username,
-            'password': self.password,
-            'next': '/v2/oauth2/authenticate?' + urlencode(next_params)
-        }
-
+        client = PutioClient(self.password)
         try:
-            response = self.session.post(self.url, data=post_data,
-                                         allow_redirects=False)
-            response.raise_for_status()
-
-            response = self.session.get(response.headers['location'],
-                                        allow_redirects=False)
-            response.raise_for_status()
-
-            resulting_uri = '{redirect_uri}#access_token=(.*)'.format(
-                redirect_uri=re.escape(self.redirect_uri))
-
-            self.auth = re.search(resulting_uri, response.headers['location']).group(1)
-
-        except Exception as error:
+            client.Account.info()
+        except ClientError as error:
             helpers.handle_requests_exception(error)
             self.auth = None
+        else:
+            self.auth = client
 
         return self.auth
 
-    def _add_torrent_uri(self, result):
-        self.url = 'https://api.put.io/v2/transfers/add'
-        post_data = {
-            'url': result.url,
-            'save_parent_id': 0,
-            'extract': True,
-            'oauth_token': self.auth
-        }
-        if not self._request('POST', data=post_data):
-            return False
+    @property
+    def _parent_id(self):
+        parent_id = 0
+        if self.username is not None and self.username != '':
+            for f in self.auth.File.list():
+                if f.name == self.username:
+                    parent_id = f.id
+                    break
 
-        j = self.response.json()
-        return j.get("transfer", {}).get('save_parent_id', None) == 0
+        return parent_id
+
+    def _add_torrent_uri(self, result):
+        transfer = self.auth.Transfer.add_url(result.url, self._parent_id)
+
+        return transfer.id is not None
 
     def _add_torrent_file(self, result):
-        self.url = 'https://upload.put.io/v2/files/upload'
-        post_data = {
-            'parent_id': 0,
-            'oauth_token': self.auth
-        }
-        files = {'file': (result.name + '.torrent', result.content)}
-        if not self._request('POST', data=post_data, files=files):
-            return False
+        filename = result.name + '.torrent'
+        transfer = self.auth.Transfer.add_torrent(filename, self._parent_id)
 
-        return self.response.json()['status'] == "OK"
+        return transfer.id is not None
 
 
 api = PutioAPI()

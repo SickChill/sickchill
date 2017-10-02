@@ -9,7 +9,7 @@ pages would be:
     plot summary:       http://akas.imdb.com/title/tt0094226/plotsummary
     ...and so on...
 
-Copyright 2004-2013 Davide Alberani <da@erlug.linux.it>
+Copyright 2004-2016 Davide Alberani <da@erlug.linux.it>
                2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -207,6 +207,11 @@ class DOMHTMLMovieParser(DOMParserBase):
                             multi=True,
                             path="./text()")),
 
+                Extractor(label='myrating',
+                        path="//span[@id='voteuser']",
+                        attrs=Attribute(key='myrating',
+                                        path=".//text()")),
+
                 Extractor(label='h5sections',
                         path="//div[@class='info']/h5/..",
                         attrs=[
@@ -226,7 +231,7 @@ class DOMHTMLMovieParser(DOMParserBase):
                             Attribute(key="countries",
                                 path="./h5[starts-with(text(), " \
                             "'Countr')]/../div[@class='info-content']//text()",
-                            postprocess=makeSplitter('|')),
+                                postprocess=makeSplitter('|')),
                             Attribute(key="language",
                                 path="./h5[starts-with(text(), " \
                                         "'Language')]/..//text()",
@@ -234,7 +239,7 @@ class DOMHTMLMovieParser(DOMParserBase):
                             Attribute(key='color info',
                                 path="./h5[starts-with(text(), " \
                                         "'Color')]/..//text()",
-                                postprocess=makeSplitter('Color:')),
+                                postprocess=makeSplitter('|')),
                             Attribute(key='sound mix',
                                 path="./h5[starts-with(text(), " \
                                         "'Sound Mix')]/..//text()",
@@ -462,6 +467,8 @@ class DOMHTMLMovieParser(DOMParserBase):
                 del data['other akas']
             if nakas:
                 data['akas'] = nakas
+        if 'color info' in data:
+            data['color info'] = [x.replace('Color:', '', 1) for x in data['color info']]
         if 'runtimes' in data:
             data['runtimes'] = [x.replace(' min', u'')
                                 for x in data['runtimes']]
@@ -552,10 +559,10 @@ class DOMHTMLPlotParser(DOMParserBase):
     # Notice that recently IMDb started to put the email of the
     # author only in the link, that we're not collecting, here.
     extractors = [Extractor(label='plot',
-                            path="//ul[@class='zebraList']//p",
+                            path="//p[@class='plotSummary']",
                             attrs=Attribute(key='plot',
                                             multi=True,
-                                            path={'plot': './text()[1]',
+                                            path={'plot': './/text()',
                                                   'author': './span/em/a/text()'},
                                             postprocess=_process_plotsummary))]
 
@@ -783,17 +790,20 @@ class DOMHTMLTriviaParser(DOMParserBase):
 
 
 
-class DOMHTMLSoundtrackParser(DOMHTMLAlternateVersionsParser):
-    kind = 'soundtrack'
-
-    preprocessors = [
-        ('<br>', '\n')
-        ]
+class DOMHTMLSoundtrackParser(DOMParserBase):
+    _defGetRefs = True
+    preprocessors = [('<br />', '\n'), ('<br>', '\n')]
+    extractors = [Extractor(label='soundtrack',
+                            path="//div[@class='list']//div",
+                            attrs=Attribute(key='soundtrack',
+                                            multi=True,
+                                            path=".//text()",
+                                            postprocess=lambda x: x.strip()))]
 
     def postprocess_data(self, data):
-        if 'alternate versions' in data:
+        if 'soundtrack' in data:
             nd = []
-            for x in data['alternate versions']:
+            for x in data['soundtrack']:
                 ds = x.split('\n')
                 title = ds[0]
                 if title[0] == '"' and title[-1] == '"':
@@ -1177,7 +1187,7 @@ class DOMHTMLCriticReviewsParser(DOMParserBase):
                 path="//div[@class='article']/div[@class='see-more']/a",
                 attrs=Attribute(key='metacritic url',
                                 path="./@href")) ]
-    
+
 class DOMHTMLOfficialsitesParser(DOMParserBase):
     """Parser for the "official sites", "external reviews", "newsgroup
     reviews", "miscellaneous links", "sound clips", "video clips" and
@@ -1289,16 +1299,17 @@ class DOMHTMLTechParser(DOMParserBase):
         result = tparser.parse(technical_html_string)
     """
     kind = 'tech'
+    re_space = re.compile(r'\s+')
 
     extractors = [Extractor(label='tech',
-                        group="//h5",
+                        group="//table//tr/td[@class='label']",
                         group_key="./text()",
-                        group_key_normalize=lambda x: x.lower(),
-                        path="./following-sibling::div[1]",
+                        group_key_normalize=lambda x: x.lower().strip(),
+                        path=".",
                         attrs=Attribute(key=None,
-                                    path=".//text()",
+                                        path="..//td[2]//text()",
                                     postprocess=lambda x: [t.strip()
-                                        for t in x.split('\n') if t.strip()]))]
+                                                           for t in x.split(':::') if t.strip()]))]
 
     preprocessors = [
         (re.compile('(<h5>.*?</h5>)', re.I), r'</div>\1<div class="_imdbpy">'),
@@ -1308,12 +1319,15 @@ class DOMHTMLTechParser(DOMParserBase):
         (re.compile('<p>(.*?)</p>', re.I), r'\1<br/>'),
         (re.compile('(</td><td valign="top">)', re.I), r'\1::'),
         (re.compile('(</tr><tr>)', re.I), r'\n\1'),
+        (re.compile('<span class="ghost">\|</span>', re.I), r':::'),
+        (re.compile('<br/?>', re.I), r':::'),
         # this is for splitting individual entries
-        (re.compile('<br/>', re.I), r'\n'),
         ]
 
     def postprocess_data(self, data):
         for key in data:
+            data[key] = filter(lambda x: x != '|', data[key])
+            data[key] = [self.re_space.sub(' ', x).strip() for x in data[key]]
             data[key] = filter(None, data[key])
         if self.kind in ('literature', 'business', 'contacts') and data:
             if 'screenplay/teleplay' in data:
@@ -1905,7 +1919,7 @@ _OBJECTS = {
     'goofs_parser':  ((DOMHTMLGoofsParser,), None),
     'alternateversions_parser':  ((DOMHTMLAlternateVersionsParser,), None),
     'trivia_parser':  ((DOMHTMLTriviaParser,), None),
-    'soundtrack_parser':  ((DOMHTMLSoundtrackParser,), {'kind': 'soundtrack'}),
+    'soundtrack_parser':  ((DOMHTMLSoundtrackParser,), None),
     'quotes_parser':  ((DOMHTMLQuotesParser,), None),
     'releasedates_parser':  ((DOMHTMLReleaseinfoParser,), None),
     'ratings_parser':  ((DOMHTMLRatingsParser,), None),

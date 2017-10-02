@@ -54,7 +54,7 @@ class ShazbatProvider(TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, data):
+    def _check_auth_from_data(self, data):
         if not self.passkey:
             self._check_auth()
         elif data.get('bozo') == 1 and not (data['entries'] and data['feed']):
@@ -64,7 +64,7 @@ class ShazbatProvider(TorrentProvider):
 
 
 class ShazbatCache(tvcache.TVCache):
-    def _getRSSData(self):
+    def _get_rss_data(self):
         params = {
             'passkey': self.provider.passkey,
             'fname': 'true',
@@ -72,9 +72,9 @@ class ShazbatCache(tvcache.TVCache):
             'duration': '2 hours'
         }
 
-        return self.getRSSFeed(self.provider.urls['rss_recent'], params=params)
+        return self.get_rss_feed(self.provider.urls['rss_recent'], params=params)
 
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)  # pylint: disable=protected-access
+    def _check_auth(self, data):
+        return self.provider._check_auth_from_data(data)  # pylint: disable=protected-access
 
 provider = ShazbatProvider()

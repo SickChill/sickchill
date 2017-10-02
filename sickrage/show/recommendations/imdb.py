@@ -1,9 +1,13 @@
 # coding=utf-8
-import re
+
+from __future__ import print_function, unicode_literals
+
 import os
 import posixpath
-from bs4 import BeautifulSoup
+import re
 from datetime import date
+
+from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import helpers
@@ -80,7 +84,7 @@ class imdbPopular(object):
                 if outline:
                     show['outline'] = outline.contents[0]
                 else:
-                    show['outline'] = u''
+                    show['outline'] = ''
 
                 popular_shows.append(show)
 

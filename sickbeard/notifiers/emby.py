@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -18,11 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
-import urllib2
+from __future__ import print_function, unicode_literals
+
+from six.moves import urllib
 
 import sickbeard
-
 from sickbeard import logger
 from sickrage.helper.exceptions import ex
 
@@ -52,19 +52,19 @@ class Notifier(object):
         values = {'Name': 'SickRage', 'Description': message, 'ImageUrl': sickbeard.LOGO_URL}
         data = json.dumps(values)
         try:
-            req = urllib2.Request(url, data)
+            req = urllib.request.Request(url, data)
             req.add_header('X-MediaBrowser-Token', emby_apikey)
             req.add_header('Content-Type', 'application/json')
 
-            response = urllib2.urlopen(req)
+            response = urllib.request.urlopen(req)
             result = response.read()
             response.close()
 
-            logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
+            logger.log('EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
             return True
 
-        except (urllib2.URLError, IOError) as e:
-            logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
+        except (urllib.error.URLError, IOError) as e:
+            logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
             return False
 
 
@@ -86,17 +86,17 @@ class Notifier(object):
         if sickbeard.USE_EMBY:
 
             if not sickbeard.EMBY_HOST:
-                logger.log(u'EMBY: No host specified, check your settings', logger.DEBUG)
+                logger.log('EMBY: No host specified, check your settings', logger.DEBUG)
                 return False
 
             if show:
                 if show.indexer == 1:
                     provider = 'tvdb'
                 elif show.indexer == 2:
-                    logger.log(u'EMBY: TVRage Provider no longer valid', logger.WARNING)
+                    logger.log('EMBY: TVRage Provider no longer valid', logger.WARNING)
                     return False
                 else:
-                    logger.log(u'EMBY: Provider unknown', logger.WARNING)
+                    logger.log('EMBY: Provider unknown', logger.WARNING)
                     return False
                 query = '?{0}id={1}'.format(provider, show.indexerid)
             else:
@@ -104,18 +104,18 @@ class Notifier(object):
 
             url = 'http://{0}/emby/Library/Series/Updated{1}'.format(sickbeard.EMBY_HOST, query)
             values = {}
-            data = urllib.urlencode(values)
+            data = urllib.parse.urlencode(values)
             try:
-                req = urllib2.Request(url, data)
+                req = urllib.request.Request(url, data)
                 req.add_header('X-MediaBrowser-Token', sickbeard.EMBY_APIKEY)
 
-                response = urllib2.urlopen(req)
+                response = urllib.request.urlopen(req)
                 result = response.read()
                 response.close()
 
-                logger.log(u'EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
+                logger.log('EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
                 return True
 
-            except (urllib2.URLError, IOError) as e:
-                logger.log(u'EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
+            except (urllib.error.URLError, IOError) as e:
+                logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
                 return False

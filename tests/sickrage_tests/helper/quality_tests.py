@@ -34,6 +34,9 @@ from sickbeard.common import ANY, HD, HD1080p, HD720p, Quality, SD
 from sickrage.helper.quality import get_quality_string
 
 
+import six
+
+
 class QualityTests(unittest.TestCase):
     """
     Test qualities
@@ -62,7 +65,7 @@ class QualityTests(unittest.TestCase):
             1000000: 'Custom',  # An invalid quality number to test the default case
         }
 
-        for (quality, result) in tests.iteritems():
+        for (quality, result) in six.iteritems(tests):
             self.assertEqual(get_quality_string(quality), result)
 
 

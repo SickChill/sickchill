@@ -21,13 +21,14 @@
 Test GenericProvider
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import os
 import sys
 import unittest
 
 from mock import patch, MagicMock
+import six
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -75,31 +76,31 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '',
-            u' ': '',
-            u'123': '123',
-            u' 123 ': '123',
-            u'12.3': '12_3',
-            u' 12.3 ': '12_3',
-            u'0': '0',
-            u' 0 ': '0',
-            u'-123': '_123',
-            u' -123 ': '_123',
-            u'-12.3': '_12_3',
-            u' -12.3 ': '_12_3',
-            u'abc': 'abc',
-            u' abc ': 'abc',
-            u'ABC': 'abc',
-            u' ABC ': 'abc',
-            u'.def': '_def',
-            u'g,hi': 'g_hi',
-            u'jk!l': 'jk_l',
-            u'mno?': 'mno_',
-            u'_pqr$': '_pqr_',
+            '': '',
+            ' ': '',
+            '123': '123',
+            ' 123 ': '123',
+            '12.3': '12_3',
+            ' 12.3 ': '12_3',
+            '0': '0',
+            ' 0 ': '0',
+            '-123': '_123',
+            ' -123 ': '_123',
+            '-12.3': '_12_3',
+            ' -12.3 ': '_12_3',
+            'abc': 'abc',
+            ' abc ': 'abc',
+            'ABC': 'abc',
+            ' ABC ': 'abc',
+            '.def': '_def',
+            'g,hi': 'g_hi',
+            'jk!l': 'jk_l',
+            'mno?': 'mno_',
+            '_pqr$': '_pqr_',
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider(name).get_id(), result)
 
     def test_image_name(self):
@@ -137,31 +138,31 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '.png',
-            u' ': '.png',
-            u'123': '123.png',
-            u' 123 ': '123.png',
-            u'12.3': '12_3.png',
-            u' 12.3 ': '12_3.png',
-            u'0': '0.png',
-            u' 0 ': '0.png',
-            u'-123': '_123.png',
-            u' -123 ': '_123.png',
-            u'-12.3': '_12_3.png',
-            u' -12.3 ': '_12_3.png',
-            u'abc': 'abc.png',
-            u' abc ': 'abc.png',
-            u'ABC': 'abc.png',
-            u' ABC ': 'abc.png',
-            u'.def': '_def.png',
-            u'g,hi': 'g_hi.png',
-            u'jk!l': 'jk_l.png',
-            u'mno?': 'mno_.png',
-            u'_pqr$': '_pqr_.png',
+            '': '.png',
+            ' ': '.png',
+            '123': '123.png',
+            ' 123 ': '123.png',
+            '12.3': '12_3.png',
+            ' 12.3 ': '12_3.png',
+            '0': '0.png',
+            ' 0 ': '0.png',
+            '-123': '_123.png',
+            ' -123 ': '_123.png',
+            '-12.3': '_12_3.png',
+            ' -12.3 ': '_12_3.png',
+            'abc': 'abc.png',
+            ' abc ': 'abc.png',
+            'ABC': 'abc.png',
+            ' ABC ': 'abc.png',
+            '.def': '_def.png',
+            'g,hi': 'g_hi.png',
+            'jk!l': 'jk_l.png',
+            'mno?': 'mno_.png',
+            '_pqr$': '_pqr_.png',
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider(name).image_name(), result)
 
     def test_is_active(self):
@@ -211,31 +212,31 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': '',
-            u' ': '',
-            u'123': '123',
-            u' 123 ': '123',
-            u'12.3': '12_3',
-            u' 12.3 ': '12_3',
-            u'0': '0',
-            u' 0 ': '0',
-            u'-123': '_123',
-            u' -123 ': '_123',
-            u'-12.3': '_12_3',
-            u' -12.3 ': '_12_3',
-            u'abc': 'abc',
-            u' abc ': 'abc',
-            u'ABC': 'abc',
-            u' ABC ': 'abc',
-            u'.def': '_def',
-            u'g,hi': 'g_hi',
-            u'jk!l': 'jk_l',
-            u'mno?': 'mno_',
-            u'_pqr$': '_pqr_',
+            '': '',
+            ' ': '',
+            '123': '123',
+            ' 123 ': '123',
+            '12.3': '12_3',
+            ' 12.3 ': '12_3',
+            '0': '0',
+            ' 0 ': '0',
+            '-123': '_123',
+            ' -123 ': '_123',
+            '-12.3': '_12_3',
+            ' -12.3 ': '_12_3',
+            'abc': 'abc',
+            ' abc ': 'abc',
+            'ABC': 'abc',
+            ' ABC ': 'abc',
+            '.def': '_def',
+            'g,hi': 'g_hi',
+            'jk!l': 'jk_l',
+            'mno?': 'mno_',
+            '_pqr$': '_pqr_',
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.iteritems():
+            for (name, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider.make_id(name), result)
 
     def test_seed_ratio(self):
@@ -274,15 +275,15 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         unicode_test_cases = {
-            u'': [],
-            u'123': [],
-            u'12.3': [],
-            u'-123': [],
-            u'-12.3': [],
+            '': [],
+            '123': [],
+            '12.3': [],
+            '-123': [],
+            '-12.3': [],
         }
 
         for test in test_cases, unicode_test_cases:
-            for (search_params, result) in test.iteritems():
+            for (search_params, result) in six.iteritems(test):
                 self.assertEqual(GenericProvider('Test Provider').search(search_params), result)
 
     def test__get_size(self):
@@ -310,8 +311,8 @@ class GenericProviderTests(unittest.TestCase):
         ]
 
         unicode_items_list = [
-            {'link': u'', 'title': u''},
-            {'link': u'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': u'Some Title'}
+            {'link': '', 'title': ''},
+            {'link': 'http://www.google.com/&amp;foo=bar%26tr%3Dtest', 'title': 'Some Title'}
         ]
         unicode_results_list = [
             ('', ''), ('Some.Title', 'http://www.google.com/&foo=bar&tr=test')

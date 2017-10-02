@@ -19,15 +19,12 @@
 
 from __future__ import unicode_literals
 
-import urllib
-import urllib2
+from six.moves import urllib
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, \
-    NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
-
-from sickrage.helper import HTTP_STATUS_CODES
+from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
+                              NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
 
 
 class Notifier(object):
@@ -36,43 +33,47 @@ class Notifier(object):
 
     http://joaoapps.com/join/
     """
-    def test_notify(self, id=None):
+    def test_notify(self, id=None, apikey=None):
         """
         Send a test notification
         :param id: The Device ID
+        :param id: The User's API Key
         :returns: the notification
         """
-        return self._notify_join('Test', 'This is a test notification from SickRage', id, force=True)
+        return self._notify_join('Test', 'This is a test notification from SickRage', id, apikey, force=True)
 
-    def _send_join_msg(self, title, msg, id=None):
+    def _send_join_msg(self, title, msg, id=None, apikey=None):
         """
         Sends a Join notification
 
         :param title: The title of the notification to send
         :param msg: The message string to send
         :param id: The Device ID
+        :param id: The User's API Key
 
         :returns: True if the message succeeded, False otherwise
         """
         id = sickbeard.JOIN_ID if id is None else id
+        apikey = sickbeard.JOIN_APIKEY if apikey is None else apikey
 
         logger.log('Join in use with device ID: {0}'.format(id), logger.DEBUG)
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
-        params = {   
+        params = {
+            "apikey": apikey,
             "deviceId": id,
             "title": title,
             "text": message,
             "icon": "https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage.png"
         }
-        payload = urllib.urlencode(params)
+        payload = urllib.parse.urlencode(params)
         join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload
         logger.log('Join url in use : {0}'.format(join_api), logger.DEBUG)
         success = False
         try:
-            urllib2.urlopen(join_api)
+            urllib.request.urlopen(join_api)
             message = 'Join message sent successfully.'
-            logger.log('Join message returned : {0}'.format(message), logger.DEBUG) 
+            logger.log('Join message returned : {0}'.format(message), logger.DEBUG)
             success = True
         except Exception as e:
             message = 'Error while sending Join message: {0} '.format(e)
@@ -133,13 +134,14 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_join(title, update_text.format(ipaddress))
 
-    def _notify_join(self, title, message, id=None, force=False):
+    def _notify_join(self, title, message, id=None, apikey=None, force=False):
         """
         Sends a Join notification
 
         :param title: The title of the notification to send
         :param message: The message string to send
         :param id: The Device ID
+        :param id: The User's API Key
         :param force: Enforce sending, for instance for testing
 
         :returns: the message to send
@@ -151,4 +153,4 @@ class Notifier(object):
 
         logger.log('Sending a Join message for {0}'.format(message), logger.DEBUG)
 
-        return self._send_join_msg(title, message, id)
+        return self._send_join_msg(title, message, id, apikey)

@@ -2,7 +2,7 @@
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # Author: Gordon Turner <gordonturner@gordonturner.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -19,13 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, unicode_literals
 
+import datetime
 import io
 import os
-import datetime
 
 import sickbeard
-from sickbeard import logger, helpers
+from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex, ShowNotFoundException
@@ -142,7 +143,7 @@ class TIVOMetadata(generic.GenericMetadata):
             metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), '.meta')
             metadata_file_path = ek(os.path.join, metadata_dir_name, metadata_file_name)
         else:
-            logger.log(u"Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
+            logger.log("Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
             return ''
         return metadata_file_path
 
@@ -185,7 +186,7 @@ class TIVOMetadata(generic.GenericMetadata):
         except sickbeard.indexer_shownotfound as e:
             raise ShowNotFoundException(str(e))
         except sickbeard.indexer_error as e:
-            logger.log(u"Unable to connect to " + sickbeard.indexerApi(
+            logger.log("Unable to connect to " + sickbeard.indexerApi(
                 ep_obj.show.indexer).name + " while creating meta files - skipping - " + str(e), logger.ERROR)
             return False
 
@@ -194,7 +195,10 @@ class TIVOMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode {0:d}x{1:d} on {2}... has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, sickbeard.indexerApi(ep_obj.show.indexer).name))
+                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
+                           "has it been removed? Should I delete from db?".format(
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
+                    sickbeard.indexerApi(ep_obj.show.indexer).name))
                 return None
 
             if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
@@ -230,9 +234,9 @@ class TIVOMetadata(generic.GenericMetadata):
             # Micrsoft Word's smartquotes can die in a fire.
             sanitizedDescription = curEpToWrite.description
             # Replace double curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u201c", "\"").replace(u"\u201d", "\"")
+            sanitizedDescription = sanitizedDescription.replace("\u201c", "\"").replace("\u201d", "\"")
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(u"\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02BC", "'")
 
             data += ("description : " + sanitizedDescription + "\n")
 
@@ -313,11 +317,11 @@ class TIVOMetadata(generic.GenericMetadata):
 
         try:
             if not ek(os.path.isdir, nfo_file_dir):
-                logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
                 ek(os.makedirs, nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
-            logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
+            logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
 
             with io.open(nfo_file_path, 'wb') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
@@ -326,7 +330,7 @@ class TIVOMetadata(generic.GenericMetadata):
             helpers.chmodAsParent(nfo_file_path)
 
         except EnvironmentError as e:
-            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
                        logger.ERROR)
             return False
 

@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Jonathon Saine <thezoggy@gmail.com>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -22,23 +22,29 @@
 # pylint: disable=line-too-long,too-many-lines,abstract-method
 # pylint: disable=no-member,method-hidden,missing-docstring,invalid-name
 
+from __future__ import print_function, unicode_literals
+
 import datetime
 import io
 import os
 import re
 import time
 import traceback
-import urllib
+
+import six
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+from tornado.web import RequestHandler
 
 import sickbeard
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, processTV, sbdatetime, search_queue, \
-    ui
-from sickbeard.common import ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, \
-    SNATCHED_PROPER, UNAIRED, UNKNOWN, WANTED, statusStrings
+from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
+from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
+                              WANTED)
+from sickbeard.postProcessor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
 from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException, ex
+from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickrage.helper.quality import get_quality_string
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
@@ -56,8 +62,9 @@ except ImportError:
     # pylint: disable=import-error
     import simplejson as json
 
-# pylint: disable=import-error
-from tornado.web import RequestHandler
+
+
+
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -79,7 +86,7 @@ result_type_map = {
 
 # basically everything except RESULT_SUCCESS / success is bad
 
-
+# noinspection PyAbstractClass
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
     version = 5  # use an int since float-point is unpredictable
@@ -92,7 +99,8 @@ class ApiHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
-        for arg, value in kwargs.iteritems():
+        # noinspection PyCompatibility
+        for arg, value in six.iteritems(kwargs):
             if len(value) == 1:
                 kwargs[arg] = value[0]
 
@@ -105,7 +113,7 @@ class ApiHandler(RequestHandler):
             'image': self._out_as_image,
         }
 
-        access_msg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
+        access_msg = "API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
         logger.log(access_msg, logger.DEBUG)
 
         # set the original call_dispatcher as the local _call_dispatcher
@@ -120,7 +128,7 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
-            logger.log(u"API :: " + ex(e), logger.ERROR)
+            logger.log("API :: " + ex(e), logger.ERROR)
             error_data = {
                 "error_msg": ex(e),
                 "args": args,
@@ -134,6 +142,7 @@ class ApiHandler(RequestHandler):
         else:
             output_callback = output_callback_dict['default']
 
+        # noinspection PyBroadException
         try:
             self.finish(output_callback(out_dict))
         except Exception:
@@ -151,7 +160,7 @@ class ApiHandler(RequestHandler):
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
-            logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
+            logger.log("API :: " + traceback.format_exc(), logger.DEBUG)
             out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
         return out
 
@@ -161,8 +170,8 @@ class ApiHandler(RequestHandler):
             or calls the TVDBShorthandWrapper when the first args element is a number
             or returns an error that there is no such cmd
         """
-        logger.log(u"API :: all args: '" + str(args) + "'", logger.DEBUG)
-        logger.log(u"API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
+        logger.log("API :: all args: '" + str(args) + "'", logger.DEBUG)
+        logger.log("API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
 
         commands = None
         if args:
@@ -178,17 +187,22 @@ class ApiHandler(RequestHandler):
 
                 if len(cmd.split("_")) > 1:
                     cmd, cmd_index = cmd.split("_")
+                else:
+                    cmd_index = None
 
-                logger.log(u"API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
+                logger.log("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
                         multi_commands):  # skip these cmd while chaining
                     try:
                         if cmd in function_mapper:
                             func = function_mapper.get(cmd)  # map function
-                            func.rh = self  # add request handler to function
-                            cur_out_dict = func(cur_args, cur_kwargs).run()  # call function and get response
+                            to_call = func(cur_args, cur_kwargs)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()  # call function and get response
                         elif _is_int(cmd):
-                            cur_out_dict = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd).run()
+                            to_call = TVDBShorthandWrapper(cur_args, cur_kwargs, cmd)
+                            to_call.rh = self
+                            cur_out_dict = to_call.run()
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
@@ -212,7 +226,7 @@ class ApiHandler(RequestHandler):
             if multi_commands:  # if we had multiple commands we have to wrap it in a response dict
                 out_dict = _responds(RESULT_SUCCESS, out_dict)
         else:  # index / no cmd given
-            out_dict = CMD_SickBeard(args, kwargs).run()
+            out_dict = CMDSickBeard(args, kwargs).run()
 
         return out_dict
 
@@ -251,61 +265,57 @@ class ApiHandler(RequestHandler):
         return cur_args, cur_kwargs
 
 
+# noinspection PyAbstractClass
 class ApiCall(ApiHandler):
 
     _help = {"desc": "This command is not documented. Please report this to the developers."}
 
+    # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
-        # missing
-        try:
-            if self._missing:
-                self.run = self.return_missing
-        except AttributeError:
-            pass
-
-        # help
-        if 'help' in kwargs:
-            self.run = self.return_help
+        # TODO: Find out why this buggers up RequestHandler init if called
+        # super(ApiCall, self).__init__(args, kwargs)
+        self.rh = None
+        self.indexer = 1
+        self._missing = []
+        self._requiredParams = {}
+        self._optionalParams = {}
+        self.check_params(args, kwargs)
 
     def run(self):
-        # override with real output function in subclass
-        return {}
+        raise NotImplementedError()
 
     def return_help(self):
-        try:
-            if self._requiredParams:
-                pass
-        except AttributeError:
-            self._requiredParams = []
-        try:
-            if self._optionalParams:
-                pass
-        except AttributeError:
-            self._optionalParams = []
-
         for paramDict, paramType in [(self._requiredParams, "requiredParameters"),
                                      (self._optionalParams, "optionalParameters")]:
 
             if paramType in self._help:
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName] = {}
                     if paramDict[paramName]["allowedValues"]:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName]["allowedValues"] = paramDict[paramName]["allowedValues"]
                     else:
+                        # noinspection PyUnresolvedReferences
                         self._help[paramType][paramName]["allowedValues"] = "see desc"
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName]["defaultValue"] = paramDict[paramName]["defaultValue"]
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName]["type"] = paramDict[paramName]["type"]
 
             elif paramDict:
                 for paramName in paramDict:
                     self._help[paramType] = {}
+                    # noinspection PyUnresolvedReferences
                     self._help[paramType][paramName] = paramDict[paramName]
             else:
                 self._help[paramType] = {}
+
         msg = "No description available"
         if "desc" in self._help:
             msg = self._help["desc"]
+
         return _responds(RESULT_SUCCESS, self._help, msg)
 
     def return_missing(self):
@@ -315,7 +325,7 @@ class ApiCall(ApiHandler):
             msg = "The required parameters: '" + "','".join(self._missing) + "' where not set"
         return _responds(RESULT_ERROR, msg=msg)
 
-    def check_params(self, args, kwargs, key, default, required, arg_type, allowed_values):
+    def check_params(self, args, kwargs, key=None, default=None, required=None, arg_type=None, allowed_values=None):
 
         """ function to check passed params for the shorthand wrapper
             and to detect missing/required params
@@ -328,50 +338,48 @@ class ApiCall(ApiHandler):
 
             self.indexer = indexer_ids.index(key)
 
-        missing = True
-        org_default = default
+        if key:
+            missing = True
+            org_default = default
 
-        if arg_type == "bool":
-            allowed_values = [0, 1]
-
-        if args:
-            default = args[0]
-            missing = False
-            args = args[1:]
-        if kwargs.get(key):
-            default = kwargs.get(key)
-            missing = False
-        if required:
-            try:
-                self._missing
-                self._requiredParams.append(key)
-            except AttributeError:
-                self._missing = []
-                self._requiredParams = {key: {"allowedValues": allowed_values,
-                                              "defaultValue": org_default,
-                                              "type": arg_type}}
-
-            if missing and key not in self._missing:
-                self._missing.append(key)
-        else:
-            try:
-                self._optionalParams[key] = {"allowedValues": allowed_values,
-                                             "defaultValue": org_default,
-                                             "type": arg_type}
-            except AttributeError:
-                self._optionalParams = {key: {"allowedValues": allowed_values,
-                                              "defaultValue": org_default,
-                                              "type": arg_type}}
-
-        if default:
-            default = self._check_param_type(default, key, arg_type)
             if arg_type == "bool":
-                arg_type = []
-            self._check_param_value(default, key, allowed_values)
+                allowed_values = [0, 1]
+
+            if args:
+                default = args[0]
+                missing = False
+                args = args[1:]
+            if kwargs.get(key):
+                default = kwargs.get(key)
+                missing = False
+
+            key_value = {
+                "allowedValues": allowed_values,
+                "defaultValue": org_default,
+                "type": arg_type
+            }
+
+            if required:
+                self._requiredParams[key] = key_value
+                if missing and key not in self._missing:
+                    self._missing.append(key)
+            else:
+                self._optionalParams[key] = key_value
+
+            if default:
+                default = self._check_param_type(default, key, arg_type)
+                self._check_param_value(default, key, allowed_values)
+
+        if self._missing:
+            setattr(self, "run", self.return_missing)
+
+        if 'help' in kwargs:
+            setattr(self, "run", self.return_help)
 
         return default, args
 
-    def _check_param_type(self, value, name, arg_type):
+    @staticmethod
+    def _check_param_type(value, name, arg_type):
         """ checks if value can be converted / parsed to arg_type
             will raise an error on failure
             or will convert it to arg_type and return new converted value
@@ -404,15 +412,16 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.log(u'API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
+            logger.log('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(u'param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
+            raise ApiError('param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
 
         return value
 
-    def _check_param_value(self, value, name, allowed_values):
+    @staticmethod
+    def _check_param_value(value, name, allowed_values):
         """ will check if value (or all values in it ) are in allowed values
             will raise an exception if value is "out of range"
             if bool(allowed_value) is False a check is not performed and all values are excepted
@@ -429,14 +438,17 @@ class ApiCall(ApiHandler):
 
             if error:
                 # this is kinda a ApiError but raising an error is the only way of quitting here
-                raise ApiError(u"param: '" + str(name) + "' with given value: '" + str(
+                raise ApiError("param: '" + str(name) + "' with given value: '" + str(
                     value) + "' is out of allowed range '" + str(allowed_values) + "'")
 
 
+# noinspection PyAbstractClass
 class TVDBShorthandWrapper(ApiCall):
     _help = {"desc": "This is an internal function wrapper. Call the help command directly for more information."}
 
     def __init__(self, args, kwargs, sid):
+        super(TVDBShorthandWrapper, self).__init__(args, kwargs)
+
         self.origArgs = args
         self.kwargs = kwargs
         self.sid = sid
@@ -445,17 +457,15 @@ class TVDBShorthandWrapper(ApiCall):
         self.e, args = self.check_params(args, kwargs, "e", None, False, "ignore", [])
         self.args = args
 
-        ApiCall.__init__(self, args, kwargs)
-
     def run(self):
         """ internal function wrapper """
         args = (self.sid,) + self.origArgs
         if self.e:
-            return CMD_Episode(args, self.kwargs).run()
+            return CMDEpisode(args, self.kwargs).run()
         elif self.s:
-            return CMD_ShowSeasons(args, self.kwargs).run()
+            return CMDShowSeasons(args, self.kwargs).run()
         else:
-            return CMD_Show(args, self.kwargs).run()
+            return CMDShow(args, self.kwargs).run()
 
 
 # ###############################
@@ -516,34 +526,78 @@ def _history_date_to_datetime_form(time_string):
     date = datetime.datetime.strptime(time_string, History.date_format)
     return date.strftime(dateTimeFormat)
 
+QUALITY_MAP = {
+    Quality.SDTV: 'sdtv',
+    'sdtv': Quality.SDTV,
 
-def _map_quality(show_obj):
-    quality_map = _get_quality_map()
+    Quality.SDDVD: 'sddvd',
+    'sddvd': Quality.SDDVD,
+
+    Quality.HDTV: 'hdtv',
+    'hdtv': Quality.HDTV,
+
+    Quality.RAWHDTV: 'rawhdtv',
+    'rawhdtv': Quality.RAWHDTV,
+
+    Quality.FULLHDTV: 'fullhdtv',
+    'fullhdtv': Quality.FULLHDTV,
+
+    Quality.HDWEBDL: 'hdwebdl',
+    'hdwebdl': Quality.HDWEBDL,
+
+    Quality.FULLHDWEBDL: 'fullhdwebdl',
+    'fullhdwebdl': Quality.FULLHDWEBDL,
+
+    Quality.HDBLURAY: 'hdbluray',
+    'hdbluray': Quality.HDBLURAY,
+
+    Quality.FULLHDBLURAY: 'fullhdbluray',
+    'fullhdbluray': Quality.FULLHDBLURAY,
+
+    Quality.UHD_4K_TV: 'uhd4ktv',
+    'udh4ktv': Quality.UHD_4K_TV,
+
+    Quality.UHD_4K_BLURAY: '4kbluray',
+    'uhd4kbluray': Quality.UHD_4K_BLURAY,
+
+    Quality.UHD_4K_WEBDL: '4kwebdl',
+    'udh4kwebdl': Quality.UHD_4K_WEBDL,
+
+    Quality.UHD_8K_TV: 'uhd8ktv',
+    'udh8ktv': Quality.UHD_8K_TV,
+
+    Quality.UHD_8K_BLURAY: 'uhd8kbluray',
+    'uhd8kbluray': Quality.UHD_8K_BLURAY,
+
+    Quality.UHD_8K_WEBDL: 'udh8kwebdl',
+    "udh8kwebdl": Quality.UHD_8K_WEBDL,
+
+    Quality.UNKNOWN: 'unknown',
+    'unknown': Quality.UNKNOWN
+}
+
+ALLOWED_QUALITY_LIST = [
+    "sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray",
+    "udh4ktv", "uhd4kbluray", "udh4kwebdl", "udh8ktv", "uhd8kbluray", "udh8kwebdl", "unknown"
+]
+
+PREFERRED_QUALITY_LIST = [
+    "sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray",
+    "udh4ktv", "uhd4kbluray", "udh4kwebdl", "udh8ktv", "uhd8kbluray", "udh8kwebdl"
+]
+
+
+def _map_quality(show_quality):
 
     any_qualities = []
     best_qualities = []
 
-    i_quality_id, a_quality_id = Quality.splitQuality(int(show_obj))
-    if i_quality_id:
-        for quality in i_quality_id:
-            any_qualities.append(quality_map[quality])
-    if a_quality_id:
-        for quality in a_quality_id:
-            best_qualities.append(quality_map[quality])
+    i_quality_id, a_quality_id = Quality.splitQuality(int(show_quality))
+    for quality in i_quality_id:
+        any_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
+    for quality in a_quality_id:
+        best_qualities.append((QUALITY_MAP[quality], "N/A")[quality is None])
     return any_qualities, best_qualities
-
-
-def _get_quality_map():
-    return {Quality.SDTV: 'sdtv',
-            Quality.SDDVD: 'sddvd',
-            Quality.HDTV: 'hdtv',
-            Quality.RAWHDTV: 'rawhdtv',
-            Quality.FULLHDTV: 'fullhdtv',
-            Quality.HDWEBDL: 'hdwebdl',
-            Quality.FULLHDWEBDL: 'fullhdwebdl',
-            Quality.HDBLURAY: 'hdbluray',
-            Quality.FULLHDBLURAY: 'fullhdbluray',
-            Quality.UNKNOWN: 'unknown'}
 
 
 def _get_root_dirs():
@@ -562,13 +616,14 @@ def _get_root_dirs():
         return {}
 
     # clean up the list - replace %xx escapes by their single-character equivalent
-    root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+    root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
 
     default_dir = root_dirs[default_index]
 
     dir_list = []
     for root_dir in root_dirs:
         valid = 1
+        # noinspection PyBroadException
         try:
             ek(os.listdir, root_dir)
         except Exception:
@@ -602,7 +657,8 @@ class IntParseError(Exception):
 # -------------------------------------------------------------------------------------#
 
 
-class CMD_Help(ApiCall):
+# noinspection PyAbstractClass
+class CMDHelp(ApiCall):
     _help = {
         "desc": "Get help about a given command",
         "optionalParameters": {
@@ -611,10 +667,8 @@ class CMD_Help(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDHelp, self).__init__(args, kwargs)
         self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string", function_mapper.keys())
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get help about a given command """
@@ -625,7 +679,8 @@ class CMD_Help(ApiCall):
         return out
 
 
-class CMD_ComingEpisodes(ApiCall):
+# noinspection PyAbstractClass
+class CMDComingEpisodes(ApiCall):
     _help = {
         "desc": "Get the coming episodes",
         "optionalParameters": {
@@ -638,44 +693,43 @@ class CMD_ComingEpisodes(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDComingEpisodes, self).__init__(args, kwargs)
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ComingEpisodes.sorts.keys())
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
         self.paused, args = self.check_params(args, kwargs, "paused", bool(sickbeard.COMING_EPS_DISPLAY_PAUSED), False,
                                               "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the coming episodes """
         grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
-        for section, coming_episodes in grouped_coming_episodes.iteritems():
+        # noinspection PyCompatibility
+        for section, coming_episodes in six.iteritems(grouped_coming_episodes):
             for coming_episode in coming_episodes:
                 data[section].append({
-                    'airdate': coming_episode['airdate'],
-                    'airs': coming_episode['airs'],
-                    'ep_name': coming_episode['name'],
-                    'ep_plot': coming_episode['description'],
-                    'episode': coming_episode['episode'],
-                    'indexerid': coming_episode['indexer_id'],
-                    'network': coming_episode['network'],
-                    'paused': coming_episode['paused'],
-                    'quality': coming_episode['quality'],
-                    'season': coming_episode['season'],
-                    'show_name': coming_episode['show_name'],
-                    'show_status': coming_episode['status'],
-                    'tvdbid': coming_episode['tvdbid'],
-                    'weekday': coming_episode['weekday']
+                    'airdate': coming_episode[b'airdate'],
+                    'airs': coming_episode[b'airs'],
+                    'ep_name': coming_episode[b'name'],
+                    'ep_plot': coming_episode[b'description'],
+                    'episode': coming_episode[b'episode'],
+                    'indexerid': coming_episode[b'indexer_id'],
+                    'network': coming_episode[b'network'],
+                    'paused': coming_episode[b'paused'],
+                    'quality': coming_episode[b'quality'],
+                    'season': coming_episode[b'season'],
+                    'show_name': coming_episode[b'show_name'],
+                    'show_status': coming_episode[b'status'],
+                    'tvdbid': coming_episode[b'tvdbid'],
+                    'weekday': coming_episode[b'weekday']
                 })
 
         return _responds(RESULT_SUCCESS, data)
 
 
-class CMD_Episode(ApiCall):
+# noinspection PyAbstractClass
+class CMDEpisode(ApiCall):
     _help = {
         "desc": "Get detailed information about an episode",
         "requiredParameters": {
@@ -692,14 +746,11 @@ class CMD_Episode(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDEpisode, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
-        # optional
         self.fullPath, args = self.check_params(args, kwargs, "full_path", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get detailed information about an episode """
@@ -708,6 +759,7 @@ class CMD_Episode(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         main_db_con = db.DBConnection(row_type="dict")
+        # noinspection PyPep8
         sql_results = main_db_con.select(
             "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
             [self.indexerid, self.e, self.s])
@@ -723,28 +775,29 @@ class CMD_Episode(ApiCall):
             pass
 
         if not show_path:  # show dir is broken ... episode path will be empty
-            episode["location"] = ""
+            episode[b"location"] = ""
         elif not self.fullPath:
             # using the length because lstrip() removes to much
             show_path_length = len(show_path) + 1  # the / or \ yeah not that nice i know
-            episode["location"] = episode["location"][show_path_length:]
+            episode[b"location"] = episode[b"location"][show_path_length:]
 
         # convert stuff to human form
-        if try_int(episode['airdate'], 1) > 693595:  # 1900
-            episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
-                network_timezones.parse_date_time(int(episode['airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
+        if try_int(episode[b'airdate'], 1) > 693595:  # 1900
+            episode[b'airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
+                network_timezones.parse_date_time(int(episode[b'airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
         else:
-            episode['airdate'] = 'Never'
+            episode[b'airdate'] = 'Never'
 
-        status, quality = Quality.splitCompositeStatus(int(episode["status"]))
-        episode["status"] = _get_status_strings(status)
-        episode["quality"] = get_quality_string(quality)
-        episode["file_size_human"] = pretty_file_size(episode["file_size"])
+        status, quality = Quality.splitCompositeStatus(int(episode[b"status"]))
+        episode[b"status"] = _get_status_strings(status)
+        episode[b"quality"] = get_quality_string(quality)
+        episode[b"file_size_human"] = pretty_file_size(episode[b"file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 
 
-class CMD_EpisodeSearch(ApiCall):
+# noinspection PyAbstractClass
+class CMDEpisodeSearch(ApiCall):
     _help = {
         "desc": "Search for an episode. The response might take some time.",
         "requiredParameters": {
@@ -758,13 +811,10 @@ class CMD_EpisodeSearch(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDEpisodeSearch, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Search for an episode """
@@ -795,7 +845,8 @@ class CMD_EpisodeSearch(ApiCall):
         return _responds(RESULT_FAILURE, msg='Unable to find episode')
 
 
-class CMD_EpisodeSetStatus(ApiCall):
+# noinspection PyAbstractClass
+class CMDEpisodeSetStatus(ApiCall):
     _help = {
         "desc": "Set the status of an episode or a season (when no episode is provided)",
         "requiredParameters": {
@@ -811,16 +862,13 @@ class CMD_EpisodeSetStatus(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDEpisodeSetStatus, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.status, args = self.check_params(args, kwargs, "status", None, True, "string",
                                               ["wanted", "skipped", "ignored", "failed"])
-        # optional
         self.e, args = self.check_params(args, kwargs, "episode", None, False, "int", [])
         self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Set the status of an episode or a season (when no episode is provided) """
@@ -837,7 +885,6 @@ class CMD_EpisodeSetStatus(ApiCall):
             # the allowed values has at least one item that could not be matched against the internal status strings
             raise ApiError("The status string could not be matched to a status. Report to Devs!")
 
-        ep_list = []
         if self.e:
             ep_obj = show_obj.getEpisode(self.s, self.e)
             if not ep_obj:
@@ -868,6 +915,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
                 # don't let them mess up UN-AIRED episodes
                 if ep_obj.status == UNAIRED:
+                    # noinspection PyPep8
                     if self.e is not None:  # setting the status of an un-aired is only considered a failure if we directly wanted this episode, but is ignored on a season request
                         ep_results.append(
                             _ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is UN-AIRED"))
@@ -898,11 +946,12 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         extra_msg = ""
         if start_backlog:
-            for season, segment in segments.iteritems():
+            # noinspection PyCompatibility
+            for season, segment in six.iteritems(segments):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
-                logger.log(u"API :: Starting backlog for " + show_obj.name + " season " + str(
+                logger.log("API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
 
             extra_msg = " Backlog started"
@@ -913,7 +962,8 @@ class CMD_EpisodeSetStatus(ApiCall):
             return _responds(RESULT_SUCCESS, msg='All status set successfully.' + extra_msg)
 
 
-class CMD_SubtitleSearch(ApiCall):
+# noinspection PyAbstractClass
+class CMDSubtitleSearch(ApiCall):
     _help = {
         "desc": "Search for an episode subtitles. The response might take some time.",
         "requiredParameters": {
@@ -927,13 +977,10 @@ class CMD_SubtitleSearch(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDSubtitleSearch, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Search for an episode subtitles """
@@ -946,6 +993,7 @@ class CMD_SubtitleSearch(ApiCall):
         if isinstance(ep_obj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
+        # noinspection PyBroadException
         try:
             new_subtitles = ep_obj.download_subtitles()
         except Exception:
@@ -964,7 +1012,8 @@ class CMD_SubtitleSearch(ApiCall):
         return response
 
 
-class CMD_Exceptions(ApiCall):
+# noinspection PyAbstractClass
+class CMDExceptions(ApiCall):
     _help = {
         "desc": "Get the scene exceptions for all or a given show",
         "optionalParameters": {
@@ -974,12 +1023,9 @@ class CMD_Exceptions(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDExceptions, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
-
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
         """ Get the scene exceptions for all or a given show """
@@ -989,10 +1035,10 @@ class CMD_Exceptions(ApiCall):
             sql_results = cache_db_con.select("SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions")
             scene_exceptions = {}
             for row in sql_results:
-                indexerid = row["indexerid"]
+                indexerid = row[b"indexerid"]
                 if indexerid not in scene_exceptions:
                     scene_exceptions[indexerid] = []
-                scene_exceptions[indexerid].append(row["show_name"])
+                scene_exceptions[indexerid].append(row[b"show_name"])
 
         else:
             show_obj = Show.find(sickbeard.showList, int(self.indexerid))
@@ -1004,12 +1050,13 @@ class CMD_Exceptions(ApiCall):
                 [self.indexerid])
             scene_exceptions = []
             for row in sql_results:
-                scene_exceptions.append(row["show_name"])
+                scene_exceptions.append(row[b"show_name"])
 
         return _responds(RESULT_SUCCESS, scene_exceptions)
 
 
-class CMD_History(ApiCall):
+# noinspection PyAbstractClass
+class CMDHistory(ApiCall):
     _help = {
         "desc": "Get the downloaded and/or snatched history",
         "optionalParameters": {
@@ -1019,14 +1066,10 @@ class CMD_History(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDHistory, self).__init__(args, kwargs)
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string", ["downloaded", "snatched"])
         self.type = self.type.lower() if isinstance(self.type, str) else ''
-
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the downloaded and/or snatched history """
@@ -1034,37 +1077,35 @@ class CMD_History(ApiCall):
         results = []
 
         for row in data:
-            status, quality = Quality.splitCompositeStatus(int(row["action"]))
+            status, quality = Quality.splitCompositeStatus(int(row[b"action"]))
             status = _get_status_strings(status)
 
             if self.type and not status.lower() == self.type:
                 continue
 
-            row["status"] = status
-            row["quality"] = get_quality_string(quality)
-            row["date"] = _history_date_to_datetime_form(str(row["date"]))
+            row[b"status"] = status
+            row[b"quality"] = get_quality_string(quality)
+            row[b"date"] = _history_date_to_datetime_form(str(row[b"date"]))
 
-            del row["action"]
+            del row[b"action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row["resource_path"] = ek(os.path.dirname, row["resource"])
-            row["resource"] = ek(os.path.basename, row["resource"])
+            row[b"resource_path"] = ek(os.path.dirname, row[b"resource"])
+            row[b"resource"] = ek(os.path.basename, row[b"resource"])
 
             # Add tvdbid for backward compatibility
-            row['tvdbid'] = row['indexerid']
+            row[b'tvdbid'] = row[b'indexerid']
             results.append(row)
 
         return _responds(RESULT_SUCCESS, results)
 
 
-class CMD_HistoryClear(ApiCall):
+# noinspection PyAbstractClass
+class CMDHistoryClear(ApiCall):
     _help = {"desc": "Clear the entire history"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDHistoryClear, self).__init__(args, kwargs)
 
     def run(self):
         """ Clear the entire history """
@@ -1073,14 +1114,12 @@ class CMD_HistoryClear(ApiCall):
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
 
-class CMD_HistoryTrim(ApiCall):
+# noinspection PyAbstractClass
+class CMDHistoryTrim(ApiCall):
     _help = {"desc": "Trim history entries older than 30 days"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDHistoryTrim, self).__init__(args, kwargs)
 
     def run(self):
         """ Trim history entries older than 30 days """
@@ -1089,7 +1128,8 @@ class CMD_HistoryTrim(ApiCall):
         return _responds(RESULT_SUCCESS, msg='Removed history entries older than 30 days')
 
 
-class CMD_Failed(ApiCall):
+# noinspection PyAbstractClass
+class CMDFailed(ApiCall):
     _help = {
         "desc": "Get the failed downloads",
         "optionalParameters": {
@@ -1098,11 +1138,8 @@ class CMD_Failed(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDFailed, self).__init__(args, kwargs)
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the failed downloads """
@@ -1118,14 +1155,12 @@ class CMD_Failed(ApiCall):
         return _responds(RESULT_SUCCESS, sql_results)
 
 
-class CMD_Backlog(ApiCall):
+# noinspection PyAbstractClass
+class CMDBacklog(ApiCall):
     _help = {"desc": "Get the backlogged episodes"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDBacklog, self).__init__(args, kwargs)
 
     def run(self):
         """ Get the backlogged episodes """
@@ -1137,13 +1172,14 @@ class CMD_Backlog(ApiCall):
 
             show_eps = []
 
+            # noinspection PyPep8
             sql_results = main_db_con.select(
                 "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
 
             for curResult in sql_results:
 
-                cur_ep_cat = curShow.getOverview(curResult["status"])
+                cur_ep_cat = curShow.getOverview(curResult[b"status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(curResult)
 
@@ -1158,7 +1194,8 @@ class CMD_Backlog(ApiCall):
         return _responds(RESULT_SUCCESS, shows)
 
 
-class CMD_Logs(ApiCall):
+# noinspection PyAbstractClass
+class CMDLogs(ApiCall):
     _help = {
         "desc": "Get the logs",
         "optionalParameters": {
@@ -1171,12 +1208,9 @@ class CMD_Logs(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDLogs, self).__init__(args, kwargs)
         self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string",
                                                  ["error", "warning", "info", "debug"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the logs """
@@ -1224,7 +1258,8 @@ class CMD_Logs(ApiCall):
         return _responds(RESULT_SUCCESS, final_data)
 
 
-class CMD_LogsClear(ApiCall):
+# noinspection PyAbstractClass
+class CMDLogsClear(ApiCall):
     _help = {
         "desc": "Clear the logs",
         "optionalParameters": {
@@ -1233,11 +1268,8 @@ class CMD_LogsClear(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDLogsClear, self).__init__(args, kwargs)
         self.level, args = self.check_params(args, kwargs, "level", "warning", False, "string", ["warning", "error"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Clear the logs """
@@ -1255,33 +1287,35 @@ class CMD_LogsClear(ApiCall):
         return _responds(RESULT_SUCCESS, msg=msg)
 
 
-class CMD_PostProcess(ApiCall):
+# noinspection PyAbstractClass
+class CMDPostProcess(ApiCall):
     _help = {
         "desc": "Manually post-process the files in the download folder",
         "optionalParameters": {
             "path": {"desc": "The path to the folder to post-process"},
             "force_replace": {"desc": "Force already post-processed files to be post-processed again"},
+            "force_next": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
             "return_data": {"desc": "Returns the result of the post-process"},
             "process_method": {"desc": "How should valid post-processed files be handled"},
             "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
             "failed": {"desc": "Mark download as failed"},
+            "delete": {"desc": "Delete processed files and folders"},
             "type": {"desc": "The type of post-process being requested"},
         }
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDPostProcess, self).__init__(args, kwargs)
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
-                                                      ["copy", "symlink", "hardlink", "move"])
+                                                      PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
+        self.delete, args = self.check_params(args, kwargs, "delete", False, False, "bool", [])
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Manually post-process the files in the download folder """
@@ -1294,8 +1328,11 @@ class CMD_PostProcess(ApiCall):
         if not self.type:
             self.type = 'manual'
 
-        data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace,
-                                    is_priority=self.is_priority, failed=self.failed, proc_type=self.type)
+        data = sickbeard.postProcessorTaskScheduler.action.add_item(
+            self.path, method=self.process_method, force=self.force_replace,
+            is_priority=self.is_priority, failed=self.failed, delete=self.delete,
+            mode=self.type, force_next=self.force_next
+        )
 
         if not self.return_data:
             data = ""
@@ -1303,14 +1340,12 @@ class CMD_PostProcess(ApiCall):
         return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0}".format(self.path))
 
 
-class CMD_SickBeard(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeard(ApiCall):
     _help = {"desc": "Get miscellaneous information about SickRage"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeard, self).__init__(args, kwargs)
 
     def run(self):
         """ dGet miscellaneous information about SickRage """
@@ -1319,7 +1354,8 @@ class CMD_SickBeard(ApiCall):
         return _responds(RESULT_SUCCESS, data)
 
 
-class CMD_SickBeardAddRootDir(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardAddRootDir(ApiCall):
     _help = {
         "desc": "Add a new root (parent) directory to SickRage",
         "requiredParameters": {
@@ -1331,17 +1367,14 @@ class CMD_SickBeardAddRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDSickBeardAddRootDir, self).__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
-        # optional
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Add a new root (parent) directory to SickRage """
 
-        self.location = urllib.unquote_plus(self.location)
+        self.location = urllib.parse.unquote_plus(self.location)
         location_matched = 0
         index = 0
 
@@ -1358,7 +1391,7 @@ class CMD_SickBeardAddRootDir(ApiCall):
             index = int(sickbeard.ROOT_DIRS.split('|')[0])
             root_dirs.pop(0)
             # clean up the list - replace %xx escapes by their single-character equivalent
-            root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+            root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
             for x in root_dirs:
                 if x == self.location:
                     location_matched = 1
@@ -1372,22 +1405,21 @@ class CMD_SickBeardAddRootDir(ApiCall):
             else:
                 root_dirs.append(self.location)
 
-        root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs]
+        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs]
         root_dirs_new.insert(0, index)
-        root_dirs_new = '|'.join(unicode(x) for x in root_dirs_new)
+        # noinspection PyCompatibility
+        root_dirs_new = '|'.join(six.text_type(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directories updated")
 
 
-class CMD_SickBeardCheckVersion(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardCheckVersion(ApiCall):
     _help = {"desc": "Check if a new version of SickRage is available"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardCheckVersion, self).__init__(args, kwargs)
 
     def run(self):
         check_version = CheckVersion()
@@ -1411,18 +1443,16 @@ class CMD_SickBeardCheckVersion(ApiCall):
         return _responds(RESULT_SUCCESS, data)
 
 
-class CMD_SickBeardCheckScheduler(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardCheckScheduler, self).__init__(args, kwargs)
 
     def run(self):
         """ Get information about the scheduler """
-        main_db_con = db.DBConnection()
+        main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
         backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
@@ -1430,12 +1460,13 @@ class CMD_SickBeardCheckScheduler(ApiCall):
         next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         data = {"backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
-                "last_backlog": _ordinal_to_date_form(sql_results[0]["last_backlog"]),
+                "last_backlog": _ordinal_to_date_form(sql_results[0][b"last_backlog"]),
                 "next_backlog": next_backlog}
         return _responds(RESULT_SUCCESS, data)
 
 
-class CMD_SickBeardDeleteRootDir(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardDeleteRootDir(ApiCall):
     _help = {
         "desc": "Delete a root (parent) directory from SickRage",
         "requiredParameters": {
@@ -1444,11 +1475,8 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDSickBeardDeleteRootDir, self).__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Delete a root (parent) directory from SickRage """
@@ -1461,7 +1489,7 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
         index = int(root_dirs[0])
         root_dirs.pop(0)
         # clean up the list - replace %xx escapes by their single-character equivalent
-        root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
+        root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
         old_root_dir = root_dirs[index]
         for curRootDir in root_dirs:
             if not curRootDir == self.location:
@@ -1474,24 +1502,23 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
                 new_index = curIndex
                 break
 
-        root_dirs_new = [urllib.unquote_plus(x) for x in root_dirs_new]
+        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
         if len(root_dirs_new) > 0:
             root_dirs_new.insert(0, new_index)
-        root_dirs_new = "|".join(unicode(x) for x in root_dirs_new)
+        # noinspection PyCompatibility
+        root_dirs_new = "|".join(six.text_type(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         # what if the root dir was not found?
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directory deleted")
 
 
-class CMD_SickBeardGetDefaults(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardGetDefaults(ApiCall):
     _help = {"desc": "Get SickRage's user default configuration value"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardGetDefaults, self).__init__(args, kwargs)
 
     def run(self):
         """ Get SickRage's user default configuration value """
@@ -1499,19 +1526,19 @@ class CMD_SickBeardGetDefaults(ApiCall):
         any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
         data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": any_qualities,
-                "archive": best_qualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
+                "flatten_folders": int(not sickbeard.SEASON_FOLDERS_DEFAULT),
+                "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT),
+                "initial": any_qualities, "archive": best_qualities,
+                "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
         return _responds(RESULT_SUCCESS, data)
 
 
-class CMD_SickBeardGetMessages(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardGetMessages(ApiCall):
     _help = {"desc": "Get all messages"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardGetMessages, self).__init__(args, kwargs)
 
     def run(self):
         messages = []
@@ -1522,14 +1549,12 @@ class CMD_SickBeardGetMessages(ApiCall):
         return _responds(RESULT_SUCCESS, messages)
 
 
-class CMD_SickBeardGetRootDirs(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardGetRootDirs(ApiCall):
     _help = {"desc": "Get all root (parent) directories"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardGetRootDirs, self).__init__(args, kwargs)
 
     def run(self):
         """ Get all root (parent) directories """
@@ -1537,7 +1562,8 @@ class CMD_SickBeardGetRootDirs(ApiCall):
         return _responds(RESULT_SUCCESS, _get_root_dirs())
 
 
-class CMD_SickBeardPauseBacklog(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardPauseBacklog(ApiCall):
     _help = {
         "desc": "Pause or un-pause the backlog search",
         "optionalParameters": {
@@ -1546,11 +1572,8 @@ class CMD_SickBeardPauseBacklog(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDSickBeardPauseBacklog, self).__init__(args, kwargs)
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Pause or un-pause the backlog search """
@@ -1562,14 +1585,12 @@ class CMD_SickBeardPauseBacklog(ApiCall):
             return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
 
 
-class CMD_SickBeardPing(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardPing(ApiCall):
     _help = {"desc": "Ping SickRage to check if it is running"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardPing, self).__init__(args, kwargs)
 
     def run(self):
         """ Ping SickRage to check if it is running """
@@ -1579,14 +1600,12 @@ class CMD_SickBeardPing(ApiCall):
             return _responds(RESULT_SUCCESS, msg="Pong")
 
 
-class CMD_SickBeardRestart(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardRestart(ApiCall):
     _help = {"desc": "Restart SickRage"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardRestart, self).__init__(args, kwargs)
 
     def run(self):
         """ Restart SickRage """
@@ -1596,28 +1615,26 @@ class CMD_SickBeardRestart(ApiCall):
         return _responds(RESULT_SUCCESS, msg="SickRage is restarting...")
 
 
-class CMD_SickBeardSearchIndexers(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardSearchIndexers(ApiCall):
     _help = {
         "desc": "Search for a show with a given name on all the indexers, in a specific language",
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
             "indexerid": {"desc": "Unique ID of a show"},
-            "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
             "lang": {"desc": "The 2-letter language code of the desired show"},
+            "only_new": {"desc": "Discard shows that are already in your show list"},
         }
     }
 
     def __init__(self, args, kwargs):
+        super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
         self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
-        # required
-        # optional
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
-
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
 
     def run(self):
         """ Search for a show with a given name on all the indexers, in a specific language """
@@ -1639,14 +1656,18 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                 try:
                     api_data = t[str(self.name).encode()]
                 except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     continue
 
                 for curSeries in api_data:
+                    # Skip it if it's in our show list already, and we only want new shows
+                    if curSeries['in_show_list'] and self.only_new:
+                        continue
                     results.append({indexer_ids[_indexer]: int(curSeries['id']),
                                     "name": curSeries['seriesname'],
                                     "first_aired": curSeries['firstaired'],
-                                    "indexer": int(_indexer)})
+                                    "indexer": int(_indexer),
+                                    "in_show_list": curSeries['in_show_list']})
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
@@ -1663,18 +1684,19 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                 try:
                     my_show = t[int(self.indexerid)]
                 except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
                 if not my_show.data['seriesname']:
                     logger.log(
-                        u"API :: Found show with indexerid: " + str(
+                        "API :: Found show with indexerid: " + str(
                             self.indexerid) + ", however it contained no show name", logger.DEBUG)
                     return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
                 # found show
+                # noinspection PyCompatibility
                 results = [{indexer_ids[_indexer]: int(my_show.data['id']),
-                            "name": unicode(my_show.data['seriesname']),
+                            "name": six.text_type(my_show.data['seriesname']),
                             "first_aired": my_show.data['firstaired'],
                             "indexer": int(_indexer)}]
                 break
@@ -1684,7 +1706,8 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             return _responds(RESULT_FAILURE, msg="Either a unique id or name is required!")
 
 
-class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
+# noinspection PyAbstractClass
+class CMDSickBeardSearchTVDB(CMDSickBeardSearchIndexers):
     _help = {
         "desc": "Search for a show with a given name on The TVDB, in a specific language",
         "optionalParameters": {
@@ -1695,11 +1718,12 @@ class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
+        CMDSickBeardSearchIndexers.__init__(self, args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
 
-class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
+# noinspection PyAbstractClass
+class CMDSickBeardSearchTVRAGE(CMDSickBeardSearchIndexers):
     """
     Deprecated, TVRage is no more.
     """
@@ -1715,65 +1739,50 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        # Leave this one as APICall so it doesnt try and search anything
-        # pylint: disable=non-parent-init-called,super-init-not-called
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardSearchTVRAGE, self).__init__(args, kwargs)
 
     def run(self):
         return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
 
 
-class CMD_SickBeardSetDefaults(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardSetDefaults(ApiCall):
     _help = {
         "desc": "Set SickRage's user default configuration value",
         "optionalParameters": {
             "initial": {"desc": "The initial quality of a show"},
             "archive": {"desc": "The archive quality of a show"},
             "future_show_paused": {"desc": "True to list paused shows in the coming episode, False otherwise"},
-            "flatten_folders": {"desc": "Flatten sub-folders within the show directory"},
+            "season_folders": {"desc": "Group episodes in season folders within the show directory"},
             "status": {"desc": "Status of missing episodes"},
         }
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        super(CMDSickBeardSetDefaults, self).__init__(args, kwargs)
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
+
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
-        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", None, False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders", not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "season_folders", self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Set SickRage's user default configuration value """
-
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
 
         i_quality_id = []
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             sickbeard.QUALITY_DEFAULT = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -1792,8 +1801,8 @@ class CMD_SickBeardSetDefaults(ApiCall):
                 raise ApiError("Status Prohibited")
             sickbeard.STATUS_DEFAULT = self.status
 
-        if self.flatten_folders is not None:
-            sickbeard.FLATTEN_FOLDERS_DEFAULT = int(self.flatten_folders)
+        if self.season_folders is not None:
+            sickbeard.SEASON_FOLDERS_DEFAULT = int(self.season_folders)
 
         if self.future_show_paused is not None:
             sickbeard.COMING_EPS_DISPLAY_PAUSED = int(self.future_show_paused)
@@ -1801,14 +1810,12 @@ class CMD_SickBeardSetDefaults(ApiCall):
         return _responds(RESULT_SUCCESS, msg="Saved defaults")
 
 
-class CMD_SickBeardShutdown(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardShutdown(ApiCall):
     _help = {"desc": "Shutdown SickRage"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardShutdown, self).__init__(args, kwargs)
 
     def run(self):
         """ Shutdown SickRage """
@@ -1818,14 +1825,12 @@ class CMD_SickBeardShutdown(ApiCall):
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
 
 
-class CMD_SickBeardUpdate(ApiCall):
+# noinspection PyAbstractClass
+class CMDSickBeardUpdate(ApiCall):
     _help = {"desc": "Update SickRage to the latest version available"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDSickBeardUpdate, self).__init__(args, kwargs)
 
     def run(self):
         check_version = CheckVersion()
@@ -1833,15 +1838,13 @@ class CMD_SickBeardUpdate(ApiCall):
         if check_version.check_for_new_version():
             if check_version.run_backup_if_safe():
                 check_version.update()
-
                 return _responds(RESULT_SUCCESS, msg="SickRage is updating ...")
-
             return _responds(RESULT_FAILURE, msg="SickRage could not backup config ...")
-
         return _responds(RESULT_FAILURE, msg="SickRage is already up to date")
 
 
-class CMD_Show(ApiCall):
+# noinspection PyAbstractClass
+class CMDShow(ApiCall):
     _help = {
         "desc": "Get detailed information about a show",
         "requiredParameters": {
@@ -1853,11 +1856,8 @@ class CMD_Show(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShow, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get detailed information about a show """
@@ -1866,8 +1866,8 @@ class CMD_Show(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         show_dict = {
-            "season_list": CMD_ShowSeasonList((), {"indexerid": self.indexerid}).run()["data"],
-            "cache": CMD_ShowCache((), {"indexerid": self.indexerid}).run()["data"]
+            "season_list": CMDShowSeasonList((), {"indexerid": self.indexerid}).run()["data"],
+            "cache": CMDShowCache((), {"indexerid": self.indexerid}).run()["data"]
         }
 
         genre_list = []
@@ -1893,7 +1893,7 @@ class CMD_Show(ApiCall):
         show_dict["paused"] = (0, 1)[show_obj.paused]
         show_dict["subtitles"] = (0, 1)[show_obj.subtitles]
         show_dict["air_by_date"] = (0, 1)[show_obj.air_by_date]
-        show_dict["flatten_folders"] = (0, 1)[show_obj.flatten_folders]
+        show_dict["season_folders"] = (0, 1)[show_obj.season_folders]
         show_dict["sports"] = (0, 1)[show_obj.sports]
         show_dict["anime"] = (0, 1)[show_obj.anime]
         show_dict["airs"] = str(show_obj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
@@ -1935,7 +1935,8 @@ class CMD_Show(ApiCall):
         return _responds(RESULT_SUCCESS, show_dict)
 
 
-class CMD_ShowAddExisting(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowAddExisting(ApiCall):
     _help = {
         "desc": "Add an existing show in SickRage",
         "requiredParameters": {
@@ -1946,28 +1947,24 @@ class CMD_ShowAddExisting(ApiCall):
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
             "initial": {"desc": "The initial quality of the show"},
             "archive": {"desc": "The archive quality of the show"},
-            "flatten_folders": {"desc": "True to flatten the show folder, False otherwise"},
+            "season_folders": {"desc": "True to group episodes in season folders, False otherwise"},
             "subtitles": {"desc": "True to search for subtitles, False otherwise"},
         }
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowAddExisting, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
-        # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
-        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                       bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "season_folders",
+                                                      self.season_folders, False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
                                                  False, "int", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Add an existing show in SickRage """
@@ -1979,30 +1976,19 @@ class CMD_ShowAddExisting(ApiCall):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexer_name = None
-        indexer_result = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
-        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result['data']['results']:
+        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result[b'data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
-                indexer_name = indexer_result['data']['results'][0]['name']
+            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
+                indexer_name = indexer_result[b'data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer so we can pass it along when adding show to SR
-        indexer = indexer_result['data']['results'][0]['indexer']
-
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
+        indexer = indexer_result[b'data']['results'][0]['indexer']
 
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
@@ -2010,26 +1996,29 @@ class CMD_ShowAddExisting(ApiCall):
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), self.location,
             default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
-            flatten_folders=int(self.flatten_folders), subtitles=self.subtitles,
+            season_folders=int(self.season_folders), subtitles=self.subtitles,
             default_status_after=sickbeard.STATUS_DEFAULT_AFTER
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
 
 
-class CMD_ShowAddNew(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowAddNew(ApiCall):
     _help = {
         "desc": "Add a new show to SickRage",
         "requiredParameters": {
@@ -2040,7 +2029,7 @@ class CMD_ShowAddNew(ApiCall):
             "initial": {"desc": "The initial quality of the show"},
             "location": {"desc": "The path to the folder where the show should be created"},
             "archive": {"desc": "The archive quality of the show"},
-            "flatten_folders": {"desc": "True to flatten the show folder, False otherwise"},
+            "season_folders": {"desc": "True to group episodes in season folders, False otherwise"},
             "status": {"desc": "The status of missing episodes"},
             "lang": {"desc": "The 2-letter language code of the desired show"},
             "subtitles": {"desc": "True to search for subtitles, False otherwise"},
@@ -2051,19 +2040,18 @@ class CMD_ShowAddNew(ApiCall):
     }
 
     def __init__(self, args, kwargs):
+        super(CMDShowAddNew, self).__init__(args, kwargs)
         self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
-        # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray"])
-        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                       bool(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+        self.initial, args = self.check_params(
+            args, kwargs, "initial", None, False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(
+            args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "season_folders",
+                                                      self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
@@ -2076,9 +2064,6 @@ class CMD_ShowAddNew(ApiCall):
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
-
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Add a new show to SickRage """
@@ -2098,28 +2083,19 @@ class CMD_ShowAddNew(ApiCall):
         if not ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
         i_quality_id = []
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -2159,38 +2135,38 @@ class CMD_ShowAddNew(ApiCall):
             default_ep_status_after = self.future_status
 
         indexer_name = None
-        indexer_result = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
+        indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
-        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result['data']['results']:
+        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result[b'data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
-                indexer_name = indexer_result['data']['results'][0]['name']
+            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
+                indexer_name = indexer_result[b'data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer for found show so we can pass it along
-        indexer = indexer_result['data']['results'][0]['indexer']
+        indexer = indexer_result[b'data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
         show_path = ek(os.path.join, self.location, sanitize_filename(indexer_name))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
-            logger.log(u"Skipping initial creation of " + show_path + " due to config.ini setting")
+            logger.log("Skipping initial creation of " + show_path + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_path)
             if not dir_exists:
-                logger.log(u"API :: Unable to create the folder " + show_path + ", can't add the show", logger.ERROR)
+                logger.log("API :: Unable to create the folder " + show_path + ", can't add the show", logger.ERROR)
                 return _responds(RESULT_FAILURE, {"path": show_path},
                                  "Unable to create the folder " + show_path + ", can't add the show")
             else:
                 helpers.chmodAsParent(show_path)
 
-        sickbeard.showQueueScheduler.action.addShow(
+        sickbeard.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), show_path, default_status=new_status,
-            quality=new_quality, flatten_folders=int(self.flatten_folders),
+            quality=new_quality, season_folders=int(self.season_folders),
             lang=self.lang, subtitles=self.subtitles, anime=self.anime,
             scene=self.scene, default_status_after=default_ep_status_after
         )
@@ -2198,7 +2174,8 @@ class CMD_ShowAddNew(ApiCall):
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
 
 
-class CMD_ShowCache(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowCache(ApiCall):
     _help = {
         "desc": "Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid",
         "requiredParameters": {
@@ -2210,11 +2187,8 @@ class CMD_ShowCache(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowCache, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid """
@@ -2238,7 +2212,8 @@ class CMD_ShowCache(ApiCall):
         return _responds(RESULT_SUCCESS, {"poster": has_poster, "banner": has_banner})
 
 
-class CMD_ShowDelete(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowDelete(ApiCall):
     _help = {
         "desc": "Delete a show in SickRage",
         "requiredParameters": {
@@ -2253,12 +2228,9 @@ class CMD_ShowDelete(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowDelete, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Delete a show in SickRage """
@@ -2270,7 +2242,8 @@ class CMD_ShowDelete(ApiCall):
         return _responds(RESULT_SUCCESS, msg='{0} has been queued to be deleted'.format(show.name))
 
 
-class CMD_ShowGetQuality(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowGetQuality(ApiCall):
     _help = {
         "desc": "Get the quality setting of a show",
         "requiredParameters": {
@@ -2282,11 +2255,8 @@ class CMD_ShowGetQuality(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowGetQuality, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the quality setting of a show """
@@ -2299,7 +2269,8 @@ class CMD_ShowGetQuality(ApiCall):
         return _responds(RESULT_SUCCESS, {"initial": any_qualities, "archive": best_qualities})
 
 
-class CMD_ShowGetPoster(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowGetPoster(ApiCall):
     _help = {
         "desc": "Get the poster of a show",
         "requiredParameters": {
@@ -2307,25 +2278,25 @@ class CMD_ShowGetPoster(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {"desc": '"normal" for normal size poster (default), "thumb" for small size poster'},
         }
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowGetPoster, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the poster a show """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid),
+            'image': ShowPoster(self.indexerid, self.media_format),
         }
 
 
-class CMD_ShowGetBanner(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowGetBanner(ApiCall):
     _help = {
         "desc": "Get the banner of a show",
         "requiredParameters": {
@@ -2333,25 +2304,25 @@ class CMD_ShowGetBanner(ApiCall):
         },
         "optionalParameters": {
             "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
+            "media_format": {"desc": '"normal" for normal size banner (default), "thumb" for small size banner'},
         }
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowGetBanner, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the banner of a show """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid),
+            'image': ShowBanner(self.indexerid, self.media_format),
         }
 
 
-class CMD_ShowGetNetworkLogo(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowGetNetworkLogo(ApiCall):
     _help = {
         "desc": "Get the network logo of a show",
         "requiredParameters": {
@@ -2363,11 +2334,8 @@ class CMD_ShowGetNetworkLogo(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowGetNetworkLogo, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """
@@ -2379,7 +2347,8 @@ class CMD_ShowGetNetworkLogo(ApiCall):
         }
 
 
-class CMD_ShowGetFanArt(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowGetFanArt(ApiCall):
     _help = {
         "desc": "Get the fan art of a show",
         "requiredParameters": {
@@ -2391,11 +2360,8 @@ class CMD_ShowGetFanArt(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowGetFanArt, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the fan art of a show """
@@ -2405,7 +2371,8 @@ class CMD_ShowGetFanArt(ApiCall):
         }
 
 
-class CMD_ShowPause(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowPause(ApiCall):
     _help = {
         "desc": "Pause or un-pause a show",
         "requiredParameters": {
@@ -2418,12 +2385,9 @@ class CMD_ShowPause(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowPause, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Pause or un-pause a show """
@@ -2435,7 +2399,8 @@ class CMD_ShowPause(ApiCall):
         return _responds(RESULT_SUCCESS, msg='{0} has been {1}'.format(show.name, ('resumed', 'paused')[show.paused]))
 
 
-class CMD_ShowRefresh(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowRefresh(ApiCall):
     _help = {
         "desc": "Refresh a show in SickRage",
         "requiredParameters": {
@@ -2447,11 +2412,8 @@ class CMD_ShowRefresh(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowRefresh, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Refresh a show in SickRage """
@@ -2463,7 +2425,8 @@ class CMD_ShowRefresh(ApiCall):
         return _responds(RESULT_SUCCESS, msg='{0} has queued to be refreshed'.format(show.name))
 
 
-class CMD_ShowSeasonList(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowSeasonList(ApiCall):
     _help = {
         "desc": "Get the list of seasons of a show",
         "requiredParameters": {
@@ -2476,12 +2439,9 @@ class CMD_ShowSeasonList(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowSeasonList, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
         self.sort, args = self.check_params(args, kwargs, "sort", "desc", False, "string", ["asc", "desc"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the list of seasons of a show """
@@ -2498,12 +2458,13 @@ class CMD_ShowSeasonList(ApiCall):
                                              [self.indexerid])
         season_list = []  # a list with all season numbers
         for row in sql_results:
-            season_list.append(int(row["season"]))
+            season_list.append(int(row[b"season"]))
 
         return _responds(RESULT_SUCCESS, season_list)
 
 
-class CMD_ShowSeasons(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowSeasons(ApiCall):
     _help = {
         "desc": "Get the list of episodes for one or all seasons of a show",
         "requiredParameters": {
@@ -2516,12 +2477,9 @@ class CMD_ShowSeasons(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowSeasons, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
         self.season, args = self.check_params(args, kwargs, "season", None, False, "int", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get the list of episodes for one or all seasons of a show """
@@ -2537,19 +2495,19 @@ class CMD_ShowSeasons(ApiCall):
                 [self.indexerid])
             seasons = {}
             for row in sql_results:
-                status, quality = Quality.splitCompositeStatus(int(row["status"]))
-                row["status"] = _get_status_strings(status)
-                row["quality"] = get_quality_string(quality)
-                if try_int(row['airdate'], 1) > 693595:  # 1900
+                status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
+                row[b"status"] = _get_status_strings(status)
+                row[b"quality"] = get_quality_string(quality)
+                if try_int(row[b'airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
-                        network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
-                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                        network_timezones.parse_date_time(row[b'airdate'], sho_obj.airs, sho_obj.network))
+                    row[b'airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
-                    row['airdate'] = 'Never'
-                cur_season = int(row["season"])
-                cur_episode = int(row["episode"])
-                del row["season"]
-                del row["episode"]
+                    row[b'airdate'] = 'Never'
+                cur_season = int(row[b"season"])
+                cur_episode = int(row[b"episode"])
+                del row[b"season"]
+                del row[b"episode"]
                 if cur_season not in seasons:
                     seasons[cur_season] = {}
                 seasons[cur_season][cur_episode] = row
@@ -2562,17 +2520,17 @@ class CMD_ShowSeasons(ApiCall):
                 return _responds(RESULT_FAILURE, msg="Season not found")
             seasons = {}
             for row in sql_results:
-                cur_episode = int(row["episode"])
-                del row["episode"]
-                status, quality = Quality.splitCompositeStatus(int(row["status"]))
-                row["status"] = _get_status_strings(status)
-                row["quality"] = get_quality_string(quality)
-                if try_int(row['airdate'], 1) > 693595:  # 1900
+                cur_episode = int(row[b"episode"])
+                del row[b"episode"]
+                status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
+                row[b"status"] = _get_status_strings(status)
+                row[b"quality"] = get_quality_string(quality)
+                if try_int(row[b'airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
-                        network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
-                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                        network_timezones.parse_date_time(row[b'airdate'], sho_obj.airs, sho_obj.network))
+                    row[b'airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
-                    row['airdate'] = 'Never'
+                    row[b'airdate'] = 'Never'
                 if cur_episode not in seasons:
                     seasons[cur_episode] = {}
                 seasons[cur_episode] = row
@@ -2580,7 +2538,8 @@ class CMD_ShowSeasons(ApiCall):
         return _responds(RESULT_SUCCESS, seasons)
 
 
-class CMD_ShowSetQuality(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowSetQuality(ApiCall):
     _help = {
         "desc": "Set the quality setting of a show. If no quality is provided, the default user setting is used.",
         "requiredParameters": {
@@ -2594,20 +2553,10 @@ class CMD_ShowSetQuality(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowSetQuality, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # this for whatever reason removes hdbluray not sdtv... which is just wrong. reverting to previous code.. plus we didnt use the new code everywhere.
-        # self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", _get_quality_map().values()[1:])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
-                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
-                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
-                                                "fullhdwebdl",
-                                                "hdbluray", "fullhdbluray"])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
+        self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
@@ -2615,28 +2564,19 @@ class CMD_ShowSetQuality(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        quality_map = {'sdtv': Quality.SDTV,
-                       'sddvd': Quality.SDDVD,
-                       'hdtv': Quality.HDTV,
-                       'rawhdtv': Quality.RAWHDTV,
-                       'fullhdtv': Quality.FULLHDTV,
-                       'hdwebdl': Quality.HDWEBDL,
-                       'fullhdwebdl': Quality.FULLHDWEBDL,
-                       'hdbluray': Quality.HDBLURAY,
-                       'fullhdbluray': Quality.FULLHDBLURAY,
-                       'unknown': Quality.UNKNOWN}
-
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
         i_quality_id = []
         a_quality_id = []
 
         if self.initial:
+            # noinspection PyTypeChecker
             for quality in self.initial:
-                i_quality_id.append(quality_map[quality])
+                i_quality_id.append(QUALITY_MAP[quality])
         if self.archive:
+            # noinspection PyTypeChecker
             for quality in self.archive:
-                a_quality_id.append(quality_map[quality])
+                a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
@@ -2646,7 +2586,8 @@ class CMD_ShowSetQuality(ApiCall):
                          msg=show_obj.name + " quality has been changed to " + get_quality_string(show_obj.quality))
 
 
-class CMD_ShowStats(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowStats(ApiCall):
     _help = {
         "desc": "Get episode statistics for a given show",
         "requiredParameters": {
@@ -2658,11 +2599,8 @@ class CMD_ShowStats(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowStats, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get episode statistics for a given show """
@@ -2698,19 +2636,19 @@ class CMD_ShowStats(ApiCall):
                                          [self.indexerid])
         # the main loop that goes through all episodes
         for row in sql_results:
-            status, quality = Quality.splitCompositeStatus(int(row["status"]))
+            status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
 
             episode_status_counts_total["total"] += 1
 
             if status in Quality.DOWNLOADED + Quality.ARCHIVED:
                 episode_qualities_counts_download["total"] += 1
-                episode_qualities_counts_download[int(row["status"])] += 1
+                # noinspection PyTypeChecker
+                episode_qualities_counts_download[int(row[b"status"])] += 1
             elif status in Quality.SNATCHED + Quality.SNATCHED_PROPER:
                 episode_qualities_counts_snatch["total"] += 1
-                episode_qualities_counts_snatch[int(row["status"])] += 1
-            elif status == 0:  # we don't count NONE = 0 = N/A
-                pass
-            else:
+                # noinspection PyTypeChecker
+                episode_qualities_counts_snatch[int(row[b"status"])] += 1
+            elif status > 0:  # we don't count NONE = 0 = N/A
                 episode_status_counts_total[status] += 1
 
         # the outgoing container
@@ -2738,12 +2676,11 @@ class CMD_ShowStats(ApiCall):
             else:
                 episodes_stats["snatched"][status_string] = episode_qualities_counts_snatch[statusCode]
 
-        # episodes_stats["total"] = {}
         for statusCode in episode_status_counts_total:
             if statusCode == "total":
                 episodes_stats["total"] = episode_status_counts_total[statusCode]
                 continue
-            status, quality = Quality.splitCompositeStatus(int(statusCode))
+            # status, quality = Quality.splitCompositeStatus(int(statusCode))
             status_string = statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(
                 ")", "")
             episodes_stats[status_string] = episode_status_counts_total[statusCode]
@@ -2751,7 +2688,8 @@ class CMD_ShowStats(ApiCall):
         return _responds(RESULT_SUCCESS, episodes_stats)
 
 
-class CMD_ShowUpdate(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowUpdate(ApiCall):
     _help = {
         "desc": "Update a show in SickRage",
         "requiredParameters": {
@@ -2763,11 +2701,8 @@ class CMD_ShowUpdate(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
+        super(CMDShowUpdate, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Update a show in SickRage """
@@ -2776,14 +2711,15 @@ class CMD_ShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.updateShow(show_obj, True)  # @UndefinedVariable
+            sickbeard.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log(u"API::Unable to update show: {0}".format(e), logger.DEBUG)
+            logger.log("API::Unable to update show: {0}".format(e), logger.DEBUG)
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 
-class CMD_Shows(ApiCall):
+# noinspection PyAbstractClass
+class CMDShows(ApiCall):
     _help = {
         "desc": "Get all shows in SickRage",
         "optionalParameters": {
@@ -2793,12 +2729,9 @@ class CMD_Shows(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
+        super(CMDShows, self).__init__(args, kwargs)
         self.sort, args = self.check_params(args, kwargs, "sort", "id", False, "string", ["id", "name"])
         self.paused, args = self.check_params(args, kwargs, "paused", None, False, "bool", [])
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Get all shows in SickRage """
@@ -2832,7 +2765,7 @@ class CMD_Shows(ApiCall):
             else:
                 show_dict['next_ep_airdate'] = ''
 
-            show_dict["cache"] = CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
+            show_dict["cache"] = CMDShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
             if not show_dict["network"]:
                 show_dict["network"] = ""
             if self.sort == "name":
@@ -2843,14 +2776,12 @@ class CMD_Shows(ApiCall):
         return _responds(RESULT_SUCCESS, shows)
 
 
-class CMD_ShowsStats(ApiCall):
+# noinspection PyAbstractClass
+class CMDShowsStats(ApiCall):
     _help = {"desc": "Get the global shows and episodes statistics"}
 
     def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
+        super(CMDShowsStats, self).__init__(args, kwargs)
 
     def run(self):
         """ Get the global shows and episodes statistics """
@@ -2871,55 +2802,55 @@ class CMD_ShowsStats(ApiCall):
 # WARNING: never define a param name that contains a "." (dot)
 # this is reserved for cmd namespaces used while cmd chaining
 function_mapper = {
-    "help": CMD_Help,
-    "future": CMD_ComingEpisodes,
-    "episode": CMD_Episode,
-    "episode.search": CMD_EpisodeSearch,
-    "episode.setstatus": CMD_EpisodeSetStatus,
-    "episode.subtitlesearch": CMD_SubtitleSearch,
-    "exceptions": CMD_Exceptions,
-    "history": CMD_History,
-    "history.clear": CMD_HistoryClear,
-    "history.trim": CMD_HistoryTrim,
-    "failed": CMD_Failed,
-    "backlog": CMD_Backlog,
-    "logs": CMD_Logs,
-    "logs.clear": CMD_LogsClear,
-    "sb": CMD_SickBeard,
-    "postprocess": CMD_PostProcess,
-    "sb.addrootdir": CMD_SickBeardAddRootDir,
-    "sb.checkversion": CMD_SickBeardCheckVersion,
-    "sb.checkscheduler": CMD_SickBeardCheckScheduler,
-    "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
-    "sb.getdefaults": CMD_SickBeardGetDefaults,
-    "sb.getmessages": CMD_SickBeardGetMessages,
-    "sb.getrootdirs": CMD_SickBeardGetRootDirs,
-    "sb.pausebacklog": CMD_SickBeardPauseBacklog,
-    "sb.ping": CMD_SickBeardPing,
-    "sb.restart": CMD_SickBeardRestart,
-    "sb.searchindexers": CMD_SickBeardSearchIndexers,
-    "sb.searchtvdb": CMD_SickBeardSearchTVDB,
-    "sb.searchtvrage": CMD_SickBeardSearchTVRAGE,
-    "sb.setdefaults": CMD_SickBeardSetDefaults,
-    "sb.update": CMD_SickBeardUpdate,
-    "sb.shutdown": CMD_SickBeardShutdown,
-    "show": CMD_Show,
-    "show.addexisting": CMD_ShowAddExisting,
-    "show.addnew": CMD_ShowAddNew,
-    "show.cache": CMD_ShowCache,
-    "show.delete": CMD_ShowDelete,
-    "show.getquality": CMD_ShowGetQuality,
-    "show.getposter": CMD_ShowGetPoster,
-    "show.getbanner": CMD_ShowGetBanner,
-    "show.getnetworklogo": CMD_ShowGetNetworkLogo,
-    "show.getfanart": CMD_ShowGetFanArt,
-    "show.pause": CMD_ShowPause,
-    "show.refresh": CMD_ShowRefresh,
-    "show.seasonlist": CMD_ShowSeasonList,
-    "show.seasons": CMD_ShowSeasons,
-    "show.setquality": CMD_ShowSetQuality,
-    "show.stats": CMD_ShowStats,
-    "show.update": CMD_ShowUpdate,
-    "shows": CMD_Shows,
-    "shows.stats": CMD_ShowsStats
+    "help": CMDHelp,
+    "future": CMDComingEpisodes,
+    "episode": CMDEpisode,
+    "episode.search": CMDEpisodeSearch,
+    "episode.setstatus": CMDEpisodeSetStatus,
+    "episode.subtitlesearch": CMDSubtitleSearch,
+    "exceptions": CMDExceptions,
+    "history": CMDHistory,
+    "history.clear": CMDHistoryClear,
+    "history.trim": CMDHistoryTrim,
+    "failed": CMDFailed,
+    "backlog": CMDBacklog,
+    "logs": CMDLogs,
+    "logs.clear": CMDLogsClear,
+    "sb": CMDSickBeard,
+    "postprocess": CMDPostProcess,
+    "sb.addrootdir": CMDSickBeardAddRootDir,
+    "sb.checkversion": CMDSickBeardCheckVersion,
+    "sb.checkscheduler": CMDSickBeardCheckScheduler,
+    "sb.deleterootdir": CMDSickBeardDeleteRootDir,
+    "sb.getdefaults": CMDSickBeardGetDefaults,
+    "sb.getmessages": CMDSickBeardGetMessages,
+    "sb.getrootdirs": CMDSickBeardGetRootDirs,
+    "sb.pausebacklog": CMDSickBeardPauseBacklog,
+    "sb.ping": CMDSickBeardPing,
+    "sb.restart": CMDSickBeardRestart,
+    "sb.searchindexers": CMDSickBeardSearchIndexers,
+    "sb.searchtvdb": CMDSickBeardSearchTVDB,
+    "sb.searchtvrage": CMDSickBeardSearchTVRAGE,
+    "sb.setdefaults": CMDSickBeardSetDefaults,
+    "sb.update": CMDSickBeardUpdate,
+    "sb.shutdown": CMDSickBeardShutdown,
+    "show": CMDShow,
+    "show.addexisting": CMDShowAddExisting,
+    "show.addnew": CMDShowAddNew,
+    "show.cache": CMDShowCache,
+    "show.delete": CMDShowDelete,
+    "show.getquality": CMDShowGetQuality,
+    "show.getposter": CMDShowGetPoster,
+    "show.getbanner": CMDShowGetBanner,
+    "show.getnetworklogo": CMDShowGetNetworkLogo,
+    "show.getfanart": CMDShowGetFanArt,
+    "show.pause": CMDShowPause,
+    "show.refresh": CMDShowRefresh,
+    "show.seasonlist": CMDShowSeasonList,
+    "show.seasons": CMDShowSeasons,
+    "show.setquality": CMDShowSetQuality,
+    "show.stats": CMDShowStats,
+    "show.update": CMDShowUpdate,
+    "shows": CMDShows,
+    "shows.stats": CMDShowsStats
 }

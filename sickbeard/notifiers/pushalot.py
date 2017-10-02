@@ -2,7 +2,7 @@
 
 # Author: Maciej Olesinski (https://github.com/molesinski/)
 # Based on prowl.py by Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -22,7 +22,7 @@
 from __future__ import unicode_literals
 
 import sickbeard
-from sickbeard import logger, common
+from sickbeard import common, logger
 
 
 class Notifier(object):

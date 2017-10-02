@@ -17,7 +17,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
+
 import threading
+
+import six
 
 import sickbeard
 from sickbeard import db
@@ -63,7 +67,7 @@ def clearCache(indexerid=0):
     cache_db_con = db.DBConnection('cache.db')
     cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ? OR indexer_id = ?", (indexerid, 0))
 
-    toRemove = [key for key, value in nameCache.iteritems() if value in (0, indexerid)]
+    toRemove = [key for key, value in six.iteritems(nameCache) if value in (0, indexerid)]
     for key in toRemove:
         del nameCache[key]
 
@@ -72,7 +76,7 @@ def saveNameCacheToDb():
     """Commit cache to database file"""
     cache_db_con = db.DBConnection('cache.db')
 
-    for name, indexer_id in nameCache.iteritems():
+    for name, indexer_id in six.iteritems(nameCache):
         cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
@@ -98,4 +102,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        # logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.iteritems() if value == show.indexerid]) + " ]", logger.DEBUG)
+        # logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in six.iteritems(nameCache) if value == show.indexerid]) + " ]", logger.DEBUG)

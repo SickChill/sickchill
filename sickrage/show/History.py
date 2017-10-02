@@ -17,8 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
-from datetime import timedelta
+from __future__ import unicode_literals
+
+from datetime import datetime, timedelta
+
+import six
+
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
 from sickrage.helper.common import try_int
@@ -29,6 +33,24 @@ class History(object):
 
     def __init__(self):
         self.db = DBConnection()
+
+    def remove(self, toRemove):
+        """
+        Removes the selected history
+        :param toRemove: Contains the properties of the log entries to remove
+        """
+        query = ''
+
+        for item in toRemove:
+            query = query + ' OR ' if query != '' else ''
+            query = query + '(date IN ({0}) AND showid = {1} ' \
+                            'AND season = {2} AND episode = {3})' \
+                            .format(','.join(item['dates']), item['show_id'], \
+                                    item['season'], item['episode'])
+
+        self.db.action(
+            'DELETE FROM history WHERE ' + query
+        )
 
     def clear(self):
         """
@@ -71,15 +93,15 @@ class History(object):
         data = []
         for result in results:
             data.append({
-                'action': result['action'],
-                'date': result['date'],
-                'episode': result['episode'],
-                'provider': result['provider'],
-                'quality': result['quality'],
-                'resource': result['resource'],
-                'season': result['season'],
-                'show_id': result['showid'],
-                'show_name': result['show_name']
+                'action': result[b'action'],
+                'date': result[b'date'],
+                'episode': result[b'episode'],
+                'provider': result[b'provider'],
+                'quality': result[b'quality'],
+                'resource': result[b'resource'],
+                'season': result[b'season'],
+                'show_id': result[b'showid'],
+                'show_name': result[b'show_name']
             })
 
         return data
@@ -98,7 +120,7 @@ class History(object):
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, (str, unicode)) else ''
+        action = action.lower() if isinstance(action, six.string_types) else ''
 
         if action == 'downloaded':
             return Quality.DOWNLOADED

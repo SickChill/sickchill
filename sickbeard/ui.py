@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -16,6 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
 
 import datetime
 
@@ -155,10 +157,10 @@ class QueueProgressIndicator(object):
         return len(self.queueItemList)
 
     def numFinished(self):
-        return len([x for x in self.queueItemList if not x.isInQueue()])
+        return len([x for x in self.queueItemList if not x.is_in_queue()])
 
     def numRemaining(self):
-        return len([x for x in self.queueItemList if x.isInQueue()])
+        return len([x for x in self.queueItemList if x.is_in_queue()])
 
     def nextName(self):
         for curItem in [sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
