@@ -287,7 +287,10 @@ class NameParser(object):
 
                     new_absolute_numbers.append(a)
                     new_episode_numbers.extend(e)
-                    new_season_numbers.append(s)
+                    if bestResult.scene_season is not s:
+                        new_season_numbers.append(bestResult.scene_season)
+                    else:
+                        new_season_numbers.append(s)
 
             elif bestResult.season_number and bestResult.episode_numbers:
                 for epNo in bestResult.episode_numbers:
