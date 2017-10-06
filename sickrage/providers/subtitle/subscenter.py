@@ -10,7 +10,6 @@ import zipfile
 from babelfish import Language
 from guessit import guessit
 from requests import Session
-
 from subliminal import __short_version__
 from subliminal.exceptions import AuthenticationError, ConfigurationError, ProviderError
 from subliminal.providers import Provider

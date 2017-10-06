@@ -10,6 +10,7 @@ import zipfile
 from babelfish import Language
 from guessit import guessit
 from requests import Session
+from subliminal import __short_version__
 from subliminal.cache import region, SHOW_EXPIRATION_TIME
 from subliminal.exceptions import ProviderError
 from subliminal.providers import Provider
@@ -85,6 +86,7 @@ class WizdomProvider(Provider):
 
     def initialize(self):
         self.session = Session()
+        self.session.headers['User-Agent'] = 'Subliminal/{}'.format(__short_version__)
 
     def terminate(self):
         self.session.close()
