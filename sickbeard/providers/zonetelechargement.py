@@ -111,40 +111,6 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                 logger.log(u"search_string_for_url: {0}".format
                            (search_string_for_url.decode("utf-8")), logger.DEBUG)
 
-                # #HEADER BYPASS
-                # dataPage = self.get_url("https://www.zone-telechargement.ws/telecharger-series/26988-telecharger-game-of-thrones-saison-7-vostfr-hdtv-6vbrh4y7el25.html", verify=False)
-                # with BS4Parser(dataPage, 'html5lib') as htmlPage:
-
-                #     #BYPASS HERE
-
-                #     #TRYHARD DATA*
-                #     url = "https://www.zone-telechargement.ws/telecharger-series/26988-telecharger-game-of-thrones-saison-7-vostfr-hdtv-6vbrh4y7el25.html"
-                #     for key, tv in self.titleVersion.items():
-                #         if any(keyword in url for keyword in tv["keywords"]):
-                #             title = search_string.replace(" ",".") +"."+ tv["suffix"]
-                #             break;
-
-
-                #     content_page = htmlPage(class_=re.compile('postinfo'))
-                #     bTags = content_page[0].find_all('b')
-                #     providerDDLName = ""
-                #     for bTag in bTags:
-                #         if self.canUseProvider(bTag.text):
-                #             providerDDLName = bTag.text
-
-                #         if  self.canUseProvider(providerDDLName) and \
-                #             bTag.text.startswith("Episode "+str(int(episodeVersion))):
-                #             providerDDLLink = bTag.find_all('a')[0]['href']
-                #             logger.log(providerDDLName, logger.DEBUG)
-                #             logger.log(providerDDLLink, logger.DEBUG)
-
-                #             item = {'title': title, 'link': providerDDLLink}
-                #             items.append(item)
-                #             providerDDLName = ""
-                
-                # continue
-                # END
-
                 search_urlS = [self.urls['search']]
                 for search_url in search_urlS:
 
@@ -152,9 +118,9 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                     data["do"] = "search"
                     data["subaction"] = "search"
                     data["story"] = search_string_for_url
+                    data["catlist[]"] = "15,16,17,18,19,20,21"
 
                     dataSearch = self.get_url(search_url, post_data=data)
-                    #dataSearch = self.get_url(search_url, verify=False)
                     if not dataSearch:
                         continue
 
@@ -173,6 +139,7 @@ class ZoneTelechargementProvider(DDLProvider):  # pylint: disable=too-many-insta
                                 dataPage = self.get_url(links_page[0].get('href'), verify=False)
                                 with BS4Parser(dataPage, 'html5lib') as htmlPage:
                                     url = links_page[0].get('href')
+                                    title = ""
                                     for key, tv in self.titleVersion.items():
                                         if all(keyword in url for keyword in tv["keywords"]):
                                             title = search_string.replace(" ",".") +"."+ tv["suffix"]
