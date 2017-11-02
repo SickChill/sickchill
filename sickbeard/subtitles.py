@@ -54,8 +54,8 @@ if 'wizdom' not in provider_manager.names():
 # Until it gets an update in subliminal, we'll use a fixed provider.
 if 'subscenter' not in provider_manager.names():
     provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
-if 'tusubtitulo' not in provider_manager.names():
-    provider_manager.register('tusubtitulo = sickrage.providers.subtitle.tusubtitulo:TuSubtituloProvider')
+if 'subtitulamos' not in provider_manager.names():
+    provider_manager.register('subtitulamos = sickrage.providers.subtitle.subtitulamos:SubtitulamosProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
@@ -67,10 +67,10 @@ PROVIDER_URLS = {
     'opensubtitles': 'http://www.opensubtitles.org',
     'podnapisi': 'http://www.podnapisi.net',
     'subscenter': 'http://www.subscenter.info',
+    'subtitulamos': 'https://www.subtitulamos.tv',
     'thesubdb': 'http://www.thesubdb.com',
-    'tusubtitulo': 'https://www.tusubtitulo.com',
-    'tvsubtitles': 'http://www.tvsubtitles.net',
-    'wizdom': 'http://wizdom.xyz'
+    'wizdom': 'http://wizdom.xyz',
+    'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
 
