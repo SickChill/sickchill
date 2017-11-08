@@ -30,6 +30,7 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickrage.helper.encoding import ek
 
 name_presets = (
+    '%SN - %Sx%0E',
     '%SN - %Sx%0E - %EN',
     '%S.N.S%0SE%0E.%E.N',
     '%Sx%0E - %EN',
