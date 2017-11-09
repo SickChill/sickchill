@@ -24,8 +24,9 @@ import datetime
 import os
 import re
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickrage.helper.common import dateFormat, replace_extension

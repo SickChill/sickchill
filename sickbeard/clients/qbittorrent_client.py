@@ -22,10 +22,11 @@ from __future__ import unicode_literals
 
 from time import sleep
 
-import sickbeard
 from requests.auth import HTTPDigestAuth
+from requests.compat import urljoin
+
+import sickbeard
 from sickbeard.clients.generic import GenericClient
-from sickrage.helper.common import try_int
 
 
 class qbittorrentAPI(GenericClient):
@@ -36,20 +37,30 @@ class qbittorrentAPI(GenericClient):
 
         self.url = self.host
         self.session.auth = HTTPDigestAuth(self.username, self.password)
+        self.session.headers.update({
+            'Origin': self.host,
+            'Referer': self.host
+        })
 
     @property
     def api(self):
         try:
-            self.url = self.host + 'version/api'
-            version = int(self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT).content)
+            self.url = urljoin(self.host, 'version/api')
+            response = self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT)
+            if response.status_code == 401:
+                version = None
+            else:
+                version = int(response.content)
         except Exception:
             version = 1
         return version
 
     def _get_auth(self):
+        if self.api is None:
+            return None
 
         if self.api > 1:
-            self.url = self.host + 'login'
+            self.url = urljoin(self.host, 'login')
             data = {'username': self.username, 'password': self.password}
             try:
                 self.response = self.session.post(self.url, data=data)
@@ -59,7 +70,6 @@ class qbittorrentAPI(GenericClient):
         else:
             try:
                 self.response = self.session.get(self.host, verify=sickbeard.TORRENT_VERIFY_CERT)
-                self.auth = self.response.content
             except Exception:
                 return None
 
@@ -70,15 +80,16 @@ class qbittorrentAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = self.host + 'command/download'
+        self.url = urljoin(self.host, 'command/download')
         data = {'urls': result.url}
         if self._request(method='post', data=data, cookies=self.session.cookies):
+            sleep(1)  # The client always needs to fetch the torrent/magnet
             return self._verify_added(result.hash)
         return False
 
     def _add_torrent_file(self, result):
 
-        self.url = self.host + 'command/upload'
+        self.url = urljoin(self.host, 'command/upload')
         files = {'torrents': (result.name + '.torrent', result.content)}
         if self._request(method='post', files=files, cookies=self.session.cookies):
             return self._verify_added(result.hash)
@@ -91,12 +102,12 @@ class qbittorrentAPI(GenericClient):
             label = sickbeard.TORRENT_LABEL_ANIME
 
         if 6 < self.api < 10 and label:
-            self.url = self.host + 'command/setLabel'
+            self.url = urljoin(self.host, 'command/setLabel')
             data = {'hashes': result.hash.lower(), 'label': label.replace(' ', '_')}
             return self._request(method='post', data=data, cookies=self.session.cookies)
 
         elif self.api >= 10 and label:
-            self.url = self.host + 'command/setCategory'
+            self.url = urljoin(self.host, 'command/setCategory')
             data = {'hashes': result.hash.lower(), 'category': label.replace(' ', '_')}
             return self._request(method='post', data=data, cookies=self.session.cookies)
 
@@ -104,27 +115,27 @@ class qbittorrentAPI(GenericClient):
 
     def _set_torrent_priority(self, result):
 
-        self.url = self.host + 'command/decreasePrio'
+        self.url = urljoin(self.host, 'command/decreasePrio')
         if result.priority == 1:
-            self.url = self.host + 'command/increasePrio'
+            self.url = urljoin(self.host, 'command/increasePrio')
 
         data = {'hashes': result.hash.lower()}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _set_torrent_pause(self, result):
 
-        self.url = self.host + 'command/resume'
+        self.url = urljoin(self.host, 'command/resume')
         if sickbeard.TORRENT_PAUSED:
-            self.url = self.host + 'command/pause'
+            self.url = urljoin(self.host, 'command/pause')
 
         data = {'hash': result.hash.lower()}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _verify_added(self, torrent_hash, attempts=5):
-        self.url = self.host + 'query/propertiesGeneral/' + torrent_hash.lower()
+        self.url = urljoin(self.host, 'query/propertiesGeneral/{}'.format(torrent_hash.lower()))
         for i in range(attempts):
             if self._request(method='get', cookies=self.session.cookies):
-                if try_int(self.response.headers.get('Content-Length')) > 0:
+                if self.response.json()['piece_size'] != -1:
                     return True
             sleep(2)
         return False

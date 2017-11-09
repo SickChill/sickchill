@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
     $('.imdbstars').qtip({
         content: {
             text: function() {

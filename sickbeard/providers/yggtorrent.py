@@ -55,7 +55,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         # Proper Strings
-        self.proper_strings = ['PROPER', 'REPACK']
+        self.proper_strings = ['PROPER']
 
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
