@@ -24,7 +24,6 @@ from os import sys
 from random import shuffle
 
 import sickbeard
-
 from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, btn, cpasbien, danishbits, elitetorrent, filelist, gftracker,
                                  hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed, iptorrents,
                                  limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat,
