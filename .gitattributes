@@ -77,3 +77,11 @@ init.*			text
 *.rar			binary
 *.dll			binary
 *.lib
+
+#linguist overides
+lib/* linguist-vendored
+lib/abda/ linguist-vendored=false
+lib/enyzme/__init__.py linguist-vendored=false
+lib/fake_useragent/ linguist-vendored=false
+lib/fanart/ linguist-vendored=false
+lib/feedparser/ linguist-vendored=false
