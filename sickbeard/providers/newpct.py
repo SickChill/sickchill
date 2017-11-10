@@ -27,6 +27,7 @@ from requests.compat import urljoin
 from sickbeard import helpers, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size
+from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -46,7 +47,23 @@ class newpctProvider(TorrentProvider):
                      'download': 'http://tumejorserie.com/descargar/index.php?link=torrents/%s.torrent',}
 
         self.cache = tvcache.TVCache(self, min_time=20)
+        
+    def _get_season_search_strings(self, ep_obj):
+        search_string = {'Season': []}
 
+        for show_name in set(allPossibleShowNames(ep_obj.show)):
+            search_string['Season'].append(show_name)
+
+        return [search_string]
+
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+        search_string = {'Episode': []}
+
+        for show_name in set(allPossibleShowNames(ep_obj.show)):
+            search_string['Episode'].append(show_name)
+
+        return [search_string]
+        
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         """
         Search query:
@@ -88,14 +105,13 @@ class newpctProvider(TorrentProvider):
                         continue
 
             else:
-
-                series_names = []
-                for search_string in search_strings[mode]:
-                    name = re.sub(r'S0*(\d*)E0*(\d*)', '', search_string, flags=re.I).strip()
-                    if not name in series_names:
-                        series_names.append(name)
-
-                for series_name in series_names:
+            
+                # Only search if user conditions are true
+                if self.onlyspasearch and lang_info != 'es':
+                    logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
+                    continue
+                
+                for series_name in search_strings[mode]:
                     search_name = re.sub(r'[ \.\(\)]', '-', series_name, flags=re.I)
                     search_names = [search_name]
                     search_name = re.sub(r'-+', '-', search_name, flags=re.I)
@@ -306,7 +322,6 @@ class newpctProvider(TorrentProvider):
         else:
             logger.log('_processTitle: Matched by stdFormat: {}'.format(title), logger.DEBUG)
 
-
         # Quality - Use re module to avoid case sensitive problems with replace
         title = re.sub(r'\[HDTV 1080p?[^\[]*]', '1080p HDTV x264', title, flags=re.I)
         title = re.sub(r'\[HDTV 720p?[^\[]*]', '720p HDTV x264', title, flags=re.I)
@@ -361,15 +376,19 @@ class newpctProvider(TorrentProvider):
             title_vo = True
 
         # Language
-        title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
-        title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
-        title = re.sub(r'\[Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
-        title = re.sub(r'\[AC3 5\.1 Español[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(r'\[Spanish[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(r'\[Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(ur'\[Espa\u00f1ol[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(ur'\[Espa\u00f1ol Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(r'\[AC3 5\.1[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(ur'\[AC3 5\.1 Espa\u00f1ol[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
+        # title = re.sub(ur'\[AC3 5\.1 Espa\u00f1ol Castellano[^\[]*]', 'SPANISH AUDIO', title, flags=re.I)
 
         if title_vo:
-            title += '-NEWPCTVO'
+            title += ' -NEWPCTVO'
         else:
-            title += '-NEWPCT'
+            title += ' -SPANISH AUDIO'
+            title += ' -NEWPCT'
 
         return self._clean_spaces(title)
 
