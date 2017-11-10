@@ -47,7 +47,7 @@ class newpctProvider(TorrentProvider):
                      'download': 'http://tumejorserie.com/descargar/index.php?link=torrents/%s.torrent',}
 
         self.cache = tvcache.TVCache(self, min_time=20)
-        
+
     def _get_season_search_strings(self, ep_obj):
         search_string = {'Season': []}
 
@@ -63,7 +63,7 @@ class newpctProvider(TorrentProvider):
             search_string['Episode'].append(show_name)
 
         return [search_string]
-        
+
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         """
         Search query:
@@ -105,12 +105,12 @@ class newpctProvider(TorrentProvider):
                         continue
 
             else:
-            
+
                 # Only search if user conditions are true
                 if self.onlyspasearch and lang_info != 'es':
                     logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                     continue
-                
+
                 for series_name in search_strings[mode]:
                     search_name = re.sub(r'[ \.\(\)]', '-', series_name, flags=re.I)
                     search_names = [search_name]
