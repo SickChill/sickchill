@@ -391,6 +391,7 @@ class newpctProvider(TorrentProvider):
 
         #propers handling
         title = re.sub(r'\(?proper\)?', '-PROPER', title, flags=re.I)
+        title = re.sub(r'\(?repack\)?', '-REPACK', title, flags=re.I)
 
         return self._clean_spaces(title)
 
