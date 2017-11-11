@@ -274,7 +274,7 @@ class newpctProvider(TorrentProvider):
         series_name = self._clean_spaces(series_name)
 
         title_stdformat = r'.+-.+\d{1,2}.+\[Cap.\d{2,4}([\-\_]\d{2,4})?\]'
-        title_listformat = r'Serie (.+) Temporada *\[? *(\d+) *\]?.*Capitulos? *\[? *(\d+) *\]? *(al*\[? *(\d+) *\]?)?.*-(.*)Calidad(.+)'
+        title_listformat = r'Serie ?(.+?) ?-? ?Temporada ?\[?(\d+)\]?.*Capitulos? ?\[?(\d+)\]? ?(al ?\[?(\d+)\]?)?.*- ?(.*) ?Calidad ?(.+)'
         title_urlformat = r'.*\/(.*)\/capitulo-(\d{2,4})\/'
 
         title_is_proper = re.search(r'\b(proper|repack)', title, flags=re.I)
@@ -288,7 +288,6 @@ class newpctProvider(TorrentProvider):
                     name = series_name + ((' (' + title_is_proper.group() + ')') if title_is_proper else "")
                 else:
                     name = self._clean_spaces(listformat_match.group(1))
-                name = re.sub(r' *-* *$', ' ', name, flags=re.I)
                 season = self._clean_spaces(listformat_match.group(2))
                 episode = self._clean_spaces(listformat_match.group(3)).zfill(2)
                 audioquality = self._clean_spaces(listformat_match.group(6))
@@ -389,6 +388,9 @@ class newpctProvider(TorrentProvider):
         else:
             title += ' -SPANISH AUDIO'
             title += ' -NEWPCT'
+
+        #propers handling
+        title = re.sub(r'\(?proper\)?', '-PROPER', title, flags=re.I)
 
         return self._clean_spaces(title)
 
