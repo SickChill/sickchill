@@ -14,10 +14,10 @@
                 preventDuplicates: true,
                 prePopulate: [${','.join("{\"id\": \"" + code + "\", name: \"" + subtitles.name_from_code(code) + "\"}" for code in subtitles.wanted_languages())}],
                 resultsFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${srRoot}/images/flags/unknown.png\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 },
                 tokenFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${srRoot}/images/flags/unknown.png\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 }
             });
         });
@@ -295,7 +295,7 @@
                                             <input type="checkbox" id="enable_${curService['name']}"
                                                    class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
                                             <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
-                                                <img src="${srRoot}/images/subtitles/${curService['image']}"
+                                                <img src="${static_url('images/subtitles/' + curService['image'])}"
                                                      alt="${curService['url']}" title="${curService['url']}" width="16"
                                                      height="16" style="vertical-align:middle;"/>
                                             </a>

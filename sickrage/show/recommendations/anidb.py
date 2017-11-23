@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from anidbhttp import anidbquery
 from anidbhttp.query import QUERY_HOT
 from recommended import RecommendedShow
+
 from sickbeard import helpers
 from sickrage.helper.common import try_int
 

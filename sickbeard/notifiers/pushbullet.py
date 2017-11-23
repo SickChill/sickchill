@@ -22,8 +22,9 @@ from __future__ import unicode_literals
 
 import re
 
-import sickbeard
 from requests.compat import urljoin
+
+import sickbeard
 from sickbeard import common, helpers, logger
 
 

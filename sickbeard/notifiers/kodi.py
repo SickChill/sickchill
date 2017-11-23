@@ -24,12 +24,13 @@ import base64
 import socket
 import time
 
-import sickbeard
 import six
+from six.moves import http_client, urllib
+
+import sickbeard
 from sickbeard import common, logger
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import ex
-from six.moves import http_client, urllib
 
 try:
     import xml.etree.cElementTree as etree

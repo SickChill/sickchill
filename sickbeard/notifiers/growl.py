@@ -22,8 +22,9 @@ from __future__ import print_function, unicode_literals
 
 import socket
 
-import sickbeard
 from libgrowl import gntp
+
+import sickbeard
 from sickbeard import common, logger
 from sickrage.helper.exceptions import ex
 
