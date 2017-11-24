@@ -123,7 +123,10 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 continue
 
                             title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
+                            for download_img in cells[0].select('a[href] img'):                                   
+                                if download_img['src'] == "https://yggtorrent.com/static/icons/icon_download.gif":
+                                    download_url = urljoin(self.url, download_img.parent['href'])
+
                             if not (title and download_url):
                                 continue
 
