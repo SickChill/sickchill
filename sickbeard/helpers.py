@@ -1489,6 +1489,12 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
             resp.raise_for_status()
 
+            # Workaround for jackett.
+            if resp.headers.get('content-type') == 'application/x-bittorrent':
+                group = re.findall('filename=["\'](.+)["\']', resp.headers.get('content-disposition', ''))
+                if group:
+                    filename = group[0]
+
             try:
                 with io.open(filename, 'wb') as fp:
                     for chunk in resp.iter_content(chunk_size=1024):
