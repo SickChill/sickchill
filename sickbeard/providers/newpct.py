@@ -205,7 +205,11 @@ class newpctProvider(TorrentProvider):
             kwargs['returns'] = 'text'
             data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, **kwargs)
 
-            download_id = re.search(r'http://tumejorserie.com/descargar/.+?(\d{6}).+?\.html', data, re.DOTALL).group(1)
+            match = re.search(r'http://tumejorserie.com/descargar/.+?(\d{6}).+?\.html', data, re.DOTALL)
+            if not match:
+                return None
+            
+            download_id = match.group(1)
             url = self.urls['download'] % download_id
 
         kwargs['returns'] = trickery
