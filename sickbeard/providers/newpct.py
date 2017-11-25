@@ -65,14 +65,7 @@ class newpctProvider(TorrentProvider):
         return [search_string]
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
-        """
-        Search query:
-        http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
-        q => Show name
-        category_ = Category 'Shows' (767)
-        idioma_ = Language Spanish (1), All
-        bus_de_ = Date from (All, mes, semana, ayer, hoy)
-        """
+
         results = []
 
         # Only search if user conditions are true
