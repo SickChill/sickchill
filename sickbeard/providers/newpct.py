@@ -43,7 +43,10 @@ class newpctProvider(TorrentProvider):
         self.urls = {'search': [ urljoin(self.url, '/series'),
                                  urljoin(self.url, '/series-hd')],
                                  #urljoin(self.url, '/series-vo')],
-                     'rss':urljoin(self.url, '/feed'),
+                     'rss': urljoin(self.url, '/feed'),
+                     'letter': [ urljoin(self.url, '/series/letter/{0}'),
+                                 urljoin(self.url, '/series-hd/letter/{0}')],
+                                 #urljoin(self.url, '/series-vo/letter/{0}')],
                      'download': 'http://tumejorserie.com/descargar/index.php?link=torrents/%s.torrent',}
 
         self.cache = tvcache.TVCache(self, min_time=20)
@@ -103,35 +106,77 @@ class newpctProvider(TorrentProvider):
                 if self.onlyspasearch and lang_info != 'es':
                     logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
                     continue
+                    
+                letters = []
+                series_names_lower = [x.lower() for x in search_strings[mode]]
 
-                for series_name in search_strings[mode]:
-                    search_name = re.sub(r'[ \.\(\)]', '-', series_name, flags=re.I)
-                    search_names = [search_name]
-                    search_name = re.sub(r'-+', '-', search_name, flags=re.I)
-                    if not search_name in search_names:
-                        search_names.append(search_name)
-
-                    for search_name in search_names:
-                        for search_url in self.urls['search']:
-                            pg = 1
-                            while True:
-                                url = search_url + '/' + search_name + '//pg/' + str(pg)
-
-                                try:
-                                    data = self.get_url(url, params=None, returns='text')
-                                    items = self.parse(series_name, data, mode)
-                                    if not len(items):
+                #search series name
+                for series_name in series_names_lower:
+                    name = series_name.lower().strip()
+                    if name and (name[0] not in letters):
+                        letters.append(name[0])
+                    
+                for letter in letters:
+                    for letter_url in self.urls['letter']:
+                        url = letter_url.format(letter) if not letter.isdigit() else letter_url.format('0-9')
+                        
+                        try:
+                            data = self.get_url(url, params=None, returns='text')
+                            seriesparsed = self.parse_seriestitleurl(series_names_lower, data)
+                            if not len(seriesparsed):
+                                continue
+                                
+                            for seriesparseditem in seriesparsed:
+                                pg = 1
+                                while pg < 100:
+                                    try:
+                                        data = self.get_url(seriesparseditem['url'] + '/pg/' + str(pg) , params=None, returns='text')
+                                        items = self.parse(seriesparseditem['title'], data, mode)
+                                        if not len(items):
+                                            break
+                                        results += items
+                                    except Exception:
+                                        logger.log('No data returned from provider', logger.DEBUG)
                                         break
-                                    results += items
-                                except Exception:
-                                    logger.log('No data returned from provider', logger.DEBUG)
-                                    break
-
-                                pg += 1
+     
+                                    pg += 1
+                            
+                        except Exception as e:
+                            logger.log('No data returned from provider (letter) {0}'.format(str(e)), logger.DEBUG)
+                            continue
 
             results += items
 
         return results
+        
+        
+    def parse_seriestitleurl(self, series_names, data):
+        results = []
+
+        with BS4Parser(data) as html:
+            series_table = html.find('ul', class_='pelilist')
+            series_rows = series_table('li') if series_table else []
+     
+            # Continue only if at least one series is found
+            if not len(series_rows):
+                return results
+                
+            for row in series_rows:
+                try:
+                    series_anchor = row.find_all('a')[0]
+                    title = series_anchor.get('title', '').lower()
+                    url = series_anchor.get('href', '')
+                    if title and title in series_names:
+                        item = {
+                            'title': title,
+                            'url': url,
+                        }                    
+                        results.append(item)
+                except Exception as e:
+                    continue
+
+        return results
+        
 
     def parse(self, series_name, data, mode):
         """
