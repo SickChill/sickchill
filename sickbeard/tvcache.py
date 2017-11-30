@@ -23,8 +23,9 @@ import datetime
 import itertools
 import time
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import db, logger, show_name_helpers
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.rssfeeds import getFeed

@@ -23,12 +23,13 @@ from __future__ import print_function, unicode_literals
 
 import time
 
+from six.moves import http_client, urllib
+
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
 from sickrage.helper.exceptions import ex
-from six.moves import http_client, urllib
 
 API_URL = "https://api.pushover.net/1/messages.json"
 

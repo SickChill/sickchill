@@ -22,8 +22,9 @@ from __future__ import print_function, unicode_literals
 
 import re
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
 from sickrage.helper.exceptions import ex

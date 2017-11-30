@@ -21,6 +21,7 @@
 from __future__ import unicode_literals
 
 from requests.compat import urlencode
+
 from sickbeard import logger, tvcache
 from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException

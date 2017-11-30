@@ -25,10 +25,11 @@ from base64 import b16encode, b32decode
 from hashlib import sha1
 
 import bencode
-import sickbeard
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
+
+import sickbeard
 from sickbeard import helpers, logger
 
 
@@ -212,12 +213,13 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode = bencode.bdecode(result.content)
+                torrent_bdecode = helpers.bdecode(result.content, True)
             except (bencode.BTL.BTFailure, Exception) as error:
                 logger.log('Unable to bdecode torrent', logger.ERROR)
                 logger.log('Error is: {0}'.format(error), logger.DEBUG)
                 # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
                 raise
+
             try:
                 info = torrent_bdecode[b'info']
             except Exception:

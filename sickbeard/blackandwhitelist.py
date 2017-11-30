@@ -20,8 +20,9 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickbeard
 from adba.aniDBerrors import AniDBCommandTimeoutError
+
+import sickbeard
 from sickbeard import db, helpers, logger
 
 

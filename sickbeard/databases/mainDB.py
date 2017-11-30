@@ -25,8 +25,9 @@ import datetime
 import os.path
 import warnings
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickrage.helper.common import dateTimeFormat, episode_num

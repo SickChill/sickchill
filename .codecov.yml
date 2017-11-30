@@ -2,21 +2,13 @@ codecov:
   notify:                   # [advanced] usage only
     require_ci_to_pass: yes # require the build to pass before submitting notifications
     after_n_builds: 1       # how many build to wait for before submitting notifications, therefore skipping status checks
-    countdown: 60           # number of seconds to wait before checking CI status
+    countdown: 30           # number of seconds to wait before checking CI status
     delay: 120               # number of seconds between each CI status check
 
 coverage:
   precision: 3         # how many decimal places to display in the UI: 0 <= value <= 4
   round: down          # how coverage is rounded: down/up/nearest
   range: "50...75"     # custom range of coverage colors from red -> yellow -> green
-
-#  notify:
-#    irc:
-#      default:                        # -> see "sections" below
-#        server: "chat.freenode.net"   #*S the domain of the irc server
-#        branches: null                # -> see https://docs.codecov.io/docs/flags
-#        threshold: null               # -> see "threshold" below
-#        message: "template string"    # [advanced] -> see "customized message" below
 
   status:
     project:                   # measuring the overall project coverage
@@ -25,13 +17,13 @@ coverage:
         target: auto           # specify the target coverage for each commit status
                                #   option: "auto" (must increase from parent commit or pull request base)
                                #   option: "X%" a static target percentage to hit
-        branches: null         # -> see https://docs.codecov.io/docs/flags
+        branches: null         # -> see https://github.com/codecov/support/wiki/Filtering-Branches
         threshold: 0.1%        # allowed to drop X% and still result in a "success" commit status
-        base: auto             # ?
+        base: auto             # base branch to test against?
         if_no_uploads: error   # will post commit status of "error" if no coverage reports we uploaded
                                # options: success, error, failure
         if_not_found: success  # if parent is not found report status as success, error, or failure
-        if_ci_failed: error    # if ci fails report status as success, error, or failure
+        if_ci_failed: failure  # if ci fails report status as success, error, or failure
         only_pulls: false      # if true set this status on pull requests only
         flags: null            # https://docs.codecov.io/docs/flags
         paths: null            # https://github.com/codecov/support/wiki/Filtering-Paths
@@ -40,29 +32,25 @@ coverage:
                                # entire pull requests Coverage Diff. Checking if the lines
                                # adjusted are covered at least X%.
       default: off
-#        enabled: yes             # must be yes|true to enable this status
-#        target: 30%              # specify the target "X%" coverage to hit
-#        branches: null           # -> see https://docs.codecov.io/docs/flags
-#        threshold: 0.1%          # allowed to drop X% and still result in a "success" commit status
-#        if_no_uploads: error     # will post commit status of "error" if no coverage reports we uploaded
-                                 # options: success, error, failure
-#        if_not_found: success
-#        if_ci_failed: error
+        # enabled: yes          # must be yes|true to enable this status
+        # target: 30%           # specify the target "X%" coverage to hit
+        # branches: null        # -> see https://github.com/codecov/support/wiki/Filtering-Branches
+        # threshold: 0.1%       # allowed to drop X% and still result in a "success" commit status
+        # if_no_uploads: error  # will post commit status of "error" if no coverage reports we uploaded
+                                # options: success, error, failure
+        # if_not_found: success
+        # if_ci_failed: error
 
-    changes:                   # if there are any unexpected changes in coverage
+    changes:                     # if there are any unexpected changes in coverage
       default:
-        enabled: no              # must be yes|true to enable this status
-        branches: null           # -> see https://docs.codecov.io/docs/flags
+        enabled: yes             # must be yes|true to enable this status
+        branches: null           # -> see https://github.com/codecov/support/wiki/Filtering-Branches
         if_no_uploads: error
         if_not_found: success
-        if_ci_failed: error
+        if_ci_failed: failure
 
-#  ignore:          # files and folders that will be removed during processing
-#    - "tests/*"
-#    - "demo/*.rb"
-
-#  fixes:           # [advanced] in rare cases the report tree is invalid, specify adjustments here
-#    - "old_path::new_path"
+    ignore:          # files and folders that will be removed during processing
+      - "tests/*"
 
 parsers:
   gcov:
@@ -73,11 +61,12 @@ parsers:
       macro: no
 
 comment:                 # comment: false  # to disable comments
-  layout: "header, diff, changes, sunburst, suggestions, tree"
-  branches: null           # -> see https://docs.codecov.io/docs/flags
-  behavior: default        # option: "default" posts once then update, posts new if delete
-                           # option: "once"    post once then updates, if deleted do not post new
-                           # option: "new"     delete old, post new
-                           # option: "spammy"  post new
-#  require_base: no        # [yes :: must have a base report to post]
-#  require_head: yes       # [yes :: must have a head report to post]
+  layout: "header, diff, changes, tree"
+  branches: null         # -> see https://github.com/codecov/support/wiki/Filtering-Branches
+  behavior: default      # Options:
+                         # "default" posts once then update, posts new if delete
+                         # "once"    post once then updates, if deleted do not post new
+                         # "new"     delete old, post new
+                         # "spammy"  post new
+  # require_base: no      # [yes :: must have a base report to post]
+  # require_head: yes     # [yes :: must have a head report to post]
