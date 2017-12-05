@@ -7,8 +7,9 @@ import posixpath
 import re
 from datetime import date
 
-import sickbeard
 from bs4 import BeautifulSoup
+
+import sickbeard
 from sickbeard import helpers
 from sickrage.helper.encoding import ek
 

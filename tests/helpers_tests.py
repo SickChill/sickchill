@@ -79,6 +79,9 @@ Public Methods:
     pretty_time_delta
     is_file_locked
     disk_usage
+    sortable_name
+    manage_torrents_url
+    bdecode
 Private Methods:
     _check_against_names
     _setUpSession
@@ -95,6 +98,8 @@ from shutil import rmtree
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import sickbeard
+from bencode.BTL import BTFailure
 from sickbeard import helpers
 from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
@@ -761,6 +766,40 @@ class HelpersMiscTests(unittest.TestCase):
         Test pretty_time_delta
         """
         pass
+
+    def test_sortable_name(self):
+        """
+        Test that sortable_name returns the correct show name
+        """
+        cases = [
+            # raw_name, SORT_ARTICLE, expected
+            ('The Big Bang Theory', False, 'big bang theory'),
+            ('A Big World', False, 'big world'),
+            ('An Unexpected Journey', False, 'unexpected journey'),
+            ('The Big Bang Theory', True, 'the big bang theory'),
+            ('A Big World', True, 'a big world'),
+            ('An Unexpected Journey', True, 'an unexpected journey'),
+        ]
+        for raw_name, option, expected in cases:
+            sickbeard.SORT_ARTICLE = option
+            self.assertEqual(helpers.sortable_name(raw_name), expected)
+
+    @unittest.skip('Not yet implemented')
+    def test_manage_torrents_url(self):
+        """
+        Test manage_torrents_url
+        """
+        pass
+
+    def test_bdecode(self):
+        """
+        Test the custom bdecode function
+        """
+        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
+        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
+        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
+        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
+
 
 if __name__ == '__main__':
     print("==================")

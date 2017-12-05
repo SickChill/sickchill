@@ -24,8 +24,10 @@ import re
 
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
+from sickbeard.show_name_helpers import allPossibleShowNames
 from sickrage.helper.common import convert_size, try_int
 from sickrage.helper.exceptions import AuthException
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
@@ -127,9 +129,12 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_params['searchstr'] = search_string
+                if mode == 'Season':
+                    searchedSeason = re.match('.*\s(Season\s\d+|S\d+)', search_string).group(1)
 
+                search_params['searchstr'] = search_string
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
+
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
@@ -153,6 +158,30 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 continue
 
                             title = result.find('a', title='View torrent').get_text(strip=True)
+
+                            if mode == 'Season':
+                                # Skip if torrent isn't the right season, we can't search
+                                # for an exact season on MTV, it returns all of them
+                                if searchedSeason not in title:
+                                    continue
+                                # If torrent is grouped, we need a folder name for title
+                                if 'Season' in title:
+                                    torrentid = urljoin(self.url, result.find('span', title='Download').parent['href'])
+                                    torrentid = re.match('.*?id=([0-9]+)', torrentid).group(1)
+
+                                    group_params = {
+                                        'torrentid': torrentid
+                                    }
+
+                                    # Obtain folder name to use as title
+                                    torrentInfo = self.get_url(self.urls['search'], params=group_params,
+                                                               returns='text').replace('\n', '')
+
+                                    releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(re.escape(torrentid))
+                                    releasename = re.search(releaseregex, torrentInfo).group(1)
+                                    title = releasename
+
+
                             download_url = urljoin(self.url, result.find('span', title='Download').parent['href'])
                             if not all([title, download_url]):
                                 continue
@@ -187,5 +216,29 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return results
 
+    def _get_season_search_strings(self, episode):
+        search_string = {
+            'Season': []
+        }
+
+        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+            season_string = show_name + ' '
+
+            if episode.show.air_by_date or episode.show.sports:
+                season_string += str(episode.airdate).split('-')[0]
+            elif episode.show.anime:
+                # use string below if you really want to search on season with number
+                # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
+                season_string += 'Season'  # ignore season number to get all seasons in all formats
+            else:
+                season_string += 'S{0:02d}'.format(int(episode.scene_season))
+                # MTV renames most season packs to just "Season ##"
+                mtv_season_string = '{0} Season {1}'.format(show_name, int(episode.scene_season))
+                search_string['Season'].append(mtv_season_string.encode('utf-8').strip())
+
+            search_string['Season'].append(season_string.encode('utf-8').strip())
+
+        return [search_string]
+		
 
 provider = MoreThanTVProvider()

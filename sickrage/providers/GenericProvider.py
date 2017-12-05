@@ -26,9 +26,10 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 
-import sickbeard
 import six
 from requests.utils import add_dict_to_cookiejar
+
+import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
