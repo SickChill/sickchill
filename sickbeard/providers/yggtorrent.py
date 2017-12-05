@@ -48,7 +48,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.com/'
+        self.url = 'https://ww1.yggtorrent.com/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search'),
@@ -121,10 +121,11 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             cells = result('td')
                             if len(cells) < 5:
                                 continue
-
+                            
+                            download_url = ""
                             title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
                             for download_img in cells[0].select('a[href] img'):                                   
-                                if download_img['src'] == "https://yggtorrent.com/static/icons/icon_download.gif":
+                                if download_img['src'] == urljoin(self.url,"static/icons/icon_download.gif"):
                                     download_url = urljoin(self.url, download_img.parent['href'])
                                     break
 
