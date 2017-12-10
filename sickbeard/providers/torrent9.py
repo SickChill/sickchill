@@ -37,7 +37,7 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "http://www.torrent9.cc"
+        self.url = "http://www.torrent9.pe"
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
