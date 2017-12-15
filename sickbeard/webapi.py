@@ -24,14 +24,13 @@
 
 from __future__ import print_function, unicode_literals
 
-from abc import abstractmethod
-
 import datetime
 import io
 import os
 import re
 import time
 import traceback
+from abc import abstractmethod
 
 import six
 # noinspection PyUnresolvedReferences
