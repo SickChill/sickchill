@@ -50,8 +50,8 @@
                         <p>${_('At least one provider is required but two are recommended.')}</p>
 
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
-                            <blockquote style="margin: 20px 0;">NZB/${_('Torrent providers can be toggled in ')}
-                                <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
+                            <blockquote style="margin: 20px 0;">NZB/${_('Torrent and NZB providers can be toggled in ')}
+                                <b><a href="/config/search">Search Settings</a></b></blockquote>
                         % else:
                             <br>
                         % endif
@@ -78,9 +78,9 @@
 
                                 curName = curProvider.get_id()
                                 if hasattr(curProvider, 'custom_url'):
-                                        curURL = curProvider.custom_url or curProvider.url
+                                    curURL = curProvider.custom_url or curProvider.url
                                 else:
-                                        curURL = curProvider.url
+                                    curURL = curProvider.url
                             %>
                                 <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.provider_type == GenericProvider.TORRENT)]}" id="${curName}">
                                     <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled() is True]}/>

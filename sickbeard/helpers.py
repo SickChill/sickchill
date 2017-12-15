@@ -63,6 +63,7 @@ import sickbeard
 from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
 from sickrage.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
+from sickrage.helper.common import replace_extension
 from sickrage.helper.encoding import ek
 from sickrage.helper.exceptions import ex
 from sickrage.show.Show import Show
@@ -1480,6 +1481,8 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
     :return: True on success, False on failure
     """
 
+    return_filename = kwargs.get('return_filename', False)
+
     try:
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
@@ -1490,10 +1493,8 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
             resp.raise_for_status()
 
             # Workaround for jackett.
-            if resp.headers.get('content-type') == 'application/x-bittorrent':
-                group = re.findall('filename=["\'](.+)["\']', resp.headers.get('content-disposition', ''))
-                if group:
-                    filename = group[0]
+            if filename.endswith('nzb') and resp.headers.get('content-type') == 'application/x-bittorrent':
+                filename = replace_extension(filename, 'torrent')
 
             try:
                 with io.open(filename, 'wb') as fp:
@@ -1508,9 +1509,9 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
     except Exception as error:
         handle_requests_exception(error)
-        return False
+        return False if not return_filename else ""
 
-    return True
+    return True if not return_filename else filename
 
 
 def handle_requests_exception(requests_exception):  # pylint: disable=too-many-branches, too-many-statements
