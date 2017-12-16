@@ -54,6 +54,8 @@ $(document).ready(function() {
     const newznabProviders = [];
     const torrentRssProviders = [];
 
+    const newznabProvidersCapabilities = [];
+
     $.fn.addProvider = function(id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
         url = $.trim(url);
         if (!url) {
@@ -210,7 +212,7 @@ $(document).ready(function() {
     };
 
     /**
-     * Updates the Global array $.fn.newznabProvidersCapabilities with a combination of newznab prov name
+     * Updates the Global constant array newznabProvidersCapabilities with a combination of newznab prov name
      * and category capabilities. Return
      * @param {Array} newzNabCaps, is the returned object with newznabprovider Name and Capabilities.
      * @param {Array} selectedProvider
@@ -242,7 +244,7 @@ $(document).ready(function() {
     $.fn.makeNewznabProviderString = function() {
         const provStrings = [];
         for (let id in newznabProviders) {
-            if (newznabProviders.hasOwnProperty(id)) {
+            if (Object.prototype.hasOwnProperty.call(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
         }
@@ -518,9 +520,6 @@ $(document).ready(function() {
             self.append($option);
         });
     };
-
-    // Initialization stuff
-    const newznabProvidersCapabilities = [];
 
     $(this).showHideProviders();
 
