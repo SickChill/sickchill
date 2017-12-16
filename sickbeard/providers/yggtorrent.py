@@ -1,5 +1,6 @@
 # coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
+# Contributor: PHD <phd59fr@gmail.com>
 #
 # URL: https://sickrage.github.io
 #
@@ -47,7 +48,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.com/'
+        self.url = 'https://ww1.yggtorrent.com/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search'),
@@ -69,7 +70,13 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if response: # Yggtorrent return empty response if user is logged, so ...
+        if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
+            response = self.get_url(self.url, returns='text')
+            if not response: # The provider is dead !!!
+                logger.log('Unable to connect to provider', logger.WARNING)
+                return False
+
+        if 'logout' not in response:
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -92,6 +99,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     search_params = {
+                        'category': "2145",
+                        'subcategory' : "2184",
                         'q': re.sub(r'[()]', '', search_string)
                     }
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
@@ -112,9 +121,14 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             cells = result('td')
                             if len(cells) < 5:
                                 continue
-
+                            
+                            download_url = ""
                             title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
+                            for download_img in cells[0].select('a[href] img'):                                   
+                                if download_img['src'] == urljoin(self.url,"static/icons/icon_download.gif"):
+                                    download_url = urljoin(self.url, download_img.parent['href'])
+                                    break
+
                             if not (title and download_url):
                                 continue
 
