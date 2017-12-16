@@ -15,7 +15,8 @@
 # Copyright 2013 Mark Roddy <markroddy@gmail.com>                              #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -186,7 +187,7 @@ class Requester:
             cls = GithubException.TwoFactorException  # pragma no cover (Should be covered)
         elif status == 403 and output.get("message").startswith("Missing or invalid User Agent string"):
             cls = GithubException.BadUserAgentException
-        elif status == 403 and output.get("message").startswith("API Rate Limit Exceeded"):
+        elif status == 403 and output.get("message").lower().startswith("api rate limit exceeded"):
             cls = GithubException.RateLimitExceededException
         elif status == 404 and output.get("message") == "Not Found":
             cls = GithubException.UnknownObjectException
@@ -263,6 +264,7 @@ class Requester:
         return status, responseHeaders, output
 
     def __requestRaw(self, cnx, verb, url, requestHeaders, input):
+        original_cnx = cnx
         if cnx is None:
             cnx = self.__createConnection()
         else:
@@ -283,6 +285,9 @@ class Requester:
         cnx.close()
 
         self.__log(verb, url, requestHeaders, input, status, responseHeaders, output)
+
+        if status == 301 and 'location' in responseHeaders:
+            return self.__requestRaw(original_cnx, verb, responseHeaders['location'], requestHeaders, input)
 
         return status, responseHeaders, output
 
@@ -333,7 +338,10 @@ class Requester:
             headers = {}
             if url.username and url.password:
                 auth = '%s:%s' % (url.username, url.password)
-                headers['Proxy-Authorization'] = 'Basic ' + base64.b64encode(auth)
+                if atLeastPython3 and isinstance(auth, str):
+                    headers['Proxy-Authorization'] = 'Basic ' + base64.b64encode(auth.encode()).decode()
+                else:
+                    headers['Proxy-Authorization'] = 'Basic ' + base64.b64encode(auth)
             conn.set_tunnel(self.__hostname, self.__port, headers)
         else:
             conn = self.__connectionClass(self.__hostname, self.__port, **kwds)

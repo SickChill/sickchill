@@ -8,7 +8,8 @@
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
 #                                                                              #
-# This file is part of PyGithub. http://jacquev6.github.com/PyGithub/          #
+# This file is part of PyGithub.                                               #
+# http://pygithub.github.io/PyGithub/v1/index.html                             #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -32,6 +33,9 @@ class PullRequestMergeStatus(github.GithubObject.NonCompletableGithubObject):
     """
     This class represents PullRequestMergeStatuss. The reference can be found here http://developer.github.com/v3/pulls/#get-if-a-pull-request-has-been-merged
     """
+
+    def __repr__(self):
+        return self.get__repr__({"sha": self._sha.value, "merged": self._merged.value})
 
     @property
     def merged(self):

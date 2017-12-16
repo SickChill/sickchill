@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import re
 
 from requests.compat import urljoin
+
 from sickbeard import logger, tvcache
 from sickrage.providers.nzb.NZBProvider import NZBProvider
 
