@@ -11,9 +11,8 @@
         $(document).ready(function() {
             $('#config-components').tabs();
             % if sickbeard.USE_NZBS:
-                var show_nzb_providers = ${("false", "true")[bool(sickbeard.USE_NZBS)]};
                 % for curNewznabProvider in sickbeard.newznabProviderList:
-                    $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)}, show_nzb_providers);
+                    $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)});
                 % endfor
             % endif
             % if sickbeard.USE_TORRENTS:
@@ -50,8 +49,8 @@
                         <p>${_('At least one provider is required but two are recommended.')}</p>
 
                         % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
-                            <blockquote style="margin: 20px 0;">NZB/${_('Torrent providers can be toggled in ')}
-                                <b><a href="${srRoot}/config/search">Search Settings</a></b></blockquote>
+                            <blockquote style="margin: 20px 0;">NZB/${_('Torrent and NZB providers can be toggled in ')}
+                                <b><a href="/config/search">Search Settings</a></b></blockquote>
                         % else:
                             <br>
                         % endif
@@ -78,9 +77,9 @@
 
                                 curName = curProvider.get_id()
                                 if hasattr(curProvider, 'custom_url'):
-                                        curURL = curProvider.custom_url or curProvider.url
+                                    curURL = curProvider.custom_url or curProvider.url
                                 else:
-                                        curURL = curProvider.url
+                                    curURL = curProvider.url
                             %>
                                 <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[bool(curProvider.provider_type == GenericProvider.TORRENT)]}" id="${curName}">
                                     <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled() is True]}/>
@@ -148,7 +147,7 @@
 
 
                         <!-- start div for editing providers //-->
-                        % for curNewznabProvider in [curProvider for curProvider in sickbeard.newznabProviderList]:
+                        % for curNewznabProvider in sickbeard.newznabProviderList:
                             <div class="providerDiv" id="${curNewznabProvider.get_id()}Div">
                                 % if curNewznabProvider.default and curNewznabProvider.needs_auth:
 

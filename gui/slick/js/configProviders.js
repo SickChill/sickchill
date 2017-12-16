@@ -54,7 +54,9 @@ $(document).ready(function() {
     const newznabProviders = [];
     const torrentRssProviders = [];
 
-    $.fn.addProvider = function(id, name, url, key, cat, isDefault, showProvider) { // eslint-disable-line max-params
+    const newznabProvidersCapabilities = [];
+
+    $.fn.addProvider = function(id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
         url = $.trim(url);
         if (!url) {
             return;
@@ -68,32 +70,30 @@ $(document).ready(function() {
             url += '/';
         }
 
-        const newData = [isDefault, [name, url, key, cat]];
-        newznabProviders[id] = newData;
+        newznabProviders[id] = [isDefault, [name, url, key, cat]];
 
         $('#editANewznabProvider').addOption(id, name);
         $(this).populateNewznabSection();
 
-        if ($('#provider_order_list > #' + id).length === 0 && showProvider !== false) {
-            const toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>';
-
-            $('#provider_order_list').append(toAdd);
-            $('#provider_order_list').sortable('refresh');
+        if ($('#provider_order_list > #' + id).length === 0) {
+            let providerOrderList = $('#provider_order_list');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.sortable('refresh');
         }
 
         $(this).makeNewznabProviderString();
     };
 
     $.fn.addTorrentRssProvider = function(id, name, url, cookies, titleTAG) { // eslint-disable-line max-params
-        const newData = [name, url, cookies, titleTAG];
-        torrentRssProviders[id] = newData;
+        torrentRssProviders[id] = [name, url, cookies, titleTAG];
 
         $('#editATorrentRssProvider').addOption(id, name);
         $(this).populateTorrentRssSection();
 
         if ($('#provider_order_list > #' + id).length === 0) {
-            $('#provider_order_list').append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
-            $('#provider_order_list').sortable('refresh');
+            let providerOrderList = $('#provider_order_list');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.sortable('refresh');
         }
 
         $(this).makeTorrentRssProviderString();
@@ -204,7 +204,7 @@ $(document).ready(function() {
             }
 
             // Get Categories Capabilities
-            if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
+            if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
                 $(this).getCategories(isDefault, data);
             }
             $(this).updateNewznabCaps(null, data);
@@ -212,22 +212,22 @@ $(document).ready(function() {
     };
 
     /**
-     * Updates the Global array $.fn.newznabProvidersCapabilities with a combination of newznab prov name
+     * Updates the Global constant array newznabProvidersCapabilities with a combination of newznab prov name
      * and category capabilities. Return
      * @param {Array} newzNabCaps, is the returned object with newznabprovider Name and Capabilities.
      * @param {Array} selectedProvider
      * @return no return data. The multiselect input $("#newznab_cap") is updated, as a result.
      */
     $.fn.updateNewznabCaps = function(newzNabCaps, selectedProvider) {
-        if (newzNabCaps && !ifExists($.fn.newznabProvidersCapabilities, selectedProvider[0])) {
-            $.fn.newznabProvidersCapabilities.push({name: selectedProvider[0], categories: newzNabCaps.tv_categories});
+        if (newzNabCaps && !ifExists(newznabProvidersCapabilities, selectedProvider[0])) {
+            newznabProvidersCapabilities.push({name: selectedProvider[0], categories: newzNabCaps.tv_categories});
         }
 
         // Loop through the array and if currently selected newznab provider name matches one in the array, use it to
         // update the capabilities select box (on the left).
         $('#newznab_cap').empty();
         if (selectedProvider[0]) {
-            $.fn.newznabProvidersCapabilities.forEach(function(newzNabCap) {
+            newznabProvidersCapabilities.forEach(function(newzNabCap) {
                 if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && newzNabCap.categories instanceof Array) {
                     const newCapOptions = [];
                     newzNabCap.categories.forEach(function(categorySet) {
@@ -243,13 +243,11 @@ $(document).ready(function() {
 
     $.fn.makeNewznabProviderString = function() {
         const provStrings = [];
-
-        for (let id = 0; id < newznabProviders.length; id++) {
-            if ({}.hasOwnProperty.call(newznabProviders, id)) {
+        for (let id in newznabProviders) {
+            if (Object.prototype.hasOwnProperty.call(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
         }
-
         $('#newznab_string').val(provStrings.join('!!!'));
     };
 
@@ -522,9 +520,6 @@ $(document).ready(function() {
             self.append($option);
         });
     };
-
-    // Initialization stuff
-    $.fn.newznabProvidersCapabilities = [];
 
     $(this).showHideProviders();
 
