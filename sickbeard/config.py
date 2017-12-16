@@ -26,13 +26,14 @@ import platform
 import re
 
 import rarfile
-import sickbeard
 import six
+# noinspection PyUnresolvedReferences
+from six.moves.urllib import parse
+
+import sickbeard
 from sickbeard import db, helpers, logger, naming
 from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
-# noinspection PyUnresolvedReferences
-from six.moves.urllib import parse
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently

@@ -22,8 +22,9 @@ from __future__ import print_function, unicode_literals
 import datetime
 import threading
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, db, logger, scheduler, search_queue, ui
 
 

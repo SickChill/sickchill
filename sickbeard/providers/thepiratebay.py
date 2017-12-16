@@ -24,6 +24,7 @@ import re
 
 import validators
 from requests.compat import urljoin
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size, try_int
@@ -46,7 +47,7 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.confirmed = True
 
         # URLs
-        self.url = "https://thepiratebay.se"
+        self.url = "https://thepiratebay.org"
         self.urls = {
             "rss": [urljoin(self.url, "browse/208/0/4/0"), urljoin(self.url, "browse/205/0/4/0")],
             "search": urljoin(self.url, "search"),

@@ -24,9 +24,10 @@ import os
 import re
 import time
 
-import sickbeard
 import validators
 from requests.compat import urljoin
+
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
@@ -281,7 +282,6 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 return results
 
         for mode in search_strings:
-            torznab = False
             search_params = {
                 't': ('search', 'tvsearch')[bool(self.use_tv_search)],
                 'limit': 100,
@@ -329,9 +329,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                         break
 
                     try:
-                        torznab = 'xmlns:torznab' in html.rss.attrs
+                        self.torznab = 'xmlns:torznab' in html.rss.attrs
                     except AttributeError:
-                        torznab = False
+                        self.torznab = False
 
                     for item in html('item'):
                         try:
@@ -361,7 +361,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                                     seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                                     leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
 
-                            if not item_size or (torznab and (seeders is None or leechers is None)):
+                            if not item_size or (self.torznab and (seeders is None or leechers is None)):
                                 continue
 
                             size = convert_size(item_size) or -1
@@ -376,7 +376,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 if 'tvdbid' in search_params:
                     break
 
-            if torznab:
+            if self.torznab:
                 results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 

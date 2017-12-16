@@ -28,9 +28,11 @@ import stat
 import threading
 import traceback
 
-import sickbeard
 import six
 from imdb import imdb
+from unidecode import unidecode
+
+import sickbeard
 from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
@@ -44,7 +46,6 @@ from sickrage.helper.exceptions import (EpisodeDeletedException, EpisodeNotFound
                                         MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
                                         ShowNotFoundException)
 from sickrage.show.Show import Show
-from unidecode import unidecode
 
 try:
     import xml.etree.cElementTree as etree

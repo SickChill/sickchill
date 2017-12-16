@@ -23,8 +23,9 @@ import fnmatch
 import os
 import re
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, logger
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.scene_exceptions import get_scene_exceptions
