@@ -7,13 +7,12 @@ dist: xenial
 sudo: false
 
 env:
-  - TRAVIS_NODE_VERSION="5.6.0"
+  - TRAVIS_NODE_VERSION="8.0.0"
 
 before_install:
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm &&
     git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - npm install -g grunt-cli
-  - npm install -g bower
+  - npm install -g grunt-cli bower xo
   - npm install --quiet
   - bower install
 
@@ -23,8 +22,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - grunt ci
-  - tox -v --recreate
+  - xo && tox -v --recreate -e "py27-{flake8,linux}"
 
 cache:
   directories:
@@ -46,7 +44,7 @@ after_success:
   - git remote rm origin
   - git remote add origin https://$GH_CRED@github.com/$TRAVIS_REPO_SLUG.git
   - git fetch origin master develop --no-tags
-  - grunt ci:update
+  - grunt auto_update_trans
 
 notifications:
   irc: "irc.freenode.net#sickrage-builds"

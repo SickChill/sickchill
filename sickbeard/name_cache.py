@@ -21,8 +21,9 @@ from __future__ import unicode_literals
 
 import threading
 
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import db
 
 # from sickbeard import logger

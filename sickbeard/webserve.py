@@ -34,9 +34,9 @@ from operator import attrgetter
 
 import adba
 import markdown2
-import sickbeard
 import six
 from dateutil import tz
+from github.GithubException import GithubException
 from libtrakt import TraktAPI
 from libtrakt.exceptions import traktException
 from mako.exceptions import RichTraceback
@@ -44,6 +44,18 @@ from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
 from requests.compat import urljoin
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import unquote_plus
+from tornado.concurrent import run_on_executor
+from tornado.gen import coroutine
+from tornado.ioloop import IOLoop
+from tornado.process import cpu_count
+from tornado.routes import route
+from tornado.web import addslash, authenticated, HTTPError, RequestHandler, StaticFileHandler
+
+import sickbeard
 from sickbeard import classes, clients, config, db, helpers, logger, naming, network_timezones, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
@@ -72,16 +84,6 @@ from sickrage.show.History import History as HistoryTool
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import unquote_plus
-from tornado.concurrent import run_on_executor
-from tornado.gen import coroutine
-from tornado.ioloop import IOLoop
-from tornado.process import cpu_count
-from tornado.routes import route
-from tornado.web import authenticated, HTTPError, RequestHandler, StaticFileHandler
 
 try:
     import json
@@ -118,6 +120,7 @@ class PageTemplate(MakoTemplate):
         self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
+        self.arguments['static_url'] = rh.static_url
 
         if rh.request.headers['Host'][0] == '[':
             self.arguments['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
@@ -130,7 +133,7 @@ class PageTemplate(MakoTemplate):
             sbHttpPort = rh.request.headers['X-Forwarded-Port']
             self.arguments['sbHttpsPort'] = sbHttpPort
         if "X-Forwarded-Proto" in rh.request.headers:
-            self.arguments['sbHttpsEnabled'] = True if rh.request.headers['X-Forwarded-Proto'] == 'https' else False
+            self.arguments['sbHttpsEnabled'] = rh.request.headers['X-Forwarded-Proto'].lower() == 'https'
 
         self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
         self.arguments['numWarnings'] = len(classes.WarningViewer.errors)
@@ -167,6 +170,7 @@ class BaseHandler(RequestHandler):
         self.startTime = time.time()
 
         super(BaseHandler, self).__init__(*args, **kwargs)
+        # self.include_host = True
 
     # def set_default_headers(self):
     #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -608,13 +612,15 @@ class UI(WebRoot):
     def get_messages(self):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
+        notifications = ui.notifications.get_notifications(self.request.remote_ip)
         messages = {}
-        cur_notification_num = 1
-        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
-            messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                     'message': cur_notification.message,
-                                                                     'type': cur_notification.type}
-            cur_notification_num += 1
+        for index, cur_notification in enumerate(notifications, 1):
+            messages['notification-' + str(index)] = {
+                'hash': hash(cur_notification),
+                'title': cur_notification.title,
+                'message': cur_notification.message,
+                'type': cur_notification.type
+            }
 
         return json.dumps(messages)
 
@@ -1296,6 +1302,29 @@ class Home(WebRoot):
         else:
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
+    @staticmethod
+    def fetchRemoteBranches():
+        response = []
+        try:
+            gh_branches = sickbeard.versionCheckScheduler.action.list_remote_branches()
+        except GithubException:
+            gh_branches = None
+
+        if gh_branches:
+            gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD or
+                              sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
+            for cur_branch in gh_branches:
+                branch_obj = {'name': cur_branch}
+                if cur_branch == sickbeard.BRANCH:
+                    branch_obj['current'] = True
+
+                if (gh_credentials and sickbeard.DEVELOPER == 1 or
+                    gh_credentials and cur_branch in ['master', 'develop'] or
+                    cur_branch == 'master'):
+                    response.append(branch_obj)
+
+        return json.dumps(response)
+
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
             sickbeard.BRANCH = branch
@@ -1492,10 +1521,10 @@ class Home(WebRoot):
             return _("No scene exceptions")
 
         out = []
-        for season, names in iter(sorted(six.iteritems(exceptionsList))):
+        for season, object in iter(sorted(six.iteritems(exceptionsList))):
             if season == -1:
                 season = "*"
-            out.append("S" + str(season) + ": " + ", ".join(names))
+            out.append("S" + str(season) + ": " + ", ".join(object.names))
         return "<br>".join(out)
 
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
@@ -1522,7 +1551,13 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errString)
 
-        show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
+
+        main_db_con = db.DBConnection()
+        seasonResults = main_db_con.select(
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season IS NOT NULL ORDER BY season DESC",
+            [show_obj.indexerid]
+        )
 
         if try_int(quality_preset, None):
             bestQualities = []
@@ -1546,14 +1581,14 @@ class Home(WebRoot):
 
             with show_obj.lock:
                 show = show_obj
-                scene_exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
             if show_obj.is_anime:
-                return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
-                                blacklist=blacklist, title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
+                return t.render(show=show, scene_exceptions=show_obj.exceptions, seasonResults=seasonResults,
+                                groups=groups, whitelist=whitelist, blacklist=blacklist,
+                                title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title=_('Edit Show'), header=_('Edit Show'),
-                                controller="home", action="editShow")
+                return t.render(show=show, scene_exceptions=show_obj.exceptions, seasonResults=seasonResults,
+                                title=_('Edit Show'), header=_('Edit Show'), controller="home", action="editShow")
 
         season_folders = config.checkbox_to_value(season_folders)
         dvdorder = config.checkbox_to_value(dvdorder)
@@ -1589,18 +1624,28 @@ class Home(WebRoot):
         if not isinstance(bestQualities, list):
             bestQualities = [bestQualities]
 
-        if not isinstance(exceptions_list, list):
-            exceptions_list = [exceptions_list]
+        if isinstance(exceptions_list, list):
+            if len(exceptions_list) > 0:
+                exceptions_list = exceptions_list[0]
+            else:
+                exceptions_list = None
+
+        # Map custom exceptions
+        exceptions = {}
+
+        if exceptions_list is not None:
+            for season in exceptions_list.split(','):
+                (season, shows) = season.split(':')
+
+                show_list = []
+
+                for cur_show in shows.split('|'):
+                    show_list.append({'show_name': unquote_plus(cur_show), 'custom': True})
+
+                exceptions[int(season)] = show_list
 
         # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
-        if directCall:
-            do_update_exceptions = False
-        else:
-            if set(exceptions_list) == set(show_obj.exceptions):
-                do_update_exceptions = False
-            else:
-                do_update_exceptions = True
-
+        if not directCall:
             with show_obj.lock:
                 if anime:
                     if not show_obj.release_groups:
@@ -1681,12 +1726,11 @@ class Home(WebRoot):
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
 
-        if do_update_exceptions:
-            try:
-                sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions_list)  # @UndefinedVdexerid)
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except CantUpdateShowException as e:
-                errors.append(_("Unable to force an update on scene exceptions of the show."))
+        try:
+            sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+        except CantUpdateShowException as e:
+            errors.append(_("Unable to force an update on scene exceptions of the show."))
 
         if do_update_scene_numbering:
             try:
@@ -2402,6 +2446,7 @@ class HomePostProcess(Home):
     def __init__(self, *args, **kwargs):
         super(HomePostProcess, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
         return t.render(title=_('Post Processing'), header=_('Post Processing'), topmenu='home', controller="home", action="postProcess")
@@ -2492,7 +2537,7 @@ class HomeAddShows(Home):
 
         for i, shows in six.iteritems(results):
             final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired']) for show in shows})
+                                   show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id})
@@ -3788,6 +3833,7 @@ class Config(WebRoot):
 
         return menu
 
+    @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
 
@@ -3833,6 +3879,7 @@ class ConfigShares(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigShares, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self):
 
         t = PageTemplate(rh=self, filename="config_shares.mako")
@@ -3871,6 +3918,7 @@ class ConfigGeneral(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigGeneral, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="config_general.mako")
 
@@ -4066,6 +4114,7 @@ class ConfigBackupRestore(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigBackupRestore, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_backuprestore.mako")
 
@@ -4129,6 +4178,7 @@ class ConfigSearch(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSearch, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_search.mako")
 
@@ -4266,6 +4316,7 @@ class ConfigPostProcessing(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigPostProcessing, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_postProcessing.mako")
 
@@ -4443,6 +4494,7 @@ class ConfigProviders(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigProviders, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
@@ -4458,12 +4510,12 @@ class ConfigProviders(Config):
 
         providerDict = dict(zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
-        tempProvider = newznab.NewznabProvider(name, '')
+        cur_id = GenericProvider.make_id(name)
 
-        if tempProvider.get_id() in providerDict:
-            return json.dumps({'error': 'Provider Name already exists as ' + providerDict[tempProvider.get_id()].name})
+        if cur_id in providerDict:
+            return json.dumps({'error': 'Provider Name already exists as ' + name})
         else:
-            return json.dumps({'success': tempProvider.get_id()})
+            return json.dumps({'success': cur_id})
 
     @staticmethod
     def getNewznabCategories(name, url, key):
@@ -4549,75 +4601,56 @@ class ConfigProviders(Config):
         return '1'
 
     def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
-        provider_str_list = provider_order.split()
-        provider_list = []
-
         newznabProviderDict = dict(
             zip([x.get_id() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
-        finishedNames = []
+        finished_names = []
 
         # add all the newznab info we got into our list
+        if not newznab_string:
+            logger.log('No newznab_string passed to saveProviders', logger.ERROR)
+            # newznab_string = sickbeard.NEWZNAB_DATA
+
+        for curNewznabProviderStr in newznab_string.split('!!!'):
+            if not curNewznabProviderStr:
+                continue
+
+            cur_name, cur_url, cur_key, cur_cat = curNewznabProviderStr.split('|')
+            cur_url = config.clean_url(cur_url)
+            cur_id = GenericProvider.make_id(cur_name)
+
+            # if it does not already exist then add it
+            if cur_id not in newznabProviderDict:
+                new_provider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key, catIDs=cur_cat)
+                sickbeard.newznabProviderList.append(new_provider)
+                newznabProviderDict[cur_id] = new_provider
+
+            # set all params
+            newznabProviderDict[cur_id].name = cur_name
+            newznabProviderDict[cur_id].url = cur_url
+            newznabProviderDict[cur_id].key = cur_key
+            newznabProviderDict[cur_id].catIDs = cur_cat
+            # a 0 in the key spot indicates that no key is needed
+            newznabProviderDict[cur_id].needs_auth = cur_key and cur_key != '0'
+            newznabProviderDict[cur_id].search_mode = str(kwargs.get(cur_id + '_search_mode', 'eponly')).strip()
+            newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(kwargs.get(cur_id + 'search_fallback', 0), value_on=1, value_off=0)
+            newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(kwargs.get(cur_id + 'enable_daily', 0), value_on=1, value_off=0)
+            newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(kwargs.get(cur_id + 'enable_backlog', 0), value_on=1, value_off=0)
+
+            # mark it finished
+            finished_names.append(cur_id)
+
+        # delete anything that is in the list that was not processed just now
         if newznab_string:
-            for curNewznabProviderStr in newznab_string.split('!!!'):
-
-                if not curNewznabProviderStr:
-                    continue
-
-                cur_name, cur_url, cur_key, cur_cat = curNewznabProviderStr.split('|')
-                cur_url = config.clean_url(cur_url)
-
-                newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
-
-                cur_id = newProvider.get_id()
-
-                # if it already exists then update it
-                if cur_id in newznabProviderDict:
-                    newznabProviderDict[cur_id].name = cur_name
-                    newznabProviderDict[cur_id].url = cur_url
-                    newznabProviderDict[cur_id].key = cur_key
-                    newznabProviderDict[cur_id].catIDs = cur_cat
-                    # a 0 in the key spot indicates that no key is needed
-                    if cur_key == '0':
-                        newznabProviderDict[cur_id].needs_auth = False
-                    else:
-                        newznabProviderDict[cur_id].needs_auth = True
-
-                    try:
-                        newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
-                    except Exception:
-                        pass
-
-                    try:
-                        newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
-                            kwargs[cur_id + '_search_fallback'])
-                    except Exception:
-                        newznabProviderDict[cur_id].search_fallback = 0
-
-                    try:
-                        newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(
-                            kwargs[cur_id + '_enable_daily'])
-                    except Exception:
-                        newznabProviderDict[cur_id].enable_daily = 0
-
-                    try:
-                        newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(
-                            kwargs[cur_id + '_enable_backlog'])
-                    except Exception:
-                        newznabProviderDict[cur_id].enable_backlog = 0
-                else:
-                    sickbeard.newznabProviderList.append(newProvider)
-
-                finishedNames.append(cur_id)
-
-        # delete anything that is missing
-        for curProvider in sickbeard.newznabProviderList:
-            if curProvider.get_id() not in finishedNames:
-                sickbeard.newznabProviderList.remove(curProvider)
+            for curProvider in sickbeard.newznabProviderList:
+                if curProvider.get_id() not in finished_names:
+                    sickbeard.newznabProviderList.remove(curProvider)
+                    del newznabProviderDict[curProvider.get_id()]
 
         torrentRssProviderDict = dict(
             zip([x.get_id() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
-        finishedNames = []
+
+        finished_names = []
 
         if torrentrss_string:
             for curTorrentRssProviderStr in torrentrss_string.split('!!!'):
@@ -4625,51 +4658,52 @@ class ConfigProviders(Config):
                 if not curTorrentRssProviderStr:
                     continue
 
-                curName, curURL, curCookies, curTitleTAG = curTorrentRssProviderStr.split('|')
-                curURL = config.clean_url(curURL)
+                cur_name, cur_url, cur_cookies, cur_title_tag = curTorrentRssProviderStr.split('|')
+                cur_url = config.clean_url(cur_url)
+                cur_id = GenericProvider.make_id(cur_name)
 
-                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies, curTitleTAG)
+                # if it does not already exist then create it
+                if cur_id not in torrentRssProviderDict:
+                    new_provider = rsstorrent.TorrentRssProvider(cur_name, cur_url, cur_cookies, cur_title_tag)
+                    sickbeard.torrentRssProviderList.append(new_provider)
+                    torrentRssProviderDict[cur_id] = new_provider
 
-                curID = newProvider.get_id()
+                # update values
+                torrentRssProviderDict[cur_id].name = cur_name
+                torrentRssProviderDict[cur_id].url = cur_url
+                torrentRssProviderDict[cur_id].cookies = cur_cookies
+                torrentRssProviderDict[cur_id].cur_title_tag = cur_title_tag
 
-                # if it already exists then update it
-                if curID in torrentRssProviderDict:
-                    torrentRssProviderDict[curID].name = curName
-                    torrentRssProviderDict[curID].url = curURL
-                    torrentRssProviderDict[curID].cookies = curCookies
-                    torrentRssProviderDict[curID].curTitleTAG = curTitleTAG
-                else:
-                    sickbeard.torrentRssProviderList.append(newProvider)
-
-                finishedNames.append(curID)
+                # mark it finished
+                finished_names.append(cur_id)
 
         # delete anything that is missing
         for curProvider in sickbeard.torrentRssProviderList:
-            if curProvider.get_id() not in finishedNames:
+            if curProvider.get_id() not in finished_names:
                 sickbeard.torrentRssProviderList.remove(curProvider)
+                del torrentRssProviderDict[curProvider.get_id()]
 
-        disabled_list = []
         # do the enable/disable
-        for curProviderStr in provider_str_list:
-            curProvider, curEnabled = curProviderStr.split(':')
-            curEnabled = bool(try_int(curEnabled))
+        enabled_provider_list = []
+        disabled_provider_list = []
+        for cur_id, cur_enabled in (cur_provider_str.split(':') for cur_provider_str in provider_order.split()):
+            cur_enabled = bool(try_int(cur_enabled))
 
-            curProvObj = [x for x in sickbeard.providers.sortedProviderList() if
-                          x.get_id() == curProvider and hasattr(x, 'enabled')]
-            if curProvObj:
-                curProvObj[0].enabled = curEnabled
+            cur_provider_obj = [x for x in sickbeard.providers.sortedProviderList() if
+                          x.get_id() == cur_id and hasattr(x, 'enabled')]
 
-            if curEnabled:
-                provider_list.append(curProvider)
+            if cur_provider_obj:
+                cur_provider_obj[0].enabled = cur_enabled
+
+            if cur_enabled:
+                enabled_provider_list.append(cur_id)
             else:
-                disabled_list.append(curProvider)
+                disabled_provider_list.append(cur_id)
 
-            if curProvider in newznabProviderDict:
-                newznabProviderDict[curProvider].enabled = curEnabled
-            elif curProvider in torrentRssProviderDict:
-                torrentRssProviderDict[curProvider].enabled = curEnabled
-
-        provider_list = provider_list + disabled_list
+            if cur_id in newznabProviderDict:
+                newznabProviderDict[cur_id].enabled = cur_enabled
+            elif cur_id in torrentRssProviderDict:
+                torrentRssProviderDict[cur_id].enabled = cur_enabled
 
         # dynamically load provider settings
         for curTorrentProvider in [prov for prov in sickbeard.providers.sortedProviderList() if
@@ -4872,7 +4906,7 @@ class ConfigProviders(Config):
                     curNzbProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
-        sickbeard.PROVIDER_ORDER = provider_list
+        sickbeard.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
 
         sickbeard.save_config()
 
@@ -4889,6 +4923,7 @@ class ConfigNotifications(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigNotifications, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 
@@ -5169,6 +5204,7 @@ class ConfigSubtitles(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSubtitles, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_subtitles.mako")
 
@@ -5235,6 +5271,7 @@ class ConfigAnime(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigAnime, self).__init__(*args, **kwargs)
 
+    @addslash
     def index(self, *args_, **kwargs_):
 
         t = PageTemplate(rh=self, filename="config_anime.mako")
@@ -5290,6 +5327,7 @@ class ErrorLogs(WebRoot):
 
         return menu
 
+    @addslash
     def index(self, level=logger.ERROR):  # pylint: disable=arguments-differ
         level = try_int(level, logger.ERROR)
 

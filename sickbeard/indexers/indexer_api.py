@@ -22,8 +22,9 @@ from __future__ import unicode_literals
 
 import os
 
-import sickbeard
 from indexer_config import indexerConfig, initConfig
+
+import sickbeard
 from sickrage.helper.common import try_int
 from sickrage.helper.encoding import ek
 
