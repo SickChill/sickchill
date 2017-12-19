@@ -103,9 +103,7 @@ $(document).ready(function() {
         newznabProviders[id][1][1] = url;
         newznabProviders[id][1][2] = key;
         newznabProviders[id][1][3] = cat;
-
         $(this).populateNewznabSection();
-
         $(this).makeNewznabProviderString();
     };
 
@@ -286,12 +284,11 @@ $(document).ready(function() {
 
     $.fn.makeTorrentRssProviderString = function() {
         const provStrings = [];
-        for (let id = 0; id < torrentRssProviders.length; id++) {
-            if ({}.hasOwnProperty.call(torrentRssProviders, id)) {
+        for (let id in torrentRssProviders) {
+            if (Object.prototype.hasOwnProperty.call(torrentRssProviders, id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
         }
-
         $('#torrentrss_string').val(provStrings.join('!!!'));
     };
 
@@ -320,9 +317,11 @@ $(document).ready(function() {
 
         if (finalArr.length > 0) {
             $('<select>').prop('id', 'editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
-            for (let i = 0, len = finalArr.length; i < len; i++) {
-                const provider = finalArr[i];
-                $('#editAProvider').append($('<option>').prop('value', provider).text($.trim($('#' + provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
+            for (let id in finalArr) {
+                if (Object.prototype.hasOwnProperty.call(finalArr, id)) {
+                    const provider = finalArr[id];
+                    $('#editAProvider').append($('<option>').prop('value', provider).text($.trim($('#' + provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
+                }
             }
         } else {
             document.getElementsByClassName('component-desc')[0].innerHTML = 'No providers available to configure.';
