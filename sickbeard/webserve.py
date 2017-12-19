@@ -167,6 +167,9 @@ class PageTemplate(MakoTemplate):
 class BaseHandler(RequestHandler):
     startTime = 0.
 
+    def data_received(self, chunk):
+        pass
+
     def __init__(self, *args, **kwargs):
         self.startTime = time.time()
 
@@ -323,6 +326,9 @@ class LogoutHandler(BaseHandler):
 
 
 class KeyHandler(RequestHandler):
+    def data_received(self, chunk):
+        pass
+
     def __init__(self, *args, **kwargs):
         super(KeyHandler, self).__init__(*args, **kwargs)
 
@@ -1965,13 +1971,13 @@ class Home(WebRoot):
                         logger.log("Refusing to change status of " + cur_ep + " because it is UNAIRED", logger.WARNING)
                         continue
 
-                    if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + \
-                        Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED + [IGNORED] and not ek(os.path.isfile, ep_obj.location):
+                    if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
+                            Quality.DOWNLOADED + [IGNORED] and not ek(os.path.isfile, ep_obj.location):
                         logger.log("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
                         continue
 
-                    if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + \
-                        Quality.SNATCHED_BEST + Quality.DOWNLOADED + Quality.ARCHIVED:
+                    if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
+                            Quality.DOWNLOADED + Quality.ARCHIVED:
                         logger.log("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
                         continue
 
@@ -1993,11 +1999,15 @@ class Home(WebRoot):
                 if data['seasons']:
                     upd = ""
                     if int(status) in [WANTED, FAILED]:
-                        logger.log("Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist", logger.DEBUG)
+                        logger.log(
+                            "Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist", logger.DEBUG
+                        )
                         upd = "add"
                     elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                         # noinspection PyPep8
-                        logger.log("Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist", logger.DEBUG)
+                        logger.log(
+                            "Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist", logger.DEBUG
+                        )
                         upd = "remove"
 
                     if upd:
