@@ -39,7 +39,7 @@ class newpctProvider(TorrentProvider):
 
         self.onlyspasearch = None
 
-        self.url = 'http://www.newpct.com'
+        self.url = 'http://newpct.com'
         self.urls = {'search': [ urljoin(self.url, '/series'),
                                  urljoin(self.url, '/series-hd')],
                                  #urljoin(self.url, '/series-vo')],
@@ -47,7 +47,7 @@ class newpctProvider(TorrentProvider):
                      'letter': [ urljoin(self.url, '/series/letter/{0}'),
                                  urljoin(self.url, '/series-hd/letter/{0}')],
                                  #urljoin(self.url, '/series-vo/letter/{0}')],
-                     'download': 'http://tumejorserie.com/descargar/index.php?link=torrents/%s.torrent',}
+                     'downloadregex': urljoin(self.url, '/descargar-torrent/\d+_[^\"]+\.html'),}
 
         self.cache = tvcache.TVCache(self, min_time=20)
 
@@ -242,13 +242,11 @@ class newpctProvider(TorrentProvider):
         if trickery == 'content':
             kwargs['returns'] = 'text'
             data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, **kwargs)
-
-            match = re.search(r'http://tumejorserie.com/descargar/.+?(\d{6}).+?\.html', data, re.DOTALL)
+            
+            match = re.search(r'' + self.urls['downloadregex'], data, re.DOTALL)
             if not match:
                 return None
-            
-            download_id = match.group(1)
-            url = self.urls['download'] % download_id
+            url = match.group()
 
         kwargs['returns'] = trickery
         return super(newpctProvider, self).get_url(url, post_data=post_data, params=params,
@@ -269,9 +267,11 @@ class newpctProvider(TorrentProvider):
             # Search results don't return torrent files directly, it returns show sheets so we must parse showSheet to access torrent.
             data = self.get_url(url, returns='text')
 
-            download_id = re.search(r'http://tumejorserie.com/descargar/.+?(\d{6}).+?\.html', data, re.DOTALL).group(1)
-            url_torrent = self.urls['download'] % download_id
-
+            match = re.search(r'' + self.urls['downloadregex'], data, re.DOTALL)
+            if not match:
+                continue
+            url_torrent = match.group()
+            
             if url_torrent.startswith('http'):
                 self.headers.update({'Referer': '/'.join(url_torrent.split('/')[:3]) + '/'})
 
