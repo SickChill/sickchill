@@ -30,6 +30,7 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from lib.js2py.translators.pyjsparser import false
 
 
 class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -48,10 +49,11 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://ww1.yggtorrent.com/'
+        self.url = 'https://yggtorrent.com/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search'),
+            'login_check': urljoin(self.url, 'user/account')
         }
 
         # Proper Strings
@@ -71,12 +73,12 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
-            response = self.get_url(self.url, returns='text')
+            response = self.get_url(self.urls['login_check'], returns='text')
             if not response: # The provider is dead !!!
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
-
-        if 'logout' not in response:
+      
+        if self.username.lower() not in response.lower():
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -96,7 +98,14 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if mode != 'RSS':
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
-
+                # search string needs to be normalized, single quotes are apparently not allowed on the site
+                removed_chars="'"
+                for c in removed_chars:
+                    search_string = search_string.replace(c,'')
+                
+                logger.log('Sanitized string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
+                    
                 try:
                     search_params = {
                         'category': "2145",
