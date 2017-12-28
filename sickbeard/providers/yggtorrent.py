@@ -53,7 +53,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search'),
-            'login_check': urljoin(self.url, 'user/account')
+            'login_check': urljoin(self.url, 'user/account'),
+            'logout': urljoin(self.url, 'user/logout')
         }
 
         # Proper Strings
@@ -77,8 +78,9 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             if not response: # The provider is dead !!!
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
-      
-        if self.username.lower() not in response.lower():
+
+        html = BS4Parser(response, 'html5lib')
+        if not html.soup.find_all('a', self.urls['logout']):
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -99,13 +101,18 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
-                removed_chars="'"
-                for c in removed_chars:
-                    search_string = search_string.replace(c,'')
-                
+                # ç should also be replaced, people tend to use c instead
+                replace_chars= {
+                "'": '',
+                "ç": 'c'
+                }
+
+                for k, v in replace_chars.iteritems():
+                    search_string = search_string.replace(k, v)
+
                 logger.log('Sanitized string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
-                    
+
                 try:
                     search_params = {
                         'category': "2145",
@@ -130,10 +137,10 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             cells = result('td')
                             if len(cells) < 5:
                                 continue
-                            
+
                             download_url = ""
                             title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            for download_img in cells[0].select('a[href] img'):                                   
+                            for download_img in cells[0].select('a[href] img'):
                                 if download_img['src'] == urljoin(self.url,"static/icons/icon_download.gif"):
                                     download_url = urljoin(self.url, download_img.parent['href'])
                                     break
