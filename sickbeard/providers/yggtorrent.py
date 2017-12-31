@@ -52,9 +52,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.url = 'https://yggtorrent.com/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
-            'search': urljoin(self.url, 'engine/search'),
-            'login_check': urljoin(self.url, 'user/account'),
-            'logout': urljoin(self.url, 'user/logout')
+            'search': urljoin(self.url, 'engine/search')
         }
 
         # Proper Strings
@@ -74,13 +72,12 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
-            response = self.get_url(self.urls['login_check'], returns='text')
+            response = self.get_url(self.url, returns='text')
             if not response: # The provider is dead !!!
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
 
-        html = BS4Parser(response, 'html5lib')
-        if not html.soup.find_all('a', self.urls['logout']):
+        if 'logout' not in response:
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -102,9 +99,9 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                (search_string.decode('utf-8')), logger.DEBUG)
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
-                replace_chars= {
-                "'": '',
-                "ç": 'c'
+                replace_chars = {
+                                "'": '',
+                                "ç": 'c'
                 }
 
                 for k, v in replace_chars.iteritems():
