@@ -28,8 +28,9 @@ import stat
 import subprocess
 
 import adba
-import sickbeard
 import six
+
+import sickbeard
 from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
 from sickbeard.helpers import verify_freespace
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

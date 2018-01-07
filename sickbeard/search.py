@@ -47,11 +47,11 @@ def _downloadResult(result):
         logger.log("Invalid provider name - this is a coding error, report it please", logger.ERROR)
         return False
 
-    # nzbs with an URL can just be downloaded from the provider
-    if result.resultType == "nzb":
+    # nzbs/torrents with an URL can just be downloaded from the provider
+    if result.resultType in (GenericProvider.NZB, GenericProvider.TORRENT):
         newResult = resProvider.download_result(result)
     # if it's an nzb data result
-    elif result.resultType == "nzbdata":
+    elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
         fileName = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
@@ -70,8 +70,6 @@ def _downloadResult(result):
         except EnvironmentError as e:
             logger.log("Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
-    elif result.resultType == "torrent":
-        newResult = resProvider.download_result(result)
     else:
         logger.log("Invalid provider type - this is a coding error, report it please", logger.ERROR)
         newResult = False
@@ -101,11 +99,8 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
 
     endStatus = SNATCHED_PROPER if re.search(r'\b(proper|repack|real)\b', result.name, re.I) else endStatus
 
-    if result.url.startswith('magnet') or result.url.endswith('torrent'):
-        result.resultType = 'torrent'
-
     # NZBs can be sent straight to SAB or saved to disk
-    if result.resultType in ("nzb", "nzbdata"):
+    if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
         if sickbeard.NZB_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         elif sickbeard.NZB_METHOD == "sabnzbd":
@@ -122,7 +117,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
             dlResult = False
 
     # Torrents can be sent to clients or saved to disk
-    elif result.resultType == "torrent":
+    elif result.resultType == GenericProvider.TORRENT:
         # torrents are saved to disk when blackhole mode
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)

@@ -30,9 +30,14 @@ import os
 import re
 import time
 import traceback
+from abc import abstractmethod
+
+import six
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+from tornado.web import RequestHandler
 
 import sickbeard
-import six
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
@@ -51,10 +56,6 @@ from sickrage.show.History import History
 from sickrage.show.Show import Show
 from sickrage.system.Restart import Restart
 from sickrage.system.Shutdown import Shutdown
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
-# pylint: disable=import-error
-from tornado.web import RequestHandler
 
 try:
     import json
@@ -845,6 +846,83 @@ class CMDEpisodeSearch(ApiCall):
         return _responds(RESULT_FAILURE, msg='Unable to find episode')
 
 
+class AbstractStartScheduler(ApiCall):
+
+    @property
+    @abstractmethod
+    def scheduler(self):
+        return AbstractStartScheduler
+
+    @property
+    @abstractmethod
+    def scheduler_class_str(self):
+        return 'sickbeard.scheduler.Scheduler'
+
+    def run(self):
+        error_str = 'Start scheduler failed'
+        if not isinstance(self.scheduler, sickbeard.scheduler.Scheduler):
+            error_str = '{0}: {1} is not initialized as a static variable'.format(error_str, self.scheduler_class_str)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        if not self.scheduler.enable:
+            error_str = '{0}: {1} is not enabled'.format(error_str, self.scheduler_class_str)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        if not hasattr(self.scheduler.action, 'amActive'):
+            error_str = '{0}: {1} is not a valid action'.format(error_str, self.scheduler.action)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        time_remain = self.scheduler.timeLeft()
+        # Force the search to start in order to skip the search interval check
+        if self.scheduler.forceRun():
+            cycle_time = self.scheduler.cycleTime
+            next_run = datetime.datetime.now() + cycle_time
+            result_str = 'Force run successful: {0} search underway. Time Remaining: {1}. ' \
+                         'Next Run: {2}'.format(self.scheduler_class_str, time_remain, next_run)
+            return _responds(RESULT_SUCCESS, msg=result_str)
+        else:
+            # Scheduler is currently active
+            error_str = '{0}: {1} search underway. Time remaining: {}.'.format(
+                error_str, self.scheduler_class_str, time_remain)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+
+class CMDFullSubtitleSearch(AbstractStartScheduler):
+    _help = {"desc": "Force a subtitle search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.subtitlesFinderScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.subtitlesFinderScheduler'
+
+
+class CMDProperSearch(AbstractStartScheduler):
+    _help = {"desc": "Force a proper search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.properFinderScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.properFinderScheduler'
+
+
+class CMDDailySearch(AbstractStartScheduler):
+    _help = {"desc": "Force a daily search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.dailySearchScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.dailySearchScheduler'
+
+
 # noinspection PyAbstractClass
 class CMDEpisodeSetStatus(ApiCall):
     _help = {
@@ -1622,8 +1700,8 @@ class CMDSickBeardSearchIndexers(ApiCall):
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
             "indexerid": {"desc": "Unique ID of a show"},
-            "tvdbid": {"desc": "thetvdb.com unique ID of a show"},
             "lang": {"desc": "The 2-letter language code of the desired show"},
+            "only_new": {"desc": "Discard shows that are already in your show list"},
         }
     }
 
@@ -1634,6 +1712,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
+        self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
 
     def run(self):
         """ Search for a show with a given name on all the indexers, in a specific language """
@@ -1659,10 +1738,14 @@ class CMDSickBeardSearchIndexers(ApiCall):
                     continue
 
                 for curSeries in api_data:
+                    # Skip it if it's in our show list already, and we only want new shows
+                    if curSeries['in_show_list'] and self.only_new:
+                        continue
                     results.append({indexer_ids[_indexer]: int(curSeries['id']),
                                     "name": curSeries['seriesname'],
                                     "first_aired": curSeries['firstaired'],
-                                    "indexer": int(_indexer)})
+                                    "indexer": int(_indexer),
+                                    "in_show_list": curSeries['in_show_list']})
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
@@ -1955,7 +2038,7 @@ class CMDShowAddExisting(ApiCall):
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
@@ -2044,7 +2127,7 @@ class CMDShowAddNew(ApiCall):
         self.archive, args = self.check_params(
             args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
@@ -2823,6 +2906,9 @@ function_mapper = {
     "sb.pausebacklog": CMDSickBeardPauseBacklog,
     "sb.ping": CMDSickBeardPing,
     "sb.restart": CMDSickBeardRestart,
+    "sb.dailysearch": CMDDailySearch,
+    "sb.propersearch": CMDProperSearch,
+    "sb.subtitlesearch": CMDFullSubtitleSearch,
     "sb.searchindexers": CMDSickBeardSearchIndexers,
     "sb.searchtvdb": CMDSickBeardSearchTVDB,
     "sb.searchtvrage": CMDSickBeardSearchTVRAGE,

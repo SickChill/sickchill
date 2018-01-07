@@ -18,5 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
-from . import indexer_api
-from . import indexer_exceptions
+from __future__ import unicode_literals
+
+from . import indexer_api, indexer_exceptions
