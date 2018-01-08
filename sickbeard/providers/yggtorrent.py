@@ -72,6 +72,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if response: # Yggtorrent return empty response if user is logged, so ...
+            logger.log('logged', logger.WARNING)
+
         if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
             response = self.get_url(self.url, returns='text')
             if not response: # The provider is dead !!!
