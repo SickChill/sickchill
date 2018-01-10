@@ -31,12 +31,17 @@ class NZBProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.provider_type = GenericProvider.NZB
+        self.torznab = False
 
     def is_active(self):
         return bool(sickbeard.USE_NZBS) and self.is_enabled()
 
     def _get_result(self, episodes):
-        return NZBSearchResult(episodes)
+        result = NZBSearchResult(episodes)
+        if self.torznab or result.url.startswith('magnet'):
+            result.resultType = GenericProvider.TORRENT
+
+        return result
 
     def _get_size(self, item):
         try:

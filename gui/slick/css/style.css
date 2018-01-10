@@ -815,6 +815,14 @@ home_newShow.mako
     border: 1px solid #DFDEDE;
 }
 
+#searchResults {
+    height: 100%;
+}
+
+#searchResults .legendStep {
+    margin-bottom: 5px;
+}
+
 #searchResults input[type="radio"] {
     vertical-align: -2px;
 }
@@ -1223,6 +1231,11 @@ td.col-name {
 
 td.col-name {
     text-align: left;
+}
+
+th.col-network,
+td.col-network {
+    width: 95px;
 }
 
 th.col-subtitles,
@@ -2365,6 +2378,20 @@ pre {
 
 .navbar-brand {
     padding: 0;
+}
+
+.floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    padding: 0px 4px;
+    background-color: #777777;
+    border: 2px solid #959595;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
 }
 
 /* navbar styling */

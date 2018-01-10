@@ -21,9 +21,10 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
-import sickbeard
 from feedparser.util import FeedParserDict
 from hachoir_parser import createParser
+
+import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality

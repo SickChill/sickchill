@@ -41,42 +41,54 @@ init.*			text
 *.mako			text
 
 # Web file
-*.htm text
-*.html text
-*.css text
-*.js text
-*.xml text
+*.htm			text
+*.html			text
+*.css			text
+*.js			text
+*.xml			text
 
 #
 ## These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
 #
 
-# Python Binary files
+# Minified web files
+*.min.css		binary
+*.min.js		binary
+
+# Databases
 *.db			binary
+
+# Python Binary files
 *.p 			binary
 *.pkl 			binary
 *.pyc 			binary
 *.pyd			binary
 *.pyo 			binary
 
-# These files are binary and should be left untouched
-# (binary is a macro for -text -diff)
+# Python archives
+*.egg			binary
+*.whl			binary
+
+# Images
 *.png			binary
 *.jpg			binary
 *.jpeg			binary
 *.gif			binary
 *.ico			binary
-*.swf			binary
+
+# Fonts
+*.svg			binary
+*.ttf			binary
+*.woff			binary
+*.woff2			binary
+*.eot			binary
+
+# Archives
 *.gz			binary
 *.zip			binary
 *.7z			binary
-*.ttf			binary
-*.svg			binary
-*.woff			binary
-*.eot			binary
 *.rar			binary
-*.dll			binary
-*.lib
 
 #linguist overides
 lib/* linguist-vendored

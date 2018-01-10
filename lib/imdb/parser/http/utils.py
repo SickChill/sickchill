@@ -19,7 +19,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import re
@@ -404,6 +404,15 @@ def build_movie(txt, movieID=None, roleID=None, status=None,
     m = Movie(title=title, movieID=movieID, notes=notes, currentRole=role,
                 roleID=roleID, roleIsPerson=_parsingCharacter,
                 modFunct=modFunct, accessSystem=accessSystem)
+    if additionalNotes:
+        if '(TV Series)' in additionalNotes:
+            m['kind'] = u'tv series'
+        elif '(Video Game)' in additionalNotes:
+            m['kind'] = u'video game'
+        elif '(TV Movie)' in additionalNotes:
+            m['kind'] = u'tv movie'
+        elif '(TV Short)' in additionalNotes:
+            m['kind'] = u'tv short'
     if roleNotes and len(roleNotes) == len(roleID):
         for idx, role in enumerate(m.currentRole):
             try:
