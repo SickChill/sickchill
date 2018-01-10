@@ -32,7 +32,6 @@ from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
 
-
 class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
