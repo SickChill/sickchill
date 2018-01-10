@@ -25,10 +25,11 @@ import re
 
 from bs4 import BeautifulSoup
 from requests.utils import dict_from_cookiejar
+from six.moves.urllib.parse import quote_plus
+
 from sickbeard import logger, tvcache
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
-from six.moves.urllib.parse import quote_plus
 
 
 class HDSpaceProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes

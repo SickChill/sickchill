@@ -122,23 +122,9 @@ class FeedParserDict(dict):
 
     def __setitem__(self, key, value):
         key = self.keymap.get(key, key)
-        if key == 'newznab_attr':
-            if isinstance(value, dict) and value.keys() == ['name', 'value']:
-                key = value['name']
-                value = value['value']
-
-            if not dict.__contains__(self, 'categories'):
-                dict.__setitem__(self, 'categories', [])
-
-            if key == 'category':
-                self['categories'].append(value)
-            else:
-                dict.__setitem__(self, key, value)
-        else:
-            if isinstance(key, list):
-                key = key[0]
-
-            return dict.__setitem__(self, key, value)
+        if isinstance(key, list):
+            key = key[0]
+        return dict.__setitem__(self, key, value)
 
     def setdefault(self, key, value):
         if key not in self:

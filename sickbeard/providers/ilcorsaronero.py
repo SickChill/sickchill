@@ -20,8 +20,9 @@
 from __future__ import unicode_literals
 
 import re
-import traceback
-import urllib
+
+import six
+from requests.compat import quote_plus, urljoin
 
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -30,41 +31,36 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickrage.helper.common import convert_size, try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
-category_excluded = {
-    'Screener': 19, #shit
-    'Musica': 2,
-    'Audiolibri': 18,
-    'Ebooks': 6,
-    'App Win': 7,
-    'App Linux': 8,
-    'App Mac': 9,
-    'PlayStation': 13,
-    'XBOX': 14,
-    'PC Games': 3,
-    'H4cikn9': 16,
-    'Altro': 4,
-}
-
-#'BDRiP': 2,
-#'Anime': 5,
-#'DVD': 20,
-#'SerieTv': 15
 
 class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
-
         TorrentProvider.__init__(self, 'ilCorsaroNero')
 
+        categories = [  # Categories included in searches
+            15,  # Serie TV
+            5,  # Anime
+            1,  # BDRip
+            20,  # DVD
+            19,  # Screener
+        ]
+        categories = ','.join(map(six.text_type, categories))
+
+        self.url = 'https://ilcorsaronero.info'
+        self.urls = {
+            'search': urljoin(self.url, 'advsearch.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
+        }
+
         self.public = True
-        self._uid = None
-        self._hash = None
-        self.cat = None
-        self.engrelease = None
-        self.page = 10
-        self.subtitle = None
         self.minseed = None
         self.minleech = None
+
+        self.engrelease = None
+        self.subtitle = None
+        self.max_pages = 10
+
+        self.proper_strings = ['PROPER', 'REPACK']
+        self.sub_string = ['sub', 'softsub']
 
         self.hdtext = [
             ' - Versione 720p',
@@ -78,29 +74,8 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
             ' 720p HEVC',
             ' Ver 720',
             ' 720p HEVC',
-            ' 720p']
-
-        self.category_dict = {
-            'Serie TV': 15,
-            'BDRip': 1,
-            'DVD': 20,
-            'Anime': 5,
-            'Screener': 19
-        }
-
-        self.urls = {
-            'base_url': 'http://ilcorsaronero.info',
-            'detail': 'http://ilcorsaronero.info/tor/%s/',
-            'search': 'http://ilcorsaronero.info/argh.php?search=%s',
-            'search_page': 'http://ilcorsaronero.info/advsearch.php?search={0}&order=data&by=DESC&page={1}',
-            'download': 'http://itorrents.org/torrent/%s.torrent'
-        }
-
-        self.url = self.urls['base_url']
-
-        self.sub_string = ['sub', 'softsub']
-
-        self.proper_strings = ['PROPER', 'REPACK']
+            ' 720p',
+        ]
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll ilCorsaroNero every 30 minutes max
 
@@ -181,12 +156,12 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                 continue
 
             if re.search('ita', name.split(sub)[0], re.I):
-                logger.log(u'Found Italian release:  ' + name, logger.DEBUG)
+                logger.log(u'Found Italian release: ' + name, logger.DEBUG)
                 italian = True
                 break
 
         if not subFound and re.search('ita', name, re.I):
-            logger.log(u'Found Italian release:  ' + name, logger.DEBUG)
+            logger.log(u'Found Italian release: ' + name, logger.DEBUG)
             italian = True
 
         return italian
@@ -199,7 +174,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         english = False
         if re.search('eng', name, re.I):
-            logger.log(u'Found English release:  ' + name, logger.DEBUG)
+            logger.log(u'Found English release: ' + name, logger.DEBUG)
             english = True
 
         return english
@@ -219,6 +194,13 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
         if int(episodes[0][b'count']) == len(parse_result.episode_numbers):
             return True
 
+    @staticmethod
+    def _magnet_from_result(info_hash, title):
+        return 'magnet:?xt=urn:btih:{hash}&dn={title}&tr={trackers}'.format(
+            hash=info_hash,
+            title=quote_plus(title),
+            trackers='http://tracker.tntvillage.scambioetico.org:2710/announce')
+
     def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         results = []
 
@@ -226,24 +208,19 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
             items = []
             logger.log(u'Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_params[mode]:
-
-                self.page = 1
-                last_page = 0
-                y = int(self.page)
-
                 if search_string == '':
                     continue
 
-                search_string = str(search_string).replace('.', ' ')
+                search_string = six.text_type(search_string).replace('.', ' ')
+                logger.log(u'Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
-                for x in range(0, y):
-
+                last_page = False
+                for page in range(0, self.max_pages):
                     if last_page:
                         break
 
-                    search_url = self.urls['search_page'].format(search_string, x)
-
-                    logger.log(u'Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log('Processing page {0} of results'.format(page), logger.DEBUG)
+                    search_url = self.urls['search'].format(search_string, page)
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
@@ -261,40 +238,30 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                             torrent_rows = torrent_table('tr')
 
                             # Continue only if one Release is found
-                            if (len(torrent_rows) < 6) or (len(torrent_rows[2]('td')) == 1):
+                            if len(torrent_rows) < 6 or len(torrent_rows[2]('td')) == 1:
                                 logger.log(u'Data returned from provider does not contain any torrents', logger.DEBUG)
-                                last_page = 1
+                                last_page = True
                                 continue
 
                             if len(torrent_rows) < 45:
-                                last_page = 1
+                                last_page = True
 
                             for result in torrent_rows[2:-3]:
-
+                                result_cols = result('td')
+                                if len(result_cols) == 1:
+                                    # Ignore empty rows in the middle of the table
+                                    continue
                                 try:
-                                    link = result('td')[1].find('a')['href']
-                                    title = re.sub(' +',' ', link.rsplit('/', 1)[-1].replace('_', ' '))
-                                    hash = result('td')[3].find('input', class_='downarrow')['value'].upper()
+                                    info_link = result('td')[1].find('a')['href']
+                                    title = re.sub(' +', ' ', info_link.rsplit('/', 1)[-1].replace('_', ' '))
+                                    info_hash = result('td')[3].find('input', class_='downarrow')['value'].upper()
+                                    download_url = self._magnet_from_result(info_hash, title)
                                     seeders = try_int(result('td')[5].text)
                                     leechers = try_int(result('td')[6].text)
                                     torrent_size = result('td')[2].string
                                     size = convert_size(torrent_size) or -1
 
-                                    # Download Urls
-                                    download_url = self.urls['download'] % hash
-                                    if urllib.urlopen(download_url).getcode() == 404:
-                                        logger.log(u'Torrent hash not found in itorrents.org, searching for magnet',
-                                                   logger.DEBUG)
-                                        data_detail = self.get_url(link, returns='text')
-                                        with BS4Parser(data_detail, 'html5lib') as html_detail:
-                                            sources_row = html_detail.find('td', class_='header2').parent
-                                            source_magnet = sources_row('td')[1].find('a', class_='forbtn', title='Magnet')
-                                            if source_magnet and not source_magnet == 'None':
-                                                download_url = source_magnet['href']
-                                            else:
-                                                continue
-
-                                except (AttributeError, TypeError):
+                                except (AttributeError, IndexError, TypeError):
                                     continue
 
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
@@ -308,11 +275,12 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
                                     title += filename_qt
 
                                 if not self._is_italian(title) and not self.subtitle:
-                                    logger.log(u'Torrent is subtitled, skipping: {0} '.format(title), logger.DEBUG)
+                                    logger.log(u'Torrent is subtitled, skipping: {0}'.format(title), logger.DEBUG)
                                     continue
 
                                 if self.engrelease and not self._is_english(title):
-                                    logger.log(u'Torrent isnt english audio/subtitled , skipping: {0} '.format(title), logger.DEBUG)
+                                    logger.log(u'Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title),
+                                               logger.DEBUG)
                                     continue
 
                                 search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]
@@ -334,18 +302,21 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    logger.log(u'Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                                   (title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u'Discarding torrent because it doesn\'t meet the minimum'
+                                               u' seeders or leechers: {0} (S:{1} L:{2})'.format(
+                                        title, seeders, leechers), logger.DEBUG)
                                     continue
 
-                                item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                                item = {'title': title, 'link': download_url, 'size': size,
+                                        'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                                 if mode != 'RSS':
-                                    logger.log(u'Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+                                    logger.log(u'Found result: {0} with {1} seeders and {2} leechers'.format(
+                                        title, seeders, leechers), logger.DEBUG)
 
                                 items.append(item)
 
-                    except Exception:
-                        logger.log(u'Failed parsing provider. Traceback: {0}'.format(traceback.format_exc()), logger.ERROR)
+                    except Exception as error:
+                        logger.log(u'Failed parsing provider. Error: {0}'.format(error), logger.ERROR)
 
                 # For each search mode sort all the items by seeders if available
                 items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

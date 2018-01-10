@@ -60,7 +60,6 @@ from .sanitizer import replace_doctype
 from .sgml import *
 from .urls import _convert_to_idn, _makeSafeAbsoluteURI
 from .util import FeedParserDict
-from . import USER_AGENT
 
 bytes_ = type(b'')
 unicode_ = type('')

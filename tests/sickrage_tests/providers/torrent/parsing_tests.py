@@ -50,8 +50,6 @@ overwrite_cassettes = False
 disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # ???
-    'Torrent9': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # api_maintenance still
     'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # Have to trick it into thinking is an anime search, and add string overrides
@@ -59,14 +57,10 @@ disabled_provider_tests = {
     # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # RSS search is broken (site's fault)
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # Not working on CIs for some weird unknown reason
-    'SkyTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # Not working on CIs because of a SSL error
-    'ilCorsaroNero': ['test_rss_search', 'test_episode_search', 'test_season_search'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
-    'Torrent9': {'Episode': ['NCIS S14E09'], 'Season': ['NCIS S14']},
+    'Torrent9': {'Episode': ['Arrow S05E01'], 'Season': ['Arrow S05']},
     'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},

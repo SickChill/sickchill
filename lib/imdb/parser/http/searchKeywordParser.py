@@ -21,7 +21,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from utils import Extractor, Attribute, analyze_imdbid
@@ -47,7 +47,7 @@ class DOMHTMLSearchKeywordParser(DOMHTMLSearchMovieParser):
     the one given."""
 
     _BaseParser = DOMBasicKeywordParser
-    _notDirectHitTitle = '<title>imdb keyword'
+    _notDirectHitTitle = '<title>find - imdb'
     _titleBuilder = lambda self, x: x
     _linkPrefix = '/keyword/'
 
@@ -56,7 +56,7 @@ class DOMHTMLSearchKeywordParser(DOMHTMLSearchMovieParser):
                         path="./a[1]/text()"
                             )]
     extractors = [Extractor(label='search',
-                            path="//td[3]/a[starts-with(@href, " \
+                            path="//a[starts-with(@href, " \
                                     "'/keyword/')]/..",
                             attrs=_attrs)]
 
@@ -80,7 +80,7 @@ class DOMHTMLSearchMovieKeywordParser(DOMHTMLSearchMovieParser):
     "new search system" is used, searching for movies with the given
     keyword."""
 
-    _notDirectHitTitle = '<title>best'
+    _notDirectHitTitle = '<title>most'
 
     _attrs = [Attribute(key='data',
                         multi=True,
@@ -98,7 +98,7 @@ class DOMHTMLSearchMovieKeywordParser(DOMHTMLSearchMovieParser):
                         ))]
 
     extractors = [Extractor(label='search',
-                            path="//td[3]/a[starts-with(@href, " \
+                            path="//div[@class='lister-list']//h3//a[starts-with(@href, " \
                                     "'/title/tt')]/..",
                             attrs=_attrs)]
 
