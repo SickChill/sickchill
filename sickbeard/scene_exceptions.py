@@ -346,7 +346,7 @@ def getSceneSeasons(indexer_id):
 
 
 def rebuild_exception_cache(indexer_id):
-    if indexer_id in exceptionsCache:
+    if indexer_id not in exceptionsCache:
         exceptionsCache[indexer_id] = {}
 
     cache_db_con = db.DBConnection('cache.db')
