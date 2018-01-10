@@ -23,23 +23,25 @@
                     <div class="show-image">
                         <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" />
                     </div>
-                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id | u}" data-progress-percentage="0"></div>
-                    <div class="show-title">${_('Loading')} (${loading_show.name})</div>
-                    <div class="show-date">&nbsp;</div>
-                    <div class="show-details">
-                        <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
-                            <tr>
-                                <td class="show-table">
-                                    <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
-                                </td>
-                                <td class="show-table">
-                                    <span title="${loading_show.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=network" alt="${loading_show.network}" title="${loading_show.network}" /></span>
-                                </td>
-                                <td class="show-table">
-                                    ${renderQualityPill(loading_show.quality, showTitle=True, overrideClass="show-quality")}
-                                </td>
-                            </tr>
-                        </table>
+                    <div class="show-information">
+                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id | u}" data-progress-percentage="0"></div>
+                        <div class="show-title">${_('Loading')} (${loading_show.name})</div>
+                        <div class="show-date">&nbsp;</div>
+                        <div class="show-details">
+                            <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
+                                <tr>
+                                    <td class="show-table">
+                                        <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
+                                    </td>
+                                    <td class="show-table">
+                                        <span title="${loading_show.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=network" alt="${loading_show.network}" title="${loading_show.network}" /></span>
+                                    </td>
+                                    <td class="show-table">
+                                        ${renderQualityPill(loading_show.quality, showTitle=True, overrideClass="show-quality")}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             % endfor
@@ -103,56 +105,58 @@
                         <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
                     </div>
 
-                    <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
+                    <div class="show-information">
+                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
 
-                    <div class="show-title">
-                        ${curShow.name}
-                    </div>
+                        <div class="show-title">
+                            ${curShow.name}
+                        </div>
 
-                    <div class="show-date">
-                        % if cur_airs_next:
-                        <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
-                        <%
-                            try:
-                                out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
-                            except ValueError:
-                                out = _('Invalid date')
-                                pass
-                        %>
-                        ${out}
-                        % else:
-                        <%
-                            output_html = '?'
-                            display_status = curShow.status
-                            if display_status:
-                                if display_status != 'Ended' and curShow.paused:
-                                    output_html = 'Paused'
-                                elif display_status:
-                                    output_html = display_status
-                        %>
-                        ${_(output_html)}
-                        % endif
-                    </div>
+                        <div class="show-date">
+                            % if cur_airs_next:
+                            <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
+                            <%
+                                try:
+                                    out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+                                except ValueError:
+                                    out = _('Invalid date')
+                                    pass
+                            %>
+                            ${out}
+                            % else:
+                            <%
+                                output_html = '?'
+                                display_status = curShow.status
+                                if display_status:
+                                    if display_status != 'Ended' and curShow.paused:
+                                        output_html = 'Paused'
+                                    elif display_status:
+                                        output_html = display_status
+                            %>
+                            ${_(output_html)}
+                            % endif
+                        </div>
 
-                    <div class="show-details">
-                        <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
-                            <tr>
-                                <td class="show-table">
-                                    <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
-                                </td>
+                        <div class="show-details">
+                            <table class="show-details" width="100%" cellspacing="1" border="0" cellpadding="0">
+                                <tr>
+                                    <td class="show-table">
+                                        <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
+                                    </td>
 
-                                <td class="show-table">
-                                    % if curShow.network:
-                                        <span title="${curShow.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
-                                    % else:
-                                        <span title="${_('No Network')}"><img class="show-network-image" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
-                                    % endif
-                                </td>
-                                <td class="show-table">
-                                    ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
-                                </td>
-                            </tr>
-                        </table>
+                                    <td class="show-table">
+                                        % if curShow.network:
+                                            <span title="${curShow.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                                        % else:
+                                            <span title="${_('No Network')}"><img class="show-network-image" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
+                                        % endif
+                                    </td>
+                                    <td class="show-table">
+                                        ${renderQualityPill(curShow.quality, showTitle=True, overrideClass="show-quality")}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             % endfor
