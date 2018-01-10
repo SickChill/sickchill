@@ -2877,6 +2877,10 @@ var SICKRAGE = {
                         return encodeURIComponent(exception);
                     }).join('|');
 
+                    if (exceptions.length < 1) {
+                        return null;
+                    }
+
                     return [season, exceptions].join(':');
                 }).filter(function(item) {
                     return item;
