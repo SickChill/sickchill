@@ -71,8 +71,7 @@ from sickbeard.webapi import function_mapper
 from sickrage.helper import episode_num, sanitize_filename, setup_github, try_int
 from sickrage.helper.common import pretty_file_size
 from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import (CantRefreshShowException, CantUpdateShowException, ex, NoNFOException,
-                                        ShowDirectoryNotFoundException)
+from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
 from sickrage.media.ShowBanner import ShowBanner
 from sickrage.media.ShowFanArt import ShowFanArt
 from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
