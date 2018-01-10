@@ -30,6 +30,7 @@ import os
 import re
 import time
 import traceback
+from abc import abstractmethod
 
 import six
 # noinspection PyUnresolvedReferences
@@ -843,6 +844,83 @@ class CMDEpisodeSearch(ApiCall):
                              "Snatched (" + get_quality_string(quality) + ")")
 
         return _responds(RESULT_FAILURE, msg='Unable to find episode')
+
+
+class AbstractStartScheduler(ApiCall):
+
+    @property
+    @abstractmethod
+    def scheduler(self):
+        return AbstractStartScheduler
+
+    @property
+    @abstractmethod
+    def scheduler_class_str(self):
+        return 'sickbeard.scheduler.Scheduler'
+
+    def run(self):
+        error_str = 'Start scheduler failed'
+        if not isinstance(self.scheduler, sickbeard.scheduler.Scheduler):
+            error_str = '{0}: {1} is not initialized as a static variable'.format(error_str, self.scheduler_class_str)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        if not self.scheduler.enable:
+            error_str = '{0}: {1} is not enabled'.format(error_str, self.scheduler_class_str)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        if not hasattr(self.scheduler.action, 'amActive'):
+            error_str = '{0}: {1} is not a valid action'.format(error_str, self.scheduler.action)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+        time_remain = self.scheduler.timeLeft()
+        # Force the search to start in order to skip the search interval check
+        if self.scheduler.forceRun():
+            cycle_time = self.scheduler.cycleTime
+            next_run = datetime.datetime.now() + cycle_time
+            result_str = 'Force run successful: {0} search underway. Time Remaining: {1}. ' \
+                         'Next Run: {2}'.format(self.scheduler_class_str, time_remain, next_run)
+            return _responds(RESULT_SUCCESS, msg=result_str)
+        else:
+            # Scheduler is currently active
+            error_str = '{0}: {1} search underway. Time remaining: {}.'.format(
+                error_str, self.scheduler_class_str, time_remain)
+            return _responds(RESULT_FAILURE, msg=error_str)
+
+
+class CMDFullSubtitleSearch(AbstractStartScheduler):
+    _help = {"desc": "Force a subtitle search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.subtitlesFinderScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.subtitlesFinderScheduler'
+
+
+class CMDProperSearch(AbstractStartScheduler):
+    _help = {"desc": "Force a proper search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.properFinderScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.properFinderScheduler'
+
+
+class CMDDailySearch(AbstractStartScheduler):
+    _help = {"desc": "Force a daily search for all shows."}
+
+    @property
+    def scheduler(self):
+        return sickbeard.dailySearchScheduler
+
+    @property
+    def scheduler_class_str(self):
+        return 'sickbeard.dailySearchScheduler'
 
 
 # noinspection PyAbstractClass
@@ -2828,6 +2906,9 @@ function_mapper = {
     "sb.pausebacklog": CMDSickBeardPauseBacklog,
     "sb.ping": CMDSickBeardPing,
     "sb.restart": CMDSickBeardRestart,
+    "sb.dailysearch": CMDDailySearch,
+    "sb.propersearch": CMDProperSearch,
+    "sb.subtitlesearch": CMDFullSubtitleSearch,
     "sb.searchindexers": CMDSickBeardSearchIndexers,
     "sb.searchtvdb": CMDSickBeardSearchTVDB,
     "sb.searchtvrage": CMDSickBeardSearchTVRAGE,
