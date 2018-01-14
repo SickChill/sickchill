@@ -185,8 +185,10 @@ class BaseHandler(RequestHandler):
             url = self.request.uri
             if sickbeard.WEB_ROOT and self.request.uri.startswith(sickbeard.WEB_ROOT):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
+            else:
+                url = url.lstrip('/')
 
-            if url[:4] != '/api':
+            if url[:3] != 'api':
                 t = PageTemplate(rh=self, filename="404.mako")
                 return self.finish(t.render(title='404', header=_('Oops')))
             else:
