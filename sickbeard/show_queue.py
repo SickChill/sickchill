@@ -277,7 +277,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         Returns the show name if there is a show object created, if not returns
         the dir that the show is being added to.
         """
-        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1]
+        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1] if self.showDir else "Loading"
 
 
     @property
