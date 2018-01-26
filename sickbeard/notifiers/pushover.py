@@ -23,13 +23,15 @@ from __future__ import print_function, unicode_literals
 
 import time
 
-from six.moves import http_client, urllib
-
+import requests
 import sickbeard
-from sickbeard import logger
+from sickbeard import db, logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
+from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import ex
+from sickrage.media.ShowBanner import ShowBanner
+import traceback
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
@@ -39,9 +41,9 @@ class Notifier(object):
         pass
 
     def test_notify(self, userKey=None, apiKey=None):
-        return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey=userKey, apiKey=apiKey, force=True)
+        return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey=userKey, apiKey=apiKey, force=True, attachment="gui/slick/images/banner.png")
 
-    def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None, priority=None):
+    def _sendPushover(self, msg, title, sound=None, userKey=None, apiKey=None, priority=None, attachment=None):
         """
         Sends a pushover notification to the address provided
 
@@ -50,6 +52,7 @@ class Notifier(object):
         sound: The notification sound to use
         userKey: The pushover user id to send the message to (or to subscribe with)
         apiKey: The pushover api key to use
+        attachment: Image attachment
         returns: True if the message succeeded, False otherwise
         """
 
@@ -72,53 +75,35 @@ class Notifier(object):
 
         # send the request to pushover
         try:
+            args = {
+                "token": apiKey,
+                "user": userKey,
+                "title": title.encode('utf-8'),
+                "message": msg.encode('utf-8'),
+                "timestamp": int(time.time()),
+                "retry": 60,
+                "expire": 3600,
+                "priority": priority,
+            }
             if sickbeard.PUSHOVER_SOUND != "default":
-                args = {
-                    "token": apiKey,
-                    "user": userKey,
-                    "title": title.encode('utf-8'),
-                    "message": msg.encode('utf-8'),
-                    "timestamp": int(time.time()),
-                    "retry": 60,
-                    "expire": 3600,
-                    "sound": sound,
-                    "priority": priority,
-                }
-            else:
-                # sound is default, so don't send it
-                args = {
-                    "token": apiKey,
-                    "user": userKey,
-                    "title": title.encode('utf-8'),
-                    "message": msg.encode('utf-8'),
-                    "timestamp": int(time.time()),
-                    "retry": 60,
-                    "expire": 3600,
-                    "priority": priority,
-                }
-
+                args["sound"] = sound
             if sickbeard.PUSHOVER_DEVICE:
                 args["device"] = sickbeard.PUSHOVER_DEVICE
 
-            conn = http_client.HTTPSConnection("api.pushover.net:443")
-            conn.request("POST", "/1/messages.json",
-                         urllib.parse.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
-
-        except urllib.error.HTTPError as e:
-            # if we get an error back that doesn't have an error code then who knows what's really happening
-            if not hasattr(e, 'code'):
-                logger.log("Pushover notification failed." + ex(e), logger.ERROR)
-                return False
-            else:
-                logger.log("Pushover notification failed. Error code: " + str(e.code), logger.ERROR)
+            files=None
+            if attachment is not None:
+                files = {
+                    "attachment": open(attachment, 'rb')
+                }
+            response = requests.post(API_URL, data=args, files=files)
 
             # HTTP status 404 if the provided email address isn't a Pushover user.
-            if e.code == 404:
+            if response.status_code == 404:
                 logger.log("Username is wrong/not a pushover email. Pushover will send an email to it", logger.WARNING)
                 return False
 
             # For HTTP status code 401's, it is because you are passing in either an invalid token, or the user has not added your service.
-            elif e.code == 401:
+            elif response.status_code == 401:
 
                 # HTTP status 401 if the user doesn't have the service added
                 subscribeNote = self._sendPushover(msg, title, sound=sound, userKey=userKey, apiKey=apiKey)
@@ -130,29 +115,37 @@ class Notifier(object):
                     return False
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
-            elif e.code == 400:
+            elif response.status_code == 400:
                 logger.log("Wrong data sent to pushover", logger.ERROR)
                 return False
 
             # If you receive a HTTP status code of 429, it is because the message limit has been reached (free limit is 7,500)
-            elif e.code == 429:
+            elif response.status_code == 429:
                 logger.log("Pushover API message limit reached - try a different API key", logger.ERROR)
                 return False
+
+        except requests.exceptions.RequestException as e:
+            logger.log("Pushover notification failed." + ex(e), logger.ERROR)
+            return False
+
 
         logger.log("Pushover notification successful.", logger.INFO)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         if sickbeard.PUSHOVER_NOTIFY_ONSNATCH:
-            self._notifyPushover(title, ep_name)
+            attachment = self._get_show_banner(ep_name)
+            self._notifyPushover(title, ep_name, attachment=attachment)
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD:
-            self._notifyPushover(title, ep_name)
+            attachment = self._get_show_banner(ep_name)
+            self._notifyPushover(title, ep_name, attachment=attachment)
 
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
         if sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyPushover(title, ep_name + ": " + lang)
+            attachment = self._get_show_banner(ep_name)
+            self._notifyPushover(title, ep_name + ": " + lang, attachment=attachment)
 
     def notify_git_update(self, new_version="??"):
         if sickbeard.USE_PUSHOVER:
@@ -166,7 +159,7 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notifyPushover(title, update_text.format(ipaddress))
 
-    def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
+    def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False, attachment=None):
         """
         Sends a pushover notification based on the provided info or SR config
 
@@ -184,4 +177,22 @@ class Notifier(object):
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 
-        return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey)
+        return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey, attachment=attachment)
+
+
+    @staticmethod
+    def _get_show_banner(ep_name):
+        parts = ss(ep_name).split(" - ")
+        if len(parts) < 1:
+            return None
+
+        mydb = db.DBConnection()
+        show_name = parts[0]
+        rows = mydb.select('SELECT indexer_id FROM tv_shows WHERE show_name = ?;', [show_name])
+        try:
+            indexer_id =  rows[0][b'indexer_id']
+            return ShowBanner(indexer_id).get_media_path()
+        except Exception as error:  # pylint: disable=broad-except
+            logger.log('There was an error creating the show: Error {0}'.format(error), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            return None
