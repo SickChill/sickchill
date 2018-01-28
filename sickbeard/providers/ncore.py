@@ -31,20 +31,22 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
         self.password = None
         self.minseed = None
         self.minleech = None
+
         categories = [
             'xvidser_hun', 'xvidser',
-            'dvd_hun', 'dvd',
-            'dvd9_hun', 'dvd9',
-            'hd_hun', 'hd'
+            'dvdser_hun', 'dvdser',
+            'hdser_hun', 'hdser'
         ]
-        categories = '&'.join(['kivalasztott_tipus[]=' + x for x in categories])
+        categories = '&kivalasztott_tipus=' + ','.join([x for x in categories])
+
         self.url = 'https://ncore.cc/'
         self.urls = {
             'login': 'https://ncore.cc/login.php',
-            'search': ('https://ncore.cc/torrents.php?{cats}&mire=%s&miben=name'
+            'search': ('https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name'
                        '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
                        '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories),
-        }
+		}
+
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -120,7 +122,7 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
                         if mode != "RSS":
                             logger.log("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size), logger.DEBUG)
 
-                            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         items.append(result)
 
                     except StandardError:
