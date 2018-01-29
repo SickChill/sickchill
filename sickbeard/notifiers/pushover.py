@@ -21,9 +21,10 @@
 
 from __future__ import print_function, unicode_literals
 
-import time
-
 import requests
+import time
+import traceback
+
 import sickbeard
 from sickbeard import db, logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
@@ -31,7 +32,6 @@ from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPD
 from sickrage.helper.encoding import ss
 from sickrage.helper.exceptions import ex
 from sickrage.media.ShowBanner import ShowBanner
-import traceback
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
