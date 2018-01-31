@@ -3088,7 +3088,8 @@ var SICKRAGE = {
                     14: {sorter: false},
                     15: {sorter: false},
                     16: {sorter: false},
-                    17: {sorter: false}
+                    17: {sorter: false},
+                    18: {sorter: false}
                 },
                 widgetOptions: {
                     columnSelector_mediaquery: false // eslint-disable-line camelcase
@@ -3130,6 +3131,7 @@ var SICKRAGE = {
                 const updateArr = [];
                 const refreshArr = [];
                 const renameArr = [];
+                const redateArr = [];
                 const subtitleArr = [];
                 const deleteArr = [];
                 const removeArr = [];
@@ -3150,6 +3152,12 @@ var SICKRAGE = {
                 $('.renameCheck').each(function() {
                     if (this.checked === true) {
                         renameArr.push($(this).attr('id').split('-')[1]);
+                    }
+                });
+
+                $('.redateCheck').each(function() {
+                    if (this.checked === true) {
+                        redateArr.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
@@ -3187,22 +3195,22 @@ var SICKRAGE = {
                                     deleteArr.push($(this).attr('id').split('-')[1]);
                                 }
                             });
-                            if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
+                            if (updateArr.length + refreshArr.length + renameArr.length + redateArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                                 return false;
                             }
                             const url = srRoot + '/manage/massUpdate';
-                            const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
+                            const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toRedate=' + redateArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
                             $.post(url, params, function() {
                                 location.reload(true);
                             });
                         }
                     });
                 }
-                if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
+                if (updateArr.length + refreshArr.length + renameArr.length + redateArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
                     return false;
                 }
                 const url = srRoot + '/manage/massUpdate';
-                const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
+                const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toRedate=' + redateArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
                 $.post(url, params, function() {
                     location.reload(true);
                 });

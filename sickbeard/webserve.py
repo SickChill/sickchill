@@ -1446,6 +1446,10 @@ class Home(WebRoot):
 
                 submenu.append({'title': _('Preview Rename'), 'path': 'home/testRename?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-tag'})
 
+                if sickbeard.AIRDATE_EPISODES and not sickbeard.showQueueScheduler.action.is_being_redated(show_obj):
+                    # noinspection PyPep8
+                    submenu.append({'title': _('Redate'), 'path': 'home/redateShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-clock-o'})
+
                 if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
                     # noinspection PyPep8
                     submenu.append({'title': _('Download Subtitles'), 'path': 'home/subtitleShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-language'})
@@ -1835,6 +1839,23 @@ class Home(WebRoot):
             ui.notifications.error(_("Unable to update this show."), ex(e))
 
         # just give it some time
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
+        return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
+
+    def redateShow(self, show=None, force=0):
+
+        if not show:
+            return self._genericMessage(_("Error"), _("Invalid show ID"))
+
+        show_obj = Show.find(sickbeard.showList, int(show))
+
+        if not show_obj:
+            return self._genericMessage(_("Error"), _("Unable to find the specified show"))
+
+        # Perform the redate
+        sickbeard.showQueueScheduler.action.redate_show_episodes(show_obj, bool(force))
+
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
@@ -3582,11 +3603,12 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None,
-                   toSubtitle=None):
+                   toSubtitle=None, toRedate=None):
 
         toUpdate = toUpdate.split('|') if toUpdate else []
         toRefresh = toRefresh.split('|') if toRefresh else []
         toRename = toRename.split('|') if toRename else []
+        toRedate = toRedate.split('|') if toRedate else []
         toSubtitle = toSubtitle.split('|') if toSubtitle else []
         toDelete = toDelete.split('|') if toDelete else []
         toRemove = toRemove.split('|') if toRemove else []
@@ -3596,9 +3618,10 @@ class Manage(Home, WebRoot):
         refreshes = []
         updates = []
         renames = []
+        redates = []
         subtitles = []
 
-        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
+        for curShowID in set(toUpdate + toRefresh + toRename + toRedate + toSubtitle + toDelete + toRemove + toMetadata):
 
             if curShowID == '':
                 continue
@@ -3636,6 +3659,10 @@ class Manage(Home, WebRoot):
                 sickbeard.showQueueScheduler.action.rename_show_episodes(show_obj)
                 renames.append(show_obj.name)
 
+            if curShowID in toRedate:
+                sickbeard.showQueueScheduler.action.redate_show_episodes(show_obj)
+                redates.append(show_obj.name)
+
             if curShowID in toSubtitle:
                 sickbeard.showQueueScheduler.action.download_subtitles(show_obj)
                 subtitles.append(show_obj.name)
@@ -3661,12 +3688,17 @@ class Manage(Home, WebRoot):
             messageDetail += "</li><li>".join(renames)
             messageDetail += "</li></ul>"
 
+        if redates:
+            messageDetail += "<br><b>" + _("Redates") + "</b><br><ul><li>"
+            messageDetail += "</li><li>".join(redates)
+            messageDetail += "</li></ul>"
+
         if subtitles:
             messageDetail += "<br><b>" + _("Subtitles") + "</b><br><ul><li>"
             messageDetail += "</li><li>".join(subtitles)
             messageDetail += "</li></ul>"
 
-        if updates + refreshes + renames + subtitles:
+        if updates + refreshes + renames + redates + subtitles:
             ui.notifications.message(_("The following actions were queued") + ":",
                                      messageDetail)
 

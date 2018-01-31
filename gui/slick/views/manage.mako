@@ -50,6 +50,9 @@
                                 <th width="1%">${_('Update')}<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
                                 <th width="1%">${_('Rescan')}<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
                                 <th width="1%">${_('Rename')}<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
+                                % if sickbeard.AIRDATE_EPISODES:
+                                    <th width="1%">${_('Redate')}<br><input type="checkbox" class="bulkCheck" id="redateCheck" /></th>
+                                % endif
                                 % if sickbeard.USE_SUBTITLES:
                                     <th width="1%">${_('Search Subtitle')}<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
                                 % endif
@@ -72,6 +75,9 @@
 
                                 disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow)
                                 curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
+
+                                disabled = sickbeard.showQueueScheduler.action.is_being_redated(curShow) or sickbeard.showQueueScheduler.action.is_in_redate_queue(curShow)
+                                curRedate = "<input type=\"checkbox\" class=\"redateCheck\" id=\"redate-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
                                 disabled = not curShow.subtitles or sickbeard.showQueueScheduler.action.is_being_subtitled(curShow) or sickbeard.showQueueScheduler.action.is_in_subtitle_queue(curShow)
                                 curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
@@ -102,6 +108,9 @@
                                     <td align="center">${curUpdate}</td>
                                     <td align="center">${curRefresh}</td>
                                     <td align="center">${curRename}</td>
+                                    % if sickbeard.AIRDATE_EPISODES:
+                                        <td align="center">${curRedate}</td>
+                                    % endif
                                     % if sickbeard.USE_SUBTITLES:
                                         <td align="center">${curSubtitle}</td>
                                     % endif
@@ -113,7 +122,7 @@
                         <tfoot>
                             <tr>
                                 <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
-                                <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
+                                <td rowspan="1" colspan="${15 + bool(sickbeard.AIRDATE_EPISODES) + bool(sickbeard.USE_SUBTITLES)}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
                             </tr>
                         </tfoot>
                     </table>

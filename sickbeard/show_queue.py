@@ -68,6 +68,9 @@ class ShowQueue(generic_queue.GenericQueue):
     def is_in_rename_queue(self, show):
         return self._is_in_queue(show, (ShowQueueActions.RENAME,))
 
+    def is_in_redate_queue(self, show):
+        return self._is_in_queue(show, (ShowQueueActions.REDATE,))
+
     def is_in_remove_queue(self, show):
         return self._is_in_queue(show, (ShowQueueActions.REMOVE,))
 
@@ -85,6 +88,9 @@ class ShowQueue(generic_queue.GenericQueue):
 
     def is_being_renamed(self, show):
         return self._is_being_somethinged(show, (ShowQueueActions.RENAME,))
+
+    def is_being_redated(self, show):
+        return self._is_being_somethinged(show, (ShowQueueActions.REDATE,))
 
     def is_being_removed(self, show):
         return self._is_being_somethinged(show, (ShowQueueActions.REMOVE,))
@@ -145,6 +151,12 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
     # noinspection PyUnusedLocal
+    def redate_show_episodes(self, show, force=False):
+        queue_item_obj = QueueItemRedate(show)
+        self.add_item(queue_item_obj)
+        return queue_item_obj
+
+    # noinspection PyUnusedLocal
     def download_subtitles(self, show, force=False):
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
@@ -200,6 +212,7 @@ class ShowQueueActions(object):  # pylint: disable=too-few-public-methods
     RENAME = 5
     SUBTITLE = 6
     REMOVE = 7
+    REDATE = 8
 
     names = {
         REFRESH: 'Refresh',
@@ -208,7 +221,8 @@ class ShowQueueActions(object):  # pylint: disable=too-few-public-methods
         FORCEUPDATE: 'Force Update',
         RENAME: 'Rename',
         SUBTITLE: 'Subtitle',
-        REMOVE: 'Remove Show'
+        REMOVE: 'Remove Show',
+        REDATE: 'Redate Show'
     }
 
 
@@ -616,6 +630,50 @@ class QueueItemRename(ShowQueueItem):
             cur_ep_obj.rename()
 
         super(QueueItemRename, self).finish()
+        self.finish()
+
+
+class QueueItemRedate(ShowQueueItem):
+    def __init__(self, show=None):
+        super(QueueItemRedate, self).__init__(ShowQueueActions.REDATE, show)
+
+    def run(self):
+
+        super(QueueItemRedate, self).run()
+
+        logger.log('Performing redate on {0}'.format(self.show.name))
+
+        try:
+            self.show.location
+        except ShowDirectoryNotFoundException:
+            logger.log('Can\'t perform redate on {0} when the show dir is missing.'.format(self.show.name), logger.WARNING)
+            super(QueueItemRedate, self).finish()
+            self.finish()
+            return
+
+        ep_obj_redate_list = []
+
+        ep_obj_list = self.show.getAllEpisodes(has_location=True)
+        for cur_ep_obj in ep_obj_list:
+            # Only want to redate if we have a location
+            if cur_ep_obj.location:
+                if cur_ep_obj.relatedEps:
+                    # do we have one of multi-episodes in the redate list already
+                    have_already = False
+                    for cur_related_ep in cur_ep_obj.relatedEps + [cur_ep_obj]:
+                        if cur_related_ep in ep_obj_redate_list:
+                            have_already = True
+                            break
+                    if not have_already:
+                        ep_obj_redate_list.append(cur_ep_obj)
+
+                else:
+                    ep_obj_redate_list.append(cur_ep_obj)
+
+        for cur_ep_obj in ep_obj_redate_list:
+            cur_ep_obj.airdateModifyStamp()
+
+        super(QueueItemRedate, self).finish()
         self.finish()
 
 
