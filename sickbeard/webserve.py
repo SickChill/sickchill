@@ -2239,7 +2239,8 @@ class Home(WebRoot):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
-                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
+                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segment/episodes
+                # TODO: WTF is this doing? Intensive
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
@@ -2774,7 +2775,8 @@ class HomeAddShows(Home):
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
-    def getTrendingShowImage(self, indexerId):
+    @staticmethod
+    def getTrendingShowImage(indexerId):
         image_url = trakt_trending.get_image_url(indexerId)
         if image_url:
             image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
@@ -3925,7 +3927,8 @@ class ConfigShares(Config):
                         topmenu='config', submenu=self.ConfigMenu(),
                         controller="config", action="shares")
 
-    def save_shares(self, shares):
+    @staticmethod
+    def save_shares(shares):
         new_shares = {}
         for index, share in enumerate(shares):
             if share.get('server') and share.get('path') and share.get('name'):
