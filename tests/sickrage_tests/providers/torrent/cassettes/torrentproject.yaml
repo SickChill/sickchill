@@ -411,4 +411,51 @@ interactions:
       date: ['Wed, 19 Oct 2016 07:11:03 GMT']
       server: [cloudflare-nginx]
     status: {code: 503, message: Service Temporarily Unavailable}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36']
+    method: GET
+    uri: https://torrentproject.se/?s=0day&out=json&filter=2101&num=50&showmagnets=on&out=json&s=0day&showmagnets=on&filter=2101&num=50
+  response:
+    body: {string: !!python/unicode '{"error":"api maintenance","reason":"rebuilding
+        api for better server resources management"}'}
+    headers:
+      cf-ray: [3eeeb03f29f8515e-SJC]
+      connection: [keep-alive]
+      content-length: ['92']
+      content-type: [application/json]
+      date: ['Sun, 18 Feb 2018 05:46:52 GMT']
+      expect-ct: ['max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"']
+      server: [cloudflare]
+      set-cookie: ['__cfduid=d535b4a8570182f60872c7da6178fcf231518932812; expires=Mon,
+          18-Feb-19 05:46:52 GMT; path=/; domain=.torrentproject.se; HttpOnly']
+    status: {code: 503, message: Service Temporarily Unavailable}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=d535b4a8570182f60872c7da6178fcf231518932812]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36']
+    method: GET
+    uri: https://torrentproject.se/?s=Game+of+Thrones+S05E08&out=json&filter=2101&num=50&showmagnets=on&out=json&s=Game+of+Thrones+S05E08&showmagnets=on&filter=2101&num=50
+  response:
+    body: {string: !!python/unicode '{"error":"api maintenance","reason":"rebuilding
+        api for better server resources management"}'}
+    headers:
+      cf-ray: [3eeeb0634dbe51b2-SJC]
+      connection: [keep-alive]
+      content-length: ['92']
+      content-type: [application/json]
+      date: ['Sun, 18 Feb 2018 05:46:58 GMT']
+      expect-ct: ['max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"']
+      server: [cloudflare]
+    status: {code: 503, message: Service Temporarily Unavailable}
 version: 1

@@ -24,7 +24,6 @@ import traceback
 from collections import namedtuple
 
 import six
-
 # noinspection PyProtectedMember
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
