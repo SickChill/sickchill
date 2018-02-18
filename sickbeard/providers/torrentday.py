@@ -23,7 +23,7 @@ from __future__ import unicode_literals
 import re
 
 import validators
-from requests.compat import urljoin, quote_plus
+from requests.compat import quote_plus, urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
