@@ -170,6 +170,8 @@ def remove_non_release_groups(name):
         r'-Siklopentan$': 'searchre',
         r'-Chamele0n$': 'searchre',
         r'-Obfuscated$': 'searchre',
+        r'-Pre$': 'searchre',
+        r'-postbot$': 'searchre',
         r'-BUYMORE$': 'searchre',
         r'-\[SpastikusTV\]$': 'searchre',
         r'-RP$': 'searchre',
