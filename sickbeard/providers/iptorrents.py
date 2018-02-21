@@ -49,9 +49,9 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
-        self.urls = {'base_url': 'https://iptorrents.eu',
-                     'login': 'https://iptorrents.eu/take_login.php',
-                     'search': 'https://iptorrents.eu/t?%s%s&q=%s&qf=#torrents'}
+        self.urls = {'base_url': 'https://iptorrents.com',
+                     'login': 'https://iptorrents.com/take_login.php',
+                     'search': 'https://iptorrents.com/t?%s%s&q=%s&qf=#torrents'}
 
         self.url = self.urls['base_url']
 
