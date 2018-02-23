@@ -39,6 +39,7 @@ class newpctProvider(TorrentProvider):
 
         self.onlyspasearch = None
 
+        self.url = 'http://newpct.com'
         self.urls = {'search': [ urljoin(self.url, '/series'),
                                  urljoin(self.url, '/series-hd')],
                                  #urljoin(self.url, '/series-vo')],
@@ -46,7 +47,7 @@ class newpctProvider(TorrentProvider):
                      'letter': [ urljoin(self.url, '/series/letter/{0}'),
                                  urljoin(self.url, '/series-hd/letter/{0}')],
                                  #urljoin(self.url, '/series-vo/letter/{0}')],
-                     'downloadregex': r'[^\"]*/descargar-torrent/\d+_[^\"]*',}
+                     'downloadregex': urljoin(self.url, '/descargar-torrent/\d+_[^\"]+\.html'),}
 
         self.cache = tvcache.TVCache(self, min_time=20)
 
