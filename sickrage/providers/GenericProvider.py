@@ -44,6 +44,7 @@ from sickrage.helper.encoding import ek
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     NZB = 'nzb'
+    NZBDATA = 'nzbdata'
     TORRENT = 'torrent'
 
     def __init__(self, name):
@@ -99,16 +100,15 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
             logger.log('Downloading a result from {0} at {1}'.format(self.name, url))
 
-            if url.endswith(GenericProvider.TORRENT) and filename.endswith(GenericProvider.NZB):
-                filename = replace_extension(filename, GenericProvider.TORRENT)
-
-            if download_file(url, filename, session=self.session, headers=self.headers, hooks={'response': self.get_url_hook}):
-                if self._verify_download(filename):
-                    logger.log('Saved result to {0}'.format(filename), logger.INFO)
+            downloaded_filename = download_file(url, filename, session=self.session, headers=self.headers,
+                                                hooks={'response': self.get_url_hook}, return_filename=True)
+            if downloaded_filename:
+                if self._verify_download(downloaded_filename):
+                    logger.log('Saved result to {0}'.format(downloaded_filename), logger.INFO)
                     return True
 
                 logger.log('Could not download {0}'.format(url), logger.WARNING)
-                remove_file_failed(filename)
+                remove_file_failed(downloaded_filename)
 
         if urls:
             logger.log('Failed to download any results', logger.WARNING)
