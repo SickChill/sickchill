@@ -2252,7 +2252,7 @@ var SICKRAGE = {
                         return $(node).find('span').attr('title').toLowerCase();
                     }
                 },
-                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                widgets: ['zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
                     0: {sorter: 'realISODate'},
                     1: {sorter: 'realISODate'},
@@ -2456,7 +2456,7 @@ var SICKRAGE = {
             }
 
             $('.displayShowTable').tablesorter({
-                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
+                widgets: ['stickyHeaders', 'columnSelector'],
                 widgetOptions: {
                     columnSelector_saveColumns: true, // eslint-disable-line camelcase
                     columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
@@ -2940,7 +2940,7 @@ var SICKRAGE = {
         },
         status: function() {
             $('#schedulerStatusTable').tablesorter({
-                widgets: ['saveSort', 'zebra'],
+                widgets: ['zebra'],
                 textExtraction: {
                     5: function(node) {
                         return $(node).data('seconds');
@@ -2955,7 +2955,7 @@ var SICKRAGE = {
                 }
             });
             $('#queueStatusTable').tablesorter({
-                widgets: ['saveSort', 'zebra'],
+                widgets: ['zebra'],
                 sortList: [[3, 0], [4, 0], [2, 1]]
             });
         },
@@ -3641,7 +3641,7 @@ var SICKRAGE = {
                 });
 
                 $('#showListTable:has(tbody tr)').tablesorter({
-                    widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
+                    widgets: ['stickyHeaders', 'filter', 'columnSelector'],
                     sortList: sortList,
                     textExtraction: {
                         0: function(node) {
