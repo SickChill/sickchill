@@ -49,10 +49,9 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         # URLs
         self.url = 'https://yggtorrent.com/'
-        # self.url = 'https://ww1.yggtorrent.com/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
-            'search': urljoin(self.url, 'engine/search'),
+            'search': urljoin(self.url, 'engine/search')
         }
 
         # Proper Strings
@@ -71,9 +70,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if response: # Yggtorrent return empty response if user is logged, so ...
-            logger.log('logged', logger.WARNING)
-
         if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
             response = self.get_url(self.url, returns='text')
             if not response: # The provider is dead !!!
@@ -100,11 +96,23 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 if mode != 'RSS':
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
+                # search string needs to be normalized, single quotes are apparently not allowed on the site
+                # ç should also be replaced, people tend to use c instead
+                replace_chars = {
+                                "'": '',
+                                "ç": 'c'
+                }
+
+                for k, v in replace_chars.iteritems():
+                    search_string = search_string.replace(k, v)
+
+                logger.log('Sanitized string: {0}'.format
+                               (search_string.decode('utf-8')), logger.DEBUG)
 
                 try:
                     search_params = {
                         'category': "2145",
-                        # 'subcategory' : "2184",
+                        'subcategory' : "2184",
                         'q': re.sub(r'[()]', '', search_string)
                     }
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
@@ -126,11 +134,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             if len(cells) < 5:
                                 continue
 
-                            title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            # download_url = urljoin(self.url, cells[0].find('a', target='_blank')['href'])
-                            # download_url = cells[0].find_all('a')[2]['href']
-                            download_url = cells[0].find('a',href=re.compile("download"))['href']
-
                             download_url = ""
                             title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
                             for download_img in cells[0].select('a[href] img'):
@@ -144,7 +147,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                             seeders = try_int(cells[4].get_text(strip=True))
                             leechers = try_int(cells[5].get_text(strip=True))
 
-                            torrent_size = cells[3].get_text()
                             torrent_size = cells[2].get_text()
                             size = convert_size(torrent_size) or -1
 
