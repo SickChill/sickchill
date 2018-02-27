@@ -19,7 +19,8 @@ fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbe
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
 futures == 3.1.1
 git+https://github.com/guessit-io/guessit.git@a4fb2865d4b697397aa976388bbd0edf558a24fb#egg=guessit
-hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hachoir-core
+hachoir-core == 1.3.3
+# hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hachoir-core
 # hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-metadata&subdirectory=hachoir-metadata  # Unable to install
 # hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-parser&subdirectory=hachoir-parser  # Unable to install
 html5lib == 1.0b10

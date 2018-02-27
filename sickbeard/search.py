@@ -225,6 +225,14 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
 
         if not bestResult:
             bestResult = cur_result
+
+        # met les episodes avec un tag FRENCH dans le meilleur resultat
+        elif 'FRENCH' in cur_result.name.upper() and 'FRENCH' not in bestResult.name.upper():
+            bestResult = cur_result
+        elif 'FRENCH' in bestResult.name.upper() and 'VOSTFR' in cur_result.name.upper():
+            bestResult = bestResult
+        #
+
         elif cur_result.quality in bestQualities and (bestResult.quality < cur_result.quality or bestResult.quality not in bestQualities):
             bestResult = cur_result
         elif cur_result.quality in anyQualities and bestResult.quality not in bestQualities and bestResult.quality < cur_result.quality:

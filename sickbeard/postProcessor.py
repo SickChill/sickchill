@@ -1144,6 +1144,15 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if sickbeard.RENAME_EPISODES:
             orig_extension = self.file_name.rpartition('.')[-1]
             new_base_name = ek(os.path.basename, proper_path)
+     # ajout VOSTFR ou FRENCH a la fin du fichier
+            try:
+                if 'VOSTFR' in self.file_name.upper():
+                    new_base_name = new_base_name + ' - VOSTFR'
+                if 'FRENCH' in self.file_name.upper():
+                    new_base_name = new_base_name + ' - FRENCH'
+            except:
+                pass
+
             new_file_name = new_base_name + '.' + orig_extension
 
         else:
