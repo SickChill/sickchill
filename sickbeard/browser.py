@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -31,7 +31,7 @@ from sickbeard import logger
 from sickrage.helper.encoding import ek
 
 
-# adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
+# adapted from https://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def getWinDrives():
     """ Return list of detected drives """
     assert os.name == 'nt'

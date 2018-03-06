@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -92,7 +92,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         if not self.login():
             return results
 
-        # http://speed.cd/browse.php?c49=1&c50=1&c52=1&c41=1&c55=1&c2=1&c30=1&freeleech=on&search=arrow&d=on
+        # https://speed.cd/browse.php?c49=1&c50=1&c52=1&c41=1&c55=1&c2=1&c30=1&freeleech=on&search=arrow&d=on
         # Search Params
         search_params = {
             'c30': 1,  # Anime

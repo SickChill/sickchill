@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
 from __future__ import print_function, unicode_literals
@@ -1863,7 +1863,7 @@ def add_site_message(message, tag=None, level='danger'):
         to_add = dict(level=level, tag=tag, message=message)
 
         if tag:  # prevent duplicate messages of the same type
-            # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
+            # https://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
             existing = next((x for x, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag), None)
             if existing:
                 sickbeard.SITE_MESSAGES[existing] = to_add

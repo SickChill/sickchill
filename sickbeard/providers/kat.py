@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://sickrage.github.io
+# URL: https://sickrage.github.io
 #
 # This file is part of SickRage.
 #
@@ -15,7 +15,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 

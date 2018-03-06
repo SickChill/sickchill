@@ -1,4 +1,4 @@
-SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=master)](https://travis-ci.org/SickRage/SickRage) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/sickrage/branch/master) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickRage/SickRage.svg)](http://isitmaintained.com/project/SickRage/SickRage "Percentage of issues still open") [![Coverage Status](https://codecov.io/gh/SickRage/SickRage/branch/master/graph/badge.svg)](https://codecov.io/gh/SickRage/SickRage) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) [![Donate](https://img.shields.io/badge/donations-appreciated-green.svg)](https://github.com/SickRage/SickRage/wiki/Donations)
+SickRage [![Build Status](https://travis-ci.org/SickRage/SickRage.svg?branch=master)](https://travis-ci.org/SickRage/SickRage) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/sickrage/branch/master) [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/SickRage/SickRage.svg)](https://isitmaintained.com/project/SickRage/SickRage "Average time to resolve an issue") [![Percentage of issues still open](https://isitmaintained.com/badge/open/SickRage/SickRage.svg)](https://isitmaintained.com/project/SickRage/SickRage "Percentage of issues still open") [![Coverage Status](https://codecov.io/gh/SickRage/SickRage/branch/master/graph/badge.svg)](https://codecov.io/gh/SickRage/SickRage) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) [![Donate](https://img.shields.io/badge/donations-appreciated-green.svg)](https://github.com/SickRage/SickRage/wiki/Donations)
 ====================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
@@ -23,13 +23,13 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
  - Supports Anime shows
 
 #### Screenshots
-- [Desktop (Full-HD)](http://imgur.com/a/4fpBk)
-- [Mobile](http://imgur.com/a/WPyG6)
+- [Desktop (Full-HD)](https://imgur.com/a/4fpBk)
+- [Mobile](https://imgur.com/a/WPyG6)
 
 #### Dependencies
  To run SickRage from source you will need Python 2.7.10
 
-#### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
+#### [![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](https://feathub.com/SickRage/SickRage)
 
 ##### [SickRage Issue Tracker](https://github.com/SickRage/SickRage/issues)
 
@@ -49,7 +49,7 @@ A full list can be found here: [Link](https://github.com/SickRage/SickRage/wiki/
 ![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)
 ![image](https://torrentproject.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)
 ![image](https://thepiratebay.se/favicon.ico)[ThePirateBay](https://thepiratebay.se/)
-![image](http://kat.cr/favicon.ico)[KickAssTorrents](https://kat.cr)
+![image](https://kat.cr/favicon.ico)[KickAssTorrents](https://kat.cr)
 ![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)
 ![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)
 ![image](https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)

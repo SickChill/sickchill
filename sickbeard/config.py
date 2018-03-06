@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -37,7 +37,7 @@ from sickrage.helper.encoding import ek
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
-# http://bugs.python.org/issue23636
+# https://bugs.python.org/issue23636
 parse.uses_netloc.append('scgi')
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",

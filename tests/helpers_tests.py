@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SickRage/SickRage
+# URL: https://github.com/SickRage/SickRage
 #
 # This file is part of SickRage.
 #
@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 """
 Test sickbeard.helpers

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-# Author: Pedro Correia (http://github.com/pedrocorreia/)
+# Author: Pedro Correia (https://github.com/pedrocorreia/)
 # Based on pushalot.py by Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickrage.github.io
 #
@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 

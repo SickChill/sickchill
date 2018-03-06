@@ -15,7 +15,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
 from __future__ import print_function, unicode_literals
@@ -512,7 +512,7 @@ class CalendarHandler(BaseHandler):
 
     # Raw iCalendar implementation by Pedro Jose Pereira Vieito (@pvieito).
     #
-    # iCalendar (iCal) - Standard RFC 5545 <http://tools.ietf.org/html/rfc5546>
+    # iCalendar (iCal) - Standard RFC 5545 <https://tools.ietf.org/html/rfc5546>
     # Works with iCloud, Google Calendar and Outlook.
     def calendar(self):
         """ Provides a subscribeable URL for iCal subscriptions
@@ -4564,7 +4564,7 @@ class ConfigProviders(Config):
         """
         Retrieves a list of possible categories with category id's
         Using the default url/api?cat
-        http://yournewznaburl.com/api?t=caps&apikey=yourapikey
+        https://yournewznaburl.com/api?t=caps&apikey=yourapikey
         """
         error = ""
         success = False

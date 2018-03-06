@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -154,7 +154,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode instance to create the metadata file for.
 
-        Lookup the show in http://thetvdb.com/ using the python library:
+        Lookup the show in https://thetvdb.com/ using the python library:
 
         https://github.com/dbr/indexer_api/
 
@@ -162,7 +162,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         The key values for the tivo metadata file are from:
 
-        http://pytivo.sourceforge.net/wiki/index.php/Metadata
+        https://pytivo.sourceforge.net/wiki/index.php/Metadata
         """
 
         data = ""

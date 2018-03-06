@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
+# URL: https://code.google.com/p/sickbeard/
 #
 # Rewrite Author: miigotu <miigotu@gmail.com>
 # URL: https://sickrage.github.io
@@ -19,7 +19,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -81,7 +81,7 @@ from sickrage.helper.argument_parser import SickRageArgumentParser
 from six.moves import reload_module
 
 
-# http://bugs.python.org/issue7980#msg221094
+# https://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
