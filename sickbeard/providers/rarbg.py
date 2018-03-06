@@ -47,7 +47,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
         self.url = "https://rarbg.com"
-        self.urls = {"api": "http://torrentapi.org/pubapi_v2.php"}
+        self.urls = {"api": "https://torrentapi.org/pubapi_v2.php"}
 
         self.proper_strings = ["{{PROPER|REPACK}}"]
 

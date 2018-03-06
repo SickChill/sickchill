@@ -61,7 +61,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
 
         network_timezones.update_network_dict()
 
-        url = 'http://thetvdb.com/api/Updates.php?type=series&time={0}'.format(last_update)
+        url = 'https://thetvdb.com/api/Updates.php?type=series&time={0}'.format(last_update)
         data = helpers.getURL(url, session=self.session, returns='text', hooks={'response': self.request_hook})
         if not data:
             logger.log('Could not get the recently updated show data from {0}. Retrying later. Url was: {1}'.format(sickbeard.indexerApi(INDEXER_TVDB).name, url))

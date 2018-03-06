@@ -8,7 +8,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:21.0)
           Gecko/20100101 Firefox/21.0']
     method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=sickrage2&format=json
+    uri: https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=sickrage2&format=json
   response:
     body:
       string: !!binary |
@@ -34,7 +34,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:21.0)
           Gecko/20100101 Firefox/21.0']
     method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?sort=seeders&min_leechers=0&min_seeders=0&app_id=sickrage2&search_string=Game+of+Thrones+S05E08&ranked=0&category=tv&format=json_extended&token=7teph5nai2&limit=100&mode=search
+    uri: https://torrentapi.org/pubapi_v2.php?sort=seeders&min_leechers=0&min_seeders=0&app_id=sickrage2&search_string=Game+of+Thrones+S05E08&ranked=0&category=tv&format=json_extended&token=7teph5nai2&limit=100&mode=search
   response:
     body:
       string: !!binary |
@@ -79,7 +79,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:21.0)
           Gecko/20100101 Firefox/21.0']
     method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?category=tv&sort=last&min_leechers=0&ranked=0&limit=100&token=7teph5nai2&min_seeders=0&format=json_extended&app_id=sickrage2&mode=list
+    uri: https://torrentapi.org/pubapi_v2.php?category=tv&sort=last&min_leechers=0&ranked=0&limit=100&token=7teph5nai2&min_seeders=0&format=json_extended&app_id=sickrage2&mode=list
   response:
     body:
       string: !!binary |
@@ -265,7 +265,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:21.0)
           Gecko/20100101 Firefox/21.0']
     method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?sort=seeders&min_leechers=0&min_seeders=0&app_id=sickrage2&search_string=Game+of+Thrones+S05&ranked=0&category=tv&format=json_extended&token=7teph5nai2&limit=100&mode=search
+    uri: https://torrentapi.org/pubapi_v2.php?sort=seeders&min_leechers=0&min_seeders=0&app_id=sickrage2&search_string=Game+of+Thrones+S05&ranked=0&category=tv&format=json_extended&token=7teph5nai2&limit=100&mode=search
   response:
     body:
       string: !!binary |

@@ -1783,7 +1783,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
     session = make_session()
     tvdb_id = ''
     if indexer == 'IMDB':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={0}".format(indexer_id)
+        url = "https://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={0}".format(indexer_id)
         data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
@@ -1797,7 +1797,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
         return tvdb_id
     elif indexer == 'ZAP2IT':
-        url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={0}".format(indexer_id)
+        url = "https://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={0}".format(indexer_id)
         data = getURL(url, session=session, returns='content')
         if data is None:
             return tvdb_id
@@ -1811,7 +1811,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
         return tvdb_id
     elif indexer == 'TVMAZE':
-        url = "http://api.tvmaze.com/shows/{0}".format(indexer_id)
+        url = "https://api.tvmaze.com/shows/{0}".format(indexer_id)
         data = getURL(url, session=session, returns='json')
         if data is None:
             return tvdb_id

@@ -53,11 +53,11 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.anime_only = False
         self.bt_cache_urls = [
             #'http://torcache.net/torrent/{torrent_hash}.torrent',
-            'http://torrentproject.se/torrent/{torrent_hash}.torrent',
-            'http://thetorrent.org/torrent/{torrent_hash}.torrent',
-            'http://btdig.com/torrent/{torrent_hash}.torrent',
+            'https://torrentproject.se/torrent/{torrent_hash}.torrent',
+            'https://thetorrent.org/torrent/{torrent_hash}.torrent',
+            'https://btdig.com/torrent/{torrent_hash}.torrent',
             # 'http://torrage.com/torrent/{torrent_hash}.torrent',
-            'http://itorrents.org/torrent/{torrent_hash}.torrent',
+            'https://itorrents.org/torrent/{torrent_hash}.torrent',
         ]
         self.cache = TVCache(self)
         self.enable_backlog = False

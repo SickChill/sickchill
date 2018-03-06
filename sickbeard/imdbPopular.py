@@ -18,8 +18,7 @@ class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from imdb"""
 
-        # Use akas.imdb.com, just like the imdb lib.
-        self.url = 'http://akas.imdb.com/search/title'
+        self.url = 'https://www.imdb.com/search/title'
 
         self.params = {
             'at': 0,
@@ -35,7 +34,7 @@ class imdbPopular(object):
 
         popular_shows = []
 
-        data = helpers.getURL(self.url, session=self.session, params=self.params, headers={'Referer': 'http://akas.imdb.com/'}, returns='text')
+        data = helpers.getURL(self.url, session=self.session, params=self.params, headers={'Referer': 'https://www.imdb.com/'}, returns='text')
         if not data:
             return None
 
@@ -59,7 +58,7 @@ class imdbPopular(object):
                     a_tag = header.find("a")
                     if a_tag:
                         show['name'] = a_tag.get_text(strip=True)
-                        show['imdb_url'] = "http://www.imdb.com" + a_tag["href"]
+                        show['imdb_url'] = "https://www.imdb.com" + a_tag["href"]
                         show['year'] = header.find("span", {"class": "lister-item-year"}).contents[0].split(" ")[0][1:].strip("-")
 
                 imdb_rating = row.find("div", {"class": "ratings-imdb-rating"})

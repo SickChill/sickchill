@@ -59,14 +59,14 @@ subliminal.region.configure('dogpile.cache.memory')
 
 PROVIDER_URLS = {
     'addic7ed': 'http://www.addic7ed.com',
-    'itasa': 'http://www.italiansubs.net/',
+    'itasa': 'https://www.italiansubs.net/',
     'legendastv': 'http://www.legendas.tv',
     'napiprojekt': 'http://www.napiprojekt.pl',
-    'opensubtitles': 'http://www.opensubtitles.org',
-    'podnapisi': 'http://www.podnapisi.net',
+    'opensubtitles': 'https://www.opensubtitles.org',
+    'podnapisi': 'https://www.podnapisi.net',
     'subscenter': 'http://www.subscenter.info',
     'thesubdb': 'http://www.thesubdb.com',
-    'wizdom': 'http://wizdom.xyz',
+    'wizdom': 'https://wizdom.xyz',
     'tvsubtitles': 'http://www.tvsubtitles.net'
 }
 
@@ -126,7 +126,7 @@ class SubtitleProviderPool(object):  # pylint: disable=too-few-public-methods
 
 def sorted_service_list():
     new_list = []
-    lmgtfy = 'http://lmgtfy.com/?q=%s'
+    lmgtfy = 'https://lmgtfy.com/?q=%s'
 
     current_index = 0
     for current_service in sickbeard.SUBTITLES_SERVICES_LIST:
