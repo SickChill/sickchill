@@ -45,7 +45,7 @@ missing_network_timezones = set()
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
-    url = 'http://sickrage.github.io/sb_network_timezones/network_timezones.txt'
+    url = 'https://sickrage.github.io/sb_network_timezones/network_timezones.txt'
     data = helpers.getURL(url, session=helpers.make_session(), returns='text')
     if not data:
         logger.log('Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)
