@@ -189,9 +189,9 @@
                                     </td>
                                     <td align="center" style="vertical-align: middle;">
                                         % if cur_result[b'imdb_id']:
-                                            <a href="${anon_url('http://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                            <a href="${anon_url('https://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false"
-                                               title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
+                                               title="https://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
                                         % endif
@@ -428,8 +428,8 @@
 
                                         <span class="tvshowTitleIcons">
                                             % if cur_result[b'imdb_id']:
-                                                <a href="${anon_url('http://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
+                                                <a href="${anon_url('https://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false" title="https://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
                                             % endif

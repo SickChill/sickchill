@@ -2456,11 +2456,11 @@ class HomeChangeLog(Home):
 
     def index(self, *args_, **kwargs_):
         try:
-            changes = helpers.getURL('http://sickrage.github.io/sickrage-news/CHANGES.md', session=helpers.make_session(), returns='text')
+            changes = helpers.getURL('https://sickrage.github.io/sickrage-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.log('Could not load changes from repo, giving a link!', logger.DEBUG)
             changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='http://sickrage.github.io/sickrage-news/CHANGES.md'
+                changes_url='https://sickrage.github.io/sickrage-news/CHANGES.md'
             )
 
         t = PageTemplate(rh=self, filename="markdown.mako")

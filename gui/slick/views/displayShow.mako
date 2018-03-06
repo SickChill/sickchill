@@ -139,7 +139,7 @@
                                 % endif
                                         ${show.imdb_info['runtimes']} ${_('minutes')}
                             </span>
-                                    <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
+                                    <a href="${anon_url('https://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                 % endif
                                 <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" src="${static_url('images/indexers/' + sickbeard.indexerApi(show.indexer).config["icon"])}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
@@ -151,11 +151,11 @@
                                 <ul class="tags">
                                     % if show.genre and not show.imdb_info.get('genres'):
                                         % for genre in show.genre[1:-1].split('|'):
-                                            <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=_(genre))}"><li>${_(genre)}</li></a>
+                                            <a href="${anon_url('https://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=_(genre))}"><li>${_(genre)}</li></a>
                                         % endfor
                                     % elif show.imdb_info.get('genres'):
                                         % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=_(imdbgenre))}"><li>${_(imdbgenre)}</li></a>
+                                            <a href="${anon_url('https://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} shows on IMDB.').format(imdbgenre=_(imdbgenre))}"><li>${_(imdbgenre)}</li></a>
                                         % endfor
                                     % endif
                                 </ul>

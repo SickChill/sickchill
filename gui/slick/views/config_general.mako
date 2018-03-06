@@ -921,7 +921,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <b>${_('warning')}:</b>&nbsp;${_('passwords must only contain')}
-                                        <a target="_blank" href="${anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a>
+                                        <a target="_blank" href="${anon_url('https://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters')}">${_('ASCII characters')}</a>
                                     </div>
                                 </div>
                             </div>
