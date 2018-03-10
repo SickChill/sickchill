@@ -5287,7 +5287,7 @@ class ConfigSubtitles(Config):
         sickbeard.OPENSUBTITLES_USER = opensubtitles_user or ''
         sickbeard.OPENSUBTITLES_PASS = filters.unhide(sickbeard.OPENSUBTITLES_PASS, opensubtitles_pass) or ''
         sickbeard.SUBSCENTER_USER = subscenter_user or ''
-        sickbeard.SUBSCENTER_PASS = filters.unhide(sickbeard.SUBCENTER_PASS, subscenter_pass) or ''
+        sickbeard.SUBSCENTER_PASS = filters.unhide(sickbeard.SUBSCENTER_PASS, subscenter_pass) or ''
 
         sickbeard.save_config()
         # Reset provider pool so next time we use the newest settings
