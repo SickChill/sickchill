@@ -277,8 +277,12 @@ class WebHandler(BaseHandler):
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
                     kwargs[arg] = xhtml_escape(value[0])
-                else:
+                elif isinstance(value, basestring):
                     kwargs[arg] = xhtml_escape(value)
+                elif isinstance(value, list):
+                    kwargs[arg] = [xhtml_escape(v) for v in value]
+                else:
+                    raise
 
             result = function(**kwargs)
             return result
@@ -1540,8 +1544,7 @@ class Home(WebRoot):
         anidb_failed = False
 
         try:
-            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
-            show_obj = Show.find(sickbeard.showList, show)
+            show_obj = Show.find(sickbeard.showList, int(show))
         except (ValueError, TypeError):
             errString = _("Invalid show ID") + ": {show}".format(show=str(show))
             if directCall:
