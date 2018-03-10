@@ -1019,6 +1019,9 @@ unique_key1 = hex(uuid.getnode() ** 2)  # Used in encryption v1
 # Encryption Functions
 def encrypt(data, encryption_version=0, _decrypt=False):
     # Version 1: Simple XOR encryption (this is not very secure, but works)
+    if data is None:
+        return ""
+
     if encryption_version == 1:
         if _decrypt:
             return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(base64.decodestring(data), cycle(unique_key1)))
