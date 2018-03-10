@@ -1540,8 +1540,7 @@ class Home(WebRoot):
         anidb_failed = False
 
         try:
-            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
-            show_obj = Show.find(sickbeard.showList, show)
+            show_obj = Show.find(sickbeard.showList, int(show))
         except (ValueError, TypeError):
             errString = _("Invalid show ID") + ": {show}".format(show=str(show))
             if directCall:
