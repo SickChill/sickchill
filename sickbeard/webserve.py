@@ -277,8 +277,12 @@ class WebHandler(BaseHandler):
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
                     kwargs[arg] = xhtml_escape(value[0])
-                else:
+                elif isinstance(value, basestring):
                     kwargs[arg] = xhtml_escape(value)
+                elif isinstance(value, list):
+                    kwargs[arg] = [xhtml_escape(v) for v in value]
+                else:
+                    raise
 
             result = function(**kwargs)
             return result
