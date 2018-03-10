@@ -5,6 +5,7 @@
 
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
+    from sickbeard.filters import hide
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
 
@@ -702,7 +703,9 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+                                        <input
+                                            type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD|hide}"
+                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -1150,7 +1153,8 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD|hide}"
+                                                   class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1170,7 +1174,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
+                                            <input
+                                                type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN|hide}"
+                                                class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
+                                            />
                                             % if not sickbeard.GIT_TOKEN:
                                                 <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
                                             % else:

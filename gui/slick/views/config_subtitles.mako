@@ -1,7 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickbeard import subtitles
     import sickbeard
+    from sickbeard import subtitles
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
 %>
 
@@ -362,11 +363,11 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="${curService['name']}_pass"
-                                                   id="${curService['name']}_pass"
-                                                   value="${providerLoginDict[curService['name']]['pass']}"
-                                                   class="form-control input-sm input300" autocomplete="no"
-                                                   autocapitalize="off" title="Password"/>
+                                            <input
+                                                type="password" name="${curService['name']}_pass" id="${curService['name']}_pass"
+                                                value="${providerLoginDict[curService['name']]['pass']|hide}"
+                                                class="form-control input-sm input300" autocomplete="no" autocapitalize="off" title="Password"
+                                            />
                                         </div>
                                     </div>
                                 </div>
