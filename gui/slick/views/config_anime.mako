@@ -1,6 +1,7 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     import sickbeard
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
 %>
 
@@ -67,10 +68,10 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="anidb_password" id="anidb_password"
-                                                   value="${sickbeard.ANIDB_PASSWORD}"
-                                                   class="form-control input-sm input350 pull-left" autocomplete="no"
-                                                   autocapitalize="off" title="Password"/>
+                                            <input
+                                                type="password" name="anidb_password" id="anidb_password" value="${sickbeard.ANIDB_PASSWORD|hide}"
+                                                class="form-control input-sm input350 pull-left" autocomplete="no" autocapitalize="off" title="Password"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">

@@ -2,6 +2,7 @@
 <%!
     import six
     import sickbeard
+    from sickbeard.filters import hide
 %>
 
 <%block name="tabs">
@@ -375,9 +376,10 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="password" name="sab_password" id="sab_password"
-                                                           value="${sickbeard.SAB_PASSWORD}" class="form-control input-sm input200"
-                                                           autocomplete="no" autocapitalize="off"/>
+                                                    <input
+                                                        type="password" name="sab_password" id="sab_password" value="${sickbeard.SAB_PASSWORD|hide}"
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -395,9 +397,10 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" name="sab_apikey" id="sab_apikey"
-                                                           value="${sickbeard.SAB_APIKEY}" class="form-control input-sm input350"
-                                                           autocapitalize="off"/>
+                                                    <input
+                                                        type="password" name="sab_apikey" id="sab_apikey" value="${sickbeard.SAB_APIKEY|hide}"
+                                                        class="form-control input-sm input350" autocapitalize="off"
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -598,10 +601,10 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="password" name="nzbget_password" id="nzbget_password"
-                                                           value="${sickbeard.NZBGET_PASSWORD}"
-                                                           class="form-control input-sm input200" autocomplete="no"
-                                                           autocapitalize="off"/>
+                                                    <input
+                                                        type="password" name="nzbget_password" id="nzbget_password" value="${sickbeard.NZBGET_PASSWORD|hide}"
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -769,10 +772,10 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="password" name="syno_dsm_pass" id="syno_dsm_pass"
-                                                           value="${sickbeard.SYNOLOGY_DSM_PASSWORD}"
-                                                           class="form-control input-sm input200" autocomplete="no"
-                                                           autocapitalize="off"/>
+                                                    <input
+                                                        type="password" name="syno_dsm_pass" id="syno_dsm_pass" value="${sickbeard.SYNOLOGY_DSM_PASSWORD|hide}"
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -999,10 +1002,10 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="password" name="torrent_password" id="torrent_password"
-                                                           value="${sickbeard.TORRENT_PASSWORD}"
-                                                           class="form-control input-sm input200" autocomplete="no"
-                                                           autocapitalize="off"/>
+                                                    <input
+                                                        type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD|hide}"
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="row">
