@@ -48,6 +48,7 @@ from six.moves import urllib
 # noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 from tornado.concurrent import run_on_executor
+from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -223,7 +224,6 @@ class BaseHandler(RequestHandler):
         (temporary) is chosen based on the ``permanent`` argument.
         The default is 302 (temporary).
         """
-        from tornado.escape import utf8
         if not url.startswith(sickbeard.WEB_ROOT):
             url = sickbeard.WEB_ROOT + url
 
@@ -276,7 +276,9 @@ class WebHandler(BaseHandler):
             kwargs = self.request.arguments
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
-                    kwargs[arg] = value[0]
+                    kwargs[arg] = xhtml_escape(value[0])
+                else:
+                    kwargs[arg] = xhtml_escape(value)
 
             result = function(**kwargs)
             return result
@@ -1536,14 +1538,16 @@ class Home(WebRoot):
                  defaultEpStatus=None, quality_preset=None):
 
         anidb_failed = False
-        if not show:
+
+        try:
+            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
+            show_obj = Show.find(sickbeard.showList, show)
+        except (ValueError, TypeError):
             errString = _("Invalid show ID") + ": {show}".format(show=str(show))
             if directCall:
                 return [errString]
             else:
                 return self._genericMessage(_("Error"), errString)
-
-        show_obj = Show.find(sickbeard.showList, int(show))
 
         if not show_obj:
             errString = _("Unable to find the specified show") + ": {show}".format(show=str(show))
