@@ -1,7 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
     import re
+    import sickbeard
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
 %>
 
@@ -159,7 +160,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -264,7 +268,11 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="plex_server_password" id="plex_server_password" value="${'*' * len(sickbeard.PLEX_SERVER_PASSWORD)}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="plex_server_password" id="plex_server_password"
+                                                value="${sickbeard.PLEX_SERVER_PASSWORD|hide}" class="form-control input-sm input250"
+                                                autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -431,7 +439,11 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="plex_client_password" id="plex_client_password" value="${'*' * len(sickbeard.PLEX_CLIENT_PASSWORD)}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="plex_client_password" id="plex_client_password"
+                                                value="${sickbeard.PLEX_CLIENT_PASSWORD|hide}" class="form-control input-sm input250"
+                                                autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1092,7 +1104,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -3009,7 +3024,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">

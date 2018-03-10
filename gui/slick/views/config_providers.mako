@@ -1,6 +1,7 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     import sickbeard
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
     from sickrage.providers.GenericProvider import GenericProvider
 %>
@@ -428,10 +429,11 @@
                                             <label class="component-title">${_('Password')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="password" name="${curTorrentProvider.get_id()}_password"
-                                                   id="${curTorrentProvider.get_id()}_password"
-                                                   value="${curTorrentProvider.password | h}" class="form-control input-sm input350"
-                                                   autocomplete="no" autocapitalize="off"/>
+                                            <input
+                                                type="password" name="${curTorrentProvider.get_id()}_password"
+                                                id="${curTorrentProvider.get_id()}_password" value="${curTorrentProvider.password|hide}"
+                                                class="form-control input-sm input350" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                 % endif
@@ -442,10 +444,10 @@
                                             <label class="component-title">${_('Passkey')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${curTorrentProvider.get_id()}_passkey"
-                                                   id="${curTorrentProvider.get_id()}_passkey"
-                                                   value="${curTorrentProvider.passkey}" class="form-control input-sm input350"
-                                                   autocapitalize="off"/>
+                                            <input
+                                                type="text" name="${curTorrentProvider.get_id()}_passkey" id="${curTorrentProvider.get_id()}_passkey"
+                                                value="${curTorrentProvider.passkey|hide}" class="form-control input-sm input350" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                 % endif
@@ -484,10 +486,11 @@
                                             <label class="component-title">${_('Pin')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="password" name="${curTorrentProvider.get_id()}_pin"
-                                                   id="${curTorrentProvider.get_id()}_pin" value="${curTorrentProvider.pin}"
-                                                   class="form-control input-sm input100" autocomplete="no"
-                                                   autocapitalize="off"/>
+                                            <input
+                                                type="password" name="${curTorrentProvider.get_id()}_pin"
+                                                id="${curTorrentProvider.get_id()}_pin" value="${curTorrentProvider.pin|hide}"
+                                                class="form-control input-sm input100" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                 % endif
@@ -781,8 +784,9 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="password" id="newznab_key"
-                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                                <input
+                                                    type="password" id="newznab_key" class="form-control input-sm input350" autocapitalize="off"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">

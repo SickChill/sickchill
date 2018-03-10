@@ -48,6 +48,7 @@ from six.moves import urllib
 # noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 from tornado.concurrent import run_on_executor
+from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -55,7 +56,8 @@ from tornado.routes import route
 from tornado.web import addslash, authenticated, HTTPError, RequestHandler
 
 import sickbeard
-from sickbeard import classes, clients, config, db, helpers, logger, naming, network_timezones, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
+                       subtitles as subtitle_module, ui)
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, statusStrings, UNAIRED,
@@ -222,7 +224,6 @@ class BaseHandler(RequestHandler):
         (temporary) is chosen based on the ``permanent`` argument.
         The default is 302 (temporary).
         """
-        from tornado.escape import utf8
         if not url.startswith(sickbeard.WEB_ROOT):
             url = sickbeard.WEB_ROOT + url
 
@@ -275,7 +276,9 @@ class WebHandler(BaseHandler):
             kwargs = self.request.arguments
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
-                    kwargs[arg] = value[0]
+                    kwargs[arg] = xhtml_escape(value[0])
+                else:
+                    kwargs[arg] = xhtml_escape(value)
 
             result = function(**kwargs)
             return result
@@ -297,20 +300,11 @@ class LoginHandler(BaseHandler):
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
 
     def post(self, *args, **kwargs):
-
-        api_key = None
-
-        username = sickbeard.WEB_USERNAME
-        password = sickbeard.WEB_PASSWORD
-
-        if self.get_argument('username', '') == username and self.get_argument('password', '') == password:
-            api_key = sickbeard.API_KEY
-
         notifiers.notify_login(self.request.remote_ip)
 
-        if api_key:
-            remember_me = try_int(self.get_argument('remember_me', default=0), 0)
-            self.set_secure_cookie('sickrage_user', api_key, expires_days=30 if remember_me > 0 else None)
+        if self.get_argument('username', '') == sickbeard.WEB_USERNAME and self.get_argument('password', '') == sickbeard.WEB_PASSWORD:
+            remember_me = (None, 30)[try_int(self.get_argument('remember_me', default=0), 0) > 0]
+            self.set_secure_cookie('sickrage_user', sickbeard.API_KEY, expires_days=remember_me)
             logger.log('User logged into the SickRage web interface', logger.INFO)
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)
@@ -332,16 +326,10 @@ class KeyHandler(RequestHandler):
         super(KeyHandler, self).__init__(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        api_key = None
-
         try:
-            username = sickbeard.WEB_USERNAME
-            password = sickbeard.WEB_PASSWORD
-
-            if self.get_argument('u', '') == username and self.get_argument('p', '') == password:
-                api_key = sickbeard.API_KEY
-
-            self.finish({'success': bool(api_key), 'api_key': api_key})
+            if self.get_argument('u', '') != sickbeard.WEB_USERNAME or self.get_argument('p', '') != sickbeard.WEB_PASSWORD:
+                raise Exception
+            self.finish({'success': bool(sickbeard.API_KEY), 'api_key': sickbeard.API_KEY})
         except Exception:
             logger.log('Failed doing key request: {0}'.format((traceback.format_exc())), logger.ERROR)
             self.finish({'success': False, 'error': 'Failed returning results'})
@@ -851,9 +839,10 @@ class Home(WebRoot):
         # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_url(host)
-
         connection, accesMsg = sab.getSabAccesMethod(host)
         if connection:
+            password = filters.unhide(sickbeard.SAB_PASSWORD, password)
+            apikey = filters.unhide(sickbeard.SAB_APIKEY, apikey)
             authed, authMsg = sab.testAuthentication(host, username, password, apikey)  # @UnusedVariable
             if authed:
                 return _("Success. Connected and authenticated")
@@ -863,22 +852,21 @@ class Home(WebRoot):
             return _("Unable to connect to host")
 
     def testDSM(self, host=None, username=None, password=None):
+        password = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, password)
         return self.testTorrent('download_station', host, username, password)
 
     @staticmethod
     def testTorrent(torrent_method=None, host=None, username=None, password=None):
-
         host = config.clean_url(host)
-
         client = clients.getClientInstance(torrent_method)
-
+        password = filters.unhide(sickbeard.TORRENT_PASSWORD, password)
         result_, accesMsg = client(host, username, password).testAuthentication()
 
         return accesMsg
 
     @staticmethod
     def testFreeMobile(freemobile_id=None, freemobile_apikey=None):
-
+        freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, freemobile_apikey)
         result, message = notifiers.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
         if result:
             return _("SMS sent successfully")
@@ -887,7 +875,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testTelegram(telegram_id=None, telegram_apikey=None):
-
+        telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, telegram_apikey)
         result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
@@ -896,7 +884,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testJoin(join_id=None, join_apikey=None):
-
+        join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, join_apikey)
         result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
@@ -908,7 +896,7 @@ class Home(WebRoot):
         # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
-
+        password = filters.unhide(sickbeard.GROWL_PASSWORD, password)
         result = notifiers.growl_notifier.test_notify(host, password)
 
         pw_append = _(" with password") + ": " + password if password else ''
@@ -1010,6 +998,7 @@ class Home(WebRoot):
 
         host = config.clean_hosts(host)
         finalResult = ''
+        password = filters.unhide(sickbeard.KODI_PASSWORD, password)
         for curHost in [x.strip() for x in host.split(",")]:
             curResult = notifiers.kodi_notifier.test_notify(unquote_plus(curHost), username, password)
             if len(curResult.split(":")) > 2 and 'OK' in curResult.split(":")[2]:
@@ -1023,8 +1012,7 @@ class Home(WebRoot):
     def testPHT(self, host=None, username=None, password=None):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
-        if set('*') == set(password or '*'):
-            password = sickbeard.PLEX_CLIENT_PASSWORD
+        password = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, password)
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -1042,8 +1030,7 @@ class Home(WebRoot):
     def testPMS(self, host=None, username=None, password=None, plex_server_token=None):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
-        if set('*') == set(password or '*'):
-            password = sickbeard.PLEX_SERVER_PASSWORD
+        password = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, password)
 
         finalResult = ''
 
@@ -1069,8 +1056,8 @@ class Home(WebRoot):
 
     @staticmethod
     def testEMBY(host=None, emby_apikey=None):
-
         host = config.clean_host(host)
+        emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, emby_apikey)
         result = notifiers.emby_notifier.test_notify(unquote_plus(host), emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
@@ -1551,14 +1538,16 @@ class Home(WebRoot):
                  defaultEpStatus=None, quality_preset=None):
 
         anidb_failed = False
-        if not show:
+
+        try:
+            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
+            show_obj = Show.find(sickbeard.showList, show)
+        except (ValueError, TypeError):
             errString = _("Invalid show ID") + ": {show}".format(show=str(show))
             if directCall:
                 return [errString]
             else:
                 return self._genericMessage(_("Error"), errString)
-
-        show_obj = Show.find(sickbeard.showList, int(show))
 
         if not show_obj:
             errString = _("Unable to find the specified show") + ": {show}".format(show=str(show))
@@ -4059,8 +4048,8 @@ class ConfigGeneral(Config):
 
         sickbeard.GIT_AUTH_TYPE = int(git_auth_type)
         sickbeard.GIT_USERNAME = git_username
-        sickbeard.GIT_PASSWORD = git_password
-        sickbeard.GIT_TOKEN = git_token
+        sickbeard.GIT_PASSWORD = filters.unhide(sickbeard.GIT_PASSWORD, git_password)
+        sickbeard.GIT_TOKEN = filters.unhide(sickbeard.GIT_TOKEN, git_token)
 
         # noinspection PyPep8
         if (sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN) != (git_auth_type, git_username, git_password, git_token):
@@ -4090,7 +4079,7 @@ class ConfigGeneral(Config):
         # sickbeard.WEB_LOG is set in config.change_log_dir()
         sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
         sickbeard.WEB_USERNAME = web_username
-        sickbeard.WEB_PASSWORD = web_password
+        sickbeard.WEB_PASSWORD = filters.unhide(sickbeard.WEB_PASSWORD, web_password)
 
         sickbeard.FUZZY_DATING = config.checkbox_to_value(fuzzy_dating)
         sickbeard.TRIM_ZERO = config.checkbox_to_value(trim_zero)
@@ -4278,8 +4267,8 @@ class ConfigSearch(Config):
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 
         sickbeard.SAB_USERNAME = sab_username
-        sickbeard.SAB_PASSWORD = sab_password
-        sickbeard.SAB_APIKEY = sab_apikey.strip()
+        sickbeard.SAB_PASSWORD = filters.unhide(sickbeard.SAB_PASSWORD, sab_password)
+        sickbeard.SAB_APIKEY = filters.unhide(sickbeard.SAB_APIKEY, sab_apikey.strip())
         sickbeard.SAB_CATEGORY = sab_category
         sickbeard.SAB_CATEGORY_BACKLOG = sab_category_backlog
         sickbeard.SAB_CATEGORY_ANIME = sab_category_anime
@@ -4288,7 +4277,7 @@ class ConfigSearch(Config):
         sickbeard.SAB_FORCED = config.checkbox_to_value(sab_forced)
 
         sickbeard.NZBGET_USERNAME = nzbget_username
-        sickbeard.NZBGET_PASSWORD = nzbget_password
+        sickbeard.NZBGET_PASSWORD = filters.unhide(sickbeard.NZBGET_PASSWORD, nzbget_password)
         sickbeard.NZBGET_CATEGORY = nzbget_category
         sickbeard.NZBGET_CATEGORY_BACKLOG = nzbget_category_backlog
         sickbeard.NZBGET_CATEGORY_ANIME = nzbget_category_anime
@@ -4298,7 +4287,7 @@ class ConfigSearch(Config):
         sickbeard.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
 
         sickbeard.TORRENT_USERNAME = torrent_username
-        sickbeard.TORRENT_PASSWORD = torrent_password
+        sickbeard.TORRENT_PASSWORD = filters.unhide(sickbeard.TORRENT_PASSWORD, torrent_password)
         sickbeard.TORRENT_LABEL = torrent_label
         sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
         sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
@@ -4314,7 +4303,7 @@ class ConfigSearch(Config):
 
         sickbeard.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
         sickbeard.SYNOLOGY_DSM_USERNAME = syno_dsm_user
-        sickbeard.SYNOLOGY_DSM_PASSWORD = syno_dsm_pass
+        sickbeard.SYNOLOGY_DSM_PASSWORD = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
         sickbeard.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
@@ -4798,19 +4787,19 @@ class ConfigProviders(Config):
 
             if hasattr(curTorrentProvider, 'password'):
                 try:
-                    curTorrentProvider.password = str(kwargs[curTorrentProvider.get_id() + '_password']).strip()
+                    curTorrentProvider.password = filters.unhide(curTorrentProvider.password, str(kwargs[curTorrentProvider.get_id() + '_password']).strip())
                 except Exception:
                     curTorrentProvider.password = None
 
             if hasattr(curTorrentProvider, 'passkey'):
                 try:
-                    curTorrentProvider.passkey = str(kwargs[curTorrentProvider.get_id() + '_passkey']).strip()
+                    curTorrentProvider.passkey = filters.unhide(curTorrentProvider.passkey, str(kwargs[curTorrentProvider.get_id() + '_passkey']).strip())
                 except Exception:
                     curTorrentProvider.passkey = None
 
             if hasattr(curTorrentProvider, 'pin'):
                 try:
-                    curTorrentProvider.pin = str(kwargs[curTorrentProvider.get_id() + '_pin']).strip()
+                    curTorrentProvider.pin = filters.unhide(curTorrentProvider.pin, str(kwargs[curTorrentProvider.get_id() + '_pin']).strip())
                 except Exception:
                     curTorrentProvider.pin = None
 
@@ -5039,7 +5028,7 @@ class ConfigNotifications(Config):
         sickbeard.KODI_UPDATE_ONLYFIRST = config.checkbox_to_value(kodi_update_onlyfirst)
         sickbeard.KODI_HOST = config.clean_hosts(kodi_host)
         sickbeard.KODI_USERNAME = kodi_username
-        sickbeard.KODI_PASSWORD = kodi_password
+        sickbeard.KODI_PASSWORD = filters.unhide(sickbeard.KODI_PASSWORD, kodi_password)
 
         sickbeard.USE_PLEX_SERVER = config.checkbox_to_value(use_plex_server)
         sickbeard.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
@@ -5050,46 +5039,44 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_SERVER_USERNAME = plex_server_username
-        if plex_server_password != '*' * len(sickbeard.PLEX_SERVER_PASSWORD):
-            sickbeard.PLEX_SERVER_PASSWORD = plex_server_password
+        sickbeard.PLEX_SERVER_PASSWORD = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, plex_server_password)
 
         sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_client)
         sickbeard.PLEX_CLIENT_USERNAME = plex_client_username
-        if plex_client_password != '*' * len(sickbeard.PLEX_CLIENT_PASSWORD):
-            sickbeard.PLEX_CLIENT_PASSWORD = plex_client_password
+        sickbeard.PLEX_CLIENT_PASSWORD = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, plex_client_password)
         sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
 
         sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)
         sickbeard.EMBY_HOST = config.clean_host(emby_host)
-        sickbeard.EMBY_APIKEY = emby_apikey
+        sickbeard.EMBY_APIKEY = filters.unhide(sickbeard.EMBY_APIKEY, emby_apikey)
 
         sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)
         sickbeard.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
         sickbeard.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
         sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
         sickbeard.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
-        sickbeard.GROWL_PASSWORD = growl_password
+        sickbeard.GROWL_PASSWORD = filters.unhide(sickbeard.GROWL_PASSWORD, growl_password)
 
         sickbeard.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
         sickbeard.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
         sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
         sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
         sickbeard.FREEMOBILE_ID = freemobile_id
-        sickbeard.FREEMOBILE_APIKEY = freemobile_apikey
+        sickbeard.FREEMOBILE_APIKEY = filters.unhide(sickbeard.FREEMOBILE_APIKEY, freemobile_apikey)
 
         sickbeard.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
         sickbeard.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
         sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
         sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
         sickbeard.TELEGRAM_ID = telegram_id
-        sickbeard.TELEGRAM_APIKEY = telegram_apikey
+        sickbeard.TELEGRAM_APIKEY = filters.unhide(sickbeard.TELEGRAM_APIKEY, telegram_apikey)
 
         sickbeard.USE_JOIN = config.checkbox_to_value(use_join)
         sickbeard.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
         sickbeard.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
         sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
         sickbeard.JOIN_ID = join_id
-        sickbeard.JOIN_APIKEY = join_apikey
+        sickbeard.JOIN_APIKEY = filters.unhide(sickbeard.JOIN_APIKEY, join_apikey)
 
         sickbeard.USE_PROWL = config.checkbox_to_value(use_prowl)
         sickbeard.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
@@ -5139,7 +5126,7 @@ class ConfigNotifications(Config):
         sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushover_notify_ondownload)
         sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
         sickbeard.PUSHOVER_USERKEY = pushover_userkey
-        sickbeard.PUSHOVER_APIKEY = pushover_apikey
+        sickbeard.PUSHOVER_APIKEY = filters.unhide(sickbeard.PUSHOVER_APIKEY, pushover_apikey)
         sickbeard.PUSHOVER_DEVICE = pushover_device
         sickbeard.PUSHOVER_SOUND = pushover_sound
         sickbeard.PUSHOVER_PRIORITY = pushover_priority
@@ -5191,7 +5178,7 @@ class ConfigNotifications(Config):
         sickbeard.EMAIL_FROM = email_from
         sickbeard.EMAIL_TLS = config.checkbox_to_value(email_tls)
         sickbeard.EMAIL_USER = email_user
-        sickbeard.EMAIL_PASSWORD = email_password
+        sickbeard.EMAIL_PASSWORD = filters.unhide(sickbeard.EMAIL_PASSWORD, email_password)
         sickbeard.EMAIL_LIST = email_list
         sickbeard.EMAIL_SUBJECT = email_subject
 
@@ -5289,15 +5276,15 @@ class ConfigSubtitles(Config):
         sickbeard.SUBTITLES_SERVICES_ENABLED = subtitles_services_enabled
 
         sickbeard.ADDIC7ED_USER = addic7ed_user or ''
-        sickbeard.ADDIC7ED_PASS = addic7ed_pass or ''
+        sickbeard.ADDIC7ED_PASS = filters.unhide(sickbeard.ADDIC7ED_PASS, addic7ed_pass) or ''
         sickbeard.ITASA_USER = itasa_user or ''
-        sickbeard.ITASA_PASS = itasa_pass or ''
+        sickbeard.ITASA_PASS = filters.unhide(sickbeard.ITASA_PASS, itasa_pass) or ''
         sickbeard.LEGENDASTV_USER = legendastv_user or ''
-        sickbeard.LEGENDASTV_PASS = legendastv_pass or ''
+        sickbeard.LEGENDASTV_PASS = filters.unhide(sickbeard.LEGENDASTV_PASS, legendastv_pass) or ''
         sickbeard.OPENSUBTITLES_USER = opensubtitles_user or ''
-        sickbeard.OPENSUBTITLES_PASS = opensubtitles_pass or ''
+        sickbeard.OPENSUBTITLES_PASS = filters.unhide(sickbeard.OPENSUBTITLES_PASS, opensubtitles_pass) or ''
         sickbeard.SUBSCENTER_USER = subscenter_user or ''
-        sickbeard.SUBSCENTER_PASS = subscenter_pass or ''
+        sickbeard.SUBSCENTER_PASS = filters.unhide(sickbeard.SUBCENTER_PASS, subscenter_pass) or ''
 
         sickbeard.save_config()
         # Reset provider pool so next time we use the newest settings
@@ -5327,7 +5314,7 @@ class ConfigAnime(Config):
 
         sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
-        sickbeard.ANIDB_PASSWORD = anidb_password
+        sickbeard.ANIDB_PASSWORD = filters.unhide(sickbeard.ANIDB_PASS, anidb_password)
         sickbeard.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
         sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
         sickbeard.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
