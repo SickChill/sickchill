@@ -48,7 +48,7 @@ from six.moves import urllib
 # noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 from tornado.concurrent import run_on_executor
-from tornado.escape import utf8, xhtml_escape
+from tornado.escape import utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -2572,7 +2572,7 @@ class HomeAddShows(Home):
         else:
             root_dirs = rootDir
 
-        root_dirs = [unquote_plus(x) for x in root_dirs]
+        root_dirs = [unquote_plus(xhtml_unescape(x)) for x in root_dirs]
 
         if sickbeard.ROOT_DIRS:
             default_index = int(sickbeard.ROOT_DIRS.split('|')[0])
@@ -2960,7 +2960,7 @@ class HomeAddShows(Home):
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
             # Show name was sent in UTF-8 in the form
-            show_name = series_pieces[4].decode('utf-8')
+            show_name = xhtml_unescape(series_pieces[4]).decode('utf-8')
         else:
             # if no indexer was provided use the default indexer set in General settings
             if not providedIndexer:
@@ -3055,7 +3055,7 @@ class HomeAddShows(Home):
         elif not isinstance(shows_to_add, list):
             shows_to_add = [shows_to_add]
 
-        shows_to_add = [unquote_plus(x) for x in shows_to_add]
+        shows_to_add = [unquote_plus(xhtml_unescape(x)) for x in shows_to_add]
 
         indexer_id_given = []
         dirs_only = []
