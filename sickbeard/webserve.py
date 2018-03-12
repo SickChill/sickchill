@@ -5317,7 +5317,7 @@ class ConfigAnime(Config):
 
         sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
-        sickbeard.ANIDB_PASSWORD = filters.unhide(sickbeard.ANIDB_PASS, anidb_password)
+        sickbeard.ANIDB_PASSWORD = filters.unhide(sickbeard.ANIDB_PASSWORD, anidb_password)
         sickbeard.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
         sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
         sickbeard.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
