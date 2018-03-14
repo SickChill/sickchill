@@ -399,10 +399,10 @@ class newpctProvider(TorrentProvider):
                 quality = self._clean_spaces(listformat_match.group(7))
 
                 if not listformat_match.group(5):
-                    title = "{0} - Temporada {1} {2} [Cap.{3}{4}]".format(name, season, quality, season, episode)
+                    title = "{0} - Temporada {1} {2} [Cap.{3}{4}][{5}]".format(name, season, quality, season, episode, audioquality)
                 else:
                     episode_to = self._clean_spaces(listformat_match.group(5)).zfill(2)
-                    title = "{0} - Temporada {1} {2} [Cap.{3}{4}_{5}{6}]".format(name, season, quality, season, episode, season, episode_to)
+                    title = "{0} - Temporada {1} {2} [Cap.{3}{4}_{5}{6}][{7}]".format(name, season, quality, season, episode, season, episode_to, audioquality)
                 logger.log('_processTitle: Matched by listFormat: {}'.format(title), logger.DEBUG)
             else:
                 if try_download:
@@ -425,7 +425,7 @@ class newpctProvider(TorrentProvider):
                         logger.log('_processTitle: Matched by url: {}'.format(title), logger.DEBUG)
         else:
             logger.log('_processTitle: Matched by stdFormat: {}'.format(title), logger.DEBUG)
-
+            
         # Quality - Use re module to avoid case sensitive problems with replace
         title = re.sub(r'\[HDTV 1080p?[^\[]*]', '1080p HDTV x264', title, flags=re.I)
         title = re.sub(r'\[HDTV 720p?[^\[]*]', '720p HDTV x264', title, flags=re.I)
@@ -446,18 +446,23 @@ class newpctProvider(TorrentProvider):
         #hdtv 720p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
         #hdtv example url: http://www.newpct.com/descargar-serie/foo/capitulo-214/hdtv/
         #bluray compilation example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-11/bluray-1080p/
+        #http://www.tvsinpagar.com/descargar/serie-vo/marvels-agents-of-s-h-i-e-l-d-/temporada-5/capitulo-12/
+        #http://www.tvsinpagar.com/descargar/serie-en-hd/the-arrangement/temporada-2/capitulo-01/
         title_hdtv = re.search(r'HDTV', title, flags=re.I)
         title_720p = re.search(r'720p', title, flags=re.I)
         title_1080p = re.search(r'1080p', title, flags=re.I)
         title_x264 = re.search(r'x264', title, flags=re.I)
         title_bluray = re.search(r'bluray', title, flags=re.I)
         title_vo = re.search(r'\[V.O.[^\[]*]', title, flags=re.I)
+        title_subt = re.search(r'\[Ingles subtitulado\]', title, flags=re.I)
         url_hdtv = re.search(r'HDTV', url, flags=re.I)
         url_720p = re.search(r'720p', url, flags=re.I)
         url_1080p = re.search(r'1080p', url, flags=re.I)
         url_bluray = re.search(r'bluray', url, flags=re.I)
-        url_serie_hd = re.search(r'descargar\-seriehd', url, flags=re.I)
-        url_serie_vo = re.search(r'descargar\-serievo', url, flags=re.I)
+        url_serie_hd = re.search(r'descargar-seriehd', url, flags=re.I)
+        url_serie_hd = url_serie_hd or re.search(r'descargar/serie-en-hd', url, flags=re.I)
+        url_serie_vo = re.search(r'descargar-serievo', url, flags=re.I)
+        url_serie_subt = re.search(r'descargar/serie-vo', url, flags=re.I)
 
         if not title_hdtv and url_hdtv:
             title += ' HDTV'
@@ -475,7 +480,7 @@ class newpctProvider(TorrentProvider):
             title_720p = True
         if not (title_720p or title_1080p) and url_serie_hd:
             title += ' 720p'
-        if not (title_vo) and url_serie_vo:
+        if not (title_vo) and (title_subt or url_serie_vo or url_serie_subt):
             title += ' [V.O.]'
             title_vo = True
 
