@@ -15,9 +15,10 @@
 from __future__ import absolute_import, division, print_function
 
 import collections
+from concurrent.futures import CancelledError
 
 from tornado import gen, ioloop
-from tornado.concurrent import Future
+from tornado.concurrent import Future, future_set_result_unless_cancelled
 
 __all__ = ['Condition', 'Event', 'Semaphore', 'BoundedSemaphore', 'Lock']
 
@@ -99,8 +100,12 @@ class Condition(_TimeoutGarbageCollector):
         # Wait up to 1 second.
         yield condition.wait(timeout=datetime.timedelta(seconds=1))
 
-    The method raises `tornado.gen.TimeoutError` if there's no notification
-    before the deadline.
+    The method returns False if there's no notification before the deadline.
+
+    .. versionchanged:: 5.0
+       Previously, waiters could be notified synchronously from within
+       `notify`. Now, the notification will always be received on the
+       next iteration of the `.IOLoop`.
     """
 
     def __init__(self):
@@ -123,7 +128,8 @@ class Condition(_TimeoutGarbageCollector):
         self._waiters.append(waiter)
         if timeout:
             def on_timeout():
-                waiter.set_result(False)
+                if not waiter.done():
+                    future_set_result_unless_cancelled(waiter, False)
                 self._garbage_collect()
             io_loop = ioloop.IOLoop.current()
             timeout_handle = io_loop.add_timeout(timeout, on_timeout)
@@ -141,7 +147,7 @@ class Condition(_TimeoutGarbageCollector):
                 waiters.append(waiter)
 
         for waiter in waiters:
-            waiter.set_result(True)
+            future_set_result_unless_cancelled(waiter, True)
 
     def notify_all(self):
         """Wake all waiters."""
@@ -191,7 +197,8 @@ class Event(object):
         Done
     """
     def __init__(self):
-        self._future = Future()
+        self._value = False
+        self._waiters = set()
 
     def __repr__(self):
         return '<%s %s>' % (
@@ -199,34 +206,48 @@ class Event(object):
 
     def is_set(self):
         """Return ``True`` if the internal flag is true."""
-        return self._future.done()
+        return self._value
 
     def set(self):
         """Set the internal flag to ``True``. All waiters are awakened.
 
         Calling `.wait` once the flag is set will not block.
         """
-        if not self._future.done():
-            self._future.set_result(None)
+        if not self._value:
+            self._value = True
+
+            for fut in self._waiters:
+                if not fut.done():
+                    fut.set_result(None)
 
     def clear(self):
         """Reset the internal flag to ``False``.
 
         Calls to `.wait` will block until `.set` is called.
         """
-        if self._future.done():
-            self._future = Future()
+        self._value = False
 
     def wait(self, timeout=None):
         """Block until the internal flag is true.
 
-        Returns a Future, which raises `tornado.gen.TimeoutError` after a
+        Returns a Future, which raises `tornado.util.TimeoutError` after a
         timeout.
         """
+        fut = Future()
+        if self._value:
+            fut.set_result(None)
+            return fut
+        self._waiters.add(fut)
+        fut.add_done_callback(lambda fut: self._waiters.remove(fut))
         if timeout is None:
-            return self._future
+            return fut
         else:
-            return gen.with_timeout(timeout, self._future)
+            timeout_fut = gen.with_timeout(timeout, fut, quiet_exceptions=(CancelledError,))
+            # This is a slightly clumsy workaround for the fact that
+            # gen.with_timeout doesn't cancel its futures. Cancelling
+            # fut will remove it from the waiters list.
+            timeout_fut.add_done_callback(lambda tf: fut.cancel() if not fut.done() else None)
+            return timeout_fut
 
 
 class _ReleasingContextManager(object):
@@ -272,6 +293,8 @@ class Semaphore(_TimeoutGarbageCollector):
        @gen.coroutine
        def simulator(futures):
            for f in futures:
+               # simulate the asynchronous passage of time
+               yield gen.moment
                yield gen.moment
                f.set_result(None)
 
@@ -388,7 +411,8 @@ class Semaphore(_TimeoutGarbageCollector):
             self._waiters.append(waiter)
             if timeout:
                 def on_timeout():
-                    waiter.set_exception(gen.TimeoutError())
+                    if not waiter.done():
+                        waiter.set_exception(gen.TimeoutError())
                     self._garbage_collect()
                 io_loop = ioloop.IOLoop.current()
                 timeout_handle = io_loop.add_timeout(timeout, on_timeout)
@@ -458,7 +482,7 @@ class Lock(object):
     ``async with`` includes both the ``yield`` and the ``acquire``
     (just as it does with `threading.Lock`):
 
-    >>> async def f():  # doctest: +SKIP
+    >>> async def f2():  # doctest: +SKIP
     ...    async with lock:
     ...        # Do something holding the lock.
     ...        pass
@@ -480,7 +504,7 @@ class Lock(object):
     def acquire(self, timeout=None):
         """Attempt to lock. Returns a Future.
 
-        Returns a Future, which raises `tornado.gen.TimeoutError` after a
+        Returns a Future, which raises `tornado.util.TimeoutError` after a
         timeout.
         """
         return self._block.acquire(timeout)

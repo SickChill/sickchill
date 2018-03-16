@@ -91,7 +91,7 @@ def encode_bool(x, r):
         encode_int(1, r)
     else:
         encode_int(0, r)
-
+        
 def encode_string(x, r):
     r.extend((str(len(x)), ':', x))
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -47,12 +46,14 @@ Thread-safety notes
 -------------------
 
 In general, methods on `RequestHandler` and elsewhere in Tornado are
-not thread-safe.  In particular, methods such as
+not thread-safe. In particular, methods such as
 `~RequestHandler.write()`, `~RequestHandler.finish()`, and
-`~RequestHandler.flush()` must only be called from the main thread.  If
+`~RequestHandler.flush()` must only be called from the main thread. If
 you use multiple threads it is important to use `.IOLoop.add_callback`
 to transfer control back to the main thread before finishing the
-request.
+request, or to limit your use of other threads to
+`.IOLoop.run_in_executor` and ensure that your callbacks running in
+the executor do not refer to Tornado objects.
 
 """
 
@@ -80,7 +81,7 @@ import types
 from inspect import isclass
 from io import BytesIO
 
-from tornado.concurrent import Future
+from tornado.concurrent import Future, future_set_result_unless_cancelled
 from tornado import escape
 from tornado import gen
 from tornado import httputil
@@ -309,20 +310,21 @@ class RequestHandler(object):
     def set_status(self, status_code, reason=None):
         """Sets the status code for our response.
 
-        :arg int status_code: Response status code. If ``reason`` is ``None``,
-            it must be present in `httplib.responses <http.client.responses>`.
-        :arg string reason: Human-readable reason phrase describing the status
+        :arg int status_code: Response status code.
+        :arg str reason: Human-readable reason phrase describing the status
             code. If ``None``, it will be filled in from
-            `httplib.responses <http.client.responses>`.
+            `http.client.responses` or "Unknown".
+
+        .. versionchanged:: 5.0
+
+           No longer validates that the response code is in
+           `http.client.responses`.
         """
         self._status_code = status_code
         if reason is not None:
             self._reason = escape.native_str(reason)
         else:
-            try:
-                self._reason = httputil.responses[status_code]
-            except KeyError:
-                raise ValueError("unknown status code %d" % status_code)
+            self._reason = httputil.responses.get(status_code, "Unknown")
 
     def get_status(self):
         """Returns the status code for our response."""
@@ -521,18 +523,28 @@ class RequestHandler(object):
         return self.request.cookies
 
     def get_cookie(self, name, default=None):
-        """Gets the value of the cookie with the given name, else default."""
+        """Returns the value of the request cookie with the given name.
+
+        If the named cookie is not present, returns ``default``.
+
+        This method only returns cookies that were present in the request.
+        It does not see the outgoing cookies set by `set_cookie` in this
+        handler.
+        """
         if self.request.cookies is not None and name in self.request.cookies:
             return self.request.cookies[name].value
         return default
 
     def set_cookie(self, name, value, domain=None, expires=None, path="/",
                    expires_days=None, **kwargs):
-        """Sets the given cookie name/value with the given options.
+        """Sets an outgoing cookie name/value with the given options.
 
-        Additional keyword arguments are set on the Cookie.Morsel
+        Newly-set cookies are not immediately visible via `get_cookie`;
+        they are not present until the next request.
+
+        Additional keyword arguments are set on the cookies.Morsel
         directly.
-        See https://docs.python.org/2/library/cookie.html#Cookie.Morsel
+        See https://docs.python.org/3/library/http.cookies.html#http.cookies.Morsel
         for available attributes.
         """
         # The cookie library only accepts type str, in both python 2 and 3
@@ -574,6 +586,9 @@ class RequestHandler(object):
         path and domain to clear a cookie as were used when that cookie
         was set (but there is no way to find out on the server side
         which values were used for a given cookie).
+
+        Similar to `set_cookie`, the effect of this method will not be
+        seen until the following request.
         """
         expires = datetime.datetime.utcnow() - datetime.timedelta(days=365)
         self.set_cookie(name, value="", path=path, expires=expires,
@@ -584,6 +599,9 @@ class RequestHandler(object):
 
         See `clear_cookie` for more information on the path and domain
         parameters.
+
+        Similar to `set_cookie`, the effect of this method will not be
+        seen until the following request.
 
         .. versionchanged:: 3.2
 
@@ -608,6 +626,9 @@ class RequestHandler(object):
 
         Secure cookies may contain arbitrary byte values, not just unicode
         strings (unlike regular cookies)
+
+        Similar to `set_cookie`, the effect of this method will not be
+        seen until the following request.
 
         .. versionchanged:: 3.2.1
 
@@ -647,6 +668,10 @@ class RequestHandler(object):
 
         The decoded cookie value is returned as a byte string (unlike
         `get_cookie`).
+
+        Similar to `get_cookie`, this method only returns cookies that
+        were present in the request. It does not see outgoing cookies set by
+        `set_secure_cookie` in this handler.
 
         .. versionchanged:: 3.2.1
 
@@ -709,7 +734,8 @@ class RequestHandler(object):
         if not isinstance(chunk, (bytes, unicode_type, dict)):
             message = "write() only accepts bytes, unicode, and dict objects"
             if isinstance(chunk, list):
-                message += ". Lists not accepted for security reasons; see http://www.tornadoweb.org/en/stable/web.html#tornado.web.RequestHandler.write"
+                message += ". Lists not accepted for security reasons; see " + \
+                    "http://www.tornadoweb.org/en/stable/web.html#tornado.web.RequestHandler.write"
             raise TypeError(message)
         if isinstance(chunk, dict):
             chunk = escape.json_encode(chunk)
@@ -974,7 +1000,8 @@ class RequestHandler(object):
                 if self.check_etag_header():
                     self._write_buffer = []
                     self.set_status(304)
-            if self._status_code in (204, 304):
+            if (self._status_code in (204, 304) or
+                    (self._status_code >= 100 and self._status_code < 200)):
                 assert not self._write_buffer, "Cannot send body with %s" % self._status_code
                 self._clear_headers_for_304()
             elif "Content-Length" not in self._headers:
@@ -1194,6 +1221,11 @@ class RequestHandler(object):
         as a potential forgery.
 
         See http://en.wikipedia.org/wiki/Cross-site_request_forgery
+
+        This property is of type `bytes`, but it contains only ASCII
+        characters. If a character string is required, there is no
+        need to base64-encode it; just decode the byte string as
+        UTF-8.
 
         .. versionchanged:: 3.2.2
            The xsrf token will now be have a random mask applied in every
@@ -1491,7 +1523,7 @@ class RequestHandler(object):
             if self._prepared_future is not None:
                 # Tell the Application we've finished with prepare()
                 # and are ready for the body to arrive.
-                self._prepared_future.set_result(None)
+                future_set_result_unless_cancelled(self._prepared_future, None)
             if self._finished:
                 return
 
@@ -1516,6 +1548,9 @@ class RequestHandler(object):
                 self._handle_request_exception(e)
             except Exception:
                 app_log.error("Exception in exception handler", exc_info=True)
+            finally:
+                # Unset result to avoid circular references
+                result = None
             if (self._prepared_future is not None and
                     not self._prepared_future.done()):
                 # In case we failed before setting _prepared_future, do it
@@ -1561,11 +1596,7 @@ class RequestHandler(object):
             # send a response.
             return
         if isinstance(e, HTTPError):
-            if e.status_code not in httputil.responses and not e.reason:
-                gen_log.error("Bad HTTP status code: %d", e.status_code)
-                self.send_error(500, exc_info=sys.exc_info())
-            else:
-                self.send_error(e.status_code, exc_info=sys.exc_info())
+            self.send_error(e.status_code, exc_info=sys.exc_info())
         else:
             self.send_error(500, exc_info=sys.exc_info())
 
@@ -1711,7 +1742,7 @@ def stream_request_body(cls):
 
     See the `file receiver demo <https://github.com/tornadoweb/tornado/tree/master/demos/file_upload/>`_
     for example usage.
-    """
+    """  # noqa: E501
     if not issubclass(cls, RequestHandler):
         raise TypeError("expected subclass of RequestHandler, got %r", cls)
     cls._stream_request_body = True
@@ -1859,6 +1890,17 @@ class Application(ReversibleRouter):
     If there's no match for the current request's host, then ``default_host``
     parameter value is matched against host regular expressions.
 
+
+    .. warning::
+
+       Applications that do not use TLS may be vulnerable to :ref:`DNS
+       rebinding <dnsrebinding>` attacks. This attack is especially
+       relevant to applications that only listen on ``127.0.0.1` or
+       other private networks. Appropriate host patterns must be used
+       (instead of the default of ``r'.*'``) to prevent this risk. The
+       ``default_host`` argument must not be used in applications that
+       may be vulnerable to DNS rebinding.
+
     You can serve static files by sending the ``static_path`` setting
     as a keyword argument. We will serve those files from the
     ``/static/`` URI (this is configurable with the
@@ -1869,6 +1911,7 @@ class Application(ReversibleRouter):
 
     .. versionchanged:: 4.5
        Integration with the new `tornado.routing` module.
+
     """
     def __init__(self, handlers=None, default_host=None, transforms=None,
                  **settings):
@@ -2089,7 +2132,7 @@ class _HandlerDelegate(httputil.HTTPMessageDelegate):
 
     def finish(self):
         if self.stream_request_body:
-            self.request.body.set_result(None)
+            future_set_result_unless_cancelled(self.request.body, None)
         else:
             self.request.body = b''.join(self.chunks)
             self.request._parse_body()
@@ -2146,11 +2189,11 @@ class HTTPError(Exception):
     :arg int status_code: HTTP status code.  Must be listed in
         `httplib.responses <http.client.responses>` unless the ``reason``
         keyword argument is given.
-    :arg string log_message: Message to be written to the log for this error
+    :arg str log_message: Message to be written to the log for this error
         (will not be shown to the user unless the `Application` is in debug
         mode).  May contain ``%s``-style placeholders, which will be filled
         in with remaining positional parameters.
-    :arg string reason: Keyword-only argument.  The HTTP "reason" phrase
+    :arg str reason: Keyword-only argument.  The HTTP "reason" phrase
         to pass in the status line along with ``status_code``.  Normally
         determined automatically from ``status_code``, but can be used
         to use a non-standard numeric code.
@@ -2256,13 +2299,21 @@ class RedirectHandler(RequestHandler):
 
     .. versionchanged:: 4.5
        Added support for substitutions into the destination URL.
+
+    .. versionchanged:: 5.0
+       If any query arguments are present, they will be copied to the
+       destination URL.
     """
     def initialize(self, url, permanent=True):
         self._url = url
         self._permanent = permanent
 
     def get(self, *args):
-        self.redirect(self._url.format(*args), permanent=self._permanent)
+        to_url = self._url.format(*args)
+        if self.request.query_arguments:
+            to_url = httputil.url_concat(
+                to_url, list(httputil.qs_to_qsl(self.request.query_arguments)))
+        self.redirect(to_url, permanent=self._permanent)
 
 
 class StaticFileHandler(RequestHandler):
@@ -2467,8 +2518,9 @@ class StaticFileHandler(RequestHandler):
 
         .. versionadded:: 3.1
         """
-        if self.check_etag_header():
-            return True
+        # If client sent If-None-Match, use it, ignore If-Modified-Since
+        if self.request.headers.get('If-None-Match'):
+            return self.check_etag_header()
 
         # Check the If-Modified-Since, and don't send the result if the
         # content has not been modified
@@ -2786,7 +2838,7 @@ class OutputTransform(object):
         pass
 
     def transform_first_chunk(self, status_code, headers, chunk, finishing):
-        # type: (int, httputil.HTTPHeaders, bytes, bool) -> typing.Tuple[int, httputil.HTTPHeaders, bytes]
+        # type: (int, httputil.HTTPHeaders, bytes, bool) -> typing.Tuple[int, httputil.HTTPHeaders, bytes] # noqa: E501
         return status_code, headers, chunk
 
     def transform_chunk(self, chunk, finishing):
@@ -2827,7 +2879,7 @@ class GZipContentEncoding(OutputTransform):
         return ctype.startswith('text/') or ctype in self.CONTENT_TYPES
 
     def transform_first_chunk(self, status_code, headers, chunk, finishing):
-        # type: (int, httputil.HTTPHeaders, bytes, bool) -> typing.Tuple[int, httputil.HTTPHeaders, bytes]
+        # type: (int, httputil.HTTPHeaders, bytes, bool) -> typing.Tuple[int, httputil.HTTPHeaders, bytes] # noqa: E501
         # TODO: can/should this type be inherited from the superclass?
         if 'Vary' in headers:
             headers['Vary'] += ', Accept-Encoding'

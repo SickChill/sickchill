@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 """Support classes for automated testing.
 
 * `AsyncTestCase` and `AsyncHTTPTestCase`:  Subclasses of unittest.TestCase
   with additional support for testing asynchronous (`.IOLoop`-based) code.
 
-* `ExpectLog` and `LogTrapTestCase`: Make test logs less spammy.
+* `ExpectLog`: Make test logs less spammy.
 
 * `main()`: A simple test runner (wrapper around unittest.main()) with support
   for the tornado.autoreload module to rerun the tests when code changes.
@@ -22,7 +21,7 @@ try:
     from tornado.process import Subprocess
 except ImportError:
     # These modules are not importable on app engine.  Parts of this module
-    # won't work, but e.g. LogTrapTestCase and main() will.
+    # won't work, but e.g. main() will.
     AsyncHTTPClient = None  # type: ignore
     gen = None  # type: ignore
     HTTPServer = None  # type: ignore
@@ -30,7 +29,7 @@ except ImportError:
     netutil = None  # type: ignore
     SimpleAsyncHTTPClient = None  # type: ignore
     Subprocess = None  # type: ignore
-from tornado.log import gen_log, app_log
+from tornado.log import app_log
 from tornado.stack_context import ExceptionStackContext
 from tornado.util import raise_exc_info, basestring_type, PY3
 import functools
@@ -42,10 +41,11 @@ import signal
 import socket
 import sys
 
-if PY3:
-    from io import StringIO
-else:
-    from cStringIO import StringIO
+try:
+    import asyncio
+except ImportError:
+    asyncio = None
+
 
 try:
     from collections.abc import Generator as GeneratorType  # type: ignore
@@ -72,24 +72,6 @@ else:
         import unittest2 as unittest  # type: ignore
     except ImportError:
         import unittest  # type: ignore
-
-_next_port = 10000
-
-
-def get_unused_port():
-    """Returns a (hopefully) unused port number.
-
-    This function does not guarantee that the port it returns is available,
-    only that a series of get_unused_port calls in a single process return
-    distinct ports.
-
-    .. deprecated::
-       Use bind_unused_port instead, which is guaranteed to find an unused port.
-    """
-    global _next_port
-    port = _next_port
-    _next_port = _next_port + 1
-    return port
 
 
 def bind_unused_port(reuse_port=False):
@@ -166,8 +148,7 @@ class AsyncTestCase(unittest.TestCase):
     callbacks should call ``self.stop()`` to signal completion.
 
     By default, a new `.IOLoop` is constructed for each test and is available
-    as ``self.io_loop``.  This `.IOLoop` should be used in the construction of
-    HTTP clients/servers, etc.  If the code being tested requires a
+    as ``self.io_loop``.  If the code being tested requires a
     global `.IOLoop`, subclasses should override `get_new_ioloop` to return it.
 
     The `.IOLoop`'s ``start`` and ``stop`` methods should not be
@@ -182,7 +163,7 @@ class AsyncTestCase(unittest.TestCase):
         class MyTestCase(AsyncTestCase):
             @tornado.testing.gen_test
             def test_http_fetch(self):
-                client = AsyncHTTPClient(self.io_loop)
+                client = AsyncHTTPClient()
                 response = yield client.fetch("http://www.tornadoweb.org")
                 # Test contents of response
                 self.assertIn("FriendFeed", response.body)
@@ -190,7 +171,7 @@ class AsyncTestCase(unittest.TestCase):
         # This test uses argument passing between self.stop and self.wait.
         class MyTestCase2(AsyncTestCase):
             def test_http_fetch(self):
-                client = AsyncHTTPClient(self.io_loop)
+                client = AsyncHTTPClient()
                 client.fetch("http://www.tornadoweb.org/", self.stop)
                 response = self.wait()
                 # Test contents of response
@@ -199,7 +180,7 @@ class AsyncTestCase(unittest.TestCase):
         # This test uses an explicit callback-based style.
         class MyTestCase3(AsyncTestCase):
             def test_http_fetch(self):
-                client = AsyncHTTPClient(self.io_loop)
+                client = AsyncHTTPClient()
                 client.fetch("http://www.tornadoweb.org/", self.handle_fetch)
                 self.wait()
 
@@ -235,13 +216,11 @@ class AsyncTestCase(unittest.TestCase):
         # Clean up Subprocess, so it can be used again with a new ioloop.
         Subprocess.uninitialize()
         self.io_loop.clear_current()
-        if (not IOLoop.initialized() or
-                self.io_loop is not IOLoop.instance()):
-            # Try to clean up any file descriptors left open in the ioloop.
-            # This avoids leaks, especially when tests are run repeatedly
-            # in the same process with autoreload (because curl does not
-            # set FD_CLOEXEC on its file descriptors)
-            self.io_loop.close(all_fds=True)
+        # Try to clean up any file descriptors left open in the ioloop.
+        # This avoids leaks, especially when tests are run repeatedly
+        # in the same process with autoreload (because curl does not
+        # set FD_CLOEXEC on its file descriptors)
+        self.io_loop.close(all_fds=True)
         super(AsyncTestCase, self).tearDown()
         # In case an exception escaped or the StackContext caught an exception
         # when there wasn't a wait() to re-raise it, do so here.
@@ -321,7 +300,8 @@ class AsyncTestCase(unittest.TestCase):
                     except Exception:
                         self.__failure = sys.exc_info()
                     self.stop()
-                self.__timeout = self.io_loop.add_timeout(self.io_loop.time() + timeout, timeout_func)
+                self.__timeout = self.io_loop.add_timeout(self.io_loop.time() + timeout,
+                                                          timeout_func)
             while True:
                 self.__running = True
                 self.io_loop.start()
@@ -382,11 +362,10 @@ class AsyncHTTPTestCase(AsyncTestCase):
         self.http_server.add_sockets([sock])
 
     def get_http_client(self):
-        return AsyncHTTPClient(io_loop=self.io_loop)
+        return AsyncHTTPClient()
 
     def get_http_server(self):
-        return HTTPServer(self._app, io_loop=self.io_loop,
-                          **self.get_httpserver_options())
+        return HTTPServer(self._app, **self.get_httpserver_options())
 
     def get_app(self):
         """Should be overridden by subclasses to return a
@@ -395,14 +374,23 @@ class AsyncHTTPTestCase(AsyncTestCase):
         raise NotImplementedError()
 
     def fetch(self, path, **kwargs):
-        """Convenience method to synchronously fetch a url.
+        """Convenience method to synchronously fetch a URL.
 
         The given path will be appended to the local server's host and
         port.  Any additional kwargs will be passed directly to
         `.AsyncHTTPClient.fetch` (and so could be used to pass
         ``method="POST"``, ``body="..."``, etc).
+
+        If the path begins with http:// or https://, it will be treated as a
+        full URL and will be fetched as-is.
+
+        .. versionchanged:: 5.0
+           Added support for absolute URLs.
         """
-        self.http_client.fetch(self.get_url(path), self.stop, **kwargs)
+        if path.lower().startswith(('http://', 'https://')):
+            self.http_client.fetch(path, self.stop, **kwargs)
+        else:
+            self.http_client.fetch(self.get_url(path), self.stop, **kwargs)
         return self.wait()
 
     def get_httpserver_options(self):
@@ -423,16 +411,14 @@ class AsyncHTTPTestCase(AsyncTestCase):
 
     def get_url(self, path):
         """Returns an absolute url for the given path on the test server."""
-        return '%s://localhost:%s%s' % (self.get_protocol(),
+        return '%s://127.0.0.1:%s%s' % (self.get_protocol(),
                                         self.get_http_port(), path)
 
     def tearDown(self):
         self.http_server.stop()
         self.io_loop.run_sync(self.http_server.close_all_connections,
                               timeout=get_async_test_timeout())
-        if (not IOLoop.initialized() or
-                self.http_client.io_loop is not IOLoop.instance()):
-            self.http_client.close()
+        self.http_client.close()
         super(AsyncHTTPTestCase, self).tearDown()
 
 
@@ -442,7 +428,7 @@ class AsyncHTTPSTestCase(AsyncHTTPTestCase):
     Interface is generally the same as `AsyncHTTPTestCase`.
     """
     def get_http_client(self):
-        return AsyncHTTPClient(io_loop=self.io_loop, force_instance=True,
+        return AsyncHTTPClient(force_instance=True,
                                defaults=dict(validate_cert=False))
 
     def get_httpserver_options(self):
@@ -454,7 +440,8 @@ class AsyncHTTPSTestCase(AsyncHTTPTestCase):
         By default includes a self-signed testing certificate.
         """
         # Testing keys were generated with:
-        # openssl req -new -keyout tornado/test/test.key -out tornado/test/test.crt -nodes -days 3650 -x509
+        # openssl req -new -keyout tornado/test/test.key \
+        #                     -out tornado/test/test.crt -nodes -days 3650 -x509
         module_dir = os.path.dirname(__file__)
         return dict(
             certfile=os.path.join(module_dir, 'test', 'test.crt'),
@@ -476,7 +463,7 @@ def gen_test(func=None, timeout=None):
         class MyTest(AsyncHTTPTestCase):
             @gen_test
             def test_something(self):
-                response = yield gen.Task(self.fetch('/'))
+                response = yield self.http_client.fetch(self.get_url('/'))
 
     By default, ``@gen_test`` times out after 5 seconds. The timeout may be
     overridden globally with the ``ASYNC_TEST_TIMEOUT`` environment variable,
@@ -485,7 +472,11 @@ def gen_test(func=None, timeout=None):
         class MyTest(AsyncHTTPTestCase):
             @gen_test(timeout=10)
             def test_something_slow(self):
-                response = yield gen.Task(self.fetch('/'))
+                response = yield self.http_client.fetch(self.get_url('/'))
+
+    Note that ``@gen_test`` is incompatible with `AsyncTestCase.stop`,
+    `AsyncTestCase.wait`, and `AsyncHTTPTestCase.fetch`. Use ``yield
+    self.http_client.fetch(self.get_url())`` as shown above instead.
 
     .. versionadded:: 3.1
        The ``timeout`` argument and ``ASYNC_TEST_TIMEOUT`` environment
@@ -494,6 +485,7 @@ def gen_test(func=None, timeout=None):
     .. versionchanged:: 4.0
        The wrapper now passes along ``*args, **kwargs`` so it can be used
        on functions with arguments.
+
     """
     if timeout is None:
         timeout = get_async_test_timeout()
@@ -529,12 +521,17 @@ def gen_test(func=None, timeout=None):
                     timeout=timeout)
             except TimeoutError as e:
                 # run_sync raises an error with an unhelpful traceback.
-                # Throw it back into the generator or coroutine so the stack
-                # trace is replaced by the point where the test is stopped.
-                self._test_generator.throw(e)
-                # In case the test contains an overly broad except clause,
-                # we may get back here.  In this case re-raise the original
-                # exception, which is better than nothing.
+                # If the underlying generator is still running, we can throw the
+                # exception back into it so the stack trace is replaced by the
+                # point where the test is stopped. The only reason the generator
+                # would not be running would be if it were cancelled, which means
+                # a native coroutine, so we can rely on the cr_running attribute.
+                if getattr(self._test_generator, 'cr_running', True):
+                    self._test_generator.throw(e)
+                    # In case the test contains an overly broad except
+                    # clause, we may get back here.
+                # Coroutine was stopped or didn't raise a useful stack trace,
+                # so re-raise the original exception which is better than nothing.
                 raise
         return post_coroutine
 
@@ -552,49 +549,6 @@ def gen_test(func=None, timeout=None):
 # Without this attribute, nosetests will try to run gen_test as a test
 # anywhere it is imported.
 gen_test.__test__ = False  # type: ignore
-
-
-class LogTrapTestCase(unittest.TestCase):
-    """A test case that captures and discards all logging output
-    if the test passes.
-
-    Some libraries can produce a lot of logging output even when
-    the test succeeds, so this class can be useful to minimize the noise.
-    Simply use it as a base class for your test case.  It is safe to combine
-    with AsyncTestCase via multiple inheritance
-    (``class MyTestCase(AsyncHTTPTestCase, LogTrapTestCase):``)
-
-    This class assumes that only one log handler is configured and
-    that it is a `~logging.StreamHandler`.  This is true for both
-    `logging.basicConfig` and the "pretty logging" configured by
-    `tornado.options`.  It is not compatible with other log buffering
-    mechanisms, such as those provided by some test runners.
-
-    .. deprecated:: 4.1
-       Use the unittest module's ``--buffer`` option instead, or `.ExpectLog`.
-    """
-    def run(self, result=None):
-        logger = logging.getLogger()
-        if not logger.handlers:
-            logging.basicConfig()
-        handler = logger.handlers[0]
-        if (len(logger.handlers) > 1 or
-                not isinstance(handler, logging.StreamHandler)):
-            # Logging has been configured in a way we don't recognize,
-            # so just leave it alone.
-            super(LogTrapTestCase, self).run(result)
-            return
-        old_stream = handler.stream
-        try:
-            handler.stream = StringIO()
-            gen_log.info("RUNNING TEST: " + str(self))
-            old_error_count = len(result.failures) + len(result.errors)
-            super(LogTrapTestCase, self).run(result)
-            new_error_count = len(result.failures) + len(result.errors)
-            if new_error_count != old_error_count:
-                old_stream.write(handler.stream.getvalue())
-        finally:
-            handler.stream = old_stream
 
 
 class ExpectLog(logging.Filter):
@@ -684,6 +638,12 @@ def main(**kwargs):
     to show many test details as they are run.
     See http://docs.python.org/library/unittest.html#unittest.main
     for full argument list.
+
+    .. versionchanged:: 5.0
+
+       This function produces no output of its own; only that produced
+       by the `unittest` module (Previously it would add a PASS or FAIL
+       log message).
     """
     from tornado.options import define, options, parse_command_line
 
@@ -719,23 +679,16 @@ def main(**kwargs):
     if __name__ == '__main__' and len(argv) == 1:
         print("No tests specified", file=sys.stderr)
         sys.exit(1)
-    try:
-        # In order to be able to run tests by their fully-qualified name
-        # on the command line without importing all tests here,
-        # module must be set to None.  Python 3.2's unittest.main ignores
-        # defaultTest if no module is given (it tries to do its own
-        # test discovery, which is incompatible with auto2to3), so don't
-        # set module if we're not asking for a specific test.
-        if len(argv) > 1:
-            unittest.main(module=None, argv=argv, **kwargs)
-        else:
-            unittest.main(defaultTest="all", argv=argv, **kwargs)
-    except SystemExit as e:
-        if e.code == 0:
-            gen_log.info('PASS')
-        else:
-            gen_log.error('FAIL')
-        raise
+    # In order to be able to run tests by their fully-qualified name
+    # on the command line without importing all tests here,
+    # module must be set to None.  Python 3.2's unittest.main ignores
+    # defaultTest if no module is given (it tries to do its own
+    # test discovery, which is incompatible with auto2to3), so don't
+    # set module if we're not asking for a specific test.
+    if len(argv) > 1:
+        unittest.main(module=None, argv=argv, **kwargs)
+    else:
+        unittest.main(defaultTest="all", argv=argv, **kwargs)
 
 
 if __name__ == '__main__':
