@@ -186,7 +186,7 @@ class BaseParser(type):
                 if result[b'link'].startswith('magnet'):
                     self.assertTrue(magnet_regex.match(result[b'link']))
                 else:
-                    self.assertTrue(validators.url(result[b'link'], require_tld=False))
+                    self.assertTrue(validators.url(result[b'link']))
 
                 self.assertIsInstance(self.provider._get_size(result), six.integer_types)  # pylint: disable=protected-access
                 self.assertTrue(all(self.provider._get_title_and_url(result)))  # pylint: disable=protected-access
