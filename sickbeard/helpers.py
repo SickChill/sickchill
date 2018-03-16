@@ -1388,7 +1388,7 @@ def request_defaults(kwargs):
     hooks = kwargs.pop('hooks', None)
     cookies = kwargs.pop('cookies', None)
     allow_proxy = kwargs.pop('allow_proxy', True)
-    verify = certifi.old_where() if all([sickbeard.SSL_VERIFY, kwargs.pop('verify', True)]) else False
+    verify = certifi.where() if all([sickbeard.SSL_VERIFY, kwargs.pop('verify', True)]) else False
 
     # request session proxies
     if allow_proxy and sickbeard.PROXY_SETTING:

@@ -56,7 +56,7 @@ def generator(_provider):
             return
 
         try:
-            requests.head(_provider.url, verify=certifi.old_where(), timeout=10)
+            requests.head(_provider.url, verify=certifi.where(), timeout=10)
         except requests.exceptions.SSLError as error:
             if 'certificate verify failed' in str(error):
                 print('Cannot verify certificate for {0}'.format(_provider.name))
