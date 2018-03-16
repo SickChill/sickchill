@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -76,7 +77,7 @@ class HTTPServer(TCPServer, Configurable,
        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
        ssl_ctx.load_cert_chain(os.path.join(data_dir, "mydomain.crt"),
                                os.path.join(data_dir, "mydomain.key"))
-       HTTPServer(application, ssl_options=ssl_ctx)
+       HTTPServer(applicaton, ssl_options=ssl_ctx)
 
     `HTTPServer` initialization follows one of three patterns (the
     initialization methods are defined on `tornado.tcpserver.TCPServer`):
@@ -133,9 +134,6 @@ class HTTPServer(TCPServer, Configurable,
 
     .. versionchanged:: 4.5
        Added the ``trusted_downstream`` argument.
-
-    .. versionchanged:: 5.0
-       The ``io_loop`` argument has been removed.
     """
     def __init__(self, *args, **kwargs):
         # Ignore args to __init__; real initialization belongs in
@@ -145,7 +143,7 @@ class HTTPServer(TCPServer, Configurable,
         # completely)
         pass
 
-    def initialize(self, request_callback, no_keep_alive=False,
+    def initialize(self, request_callback, no_keep_alive=False, io_loop=None,
                    xheaders=False, ssl_options=None, protocol=None,
                    decompress_request=False,
                    chunk_size=None, max_header_size=None,
@@ -153,6 +151,7 @@ class HTTPServer(TCPServer, Configurable,
                    max_body_size=None, max_buffer_size=None,
                    trusted_downstream=None):
         self.request_callback = request_callback
+        self.no_keep_alive = no_keep_alive
         self.xheaders = xheaders
         self.protocol = protocol
         self.conn_params = HTTP1ConnectionParameters(
@@ -163,7 +162,7 @@ class HTTPServer(TCPServer, Configurable,
             max_body_size=max_body_size,
             body_timeout=body_timeout,
             no_keep_alive=no_keep_alive)
-        TCPServer.__init__(self, ssl_options=ssl_options,
+        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options,
                            max_buffer_size=max_buffer_size,
                            read_chunk_size=chunk_size)
         self._connections = set()
@@ -286,10 +285,6 @@ class _HTTPRequestContext(object):
         proto_header = headers.get(
             "X-Scheme", headers.get("X-Forwarded-Proto",
                                     self.protocol))
-        if proto_header:
-            # use only the last proto entry if there is more than one
-            # TODO: support trusting mutiple layers of proxied protocol
-            proto_header = proto_header.split(',')[-1].strip()
         if proto_header in ("http", "https"):
             self.protocol = proto_header
 

@@ -63,5 +63,5 @@ xmltodict==0.11.0
 ```
 
 ```
-pip install --target=lib -U --global-option="--no-user-cfg" --no-binary --no-compile babelfish tzlocal Unidecode validators xmltodict tornado mako python-twitter python-dateutil PyGithub markdown2 html5lib bencode pysocks requests requests-oauthlib tzlocal
+pip install --target=lib -U --global-option="--no-user-cfg" --no-binary --no-compile babelfish tzlocal Unidecode validators xmltodict tornado==4.5 mako python-twitter python-dateutil PyGithub markdown2 html5lib bencode pysocks requests requests-oauthlib tzlocal
 ```

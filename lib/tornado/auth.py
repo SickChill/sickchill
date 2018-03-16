@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -74,9 +75,7 @@ import hmac
 import time
 import uuid
 
-from tornado.concurrent import (Future, return_future, chain_future,
-                                future_set_exc_info,
-                                future_set_result_unless_cancelled)
+from tornado.concurrent import TracebackFuture, return_future, chain_future
 from tornado import gen
 from tornado import httpclient
 from tornado import escape
@@ -118,7 +117,7 @@ def _auth_return_future(f):
 
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        future = Future()
+        future = TracebackFuture()
         callback, args, kwargs = replacer.replace(future, args, kwargs)
         if callback is not None:
             future.add_done_callback(
@@ -128,7 +127,7 @@ def _auth_return_future(f):
             if future.done():
                 return False
             else:
-                future_set_exc_info(future, (typ, value, tb))
+                future.set_exc_info((typ, value, tb))
                 return True
         with ExceptionStackContext(handle_exception):
             f(*args, **kwargs)
@@ -296,7 +295,7 @@ class OpenIdMixin(object):
         claimed_id = self.get_argument("openid.claimed_id", None)
         if claimed_id:
             user["claimed_id"] = claimed_id
-        future_set_result_unless_cancelled(future, user)
+        future.set_result(user)
 
     def get_auth_http_client(self):
         """Returns the `.AsyncHTTPClient` instance to be used for auth requests.
@@ -391,8 +390,7 @@ class OAuthMixin(object):
                 "Missing OAuth request token cookie"))
             return
         self.clear_cookie("_oauth_request_token")
-        cookie_key, cookie_secret = [
-            base64.b64decode(escape.utf8(i)) for i in request_cookie.split("|")]
+        cookie_key, cookie_secret = [base64.b64decode(escape.utf8(i)) for i in request_cookie.split("|")]
         if cookie_key != request_key:
             future.set_exception(AuthError(
                 "Request token does not match cookie"))
@@ -521,7 +519,7 @@ class OAuthMixin(object):
             future.set_exception(AuthError("Error getting user"))
             return
         user["access_token"] = access_token
-        future_set_result_unless_cancelled(future, user)
+        future.set_result(user)
 
     def _oauth_request_parameters(self, url, access_token, parameters={},
                                   method="GET"):
@@ -670,7 +668,7 @@ class OAuth2Mixin(object):
                                            (response.error, response.request.url)))
             return
 
-        future_set_result_unless_cancelled(future, escape.json_decode(response.body))
+        future.set_result(escape.json_decode(response.body))
 
     def get_auth_http_client(self):
         """Returns the `.AsyncHTTPClient` instance to be used for auth requests.
@@ -813,7 +811,7 @@ class TwitterMixin(OAuthMixin):
                 "Error response %s fetching %s" % (response.error,
                                                    response.request.url)))
             return
-        future_set_result_unless_cancelled(future, escape.json_decode(response.body))
+        future.set_result(escape.json_decode(response.body))
 
     def _oauth_consumer_token(self):
         self.require_setting("twitter_consumer_key", "Twitter OAuth")
@@ -850,8 +848,8 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
 
     .. versionadded:: 3.2
     """
-    _OAUTH_AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-    _OAUTH_ACCESS_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+    _OAUTH_AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/auth"
+    _OAUTH_ACCESS_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
     _OAUTH_USERINFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
     _OAUTH_NO_CALLBACKS = False
     _OAUTH_SETTINGS_KEY = 'google_oauth'
@@ -896,7 +894,7 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
         .. testoutput::
            :hide:
 
-        """  # noqa: E501
+        """
         http = self.get_auth_http_client()
         body = urllib_parse.urlencode({
             "redirect_uri": redirect_uri,
@@ -908,9 +906,7 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
 
         http.fetch(self._OAUTH_ACCESS_TOKEN_URL,
                    functools.partial(self._on_access_token, callback),
-                   method="POST",
-                   headers={'Content-Type': 'application/x-www-form-urlencoded'},
-                   body=body)
+                   method="POST", headers={'Content-Type': 'application/x-www-form-urlencoded'}, body=body)
 
     def _on_access_token(self, future, response):
         """Callback function for the exchange to the access token."""
@@ -919,7 +915,7 @@ class GoogleOAuth2Mixin(OAuth2Mixin):
             return
 
         args = escape.json_decode(response.body)
-        future_set_result_unless_cancelled(future, args)
+        future.set_result(args)
 
 
 class FacebookGraphMixin(OAuth2Mixin):
@@ -967,8 +963,7 @@ class FacebookGraphMixin(OAuth2Mixin):
           Tornado it will change from a string to an integer.
         * ``id``, ``name``, ``first_name``, ``last_name``, ``locale``, ``picture``,
           ``link``, plus any fields named in the ``extra_fields`` argument. These
-          fields are copied from the Facebook graph API
-          `user object <https://developers.facebook.com/docs/graph-api/reference/user>`_
+          fields are copied from the Facebook graph API `user object <https://developers.facebook.com/docs/graph-api/reference/user>`_
 
         .. versionchanged:: 4.5
            The ``session_expires`` field was updated to support changes made to the
@@ -1016,7 +1011,7 @@ class FacebookGraphMixin(OAuth2Mixin):
 
     def _on_get_user_info(self, future, session, fields, user):
         if user is None:
-            future_set_result_unless_cancelled(future, None)
+            future.set_result(None)
             return
 
         fieldmap = {}
@@ -1029,7 +1024,7 @@ class FacebookGraphMixin(OAuth2Mixin):
         # This should change in Tornado 5.0.
         fieldmap.update({"access_token": session["access_token"],
                          "session_expires": str(session.get("expires_in"))})
-        future_set_result_unless_cancelled(future, fieldmap)
+        future.set_result(fieldmap)
 
     @_auth_return_future
     def facebook_request(self, path, callback, access_token=None,

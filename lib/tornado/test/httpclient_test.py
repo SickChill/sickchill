@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import absolute_import, division, print_function
 
 import base64
@@ -208,10 +210,10 @@ Transfer-Encoding: chunked
             def accept_callback(conn, address):
                 # fake an HTTP server using chunked encoding where the final chunks
                 # and connection close all happen at once
-                stream = IOStream(conn)
+                stream = IOStream(conn, io_loop=self.io_loop)
                 stream.read_until(b"\r\n\r\n",
                                   functools.partial(write_response, stream))
-            netutil.add_accept_handler(sock, accept_callback)
+            netutil.add_accept_handler(sock, accept_callback, self.io_loop)
             self.http_client.fetch("http://127.0.0.1:%d/" % port, self.stop)
             resp = self.wait()
             resp.rethrow()
@@ -356,7 +358,7 @@ Transfer-Encoding: chunked
     def test_configure_defaults(self):
         defaults = dict(user_agent='TestDefaultUserAgent', allow_ipv6=False)
         # Construct a new instance of the configured client class
-        client = self.http_client.__class__(force_instance=True,
+        client = self.http_client.__class__(self.io_loop, force_instance=True,
                                             defaults=defaults)
         try:
             client.fetch(self.get_url('/user_agent'), callback=self.stop)
@@ -396,10 +398,10 @@ X-XSS-Protection: 1;
 """.replace(b"\n", b"\r\n"), callback=stream.close)
 
             def accept_callback(conn, address):
-                stream = IOStream(conn)
+                stream = IOStream(conn, io_loop=self.io_loop)
                 stream.read_until(b"\r\n\r\n",
                                   functools.partial(write_response, stream))
-            netutil.add_accept_handler(sock, accept_callback)
+            netutil.add_accept_handler(sock, accept_callback, self.io_loop)
             self.http_client.fetch("http://127.0.0.1:%d/" % port, self.stop)
             resp = self.wait()
             resp.rethrow()
@@ -580,20 +582,22 @@ class HTTPResponseTestCase(unittest.TestCase):
 
 class SyncHTTPClientTest(unittest.TestCase):
     def setUp(self):
-        if IOLoop.configured_class().__name__ == 'TwistedIOLoop':
+        if IOLoop.configured_class().__name__ in ('TwistedIOLoop',
+                                                  'AsyncIOMainLoop'):
             # TwistedIOLoop only supports the global reactor, so we can't have
             # separate IOLoops for client and server threads.
+            # AsyncIOMainLoop doesn't work with the default policy
+            # (although it could with some tweaks to this test and a
+            # policy that created loops for non-main threads).
             raise unittest.SkipTest(
-                'Sync HTTPClient not compatible with TwistedIOLoop')
+                'Sync HTTPClient not compatible with TwistedIOLoop or '
+                'AsyncIOMainLoop')
         self.server_ioloop = IOLoop()
 
-        @gen.coroutine
-        def init_server():
-            sock, self.port = bind_unused_port()
-            app = Application([('/', HelloWorldHandler)])
-            self.server = HTTPServer(app)
-            self.server.add_socket(sock)
-        self.server_ioloop.run_sync(init_server)
+        sock, self.port = bind_unused_port()
+        app = Application([('/', HelloWorldHandler)])
+        self.server = HTTPServer(app, io_loop=self.server_ioloop)
+        self.server.add_socket(sock)
 
         self.server_thread = threading.Thread(target=self.server_ioloop.start)
         self.server_thread.start()
@@ -603,19 +607,12 @@ class SyncHTTPClientTest(unittest.TestCase):
     def tearDown(self):
         def stop_server():
             self.server.stop()
-            # Delay the shutdown of the IOLoop by several iterations because
+            # Delay the shutdown of the IOLoop by one iteration because
             # the server may still have some cleanup work left when
-            # the client finishes with the response (this is noticeable
+            # the client finishes with the response (this is noticable
             # with http/2, which leaves a Future with an unexamined
             # StreamClosedError on the loop).
-            @gen.coroutine
-            def slow_stop():
-                # The number of iterations is difficult to predict. Typically,
-                # one is sufficient, although sometimes it needs more.
-                for i in range(5):
-                    yield
-                self.server_ioloop.stop()
-            self.server_ioloop.add_callback(slow_stop)
+            self.server_ioloop.add_callback(self.server_ioloop.stop)
         self.server_ioloop.add_callback(stop_server)
         self.server_thread.join()
         self.http_client.close()

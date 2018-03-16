@@ -1,39 +1,28 @@
-from __future__ import absolute_import, division, print_function
+#!/usr/bin/env python
 
-from concurrent.futures import ThreadPoolExecutor
+
+from __future__ import absolute_import, division, print_function
 import contextlib
 import datetime
 import functools
 import socket
-import subprocess
 import sys
 import threading
 import time
 import types
 
-from tornado.escape import native_str
 from tornado import gen
 from tornado.ioloop import IOLoop, TimeoutError, PollIOLoop, PeriodicCallback
 from tornado.log import app_log
 from tornado.platform.select import _Select
 from tornado.stack_context import ExceptionStackContext, StackContext, wrap, NullContext
-from tornado.testing import AsyncTestCase, bind_unused_port, ExpectLog, gen_test
+from tornado.testing import AsyncTestCase, bind_unused_port, ExpectLog
 from tornado.test.util import unittest, skipIfNonUnix, skipOnTravis, skipBefore35, exec_test
 
 try:
     from concurrent import futures
 except ImportError:
     futures = None
-
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
-
-try:
-    import twisted
-except ImportError:
-    twisted = None
 
 
 class FakeTimeSelect(_Select):
@@ -169,9 +158,10 @@ class TestIOLoop(AsyncTestCase):
         other_ioloop.close()
 
     def test_add_callback_while_closing(self):
-        # add_callback should not fail if it races with another thread
-        # closing the IOLoop. The callbacks are dropped silently
-        # without executing.
+        # Issue #635: add_callback() should raise a clean exception
+        # if called while another thread is closing the IOLoop.
+        if IOLoop.configured_class().__name__.endswith('AsyncIOLoop'):
+            raise unittest.SkipTest("AsyncIOMainLoop shutdown not thread safe")
         closing = threading.Event()
 
         def target():
@@ -184,7 +174,11 @@ class TestIOLoop(AsyncTestCase):
         thread.start()
         closing.wait()
         for i in range(1000):
-            other_ioloop.add_callback(lambda: None)
+            try:
+                other_ioloop.add_callback(lambda: None)
+            except RuntimeError as e:
+                self.assertEqual("IOLoop is closing", str(e))
+                break
 
     def test_handle_callback_exception(self):
         # IOLoop.handle_callback_exception can be overridden to catch
@@ -269,9 +263,7 @@ class TestIOLoop(AsyncTestCase):
         self.io_loop.call_later(0, results.append, 4)
         self.io_loop.call_later(0, self.stop)
         self.wait()
-        # The asyncio event loop does not guarantee the order of these
-        # callbacks, but PollIOLoop does.
-        self.assertEqual(sorted(results), [1, 2, 3, 4])
+        self.assertEqual(results, [1, 2, 3, 4])
 
     def test_add_timeout_return(self):
         # All the timeout methods return non-None handles that can be
@@ -398,9 +390,7 @@ class TestIOLoop(AsyncTestCase):
         """The IOLoop examines exceptions from awaitables and logs them."""
         namespace = exec_test(globals(), locals(), """
         async def callback():
-            # Stop the IOLoop two iterations after raising an exception
-            # to give the exception time to be logged.
-            self.io_loop.add_callback(self.io_loop.add_callback, self.stop)
+            self.io_loop.add_callback(self.stop)
             1 / 0
         """)
         with NullContext():
@@ -410,7 +400,7 @@ class TestIOLoop(AsyncTestCase):
 
     def test_spawn_callback(self):
         # An added callback runs in the test's stack_context, so will be
-        # re-raised in wait().
+        # re-arised in wait().
         self.io_loop.add_callback(lambda: 1 / 0)
         with self.assertRaises(ZeroDivisionError):
             self.wait()
@@ -494,16 +484,6 @@ class TestIOLoopCurrent(unittest.TestCase):
             IOLoop(make_current=True)
         # current() was not affected by the failed construction.
         self.assertIs(self.io_loop, IOLoop.current())
-
-
-class TestIOLoopCurrentAsync(AsyncTestCase):
-    @gen_test
-    def test_clear_without_current(self):
-        # If there is no current IOLoop, clear_current is a no-op (but
-        # should not fail). Use a thread so we see the threading.Local
-        # in a pristine state.
-        with ThreadPoolExecutor(1) as e:
-            yield e.submit(IOLoop.clear_current)
 
 
 class TestIOLoopAddCallback(AsyncTestCase):
@@ -604,76 +584,6 @@ class TestIOLoopFutures(AsyncTestCase):
         self.assertEqual(self.exception.args[0], "callback")
         self.assertEqual(self.future.exception().args[0], "worker")
 
-    @gen_test
-    def test_run_in_executor_gen(self):
-        event1 = threading.Event()
-        event2 = threading.Event()
-
-        def sync_func(self_event, other_event):
-            self_event.set()
-            other_event.wait()
-            # Note that return value doesn't actually do anything,
-            # it is just passed through to our final assertion to
-            # make sure it is passed through properly.
-            return self_event
-
-        # Run two synchronous functions, which would deadlock if not
-        # run in parallel.
-        res = yield [
-            IOLoop.current().run_in_executor(None, sync_func, event1, event2),
-            IOLoop.current().run_in_executor(None, sync_func, event2, event1)
-        ]
-
-        self.assertEqual([event1, event2], res)
-
-    @skipBefore35
-    @gen_test
-    def test_run_in_executor_native(self):
-        event1 = threading.Event()
-        event2 = threading.Event()
-
-        def sync_func(self_event, other_event):
-            self_event.set()
-            other_event.wait()
-            return self_event
-
-        # Go through an async wrapper to ensure that the result of
-        # run_in_executor works with await and not just gen.coroutine
-        # (simply passing the underlying concurrrent future would do that).
-        namespace = exec_test(globals(), locals(), """
-            async def async_wrapper(self_event, other_event):
-                return await IOLoop.current().run_in_executor(
-                    None, sync_func, self_event, other_event)
-        """)
-
-        res = yield [
-            namespace["async_wrapper"](event1, event2),
-            namespace["async_wrapper"](event2, event1)
-        ]
-
-        self.assertEqual([event1, event2], res)
-
-    @gen_test
-    def test_set_default_executor(self):
-        count = [0]
-
-        class MyExecutor(futures.ThreadPoolExecutor):
-            def submit(self, func, *args):
-                count[0] += 1
-                return super(MyExecutor, self).submit(func, *args)
-
-        event = threading.Event()
-
-        def sync_func():
-            event.set()
-
-        executor = MyExecutor(1)
-        loop = IOLoop.current()
-        loop.set_default_executor(executor)
-        yield loop.run_in_executor(None, sync_func)
-        self.assertEqual(1, count[0])
-        self.assertTrue(event.is_set())
-
 
 class TestIOLoopRunSync(unittest.TestCase):
     def setUp(self):
@@ -725,8 +635,6 @@ class TestIOLoopRunSync(unittest.TestCase):
         self.io_loop.run_sync(namespace['f'])
 
 
-@unittest.skipIf(asyncio is not None,
-                 'IOLoop configuration not available')
 class TestPeriodicCallback(unittest.TestCase):
     def setUp(self):
         self.io_loop = FakeTimeIOLoop()
@@ -767,79 +675,6 @@ class TestPeriodicCallback(unittest.TestCase):
         pc.start()
         self.io_loop.start()
         self.assertEqual(calls, expected)
-
-    def test_io_loop_set_at_start(self):
-        # Check PeriodicCallback uses the current IOLoop at start() time,
-        # not at instantiation time.
-        calls = []
-        io_loop = FakeTimeIOLoop()
-
-        def cb():
-            calls.append(io_loop.time())
-        pc = PeriodicCallback(cb, 10000)
-        io_loop.make_current()
-        pc.start()
-        io_loop.call_later(50, io_loop.stop)
-        io_loop.start()
-        self.assertEqual(calls, [1010, 1020, 1030, 1040, 1050])
-        io_loop.close()
-
-
-class TestIOLoopConfiguration(unittest.TestCase):
-    def run_python(self, *statements):
-        statements = [
-            'from tornado.ioloop import IOLoop, PollIOLoop',
-            'classname = lambda x: x.__class__.__name__',
-        ] + list(statements)
-        args = [sys.executable, '-c', '; '.join(statements)]
-        return native_str(subprocess.check_output(args)).strip()
-
-    def test_default(self):
-        if asyncio is not None:
-            # When asyncio is available, it is used by default.
-            cls = self.run_python('print(classname(IOLoop.current()))')
-            self.assertEqual(cls, 'AsyncIOMainLoop')
-            cls = self.run_python('print(classname(IOLoop()))')
-            self.assertEqual(cls, 'AsyncIOLoop')
-        else:
-            # Otherwise, the default is a subclass of PollIOLoop
-            is_poll = self.run_python(
-                'print(isinstance(IOLoop.current(), PollIOLoop))')
-            self.assertEqual(is_poll, 'True')
-
-    @unittest.skipIf(asyncio is not None,
-                     "IOLoop configuration not available")
-    def test_explicit_select(self):
-        # SelectIOLoop can always be configured explicitly.
-        default_class = self.run_python(
-            'IOLoop.configure("tornado.platform.select.SelectIOLoop")',
-            'print(classname(IOLoop.current()))')
-        self.assertEqual(default_class, 'SelectIOLoop')
-
-    @unittest.skipIf(asyncio is None, "asyncio module not present")
-    def test_asyncio(self):
-        cls = self.run_python(
-            'IOLoop.configure("tornado.platform.asyncio.AsyncIOLoop")',
-            'print(classname(IOLoop.current()))')
-        self.assertEqual(cls, 'AsyncIOMainLoop')
-
-    @unittest.skipIf(asyncio is None, "asyncio module not present")
-    def test_asyncio_main(self):
-        cls = self.run_python(
-            'from tornado.platform.asyncio import AsyncIOMainLoop',
-            'AsyncIOMainLoop().install()',
-            'print(classname(IOLoop.current()))')
-        self.assertEqual(cls, 'AsyncIOMainLoop')
-
-    @unittest.skipIf(twisted is None, "twisted module not present")
-    @unittest.skipIf(asyncio is not None,
-                     "IOLoop configuration not available")
-    def test_twisted(self):
-        cls = self.run_python(
-            'from tornado.platform.twisted import TwistedIOLoop',
-            'TwistedIOLoop().install()',
-            'print(classname(IOLoop.current()))')
-        self.assertEqual(cls, 'TwistedIOLoop')
 
 
 if __name__ == "__main__":

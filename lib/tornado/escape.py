@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -273,9 +274,7 @@ def recursive_unicode(obj):
 # This regex should avoid those problems.
 # Use to_unicode instead of tornado.util.u - we don't want backslashes getting
 # processed as escapes.
-_URL_RE = re.compile(to_unicode(
-    r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)"""  # noqa: E501
-))
+_URL_RE = re.compile(to_unicode(r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)"""))
 
 
 def linkify(text, shorten=False, extra_params="",
