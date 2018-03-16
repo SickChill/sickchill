@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -37,8 +36,8 @@ curl_log = logging.getLogger('tornado.curl_httpclient')
 
 
 class CurlAsyncHTTPClient(AsyncHTTPClient):
-    def initialize(self, io_loop, max_clients=10, defaults=None):
-        super(CurlAsyncHTTPClient, self).initialize(io_loop, defaults=defaults)
+    def initialize(self, max_clients=10, defaults=None):
+        super(CurlAsyncHTTPClient, self).initialize(defaults=defaults)
         self._multi = pycurl.CurlMulti()
         self._multi.setopt(pycurl.M_TIMERFUNCTION, self._set_timeout)
         self._multi.setopt(pycurl.M_SOCKETFUNCTION, self._handle_socket)
@@ -53,7 +52,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
         # SOCKETFUNCTION.  Mitigate the effects of such bugs by
         # forcing a periodic scan of all active requests.
         self._force_timeout_callback = ioloop.PeriodicCallback(
-            self._handle_force_timeout, 1000, io_loop=io_loop)
+            self._handle_force_timeout, 1000)
         self._force_timeout_callback.start()
 
         # Work around a bug in libcurl 7.29.0: Some fields in the curl
@@ -73,6 +72,12 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             curl.close()
         self._multi.close()
         super(CurlAsyncHTTPClient, self).close()
+
+        # Set below properties to None to reduce the reference count of current
+        # instance, because those properties hold some methods of current
+        # instance that will case circular reference.
+        self._force_timeout_callback = None
+        self._multi = None
 
     def fetch_impl(self, request, callback):
         self._requests.append((request, callback))
@@ -255,6 +260,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             queue=info["curl_start_time"] - info["request"].start_time,
             namelookup=curl.getinfo(pycurl.NAMELOOKUP_TIME),
             connect=curl.getinfo(pycurl.CONNECT_TIME),
+            appconnect=curl.getinfo(pycurl.APPCONNECT_TIME),
             pretransfer=curl.getinfo(pycurl.PRETRANSFER_TIME),
             starttransfer=curl.getinfo(pycurl.STARTTRANSFER_TIME),
             total=curl.getinfo(pycurl.TOTAL_TIME),
@@ -494,8 +500,10 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
     def _curl_debug(self, debug_type, debug_msg):
         debug_types = ('I', '<', '>', '<', '>')
         if debug_type == 0:
+            debug_msg = native_str(debug_msg)
             curl_log.debug('%s', debug_msg.strip())
         elif debug_type in (1, 2):
+            debug_msg = native_str(debug_msg)
             for line in debug_msg.splitlines():
                 curl_log.debug('%s %s', debug_types[debug_type], line)
         elif debug_type == 4:

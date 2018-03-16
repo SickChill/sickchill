@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2012 Facebook
 #
@@ -102,7 +101,8 @@ class LogFormatter(logging.Formatter):
        Added support for ``colorama``. Changed the constructor
        signature to be compatible with `logging.config.dictConfig`.
     """
-    DEFAULT_FORMAT = '%(color)s[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d]%(end_color)s %(message)s'
+    DEFAULT_FORMAT = \
+        '%(color)s[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d]%(end_color)s %(message)s'
     DEFAULT_DATE_FORMAT = '%y%m%d %H:%M:%S'
     DEFAULT_COLORS = {
         logging.DEBUG: 4,  # Blue
@@ -115,13 +115,13 @@ class LogFormatter(logging.Formatter):
                  style='%', color=True, colors=DEFAULT_COLORS):
         r"""
         :arg bool color: Enables color support.
-        :arg string fmt: Log message format.
+        :arg str fmt: Log message format.
           It will be applied to the attributes dict of log records. The
           text between ``%(color)s`` and ``%(end_color)s`` will be colored
           depending on the level if color support is on.
         :arg dict colors: color mappings from logging level to terminal color
           code
-        :arg string datefmt: Datetime format.
+        :arg str datefmt: Datetime format.
           Used for formatting ``(asctime)`` placeholder in ``prefix_fmt``.
 
         .. versionchanged:: 3.2
@@ -177,7 +177,7 @@ class LogFormatter(logging.Formatter):
             # bytestrings.  This is a bit of a hacky place to do this, but
             # it's worth it since the encoding errors that would otherwise
             # result are so useless (and tornado is fond of using utf8-encoded
-            # byte strings whereever possible).
+            # byte strings wherever possible).
             record.message = _safe_unicode(message)
         except Exception as e:
             record.message = "Bad message (%r): %r" % (e, record.__dict__)

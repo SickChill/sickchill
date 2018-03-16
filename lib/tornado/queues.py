@@ -12,7 +12,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""Asynchronous queues for coroutines.
+"""Asynchronous queues for coroutines. These classes are very similar
+to those provided in the standard library's `asyncio package
+<https://docs.python.org/3/library/asyncio-queue.html>`_.
 
 .. warning::
 
@@ -20,6 +22,7 @@
    are *not* thread-safe. To use these queues from another thread,
    use `.IOLoop.add_callback` to transfer control to the `.IOLoop` thread
    before calling any queue methods.
+
 """
 
 from __future__ import absolute_import, division, print_function
@@ -28,7 +31,7 @@ import collections
 import heapq
 
 from tornado import gen, ioloop
-from tornado.concurrent import Future
+from tornado.concurrent import Future, future_set_result_unless_cancelled
 from tornado.locks import Event
 
 __all__ = ['Queue', 'PriorityQueue', 'LifoQueue', 'QueueFull', 'QueueEmpty']
@@ -47,7 +50,8 @@ class QueueFull(Exception):
 def _set_timeout(future, timeout):
     if timeout:
         def on_timeout():
-            future.set_exception(gen.TimeoutError())
+            if not future.done():
+                future.set_exception(gen.TimeoutError())
         io_loop = ioloop.IOLoop.current()
         timeout_handle = io_loop.add_timeout(timeout, on_timeout)
         future.add_done_callback(
@@ -166,18 +170,23 @@ class Queue(object):
     def put(self, item, timeout=None):
         """Put an item into the queue, perhaps waiting until there is room.
 
-        Returns a Future, which raises `tornado.gen.TimeoutError` after a
+        Returns a Future, which raises `tornado.util.TimeoutError` after a
         timeout.
+
+        ``timeout`` may be a number denoting a time (on the same
+        scale as `tornado.ioloop.IOLoop.time`, normally `time.time`), or a
+        `datetime.timedelta` object for a deadline relative to the
+        current time.
         """
+        future = Future()
         try:
             self.put_nowait(item)
         except QueueFull:
-            future = Future()
             self._putters.append((item, future))
             _set_timeout(future, timeout)
-            return future
         else:
-            return gen._null_future
+            future.set_result(None)
+        return future
 
     def put_nowait(self, item):
         """Put an item into the queue without blocking.
@@ -189,7 +198,7 @@ class Queue(object):
             assert self.empty(), "queue non-empty, why are getters waiting?"
             getter = self._getters.popleft()
             self.__put_internal(item)
-            getter.set_result(self._get())
+            future_set_result_unless_cancelled(getter, self._get())
         elif self.full():
             raise QueueFull
         else:
@@ -199,7 +208,12 @@ class Queue(object):
         """Remove and return an item from the queue.
 
         Returns a Future which resolves once an item is available, or raises
-        `tornado.gen.TimeoutError` after a timeout.
+        `tornado.util.TimeoutError` after a timeout.
+
+        ``timeout`` may be a number denoting a time (on the same
+        scale as `tornado.ioloop.IOLoop.time`, normally `time.time`), or a
+        `datetime.timedelta` object for a deadline relative to the
+        current time.
         """
         future = Future()
         try:
@@ -220,7 +234,7 @@ class Queue(object):
             assert self.full(), "queue not full, why are putters waiting?"
             item, putter = self._putters.popleft()
             self.__put_internal(item)
-            putter.set_result(None)
+            future_set_result_unless_cancelled(putter, None)
             return self._get()
         elif self.qsize():
             return self._get()
@@ -248,12 +262,11 @@ class Queue(object):
     def join(self, timeout=None):
         """Block until all items in the queue are processed.
 
-        Returns a Future, which raises `tornado.gen.TimeoutError` after a
+        Returns a Future, which raises `tornado.util.TimeoutError` after a
         timeout.
         """
         return self._finished.wait(timeout)
 
-    @gen.coroutine
     def __aiter__(self):
         return _QueueIterator(self)
 
