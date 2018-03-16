@@ -338,13 +338,13 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                             title = item.title.get_text(strip=True)
                             download_url = None
                             if item.link:
-                                if validators.url(item.link.get_text(strip=True), require_tld=False):
+                                if validators.url(item.link.get_text(strip=True)):
                                     download_url = item.link.get_text(strip=True)
-                                elif validators.url(item.link.next.strip(), require_tld=False):
+                                elif validators.url(item.link.next.strip()):
                                     download_url = item.link.next.strip()
 
                             if (not download_url, item.enclosure and
-                                    validators.url(item.enclosure.get('url', '').strip(), require_tld=False)):
+                                    validators.url(item.enclosure.get('url', '').strip())):
                                 download_url = item.enclosure.get('url', '').strip()
 
                             if not (title and download_url):
