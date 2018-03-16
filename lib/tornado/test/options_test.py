@@ -7,7 +7,7 @@ import sys
 
 from tornado.options import OptionParser, Error
 from tornado.util import basestring_type, PY3
-from tornado.test.util import unittest, subTest
+from tornado.test.util import unittest
 
 if PY3:
     from io import StringIO
@@ -231,24 +231,6 @@ class OptionsTest(unittest.TestCase):
             options.define('foo')
         self.assertRegexpMatches(str(cm.exception),
                                  'Option.*foo.*already defined')
-
-    def test_error_redefine_underscore(self):
-        # Ensure that the dash/underscore normalization doesn't
-        # interfere with the redefinition error.
-        tests = [
-            ('foo-bar', 'foo-bar'),
-            ('foo_bar', 'foo_bar'),
-            ('foo-bar', 'foo_bar'),
-            ('foo_bar', 'foo-bar'),
-        ]
-        for a, b in tests:
-            with subTest(self, a=a, b=b):
-                options = OptionParser()
-                options.define(a)
-                with self.assertRaises(Error) as cm:
-                    options.define(b)
-                self.assertRegexpMatches(str(cm.exception),
-                                         'Option.*foo.bar.*already defined')
 
     def test_dash_underscore_cli(self):
         # Dashes and underscores should be interchangeable.

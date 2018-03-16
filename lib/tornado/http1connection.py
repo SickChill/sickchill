@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2014 Facebook
 #
@@ -22,8 +23,7 @@ from __future__ import absolute_import, division, print_function
 
 import re
 
-from tornado.concurrent import (Future, future_add_done_callback,
-                                future_set_result_unless_cancelled)
+from tornado.concurrent import Future
 from tornado.escape import native_str, utf8
 from tornado import gen
 from tornado import httputil
@@ -164,6 +164,7 @@ class HTTP1Connection(httputil.HTTPConnection):
                     header_data = yield gen.with_timeout(
                         self.stream.io_loop.time() + self.params.header_timeout,
                         header_future,
+                        io_loop=self.stream.io_loop,
                         quiet_exceptions=iostream.StreamClosedError)
                 except gen.TimeoutError:
                     self.close()
@@ -223,7 +224,7 @@ class HTTP1Connection(httputil.HTTPConnection):
                         try:
                             yield gen.with_timeout(
                                 self.stream.io_loop.time() + self._body_timeout,
-                                body_future,
+                                body_future, self.stream.io_loop,
                                 quiet_exceptions=iostream.StreamClosedError)
                         except gen.TimeoutError:
                             gen_log.info("Timeout reading body from %s",
@@ -250,8 +251,6 @@ class HTTP1Connection(httputil.HTTPConnection):
         except httputil.HTTPInputError as e:
             gen_log.info("Malformed HTTP message from %s: %s",
                          self.context, e)
-            if not self.is_client:
-                yield self.stream.write(b'HTTP/1.1 400 Bad Request\r\n\r\n')
             self.close()
             raise gen.Return(False)
         finally:
@@ -291,7 +290,7 @@ class HTTP1Connection(httputil.HTTPConnection):
             self._close_callback = None
             callback()
         if not self._finish_future.done():
-            future_set_result_unless_cancelled(self._finish_future, None)
+            self._finish_future.set_result(None)
         self._clear_callbacks()
 
     def close(self):
@@ -299,7 +298,7 @@ class HTTP1Connection(httputil.HTTPConnection):
             self.stream.close()
         self._clear_callbacks()
         if not self._finish_future.done():
-            future_set_result_unless_cancelled(self._finish_future, None)
+            self._finish_future.set_result(None)
 
     def detach(self):
         """Take control of the underlying stream.
@@ -313,7 +312,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         stream = self.stream
         self.stream = None
         if not self._finish_future.done():
-            future_set_result_unless_cancelled(self._finish_future, None)
+            self._finish_future.set_result(None)
         return stream
 
     def set_body_timeout(self, timeout):
@@ -350,22 +349,19 @@ class HTTP1Connection(httputil.HTTPConnection):
                 # self._request_start_line.version or
                 # start_line.version?
                 self._request_start_line.version == 'HTTP/1.1' and
-                # 1xx, 204 and 304 responses have no body (not even a zero-length
-                # body), and so should not have either Content-Length or
-                # Transfer-Encoding headers.
+                # 304 responses have no body (not even a zero-length body), and so
+                # should not have either Content-Length or Transfer-Encoding.
+                # headers.
                 start_line.code not in (204, 304) and
-                (start_line.code < 100 or start_line.code >= 200) and
                 # No need to chunk the output if a Content-Length is specified.
                 'Content-Length' not in headers and
                 # Applications are discouraged from touching Transfer-Encoding,
                 # but if they do, leave it alone.
                 'Transfer-Encoding' not in headers)
-            # If connection to a 1.1 client will be closed, inform client
-            if (self._request_start_line.version == 'HTTP/1.1' and self._disconnect_on_finish):
-                headers['Connection'] = 'close'
             # If a 1.0 client asked for keep-alive, add the header.
             if (self._request_start_line.version == 'HTTP/1.0' and
-                    self._request_headers.get('Connection', '').lower() == 'keep-alive'):
+                (self._request_headers.get('Connection', '').lower() ==
+                 'keep-alive')):
                 headers['Connection'] = 'Keep-Alive'
         if self._chunking_output:
             headers['Transfer-Encoding'] = 'chunked'
@@ -423,7 +419,7 @@ class HTTP1Connection(httputil.HTTPConnection):
     def write(self, chunk, callback=None):
         """Implements `.HTTPConnection.write`.
 
-        For backwards compatibility it is allowed but deprecated to
+        For backwards compatibility is is allowed but deprecated to
         skip `write_headers` and instead call `write()` with a
         pre-encoded header block.
         """
@@ -468,7 +464,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         if self._pending_write is None:
             self._finish_request(None)
         else:
-            future_add_done_callback(self._pending_write, self._finish_request)
+            self._pending_write.add_done_callback(self._finish_request)
 
     def _on_write_complete(self, future):
         exc = future.exception()
@@ -481,7 +477,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         if self._write_future is not None:
             future = self._write_future
             self._write_future = None
-            future_set_result_unless_cancelled(future, None)
+            future.set_result(None)
 
     def _can_keep_alive(self, start_line, headers):
         if self.params.no_keep_alive:
@@ -508,7 +504,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         # default state for the next request.
         self.stream.set_nodelay(False)
         if not self._finish_future.done():
-            future_set_result_unless_cancelled(self._finish_future, None)
+            self._finish_future.set_result(None)
 
     def _parse_headers(self, data):
         # The lstrip removes newlines that some implementations sometimes
@@ -596,9 +592,6 @@ class HTTP1Connection(httputil.HTTPConnection):
             chunk_len = yield self.stream.read_until(b"\r\n", max_bytes=64)
             chunk_len = int(chunk_len.strip(), 16)
             if chunk_len == 0:
-                crlf = yield self.stream.read_bytes(2)
-                if crlf != b'\r\n':
-                    raise httputil.HTTPInputError("improperly terminated chunked request")
                 return
             total_size += chunk_len
             if total_size > self._max_body_size:

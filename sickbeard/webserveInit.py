@@ -19,12 +19,12 @@ from sickrage.helper.encoding import ek
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, options=None, io_loop=None):
+    def __init__(self, options=None):
         threading.Thread.__init__(self)
         self.daemon = True
         self.alive = True
         self.name = "TORNADO"
-        self.io_loop = io_loop or IOLoop.current()
+        self.io_loop = IOLoop.current()
 
         self.options = options or {}
         self.options.setdefault('port', 8081)

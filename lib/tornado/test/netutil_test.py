@@ -8,9 +8,7 @@ from subprocess import Popen
 import sys
 import time
 
-from tornado.netutil import (
-    BlockingResolver, OverrideResolver, ThreadedResolver, is_valid_ip, bind_sockets
-)
+from tornado.netutil import BlockingResolver, ThreadedResolver, is_valid_ip, bind_sockets
 from tornado.stack_context import ExceptionStackContext
 from tornado.testing import AsyncTestCase, gen_test, bind_unused_port
 from tornado.test.util import unittest, skipIfNoNetwork
@@ -80,7 +78,7 @@ def _failing_getaddrinfo(*args):
 class BlockingResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
         super(BlockingResolverTest, self).setUp()
-        self.resolver = BlockingResolver()
+        self.resolver = BlockingResolver(io_loop=self.io_loop)
 
 
 # getaddrinfo-based tests need mocking to reliably generate errors;
@@ -89,7 +87,7 @@ class BlockingResolverTest(AsyncTestCase, _ResolverTestMixin):
 class BlockingResolverErrorTest(AsyncTestCase, _ResolverErrorTestMixin):
     def setUp(self):
         super(BlockingResolverErrorTest, self).setUp()
-        self.resolver = BlockingResolver()
+        self.resolver = BlockingResolver(io_loop=self.io_loop)
         self.real_getaddrinfo = socket.getaddrinfo
         socket.getaddrinfo = _failing_getaddrinfo
 
@@ -98,32 +96,12 @@ class BlockingResolverErrorTest(AsyncTestCase, _ResolverErrorTestMixin):
         super(BlockingResolverErrorTest, self).tearDown()
 
 
-class OverrideResolverTest(AsyncTestCase, _ResolverTestMixin):
-    def setUp(self):
-        super(OverrideResolverTest, self).setUp()
-        mapping = {
-            ('google.com', 80): ('1.2.3.4', 80),
-            ('google.com', 80, socket.AF_INET): ('1.2.3.4', 80),
-            ('google.com', 80, socket.AF_INET6): ('2a02:6b8:7c:40c:c51e:495f:e23a:3', 80)
-        }
-        self.resolver = OverrideResolver(BlockingResolver(), mapping)
-
-    def test_resolve_multiaddr(self):
-        self.resolver.resolve('google.com', 80, socket.AF_INET, callback=self.stop)
-        result = self.wait()
-        self.assertIn((socket.AF_INET, ('1.2.3.4', 80)), result)
-
-        self.resolver.resolve('google.com', 80, socket.AF_INET6, callback=self.stop)
-        result = self.wait()
-        self.assertIn((socket.AF_INET6, ('2a02:6b8:7c:40c:c51e:495f:e23a:3', 80, 0, 0)), result)
-
-
 @skipIfNoNetwork
 @unittest.skipIf(futures is None, "futures module not present")
 class ThreadedResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
         super(ThreadedResolverTest, self).setUp()
-        self.resolver = ThreadedResolver()
+        self.resolver = ThreadedResolver(io_loop=self.io_loop)
 
     def tearDown(self):
         self.resolver.close()
@@ -133,7 +111,7 @@ class ThreadedResolverTest(AsyncTestCase, _ResolverTestMixin):
 class ThreadedResolverErrorTest(AsyncTestCase, _ResolverErrorTestMixin):
     def setUp(self):
         super(ThreadedResolverErrorTest, self).setUp()
-        self.resolver = BlockingResolver()
+        self.resolver = BlockingResolver(io_loop=self.io_loop)
         self.real_getaddrinfo = socket.getaddrinfo
         socket.getaddrinfo = _failing_getaddrinfo
 
@@ -180,23 +158,19 @@ class ThreadedResolverImportTest(unittest.TestCase):
 class CaresResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
         super(CaresResolverTest, self).setUp()
-        self.resolver = CaresResolver()
+        self.resolver = CaresResolver(io_loop=self.io_loop)
 
 
 # TwistedResolver produces consistent errors in our test cases so we
-# could test the regular and error cases in the same class. However,
-# in the error cases it appears that cleanup of socket objects is
-# handled asynchronously and occasionally results in "unclosed socket"
-# warnings if not given time to shut down (and there is no way to
-# explicitly shut it down). This makes the test flaky, so we do not
-# test error cases here.
+# can test the regular and error cases in the same class.
 @skipIfNoNetwork
 @unittest.skipIf(twisted is None, "twisted module not present")
 @unittest.skipIf(getattr(twisted, '__version__', '0.0') < "12.1", "old version of twisted")
-class TwistedResolverTest(AsyncTestCase, _ResolverTestMixin):
+class TwistedResolverTest(AsyncTestCase, _ResolverTestMixin,
+                          _ResolverErrorTestMixin):
     def setUp(self):
         super(TwistedResolverTest, self).setUp()
-        self.resolver = TwistedResolver()
+        self.resolver = TwistedResolver(io_loop=self.io_loop)
 
 
 class IsValidIPTest(unittest.TestCase):

@@ -1,11 +1,12 @@
-from __future__ import absolute_import, division, print_function
+#!/usr/bin/env python
 
+
+from __future__ import absolute_import, division, print_function
 import logging
 import os
 import signal
 import subprocess
 import sys
-
 from tornado.httpclient import HTTPClient, HTTPError
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -16,15 +17,12 @@ from tornado.testing import bind_unused_port, ExpectLog, AsyncTestCase, gen_test
 from tornado.test.util import unittest, skipIfNonUnix
 from tornado.web import RequestHandler, Application
 
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
-
 
 def skip_if_twisted():
-    if IOLoop.configured_class().__name__.endswith('TwistedIOLoop'):
-        raise unittest.SkipTest("Process tests not compatible with TwistedIOLoop")
+    if IOLoop.configured_class().__name__.endswith(('TwistedIOLoop',
+                                                    'AsyncIOMainLoop')):
+        raise unittest.SkipTest("Process tests not compatible with "
+                                "TwistedIOLoop or AsyncIOMainLoop")
 
 # Not using AsyncHTTPTestCase because we need control over the IOLoop.
 
@@ -60,12 +58,11 @@ class ProcessTest(unittest.TestCase):
         super(ProcessTest, self).tearDown()
 
     def test_multi_process(self):
-        # This test doesn't work on twisted because we use the global
-        # reactor and don't restore it to a sane state after the fork
-        # (asyncio has the same issue, but we have a special case in
-        # place for it).
+        # This test can't work on twisted because we use the global reactor
+        # and have no way to get it back into a sane state after the fork.
         skip_if_twisted()
         with ExpectLog(gen_log, "(Starting .* processes|child .* exited|uncaught exception)"):
+            self.assertFalse(IOLoop.initialized())
             sock, port = bind_unused_port()
 
             def get_url(path):
@@ -84,10 +81,6 @@ class ProcessTest(unittest.TestCase):
                 sock.close()
                 return
             try:
-                if asyncio is not None:
-                    # Reset the global asyncio event loop, which was put into
-                    # a broken state by the fork.
-                    asyncio.set_event_loop(asyncio.new_event_loop())
                 if id in (0, 1):
                     self.assertEqual(id, task_id())
                     server = HTTPServer(self.get_app())
@@ -154,10 +147,9 @@ class SubprocessTest(AsyncTestCase):
                                     "LayeredTwistedIOLoop")
         subproc = Subprocess([sys.executable, '-u', '-i'],
                              stdin=Subprocess.STREAM,
-                             stdout=Subprocess.STREAM, stderr=subprocess.STDOUT)
+                             stdout=Subprocess.STREAM, stderr=subprocess.STDOUT,
+                             io_loop=self.io_loop)
         self.addCleanup(lambda: (subproc.proc.terminate(), subproc.proc.wait()))
-        self.addCleanup(subproc.stdout.close)
-        self.addCleanup(subproc.stdin.close)
         subproc.stdout.read_until(b'>>> ', self.stop)
         self.wait()
         subproc.stdin.write(b"print('hello')\n")
@@ -176,7 +168,8 @@ class SubprocessTest(AsyncTestCase):
         # Close the parent's stdin handle and see that the child recognizes it.
         subproc = Subprocess([sys.executable, '-u', '-i'],
                              stdin=Subprocess.STREAM,
-                             stdout=Subprocess.STREAM, stderr=subprocess.STDOUT)
+                             stdout=Subprocess.STREAM, stderr=subprocess.STDOUT,
+                             io_loop=self.io_loop)
         self.addCleanup(lambda: (subproc.proc.terminate(), subproc.proc.wait()))
         subproc.stdout.read_until(b'>>> ', self.stop)
         self.wait()
@@ -191,20 +184,20 @@ class SubprocessTest(AsyncTestCase):
         skip_if_twisted()
         subproc = Subprocess([sys.executable, '-u', '-c',
                               r"import sys; sys.stderr.write('hello\n')"],
-                             stderr=Subprocess.STREAM)
+                             stderr=Subprocess.STREAM,
+                             io_loop=self.io_loop)
         self.addCleanup(lambda: (subproc.proc.terminate(), subproc.proc.wait()))
         subproc.stderr.read_until(b'\n', self.stop)
         data = self.wait()
         self.assertEqual(data, b'hello\n')
-        # More mysterious EBADF: This fails if done with self.addCleanup instead of here.
-        subproc.stderr.close()
 
     def test_sigchild(self):
         # Twisted's SIGCHLD handler and Subprocess's conflict with each other.
         skip_if_twisted()
-        Subprocess.initialize()
+        Subprocess.initialize(io_loop=self.io_loop)
         self.addCleanup(Subprocess.uninitialize)
-        subproc = Subprocess([sys.executable, '-c', 'pass'])
+        subproc = Subprocess([sys.executable, '-c', 'pass'],
+                             io_loop=self.io_loop)
         subproc.set_exit_callback(self.stop)
         ret = self.wait()
         self.assertEqual(ret, 0)
@@ -222,12 +215,12 @@ class SubprocessTest(AsyncTestCase):
 
     def test_sigchild_signal(self):
         skip_if_twisted()
-        Subprocess.initialize()
+        Subprocess.initialize(io_loop=self.io_loop)
         self.addCleanup(Subprocess.uninitialize)
         subproc = Subprocess([sys.executable, '-c',
                               'import time; time.sleep(30)'],
-                             stdout=Subprocess.STREAM)
-        self.addCleanup(subproc.stdout.close)
+                             stdout=Subprocess.STREAM,
+                             io_loop=self.io_loop)
         subproc.set_exit_callback(self.stop)
         os.kill(subproc.pid, signal.SIGTERM)
         try:

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -60,7 +61,7 @@ except ImportError:
     SSLError = _SSLError  # type: ignore
 
 try:
-    import typing  # noqa: F401
+    import typing
 except ImportError:
     pass
 
@@ -466,7 +467,8 @@ class HTTPServerRequest(object):
     def __repr__(self):
         attrs = ("protocol", "host", "method", "uri", "version", "remote_ip")
         args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
-        return "%s(%s)" % (self.__class__.__name__, args)
+        return "%s(%s, headers=%s)" % (
+            self.__class__.__name__, args, dict(self.headers))
 
 
 class HTTPInputError(Exception):
@@ -601,8 +603,6 @@ def url_concat(url, args):
     >>> url_concat("http://example.com/foo?a=b", [("c", "d"), ("c", "d2")])
     'http://example.com/foo?a=b&c=d&c=d2'
     """
-    if args is None:
-        return url
     parsed_url = urlparse(url)
     if isinstance(args, dict):
         parsed_query = parse_qsl(parsed_url.query, keep_blank_values=True)
@@ -827,8 +827,6 @@ def parse_request_start_line(line):
     try:
         method, path, version = line.split(" ")
     except ValueError:
-        # https://tools.ietf.org/html/rfc7230#section-3.1.1
-        # invalid request-line SHOULD respond with a 400 (Bad Request)
         raise HTTPInputError("Malformed HTTP request line")
     if not re.match(r"^HTTP/1\.[0-9]$", version):
         raise HTTPInputError(
@@ -938,16 +936,6 @@ def split_host_and_port(netloc):
         host = netloc
         port = None
     return (host, port)
-
-
-def qs_to_qsl(qs):
-    """Generator converting a result of ``parse_qs`` back to name-value pairs.
-
-    .. versionadded:: 5.0
-    """
-    for k, vs in qs.items():
-        for v in vs:
-            yield (k, v)
 
 
 _OctalPatt = re.compile(r"\\[0-3][0-7][0-7]")

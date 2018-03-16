@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2011 Facebook
 #
@@ -28,7 +29,7 @@ import time
 
 from binascii import hexlify
 
-from tornado.concurrent import Future, future_set_result_unless_cancelled
+from tornado.concurrent import Future
 from tornado import ioloop
 from tornado.iostream import PipeIOStream
 from tornado.log import gen_log
@@ -125,6 +126,10 @@ def fork_processes(num_processes, max_restarts=100):
     assert _task_id is None
     if num_processes is None or num_processes <= 0:
         num_processes = cpu_count()
+    if ioloop.IOLoop.initialized():
+        raise RuntimeError("Cannot run in multiple processes: IOLoop instance "
+                           "has already been initialized. You cannot call "
+                           "IOLoop.instance() before calling start_processes()")
     gen_log.info("Starting %d processes", num_processes)
     children = {}
 
@@ -194,17 +199,16 @@ class Subprocess(object):
 
     * ``stdin``, ``stdout``, and ``stderr`` may have the value
       ``tornado.process.Subprocess.STREAM``, which will make the corresponding
-      attribute of the resulting Subprocess a `.PipeIOStream`. If this option
-      is used, the caller is responsible for closing the streams when done
-      with them.
+      attribute of the resulting Subprocess a `.PipeIOStream`.
+    * A new keyword argument ``io_loop`` may be used to pass in an IOLoop.
 
     The ``Subprocess.STREAM`` option and the ``set_exit_callback`` and
     ``wait_for_exit`` methods do not work on Windows. There is
     therefore no reason to use this class instead of
     ``subprocess.Popen`` on that platform.
 
-    .. versionchanged:: 5.0
-       The ``io_loop`` argument (deprecated since version 4.1) has been removed.
+    .. versionchanged:: 4.1
+       The ``io_loop`` argument is deprecated.
 
     """
     STREAM = object()
@@ -213,7 +217,7 @@ class Subprocess(object):
     _waiting = {}  # type: ignore
 
     def __init__(self, *args, **kwargs):
-        self.io_loop = ioloop.IOLoop.current()
+        self.io_loop = kwargs.pop('io_loop', None) or ioloop.IOLoop.current()
         # All FDs we create should be closed on error; those in to_close
         # should be closed in the parent process on success.
         pipe_fds = []
@@ -223,19 +227,19 @@ class Subprocess(object):
             kwargs['stdin'] = in_r
             pipe_fds.extend((in_r, in_w))
             to_close.append(in_r)
-            self.stdin = PipeIOStream(in_w)
+            self.stdin = PipeIOStream(in_w, io_loop=self.io_loop)
         if kwargs.get('stdout') is Subprocess.STREAM:
             out_r, out_w = _pipe_cloexec()
             kwargs['stdout'] = out_w
             pipe_fds.extend((out_r, out_w))
             to_close.append(out_w)
-            self.stdout = PipeIOStream(out_r)
+            self.stdout = PipeIOStream(out_r, io_loop=self.io_loop)
         if kwargs.get('stderr') is Subprocess.STREAM:
             err_r, err_w = _pipe_cloexec()
             kwargs['stderr'] = err_w
             pipe_fds.extend((err_r, err_w))
             to_close.append(err_w)
-            self.stderr = PipeIOStream(err_r)
+            self.stderr = PipeIOStream(err_r, io_loop=self.io_loop)
         try:
             self.proc = subprocess.Popen(*args, **kwargs)
         except:
@@ -266,7 +270,7 @@ class Subprocess(object):
         signal handler is causing a problem.
         """
         self._exit_callback = stack_context.wrap(callback)
-        Subprocess.initialize()
+        Subprocess.initialize(self.io_loop)
         Subprocess._waiting[self.pid] = self
         Subprocess._try_cleanup_process(self.pid)
 
@@ -293,12 +297,12 @@ class Subprocess(object):
                 # Unfortunately we don't have the original args any more.
                 future.set_exception(CalledProcessError(ret, None))
             else:
-                future_set_result_unless_cancelled(future, ret)
+                future.set_result(ret)
         self.set_exit_callback(callback)
         return future
 
     @classmethod
-    def initialize(cls):
+    def initialize(cls, io_loop=None):
         """Initializes the ``SIGCHLD`` handler.
 
         The signal handler is run on an `.IOLoop` to avoid locking issues.
@@ -306,13 +310,13 @@ class Subprocess(object):
         same one used by individual Subprocess objects (as long as the
         ``IOLoops`` are each running in separate threads).
 
-        .. versionchanged:: 5.0
-           The ``io_loop`` argument (deprecated since version 4.1) has been
-           removed.
+        .. versionchanged:: 4.1
+           The ``io_loop`` argument is deprecated.
         """
         if cls._initialized:
             return
-        io_loop = ioloop.IOLoop.current()
+        if io_loop is None:
+            io_loop = ioloop.IOLoop.current()
         cls._old_sigchld = signal.signal(
             signal.SIGCHLD,
             lambda sig, frame: io_loop.add_callback_from_signal(cls._cleanup))

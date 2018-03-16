@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2011 Facebook
 #
@@ -101,15 +102,12 @@ class TCPServer(object):
 
     .. versionadded:: 3.1
        The ``max_buffer_size`` argument.
-
-    .. versionchanged:: 5.0
-       The ``io_loop`` argument has been removed.
     """
-    def __init__(self, ssl_options=None, max_buffer_size=None,
+    def __init__(self, io_loop=None, ssl_options=None, max_buffer_size=None,
                  read_chunk_size=None):
+        self.io_loop = io_loop
         self.ssl_options = ssl_options
-        self._sockets = {}   # fd -> socket object
-        self._handlers = {}  # fd -> remove_handler callable
+        self._sockets = {}  # fd -> socket object
         self._pending_sockets = []
         self._started = False
         self._stopped = False
@@ -153,10 +151,13 @@ class TCPServer(object):
         method and `tornado.process.fork_processes` to provide greater
         control over the initialization of a multi-process server.
         """
+        if self.io_loop is None:
+            self.io_loop = IOLoop.current()
+
         for sock in sockets:
             self._sockets[sock.fileno()] = sock
-            self._handlers[sock.fileno()] = add_accept_handler(
-                sock, self._handle_connection)
+            add_accept_handler(sock, self._handle_connection,
+                               io_loop=self.io_loop)
 
     def add_socket(self, socket):
         """Singular version of `add_sockets`.  Takes a single socket object."""
@@ -233,8 +234,7 @@ class TCPServer(object):
         self._stopped = True
         for fd, sock in self._sockets.items():
             assert sock.fileno() == fd
-            # Unregister socket from IOLoop
-            self._handlers.pop(fd)()
+            self.io_loop.remove_handler(fd)
             sock.close()
 
     def handle_stream(self, stream, address):
@@ -284,17 +284,17 @@ class TCPServer(object):
                     raise
         try:
             if self.ssl_options is not None:
-                stream = SSLIOStream(connection,
+                stream = SSLIOStream(connection, io_loop=self.io_loop,
                                      max_buffer_size=self.max_buffer_size,
                                      read_chunk_size=self.read_chunk_size)
             else:
-                stream = IOStream(connection,
+                stream = IOStream(connection, io_loop=self.io_loop,
                                   max_buffer_size=self.max_buffer_size,
                                   read_chunk_size=self.read_chunk_size)
 
             future = self.handle_stream(stream, address)
             if future is not None:
-                IOLoop.current().add_future(gen.convert_yielded(future),
-                                            lambda f: f.result())
+                self.io_loop.add_future(gen.convert_yielded(future),
+                                        lambda f: f.result())
         except Exception:
             app_log.error("Error in connection callback", exc_info=True)

@@ -21,5 +21,7 @@ class WindowsTest(unittest.TestCase):
         r, w = os.pipe()
         self.addCleanup(functools.partial(os.close, r))
         self.addCleanup(functools.partial(os.close, w))
-        with self.assertRaises(WindowsError):
+        with self.assertRaises(WindowsError) as cm:
             set_close_exec(r)
+        ERROR_INVALID_HANDLE = 6
+        self.assertEqual(cm.exception.winerror, ERROR_INVALID_HANDLE)

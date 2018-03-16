@@ -1,8 +1,7 @@
 from __future__ import absolute_import, division, print_function
-
 from tornado.concurrent import Future
 from tornado import gen
-from tornado.escape import json_decode, utf8, to_unicode, recursive_unicode, native_str, to_basestring  # noqa: E501
+from tornado.escape import json_decode, utf8, to_unicode, recursive_unicode, native_str, to_basestring
 from tornado.httputil import format_timestamp
 from tornado.ioloop import IOLoop
 from tornado.iostream import IOStream
@@ -13,12 +12,7 @@ from tornado.template import DictLoader
 from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, ExpectLog, gen_test
 from tornado.test.util import unittest, skipBefore35, exec_test
 from tornado.util import ObjectDict, unicode_type, timedelta_to_seconds, PY3
-from tornado.web import (
-    Application, RequestHandler, StaticFileHandler, RedirectHandler as WebRedirectHandler,
-    HTTPError, MissingArgumentError, ErrorHandler, authenticated, asynchronous, url,
-    _create_signature_v1, create_signed_value, decode_signed_value, get_signature_key_version,
-    UIModule, Finish, stream_request_body, removeslash, addslash, GZipContentEncoding,
-)
+from tornado.web import RequestHandler, authenticated, Application, asynchronous, url, HTTPError, StaticFileHandler, _create_signature_v1, create_signed_value, decode_signed_value, ErrorHandler, UIModule, MissingArgumentError, stream_request_body, Finish, removeslash, addslash, RedirectHandler as WebRedirectHandler, get_signature_key_version, GZipContentEncoding
 
 import binascii
 import contextlib
@@ -362,7 +356,7 @@ class AuthRedirectTest(WebTestCase):
         response = self.wait()
         self.assertEqual(response.code, 302)
         self.assertTrue(re.match(
-            'http://example.com/login\?next=http%3A%2F%2F127.0.0.1%3A[0-9]+%2Fabsolute',
+            'http://example.com/login\?next=http%3A%2F%2Flocalhost%3A[0-9]+%2Fabsolute',
             response.headers['Location']), response.headers['Location'])
 
 
@@ -385,7 +379,7 @@ class ConnectionCloseTest(WebTestCase):
     def test_connection_close(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.connect(("127.0.0.1", self.get_http_port()))
-        self.stream = IOStream(s)
+        self.stream = IOStream(s, io_loop=self.io_loop)
         self.stream.write(b"GET / HTTP/1.0\r\n\r\n")
         self.wait()
 
@@ -641,12 +635,7 @@ class WSGISafeWebTest(WebTestCase):
 {% end %}
 </body></html>""",
             "entry.html": """\
-{{ set_resources(embedded_css=".entry { margin-bottom: 1em; }",
-                 embedded_javascript="js_embed()",
-                 css_files=["/base.css", "/foo.css"],
-                 javascript_files="/common.js",
-                 html_head="<meta>",
-                 html_body='<script src="/analytics.js"/>') }}
+{{ set_resources(embedded_css=".entry { margin-bottom: 1em; }", embedded_javascript="js_embed()", css_files=["/base.css", "/foo.css"], javascript_files="/common.js", html_head="<meta>", html_body='<script src="/analytics.js"/>') }}
 <div class="entry">...</div>""",
         })
         return dict(template_loader=loader,
@@ -668,10 +657,8 @@ class WSGISafeWebTest(WebTestCase):
             url("/multi_header", MultiHeaderHandler),
             url("/redirect", RedirectHandler),
             url("/web_redirect_permanent", WebRedirectHandler, {"url": "/web_redirect_newpath"}),
-            url("/web_redirect", WebRedirectHandler,
-                {"url": "/web_redirect_newpath", "permanent": False}),
-            url("//web_redirect_double_slash", WebRedirectHandler,
-                {"url": '/web_redirect_newpath'}),
+            url("/web_redirect", WebRedirectHandler, {"url": "/web_redirect_newpath", "permanent": False}),
+            url("//web_redirect_double_slash", WebRedirectHandler, {"url": '/web_redirect_newpath'}),
             url("/header_injection", HeaderInjectionHandler),
             url("/get_argument", GetArgumentHandler),
             url("/get_arguments", GetArgumentsHandler),
@@ -776,7 +763,7 @@ js_embed()
 //]]>
 </script>
 <script src="/analytics.js"/>
-</body></html>""")  # noqa: E501
+</body></html>""")
 
     def test_optional_path(self):
         self.assertEqual(self.fetch_json("/optional_path/foo"),
@@ -930,10 +917,6 @@ class ErrorResponseTest(WebTestCase):
             self.assertEqual(response.code, 503)
             self.assertTrue(b"503: Service Unavailable" in response.body)
 
-            response = self.fetch("/default?status=435")
-            self.assertEqual(response.code, 435)
-            self.assertTrue(b"435: Unknown" in response.body)
-
     def test_write_error(self):
         with ExpectLog(app_log, "Uncaught exception"):
             response = self.fetch("/write_error")
@@ -1080,13 +1063,6 @@ class StaticFileTest(WebTestCase):
         response2 = self.get_and_head("/static/robots.txt", headers={
             'If-None-Match': response1.headers['Etag']})
         self.assertEqual(response2.code, 304)
-
-    def test_static_304_etag_modified_bug(self):
-        response1 = self.get_and_head("/static/robots.txt")
-        response2 = self.get_and_head("/static/robots.txt", headers={
-            'If-None-Match': '"MISMATCH"',
-            'If-Modified-Since': response1.headers['Last-Modified']})
-        self.assertEqual(response2.code, 200)
 
     def test_static_if_modified_since_pre_epoch(self):
         # On windows, the functions that work with time_t do not accept
@@ -1501,7 +1477,7 @@ class StatusReasonTest(SimpleHandlerTestCase):
 
     def get_http_client(self):
         # simple_httpclient only: curl doesn't expose the reason string
-        return SimpleAsyncHTTPClient()
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop)
 
     def test_status(self):
         response = self.fetch("/?code=304")
@@ -1513,9 +1489,9 @@ class StatusReasonTest(SimpleHandlerTestCase):
         response = self.fetch("/?code=682&reason=Bar")
         self.assertEqual(response.code, 682)
         self.assertEqual(response.reason, "Bar")
-        response = self.fetch("/?code=682")
-        self.assertEqual(response.code, 682)
-        self.assertEqual(response.reason, "Unknown")
+        with ExpectLog(app_log, 'Uncaught exception'):
+            response = self.fetch("/?code=682")
+        self.assertEqual(response.code, 500)
 
 
 @wsgi_safe
@@ -1540,7 +1516,7 @@ class RaiseWithReasonTest(SimpleHandlerTestCase):
 
     def get_http_client(self):
         # simple_httpclient only: curl doesn't expose the reason string
-        return SimpleAsyncHTTPClient()
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop)
 
     def test_raise_with_reason(self):
         response = self.fetch("/")
@@ -2135,7 +2111,7 @@ class StreamingRequestBodyTest(WebTestCase):
         # Use a raw connection so we can control the sending of data.
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.connect(("127.0.0.1", self.get_http_port()))
-        stream = IOStream(s)
+        stream = IOStream(s, io_loop=self.io_loop)
         stream.write(b"GET " + url + b" HTTP/1.1\r\n")
         if connection_close:
             stream.write(b"Connection: close\r\n")
@@ -2158,7 +2134,7 @@ class StreamingRequestBodyTest(WebTestCase):
         stream.write(b"4\r\nqwer\r\n")
         data = yield self.data
         self.assertEquals(data, b"qwer")
-        stream.write(b"0\r\n\r\n")
+        stream.write(b"0\r\n")
         yield self.finished
         data = yield gen.Task(stream.read_until_close)
         # This would ideally use an HTTP1Connection to read the response.
@@ -2231,7 +2207,7 @@ class BaseStreamingRequestFlowControlTest(object):
 
     def get_http_client(self):
         # simple_httpclient only: curl doesn't support body_producer.
-        return SimpleAsyncHTTPClient()
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop)
 
     # Test all the slightly different code paths for fixed, chunked, etc bodies.
     def test_flow_control_fixed_body(self):
@@ -2900,23 +2876,12 @@ class RedirectHandlerTest(WebTestCase):
     def get_handlers(self):
         return [
             ('/src', WebRedirectHandler, {'url': '/dst'}),
-            ('/src2', WebRedirectHandler, {'url': '/dst2?foo=bar'}),
             (r'/(.*?)/(.*?)/(.*)', WebRedirectHandler, {'url': '/{1}/{0}/{2}'})]
 
     def test_basic_redirect(self):
         response = self.fetch('/src', follow_redirects=False)
         self.assertEqual(response.code, 301)
         self.assertEqual(response.headers['Location'], '/dst')
-
-    def test_redirect_with_argument(self):
-        response = self.fetch('/src?foo=bar', follow_redirects=False)
-        self.assertEqual(response.code, 301)
-        self.assertEqual(response.headers['Location'], '/dst?foo=bar')
-
-    def test_redirect_with_appending_argument(self):
-        response = self.fetch('/src2?foo2=bar2', follow_redirects=False)
-        self.assertEqual(response.code, 301)
-        self.assertEqual(response.headers['Location'], '/dst2?foo=bar&foo2=bar2')
 
     def test_redirect_pattern(self):
         response = self.fetch('/a/b/c', follow_redirects=False)

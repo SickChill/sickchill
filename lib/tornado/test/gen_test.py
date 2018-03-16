@@ -4,7 +4,6 @@ import gc
 import contextlib
 import datetime
 import functools
-import platform
 import sys
 import textwrap
 import time
@@ -17,7 +16,7 @@ from tornado.ioloop import IOLoop
 from tornado.log import app_log
 from tornado import stack_context
 from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, ExpectLog, gen_test
-from tornado.test.util import unittest, skipOnTravis, skipBefore33, skipBefore35, skipNotCPython, exec_test  # noqa: E501
+from tornado.test.util import unittest, skipOnTravis, skipBefore33, skipBefore35, skipNotCPython, exec_test
 from tornado.web import Application, RequestHandler, asynchronous, HTTPError
 
 from tornado import gen
@@ -26,11 +25,6 @@ try:
     from concurrent import futures
 except ImportError:
     futures = None
-
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
 
 
 class GenEngineTest(AsyncTestCase):
@@ -1022,8 +1016,6 @@ class GenCoroutineTest(AsyncTestCase):
         self.finished = True
 
     @skipNotCPython
-    @unittest.skipIf((3,) < sys.version_info < (3, 6),
-                     "asyncio.Future has reference cycles")
     def test_coroutine_refcounting(self):
         # On CPython, tasks and their arguments should be released immediately
         # without waiting for garbage collection.
@@ -1046,41 +1038,6 @@ class GenCoroutineTest(AsyncTestCase):
         self.io_loop.run_sync(inner2, timeout=3)
 
         self.assertIs(self.local_ref(), None)
-        self.finished = True
-
-    @unittest.skipIf(sys.version_info < (3,),
-                     "test only relevant with asyncio Futures")
-    def test_asyncio_future_debug_info(self):
-        self.finished = True
-        # Enable debug mode
-        asyncio_loop = asyncio.get_event_loop()
-        self.addCleanup(asyncio_loop.set_debug, asyncio_loop.get_debug())
-        asyncio_loop.set_debug(True)
-
-        def f():
-            yield gen.moment
-
-        coro = gen.coroutine(f)()
-        self.assertIsInstance(coro, asyncio.Future)
-        # We expect the coroutine repr() to show the place where
-        # it was instantiated
-        expected = ("created at %s:%d"
-                    % (__file__, f.__code__.co_firstlineno + 3))
-        actual = repr(coro)
-        self.assertIn(expected, actual)
-
-    @unittest.skipIf(asyncio is None, "asyncio module not present")
-    @gen_test
-    def test_asyncio_gather(self):
-        # This demonstrates that tornado coroutines can be understood
-        # by asyncio (This failed prior to Tornado 5.0).
-        @gen.coroutine
-        def f():
-            yield gen.moment
-            raise gen.Return(1)
-
-        ret = yield asyncio.gather(f(), f())
-        self.assertEqual(ret, [1, 1])
         self.finished = True
 
 
@@ -1139,7 +1096,8 @@ class GenTaskHandler(RequestHandler):
     @asynchronous
     @gen.engine
     def get(self):
-        client = AsyncHTTPClient()
+        io_loop = self.request.connection.stream.io_loop
+        client = AsyncHTTPClient(io_loop=io_loop)
         response = yield gen.Task(client.fetch, self.get_argument('url'))
         response.rethrow()
         self.finish(b"got response: " + response.body)
@@ -1292,7 +1250,7 @@ class WithTimeoutTest(AsyncTestCase):
         self.io_loop.add_timeout(datetime.timedelta(seconds=0.1),
                                  lambda: future.set_result('asdf'))
         result = yield gen.with_timeout(datetime.timedelta(seconds=3600),
-                                        future)
+                                        future, io_loop=self.io_loop)
         self.assertEqual(result, 'asdf')
 
     @gen_test
@@ -1303,20 +1261,19 @@ class WithTimeoutTest(AsyncTestCase):
             lambda: future.set_exception(ZeroDivisionError()))
         with self.assertRaises(ZeroDivisionError):
             yield gen.with_timeout(datetime.timedelta(seconds=3600),
-                                   future)
+                                   future, io_loop=self.io_loop)
 
     @gen_test
     def test_already_resolved(self):
         future = Future()
         future.set_result('asdf')
         result = yield gen.with_timeout(datetime.timedelta(seconds=3600),
-                                        future)
+                                        future, io_loop=self.io_loop)
         self.assertEqual(result, 'asdf')
 
     @unittest.skipIf(futures is None, 'futures module not present')
     @gen_test
     def test_timeout_concurrent_future(self):
-        # A concurrent future that does not resolve before the timeout.
         with futures.ThreadPoolExecutor(1) as executor:
             with self.assertRaises(gen.TimeoutError):
                 yield gen.with_timeout(self.io_loop.time(),
@@ -1325,20 +1282,9 @@ class WithTimeoutTest(AsyncTestCase):
     @unittest.skipIf(futures is None, 'futures module not present')
     @gen_test
     def test_completed_concurrent_future(self):
-        # A concurrent future that is resolved before we even submit it
-        # to with_timeout.
-        with futures.ThreadPoolExecutor(1) as executor:
-            f = executor.submit(lambda: None)
-            f.result()  # wait for completion
-            yield gen.with_timeout(datetime.timedelta(seconds=3600), f)
-
-    @unittest.skipIf(futures is None, 'futures module not present')
-    @gen_test
-    def test_normal_concurrent_future(self):
-        # A conccurrent future that resolves while waiting for the timeout.
         with futures.ThreadPoolExecutor(1) as executor:
             yield gen.with_timeout(datetime.timedelta(seconds=3600),
-                                   executor.submit(lambda: time.sleep(0.01)))
+                                   executor.submit(lambda: None))
 
 
 class WaitIteratorTest(AsyncTestCase):
@@ -1493,14 +1439,11 @@ class WaitIteratorTest(AsyncTestCase):
 
 
 class RunnerGCTest(AsyncTestCase):
-    def is_pypy3(self):
-        return (platform.python_implementation() == 'PyPy' and
-                sys.version_info > (3,))
-
+    """Github issue 1769: Runner objects can get GCed unexpectedly"""
     @gen_test
     def test_gc(self):
-        # Github issue 1769: Runner objects can get GCed unexpectedly
-        # while their future is alive.
+        """Runners shouldn't GC if future is alive"""
+        # Create the weakref
         weakref_scope = [None]
 
         def callback():
@@ -1518,97 +1461,6 @@ class RunnerGCTest(AsyncTestCase):
             datetime.timedelta(seconds=0.2),
             tester()
         )
-
-    def test_gc_infinite_coro(self):
-        # Github issue 2229: suspended coroutines should be GCed when
-        # their loop is closed, even if they're involved in a reference
-        # cycle.
-        if IOLoop.configured_class().__name__.endswith('TwistedIOLoop'):
-            raise unittest.SkipTest("Test may fail on TwistedIOLoop")
-
-        loop = self.get_new_ioloop()
-        result = []
-        wfut = []
-
-        @gen.coroutine
-        def infinite_coro():
-            try:
-                while True:
-                    yield gen.sleep(1e-3)
-                    result.append(True)
-            finally:
-                # coroutine finalizer
-                result.append(None)
-
-        @gen.coroutine
-        def do_something():
-            fut = infinite_coro()
-            fut._refcycle = fut
-            wfut.append(weakref.ref(fut))
-            yield gen.sleep(0.2)
-
-        loop.run_sync(do_something)
-        loop.close()
-        gc.collect()
-        # Future was collected
-        self.assertIs(wfut[0](), None)
-        # At least one wakeup
-        self.assertGreaterEqual(len(result), 2)
-        if not self.is_pypy3():
-            # coroutine finalizer was called (not on PyPy3 apparently)
-            self.assertIs(result[-1], None)
-
-    @skipBefore35
-    def test_gc_infinite_async_await(self):
-        # Same as test_gc_infinite_coro, but with a `async def` function
-        import asyncio
-
-        namespace = exec_test(globals(), locals(), """
-        async def infinite_coro(result):
-            try:
-                while True:
-                    await gen.sleep(1e-3)
-                    result.append(True)
-            finally:
-                # coroutine finalizer
-                result.append(None)
-        """)
-
-        infinite_coro = namespace['infinite_coro']
-        loop = self.get_new_ioloop()
-        result = []
-        wfut = []
-
-        @gen.coroutine
-        def do_something():
-            fut = asyncio.get_event_loop().create_task(infinite_coro(result))
-            fut._refcycle = fut
-            wfut.append(weakref.ref(fut))
-            yield gen.sleep(0.2)
-
-        loop.run_sync(do_something)
-        with ExpectLog('asyncio', "Task was destroyed but it is pending"):
-            loop.close()
-            gc.collect()
-        # Future was collected
-        self.assertIs(wfut[0](), None)
-        # At least one wakeup and one finally
-        self.assertGreaterEqual(len(result), 2)
-        if not self.is_pypy3():
-            # coroutine finalizer was called (not on PyPy3 apparently)
-            self.assertIs(result[-1], None)
-
-    def test_multi_moment(self):
-        # Test gen.multi with moment
-        # now that it's not a real Future
-        @gen.coroutine
-        def wait_a_moment():
-            result = yield gen.multi([gen.moment, gen.moment])
-            raise gen.Return(result)
-
-        loop = self.get_new_ioloop()
-        result = loop.run_sync(wait_a_moment)
-        self.assertEqual(result, [None, None])
 
 
 if __name__ == '__main__':
