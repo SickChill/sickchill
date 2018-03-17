@@ -39,12 +39,12 @@ def audio_codec():
     rebulk.defaults(name="audio_codec", conflict_solver=audio_codec_priority)
 
     rebulk.regex("MP3", "LAME", r"LAME(?:\d)+-?(?:\d)+", value="MP3")
-    rebulk.regex("Dolby", "DolbyDigital", "Dolby-Digital", "DD", value="DolbyDigital")
+    rebulk.regex('Dolby', 'DolbyDigital', 'Dolby-Digital', 'DD', 'AC3D?', value='AC3')
     rebulk.regex("DolbyAtmos", "Dolby-Atmos", "Atmos", value="DolbyAtmos")
-    rebulk.regex("AAC", value="AAC")
-    rebulk.regex("AC3D?", value="AC3")
-    rebulk.regex("Flac", value="FLAC")
-    rebulk.regex("DTS", value="DTS")
+    rebulk.string("AAC", value="AAC")
+    rebulk.string('EAC3', 'DDP', 'DD+', value="EAC3")
+    rebulk.string("Flac", value="FLAC")
+    rebulk.string("DTS", value="DTS")
     rebulk.regex("True-?HD", value="TrueHD")
 
     rebulk.defaults(name="audio_profile")
@@ -58,12 +58,15 @@ def audio_codec():
     rebulk.regex(r'(7[\W_][01](?:ch)?)(?:[^\d]|$)', value='7.1', children=True)
     rebulk.regex(r'(5[\W_][01](?:ch)?)(?:[^\d]|$)', value='5.1', children=True)
     rebulk.regex(r'(2[\W_]0(?:ch)?)(?:[^\d]|$)', value='2.0', children=True)
+    rebulk.regex('7[01]', value='7.1', validator=seps_after, tags='weak-audio_channels')
+    rebulk.regex('5[01]', value='5.1', validator=seps_after, tags='weak-audio_channels')
+    rebulk.string('20', value='2.0', validator=seps_after, tags='weak-audio_channels')
     rebulk.string('7ch', '8ch', value='7.1')
     rebulk.string('5ch', '6ch', value='5.1')
     rebulk.string('2ch', 'stereo', value='2.0')
     rebulk.string('1ch', 'mono', value='1.0')
 
-    rebulk.rules(DtsRule, AacRule, Ac3Rule, AudioValidatorRule, HqConflictRule)
+    rebulk.rules(DtsRule, AacRule, Ac3Rule, AudioValidatorRule, HqConflictRule, AudioChannelsValidatorRule)
 
     return rebulk
 
@@ -162,3 +165,22 @@ class HqConflictRule(Rule):
 
         if hq_other:
             return hq_other
+
+
+class AudioChannelsValidatorRule(Rule):
+    """
+    Remove audio_channel if no audio codec as previous match.
+    """
+    priority = 128
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        ret = []
+
+        for audio_channel in matches.tagged('weak-audio_channels'):
+            valid_before = matches.range(audio_channel.start - 1, audio_channel.start,
+                                         lambda match: match.name == 'audio_codec')
+            if not valid_before:
+                ret.append(audio_channel)
+
+        return ret

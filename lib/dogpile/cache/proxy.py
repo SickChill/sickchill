@@ -85,8 +85,8 @@ class ProxyBackend(CacheBackend):
     def get_multi(self, keys):
         return self.proxied.get_multi(keys)
 
-    def set_multi(self, keys):
-        self.proxied.set_multi(keys)
+    def set_multi(self, mapping):
+        self.proxied.set_multi(mapping)
 
     def delete_multi(self, keys):
         self.proxied.delete_multi(keys)

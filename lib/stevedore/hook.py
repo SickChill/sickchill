@@ -1,3 +1,15 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
 from .named import NamedExtensionManager
 
 
@@ -27,12 +39,25 @@ class HookManager(NamedExtensionManager):
     :param verify_requirements: Use setuptools to enforce the
         dependencies of the plugin(s) being loaded. Defaults to False.
     :type verify_requirements: bool
+    :type on_missing_entrypoints_callback: function
+    :param verify_requirements: Use setuptools to enforce the
+        dependencies of the plugin(s) being loaded. Defaults to False.
+    :param warn_on_missing_entrypoint: Flag to control whether failing
+        to load a plugin is reported via a log mess. Only applies if
+        on_missing_entrypoints_callback is None.
+    :type warn_on_missing_entrypoint: bool
+
     """
 
     def __init__(self, namespace, name,
                  invoke_on_load=False, invoke_args=(), invoke_kwds={},
                  on_load_failure_callback=None,
-                 verify_requirements=False):
+                 verify_requirements=False,
+                 on_missing_entrypoints_callback=None,
+                 # NOTE(dhellmann): This default is different from the
+                 # base class because for hooks it is less likely to
+                 # be an error to have no entry points present.
+                 warn_on_missing_entrypoint=False):
         super(HookManager, self).__init__(
             namespace,
             [name],
@@ -40,7 +65,9 @@ class HookManager(NamedExtensionManager):
             invoke_args=invoke_args,
             invoke_kwds=invoke_kwds,
             on_load_failure_callback=on_load_failure_callback,
+            on_missing_entrypoints_callback=on_missing_entrypoints_callback,
             verify_requirements=verify_requirements,
+            warn_on_missing_entrypoint=warn_on_missing_entrypoint,
         )
 
     def _init_attributes(self, namespace, names, name_order=False,
