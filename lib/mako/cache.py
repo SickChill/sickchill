@@ -95,7 +95,7 @@ class Cache(object):
             **self._get_cache_kw(kw, context))
 
     def set(self, key, value, **kw):
-        """Place a value in the cache.
+        r"""Place a value in the cache.
 
         :param key: the value's key.
         :param value: the value.
@@ -113,7 +113,7 @@ class Cache(object):
     """
 
     def get(self, key, **kw):
-        """Retrieve a value from the cache.
+        r"""Retrieve a value from the cache.
 
         :param key: the value's key.
         :param \**kw: cache configuration arguments.  The
@@ -125,7 +125,7 @@ class Cache(object):
         return self.impl.get(key, **self._get_cache_kw(kw, None))
 
     def invalidate(self, key, **kw):
-        """Invalidate a value in the cache.
+        r"""Invalidate a value in the cache.
 
         :param key: the value's key.
         :param \**kw: cache configuration arguments.  The
@@ -194,7 +194,7 @@ class CacheImpl(object):
     """
 
     def get_or_create(self, key, creation_function, **kw):
-        """Retrieve a value from the cache, using the given creation function
+        r"""Retrieve a value from the cache, using the given creation function
         to generate a new value.
 
         This function *must* return a value, either from
@@ -212,7 +212,7 @@ class CacheImpl(object):
         raise NotImplementedError()
 
     def set(self, key, value, **kw):
-        """Place a value in the cache.
+        r"""Place a value in the cache.
 
         :param key: the value's key.
         :param value: the value.
@@ -222,7 +222,7 @@ class CacheImpl(object):
         raise NotImplementedError()
 
     def get(self, key, **kw):
-        """Retrieve a value from the cache.
+        r"""Retrieve a value from the cache.
 
         :param key: the value's key.
         :param \**kw: cache configuration arguments.
@@ -231,7 +231,7 @@ class CacheImpl(object):
         raise NotImplementedError()
 
     def invalidate(self, key, **kw):
-        """Invalidate a value in the cache.
+        r"""Invalidate a value in the cache.
 
         :param key: the value's key.
         :param \**kw: cache configuration arguments.

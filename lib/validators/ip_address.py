@@ -23,17 +23,17 @@ def ipv4(value):
 
     :param value: IP address string to validate
     """
-    parts = value.split('.')
-    if len(parts) == 4 and all(x.isdigit() for x in parts):
-        numbers = list(int(x) for x in parts)
-        return all(num >= 0 and num < 256 for num in numbers)
-    return False
+    groups = value.split('.')
+    if len(groups) != 4 or any(not x.isdigit() for x in groups):
+        return False
+    return all(0 <= int(part) < 256 for part in groups)
 
 
 @validator
 def ipv6(value):
     """
-    Return whether or not given value is a valid IP version 6 address.
+    Return whether or not given value is a valid IP version 6 address
+    (including IPv4-mapped IPv6 addresses).
 
     This validator is based on `WTForms IPAddress validator`_.
 
@@ -45,6 +45,12 @@ def ipv6(value):
         >>> ipv6('abcd:ef::42:1')
         True
 
+        >>> ipv6('::ffff:192.0.2.128')
+        True
+
+        >>> ipv6('::192.0.2.128')
+        True
+
         >>> ipv6('abc.0.0.1')
         ValidationFailure(func=ipv6, args={'value': 'abc.0.0.1'})
 
@@ -52,25 +58,35 @@ def ipv6(value):
 
     :param value: IP address string to validate
     """
-    parts = value.split(':')
-    if len(parts) > 8:
+    ipv6_groups = value.split(':')
+    ipv4_groups = ipv6_groups[-1].split('.')
+
+    if len(ipv4_groups) > 1:
+        if not ipv4(ipv6_groups[-1]):
+            return False
+        ipv6_groups = ipv6_groups[:-1]
+    else:
+        ipv4_groups = []
+
+    max_groups = 6 if ipv4_groups else 8
+    if len(ipv6_groups) > max_groups:
         return False
 
-    num_blank = 0
-    for part in parts:
+    count_blank = 0
+    for part in ipv6_groups:
         if not part:
-            num_blank += 1
+            count_blank += 1
+            continue
+        try:
+            num = int(part, 16)
+        except ValueError:
+            return False
         else:
-            try:
-                value = int(part, 16)
-            except ValueError:
+            if not 0 <= num <= 65536:
                 return False
-            else:
-                if value < 0 or value >= 65536:
-                    return False
 
-    if num_blank < 2:
+    if count_blank < 2:
         return True
-    elif num_blank == 2 and not parts[0] and not parts[1]:
+    elif count_blank == 2 and not ipv6_groups[0] and not ipv6_groups[1]:
         return True
     return False

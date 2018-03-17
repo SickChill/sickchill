@@ -68,7 +68,7 @@ class MessageExtractor(object):
             else:
                 continue
 
-            # Comments don't apply unless they immediately preceed the message
+            # Comments don't apply unless they immediately precede the message
             if translator_comments and \
                     translator_comments[-1][0] < node.lineno - 1:
                 translator_comments = []

@@ -4,11 +4,30 @@ from __future__ import unicode_literals
 import mimetypes
 import os
 import re
+import sys
 from tempfile import NamedTemporaryFile
+from unicodedata import normalize
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 import requests
 from twitter import TwitterError
+import twitter
 
+if sys.version_info < (3,):
+    range = xrange
+
+if sys.version_info > (3,):
+    unicode = str
+
+CHAR_RANGES = [
+    range(0, 4351),
+    range(8192, 8205),
+    range(8208, 8223),
+    range(8242, 8247)]
 
 TLDS = [
     "ac", "ad", "ae", "af", "ag", "ai", "al", "am", "an", "ao", "aq", "ar",
@@ -143,7 +162,7 @@ URL_REGEXP = re.compile((
     r'('
     r'^(?!(https?://|www\.)?\.|ftps?://|([0-9]+\.){{1,3}}\d+)'  # exclude urls that start with "."
     r'(?:https?://|www\.)*^(?!.*@)(?:[\w+-_]+[.])'              # beginning of url
-    r'(?:{0}\b|'                                                # all tlds
+    r'(?:{0}\b'                                                # all tlds
     r'(?:[:0-9]))'                                              # port numbers & close off TLDs
     r'(?:[\w+\/]?[a-z0-9!\*\'\(\);:&=\+\$/%#\[\]\-_\.,~?])*'    # path/query params
     r')').format(r'\b|'.join(TLDS)), re.U | re.I | re.X)
@@ -162,11 +181,17 @@ def calc_expected_status_length(status, short_url_length=23):
 
     """
     status_length = 0
+    if isinstance(status, bytes):
+        status = unicode(status)
     for word in re.split(r'\s', status):
         if is_url(word):
             status_length += short_url_length
         else:
-            status_length += len(word)
+            for character in word:
+                if any([ord(normalize("NFC", character)) in char_range for char_range in CHAR_RANGES]):
+                    status_length += 1
+                else:
+                    status_length += 2
     status_length += len(re.findall(r'\s', status))
     return status_length
 
@@ -186,7 +211,8 @@ def is_url(text):
 def http_to_file(http):
     data_file = NamedTemporaryFile()
     req = requests.get(http, stream=True)
-    data_file.write(req.raw.data)
+    for chunk in req.iter_content(chunk_size=1024 * 1024):
+        data_file.write(chunk)
     return data_file
 
 
@@ -215,7 +241,7 @@ def parse_media_file(passed_media):
     if not hasattr(passed_media, 'read'):
         if passed_media.startswith('http'):
             data_file = http_to_file(passed_media)
-            filename = os.path.basename(passed_media)
+            filename = os.path.basename(urlparse(passed_media).path)
         else:
             data_file = open(os.path.realpath(passed_media), 'rb')
             filename = os.path.basename(passed_media)
@@ -271,3 +297,18 @@ def enf_type(field, _type, val):
         raise TwitterError({
             'message': '"{0}" must be type {1}'.format(field, _type.__name__)
         })
+
+
+def parse_arg_list(args, attr):
+    out = []
+    if isinstance(args, (str, unicode)):
+        out.append(args)
+    elif isinstance(args, twitter.User):
+        out.append(getattr(args, attr))
+    elif isinstance(args, (list, tuple)):
+        for item in args:
+            if isinstance(item, (str, unicode)):
+                out.append(item)
+            elif isinstance(item, twitter.User):
+                out.append(getattr(item, attr))
+    return ",".join([str(item) for item in out])
