@@ -8,7 +8,7 @@ from collections import MutableSet
 from types import GeneratorType
 
 
-def find_all(string, sub, start=None, end=None, ignore_case=False):
+def find_all(string, sub, start=None, end=None, ignore_case=False, **kwargs):
     """
     Return all indices in string s where substring sub is
     found, such that sub is contained in the slice s[start:end].
@@ -41,6 +41,7 @@ def find_all(string, sub, start=None, end=None, ignore_case=False):
     :return: all indices in the input string
     :rtype: __generator[str]
     """
+    #pylint: disable=unused-argument
     if ignore_case:
         sub = sub.lower()
         string = string.lower()
@@ -65,10 +66,8 @@ def get_first_defined(data, keys, default_value=None):
     :rtype:
     """
     for key in keys:
-        try:
+        if key in data:
             return data[key]
-        except KeyError:
-            pass
     return default_value
 
 
@@ -84,6 +83,7 @@ def is_iterable(obj):
     We don't need to check for the Python 2 `unicode` type, because it doesn't
     have an `__iter__` attribute anyway.
     """
+    # pylint: disable=consider-using-ternary
     return hasattr(obj, '__iter__') and not isinstance(obj, str) or isinstance(obj, GeneratorType)
 
 
@@ -118,7 +118,7 @@ class IdentitySet(MutableSet):  # pragma: no cover
     """
     Set based on identity
     """
-    def __init__(self, items=None):
+    def __init__(self, items=None):  # pylint: disable=super-init-not-called
         if items is None:
             items = []
         self.refs = set(map(_Ref, items))
@@ -132,11 +132,11 @@ class IdentitySet(MutableSet):  # pragma: no cover
     def __len__(self):
         return len(self.refs)
 
-    def add(self, elem):
-        self.refs.add(_Ref(elem))
+    def add(self, value):
+        self.refs.add(_Ref(value))
 
-    def discard(self, elem):
-        self.refs.discard(_Ref(elem))
+    def discard(self, value):
+        self.refs.discard(_Ref(value))
 
     def update(self, iterable):
         """

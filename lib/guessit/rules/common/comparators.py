@@ -18,17 +18,18 @@ def marker_comparator_predicate(match):
            not (match.name == 'container' and 'extension' in match.tags)
 
 
-def marker_weight(matches, marker):
+def marker_weight(matches, marker, predicate):
     """
     Compute the comparator weight of a marker
     :param matches:
     :param marker:
+    :param predicate:
     :return:
     """
-    return len(set(match.name for match in matches.range(*marker.span, predicate=marker_comparator_predicate)))
+    return len(set(match.name for match in matches.range(*marker.span, predicate=predicate)))
 
 
-def marker_comparator(matches, markers):
+def marker_comparator(matches, markers, predicate):
     """
     Builds a comparator that returns markers sorted from the most valuable to the less.
 
@@ -36,14 +37,17 @@ def marker_comparator(matches, markers):
 
     :param matches:
     :type matches:
+    :param markers:
+    :param predicate:
     :return:
     :rtype:
     """
+
     def comparator(marker1, marker2):
         """
         The actual comparator function.
         """
-        matches_count = marker_weight(matches, marker2) - marker_weight(matches, marker1)
+        matches_count = marker_weight(matches, marker2, predicate) - marker_weight(matches, marker1, predicate)
         if matches_count:
             return matches_count
         len_diff = len(marker2) - len(marker1)
@@ -54,15 +58,16 @@ def marker_comparator(matches, markers):
     return comparator
 
 
-def marker_sorted(markers, matches):
+def marker_sorted(markers, matches, predicate=marker_comparator_predicate):
     """
     Sort markers from matches, from the most valuable to the less.
 
-    :param fileparts:
-    :type fileparts:
+    :param markers:
+    :type markers:
     :param matches:
     :type matches:
+    :param predicate:
     :return:
     :rtype:
     """
-    return sorted(markers, key=cmp_to_key(marker_comparator(matches, markers)))
+    return sorted(markers, key=cmp_to_key(marker_comparator(matches, markers, predicate=predicate)))

@@ -131,8 +131,8 @@ class PageElement(object):
     # to methods like encode() and prettify():
     #
     # "html" - All Unicode characters with corresponding HTML entities
-    #   are converted to those entities on output.
-    # "minimal" - Bare ampersands and angle brackets are converted to
+    #   are converted to those entities on output. 
+   # "minimal" - Bare ampersands and angle brackets are converted to
     #   XML entities: &amp; &lt; &gt;
     # None - The null formatter. Unicode characters are never
     #   converted to entities.  This is not recommended, but it's
@@ -535,9 +535,16 @@ class PageElement(object):
                 return ResultSet(strainer, result)
             elif isinstance(name, basestring):
                 # Optimization to find all tags with a given name.
+                if name.count(':') == 1:
+                    # This is a name with a prefix.
+                    prefix, name = name.split(':', 1)
+                else:
+                    prefix = None
                 result = (element for element in generator
                           if isinstance(element, Tag)
-                            and element.name == name)
+                            and element.name == name
+                          and (prefix is None or element.prefix == prefix)
+                )
                 return ResultSet(strainer, result)
         results = ResultSet(strainer)
         while True:
@@ -863,7 +870,7 @@ class Tag(PageElement):
         Its contents are a copy of the old Tag's contents.
         """
         clone = type(self)(None, self.builder, self.name, self.namespace,
-                           self.nsprefix, self.attrs, is_xml=self._is_xml)
+                           self.prefix, self.attrs, is_xml=self._is_xml)
         for attr in ('can_be_empty_element', 'hidden'):
             setattr(clone, attr, getattr(self, attr))
         for child in self.contents:
@@ -985,6 +992,13 @@ class Tag(PageElement):
         attribute."""
         return self.attrs.get(key, default)
 
+    def get_attribute_list(self, key, default=None):
+        """The same as get(), but always returns a list."""
+        value = self.get(key, default)
+        if not isinstance(value, list):
+            value = [value]
+        return value
+    
     def has_attr(self, key):
         return key in self.attrs
 
@@ -1698,7 +1712,7 @@ class SoupStrainer(object):
                 "I don't know how to match against a %s" % markup.__class__)
         return found
 
-    def _matches(self, markup, match_against):
+    def _matches(self, markup, match_against, already_tried=None):
         # print u"Matching %s against %s" % (markup, match_against)
         result = False
         if isinstance(markup, list) or isinstance(markup, tuple):
@@ -1713,7 +1727,7 @@ class SoupStrainer(object):
             if self._matches(' '.join(markup), match_against):
                 return True
             return False
-
+        
         if match_against is True:
             # True matches any non-None value.
             return markup is not None
@@ -1723,6 +1737,7 @@ class SoupStrainer(object):
 
         # Custom callables take the tag as an argument, but all
         # other ways of matching match the tag name as a string.
+        original_markup = markup
         if isinstance(markup, Tag):
             markup = markup.name
 
@@ -1733,18 +1748,51 @@ class SoupStrainer(object):
             # None matches None, False, an empty string, an empty list, and so on.
             return not match_against
 
-        if isinstance(match_against, unicode):
+        if (hasattr(match_against, '__iter__')
+            and not isinstance(match_against, basestring)):
+            # We're asked to match against an iterable of items.
+            # The markup must be match at least one item in the
+            # iterable. We'll try each one in turn.
+            #
+            # To avoid infinite recursion we need to keep track of
+            # items we've already seen.
+            if not already_tried:
+                already_tried = set()
+            for item in match_against:
+                if item.__hash__:
+                    key = item
+                else:
+                    key = id(item)
+                if key in already_tried:
+                    continue
+                else:
+                    already_tried.add(key)
+                    if self._matches(original_markup, item, already_tried):
+                        return True
+            else:
+                return False
+        
+        # Beyond this point we might need to run the test twice: once against
+        # the tag's name and once against its prefixed name.
+        match = False
+        
+        if not match and isinstance(match_against, unicode):
             # Exact string match
-            return markup == match_against
+            match = markup == match_against
 
-        if hasattr(match_against, 'match'):
+        if not match and hasattr(match_against, 'search'):
             # Regexp match
             return match_against.search(markup)
 
-        if hasattr(match_against, '__iter__'):
-            # The markup must be an exact match against something
-            # in the iterable.
-            return markup in match_against
+        if (not match
+            and isinstance(original_markup, Tag)
+            and original_markup.prefix):
+            # Try the whole thing again with the prefixed tag name.
+            return self._matches(
+                original_markup.prefix + ':' + original_markup.name, match_against
+            )
+
+        return match
 
 
 class ResultSet(list):
@@ -1753,3 +1801,8 @@ class ResultSet(list):
     def __init__(self, source, result=()):
         super(ResultSet, self).__init__(result)
         self.source = source
+
+    def __getattr__(self, key):
+        raise AttributeError(
+            "ResultSet object has no attribute '%s'. You're probably treating a list of items like a single item. Did you call find_all() when you meant to call find()?" % key
+        )
