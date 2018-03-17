@@ -2252,7 +2252,7 @@ var SICKRAGE = {
                         return $(node).find('span').attr('title').toLowerCase();
                     }
                 },
-                widgets: ['zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
                     0: {sorter: 'realISODate'},
                     1: {sorter: 'realISODate'},
@@ -2266,7 +2266,7 @@ var SICKRAGE = {
                     filter_columnFilters: true, // eslint-disable-line camelcase
                     filter_hideFilters: true, // eslint-disable-line camelcase
                     stickyHeaders_offset: 50, // eslint-disable-line camelcase
-                    filter_saveFilters: true, // eslint-disable-line camelcase
+                    filter_saveFilters: false, // eslint-disable-line camelcase
                     filter_functions: { // eslint-disable-line camelcase
                         // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
                         5: function(exact, normalized, filterInput) {
@@ -2456,7 +2456,7 @@ var SICKRAGE = {
             }
 
             $('.displayShowTable').tablesorter({
-                widgets: ['stickyHeaders', 'columnSelector'],
+                widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
                 widgetOptions: {
                     columnSelector_saveColumns: true, // eslint-disable-line camelcase
                     columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
@@ -2940,7 +2940,7 @@ var SICKRAGE = {
         },
         status: function() {
             $('#schedulerStatusTable').tablesorter({
-                widgets: ['zebra'],
+                widgets: ['saveSort', 'zebra'],
                 textExtraction: {
                     5: function(node) {
                         return $(node).data('seconds');
@@ -2955,7 +2955,7 @@ var SICKRAGE = {
                 }
             });
             $('#queueStatusTable').tablesorter({
-                widgets: ['zebra'],
+                widgets: ['saveSort', 'zebra'],
                 sortList: [[3, 0], [4, 0], [2, 1]]
             });
         },
@@ -3641,7 +3641,7 @@ var SICKRAGE = {
                 });
 
                 $('#showListTable:has(tbody tr)').tablesorter({
-                    widgets: ['stickyHeaders', 'filter', 'columnSelector'],
+                    widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
                     sortList: sortList,
                     textExtraction: {
                         0: function(node) {
@@ -3666,7 +3666,7 @@ var SICKRAGE = {
                     widgetOptions: {
                         filter_columnFilters: true, // eslint-disable-line camelcase
                         filter_hideFilters: true, // eslint-disable-line camelcase
-                        filter_saveFilters: true, // eslint-disable-line camelcase
+                        filter_saveFilters: false, // eslint-disable-line camelcase
                         columnSelector_mediaquery: false, // eslint-disable-line camelcase
                         stickyHeaders_offset: 50 // eslint-disable-line camelcase
                     }
