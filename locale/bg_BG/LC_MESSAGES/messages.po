@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-03-17 09:38+0000\n"
-"PO-Revision-Date: 2018-03-17 05:39-0400\n"
+"PO-Revision-Date: 2018-03-19 09:40-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -337,7 +337,7 @@ msgstr "Основни"
 #: gui/slick/js/ajaxEpSearch.js:156 gui/slick/js/ajaxEpSearch.js:157
 #: gui/slick/views/inc_home_showList.mako:28 sickbeard/show_queue.py:300
 msgid "Loading"
-msgstr ""
+msgstr "Зареждане"
 
 #: sickbeard/versionChecker.py:70
 msgid "New update found for SickRage, starting auto-updater"
@@ -1545,7 +1545,7 @@ msgstr "Епизоди на сериал"
 
 #: gui/slick/js/core.js:2857 gui/slick/views/displayShow.mako:407
 msgid "Hide Episodes"
-msgstr ""
+msgstr "Скриване на епизодите"
 
 #: gui/slick/js/core.js:2862
 msgid "Select Show Location"
@@ -3488,7 +3488,7 @@ msgstr "Pushover API ключ"
 #: gui/slick/views/config_notifications.mako:1459
 #: gui/slick/views/config_notifications.mako:2317
 msgid "click here"
-msgstr ""
+msgstr "щракнете тук"
 
 #: gui/slick/views/config_notifications.mako:1459
 msgid " to create a Pushover API key"
@@ -6129,7 +6129,7 @@ msgstr "Предаване"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Сезон "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6456,7 +6456,7 @@ msgstr ""
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "за 30 дни"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"

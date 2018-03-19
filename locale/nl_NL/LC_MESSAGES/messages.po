@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-03-17 09:38+0000\n"
-"PO-Revision-Date: 2018-03-17 05:39-0400\n"
+"PO-Revision-Date: 2018-03-19 09:41-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -376,21 +376,21 @@ msgstr "Geen update nodig"
 
 #: sickbeard/versionChecker.py:418
 msgid "Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr ""
+msgstr "Kan jouw git executable niet vinden - sluit SickRage af en stel het juiste git bestandspad in in je config.ini of verwijder je .git folder en installeer git opnieuw om updates mogelijk te maken."
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
 msgid "(you're {num_commits} commit behind)"
 msgid_plural "(you're {num_commits} commits behind)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "(je bent {num_commits} commits achter)"
+msgstr[1] "(je bent {num_commits} commits achter)"
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
 msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Is er een <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">nieuwere versie beschikbaar</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Nu</a>"
 
 #: sickbeard/versionChecker.py:761
 msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Onbekend huidig versienummer: Als je nog nooit het SickRage upgrade systeem hebt gebruikt dan is de huidige versie niet bekend. &mdash; <a href=\"{update_url}\">Update Nu</a>"
 
 #: sickbeard/webserve.py:163
 msgid "Mako Error"
@@ -1373,19 +1373,19 @@ msgstr "Dit is een test-notificatie van SickRage"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches and backlog searches"
-msgstr ""
+msgstr "dagelijkse- en werkvoorraad zoekopdrachten"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr ""
+msgstr "dagelijkse zoekopdrachten"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
-msgstr ""
+msgstr "werkvoorraad zoekopdrachten"
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
-msgstr ""
+msgstr "Geen NZB/Torrent providers gevonden of ingeschakeld voor {searches}.<br/>Svp <a href=\"{web_root}/config/providers/\">controleer uw instellingen</a>."
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
@@ -1397,7 +1397,7 @@ msgstr "Selecteer logbestandslocatie"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr ""
+msgstr "Selecteer een achtergrondafbeelding"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
@@ -1529,7 +1529,7 @@ msgstr "URL naar de putio client (b.v. http://localhost:8080)"
 
 #: gui/slick/js/core.js:1956
 msgid "Create a new OAuth app for put.io"
-msgstr ""
+msgstr "Maak een nieuwe OAuth app voor put.io aan"
 
 #: gui/slick/js/core.js:1957
 msgid "Put.io Parent Folder"
@@ -1553,7 +1553,7 @@ msgstr "Selecteer Serie Locatie"
 
 #: gui/slick/js/core.js:2927 gui/slick/views/editShow.mako:362
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: gui/slick/js/core.js:2937
 msgid "Select Unprocessed Episode Folder"
@@ -1573,7 +1573,7 @@ msgstr "Bijwerken van de logging op deze pagina pauzeren."
 
 #: gui/slick/js/core.js:3955
 msgid " on  in "
-msgstr ""
+msgstr " op in "
 
 #: gui/slick/js/core.js:3958
 msgid "searching {searchingFor}..."
@@ -1677,7 +1677,7 @@ msgstr "Verzend"
 
 #: gui/slick/views/addShows_newShow.mako:23
 msgid "Search for a Show"
-msgstr ""
+msgstr "Zoek naar een serie"
 
 #: gui/slick/views/addShows_newShow.mako:29
 msgid "Show retrieved from existing metadata"
@@ -1690,7 +1690,7 @@ msgstr "Naam van de Serie"
 
 #: gui/slick/views/addShows_newShow.mako:52
 msgid "Metadata language"
-msgstr ""
+msgstr "Metadata taal"
 
 #: gui/slick/views/addShows_newShow.mako:65
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1716,7 +1716,7 @@ msgstr "Zoek"
 
 #: gui/slick/views/addShows_newShow.mako:101
 msgid "Pick the Folder"
-msgstr ""
+msgstr "Kies de folder"
 
 #: gui/slick/views/addShows_newShow.mako:105
 msgid "Pre-chosen Destination Folder"
@@ -1728,7 +1728,7 @@ msgstr "Opties aanpassen"
 
 #: gui/slick/views/addShows_newShow.mako:124
 msgid "Verify Your Input"
-msgstr ""
+msgstr "Controleer je invoer"
 
 #: gui/slick/views/addShows_newShow.mako:137
 #: gui/slick/views/home_massAddTable.mako:11
@@ -2719,11 +2719,11 @@ msgstr "indien uitgeschakeld zal de aflevering naar de standaard verwijderde sta
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
-msgstr ""
+msgstr "Negeer niet werkende Symbolic Links"
 
 #: gui/slick/views/config_general.mako:1014
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
-msgstr ""
+msgstr "Indien aangevinkt worden bij het berekenen van de serie-omvang de niet werkende symbolic links-waarschuwingen gelogd als debug"
 
 #: gui/slick/views/config_general.mako:1022
 msgid "Default deleted episode status"
@@ -3797,7 +3797,7 @@ msgstr "neem contact op met @myidbot op Telegram om een ID te krijgen"
 
 #: gui/slick/views/config_notifications.mako:2188
 msgid "Note: Don't forget to talk with your bot at least one time if you get a 403 error."
-msgstr ""
+msgstr "Opmerking: vergeet niet om tenminste één keer contact op te nemen met je bot als je een 403 error krijgt."
 
 #: gui/slick/views/config_notifications.mako:2196
 msgid "Bot API token"
@@ -4840,7 +4840,7 @@ msgstr "Er is minimaal 1 zoekmachine noodzakelijk maar 2 is aanbevolen."
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Torrent and NZB providers can be toggled in "
-msgstr ""
+msgstr "Torrent en NZB zoekmachines kunnen aan/uitgezet worden in "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog searches at this time."
@@ -6111,7 +6111,7 @@ msgstr "zoekresultaten met één of meer woorden van deze lijst worden genegeerd
 
 #: gui/slick/views/editShow.mako:293
 msgid "this option overrides the globally ignored words!"
-msgstr ""
+msgstr "deze optie prevaleert boven de algemeen genegeerde woorden!"
 
 #: gui/slick/views/editShow.mako:319
 msgid "search results with no words from this list will be ignored."
@@ -6119,7 +6119,7 @@ msgstr "zoekresultaten zonder woorden van deze lijst worden genegeerd."
 
 #: gui/slick/views/editShow.mako:320
 msgid "this option overrides the globally required words!"
-msgstr ""
+msgstr "deze optie prevaleert boven de algemeen verplichte woorden!"
 
 #: gui/slick/views/editShow.mako:328
 msgid "Scene Exception"
@@ -6134,7 +6134,7 @@ msgstr "Serie"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Seizoen "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6146,7 +6146,7 @@ msgstr "deze lijst wordt aan de originele serienaam toegevoegd."
 
 #: gui/slick/views/editShow.mako:384
 msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sickrage.github.io/issues\">here</a>."
-msgstr ""
+msgstr "uitgeschakelde invoer komt van een centraal bestand op github,<br/> als je vindt dat er iets fout is meld dan een issue <a href=\"//github.com/sickrage/sickrage.github.io/issues\">hier</a>."
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"
@@ -6295,7 +6295,7 @@ msgstr "Is deze serie genummerd per scène?"
 
 #: gui/slick/views/inc_addShowOptions.mako:102
 msgid "Save as default"
-msgstr ""
+msgstr "Opslaan als standaardwaarde"
 
 #: gui/slick/views/inc_addShowOptions.mako:106
 msgid "Use current values as the defaults"
@@ -6462,11 +6462,11 @@ msgstr "Nieuw"
 
 #: gui/slick/views/inc_rootDirs.mako:33
 msgid "Set as default"
-msgstr ""
+msgstr "Instellen als standaardwaarde"
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "voor 30 dagen"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"
@@ -6783,7 +6783,7 @@ msgstr "Toon"
 
 #: gui/slick/views/schedule.mako:73
 msgid "View Snatched"
-msgstr ""
+msgstr "Bekijk de Opgepikte"
 
 #: gui/slick/views/schedule.mako:85
 msgid "Calendar"
