@@ -2513,8 +2513,9 @@ class HomeAddShows(Home):
     def sanitizeFileName(name):
         return sanitize_filename(name)
 
-    @staticmethod
-    def searchIndexersForShowName(search_term, lang=None, indexer=None):
+    def searchIndexersForShowName(self, search_term, lang=None, indexer=None):
+        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header(b'Content-Type', 'application/json')
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
@@ -2560,7 +2561,7 @@ class HomeAddShows(Home):
                                    show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
-        return json.dumps({'results': final_results, 'langid': lang_id})
+        return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
         t = PageTemplate(rh=self, filename="home_massAddTable.mako")
