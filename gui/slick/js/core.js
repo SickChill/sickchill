@@ -1196,17 +1196,17 @@ var SICKRAGE = {
 
             function loadShowNotifyLists() {
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(list) {
-                    let html = null;
-                    let s = null; // @TODO: What is an "s"?
                     if (list._size === 0) {
                         return;
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     const _list = [];
-                    for (s in list) {
-                        if (s.charAt(0) !== '_') {
-                            _list.push(list[s]);
+                    for (let _show in list) {
+                        if ({}.hasOwnProperty.call(list, _show)) {
+                            if (_show.charAt(0) !== '_') {
+                                _list.push(list[_show]);
+                            }
                         }
                     }
                     const sortedList = _list.sort(function(a, b) {
@@ -1218,10 +1218,12 @@ var SICKRAGE = {
                         }
                         return 0;
                     });
-                    html = '<option value="-1">-- Select --</option>';
-                    for (s in sortedList) {
-                        if (sortedList[s].id && sortedList[s].name) {
-                            html += '<option value="' + sortedList[s].id + '">' + $('<div/>').text(sortedList[s].name).html() + '</option>';
+                    let html = '<option value="-1">-- Select --</option>';
+                    for (let _show in sortedList) {
+                        if ({}.hasOwnProperty.call(sortedList, _show)) {
+                            if (sortedList[_show].id && sortedList[_show].name) {
+                                html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
+                            }
                         }
                     }
                     $('#email_show').html(html);
@@ -1231,7 +1233,7 @@ var SICKRAGE = {
                     $('#prowl_show_list').val('');
                 });
             }
-            // Load the per show notify lists everytime this page is loaded
+            // Load the per show notify lists every time this page is loaded
             loadShowNotifyLists();
 
             // Update the internal data struct anytime settings are saved to the server
@@ -3511,8 +3513,7 @@ var SICKRAGE = {
             });
 
             $('#history_limit').on('change', function() {
-                const url = srRoot + '/history/?limit=' + $(this).val();
-                window.location.href = url;
+                window.location.href = srRoot + '/history/?limit=' + $(this).val();
             });
 
             $('a.removehistory').on('click', function() {
@@ -3905,7 +3906,7 @@ var SICKRAGE = {
                     '</tr>' +
                     '<thead>';
 
-                const selectedIndex = shows.findIndex(function(show) {
+                const selectedIndex = shows.indexOf(function(show) {
                     return !show.inShowList;
                 });
 
@@ -3944,12 +3945,11 @@ var SICKRAGE = {
 
             let searchRequestXhr = null;
             const searchIndexers = function() {
-                if (!$('#show-name').val()) {
-                    return;
-                }
-
                 if (searchRequestXhr) {
                     searchRequestXhr.abort();
+                }
+                if (!$('#show-name').val()) {
+                    return;
                 }
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
@@ -3973,7 +3973,6 @@ var SICKRAGE = {
                     },
                     success: function(data) {
                         let resultStr = '<legend class="legendStep">#2 Pick a Show</legend>';
-
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
                             $('.next-steps').hide();
