@@ -630,6 +630,7 @@ TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorren
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
+MATCH_ANYTHING = False
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
