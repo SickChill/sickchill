@@ -371,10 +371,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, skipping NFO generation")
             return
 
-        self.updateShowNFO()
-
-    def updateShowNFO(self):
-
         result = False
 
         if not ek(os.path.isdir, self._location):
