@@ -4,6 +4,7 @@ Enable debug logging in SickRage settings, reproduce the error (be sure to disab
 
 Branch/Commit:
 OS:
+Browser:
 What you did:
 What happened:
 What you expected:
