@@ -189,6 +189,17 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Match Any Occurence?')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="match_anything" id="match_anything"
+                                           class="enabler" ${('', 'checked="checked"')[bool(sickbeard.MATCH_ANYTHING)]}/>
+                                    <label for="match_anything">${_('If the required word is anywhere in the name, it will be accepted. It does not have to be separated by spaces.')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Trackers list')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

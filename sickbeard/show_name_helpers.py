@@ -43,7 +43,7 @@ if hasattr('General', 'ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
     resultFilters.append("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
-def containsAtLeastOneWord(name, words):
+def containsAtLeastOneWord(name, words, matchAny=False):
     """
     Filters out results based on filter_words
 
@@ -55,10 +55,15 @@ def containsAtLeastOneWord(name, words):
     if isinstance(words, six.string_types):
         words = words.split(',')
 
-    items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
-    for regexp, word in items:
-        if regexp.search(name):
-            return word
+    if matchAny:
+        for word in words:
+            if word in name:
+                return True #optionally, Change this to False and the IF statement to "word not in name" to require all words.
+    else:
+        items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
+        for regexp, word in items:
+            if regexp.search(name):
+                return word
     return False
 
 
@@ -115,7 +120,7 @@ def filter_bad_releases(name, parse=True, show=None):
     elif sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
         require_words = list(set(require_words).difference(x.strip() for x in sickbeard.IGNORE_WORDS.split(',') if x.strip()))
 
-    if require_words and not containsAtLeastOneWord(name, require_words):
+    if require_words and not containsAtLeastOneWord(name, require_words, sickbeard.MATCH_ANYTHING):
         logger.log("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
                    ", ignoring it", logger.INFO)
         return False
