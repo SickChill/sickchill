@@ -1,7 +1,5 @@
 FROM python:2.7.13-alpine
 
-ARG SICKRAGE_VERSION
-
 ENV PID_FILE /var/run/sickrage/sickrage.pid
 ENV DATA_DIR /data
 ENV CONF_DIR /config/
@@ -11,12 +9,6 @@ ENV PGID 1000
 RUN addgroup -g ${PGID} sickrage && \
     adduser -u ${PUID} -D -S -G sickrage sickrage
 
-RUN \
-    apk add --no-cache git && \
-    git config --global advice.detachedHead false && \
-    git clone --quiet https://github.com/SickRage/SickRage/ --branch "${SICKRAGE_VERSION:-master}" --single-branch --depth=1 /app/sickrage && \
-    apk del --no-cache git
-
 RUN mkdir /var/run/sickrage/ && \
     chown sickrage. /var/run/sickrage/ && \
     mkdir /config/ && \
@@ -24,9 +16,10 @@ RUN mkdir /var/run/sickrage/ && \
     mkdir /data/ && \
     chown sickrage. /data
 
-RUN echo '[General]' > /config/config.ini; if [ "${SICKRAGE_VERSION:-master}" = "master" ]; then echo 'auto_update = 1' >> /config/config.ini ; else echo 'auto_update = 0' >> /config/config.ini ; fi
+ADD . /app/sickrage
+RUN chown -R sickrage. /app/sickrage
 
-RUN if [ "${SICKRAGE_VERSION:-master}" = "master" ]; then chown -R sickrage. /app/sickrage/ ; fi
+RUN echo -e "[General]\nauto_update = 1" > /config/config.ini
 
 VOLUME ["/config","/data"]
 
