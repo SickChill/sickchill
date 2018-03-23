@@ -1,0 +1,14 @@
+# .git especially
+.*
+
+# Editor stuff
+**/*~
+**/.*.sw*
+
+tests
+
+Dockerfile
+docker-compose.yaml
+*.txt
+*.md
+
