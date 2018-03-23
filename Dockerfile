@@ -14,7 +14,7 @@ RUN addgroup -g ${PGID} sickrage && \
 RUN \
     apk add --no-cache git && \
     git config --global advice.detachedHead false && \
-    git clone --quiet https://github.com/SickRage/SickRage/ --branch $SICKRAGE_VERSION --single-branch --depth=1 /app/sickrage && \
+    git clone --quiet https://github.com/SickRage/SickRage/ --branch "${SICKRAGE_VERSION:-master}" --single-branch --depth=1 /app/sickrage && \
     apk del --no-cache git
 
 RUN mkdir /var/run/sickrage/ && \
@@ -24,9 +24,9 @@ RUN mkdir /var/run/sickrage/ && \
     mkdir /data/ && \
     chown sickrage. /data
 
-RUN echo '[General]' > /config/config.ini; if [ "$SICKRAGE_VERSION" = "master" ]; then echo 'auto_update = 1' >> /config/config.ini ; else echo 'auto_update = 0' >> /config/config.ini ; fi
+RUN echo '[General]' > /config/config.ini; if [ "${SICKRAGE_VERSION:-master}" = "master" ]; then echo 'auto_update = 1' >> /config/config.ini ; else echo 'auto_update = 0' >> /config/config.ini ; fi
 
-RUN if [ "$SICKRAGE_VERSION" = "master" ]; then chown -R sickrage. /app/sickrage/ ; fi
+RUN if [ "${SICKRAGE_VERSION:-master}" = "master" ]; then chown -R sickrage. /app/sickrage/ ; fi
 
 VOLUME ["/config","/data"]
 
@@ -37,3 +37,4 @@ WORKDIR /app/sickrage/
 CMD /usr/local/bin/python SickBeard.py -q --nolaunch --pidfile=${PID_FILE} --config=${CONF_DIR}/config.ini --datadir=${DATA_DIR} ${EXTRA_DAEMON_OPTS}
 
 EXPOSE 8081
+
