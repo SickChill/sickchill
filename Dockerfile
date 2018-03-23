@@ -8,14 +8,14 @@ ENV CONF_DIR /config/
 ENV PUID 1000
 ENV PGID 1000
 
-RUN apk update && \
-    apk add git
-
 RUN addgroup -g ${PGID} sickrage && \
     adduser -u ${PUID} -D -S -G sickrage sickrage
 
-RUN git config --global advice.detachedHead false && \
-    git clone --quiet https://github.com/SickRage/SickRage/ --branch $SICKRAGE_VERSION --single-branch --depth=1 /app/sickrage
+RUN \
+    apk add --no-cache git && \
+    git config --global advice.detachedHead false && \
+    git clone --quiet https://github.com/SickRage/SickRage/ --branch $SICKRAGE_VERSION --single-branch --depth=1 /app/sickrage && \
+    apk del --no-cache git
 
 RUN mkdir /var/run/sickrage/ && \
     chown sickrage. /var/run/sickrage/ && \
