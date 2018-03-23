@@ -20,7 +20,7 @@ COPY --chown=sickrage:sickrage . /app/sickrage
 
 USER sickrage
 
-RUN echo -e "[General]\nauto_update = 1" > /config/config.ini
+RUN echo -e "[General]\nauto_update = 0" > /config/config.ini
 
 VOLUME ["/config","/data"]
 
