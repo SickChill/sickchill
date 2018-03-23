@@ -16,14 +16,13 @@ RUN mkdir /var/run/sickrage/ && \
     mkdir /data/ && \
     chown sickrage. /data
 
-ADD . /app/sickrage
-RUN chown -R sickrage. /app/sickrage
+COPY --chown=sickrage:sickrage . /app/sickrage
+
+USER sickrage
 
 RUN echo -e "[General]\nauto_update = 1" > /config/config.ini
 
 VOLUME ["/config","/data"]
-
-USER sickrage
 
 WORKDIR /app/sickrage/
 
