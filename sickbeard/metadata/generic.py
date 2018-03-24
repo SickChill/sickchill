@@ -43,12 +43,6 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-
-
-
-
-
-
 class GenericMetadata(object):
     """
     Base class for all metadata providers. Default behavior is meant to mostly
@@ -283,6 +277,8 @@ class GenericMetadata(object):
 
                 root = showXML.getroot()
                 if indexerid is not None:
+                    if indexerid.text == str(show_obj.indexerid):
+                        return True
                     indexerid.text = str(show_obj.indexerid)
                 else:
                     etree.SubElement(root, "id").text = str(show_obj.indexerid)
