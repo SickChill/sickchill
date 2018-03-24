@@ -33,17 +33,14 @@ import uuid
 from os import path
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
-
-
+# noinspection PyUnresolvedReferences
+from six.moves import reduce
 
 from sickbeard.numdict import NumDict
 from sickrage.helper import video_screen_size
 from sickrage.helper.encoding import ek
 from sickrage.recompiled import tags
 from sickrage.tagger.episode import EpisodeTags
-
-# noinspection PyUnresolvedReferences
-from six.moves import reduce
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
