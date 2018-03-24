@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-03-22 13:37+0000\n"
-"PO-Revision-Date: 2018-03-22 09:39-0400\n"
+"PO-Revision-Date: 2018-03-24 02:10-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -177,7 +177,7 @@ msgstr "Genişlet (Sınırlı)"
 
 #: sickbeard/common.py:115
 msgid "Extend (Limited, E-prefixed)"
-msgstr "Uzatma (sınırlı, E-öneki)"
+msgstr "Genişlet (Sınırlı, E-öneki)"
 
 #: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:74
 #: gui/slick/views/inc_home_showList.mako:279 sickbeard/common.py:219
@@ -267,7 +267,7 @@ msgstr "Dizi Kuyruğu"
 
 #: sickbeard/logger.py:479
 msgid "Search Queue (All)"
-msgstr "Dizi Kuyruğu (Tümü)"
+msgstr "Arama Kuyruğu (Tümü)"
 
 #: sickbeard/logger.py:480
 msgid "Search Queue (Daily Searcher)"
@@ -279,23 +279,23 @@ msgstr "Arama Kuyruğu (Arka Biriktirici)"
 
 #: sickbeard/logger.py:482
 msgid "Search Queue (Manual)"
-msgstr "Arama Günlüğü (El ile)"
+msgstr "Arama Kuyruğu (El ile)"
 
 #: sickbeard/logger.py:483
 msgid "Search Queue (Retry/Failed)"
-msgstr "Arama dizisi (yeniden deneme/başarısız)"
+msgstr "Arama Kuyruğu (Tekrarlanan/Başarısız olan)"
 
 #: sickbeard/logger.py:484
 msgid "Search Queue (RSS)"
-msgstr "Arama dizisi (RSS)"
+msgstr "Arama Kuyruğu (RSS)"
 
 #: sickbeard/logger.py:485
 msgid "Find Propers"
-msgstr "Uygun olanları bul"
+msgstr "Düzgün Olanları Bul"
 
 #: sickbeard/logger.py:486
 msgid "Postprocessor"
-msgstr "Son işlemci"
+msgstr "Son işlem yapıcı"
 
 #: sickbeard/logger.py:487
 msgid "Find Subtitles"
@@ -303,7 +303,7 @@ msgstr "Alt yazıları Bul"
 
 #: gui/slick/views/status.mako:21 sickbeard/logger.py:488
 msgid "Trakt Checker"
-msgstr "Sistem denetleyicisi"
+msgstr "Trakt Kontrolcüsü"
 
 #: sickbeard/logger.py:489
 msgid "Event"
@@ -376,21 +376,21 @@ msgstr "Hiçbir güncelleme gerekmiyor"
 
 #: sickbeard/versionChecker.py:418
 msgid "Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr ""
+msgstr "Git sistemi çalıştırılabilir dosyası bulunamadı. SickRage'i kapatın ve config.ini dosyanızdaki git_path yolunu ayarlayın VEYA .git klasörünüzü silin ve güncellemeleri etkin kılmak için kaynak dosyalarından çalıştırın."
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
 msgid "(you're {num_commits} commit behind)"
 msgid_plural "(you're {num_commits} commits behind)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "(SickRage kurulumunuz {num_commits} güncelleme geride)"
+msgstr[1] "(SickRage kurulumunuz {num_commits} güncelleme geride)"
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
 msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Yaşasın! <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">yeni sürüm kullanılabilir</a> {commits_behind} &mdash; <a href=\"{update_url}\">Şimdi Güncelle</a>"
 
 #: sickbeard/versionChecker.py:761
 msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Bilinmeyen sürüm numarası: Eğer daha önce SickRage güncelleme sistemini hiç kullanmadıysanız şu anki sürüm ayarlanamamış olabilir. &mdash; <a href=\"{update_url}\">Şimdi Güncelle</a>"
 
 #: sickbeard/webserve.py:163
 msgid "Mako Error"
@@ -439,7 +439,7 @@ msgstr "2 numaralı denemedir"
 
 #: sickbeard/webserve.py:629
 msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
-msgstr "{branch} şubesini kullanmaktasınız. Özel olarak istenmedikçe lütfen 'sahip''i kullanınız"
+msgstr "{branch} kanalını kullanmaktasınız. Özel olarak istenmedikçe lütfen 'master' kanalını kullanınız"
 
 #: sickbeard/webserve.py:694 sickbeard/webserve.py:699
 msgid "Invalid show parameters"
@@ -499,7 +499,7 @@ msgstr "Telgram bildirim gönderme hatası: {message}"
 
 #: sickbeard/webserve.py:894
 msgid "join notification succeeded. Check your join clients to make sure it worked"
-msgstr "giriş bildirimi başarılı. Çalıştığından emin olmak için giriş aygıtınızı kontrol edin"
+msgstr "join bildirimi başarılı. Çalıştığından emin olmak için join katılımcılarınızı kontrol edin"
 
 #: sickbeard/webserve.py:896
 msgid "Error sending join notification: {message}"
@@ -527,7 +527,7 @@ msgstr "Deneme amaçlı prowl bildirim gönderimi başarısız"
 
 #: sickbeard/webserve.py:926
 msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
-msgstr "Boxcar2 bildirimi başarılı. Çalıştığından emin olmak için Boxcar2 müşterilerinizi kontrol ediniz"
+msgstr "Boxcar2 bildirimi başarılı. Çalıştığından emin olmak için Boxcar2 katılımcılarınızı kontrol edin"
 
 #: sickbeard/webserve.py:928
 msgid "Error sending Boxcar2 notification"
@@ -535,7 +535,7 @@ msgstr "Boxcar2 bildirim gönderme hatası"
 
 #: sickbeard/webserve.py:935
 msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
-msgstr "Basit işler bildirimi başarılı. Çalıştığından emin olmak için Basit işler müşterilerinizi kontrol ediniz"
+msgstr "Pushover bildirimi başarılı. Çalıştığından emin olmak için Pushover katılımcılarınızı kontrol edin"
 
 #: sickbeard/webserve.py:937
 msgid "Error sending Pushover notification"
@@ -559,19 +559,19 @@ msgstr "Tweet gönderimi başarısız"
 
 #: sickbeard/webserve.py:967
 msgid "Please enter a valid account sid"
-msgstr "Lütfen geçerli bir SID giriniz"
+msgstr "Lütfen geçerli bir hesap tanımlama kimliği girin"
 
 #: sickbeard/webserve.py:970
 msgid "Please enter a valid auth token"
-msgstr "Lüfen geçerli bir kimlil doğrulama belirteci giriniz"
+msgstr "Lüfen geçerli bir yetkilendirme jetonu (auth token) girin"
 
 #: sickbeard/webserve.py:973
 msgid "Please enter a valid phone sid"
-msgstr "Lütfen geçerli bir telefon SID giriniz"
+msgstr "Lütfen geçerli bir telefon tanımlama kimliği girin"
 
 #: sickbeard/webserve.py:976
 msgid "Please format the phone number as \"+1-###-###-####\""
-msgstr "Lütfen telefon numaranızı şu şekilde biçimlendirin \"+ 1-###-###-###\""
+msgstr "Lütfen telefon numaranızı şu şekilde biçimlendirin: \"+1-###-###-###\""
 
 #: sickbeard/webserve.py:980
 msgid "Authorization successful and number ownership verified"
@@ -627,15 +627,15 @@ msgstr "Test başarısız, hiçbir Plex Ortam Sunucusu adresi belirtilmemiş"
 
 #: sickbeard/webserve.py:1047
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
-msgstr "Plex Medya sunucu(lar)ı testi başarısız oldu ... {plex_servers}"
+msgstr "Plex Medya Sunucuları için gerçekleştirilen deneme başarısız oldu ... {plex_servers}"
 
 #: sickbeard/webserve.py:1050
 msgid "Tested Plex Media Server host(s)"
-msgstr "Plex Medya sunucusu host(lar)ı test edildi"
+msgstr "Plex Medya Sunucuları Denendi"
 
 #: sickbeard/webserve.py:1058
 msgid "Tried sending desktop notification via libnotify"
-msgstr "Libnotify aracılığı ile masaüstü bildirimi gönderilmeye denendi"
+msgstr "Libnotify aracılığıyla masaüstüne bildirim gönderilmesi denendi"
 
 #: sickbeard/webserve.py:1067
 msgid "Test notice sent successfully to {emby_host}"
@@ -679,11 +679,11 @@ msgstr "HATA: {last_error}"
 
 #: sickbeard/webserve.py:1196
 msgid "Test NMA notice sent successfully"
-msgstr "NMA deneme bildirimi başarıyla gönderildi"
+msgstr "NMA uyarı gönderimi başarılı"
 
 #: sickbeard/webserve.py:1198
 msgid "Test NMA notice failed"
-msgstr "NMA bildirim denemesi başarısız"
+msgstr "NMA uyarı gönderimi başarısız"
 
 #: sickbeard/webserve.py:1205
 msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
@@ -720,11 +720,11 @@ msgstr "Güncelleştirme başarısız, yeniden başlatılamıyor. Ayrıntılı b
 
 #: sickbeard/webserve.py:1333
 msgid "Checking out branch"
-msgstr "Şube teslim alınıyor"
+msgstr "Dal(branch) kontrol ediliyor"
 
 #: sickbeard/webserve.py:1336
 msgid "Already on branch"
-msgstr "Zaten dalda"
+msgstr "Zaten dalda (branch)"
 
 #: sickbeard/webserve.py:1364
 msgid "Invalid show ID: {show}"
@@ -806,7 +806,7 @@ msgstr "Özelleri gizle"
 
 #: sickbeard/webserve.py:1436
 msgid "Show specials"
-msgstr "Özelleri göster"
+msgstr "Dizi özel bölümleri"
 
 #: sickbeard/webserve.py:1438 sickbeard/webserve.py:2086 sickbeard/webserve.py:2087
 msgid "Preview Rename"
@@ -830,7 +830,7 @@ msgstr "Belirtilen dizi bulunamadı"
 
 #: sickbeard/webserve.py:1586
 msgid "Unable to retreive Fansub Groups from AniDB."
-msgstr "AniDB'den hayran gruplarını geri almak başarısız."
+msgstr "AniDB'den Fansub Grupları alınamadı."
 
 #: sickbeard/webserve.py:1595 sickbeard/webserve.py:1598
 msgid "Edit Show"
@@ -850,11 +850,11 @@ msgstr "Dizi güncelleştirilemedi: {error}"
 
 #: sickbeard/webserve.py:1743
 msgid "Unable to force an update on scene exceptions of the show."
-msgstr "Gösterinin özel sahnelerini güçle yenileme işlemi başarısız oldu."
+msgstr "Gösteri özel durumlarını zorla güncelleme işlemi başarısız oldu."
 
 #: sickbeard/webserve.py:1750
 msgid "Unable to force an update on scene numbering of the show."
-msgstr "Gösterinin sahne numaralandırma işlemini güçle yenilemek başarısız oldu."
+msgstr "Gösteri sahne numaralandırmasını zorla güncelleme işlemi başarısız oldu."
 
 #: sickbeard/webserve.py:1757 sickbeard/webserve.py:3571
 msgid "{num_errors:d} error{plural} while saving changes:"
@@ -902,19 +902,19 @@ msgstr "Bu dizi güncellenemedi."
 
 #: sickbeard/webserve.py:1866
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
-msgstr "KODI host(s)) için gönderilen kütüphane güncelleştirme komutu: {kodi_hosts}"
+msgstr "Kütüphane güncelleme komutu gönderilen KODI sunucuları: {kodi_hosts}"
 
 #: sickbeard/webserve.py:1868
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
-msgstr "Bir veya daha fazla KODI host(s)) için bağlantı kurulamadı: {kodi_hosts}"
+msgstr "Bir veya daha fazla KODI sunucusuyla bağlantı kurulamadı: {kodi_hosts}"
 
 #: sickbeard/webserve.py:1877
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
-msgstr "Kütüphane yenileme komutu Plex Medya sunucusu host'una gönderildi: {plex_server}"
+msgstr "Kütüphane güncelleme komutu gönderilen Plex sunucuları: {plex_server}"
 
 #: sickbeard/webserve.py:1880
 msgid "Unable to contact Plex Media Server host: {plex_server}"
-msgstr "Plex medya sunucusu host'una bağlantı başarısız:{plex_server}"
+msgstr "Plex Media server bağlantısı kurulamadı:{plex_server}"
 
 #: sickbeard/webserve.py:1892
 msgid "Library update command sent to Emby host: {emby_host}"
@@ -977,11 +977,11 @@ msgstr "IRC"
 
 #: sickbeard/webserve.py:2432
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
-msgstr "Repo yenilikleri yüklenemedi. [news.md için buraya tıklayın])({news_url})"
+msgstr "Haberler sunucudan alınamadı. [news.md için buraya tıklayın])({news_url})"
 
 #: sickbeard/webserve.py:2439 sickbeard/webserve.py:2459
 msgid "The was a problem connecting to github, please refresh and try again"
-msgstr "Github için bağlantıda bir sorun oluştu, lütfen yenilemeyi deneyin"
+msgstr "Github'a bağlanılırken bir sorun oluştu, lütfen tekrar deneyin"
 
 #: sickbeard/webserve.py:2454
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
@@ -1066,7 +1066,7 @@ msgstr "{show_name} isimli dizi ekleniyor"
 
 #: sickbeard/webserve.py:2949
 msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
-msgstr "Parametreler eksik, dizinleyici kimliği ve dosyası yok: {show_to_add} ve {root_dir}/{show_path}"
+msgstr "Kayıp parametre, dizinleyici kimliği veya klasörü yok: {show_to_add} ve {root_dir}/{show_path}"
 
 #: sickbeard/webserve.py:2958
 msgid "Unknown error. Unable to add show due to problem with show selection."
@@ -1373,19 +1373,19 @@ msgstr "Bu SickRage'den gelen bir bildirim testi"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches and backlog searches"
-msgstr ""
+msgstr "günlük ve biriktirme listesi araması"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr ""
+msgstr "günlük aramalar"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
-msgstr ""
+msgstr "biriktirme listesi aramaları"
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
-msgstr ""
+msgstr "{searches} için hiçbir NZB/Torrent sağlayıcısı bulunamadı veya etkinleştirilmedi.<br/>Lütfen <a href=\"{web_root}/config/providers/\">ayarlarınızı kontrol edin</a>."
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
@@ -1397,7 +1397,7 @@ msgstr "Günlük dosyası klasörünün konumunu seç"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr ""
+msgstr "Arkaplan Resmi Seçin"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
@@ -1438,7 +1438,7 @@ msgstr "Kara liste adını denetle; değerinin bir trakt sülüğü olması gere
 
 #: gui/slick/js/core.js:1026
 msgid "You must provide a recipient email address!"
-msgstr "Alıcının adresini vermeniz gerekiyor!"
+msgstr "Bir alıcı e-posta adresi sağlamanız gerekiyor!"
 
 #: gui/slick/js/core.js:1111
 msgid "You didn't supply a Pushbullet api key"
@@ -1450,11 +1450,11 @@ msgstr "Yeni pushbullet ayarlarınızı kaydetmeyi unutmayın."
 
 #: gui/slick/js/core.js:1277
 msgid "Select TV Download Directory"
-msgstr "TV indirme dizini seçiniz"
+msgstr "TV İndirme Klasörü Seçiniz"
 
 #: gui/slick/js/core.js:1278
 msgid "Select Unpack Directory"
-msgstr "Açma dizini seç"
+msgstr "Arşivden Çıkarma Klasörü Seçiniz"
 
 #: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390 gui/slick/js/core.js:1439
 #: gui/slick/js/core.js:1505
@@ -1464,7 +1464,7 @@ msgstr "Bu kalıp geçerli değil."
 #: gui/slick/js/core.js:1349 gui/slick/js/core.js:1398 gui/slick/js/core.js:1447
 #: gui/slick/js/core.js:1513
 msgid "This pattern would be invalid without the folders, using it will force \"Season Folders\" on for all shows."
-msgstr "Dosya olmadan bu kalıp geçersiz olur, bunu kullanmak tüm diziler için \"Sezon dosyalarını\" zorlar."
+msgstr "Klasörler olmadan bu kalıp geçersizdir, bu kalıbı kullanmak tüm diziler için \"Sezon Klasörleri\" oluşturma seçeneğini aktifleştirir."
 
 #: gui/slick/js/core.js:1357 gui/slick/js/core.js:1406 gui/slick/js/core.js:1455
 #: gui/slick/js/core.js:1521
@@ -1485,7 +1485,7 @@ msgstr ".Torrent karşıdan yükleme konumunu seçin"
 
 #: gui/slick/js/core.js:1882
 msgid "Minimum seeding time is"
-msgstr "En az tohumlama zamanı"
+msgstr "Asgari dağıtma süresi"
 
 #: gui/slick/js/core.js:1884
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
@@ -1529,7 +1529,7 @@ msgstr "Putio istemciniz için url (mesela http://localhost:8080)"
 
 #: gui/slick/js/core.js:1958
 msgid "Create a new OAuth app for put.io"
-msgstr ""
+msgstr "Put.io için yeni bir OAuth uygulaması oluştur"
 
 #: gui/slick/js/core.js:1959
 msgid "Put.io Parent Folder"
@@ -1553,15 +1553,15 @@ msgstr "Dizi konumu seç"
 
 #: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
 msgid "None"
-msgstr ""
+msgstr "Hiçbiri"
 
 #: gui/slick/js/core.js:2939
 msgid "Select Unprocessed Episode Folder"
-msgstr "İşlemmemiş bölüm klasörünü seç"
+msgstr "İşlenmemiş bölüm klasörünü seç"
 
 #: gui/slick/js/core.js:3327
 msgid "DELETED"
-msgstr "Silinmiş"
+msgstr "SİLİNDİ"
 
 #: gui/slick/js/core.js:3624
 msgid "Resume updating the log on this page."
@@ -1573,7 +1573,7 @@ msgstr "Bu sayfada günlük güncelleştirmesini duraklat."
 
 #: gui/slick/js/core.js:3955
 msgid " on  in "
-msgstr ""
+msgstr "üzerinde/içinde"
 
 #: gui/slick/js/core.js:3958
 msgid "searching {searchingFor}..."
@@ -1581,7 +1581,7 @@ msgstr "{searchingFor} aranıyor..."
 
 #: gui/slick/js/core.js:3971
 msgid "search timed out, try again or try another indexer"
-msgstr "arama zaman aşımına uğradı dışarı, yeniden deneyin veya başka bir dizin oluşturucusunu deneyin"
+msgstr "arama zaman aşımına uğradı, yeniden deneyin veya başka bir dizin oluşturucusu deneyin"
 
 #: gui/slick/js/core.js:4101
 msgid "loading folders..."
@@ -1676,7 +1676,7 @@ msgstr "Gönder"
 
 #: gui/slick/views/addShows_newShow.mako:23
 msgid "Search for a Show"
-msgstr ""
+msgstr "Dizi için arama"
 
 #: gui/slick/views/addShows_newShow.mako:29
 msgid "Show retrieved from existing metadata"
@@ -1689,7 +1689,7 @@ msgstr "Dizi ismi"
 
 #: gui/slick/views/addShows_newShow.mako:52
 msgid "Metadata language"
-msgstr ""
+msgstr "Meta veri dili"
 
 #: gui/slick/views/addShows_newShow.mako:65
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1715,7 +1715,7 @@ msgstr "Ara"
 
 #: gui/slick/views/addShows_newShow.mako:101
 msgid "Pick the Folder"
-msgstr ""
+msgstr "Klasörü seçin"
 
 #: gui/slick/views/addShows_newShow.mako:105
 msgid "Pre-chosen Destination Folder"
@@ -1727,7 +1727,7 @@ msgstr "Seçenekleri özelleştir"
 
 #: gui/slick/views/addShows_newShow.mako:124
 msgid "Verify Your Input"
-msgstr ""
+msgstr "Girişinizi doğrulayın"
 
 #: gui/slick/views/addShows_newShow.mako:137
 #: gui/slick/views/home_massAddTable.mako:11
@@ -2119,7 +2119,7 @@ msgstr "Gelişmiş Ayarlar"
 
 #: gui/slick/views/config_general.mako:32
 msgid "Startup options. Indexer options. Log and show file locations."
-msgstr "Başlangıç seçenekleri. Dizin oluşturucu seçenekleri. Oturum aç ve dosya konumlarını göster."
+msgstr "Başlangıç seçenekleri. Dizin oluşturucu seçenekleri. Günlük ve dizi dosyası konumları."
 
 #: gui/slick/views/config_general.mako:33
 msgid "Some options may require a manual restart to take effect."
@@ -2190,19 +2190,19 @@ msgstr "not"
 
 #: gui/slick/views/config_general.mako:109
 msgid "minutes are randomized each time SickRage is started"
-msgstr "sickRage başladığında her seferinde dakikalar rastgele ayarlanır"
+msgstr "SickRage her yeniden başlatıldığında dakikalar rastgele ayarlanır"
 
 #: gui/slick/views/config_general.mako:117
 msgid "Send to trash for actions"
-msgstr "Aksiyon için çöpe gönder"
+msgstr "Bu durumlarda çöpe gönder"
 
 #: gui/slick/views/config_general.mako:123
 msgid "when using show \"Remove\" and delete files"
-msgstr "dizi kaldır ve sil dosyaları kullanılırken"
+msgstr "dizinin \"Kaldır\" seçeneği kullanılırken ve dosyaları silinirken"
 
 #: gui/slick/views/config_general.mako:129
 msgid "on scheduled deletes of the oldest log files"
-msgstr "eski günlük dosyalarının silinme çizelgesi"
+msgstr "en eski günlük dosyalarının zamanlanmış silinmeleri sırasında"
 
 #: gui/slick/views/config_general.mako:134
 msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
@@ -2218,7 +2218,7 @@ msgstr "Kaydedilmiş günlük dosyası sayısı"
 
 #: gui/slick/views/config_general.mako:161
 msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
-msgstr "günlükler sırayla çalıştırılırken kaydedilen günlük dosyaların sayısı (varsayılan: 5) (yeniden başlatma gerektirir)"
+msgstr "günlük dosyası sayısı (varsayılan: 5) (YENİDEN BAŞLATMA GEREKTİRİR)"
 
 #: gui/slick/views/config_general.mako:169
 msgid "Size of Log files saved"
@@ -2226,11 +2226,11 @@ msgstr "Kaydedilmiş günlük dosyası boyutu"
 
 #: gui/slick/views/config_general.mako:179
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
-msgstr "günlük dosyasının MB bazında en büyük boyutu (varsayılan: 1) (yeniden başlatma gerektirir)"
+msgstr "günlük dosyasının azami boyutu (varsayılan: 1MB) (YENİDEN BAŞLATMA GEREKTİRİR)"
 
 #: gui/slick/views/config_general.mako:187
 msgid "Use initial indexer set to"
-msgstr "İlk dizin oluşturucuyu belirlemek için kullanın"
+msgstr "Varsayılan dizin oluşturucu"
 
 #: gui/slick/views/config_general.mako:202
 msgid "as the default selection when adding new shows"
@@ -2238,11 +2238,11 @@ msgstr "yeni diziler eklenirken varsayılan seçim olarak"
 
 #: gui/slick/views/config_general.mako:210
 msgid "Timeout show indexer at"
-msgstr "Zaman aşımı gösterimi dizinler"
+msgstr "Dizin oluşturucu zaman aşımı"
 
 #: gui/slick/views/config_general.mako:220
 msgid "seconds of inactivity when finding new shows (default:20)"
-msgstr "yeni dizi bulurkenki etkisizlik saniyeleri (varsayılan:20)"
+msgstr "yeni diziler bulunurken beklenecek süre (varsayılan:20 saniye)"
 
 #: gui/slick/views/config_general.mako:228
 msgid "Show root directories"
@@ -2362,15 +2362,15 @@ msgstr "Bir arka plan resmi kullan"
 
 #: gui/slick/views/config_general.mako:390
 msgid "use a custom image as background for SickRage"
-msgstr "sickRage için özel bir arkaplan resmi kullan"
+msgstr "SickRage için özel bir arkaplan resmi kullan"
 
 #: gui/slick/views/config_general.mako:396
 msgid "Background Path"
-msgstr "Arkaplan veriyolu"
+msgstr "Arka Plan Konumu"
 
 #: gui/slick/views/config_general.mako:407
 msgid "Path to the background image"
-msgstr "Arkaplan resmine veri yolu"
+msgstr "Arka plan resminin konumu"
 
 #: gui/slick/views/config_general.mako:416
 msgid "Show fanart in the background"
@@ -2390,7 +2390,7 @@ msgstr "hayranlar tarafından hazırlanan duvar kağıtlarının saydamlığı"
 
 #: gui/slick/views/config_general.mako:445
 msgid "Use a custom stylesheet file"
-msgstr "Özel stil sayfasını kullan"
+msgstr "Özel bir stil sayfası dosyası kullan"
 
 #: gui/slick/views/config_general.mako:450
 msgid "use a custom .css file to style SickRage (for advanced users)"
@@ -2398,7 +2398,7 @@ msgstr "SickRage'i biçemlendirmek için özel .css dosyası kullan (ileri düze
 
 #: gui/slick/views/config_general.mako:456
 msgid "Stylesheet File Path"
-msgstr "Stil sayfa dosya yolu"
+msgstr "Stil Sayfası Dosya Konumu"
 
 #: gui/slick/views/config_general.mako:467
 msgid "Path to the stylesheet (.css) file"
@@ -2718,11 +2718,11 @@ msgstr "devre dışı ise bölüm varsayılan silinmiş durumuna ayarlanır"
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
-msgstr ""
+msgstr "Kırık Sembolik Bağlantıları Yoksay"
 
 #: gui/slick/views/config_general.mako:1014
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
-msgstr ""
+msgstr "İşaretlerseniz, dizi boyutu hesaplanırken oluşturulan kırık sembolik bağlantı uyarıları hata ayıklama olarak kütüğe geçirilecek"
 
 #: gui/slick/views/config_general.mako:1022
 msgid "Default deleted episode status"
@@ -3795,7 +3795,7 @@ msgstr "kimlik (ID) almak için Telegram üzerinden @myidbot'a ulaşın"
 
 #: gui/slick/views/config_notifications.mako:2188
 msgid "Note: Don't forget to talk with your bot at least one time if you get a 403 error."
-msgstr ""
+msgstr "Not: Eğer bir 403 hatası alırsanız en azından bir defalığına botunuz ile (sanal yardımcı) konuşmayı unutmayın."
 
 #: gui/slick/views/config_notifications.mako:2196
 msgid "Bot API token"
@@ -4838,7 +4838,7 @@ msgstr "En az bir sağlayıcı gereklidir ancak iki önerilir."
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Torrent and NZB providers can be toggled in "
-msgstr ""
+msgstr "Torrent ve NZB sağlayıcı durumları değiştirilebilir "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog searches at this time."
@@ -5432,7 +5432,7 @@ msgstr "Çok yüksek"
 #: gui/slick/views/manage_manageSearches.mako:34
 #: gui/slick/views/manage_manageSearches.mako:42
 msgid "Force"
-msgstr "Güç"
+msgstr "Güncellemeye Zorla"
 
 #: gui/slick/views/config_search.mako:718
 msgid "priority for daily snatches (no backlog)"
@@ -5554,7 +5554,7 @@ msgstr "synology DS için hedef paylaşımlı dosya olmak zorundadır</span>"
 
 #: gui/slick/views/config_search.mako:1100
 msgid "Minimum seeding time"
-msgstr "En kısa tohumlama zamanı"
+msgstr "Asgari dağıtma süresi"
 
 #: gui/slick/views/config_search.mako:1111
 msgid "time in hours"
@@ -5968,11 +5968,11 @@ msgstr "İndir"
 
 #: gui/slick/views/displayShow.mako:468
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
-msgstr "Sahne numaralandırmaki dizin oluşturucu bölüm numaralandırmadan farklıysa değeri değiştirin"
+msgstr "Sahne numaralandırması ile dizin oluşturucu bölüm numaralandırması farklıysa buradaki değeri değiştirin"
 
 #: gui/slick/views/displayShow.mako:480
 msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
-msgstr "Sahne mutlak numaralandırma dizin oluşturucu mutlak numaralandırmadan farklı ise buradan değeri değiştir"
+msgstr "Sahne mutlak numaralandırması ile dizin oluşturucu mutlak numaralandırması farklı ise buradaki değeri değiştirtirin"
 
 #: gui/slick/views/displayShow.mako:574 gui/slick/views/displayShow.mako:593
 msgid "Manual Search"
@@ -6089,7 +6089,7 @@ msgstr "bölümleri sezon dosyasına göre grublandır (tek dosyada depolamak i�
 
 #: gui/slick/views/editShow.mako:236
 msgid "search by scene numbering (uncheck to search by indexer numbering)"
-msgstr "sahne numarasına göre ara (dizin oluşturucu numarasına göre arama işaretini kaldır)"
+msgstr "sahne numarası ile ara (dizin oluşturucu numarası ile arama yapmak için işareti kaldırın)"
 
 #: gui/slick/views/editShow.mako:248
 msgid "use the DVD order instead of the air order"
@@ -6109,7 +6109,7 @@ msgstr "bu listeden bir veya bir kaç kelimelik arama sonuçları göz ardı edi
 
 #: gui/slick/views/editShow.mako:293
 msgid "this option overrides the globally ignored words!"
-msgstr ""
+msgstr "bu seçenek evrensel olarak yoksayılan kelimeleri değiştirir!"
 
 #: gui/slick/views/editShow.mako:319
 msgid "search results with no words from this list will be ignored."
@@ -6117,7 +6117,7 @@ msgstr "bu listeden hiç kelime olmayan arama sonuçları göz ardı edilecektir
 
 #: gui/slick/views/editShow.mako:320
 msgid "this option overrides the globally required words!"
-msgstr ""
+msgstr "bu seçenek evrensel olarak gerekli kelimeleri değiştirir!"
 
 #: gui/slick/views/editShow.mako:328
 msgid "Scene Exception"
@@ -6132,7 +6132,7 @@ msgstr "Göster"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Sezon "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6144,7 +6144,7 @@ msgstr "bu liste orijinal gösteri ismine eklenecek."
 
 #: gui/slick/views/editShow.mako:384
 msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sickrage.github.io/issues\">here</a>."
-msgstr ""
+msgstr "etkisiz kılınan girdiler github üzerinde merkezi bir dosyadan alınır,<br/> bir hata olduğunu düşünüyorsanız lütfen bunu <a href=\"//github.com/sickrage/sickrage.github.io/issues\">buradan</a> belirtin."
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"
@@ -6293,7 +6293,7 @@ msgstr "Bu dizi sahne numaralandırması mı kullanıyor?"
 
 #: gui/slick/views/inc_addShowOptions.mako:102
 msgid "Save as default"
-msgstr ""
+msgstr "Varsayılan olarak kaydet"
 
 #: gui/slick/views/inc_addShowOptions.mako:106
 msgid "Use current values as the defaults"
@@ -6459,11 +6459,11 @@ msgstr "Yeni"
 
 #: gui/slick/views/inc_rootDirs.mako:33
 msgid "Set as default"
-msgstr ""
+msgstr "Varsayılan olarak ayarla"
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "30 gün boyunca"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"
@@ -6780,7 +6780,7 @@ msgstr "Gösterilen"
 
 #: gui/slick/views/schedule.mako:73
 msgid "View Snatched"
-msgstr ""
+msgstr "Yakalananları Gör"
 
 #: gui/slick/views/schedule.mako:85
 msgid "Calendar"
@@ -6808,7 +6808,7 @@ msgstr "Dizin oluşturucular"
 
 #: gui/slick/views/schedule.mako:288
 msgid "No shows for this day"
-msgstr "Bugün için gösteri yok"
+msgstr "Dizi yok"
 
 #: gui/slick/views/schedule.mako:459
 msgid "Airs"
@@ -6848,7 +6848,7 @@ msgstr "Canlı"
 
 #: gui/slick/views/status.mako:46
 msgid "Start Time"
-msgstr "Başlangıç zamanı"
+msgstr "Başlangıç Zamanı"
 
 #: gui/slick/views/status.mako:47
 msgid "Cycle Time"
@@ -6968,7 +6968,7 @@ msgstr "Filtre"
 
 #: gui/slick/views/layouts/config.mako:47
 msgid "All non-absolute folder locations are relative to "
-msgstr "Tüm mutlak olmayan dosya konumları bağlı "
+msgstr "Tüm mutlak olmayan klasör konumlarının ilgili olduğu yer "
 
 #: gui/slick/views/layouts/main.mako:146
 msgid "Manual Post-Processing"
