@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+daemon_home="/path/to/sickrage_homedir"
+daemon_user="sickrage"
+daemon="/usr/local/bin/python2.7 $daemon_home/SickRage/SickBeard.py"
+daemon_flags="-q --daemon --nolaunch --datadir=$daemon_home"
+daemon_timeout=5
+
+. /etc/rc.d/rc.subr
+
+rc_reload=NO
+
+rc_cmd $1
