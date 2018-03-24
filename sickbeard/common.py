@@ -33,14 +33,17 @@ import uuid
 from os import path
 
 from fake_useragent import settings as UA_SETTINGS, UserAgent
-# noinspection PyUnresolvedReferences
-from six.moves import reduce
+
+
 
 from sickbeard.numdict import NumDict
 from sickrage.helper import video_screen_size
 from sickrage.helper.encoding import ek
 from sickrage.recompiled import tags
 from sickrage.tagger.episode import EpisodeTags
+
+# noinspection PyUnresolvedReferences
+from six.moves import reduce
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -338,7 +341,7 @@ class Quality(object):
             if ep.avc and ep.bluray:
                 result = Quality.UHD_4K_BLURAY if not full_res else Quality.UHD_8K_BLURAY
             # WEB-DL
-            elif (ep.avc and ep.itunes) or ep.web:
+            elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                 result = Quality.UHD_4K_WEBDL if not full_res else Quality.UHD_8K_WEBDL
             # HDTV
             elif ep.avc and ep.tv == 'hd':
@@ -352,7 +355,7 @@ class Quality(object):
                 if ep.avc and (ep.bluray or ep.hddvd):
                     result = Quality.FULLHDBLURAY if full_res else Quality.HDBLURAY
                 # WEB-DL
-                elif (ep.avc and ep.itunes) or ep.web:
+                elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                     result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
                 # HDTV
                 elif ep.avc and ep.tv == 'hd':
@@ -381,6 +384,7 @@ class Quality(object):
         elif ep.tv:
             # SD TV/HD TV
             result = Quality.SDTV
+
 
         return Quality.UNKNOWN if result is None else result
 
