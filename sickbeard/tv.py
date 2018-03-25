@@ -1006,13 +1006,16 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     except Exception as error:
                         logger.log('Unable to change permissions of {0}: {1}'.format(self._location, error), logger.WARNING)
 
-                if sickbeard.TRASH_REMOVE_SHOW:
-                    send2trash(self.location)
+                if {d for d in sickbeard.ROOT_DIRS if self.location in d}:
+                    logger.log('Cannot delete the show files from disk, because this location is the root dir for other shows!')
                 else:
-                    ek(shutil.rmtree, self.location)
+                    if sickbeard.TRASH_REMOVE_SHOW:
+                        send2trash(self.location)
+                    else:
+                        ek(shutil.rmtree, self.location)
 
-                logger.log('{0} show folder {1}'.format
-                           (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
+                    logger.log('{0} show folder {1}'.format
+                               (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
 
             except ShowDirectoryNotFoundException:
                 logger.log("Show folder does not exist, no need to {0} {1}".format(action, self._location), logger.WARNING)
