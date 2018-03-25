@@ -16,11 +16,12 @@ dvd = re.compile(r'(?P<hd>hd)?dvd(?P<rip>rip|mux)?', re.I)
 web = re.compile(r'(web(?P<type>rip|mux|hd|.?dl|\b))', re.I)
 bluray = re.compile(r'(blue?-?ray|b[rd](?:rip|mux))', re.I)
 sat = re.compile(r'(dsr|satrip)', re.I)
-itunes = re.compile(r'(itunes)', re.I)
-netflix = re.compile(r'netflix(hd|uhd)', re.I)
+itunes = re.compile(r'itunes(hd|uhd)?', re.I)
+netflix = re.compile(r'netflix(hd|uhd)?', re.I)
+amazon = re.compile(r'(amzn|amazon)(hd|uhd)?', re.I)
 
 # Codecs
-avc = re.compile(r'([xh].?26[45])', re.I)
+avc = re.compile(r'([xh].?26[45]|AVC)', re.I)
 xvid = re.compile(r'(xvid|divx)', re.I)
 mpeg = re.compile(r'(mpeg-?2)', re.I)
 
