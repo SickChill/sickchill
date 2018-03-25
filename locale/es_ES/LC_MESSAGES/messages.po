@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-03-22 13:37+0000\n"
-"PO-Revision-Date: 2018-03-24 02:10-0400\n"
+"POT-Creation-Date: 2018-03-25 12:12+0000\n"
+"PO-Revision-Date: 2018-03-25 08:13-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -181,7 +181,7 @@ msgstr "Extendida (Limitada, Prefijo Ep)"
 
 #: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:74
 #: gui/slick/views/inc_home_showList.mako:279 sickbeard/common.py:219
-#: sickbeard/common.py:604
+#: sickbeard/common.py:606
 msgid "Downloaded"
 msgstr "Descargado"
 
@@ -189,53 +189,53 @@ msgstr "Descargado"
 #: gui/slick/views/inc_home_showList.mako:78
 #: gui/slick/views/inc_home_showList.mako:283 gui/slick/views/layouts/main.mako:339
 #: gui/slick/views/schedule.mako:28 gui/slick/views/schedule.mako:304
-#: sickbeard/common.py:220 sickbeard/common.py:603
+#: sickbeard/common.py:220 sickbeard/common.py:605
 msgid "Snatched"
 msgstr "Añadido"
 
-#: sickbeard/common.py:221 sickbeard/common.py:606
+#: sickbeard/common.py:221 sickbeard/common.py:608
 msgid "Snatched (Proper)"
 msgstr "Conseguido (Proper)"
 
 #: gui/slick/views/manage_manageSearches.mako:64 sickbeard/common.py:222
-#: sickbeard/common.py:611
+#: sickbeard/common.py:613
 msgid "Failed"
 msgstr "Erroneo"
 
-#: sickbeard/common.py:223 sickbeard/common.py:612
+#: sickbeard/common.py:223 sickbeard/common.py:614
 msgid "Snatched (Best)"
 msgstr "Conseguido (Mejor)"
 
-#: sickbeard/common.py:224 sickbeard/common.py:608
+#: sickbeard/common.py:224 sickbeard/common.py:610
 msgid "Archived"
 msgstr "Archivado"
 
 #: gui/slick/views/history.mako:89 gui/slick/views/history.mako:167
-#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:601
+#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:603
 msgid "Unknown"
 msgstr "Desconocido"
 
 #: gui/slick/views/inc_home_showList.mako:88
-#: gui/slick/views/inc_home_showList.mako:293 sickbeard/common.py:602
+#: gui/slick/views/inc_home_showList.mako:293 sickbeard/common.py:604
 msgid "Unaired"
 msgstr "No emitido"
 
-#: gui/slick/views/displayShow.mako:312 sickbeard/common.py:605
+#: gui/slick/views/displayShow.mako:312 sickbeard/common.py:607
 msgid "Skipped"
 msgstr "Omitido"
 
 #: gui/slick/views/displayShow.mako:309
 #: gui/slick/views/manage_backlogOverview.mako:26
-#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:607
+#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:609
 msgid "Wanted"
 msgstr "Deseado"
 
-#: sickbeard/common.py:609
+#: sickbeard/common.py:611
 msgid "Ignored"
 msgstr "Ignorado"
 
 #: gui/slick/views/config_providers.mako:716 gui/slick/views/history.mako:130
-#: sickbeard/common.py:610
+#: sickbeard/common.py:612
 msgid "Subtitled"
 msgstr "Subtitulado"
 
@@ -390,7 +390,7 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:761
 msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Número de versión actual desconocido: si nunca has usado la actualización del sistema de SickRage antes, entonces la versión actual no se ha establecido. &mdash; <a href=\"{update_url}\">actualizar ahora</a>"
 
 #: sickbeard/webserve.py:163
 msgid "Mako Error"
@@ -1377,7 +1377,7 @@ msgstr ""
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr ""
+msgstr "búsqueda diaria"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
@@ -1385,7 +1385,7 @@ msgstr ""
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
-msgstr ""
+msgstr "No hay proveedores NZB/Torrent encontrados o habilitados para {searches}. <br/>Por favor <a href=\"{web_root}/config/providers/\"> compruebe su configuración</a>."
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
@@ -1397,7 +1397,7 @@ msgstr "Seleccione la locación de carpeta del achivo de registro"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr ""
+msgstr "Seleccione imagen de fondo"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
@@ -1529,7 +1529,7 @@ msgstr "URL para su cliente putio (ej. http://localhost:8080)"
 
 #: gui/slick/js/core.js:1958
 msgid "Create a new OAuth app for put.io"
-msgstr ""
+msgstr "Crear una nueva OAuth app para put.io"
 
 #: gui/slick/js/core.js:1959
 msgid "Put.io Parent Folder"
@@ -1553,7 +1553,7 @@ msgstr "Seleccionar locación de serie"
 
 #: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #: gui/slick/js/core.js:2939
 msgid "Select Unprocessed Episode Folder"
@@ -1676,7 +1676,7 @@ msgstr "Enviar"
 
 #: gui/slick/views/addShows_newShow.mako:23
 msgid "Search for a Show"
-msgstr ""
+msgstr "Buscar una Serie"
 
 #: gui/slick/views/addShows_newShow.mako:29
 msgid "Show retrieved from existing metadata"
@@ -1689,7 +1689,7 @@ msgstr "Nombre Serie"
 
 #: gui/slick/views/addShows_newShow.mako:52
 msgid "Metadata language"
-msgstr ""
+msgstr "Lenguaje de metadatos"
 
 #: gui/slick/views/addShows_newShow.mako:65
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1715,7 +1715,7 @@ msgstr "Buscar"
 
 #: gui/slick/views/addShows_newShow.mako:101
 msgid "Pick the Folder"
-msgstr ""
+msgstr "Escoge la carpeta"
 
 #: gui/slick/views/addShows_newShow.mako:105
 msgid "Pre-chosen Destination Folder"
@@ -1727,7 +1727,7 @@ msgstr "Opciones de personalización"
 
 #: gui/slick/views/addShows_newShow.mako:124
 msgid "Verify Your Input"
-msgstr ""
+msgstr "Verificar tu entrada"
 
 #: gui/slick/views/addShows_newShow.mako:137
 #: gui/slick/views/home_massAddTable.mako:11
@@ -2720,7 +2720,7 @@ msgstr "si deshabilitas el episodio se establecerá a la opción predeterminada 
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
-msgstr ""
+msgstr "Omitir vínculos simbólicos rotos"
 
 #: gui/slick/views/config_general.mako:1014
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
@@ -6135,7 +6135,7 @@ msgstr "Series"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Temporada "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6296,7 +6296,7 @@ msgstr "¿Esta serie está enumerada por escena?"
 
 #: gui/slick/views/inc_addShowOptions.mako:102
 msgid "Save as default"
-msgstr ""
+msgstr "Establecer como predeterminado"
 
 #: gui/slick/views/inc_addShowOptions.mako:106
 msgid "Use current values as the defaults"
@@ -6463,11 +6463,11 @@ msgstr "Nuevo"
 
 #: gui/slick/views/inc_rootDirs.mako:33
 msgid "Set as default"
-msgstr ""
+msgstr "Establecer como predeterminado"
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "durante 30 días"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"

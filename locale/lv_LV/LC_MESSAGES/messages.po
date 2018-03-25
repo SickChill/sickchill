@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-03-22 13:37+0000\n"
-"PO-Revision-Date: 2018-03-24 02:09-0400\n"
+"POT-Creation-Date: 2018-03-25 12:12+0000\n"
+"PO-Revision-Date: 2018-03-25 08:13-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Latvian\n"
 "MIME-Version: 1.0\n"
@@ -181,7 +181,7 @@ msgstr ""
 
 #: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:74
 #: gui/slick/views/inc_home_showList.mako:279 sickbeard/common.py:219
-#: sickbeard/common.py:604
+#: sickbeard/common.py:606
 msgid "Downloaded"
 msgstr ""
 
@@ -189,53 +189,53 @@ msgstr ""
 #: gui/slick/views/inc_home_showList.mako:78
 #: gui/slick/views/inc_home_showList.mako:283 gui/slick/views/layouts/main.mako:339
 #: gui/slick/views/schedule.mako:28 gui/slick/views/schedule.mako:304
-#: sickbeard/common.py:220 sickbeard/common.py:603
+#: sickbeard/common.py:220 sickbeard/common.py:605
 msgid "Snatched"
 msgstr ""
 
-#: sickbeard/common.py:221 sickbeard/common.py:606
+#: sickbeard/common.py:221 sickbeard/common.py:608
 msgid "Snatched (Proper)"
 msgstr ""
 
 #: gui/slick/views/manage_manageSearches.mako:64 sickbeard/common.py:222
-#: sickbeard/common.py:611
+#: sickbeard/common.py:613
 msgid "Failed"
 msgstr ""
 
-#: sickbeard/common.py:223 sickbeard/common.py:612
+#: sickbeard/common.py:223 sickbeard/common.py:614
 msgid "Snatched (Best)"
 msgstr ""
 
-#: sickbeard/common.py:224 sickbeard/common.py:608
+#: sickbeard/common.py:224 sickbeard/common.py:610
 msgid "Archived"
 msgstr ""
 
 #: gui/slick/views/history.mako:89 gui/slick/views/history.mako:167
-#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:601
+#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:603
 msgid "Unknown"
 msgstr ""
 
 #: gui/slick/views/inc_home_showList.mako:88
-#: gui/slick/views/inc_home_showList.mako:293 sickbeard/common.py:602
+#: gui/slick/views/inc_home_showList.mako:293 sickbeard/common.py:604
 msgid "Unaired"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:312 sickbeard/common.py:605
+#: gui/slick/views/displayShow.mako:312 sickbeard/common.py:607
 msgid "Skipped"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:309
 #: gui/slick/views/manage_backlogOverview.mako:26
-#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:607
+#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:609
 msgid "Wanted"
 msgstr ""
 
-#: sickbeard/common.py:609
+#: sickbeard/common.py:611
 msgid "Ignored"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:716 gui/slick/views/history.mako:130
-#: sickbeard/common.py:610
+#: sickbeard/common.py:612
 msgid "Subtitled"
 msgstr ""
 
