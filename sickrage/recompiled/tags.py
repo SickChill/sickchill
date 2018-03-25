@@ -21,7 +21,7 @@ netflix = re.compile(r'netflix(hd|uhd)?', re.I)
 amazon = re.compile(r'(amzn|amazon)(hd|uhd)?', re.I)
 
 # Codecs
-avc = re.compile(r'([xh].?26[45])', re.I)
+avc = re.compile(r'([xh].?26[45]|AVC)', re.I)
 xvid = re.compile(r'(xvid|divx)', re.I)
 mpeg = re.compile(r'(mpeg-?2)', re.I)
 
