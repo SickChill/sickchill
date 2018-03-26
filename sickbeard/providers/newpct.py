@@ -113,13 +113,12 @@ class newpctProvider(TorrentProvider):
                     continue
                     
                 letters = []
-                series_names_lower = [x.lower() for x in search_strings[mode]]
+                series_names_lower = [x.lower().strip() for x in search_strings[mode]]
 
                 #search series name
                 for series_name in series_names_lower:
-                    name = series_name.lower().strip()
-                    if name and (name[0] not in letters):
-                        letters.append(name[0])
+                    if series_name and (series_name[0] not in letters):
+                        letters.append(series_name[0])
                     
                 for letter in letters:
                     for letter_url in self.urls['letter']:
@@ -169,7 +168,7 @@ class newpctProvider(TorrentProvider):
             for row in series_rows:
                 try:
                     series_anchor = row.find_all('a')[0]
-                    title = series_anchor.get('title', '').lower()
+                    title = series_anchor.get('title', '').strip().lower()
                     url = series_anchor.get('href', '')
                     if title and title in series_names:
                         item = {
