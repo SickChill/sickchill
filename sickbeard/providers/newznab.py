@@ -356,7 +356,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                                 item_size = size_regex.group() if size_regex else -1
                             else:
                                 item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item('newznab:attr') + item('torznab:attr'):
+                                for attr in item.find_all(['newznab:attr','torznab:attr']):
                                     item_size = attr['value'] if attr['name'] == 'size' else item_size
                                     seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                                     leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
