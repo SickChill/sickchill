@@ -964,6 +964,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return self.nextaired
 
     def deleteShow(self, full=False):
+        main_db_con = db.DBConnection()
+
+        episodes_locations = main_db_con.select("SELECT location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         sql_l = [["DELETE FROM tv_episodes WHERE showid = ?", [self.indexerid]],
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
@@ -971,7 +974,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                  ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
 
-        main_db_con = db.DBConnection()
         main_db_con.mass_action(sql_l)
 
         action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
@@ -1006,8 +1008,22 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     except Exception as error:
                         logger.log('Unable to change permissions of {0}: {1}'.format(self._location, error), logger.WARNING)
 
-                if {d for d in sickbeard.ROOT_DIRS if self.location in d}:
-                    logger.log('Cannot delete the show files from disk, because this location is the root dir for other shows!')
+                shows_in_folder = main_db_con.select("SELECT location from tv_shows WHERE location LIKE '{showloc}%' AND indexer_id != ?".format(
+                    showloc=self.location), [self.indexerid])
+                num_shows_in_folder = len(shows_in_folder)
+                if num_shows_in_folder:
+                    logger.log('Cannot delete the show folder from disk, because this location is the root dir for {num} other shows!'.format(num=num_shows_in_folder))
+                    logger.log('Deleting individual episodes. There may be some related files or folders left behind afterwards.')
+                    for ep_file in episodes_locations:
+                        for show_file in ek(glob.glob, helpers.replace_extension(glob.escape(ep_file[b'location']), '*')):
+                            logger.log('Attempt to {0} related file {1}'.format(action, show_file))
+                            try:
+                                if sickbeard.TRASH_REMOVE_SHOW:
+                                    send2trash(show_file)
+                                else:
+                                    ek(os.remove, show_file)
+                            except OSError as error:
+                                logger.log('Unable to {0} {1}: {2}'.format(action, show_file, error), logger.WARNING)
                 else:
                     if sickbeard.TRASH_REMOVE_SHOW:
                         send2trash(self.location)
