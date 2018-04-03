@@ -48,10 +48,11 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.com/'
+        self.url = 'http://yggtorrent.is/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
-            'search': urljoin(self.url, 'engine/search')
+            'search': urljoin(self.url, 'engine/search'),
+            'download': urljoin(self.url, 'engine/download_torrent')
         }
 
         # Proper Strings
@@ -70,13 +71,15 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
+        if response is None: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
             response = self.get_url(self.url, returns='text')
             if not response: # The provider is dead !!!
                 logger.log('Unable to connect to provider', logger.WARNING)
                 return False
 
-        if 'logout' not in response:
+        response = self.get_url(self.url, returns='text') # Call the home page to see if you are connected, when website will be finished, maybe test the user profile.
+
+        if 'Déconnexion' not in response: # 'Déconnexion' will be in response if we are logged in !
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
@@ -111,16 +114,17 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     search_params = {
-                        'category': "2145",
-                        'subcategory' : "2184",
-                        'q': re.sub(r'[()]', '', search_string)
+                        'category'   : "2145",
+                        'subcategory': "2184",
+                        'name'       : re.sub(r'[()]', '', search_string),
+                        'do'         : 'search'
                     }
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
                         continue
 
                     with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.find(class_='table table-striped')
+                        torrent_table = html.find(class_='table-responsive results')
                         torrent_rows = torrent_table('tr') if torrent_table else []
 
                         # Continue only if at least one Release is found
@@ -131,23 +135,24 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         # Skip column headers
                         for result in torrent_rows[1:]:
                             cells = result('td')
-                            if len(cells) < 5:
+
+                            if len(cells) < 9:
                                 continue
 
                             download_url = ""
-                            title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            for download_img in cells[0].select('a[href] img'):
-                                if download_img['src'] == urljoin(self.url,"static/icons/icon_download.gif"):
-                                    download_url = urljoin(self.url, download_img.parent['href'])
-                                    break
+                            title = cells[1].find('a').get_text(strip=True)
+                            nfo_link = cells[2].select('a#get_nfo')
+                            torrent_id = nfo_link[0]['target']
+                            download_base_url = urljoin(self.url, self.urls['download'])
+                            download_url = urljoin(download_base_url, '?id=' + str(torrent_id))
 
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(cells[4].get_text(strip=True))
-                            leechers = try_int(cells[5].get_text(strip=True))
+                            seeders = try_int(cells[7].get_text(strip=True))
+                            leechers = try_int(cells[8].get_text(strip=True))
 
-                            torrent_size = cells[2].get_text()
+                            torrent_size = cells[5].get_text()
                             size = convert_size(torrent_size) or -1
 
                             # Filter unseeded torrent
