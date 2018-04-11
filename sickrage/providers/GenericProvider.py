@@ -87,7 +87,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         if not self.login():
             return False
 
-        urls, filename = self._make_url(result, true)
+        urls, filename = self._make_url(result, True)
 
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
