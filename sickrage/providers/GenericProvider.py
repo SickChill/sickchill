@@ -87,11 +87,18 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         if not self.login():
             return False
 
-        urls, filename = self._make_url(result)
+        urls, filename = self._make_url(result, True)
 
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
                 continue
+
+            if url.startswith('magnet'):
+                text_file = open(filename, "w")
+                text_file.write("%s" % url)
+                text_file.close()
+                logger.log('Saved result to {0}'.format(filename), logger.INFO)
+                return True
 
             if url.startswith('http'):
                 self.headers.update({
@@ -488,13 +495,16 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             logger.log('Unable to extract torrent hash or name from magnet: {0}'.format(magnet), logger.ERROR)
             return ''
 
-    def _make_url(self, result):
+    def _make_url(self, result, force_magnet):
         if not result:
             return '', ''
 
         filename = ''
         urls = [result.url]
         if result.url.startswith('magnet'):
+            if force_magnet:
+                filename = ek(join, self._get_storage_dir(), sanitize_filename(result.name) + '.magnet')
+                return urls, filename
             torrent_hash = self.hash_from_magnet(result.url)
             if not torrent_hash:
                 return urls, filename
