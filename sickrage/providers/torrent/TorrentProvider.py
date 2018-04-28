@@ -70,8 +70,9 @@ class TorrentProvider(GenericProvider):
 
         return results
 
+    @property
     def is_active(self):
-        return bool(sickbeard.USE_TORRENTS) and self.is_enabled()
+        return bool(sickbeard.USE_TORRENTS) and self.is_enabled
 
     @property
     def _custom_trackers(self):

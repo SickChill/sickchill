@@ -53,7 +53,7 @@ def sortedProviderList(randomize=False):
 
     # add all enabled providers first
     for curModule in providerDict:
-        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled():
+        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled:
             newList.append(providerDict[curModule])
 
     # add any modules that are missing from that list
@@ -95,11 +95,11 @@ def check_enabled_providers():
     if not sickbeard.DEVELOPER:
         backlog_enabled, daily_enabled = False, False
         for provider in sortedProviderList():
-            if provider.is_active():
-                if provider.enable_daily:
+            if provider.is_active:
+                if provider.enable_daily and provider.can_daily:
                     daily_enabled = True
 
-                if provider.enable_backlog:
+                if provider.enable_backlog and provider.can_backlog:
                     backlog_enabled = True
 
                 if backlog_enabled and daily_enabled:

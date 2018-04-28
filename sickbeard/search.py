@@ -371,14 +371,13 @@ def searchForNeededEpisodes():
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-        curFoundResults = {}
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
@@ -440,7 +439,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_backlog]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
