@@ -169,13 +169,13 @@ class GenericProviderTests(unittest.TestCase):
         """
         Test is_active
         """
-        self.assertFalse(GenericProvider('Test Provider').is_active())
+        self.assertFalse(GenericProvider('Test Provider').is_active)
 
     def test_is_enabled(self):
         """
         Test is_enabled
         """
-        self.assertFalse(GenericProvider('Test Provider').is_enabled())
+        self.assertFalse(GenericProvider('Test Provider').is_enabled)
 
     def test_make_id(self):
         """

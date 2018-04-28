@@ -29,6 +29,7 @@ import rarfile
 import six
 # noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
+from tornado.escape import xhtml_unescape
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
@@ -654,14 +655,12 @@ def clean_url(url):
     """
 
     if url and url.strip():
-
-        url = url.strip()
+        url = xhtml_unescape(url.strip())
 
         if '://' not in url:
             url = '//' + url
 
         scheme, netloc, path, query, fragment = parse.urlsplit(url, 'http')
-
         if not path:
             path += '/'
 

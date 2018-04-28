@@ -81,8 +81,8 @@ class SearchTest(test.SickbeardTestDBCase):
         _ = url, headers
         return _create_fake_xml(search_items)
 
-    @staticmethod
-    def _fake_is_active():
+    @property
+    def _fake_is_active(self):
         """
         Fake is active
         """
@@ -98,7 +98,7 @@ class SearchTest(test.SickbeardTestDBCase):
 
         for provider in sickbeard.providers.sortedProviderList():
             provider.get_url = self._fake_get_url
-            # provider.is_active = self._fake_is_active
+            provider.is_active = self._fake_is_active
 
         super(SearchTest, self).__init__(something)
 

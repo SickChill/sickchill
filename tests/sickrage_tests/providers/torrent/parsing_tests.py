@@ -209,7 +209,7 @@ def generate_test_cases():
     """
     for p in sickbeard.providers.__all__:
         provider = sickbeard.providers.getProviderModule(p).provider
-        if provider.supports_backlog and provider.provider_type == 'torrent' and provider.public:
+        if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class
             del generated_class
