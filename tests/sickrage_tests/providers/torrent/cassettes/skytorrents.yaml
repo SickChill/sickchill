@@ -8,7 +8,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/30.0.1599.17 Safari/537.36']
     method: GET
-    uri: https://www.skytorrents.in/rss/all/ad/1/
+    uri: https://www.skytorrents.lol/rss/all/ad/1/
   response:
     body:
       string: !!binary |
@@ -104,7 +104,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/30.0.1599.17 Safari/537.36']
     method: GET
-    uri: https://www.skytorrents.in/rss/all/ed/1/Game%20of%20Thrones%20S05E08
+    uri: https://www.skytorrents.lol/rss/all/ed/1/Game%20of%20Thrones%20S05E08
   response:
     body:
       string: !!binary |
@@ -194,7 +194,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/30.0.1599.17 Safari/537.36']
     method: GET
-    uri: https://www.skytorrents.in/rss/all/ed/1/Game%20of%20Thrones%20S05
+    uri: https://www.skytorrents.lol/rss/all/ed/1/Game%20of%20Thrones%20S05
   response:
     body:
       string: !!binary |

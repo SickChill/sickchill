@@ -40,7 +40,7 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minseed = None
         self.minleech = None
 
-        self.url = "https://www.skytorrents.in"
+        self.url = "https://www.skytorrents.lol"
         self.urls = {"search": urljoin(self.url, "/rss/all/{sorting}/{page}/{search_string}")}
 
         self.custom_url = None
