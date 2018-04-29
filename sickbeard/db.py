@@ -148,7 +148,7 @@ class DBConnection(object):
         except Exception:
             raise
 
-    def check_db_version(self):
+    def get_db_version(self):
         """
         Fetch major database version
 
@@ -512,11 +512,11 @@ class SchemaUpgrade(object):
     def add_column(self, table, column, col_type="NUMERIC", default=0):
         self.connection.add_column(table=table, column=column, col_type=col_type, default=default)
 
-    def check_db_version(self):
-        return self.connection.check_db_version()
+    def get_db_version(self):
+        return self.connection.get_db_version()
 
     def increment_db_version(self):
-        new_version = self.check_db_version() + 1
+        new_version = self.get_db_version() + 1
         self.connection.action("UPDATE db_version SET db_version = ?", [new_version])
         return new_version
 
