@@ -54,18 +54,18 @@ def _downloadResult(result):
     elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
-        fileName = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
+        file_name = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
 
-        logger.log("Saving NZB to " + fileName)
+        logger.log("Saving NZB to " + file_name)
 
         newResult = True
 
         # save the data to disk
         try:
-            with ek(open, fileName, 'w') as fileOut:
+            with ek(open, file_name, 'w') as fileOut:
                 fileOut.write(result.extraInfo[0])
 
-            helpers.chmodAsParent(fileName)
+            helpers.chmodAsParent(file_name)
 
         except EnvironmentError as e:
             logger.log("Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
@@ -393,14 +393,14 @@ def searchForNeededEpisodes():
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
             if not curEp.show or curEp.show.paused:
-                logger.log("Skipping {0} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
+                logger.log("Skipping {0} because the show is paused ".format(curEp.pretty_name()), logger.DEBUG)
                 continue
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
             # if all results were rejected move on to the next episode
             if not bestResult:
-                logger.log("All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
+                logger.log("All found results for " + curEp.pretty_name() + " were rejected.", logger.DEBUG)
                 continue
 
             # if it's already in the list (from another provider) and the newly found quality is no better then skip it

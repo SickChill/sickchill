@@ -235,7 +235,7 @@ class WDTVMetadata(generic.GenericMetadata):
             episodeID.text = str(curEpToWrite.indexerid)
 
             title = etree.SubElement(episode, "title")
-            title.text = ep_obj.prettyName()
+            title.text = ep_obj.pretty_name()
 
             if getattr(myShow, 'seriesname', None):
                 seriesName = etree.SubElement(episode, "series_name")

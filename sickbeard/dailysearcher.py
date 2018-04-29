@@ -90,10 +90,10 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             ep = show.getEpisode(sqlEp[b"season"], sqlEp[b"episode"])
             with ep.lock:
                 if ep.season == 0:
-                    logger.log("New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
+                    logger.log("New episode " + ep.pretty_name() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 else:
-                    logger.log("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.prettyName(), common.statusStrings[ep.show.default_ep_status]))
+                    logger.log("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]))
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())

@@ -1518,9 +1518,8 @@ class Home(WebRoot):
     @staticmethod
     def plotDetails(show, season, episode):
         main_db_con = db.DBConnection()
-        result = main_db_con.selectOne(
-            "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-            (int(show), int(season), int(episode)))
+        result = main_db_con.select_one(
+            "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", (int(show), int(season), int(episode)))
         return result[b'description'] if result else 'Episode not found.'
 
     @staticmethod
