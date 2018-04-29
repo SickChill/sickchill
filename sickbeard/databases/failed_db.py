@@ -27,7 +27,7 @@ from sickbeard.common import Quality
 # Add new migrations at the bottom of the list; subclass the previous migration.
 class InitialSchema(db.SchemaUpgrade):
     def test(self):
-        return self.hasTable('db_version')
+        return self.has_table('db_version')
 
     def execute(self):
         queries = [
@@ -45,18 +45,18 @@ class InitialSchema(db.SchemaUpgrade):
 
 class SizeAndProvider(InitialSchema):
     def test(self):
-        return self.hasColumn('failed', 'size') and self.hasColumn('failed', 'provider')
+        return self.has_column('failed', 'size') and self.has_column('failed', 'provider')
 
     def execute(self):
-        self.addColumn('failed', 'size', 'NUMERIC')
-        self.addColumn('failed', 'provider', 'TEXT', '')
+        self.add_column('failed', 'size', 'NUMERIC')
+        self.add_column('failed', 'provider', 'TEXT', '')
 
 
 class History(SizeAndProvider):
     """Snatch history that can't be modified by the user"""
 
     def test(self):
-        return self.hasTable('history')
+        return self.has_table('history')
 
     def execute(self):
         self.connection.action('CREATE TABLE history (date NUMERIC, ' +
@@ -67,10 +67,10 @@ class HistoryStatus(History):
     """Store episode status before snatch to revert to if necessary"""
 
     def test(self):
-        return self.hasColumn('history', 'old_status')
+        return self.has_column('history', 'old_status')
 
     def execute(self):
-        self.addColumn('history', 'old_status', 'NUMERIC', Quality.NONE)
-        self.addColumn('history', 'showid', 'NUMERIC', '-1')
-        self.addColumn('history', 'season', 'NUMERIC', '-1')
-        self.addColumn('history', 'episode', 'NUMERIC', '-1')
+        self.add_column('history', 'old_status', 'NUMERIC', Quality.NONE)
+        self.add_column('history', 'showid', 'NUMERIC', '-1')
+        self.add_column('history', 'season', 'NUMERIC', '-1')
+        self.add_column('history', 'episode', 'NUMERIC', '-1')
