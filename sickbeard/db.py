@@ -103,7 +103,7 @@ class DBConnection(object):
             logger.log(_("If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"))
             # noinspection PyUnresolvedReferences
             logger.log(
-                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}").format(
+                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}").format(
                     local_variables=local_variables
                 )
             )
