@@ -195,7 +195,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="nowrap" colspan="7">&nbsp;</th>
+                                <th class="nowrap" colspan="${("6", "7")[sickbeard.USE_SUBTITLES]}">&nbsp;</th>
                             </tr>
                         </tfoot>
                     % endif

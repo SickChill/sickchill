@@ -46,6 +46,7 @@ class TorrentProjectProvider(TorrentProvider):  # pylint: disable=too-many-insta
 
         self.custom_url = None
 
+        self.ability_status = self.PROVIDER_BACKLOG
         # Proper Strings
 
         # Cache

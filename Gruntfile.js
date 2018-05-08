@@ -112,8 +112,6 @@ module.exports = function(grunt) {
                 mainFiles: {
                     'tablesorter': [
                         'dist/js/jquery.tablesorter.combined.js',
-                        'dist/js/widgets/widget-columnSelector.min.js',
-                        'dist/js/widgets/widget-stickyHeaders.min.js',
                         'dist/css/theme.blue.min.css'
                     ],
                     'bootstrap': [
@@ -216,7 +214,7 @@ module.exports = function(grunt) {
             'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
             'crowdin_download': {cmd: 'crowdin-cli-py download'},
             'babel_compile': {cmd: 'python setup.py compile_catalog'},
-		
+
             // Run tests
             'test': {cmd: 'yarn run test || npm run test'},
 

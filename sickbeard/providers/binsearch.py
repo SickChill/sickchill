@@ -39,6 +39,7 @@ class BinSearchProvider(NZBProvider):
 
         self.public = True
         self.supports_backlog = False
+        self.ability_status = self.PROVIDER_BROKEN
 
         self.cache = BinSearchCache(self, min_time=30)  # only poll Binsearch every 30 minutes max
 

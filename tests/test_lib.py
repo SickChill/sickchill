@@ -257,7 +257,7 @@ class TestCacheDBConnection(TestDBConnection, object):
 
         # Create the table if it's not already there
         try:
-            if not self.hasTable(provider_name):
+            if not self.has_table(provider_name):
                 sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
                 self.connection.execute(sql)
                 self.connection.commit()
@@ -268,8 +268,8 @@ class TestCacheDBConnection(TestDBConnection, object):
                 raise
 
             # add version column to table if missing
-            if not self.hasColumn(provider_name, 'version'):
-                self.addColumn(provider_name, 'version', "NUMERIC", "-1")
+            if not self.has_column(provider_name, 'version'):
+                self.add_column(provider_name, 'version', "NUMERIC", "-1")
 
         # Create the table if it's not already there
         try:
@@ -296,16 +296,16 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), mainDB.InitialSchema)
 
     # fix up any db problems
-    db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanity_check_database(db.DBConnection(), mainDB.MainSanityCheck)
 
     # and for cache.db too
-    db.upgradeDatabase(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
 
     # and for failed.db too
-    db.upgradeDatabase(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
 
 
 def teardown_test_db():
