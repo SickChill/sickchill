@@ -72,10 +72,10 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
-        if response.status_code == 401:
-            logger.log('Invalid username or password. Check your settings', logger.WARNING)
+        if not response or response.status_code != 200:
+            logger.log('Unable to connect to provider', logger.WARNING)
             return False
-        elif response.status_code == 200:
+        else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns='response')
 
@@ -85,9 +85,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             if 'logout' not in response.text:
                 logger.log('Invalid username or password. Check your settings', logger.WARNING)
                 return False
-        else:
-            logger.log('Unable to connect to provider', logger.WARNING)
-            return False
 
         return True
 
