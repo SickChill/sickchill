@@ -61,9 +61,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cache = tvcache.TVCache(self, min_time=30)
 
     def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
-            return True
-
         login_params = {
             'id': self.username,
             'pass': self.password,
@@ -93,8 +90,6 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        if not self.login():
-            return results
 
         for mode in search_strings:
             items = []
@@ -128,6 +123,10 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
                         continue
+
+                    if 'logout' not in data:
+                        logger.log('Refreshing cookies', logger.DEBUG)
+                        self.login()
 
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find(class_='table')
