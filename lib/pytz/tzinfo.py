@@ -403,11 +403,11 @@ class DstTzInfo(BaseTzInfo):
         >>> tz = timezone('America/St_Johns')
         >>> ambiguous = datetime(2009, 10, 31, 23, 30)
 
-        >>> tz.utcoffset(ambiguous, is_dst=False)
-        datetime.timedelta(-1, 73800)
+        >>> str(tz.utcoffset(ambiguous, is_dst=False))
+        '-1 day, 20:30:00'
 
-        >>> tz.utcoffset(ambiguous, is_dst=True)
-        datetime.timedelta(-1, 77400)
+        >>> str(tz.utcoffset(ambiguous, is_dst=True))
+        '-1 day, 21:30:00'
 
         >>> try:
         ...     tz.utcoffset(ambiguous)
@@ -435,19 +435,19 @@ class DstTzInfo(BaseTzInfo):
 
         >>> normal = datetime(2009, 9, 1)
 
-        >>> tz.dst(normal)
-        datetime.timedelta(0, 3600)
-        >>> tz.dst(normal, is_dst=False)
-        datetime.timedelta(0, 3600)
-        >>> tz.dst(normal, is_dst=True)
-        datetime.timedelta(0, 3600)
+        >>> str(tz.dst(normal))
+        '1:00:00'
+        >>> str(tz.dst(normal, is_dst=False))
+        '1:00:00'
+        >>> str(tz.dst(normal, is_dst=True))
+        '1:00:00'
 
         >>> ambiguous = datetime(2009, 10, 31, 23, 30)
 
-        >>> tz.dst(ambiguous, is_dst=False)
-        datetime.timedelta(0)
-        >>> tz.dst(ambiguous, is_dst=True)
-        datetime.timedelta(0, 3600)
+        >>> str(tz.dst(ambiguous, is_dst=False))
+        '0:00:00'
+        >>> str(tz.dst(ambiguous, is_dst=True))
+        '1:00:00'
         >>> try:
         ...     tz.dst(ambiguous)
         ... except AmbiguousTimeError:

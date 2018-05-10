@@ -25,7 +25,19 @@ except ImportError:
     import io as cStringIO
 
 try:
-    from sphinx import apidoc
+    import sphinx
+    # NOTE(dhellmann): Newer versions of Sphinx have moved the apidoc
+    # module into sphinx.ext and the API is slightly different (the
+    # function expects sys.argv[1:] instead of sys.argv[:]. So, figure
+    # out where we can import it from and set a flag so we can invoke
+    # it properly. See this change in sphinx for details:
+    # https://github.com/sphinx-doc/sphinx/commit/87630c8ae8bff8c0e23187676e6343d8903003a6
+    try:
+        from sphinx.ext import apidoc
+        apidoc_use_padding = False
+    except ImportError:
+        from sphinx import apidoc
+        apidoc_use_padding = True
     from sphinx import application
     from sphinx import setup_command
 except Exception as e:
@@ -42,6 +54,7 @@ except Exception as e:
     raise ImportError(str(e))
 from pbr import git
 from pbr import options
+from pbr import version
 
 
 _rst_template = """%(heading)s
@@ -117,7 +130,9 @@ class LocalBuildDoc(setup_command.BuildDoc):
 
     def _sphinx_tree(self):
             source_dir = self._get_source_dir()
-            cmd = ['apidoc', '.', '-H', 'Modules', '-o', source_dir]
+            cmd = ['-H', 'Modules', '-o', source_dir, '.']
+            if apidoc_use_padding:
+                cmd.insert(0, 'apidoc')
             apidoc.main(cmd + self.autodoc_tree_excludes)
 
     def _sphinx_run(self):
@@ -186,15 +201,34 @@ class LocalBuildDoc(setup_command.BuildDoc):
                         "autodoc_exclude_modules",
                         [None, ""])[1].split()))
 
-        # TODO(stephenfin): Deprecate this functionality once we depend on
-        # Sphinx 1.6, which includes a similar feature, in g-r
-        # https://github.com/sphinx-doc/sphinx/pull/3476
         self.finalize_options()
-        if hasattr(self, "builder_target_dirs"):
-            # Sphinx >= 1.6.1
+
+        is_multibuilder_sphinx = version.SemanticVersion.from_pip_string(
+            sphinx.__version__) >= version.SemanticVersion(1, 6)
+
+        # TODO(stephenfin): Remove support for Sphinx < 1.6 in 4.0
+        if not is_multibuilder_sphinx:
+            log.warn('[pbr] Support for Sphinx < 1.6 will be dropped in '
+                     'pbr 4.0. Upgrade to Sphinx 1.6+')
+
+        # TODO(stephenfin): Remove this at the next MAJOR version bump
+        if self.builders != ['html']:
+            log.warn("[pbr] Sphinx 1.6 added native support for "
+                     "specifying multiple builders in the "
+                     "'[sphinx_build] builder' configuration option, "
+                     "found in 'setup.cfg'. As a result, the "
+                     "'[sphinx_build] builders' option has been "
+                     "deprecated and will be removed in pbr 4.0. Migrate "
+                     "to the 'builder' configuration option.")
+            if is_multibuilder_sphinx:
+                self.builder = self.builders
+
+        if is_multibuilder_sphinx:
+            # Sphinx >= 1.6
             return setup_command.BuildDoc.run(self)
+
         # Sphinx < 1.6
-        for builder in self.builders:
+        for builder in self.builder:
             self.builder = builder
             self.finalize_options()
             self._sphinx_run()
@@ -208,6 +242,8 @@ class LocalBuildDoc(setup_command.BuildDoc):
         self.autodoc_tree_excludes = ['setup.py']
 
     def finalize_options(self):
+        from pbr import util
+
         # Not a new style class, super keyword does not work.
         setup_command.BuildDoc.finalize_options(self)
 
@@ -228,8 +264,8 @@ class LocalBuildDoc(setup_command.BuildDoc):
         opt = 'autodoc_tree_excludes'
         option_dict = self.distribution.get_option_dict('pbr')
         if opt in option_dict:
-            self.autodoc_tree_excludes = option_dict[opt][1]
-            self.ensure_string_list(opt)
+            self.autodoc_tree_excludes = util.split_multiline(
+                option_dict[opt][1])
 
         # handle Sphinx < 1.5.0
         if not hasattr(self, 'warning_is_error'):

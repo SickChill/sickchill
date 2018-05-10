@@ -43,6 +43,7 @@ import email.errors
 import imp
 import os
 import re
+import sys
 import sysconfig
 import tempfile
 import textwrap
@@ -51,6 +52,7 @@ import fixtures
 import mock
 import pkg_resources
 import six
+import testscenarios
 import testtools
 from testtools import matchers
 import virtualenv
@@ -486,9 +488,47 @@ class TestPresenceOfGit(base.BaseTestCase):
             self.assertEqual(False, git._git_is_installed())
 
 
-class TestIndexInRequirements(base.BaseTestCase):
+class ParseRequirementsTest(base.BaseTestCase):
 
-    def test_index_in_requirement(self):
+    def test_empty_requirements(self):
+        actual = packaging.parse_requirements([])
+        self.assertEqual([], actual)
+
+    def test_default_requirements(self):
+        """Ensure default files used if no files provided."""
+        tempdir = tempfile.mkdtemp()
+        requirements = os.path.join(tempdir, 'requirements.txt')
+        with open(requirements, 'w') as f:
+            f.write('pbr')
+        # the defaults are relative to where pbr is called from so we need to
+        # override them. This is OK, however, as we want to validate that
+        # defaults are used - not what those defaults are
+        with mock.patch.object(packaging, 'REQUIREMENTS_FILES', (
+                requirements,)):
+            result = packaging.parse_requirements()
+        self.assertEqual(['pbr'], result)
+
+    def test_override_with_env(self):
+        """Ensure environment variable used if no files provided."""
+        _, tmp_file = tempfile.mkstemp(prefix='openstack', suffix='.setup')
+        with open(tmp_file, 'w') as fh:
+            fh.write("foo\nbar")
+        self.useFixture(
+            fixtures.EnvironmentVariable('PBR_REQUIREMENTS_FILES', tmp_file))
+        self.assertEqual(['foo', 'bar'],
+                         packaging.parse_requirements())
+
+    def test_override_with_env_multiple_files(self):
+        _, tmp_file = tempfile.mkstemp(prefix='openstack', suffix='.setup')
+        with open(tmp_file, 'w') as fh:
+            fh.write("foo\nbar")
+        self.useFixture(
+            fixtures.EnvironmentVariable('PBR_REQUIREMENTS_FILES',
+                                         "no-such-file," + tmp_file))
+        self.assertEqual(['foo', 'bar'],
+                         packaging.parse_requirements())
+
+    def test_index_present(self):
         tempdir = tempfile.mkdtemp()
         requirements = os.path.join(tempdir, 'requirements.txt')
         with open(requirements, 'w') as f:
@@ -498,10 +538,7 @@ class TestIndexInRequirements(base.BaseTestCase):
         result = packaging.parse_requirements([requirements])
         self.assertEqual([], result)
 
-
-class TestNestedRequirements(base.BaseTestCase):
-
-    def test_nested_requirement(self):
+    def test_nested_requirements(self):
         tempdir = tempfile.mkdtemp()
         requirements = os.path.join(tempdir, 'requirements.txt')
         nested = os.path.join(tempdir, 'nested.txt')
@@ -511,6 +548,94 @@ class TestNestedRequirements(base.BaseTestCase):
             f.write('pbr')
         result = packaging.parse_requirements([requirements])
         self.assertEqual(['pbr'], result)
+
+    @mock.patch('warnings.warn')
+    def test_python_version(self, mock_warn):
+        with open("requirements-py%d.txt" % sys.version_info[0],
+                  "w") as fh:
+            fh.write("# this is a comment\nfoobar\n# and another one\nfoobaz")
+        self.assertEqual(['foobar', 'foobaz'],
+                         packaging.parse_requirements())
+        mock_warn.assert_called_once_with(mock.ANY, DeprecationWarning)
+
+    @mock.patch('warnings.warn')
+    def test_python_version_multiple_options(self, mock_warn):
+        with open("requirements-py1.txt", "w") as fh:
+            fh.write("thisisatrap")
+        with open("requirements-py%d.txt" % sys.version_info[0],
+                  "w") as fh:
+            fh.write("# this is a comment\nfoobar\n# and another one\nfoobaz")
+        self.assertEqual(['foobar', 'foobaz'],
+                         packaging.parse_requirements())
+        # even though we have multiple offending files, this should only be
+        # called once
+        mock_warn.assert_called_once_with(mock.ANY, DeprecationWarning)
+
+
+class ParseRequirementsTestScenarios(base.BaseTestCase):
+
+    versioned_scenarios = [
+        ('non-versioned', {'versioned': False, 'expected': ['bar']}),
+        ('versioned', {'versioned': True, 'expected': ['bar>=1.2.3']})
+    ]
+
+    scenarios = [
+        ('normal', {'url': "foo\nbar", 'expected': ['foo', 'bar']}),
+        ('normal_with_comments', {
+            'url': "# this is a comment\nfoo\n# and another one\nbar",
+            'expected': ['foo', 'bar']}),
+        ('removes_index_lines', {'url': '-f foobar', 'expected': []}),
+    ]
+
+    scenarios = scenarios + testscenarios.multiply_scenarios([
+        ('ssh_egg_url', {'url': 'git+ssh://foo.com/zipball#egg=bar'}),
+        ('git_https_egg_url', {'url': 'git+https://foo.com/zipball#egg=bar'}),
+        ('http_egg_url', {'url': 'https://foo.com/zipball#egg=bar'}),
+    ], versioned_scenarios)
+
+    scenarios = scenarios + testscenarios.multiply_scenarios(
+        [
+            ('git_egg_url',
+                {'url': 'git://foo.com/zipball#egg=bar', 'name': 'bar'})
+        ], [
+            ('non-editable', {'editable': False}),
+            ('editable', {'editable': True}),
+        ],
+        versioned_scenarios)
+
+    def test_parse_requirements(self):
+        tmp_file = tempfile.NamedTemporaryFile()
+        req_string = self.url
+        if hasattr(self, 'editable') and self.editable:
+            req_string = ("-e %s" % req_string)
+        if hasattr(self, 'versioned') and self.versioned:
+            req_string = ("%s-1.2.3" % req_string)
+        with open(tmp_file.name, 'w') as fh:
+            fh.write(req_string)
+        self.assertEqual(self.expected,
+                         packaging.parse_requirements([tmp_file.name]))
+
+
+class ParseDependencyLinksTest(base.BaseTestCase):
+
+    def setUp(self):
+        super(ParseDependencyLinksTest, self).setUp()
+        _, self.tmp_file = tempfile.mkstemp(prefix="openstack",
+                                            suffix=".setup")
+
+    def test_parse_dependency_normal(self):
+        with open(self.tmp_file, "w") as fh:
+            fh.write("http://test.com\n")
+        self.assertEqual(
+            ["http://test.com"],
+            packaging.parse_dependency_links([self.tmp_file]))
+
+    def test_parse_dependency_with_git_egg_url(self):
+        with open(self.tmp_file, "w") as fh:
+            fh.write("-e git://foo.com/zipball#egg=bar")
+        self.assertEqual(
+            ["git://foo.com/zipball#egg=bar"],
+            packaging.parse_dependency_links([self.tmp_file]))
 
 
 class TestVersions(base.BaseTestCase):
@@ -759,7 +884,7 @@ class TestRequirementParsing(base.BaseTestCase):
         expected_requirements = {
             None: ['bar', 'requests-aws>=0.1.4'],
             ":(python_version=='2.6')": ['quux<1.0'],
-            ":(python_version=='2.7')": ['Routes>=1.12.3,!=2.0,!=2.1',
+            ":(python_version=='2.7')": ['Routes!=2.0,!=2.1,>=1.12.3',
                                          'requests-kerberos>=0.6'],
             'test': ['foo'],
             "test:(python_version=='2.7')": ['baz>3.2', 'bar>3.3']
@@ -778,7 +903,20 @@ class TestRequirementParsing(base.BaseTestCase):
             generated_requirements = dict(
                 pkg_resources.split_sections(requires))
 
-        self.assertEqual(expected_requirements, generated_requirements)
+        # NOTE(dhellmann): We have to spell out the comparison because
+        # the rendering for version specifiers in a range is not
+        # consistent across versions of setuptools.
+
+        for section, expected in expected_requirements.items():
+            exp_parsed = [
+                pkg_resources.Requirement.parse(s)
+                for s in expected
+            ]
+            gen_parsed = [
+                pkg_resources.Requirement.parse(s)
+                for s in generated_requirements[section]
+            ]
+            self.assertEqual(exp_parsed, gen_parsed)
 
 
 def get_soabi():
