@@ -39,9 +39,7 @@
 # BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
 
 import os
-import textwrap
 
-from testtools import content
 from testtools import matchers
 
 from pbr.tests import base
@@ -56,10 +54,6 @@ class TestHooks(base.BaseTestCase):
             cfg.set('global', 'setup-hooks',
                     'pbr_testpackage._setup_hooks.test_hook_1\n'
                     'pbr_testpackage._setup_hooks.test_hook_2')
-            cfg.set('build_ext', 'pre-hook.test_pre_hook',
-                    'pbr_testpackage._setup_hooks.test_pre_hook')
-            cfg.set('build_ext', 'post-hook.test_post_hook',
-                    'pbr_testpackage._setup_hooks.test_post_hook')
 
     def test_global_setup_hooks(self):
         """Test setup_hooks.
@@ -70,28 +64,6 @@ class TestHooks(base.BaseTestCase):
 
         stdout, _, return_code = self.run_setup('egg_info')
         assert 'test_hook_1\ntest_hook_2' in stdout
-        assert return_code == 0
-
-    def test_command_hooks(self):
-        """Test command hooks.
-
-        Simple test that the appropriate command hooks run at the
-        beginning/end of the appropriate command.
-        """
-
-        stdout, _, return_code = self.run_setup('egg_info')
-        assert 'build_ext pre-hook' not in stdout
-        assert 'build_ext post-hook' not in stdout
-        assert return_code == 0
-
-        stdout, stderr, return_code = self.run_setup('build_ext')
-        self.addDetailUniqueName('stderr', content.text_content(stderr))
-        assert textwrap.dedent("""
-            running build_ext
-            running pre_hook pbr_testpackage._setup_hooks.test_pre_hook for command build_ext
-            build_ext pre-hook
-        """) in stdout  # flake8: noqa
-        self.expectThat(stdout, matchers.EndsWith('build_ext post-hook'))
         assert return_code == 0
 
     def test_custom_commands_known(self):
