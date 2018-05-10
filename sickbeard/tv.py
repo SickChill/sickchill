@@ -1174,11 +1174,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         helpers.update_anime_support()
 
         if self.imdbid:
-            controlValueDict = {"indexer_id": self.indexerid}
-            newValueDict = self.imdb_info
-
             main_db_con = db.DBConnection()
-            main_db_con.upsert("imdb_info", newValueDict, controlValueDict)
+            main_db_con.upsert("imdb_info", self.imdb_info, controlValueDict)
 
     def __str__(self):
         toReturn = ""
@@ -1439,7 +1436,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        (id=self.show.indexerid, subtitles=subtitle_list, show=self.show.name,
                         ep=episode_num(self.season, self.episode)), logger.DEBUG)
 
-            notifiers.notify_subtitle_download(self.prettyName(), subtitle_list)
+            notifiers.notify_subtitle_download(self.pretty_name(), subtitle_list)
         else:
             logger.log("{id}: No subtitles downloaded for {show} {ep}".format
                        (id=self.show.indexerid, show=self.show.name,
@@ -2005,7 +2002,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return strings
         return self._format_pattern(pattern)
 
-    def prettyName(self):
+    def pretty_name(self):
         """
         Returns the name of this episode in a "pretty" human-readable format. Used for logging
         and notifications and such.

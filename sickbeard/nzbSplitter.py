@@ -154,7 +154,7 @@ def split_result(obj):
     """
     url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns='content')
     if url_data is None:
-        logger.log("Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
+        logger.log("Unable to load url " + obj.url + ", can't download season NZB", logger.WARNING)
         return []
 
     # parse the season ep name

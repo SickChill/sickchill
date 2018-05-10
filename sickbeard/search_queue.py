@@ -171,7 +171,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         super(ManualSearchQueueItem, self).run()
 
         try:
-            logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
+            logger.log("Beginning manual search for: [" + self.segment.pretty_name() + "]")
             self.started = True
 
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
@@ -186,9 +186,9 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
             else:
                 ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.prettyName()))
+                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name()))
 
-                logger.log("Unable to find a download for: [" + self.segment.prettyName() + "]")
+                logger.log("Unable to find a download for: [" + self.segment.pretty_name() + "]")
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
@@ -255,7 +255,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         try:
             for epObj in self.segment:
 
-                logger.log("Marking episode as bad: [" + epObj.prettyName() + "]")
+                logger.log("Marking episode as bad: [" + epObj.pretty_name() + "]")
 
                 failed_history.markFailed(epObj)
 
@@ -265,7 +265,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     history.logFailed(epObj, release, provider)
 
                 failed_history.revertEpisode(epObj)
-                logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
+                logger.log("Beginning failed download search for: [" + epObj.pretty_name() + "]")
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
@@ -281,7 +281,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
                 pass
-                # logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
+                # logger.log(u"No valid episode found to retry for: [" + self.segment.pretty_name() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 

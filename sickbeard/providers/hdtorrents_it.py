@@ -187,7 +187,5 @@ class HDTorrentsProvider_IT(TorrentProvider):  # pylint: disable=too-many-instan
 
         return results
 
-    def seed_ratio(self):
-        return self.ratio
 
 provider = HDTorrentsProvider_IT()

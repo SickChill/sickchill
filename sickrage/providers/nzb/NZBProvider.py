@@ -33,8 +33,9 @@ class NZBProvider(GenericProvider):
         self.provider_type = GenericProvider.NZB
         self.torznab = False
 
+    @property
     def is_active(self):
-        return bool(sickbeard.USE_NZBS) and self.is_enabled()
+        return bool(sickbeard.USE_NZBS) and self.is_enabled
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)

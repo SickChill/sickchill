@@ -71,7 +71,7 @@ class TorrentProviderTests(GenericProviderTests):
             provider = TorrentProvider('Test Provider')
             provider.enabled = enabled
 
-            self.assertEqual(provider.is_active(), result)
+            self.assertEqual(provider.is_active, result)
 
     def test__get_size(self):
         """

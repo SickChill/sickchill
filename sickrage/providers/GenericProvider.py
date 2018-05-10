@@ -38,7 +38,7 @@ from sickbeard.helpers import download_file, getURL, make_session, remove_file_f
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
-from sickrage.helper.common import replace_extension, sanitize_filename
+from sickrage.helper.common import sanitize_filename
 from sickrage.helper.encoding import ek
 
 
@@ -46,6 +46,18 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     NZB = 'nzb'
     NZBDATA = 'nzbdata'
     TORRENT = 'torrent'
+
+    PROVIDER_BROKEN = 0
+    PROVIDER_DAILY = 1
+    PROVIDER_BACKLOG = 2
+    PROVIDER_OK = 3
+
+    ProviderStatus = {
+        PROVIDER_BROKEN: _("Not working"),
+        PROVIDER_DAILY: _("Daily/RSS only"),
+        PROVIDER_BACKLOG: _("Backlog/Manual Search only"),
+        PROVIDER_OK: _("Daily/RSS and Backlog/Manual Searches working")
+    }
 
     def __init__(self, name):
         self.name = name
@@ -80,6 +92,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         self.enable_cookies = False
         self.cookies = ''
         self.rss_cookies = ''
+
+        self.ability_status = self.PROVIDER_OK
+
 
         shuffle(self.bt_cache_urls)
 
@@ -328,8 +343,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return results
 
-    def get_id(self):
-        return GenericProvider.make_id(self.name)
+    def get_id(self, suffix=''):
+        return GenericProvider.make_id(self.name) + six.text_type(suffix)
 
     def get_quality(self, item, anime=False):
         (title, url_) = self._get_title_and_url(item)
@@ -359,11 +374,24 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def image_name(self):
         return self.get_id() + '.png'
 
+    @property
     def is_active(self):  # pylint: disable=no-self-use
         return False
 
+    @property
     def is_enabled(self):
         return bool(self.enabled)
+
+    @property
+    def can_daily(self):
+        return self.ability_status & self.PROVIDER_DAILY != 0
+
+    @property
+    def can_backlog(self):
+        return self.ability_status & self.PROVIDER_BACKLOG != 0 and self.supports_backlog
+
+    def status(self):
+        return self.ProviderStatus.get(self.ability_status)
 
     @staticmethod
     def make_id(name):
