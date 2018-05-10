@@ -17,13 +17,13 @@ from pytz.exceptions import InvalidTimeError
 from pytz.exceptions import NonExistentTimeError
 from pytz.exceptions import UnknownTimeZoneError
 from pytz.lazy import LazyDict, LazyList, LazySet
-from pytz.tzinfo import unpickler
+from pytz.tzinfo import unpickler, BaseTzInfo
 from pytz.tzfile import build_tzinfo
 
 
 # The IANA (nee Olson) database is updated several times a year.
-OLSON_VERSION = '2018c'
-VERSION = '2018.3'  # Switching to pip compatible version numbering.
+OLSON_VERSION = '2018d'
+VERSION = '2018.4'  # pip compatible version number.
 __version__ = VERSION
 
 OLSEN_VERSION = OLSON_VERSION  # Old releases had this misspelling
@@ -37,10 +37,7 @@ __all__ = [
 ]
 
 
-try:
-    unicode
-
-except NameError:  # Python 3.x
+if sys.version_info[0] > 2:  # Python 3.x
 
     # Python 3.x doesn't have unicode(), making writing code
     # for Python 2.3 and Python 3.x a pain.
@@ -191,7 +188,7 @@ ZERO = datetime.timedelta(0)
 HOUR = datetime.timedelta(hours=1)
 
 
-class UTC(datetime.tzinfo):
+class UTC(BaseTzInfo):
     """UTC
 
     Optimized UTC implementation. It unpickles using the single module global
@@ -416,18 +413,18 @@ def FixedOffset(offset, _tzinfos={}):
         >>> one = FixedOffset(-330)
         >>> one
         pytz.FixedOffset(-330)
-        >>> one.utcoffset(datetime.datetime.now())
-        datetime.timedelta(-1, 66600)
-        >>> one.dst(datetime.datetime.now())
-        datetime.timedelta(0)
+        >>> str(one.utcoffset(datetime.datetime.now()))
+        '-1 day, 18:30:00'
+        >>> str(one.dst(datetime.datetime.now()))
+        '0:00:00'
 
         >>> two = FixedOffset(1380)
         >>> two
         pytz.FixedOffset(1380)
-        >>> two.utcoffset(datetime.datetime.now())
-        datetime.timedelta(0, 82800)
-        >>> two.dst(datetime.datetime.now())
-        datetime.timedelta(0)
+        >>> str(two.utcoffset(datetime.datetime.now()))
+        '23:00:00'
+        >>> str(two.dst(datetime.datetime.now()))
+        '0:00:00'
 
     The datetime.timedelta must be between the range of -1 and 1 day,
     non-inclusive.

@@ -149,6 +149,7 @@ class SemanticVersion(object):
     @classmethod
     def _from_pip_string_unsafe(klass, version_string):
         # Versions need to start numerically, ignore if not
+        version_string = version_string.lstrip('vV')
         if not version_string[:1].isdigit():
             raise ValueError("Invalid version %r" % version_string)
         input_components = version_string.split('.')
