@@ -66,5 +66,6 @@ xmltodict==0.11.0
 
 ```
 pip install --target=lib -U --global-option="--no-user-cfg" --no-binary :all --no-compile --no-cache-dir babelfish tzlocal Unidecode validators xmltodict tornado==4.5 mako python-twitter python-dateutil PyGithub markdown2 html5lib bencode pysocks requests requests-oauthlib tzlocal
-    pip install --target=lib -U --global-option="--no-user-cfg" --no-binary :all --no-compile --no-cache-dir git+https://github.com/Diaoul/subliminal.git@4ad5d31a6c52c7fa0061ad0da16254580d31dc2a#egg=subliminal
+#pip install --target=lib -U --global-option="--no-user-cfg" --no-binary :all --no-compile --no-cache-dir git+https://github.com/Diaoul/subliminal.git@4ad5d31a6c52c7fa0061ad0da16254580d31dc2a#egg=subliminal
+pip install --target=lib -U --global-option="--no-user-cfg" --no-binary :all --no-compile --no-cache-dir git+https://github.com/SickRage/subliminal.git@bc92dbd#egg=subliminal
 ```
