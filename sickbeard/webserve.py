@@ -277,11 +277,11 @@ class WebHandler(BaseHandler):
             kwargs = self.request.arguments
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
-                    kwargs[arg] = xhtml_escape(value[0])
+                    kwargs[arg] = value[0]
                 elif isinstance(value, six.string_types):
-                    kwargs[arg] = xhtml_escape(value)
+                    kwargs[arg] = value
                 elif isinstance(value, list):
-                    kwargs[arg] = [xhtml_escape(v) for v in value]
+                    kwargs[arg] = value
                 else:
                     raise Exception
 
