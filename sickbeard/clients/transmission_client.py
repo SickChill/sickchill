@@ -21,7 +21,6 @@
 from __future__ import unicode_literals
 
 import json
-import re
 from base64 import b64encode
 
 import sickbeard
@@ -41,7 +40,7 @@ class TransmissionAPI(GenericClient):
         try:
             self.response = self.session.post(self.url, data=post_data.encode('utf-8'), timeout=120,
                                               verify=sickbeard.TORRENT_VERIFY_CERT)
-            self.auth = re.search(r'X-Transmission-Session-Id:\s*(\w+)', self.response.text).group(1)
+            self.auth=self.response.headers['X-Transmission-Session-Id']
         except Exception:
             return None
 
