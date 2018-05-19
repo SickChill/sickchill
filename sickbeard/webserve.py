@@ -2524,7 +2524,7 @@ class HomeAddShows(Home):
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        search_term = search_term.encode('utf-8')
+        search_term = xhtml_unescape(search_term).encode('utf-8')
 
         searchTerms = [search_term]
 
@@ -2977,13 +2977,13 @@ class HomeAddShows(Home):
 
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
-            show_name = ek(os.path.basename, ek(os.path.normpath, fullShowPath))
+            show_name = ek(os.path.basename, ek(os.path.normpath, xhtml_unescape(fullShowPath)))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = ek(os.path.normpath, fullShowPath)
+            show_dir = ek(os.path.normpath, xhtml_unescape(fullShowPath))
         else:
-            show_dir = ek(os.path.join, rootDir, sanitize_filename(show_name))
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:
