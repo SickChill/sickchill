@@ -80,8 +80,9 @@ class Torrent9Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    import ipdb;ipdb.set_trace()
-                    torrent_rows = html.find('div', {'class': 'table-responsive'}).findAll('tr')
+                    torrent_rows = html.find('div', {'class': 'table-responsive'})
+                    if not torrent_rows:
+                        continue
                     for result in torrent_rows:
                         try:
                             title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
