@@ -42,6 +42,22 @@ class Torrent9Provider(TorrentProvider):
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
 
+    def _retrieve_dllink_from_url(self, inner_url, type="torrent"):
+        data = self.get_url(inner_url, returns='text')
+        res = {
+            "torrent": "",
+            "magnet": "",
+        }
+        with BS4Parser(data, 'html5lib') as html:
+            download_btns = html.findAll("div", {"class": "download-btn"})
+            for btn in download_btns:
+                link = btn.find('a')["href"]
+                if link.startswith("magnet"):
+                    res["magnet"] = link
+                else:
+                    res["torrent"] = self.url + link
+        return res[type]
+
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
         for mode in search_strings:
@@ -64,13 +80,14 @@ class Torrent9Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.findAll('tr')
+                    import ipdb;ipdb.set_trace()
+                    torrent_rows = html.find('div', {'class': 'table-responsive'}).findAll('tr')
                     for result in torrent_rows:
                         try:
                             title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r' Saison', ' Season', title, flags=re.I)
-                            tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
-                            download_url = (self.url + '/get_torrent/{0}'.format(tmp) + ".torrent")
+                            tmp = result.find("a")['href']
+                            download_url = self._retrieve_dllink_from_url(self.url + tmp)
                             if not all([title, download_url]):
                                 continue
 
