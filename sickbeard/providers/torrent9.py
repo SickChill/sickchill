@@ -81,7 +81,7 @@ class Torrent9Provider(TorrentProvider):
 
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find('div', {'class': 'table-responsive'})
-                    if torrent_table is not None:
+                    if torrent_table:
                         torrent_rows = torrent_table.findAll('tr')
                     else:
                         torrent_rows = None
