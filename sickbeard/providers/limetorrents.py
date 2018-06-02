@@ -39,7 +39,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.urls = {
             'index': 'https://www.limetorrents.cc/',
-            'search': 'https://www.limetorrents.cc/searchrss/tv/',
+            'search': 'https://www.limetorrents.cc/searchrss/',
             'rss': 'https://www.limetorrents.cc/rss/tv/'
         }
 
