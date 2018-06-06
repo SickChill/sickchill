@@ -104,6 +104,24 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         urls, filename = self._make_url(result)
 
+        if urls:
+            if result.url.startswith('magnet'):
+                # opening in browser
+                try:
+                    import webbrowser
+                    logger.log(u'Opening magnet link in browser: {0}'.format(result.url), logger.DEBUG)
+                    try:
+                        return webbrowser.open(result.url, 2, 1)
+                    except Exception:
+                        try:
+                            return webbrowser.open(result.url, 1, 1)
+                        except Exception:
+                            logger.log(u"Unable to launch a browser", logger.ERROR)
+                except ImportError:
+                    logger.log(u"Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
+            
+            logger.log(u'Failed to download any results', logger.WARNING)
+
         for url in urls:
             if 'NO_DOWNLOAD_NAME' in url:
                 continue
@@ -124,9 +142,6 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
                 logger.log('Could not download {0}'.format(url), logger.WARNING)
                 remove_file_failed(downloaded_filename)
-
-        if urls:
-            logger.log('Failed to download any results', logger.WARNING)
 
         return False
 
