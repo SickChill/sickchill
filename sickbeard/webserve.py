@@ -1702,7 +1702,7 @@ class Home(WebRoot):
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
 
-            location = ek(os.path.normpath, location)
+            location = ek(os.path.normpath, xhtml_unescape(location))
             # noinspection PyProtectedMember
             old_location = ek(os.path.normpath, show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
