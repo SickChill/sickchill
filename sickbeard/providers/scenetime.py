@@ -46,7 +46,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
                      'detail': 'https://www.scenetime.com/details.php?id=%s',
-                     'apisearch': 'https://www.scenetime.com/browse_API.php',
+                     'apisearch': 'https://www.scenetime.com/browse.php',
                      'download': 'https://www.scenetime.com/download.php/%s/%s'}
 
         self.url = self.urls['base_url']
@@ -100,7 +100,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.findAll('tr')
+                    torrent_rows = html.find(id='torrenttable').findAll('tr')
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
