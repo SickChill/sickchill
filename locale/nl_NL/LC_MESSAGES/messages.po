@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-05-11 23:21+0000\n"
-"PO-Revision-Date: 2018-05-11 19:23-0400\n"
+"POT-Creation-Date: 2018-06-11 05:05+0000\n"
+"PO-Revision-Date: 2018-06-11 01:06-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: sickrage\n"
@@ -241,51 +241,51 @@ msgstr "Ondertiteld"
 
 #: sickbeard/db.py:86
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr ""
+msgstr "Controleer je database owner/permissies: {db_filename}"
 
 #: sickbeard/db.py:96
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr ""
+msgstr "{exception_severity} fout opgetreden bij query met {method} in database {db_location}: "
 
 #: sickbeard/db.py:103
 msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
-msgstr ""
+msgstr "Als dit gebeurde in cache.db, dan kun je veilig SickRage stoppen en het bestand cache.db verwijderen zonder data kwijt te raken"
 
 #: sickbeard/db.py:106
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
-msgstr ""
+msgstr "Hier zijn de argumenten die we naar deze functie hebben gestuurd (Dit is wat de ontwikkelaars willen weten): {local_variables!s}"
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
-msgstr ""
+msgstr "niet in staat om het database bestand te openen"
 
 #: sickbeard/db.py:114
 msgid "database is locked"
-msgstr ""
+msgstr "database is gelocked"
 
 #: sickbeard/db.py:208
 msgid "You passed a non-iterable to mass_action: {0!r}"
-msgstr ""
+msgstr "Je stuurde een niet-repeterend gegeven naar mass_action: {0!r}"
 
 #: sickbeard/db.py:224
 msgid "{filename}: {query}"
-msgstr ""
+msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
 msgid "{filename}: {query} with args {args!s}"
-msgstr ""
+msgstr "{filename}: {query} met argumenten {args!s}"
 
 #: sickbeard/db.py:232
 msgid "Transaction with {count!s} of queries executed successfully"
-msgstr ""
+msgstr "Transactie met {count!s} queries succesvol uitgevoerd"
 
 #: sickbeard/db.py:269
 msgid "Cannot fetch all and only one at the same time!"
-msgstr ""
+msgstr "Kan niet alles en één per keer afvangen op hetzelfde moment!"
 
 #: sickbeard/db.py:353
 msgid "Control dict to upsert cannot have values of None!"
-msgstr ""
+msgstr "Controleer dict to upsert; mogen geen waardes 'None' bevatten!"
 
 #: sickbeard/logger.py:473
 msgid "&lt;No Filter&gt;"
@@ -4892,11 +4892,11 @@ msgstr "Torrent en NZB zoekmachines kunnen aan/uitgezet worden in "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog or manual searches"
-msgstr ""
+msgstr "Leverancier ondersteunt geen werkvoorraad of handmatige zoekopdrachten"
 
 #: gui/slick/views/config_providers.mako:61
 msgid "Provider does not support daily rss searches"
-msgstr ""
+msgstr "Leverancier ondersteunt geen dagelijkse rss zoekopdrachten"
 
 #: gui/slick/views/config_providers.mako:110
 msgid "Configure individual provider settings here."
@@ -4934,7 +4934,7 @@ msgstr "gebruik deze Zoekmachine voor dagelijkse zoekopdrachten."
 #: gui/slick/views/config_providers.mako:296
 #: gui/slick/views/config_providers.mako:651
 msgid "Daily search is currently not working on this provider"
-msgstr ""
+msgstr "Dagelijkse zoekopdrachten werken niet op dit moment bij deze leverancier"
 
 #: gui/slick/views/config_providers.mako:195
 #: gui/slick/views/config_providers.mako:304
@@ -4952,7 +4952,7 @@ msgstr "gebruik Zoekmachine voor Werkvoorraad-zoekopdrachten."
 #: gui/slick/views/config_providers.mako:313
 #: gui/slick/views/config_providers.mako:669
 msgid "Backlog search is currently not working on this provider"
-msgstr ""
+msgstr "Werkvoorraad zoekopdrachten werken momenteel niet bij deze leverancier"
 
 #: gui/slick/views/config_providers.mako:212
 #: gui/slick/views/config_providers.mako:321
@@ -7135,17 +7135,17 @@ msgstr "Nu"
 
 #: sickrage/providers/GenericProvider.py:56
 msgid "Not working"
-msgstr ""
+msgstr "Werkt niet"
 
 #: sickrage/providers/GenericProvider.py:57
 msgid "Daily/RSS only"
-msgstr ""
+msgstr "Alleen Dagelijks/RSS"
 
 #: sickrage/providers/GenericProvider.py:58
 msgid "Backlog/Manual Search only"
-msgstr ""
+msgstr "Alleen Werkvoorraad/Handmatige Zoekopdrachten"
 
 #: sickrage/providers/GenericProvider.py:59
 msgid "Daily/RSS and Backlog/Manual Searches working"
-msgstr ""
+msgstr "Dagelijkse/RSS en Werkvoorraad/Handmatige Zoekopdrachten operationeel"
 
