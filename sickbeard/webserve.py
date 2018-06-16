@@ -1702,7 +1702,7 @@ class Home(WebRoot):
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
 
-            location = ek(os.path.normpath, location)
+            location = ek(os.path.normpath, xhtml_unescape(location))
             # noinspection PyProtectedMember
             old_location = ek(os.path.normpath, show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
@@ -2480,11 +2480,11 @@ class HomePostProcess(Home):
                        is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
-        process_path = ss(kwargs.get('dir', proc_dir) or '')
+        process_path = ss(kwargs.get('dir', xhtml_unescape(proc_dir)) or '')
         if not process_path:
             return self.redirect("/home/postprocess/")
 
-        release_name = ss(nzbName) if nzbName else nzbName
+        release_name = ss(xhtml_unescape(nzbName)) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
             process_path, release_name, method=process_method, force=force,
