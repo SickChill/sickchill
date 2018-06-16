@@ -668,13 +668,13 @@ class WebFileBrowser(WebRoot):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header(b'Content-Type', 'application/json')
 
-        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles)), fileTypes.split(',')))
+        return json.dumps(foldersAtPath(xhtml_unescape(path), True, bool(int(includeFiles)), fileTypes.split(',')))
 
     def complete(self, term, includeFiles=False, fileTypes=''):
 
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header(b'Content-Type', 'application/json')
-        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, term), includeFiles=bool(int(includeFiles)),
+        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, xhtml_unescape(term)), includeFiles=bool(int(includeFiles)),
                                                           fileTypes=fileTypes.split(','))
                  if 'path' in entry]
 
@@ -1702,7 +1702,7 @@ class Home(WebRoot):
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
 
-            location = ek(os.path.normpath, location)
+            location = ek(os.path.normpath, xhtml_unescape(location))
             # noinspection PyProtectedMember
             old_location = ek(os.path.normpath, show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
@@ -2480,11 +2480,11 @@ class HomePostProcess(Home):
                        is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
-        process_path = ss(kwargs.get('dir', proc_dir) or '')
+        process_path = ss(kwargs.get('dir', xhtml_unescape(proc_dir)) or '')
         if not process_path:
             return self.redirect("/home/postprocess/")
 
-        release_name = ss(nzbName) if nzbName else nzbName
+        release_name = ss(xhtml_unescape(nzbName)) if nzbName else nzbName
 
         result = sickbeard.postProcessorTaskScheduler.action.add_item(
             process_path, release_name, method=process_method, force=force,
@@ -2524,7 +2524,7 @@ class HomeAddShows(Home):
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        search_term = search_term.encode('utf-8')
+        search_term = xhtml_unescape(search_term).encode('utf-8')
 
         searchTerms = [search_term]
 
@@ -2977,13 +2977,13 @@ class HomeAddShows(Home):
 
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
-            show_name = ek(os.path.basename, ek(os.path.normpath, fullShowPath))
+            show_name = ek(os.path.basename, ek(os.path.normpath, xhtml_unescape(fullShowPath)))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = ek(os.path.normpath, fullShowPath)
+            show_dir = ek(os.path.normpath, xhtml_unescape(fullShowPath))
         else:
-            show_dir = ek(os.path.join, rootDir, sanitize_filename(show_name))
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek(os.path.isdir, show_dir) and not fullShowPath:
