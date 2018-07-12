@@ -24,19 +24,19 @@ from os import sys
 from random import shuffle
 
 import sickbeard
-from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, btn, cpasbien, danishbits, elitetorrent, filelist, gftracker,
-                                 hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed, iptorrents,
-                                 limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat,
-                                 skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech,
-                                 torrentproject, torrentz, tvchaosuk, xthor, yggtorrent, gimmepeers)
+from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, gimmepeers, btn, cpasbien, danishbits, elitetorrent, filelist,
+                                 gftracker, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero, immortalseed,
+                                 iptorrents, limetorrents, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime,
+                                 shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech,
+                                 torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
 
 __all__ = [
-    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'btn', 'cpasbien', 'danishbits',
+    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'gimmepeers', 'btn', 'cpasbien', 'danishbits',
     'elitetorrent', 'filelist', 'gftracker', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
     'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'morethantv',
     'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
     'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
-    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent', 'gimmepeers'
+    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
 ]
 
 
