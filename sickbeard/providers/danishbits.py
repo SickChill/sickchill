@@ -67,7 +67,8 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         search_params = {
             'user': self.username,
             'passkey': self.passkey,
-            'search': search_strings,
+            'search': '.',  # Dummy query for RSS search, needs the search param sent.
+            'latest': 'true'
         }
 
         # Units
@@ -91,16 +92,17 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_params['search'] = search_string
+                    search_params['latest'] = 'false'
+                    search_params['search'] = search_string
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     logger.log("No data returned from provider", logger.DEBUG)
                     continue
 
-                torrents = json.loads(data)
-                if 'results' in torrents:
-                    for torrent in torrents['results']:
+                result = json.loads(data)
+                if 'results' in result:
+                    for torrent in result['results']:
                         title = torrent['release_name']
                         download_url = torrent['download_url']
                         seeders  = torrent['seeders']
@@ -120,6 +122,9 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                                     (title, seeders, leechers), logger.DEBUG)
                         items.append(item)
+                        
+                if 'error' in result:
+                    logger.log(result['error'], logger.WARNING)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

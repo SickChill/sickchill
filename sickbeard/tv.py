@@ -2469,27 +2469,28 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         # move the ep file
         result = helpers.rename_ep_file(self.location, absolute_proper_path, absolute_current_path_no_ext_length)
 
-        # move related files
-        for cur_related_file in related_files:
-            # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
-            cur_related_dir = ek(os.path.dirname, ek(os.path.abspath, cur_related_file))
-            subfolder = cur_related_dir.replace(ek(os.path.dirname, ek(os.path.abspath, self.location)), '')
-            # We now have a subfolder. We need to add that to the absolute_proper_path.
-            # First get the absolute proper-path dir
-            proper_related_dir = ek(os.path.dirname, ek(os.path.abspath, absolute_proper_path + file_ext))
-            proper_related_path = absolute_proper_path.replace(proper_related_dir, proper_related_dir + subfolder)
+        if sickbeard.MOVE_ASSOCIATED_FILES:
+            # move related files
+            for cur_related_file in related_files:
+                # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
+                cur_related_dir = ek(os.path.dirname, ek(os.path.abspath, cur_related_file))
+                subfolder = cur_related_dir.replace(ek(os.path.dirname, ek(os.path.abspath, self.location)), '')
+                # We now have a subfolder. We need to add that to the absolute_proper_path.
+                # First get the absolute proper-path dir
+                proper_related_dir = ek(os.path.dirname, ek(os.path.abspath, absolute_proper_path + file_ext))
+                proper_related_path = absolute_proper_path.replace(proper_related_dir, proper_related_dir + subfolder)
 
-            cur_result = helpers.rename_ep_file(cur_related_file, proper_related_path,
-                                                absolute_current_path_no_ext_length + len(subfolder))
-            if not cur_result:
-                logger.log(str(self.indexerid) + ": Unable to rename file " + cur_related_file, logger.ERROR)
+                cur_result = helpers.rename_ep_file(cur_related_file, proper_related_path,
+                                                    absolute_current_path_no_ext_length + len(subfolder))
+                if not cur_result:
+                    logger.log(str(self.indexerid) + ": Unable to rename file " + cur_related_file, logger.ERROR)
 
-        for cur_related_sub in related_subs:
-            absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
-            cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
-                                                absolute_current_path_no_ext_length)
-            if not cur_result:
-                logger.log(str(self.indexerid) + ": Unable to rename file " + cur_related_sub, logger.ERROR)
+            for cur_related_sub in related_subs:
+                absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
+                cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
+                                                    absolute_current_path_no_ext_length)
+                if not cur_result:
+                    logger.log(str(self.indexerid) + ": Unable to rename file " + cur_related_sub, logger.ERROR)
 
         # save the ep
         with self.lock:

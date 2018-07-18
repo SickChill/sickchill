@@ -39,7 +39,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.urls = {
             'index': 'https://www.limetorrents.cc/',
-            'search': 'https://www.limetorrents.cc/searchrss/tv/',
+            'search': 'https://www.limetorrents.cc/searchrss/',
             'rss': 'https://www.limetorrents.cc/rss/tv/'
         }
 
@@ -65,7 +65,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
-                    search_url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
+                    search_url = (self.urls['rss'], self.urls['search'] + search_string + '/')[mode != 'RSS']
 
                     data = self.get_url(search_url, returns='text')
                     if not data:

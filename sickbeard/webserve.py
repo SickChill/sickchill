@@ -2480,7 +2480,7 @@ class HomePostProcess(Home):
                        is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
-        process_path = ss(kwargs.get('dir', xhtml_unescape(proc_dir)) or '')
+        process_path = ss(xhtml_unescape(kwargs.get('dir', proc_dir) or ''))
         if not process_path:
             return self.redirect("/home/postprocess/")
 

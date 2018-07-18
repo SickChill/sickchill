@@ -85,7 +85,7 @@ class OmgwtfnzbsProvider(NZBProvider):
             'user': self.username,
             'api': self.api_key,
             'eng': 1,
-            'catid': '19,20',  # SD,HD
+            'catid': '19,20,30',  # SD,HD,UHD
             'retention': sickbeard.USENET_RETENTION,
         }
 
@@ -135,7 +135,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
             'user': provider.username,
             'api': provider.api_key,
             'eng': 1,
-            'catid': '19,20'  # SD,HD
+            'catid': '19,20,30',  # SD,HD,UHD
         }
         return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
 
