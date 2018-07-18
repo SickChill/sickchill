@@ -100,7 +100,11 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.find(id='torrenttable').findAll('tr')
+                    torrent_table = html.find(id='torrenttable')
+                    if torrent_table:
+                        torrent_rows = torrent_table.findAll('tr')
+                    else:
+                        torrent_rows = []
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
