@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-06-11 05:05+0000\n"
-"PO-Revision-Date: 2018-06-11 01:05-0400\n"
+"POT-Creation-Date: 2018-07-19 06:26+0000\n"
+"PO-Revision-Date: 2018-07-19 06:26\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -234,7 +234,7 @@ msgstr "مطلوب"
 msgid "Ignored"
 msgstr "تجاهل"
 
-#: gui/slick/views/config_providers.mako:737 gui/slick/views/history.mako:130
+#: gui/slick/views/config_providers.mako:749 gui/slick/views/history.mako:130
 #: sickbeard/common.py:612
 msgid "Subtitled"
 msgstr "مترجم"
@@ -2556,8 +2556,8 @@ msgstr "هذه الخيارات تتطلب إعادة تشغيل يدوي لتص
 #: gui/slick/views/config_general.mako:649
 #: gui/slick/views/config_notifications.mako:2307
 #: gui/slick/views/config_providers.mako:164
-#: gui/slick/views/config_providers.mako:274
-#: gui/slick/views/config_providers.mako:803
+#: gui/slick/views/config_providers.mako:278
+#: gui/slick/views/config_providers.mako:815
 msgid "API key"
 msgstr "مفتاح API"
 
@@ -3064,8 +3064,8 @@ msgstr "(عناوين المضيفين المتعددة يجب أن تكون م�
 #: gui/slick/views/config_notifications.mako:248
 #: gui/slick/views/config_notifications.mako:419
 #: gui/slick/views/config_notifications.mako:2662
-#: gui/slick/views/config_providers.mako:261
-#: gui/slick/views/config_providers.mako:427 gui/slick/views/login.mako:15
+#: gui/slick/views/config_providers.mako:265
+#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:15
 #: gui/slick/views/login.mako:16 gui/slick/views/login.mako:17
 msgid "Username"
 msgstr "اسم المُستخدم"
@@ -3078,7 +3078,7 @@ msgstr "اسم المستخدم الخاص بـ KODI (فارغة إذا لم ي�
 #: gui/slick/views/config_notifications.mako:266
 #: gui/slick/views/config_notifications.mako:437
 #: gui/slick/views/config_notifications.mako:1102
-#: gui/slick/views/config_providers.mako:441
+#: gui/slick/views/config_providers.mako:449
 #: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:24
 #: gui/slick/views/login.mako:25 gui/slick/views/login.mako:26
 msgid "Password"
@@ -4880,7 +4880,7 @@ msgid "Configure Custom Newznab Providers"
 msgstr "إعدادات مقدمي خدمة Newznab مخصصين"
 
 #: gui/slick/views/config_providers.mako:37
-#: gui/slick/views/config_providers.mako:869
+#: gui/slick/views/config_providers.mako:881
 msgid "Configure Custom Torrent Providers"
 msgstr "إعدادات مقدمي خدمة تورينت مخصصين"
 
@@ -4925,242 +4925,242 @@ msgid "URL"
 msgstr "عنوان URL"
 
 #: gui/slick/views/config_providers.mako:178
-#: gui/slick/views/config_providers.mako:287
-#: gui/slick/views/config_providers.mako:642
+#: gui/slick/views/config_providers.mako:291
+#: gui/slick/views/config_providers.mako:650
 msgid "Enable daily searches"
 msgstr "تمكين عمليات البحث اليومية"
 
 #: gui/slick/views/config_providers.mako:186
-#: gui/slick/views/config_providers.mako:295
-#: gui/slick/views/config_providers.mako:650
+#: gui/slick/views/config_providers.mako:299
+#: gui/slick/views/config_providers.mako:658
 msgid "enable provider to perform daily searches."
 msgstr "تمكين مقدم الخدمة لإجراء عمليات البحث اليومية."
 
-#: gui/slick/views/config_providers.mako:187
-#: gui/slick/views/config_providers.mako:296
-#: gui/slick/views/config_providers.mako:651
+#: gui/slick/views/config_providers.mako:188
+#: gui/slick/views/config_providers.mako:301
+#: gui/slick/views/config_providers.mako:660
 msgid "Daily search is currently not working on this provider"
 msgstr ""
 
-#: gui/slick/views/config_providers.mako:195
-#: gui/slick/views/config_providers.mako:304
-#: gui/slick/views/config_providers.mako:659
+#: gui/slick/views/config_providers.mako:197
+#: gui/slick/views/config_providers.mako:310
+#: gui/slick/views/config_providers.mako:669
 msgid "Enable backlog searches"
 msgstr "تمكين عمليات البحث المتراكمة"
 
-#: gui/slick/views/config_providers.mako:203
-#: gui/slick/views/config_providers.mako:312
-#: gui/slick/views/config_providers.mako:668
+#: gui/slick/views/config_providers.mako:205
+#: gui/slick/views/config_providers.mako:318
+#: gui/slick/views/config_providers.mako:678
 msgid "enable provider to perform backlog searches."
 msgstr "تمكين مقدم الخدمة لإجراء عمليات البحث المتراكة."
 
-#: gui/slick/views/config_providers.mako:204
-#: gui/slick/views/config_providers.mako:313
-#: gui/slick/views/config_providers.mako:669
+#: gui/slick/views/config_providers.mako:207
+#: gui/slick/views/config_providers.mako:320
+#: gui/slick/views/config_providers.mako:680
 msgid "Backlog search is currently not working on this provider"
 msgstr ""
 
-#: gui/slick/views/config_providers.mako:212
-#: gui/slick/views/config_providers.mako:321
-#: gui/slick/views/config_providers.mako:677
+#: gui/slick/views/config_providers.mako:216
+#: gui/slick/views/config_providers.mako:329
+#: gui/slick/views/config_providers.mako:689
 msgid "Season search mode"
 msgstr "وضع بحث الموسم"
 
-#: gui/slick/views/config_providers.mako:217
-#: gui/slick/views/config_providers.mako:326
-#: gui/slick/views/config_providers.mako:682
+#: gui/slick/views/config_providers.mako:221
+#: gui/slick/views/config_providers.mako:334
+#: gui/slick/views/config_providers.mako:694
 msgid "when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes."
 msgstr "عند البحث عن مواسم كاملة يمكنك اختيار أن يكون البحث عن تحميل موسم كامل فقط، أو اختيار أن يكون التحميل لكل حلقة على حدة."
 
-#: gui/slick/views/config_providers.mako:225
+#: gui/slick/views/config_providers.mako:229
 msgid "season packs only."
 msgstr "موسم كامل فقط."
 
-#: gui/slick/views/config_providers.mako:233
+#: gui/slick/views/config_providers.mako:237
 msgid "episodes only."
 msgstr "الحلقات فقط."
 
-#: gui/slick/views/config_providers.mako:243
-#: gui/slick/views/config_providers.mako:352
-#: gui/slick/views/config_providers.mako:708
+#: gui/slick/views/config_providers.mako:247
+#: gui/slick/views/config_providers.mako:360
+#: gui/slick/views/config_providers.mako:720
 msgid "Enable fallback"
 msgstr "تمكين التراجع"
 
-#: gui/slick/views/config_providers.mako:248
-#: gui/slick/views/config_providers.mako:357
-#: gui/slick/views/config_providers.mako:713
+#: gui/slick/views/config_providers.mako:252
+#: gui/slick/views/config_providers.mako:365
+#: gui/slick/views/config_providers.mako:725
 msgid "when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode."
 msgstr "عند البحث عن موسم كامل تبعاً لوضع البحث قد لا يتم العثور على نتائج، يساعد هذا قبل إعادة تشغيل البحث باستخدام طريقة البحث العكسي."
 
-#: gui/slick/views/config_providers.mako:371
+#: gui/slick/views/config_providers.mako:379
 msgid "Custom URL"
 msgstr "عنوان URL مخصص"
 
-#: gui/slick/views/config_providers.mako:378
+#: gui/slick/views/config_providers.mako:386
 msgid "the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/"
 msgstr "ينبغي أن يتضمن عنوان URL على البروتوكول (والمنفذ إذا كان ذلك ممكناً).  على سبيل المثال: http://192.168.1.4/أو http://localhost:3000/"
 
-#: gui/slick/views/config_providers.mako:386
+#: gui/slick/views/config_providers.mako:394
 msgid "Api key"
 msgstr "مفتاح Api"
 
-#: gui/slick/views/config_providers.mako:400
+#: gui/slick/views/config_providers.mako:408
 msgid "Digest"
 msgstr "Digest"
 
-#: gui/slick/views/config_providers.mako:414
+#: gui/slick/views/config_providers.mako:422
 msgid "Hash"
 msgstr "Hash"
 
-#: gui/slick/views/config_providers.mako:456
+#: gui/slick/views/config_providers.mako:464
 msgid "Passkey"
 msgstr "مفتاح المرور"
 
-#: gui/slick/views/config_providers.mako:470
-#: gui/slick/views/config_providers.mako:909
+#: gui/slick/views/config_providers.mako:478
+#: gui/slick/views/config_providers.mako:921
 msgid "Cookies"
 msgstr "ملفات تعريف الارتباط"
 
-#: gui/slick/views/config_providers.mako:485
+#: gui/slick/views/config_providers.mako:493
 msgid "example: uid=1234;pass=567845439634987<br>note: uid and pass are not your username/password.<br>use DevTools or Firebug to get these values after logging in on your browser."
 msgstr ""
 
-#: gui/slick/views/config_providers.mako:498
+#: gui/slick/views/config_providers.mako:506
 msgid "Pin"
 msgstr "رقم التعريف الشخصي"
 
-#: gui/slick/views/config_providers.mako:513
+#: gui/slick/views/config_providers.mako:521
 msgid "Seed ratio"
 msgstr "نسبة الـ Seed"
 
-#: gui/slick/views/config_providers.mako:525
+#: gui/slick/views/config_providers.mako:533
 msgid "stop transfer when ratio is reached<br>(-1 SickRage default to seed forever, or leave blank for downloader default)"
 msgstr "إيقاف النقل عندما يتم التوصل إلى نسبة<br>؛ (-1 الافتراضي لـ SickRage هو -1 للرفع إلى الأبد، أو اترك المساحة فارغة لتنزيل الافتراضي)"
 
-#: gui/slick/views/config_providers.mako:535
+#: gui/slick/views/config_providers.mako:543
 msgid "Minimum seeders"
 msgstr "الحد الأدنى من seeders"
 
-#: gui/slick/views/config_providers.mako:548
+#: gui/slick/views/config_providers.mako:556
 msgid "Minimum leechers"
 msgstr "الحد الأدنى من leechers"
 
-#: gui/slick/views/config_providers.mako:562
+#: gui/slick/views/config_providers.mako:570
 msgid "Confirmed download"
 msgstr "تأكيد التحميل"
 
-#: gui/slick/views/config_providers.mako:567
+#: gui/slick/views/config_providers.mako:575
 msgid "only download torrents from trusted or verified uploaders ?"
 msgstr "تحميل التورنت فقط من المصادر الموثوق بها أو اللتي تم التحقق منها؟"
 
-#: gui/slick/views/config_providers.mako:575
+#: gui/slick/views/config_providers.mako:583
 msgid "Ranked torrents"
 msgstr "ملفات تورينت المُصنفة"
 
-#: gui/slick/views/config_providers.mako:580
+#: gui/slick/views/config_providers.mako:588
 msgid "only download ranked torrents (trusted releases)"
 msgstr "فقط تحميل ملفات التورينت المصنفة (الإصدارات الموثوق بها)"
 
-#: gui/slick/views/config_providers.mako:588
+#: gui/slick/views/config_providers.mako:596
 msgid "English torrents"
 msgstr "التورينت الإنجليزية"
 
-#: gui/slick/views/config_providers.mako:593
+#: gui/slick/views/config_providers.mako:601
 msgid "only download english torrents, or torrents containing english subtitles"
 msgstr "فقط قم بتحميل التورينت الإنجليزية، أو التورينت التي تحتوي على ترجمة باللغة الإنجليزية"
 
-#: gui/slick/views/config_providers.mako:601
+#: gui/slick/views/config_providers.mako:609
 msgid "For Spanish torrents"
 msgstr "التورينت الإسبانية"
 
-#: gui/slick/views/config_providers.mako:606
+#: gui/slick/views/config_providers.mako:614
 msgid "ONLY search on this provider if show info is defined as \"Spanish\" (avoid provider's use for VOS shows)"
 msgstr "البحث فقط في مقدم الخدمة هذا إذا كانت معلومات المسلسل معرفة بالـ \"الإسبانية\" (تجنب استخدام مقدم مسلسلات VOS)"
 
-#: gui/slick/views/config_providers.mako:614
+#: gui/slick/views/config_providers.mako:622
 msgid "Sorting results by"
 msgstr "فرز النتائج حسب"
 
-#: gui/slick/views/config_providers.mako:629
+#: gui/slick/views/config_providers.mako:637
 msgid "Freeleech"
 msgstr "Freeleech"
 
-#: gui/slick/views/config_providers.mako:634
+#: gui/slick/views/config_providers.mako:642
 msgid "only download <b>\"FreeLeech\"</b> torrents."
 msgstr "فقط تحميل ملفات التورنت <b>\"FreeLeech\"</b>."
 
-#: gui/slick/views/config_providers.mako:721
+#: gui/slick/views/config_providers.mako:733
 msgid "Category"
 msgstr "الفئة"
 
-#: gui/slick/views/config_providers.mako:742
+#: gui/slick/views/config_providers.mako:754
 msgid "select torrent with Italian subtitle"
 msgstr "حدد تورنت مع الترجمة الإيطالية"
 
-#: gui/slick/views/config_providers.mako:760
+#: gui/slick/views/config_providers.mako:772
 msgid "Configure Custom<br>Newznab Providers"
 msgstr "إعدادات مقدمي<br>خدمات Newznab مخصصين"
 
-#: gui/slick/views/config_providers.mako:761
+#: gui/slick/views/config_providers.mako:773
 msgid "Add and setup or remove custom Newznab providers."
 msgstr "إضافة وإعداد أو إزالة مقدم خدمات Newznab مخصص."
 
-#: gui/slick/views/config_providers.mako:770
-#: gui/slick/views/config_providers.mako:879
+#: gui/slick/views/config_providers.mako:782
+#: gui/slick/views/config_providers.mako:891
 msgid "Select provider"
 msgstr "حدد مقدم خدمة"
 
-#: gui/slick/views/config_providers.mako:775
-#: gui/slick/views/config_providers.mako:884
+#: gui/slick/views/config_providers.mako:787
+#: gui/slick/views/config_providers.mako:896
 msgid "-- add new provider --"
 msgstr "-إضافة مقدم خدمة جديد-"
 
-#: gui/slick/views/config_providers.mako:784
-#: gui/slick/views/config_providers.mako:893
+#: gui/slick/views/config_providers.mako:796
+#: gui/slick/views/config_providers.mako:905
 msgid "Provider name"
 msgstr "اسم مقدم الخدمة"
 
-#: gui/slick/views/config_providers.mako:794
+#: gui/slick/views/config_providers.mako:806
 msgid "Site URL"
 msgstr "عنوان الموقع"
 
-#: gui/slick/views/config_providers.mako:823
+#: gui/slick/views/config_providers.mako:835
 msgid "Newznab search categories"
 msgstr "فئات بحث Newznab"
 
-#: gui/slick/views/config_providers.mako:834
+#: gui/slick/views/config_providers.mako:846
 msgid "select your Newznab categories on the left, and click the \"update categories\" button to use them for searching.) <b>don't forget to to save the form!"
 msgstr "حدد الفئات الخاصة بك في Newznab على الجانب الأيمن، وانقر فوق الزر \"تحديث الفئات\" لإستخدامها في البحث). <b>لا تنسى حفظ النموذج!"
 
-#: gui/slick/views/config_providers.mako:839
+#: gui/slick/views/config_providers.mako:851
 msgid "Update Categories"
 msgstr "تحديث الفئات"
 
-#: gui/slick/views/config_providers.mako:848
-#: gui/slick/views/config_providers.mako:945 gui/slick/views/editShow.mako:342
+#: gui/slick/views/config_providers.mako:860
+#: gui/slick/views/config_providers.mako:957 gui/slick/views/editShow.mako:342
 #: gui/slick/views/inc_home_showList.mako:183
 msgid "Add"
 msgstr "إضافة"
 
-#: gui/slick/views/config_providers.mako:851
-#: gui/slick/views/config_providers.mako:948 gui/slick/views/inc_rootDirs.mako:32
+#: gui/slick/views/config_providers.mako:863
+#: gui/slick/views/config_providers.mako:960 gui/slick/views/inc_rootDirs.mako:32
 #: gui/slick/views/manage.mako:57 gui/slick/views/manage_massEdit.mako:75
 msgid "Delete"
 msgstr "حذف"
 
-#: gui/slick/views/config_providers.mako:870
+#: gui/slick/views/config_providers.mako:882
 msgid "Add and setup or remove custom RSS providers."
 msgstr "إضافة وإعداد أو إزالة مقدمي خدمة RSS مخصصة."
 
-#: gui/slick/views/config_providers.mako:901
+#: gui/slick/views/config_providers.mako:913
 msgid "RSS URL"
 msgstr "رابط RSS"
 
-#: gui/slick/views/config_providers.mako:926
+#: gui/slick/views/config_providers.mako:938
 msgid "Search element"
 msgstr "عنصر البحث"
 
-#: gui/slick/views/config_providers.mako:936
+#: gui/slick/views/config_providers.mako:948
 msgid "eg: title"
 msgstr "مثلا: العنوان"
 
