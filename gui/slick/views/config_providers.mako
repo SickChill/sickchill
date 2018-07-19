@@ -184,7 +184,9 @@
                                                    ${('disabled', '')[curNewznabProvider.can_daily]}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curNewznabProvider.can_daily]}
+                                            % if not curNewznabProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -201,7 +203,9 @@
                                                    ${('disabled', '')[curNewznabProvider.can_backlog]}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curNewznabProvider.can_backlog]}
+                                            % if not curNewznabProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -293,7 +297,9 @@
                                                    ${('disabled', '')[curNzbProvider.can_daily]}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curNzbProvider.can_daily]}
+                                            % if not curNzbProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -310,7 +316,9 @@
                                                    ${('disabled', ' ')[curNzbProvider.can_backlog]}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curNzbProvider.can_backlog]}
+                                            % if not curNzbProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -648,7 +656,9 @@
                                                    ${('disabled', ' ')[curTorrentProvider.can_daily]}
                                             />
                                             <label for="${curTorrentProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curTorrentProvider.can_daily]}
+                                            % if not curTorrentProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -666,7 +676,9 @@
                                             />
 
                                             <label for="${curTorrentProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                           ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curTorrentProvider.can_backlog]}
+                                            % if not curTorrentProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
