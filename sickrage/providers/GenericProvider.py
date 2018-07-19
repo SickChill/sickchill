@@ -383,6 +383,18 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return bool(self.enabled)
 
     @property
+    def daily_enabled(self):
+        return int(self.enable_daily)
+
+    @property
+    def backlog_enabled(self):
+        return int(self.enable_backlog)
+
+    @property
+    def search_fallback_enabled(self):
+        return int(self.search_fallback)
+
+    @property
     def can_daily(self):
         return self.ability_status & self.PROVIDER_DAILY != 0
 

@@ -1450,10 +1450,10 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if hasattr(curProvider, 'search_fallback'):
                 curProvider.search_fallback = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_search_fallback'))
             if hasattr(curProvider, 'enable_daily'):
-                curProvider.enable_daily =  curProvider.can_daily and check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id(
+                curProvider.enable_daily = curProvider.can_daily and check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id(
                     '_enable_daily'), True)
             if hasattr(curProvider, 'enable_backlog'):
-                curProvider.enable_backlog =  curProvider.can_backlog and check_setting_bool(
+                curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
                     CFG, curProvider.get_id().upper(), curProvider.get_id('_enable_backlog'), curProvider.can_backlog
                 )
             if hasattr(curProvider, 'cat'):
