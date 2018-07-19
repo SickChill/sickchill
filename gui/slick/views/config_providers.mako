@@ -180,7 +180,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_enable_daily")}"
                                                    id="${curNewznabProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curNewznabProvider.enable_daily]}
+                                                   ${('', 'checked="checked"')[int(curNewznabProvider.enable_daily)]}
                                                    ${('disabled', '')[curNewznabProvider.can_daily]}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
@@ -244,7 +244,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_search_fallback")}"
-                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNewznabProvider.search_fallback]}/>
+                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[int(curNewznabProvider.search_fallback)]}/>
                                             <label for="${curNewznabProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
