@@ -93,6 +93,16 @@ normal_regexes = [
      ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
+    ('verbose',
+     # Show Name Season 1 Episode 2 Ep Name
+     r'''
+     ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
+     (season|series)[. _-]+                      # season and separator
+     (?P<season_num>\d+)[. _-]+                  # 1
+     episode[. _-]+                              # episode and separator
+     (?P<ep_num>\d+)[. _-]+                      # 02 and separator
+     (?P<extra_info>.+)$                         # Source_Quality_Etc-
+     '''),
     ('scene_date_format',
      # Show.Name.2010.11.23.Source.Quality.Etc-Group
      # Show Name - 2010-11-23 - Ep Name
@@ -130,16 +140,6 @@ normal_regexes = [
      (?!264)                                                            # don't count x264
      (?P<season_num>\d{1,2})                                            # 1
      (?P<ep_num>\d{2})$                                                 # 02
-     '''),
-    ('verbose',
-     # Show Name Season 1 Episode 2 Ep Name
-     r'''
-     ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
-     (season|series)[. _-]+                      # season and separator
-     (?P<season_num>\d+)[. _-]+                  # 1
-     episode[. _-]+                              # episode and separator
-     (?P<ep_num>\d+)[. _-]+                      # 02 and separator
-     (?P<extra_info>.+)$                         # Source_Quality_Etc-
      '''),
     ('season_only',
      # Show.Name.S01.Source.Quality.Etc-Group
