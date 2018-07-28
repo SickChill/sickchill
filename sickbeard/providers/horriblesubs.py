@@ -27,6 +27,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickrage.helper.common import try_int
 from sickrage.providers.torrent.TorrentProvider import TorrentProvider
 
+
 class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
@@ -43,7 +44,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.url = 'http://horriblesubs.info/'
         self.urls = {
             'search': self.url + 'api.php',
-            'rss': self.url + 'rss.php?res=all'
+            'rss': self.url + 'rss.php'
         }
 
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll HorribleSubs every 15 minutes max
@@ -189,12 +190,12 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 quality = div.find('span', attrs={'class': 'rls-link-label'}).get_text(strip=True)
 
                 link = div.find('span', class_='hs-torrent-link')
-                download_url = link.find('a')['href'] if link else None
+                download_url = link.find('a')['href'] if link and link.find('a') else None
 
                 if not download_url:
                     # fallback to magnet link
                     link = div.find('span', class_='hs-magnet-link')
-                    download_url = link.find('a')['href'] if link else None
+                    download_url = link.find('a')['href'] if link and link.find('a') else None
 
                 release_title = '[HorribleSubs] {0}.[{1}]'.format(title, quality)
                 item = {'title': release_title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1, 'hash': ''}
@@ -203,5 +204,6 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 entries.append(item)
 
         return entries
-        
+
+
 provider = HorribleSubsProvider()
