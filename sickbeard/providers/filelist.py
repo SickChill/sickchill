@@ -46,7 +46,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.minleech = None
 
         # URLs
-        self.url = "http://filelist.ro"
+        self.url = "https://filelist.ro"
         self.urls = {
             "login": urljoin(self.url, "takelogin.php"),
             "search": urljoin(self.url, "browse.php"),
