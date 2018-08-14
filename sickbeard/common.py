@@ -77,7 +77,7 @@ NOTIFY_LOGIN_TEXT = 7
 notifyStrings = NumDict({
     # pylint: disable=undefined-variable
     NOTIFY_SNATCH: _("Started Download"),
-    NOTIFY_DOWNLOAD: _("Download Finished"),
+    NOTIFY_DOWNLOAD: _("Finished Download"),
     NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
     NOTIFY_GIT_UPDATE: _("SickRage Updated"),
     NOTIFY_GIT_UPDATE_TEXT: _("SickRage Updated To Commit#: "),
