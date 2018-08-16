@@ -48,7 +48,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://ww3.yggtorrent.is/'
+        self.url = 'https://ww4.yggtorrent.is/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
