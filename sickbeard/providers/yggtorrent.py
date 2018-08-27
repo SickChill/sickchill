@@ -22,8 +22,8 @@
 from __future__ import unicode_literals
 
 import re
-import requests
 
+import requests
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
