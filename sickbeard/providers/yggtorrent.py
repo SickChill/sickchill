@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import re
 
+import requests
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
@@ -48,7 +49,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://ww3.yggtorrent.is/'
+        self.url = requests.get('https://yggtorrent.is').url
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
