@@ -23,8 +23,8 @@ from __future__ import unicode_literals
 
 import re
 
+import validators
 from requests.compat import urljoin
-from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -48,6 +48,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
+        self.custom_url = None
         self.url = 'https://www.yggtorrent.is/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
@@ -60,13 +61,41 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
+    def update_urls(self, new_url, custom=False):
+        if custom and not new_url:
+            return True
+
+        if not validators.url(new_url):
+            if custom:
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+            else:
+                logger.log('Url changing has failed!', logger.DEBUG)
+
+            return False
+
+        self.url = new_url
+        self.urls = {
+            'login': urljoin(self.url, 'user/login'),
+            'search': urljoin(self.url, 'engine/search')
+        }
+        return True
+
     def login(self):
         login_params = {
             'id': self.username,
             'pass': self.password,
         }
 
+        self.update_urls(self.custom_url, True)
+
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+        if self.url not in response.url:
+            new_url = response.url.split('user/login')[0]
+            logger.log('Changing base url from {} to {}'.format(self.url, new_url), logger.DEBUG)
+            if not self.update_urls(new_url):
+                return False
+
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
