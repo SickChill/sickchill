@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
-# Contributor: PHD <phd59fr@gmail.com>
+# Contributor: PHD <phd59fr@gmail.com>, pluzun <pluzun59@gmail.com>
 #
 # URL: https://sickrage.github.io
 #
@@ -23,8 +23,8 @@ from __future__ import unicode_literals
 
 import re
 
+import validators
 from requests.compat import urljoin
-from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -48,7 +48,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.is/'
+        self.custom_url = None
+        self.url = 'https://www.yggtorrent.is/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
@@ -60,22 +61,47 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
-    def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+    def update_urls(self, new_url, custom=False):
+        if custom and not new_url:
             return True
 
+        if not validators.url(new_url):
+            if custom:
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+            else:
+                logger.log('Url changing has failed!', logger.DEBUG)
+
+            return False
+
+        self.url = new_url
+        self.urls = {
+            'login': urljoin(self.url, 'user/login'),
+            'search': urljoin(self.url, 'engine/search')
+        }
+        return True
+
+    def login(self):
         login_params = {
             'id': self.username,
             'pass': self.password,
         }
 
+        self.update_urls(self.custom_url, True)
+
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+        if self.url not in response.url:
+            new_url = response.url.split('user/login')[0]
+            logger.log('Changing base url from {} to {}'.format(self.url, new_url), logger.DEBUG)
+            if not self.update_urls(new_url):
+                return False
+
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
-        if response.status_code == 401:
-            logger.log('Invalid username or password. Check your settings', logger.WARNING)
+        if not response or response.status_code != 200:
+            logger.log('Unable to connect to provider', logger.WARNING)
             return False
-        elif response.status_code == 200:
+        else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns='response')
 
@@ -85,16 +111,11 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             if 'logout' not in response.text:
                 logger.log('Invalid username or password. Check your settings', logger.WARNING)
                 return False
-        else:
-            logger.log('Unable to connect to provider', logger.WARNING)
-            return False
 
         return True
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        if not self.login():
-            return results
 
         for mode in search_strings:
             items = []
@@ -125,9 +146,17 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
+
+                    if self.show and self.show.is_anime:
+                        search_params['sub_category'] = "2179"
+
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
                         continue
+
+                    if 'logout' not in data:
+                        logger.log('Refreshing cookies', logger.DEBUG)
+                        self.login()
 
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find(class_='table')
