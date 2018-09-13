@@ -2239,7 +2239,7 @@ var SICKRAGE = {
                         return $(node).find('time').attr('datetime');
                     },
                     3: function(node) {
-                        return $(node).find('span').prop('title').toLowerCase();
+                        return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
                     },
                     4: function(node) {
                         return $(node).find('span').text().toLowerCase();
@@ -2251,7 +2251,7 @@ var SICKRAGE = {
                         return $(node).data('show-size');
                     },
                     7: function(node) {
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return ($(node).find('span').attr('title') || 'No').toLowerCase();
                     }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
