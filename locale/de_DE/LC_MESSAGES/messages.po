@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-07-19 06:26+0000\n"
-"PO-Revision-Date: 2018-07-19 06:26\n"
+"POT-Creation-Date: 2018-09-13 19:05+0000\n"
+"PO-Revision-Date: 2018-09-13 19:07\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -136,8 +136,8 @@ msgid "Started Download"
 msgstr "Download gestartet"
 
 #: sickbeard/common.py:80
-msgid "Download Finished"
-msgstr "Download abgeschlossen"
+msgid "Finished Download"
+msgstr ""
 
 #: sickbeard/common.py:81
 msgid "Subtitle Download Finished"
@@ -241,11 +241,11 @@ msgstr "Mit Untertiteln"
 
 #: sickbeard/db.py:86
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr ""
+msgstr "Bitte überprüfen Sie Ihre Datenbank Besitzer/Berechtigungen: {db_filename}"
 
 #: sickbeard/db.py:96
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr ""
+msgstr "{exception_severity} Fehler beim Ausführen der Abfrage mit {method} in Datenbank {db_location}: "
 
 #: sickbeard/db.py:103
 msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
@@ -257,11 +257,11 @@ msgstr ""
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
-msgstr ""
+msgstr "Datenbankdatei kann nicht geöffnet werden"
 
 #: sickbeard/db.py:114
 msgid "database is locked"
-msgstr ""
+msgstr "Datenbank ist gesperrt"
 
 #: sickbeard/db.py:208
 msgid "You passed a non-iterable to mass_action: {0!r}"
@@ -269,7 +269,7 @@ msgstr ""
 
 #: sickbeard/db.py:224
 msgid "{filename}: {query}"
-msgstr ""
+msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
 msgid "{filename}: {query} with args {args!s}"
@@ -1425,11 +1425,11 @@ msgstr ""
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr ""
+msgstr "tägliche Suche"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
-msgstr ""
+msgstr "Rückstandssuche"
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
@@ -1445,7 +1445,7 @@ msgstr "Verzeichnis der Protokolldatei auswählen"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr ""
+msgstr "Hintergrundbild auswählen"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
@@ -1764,7 +1764,7 @@ msgstr "Suche"
 
 #: gui/slick/views/addShows_newShow.mako:101
 msgid "Pick the Folder"
-msgstr ""
+msgstr "Ordner auswählen"
 
 #: gui/slick/views/addShows_newShow.mako:105
 msgid "Pre-chosen Destination Folder"
@@ -1776,7 +1776,7 @@ msgstr "Einstellungen anpassen"
 
 #: gui/slick/views/addShows_newShow.mako:124
 msgid "Verify Your Input"
-msgstr ""
+msgstr "Überprüfen Sie Ihre Eingabe"
 
 #: gui/slick/views/addShows_newShow.mako:137
 #: gui/slick/views/home_massAddTable.mako:11
@@ -2768,7 +2768,7 @@ msgstr "sofern deaktiviert wird der Status der Folge standardmäßig auf \"gelö
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
-msgstr ""
+msgstr "Fehlerhafte Softlinks ignorieren"
 
 #: gui/slick/views/config_general.mako:1014
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
@@ -4894,7 +4894,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog or manual searches"
-msgstr ""
+msgstr "Provider unterstützt keine Rückstandssuche oder manuelle Suche"
 
 #: gui/slick/views/config_providers.mako:61
 msgid "Provider does not support daily rss searches"
@@ -6198,7 +6198,7 @@ msgstr "Serie"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Staffel "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6359,7 +6359,7 @@ msgstr "Ist diese Serie durchnummeriert?"
 
 #: gui/slick/views/inc_addShowOptions.mako:102
 msgid "Save as default"
-msgstr ""
+msgstr "Als Standard speichern"
 
 #: gui/slick/views/inc_addShowOptions.mako:106
 msgid "Use current values as the defaults"
@@ -6526,11 +6526,11 @@ msgstr "Neu"
 
 #: gui/slick/views/inc_rootDirs.mako:33
 msgid "Set as default"
-msgstr ""
+msgstr "Als Standard festlegen"
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "für 30 Tage"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"
@@ -6847,7 +6847,7 @@ msgstr "Anzeigen"
 
 #: gui/slick/views/schedule.mako:73
 msgid "View Snatched"
-msgstr ""
+msgstr "Ermittelte anzeigen"
 
 #: gui/slick/views/schedule.mako:85
 msgid "Calendar"

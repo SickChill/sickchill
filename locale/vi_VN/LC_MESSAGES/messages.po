@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-07-21 23:34+0000\n"
+"POT-Creation-Date: 2018-09-13 19:05+0000\n"
 "PO-Revision-Date: 2016-04-18 02:59-0400\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: vi_VN\n"
@@ -133,7 +133,7 @@ msgid "Started Download"
 msgstr ""
 
 #: sickbeard/common.py:80
-msgid "Download Finished"
+msgid "Finished Download"
 msgstr ""
 
 #: sickbeard/common.py:81
