@@ -302,6 +302,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                         date_str = str(ep_obj.airdate)
                         search_params['season'] = date_str.partition('-')[0]
                         search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                    elif ep_obj.show.is_anime:
+                        search_params['ep'] = ep_obj.absolute_number
                     else:
                         search_params['season'] = ep_obj.scene_season
                         search_params['ep'] = ep_obj.scene_episode
