@@ -304,7 +304,7 @@ module.exports = function(grunt) {
                 stdout: false,
                 callback: function(err, stdout) {
                     var commits = stdout.trim()
-                        .replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '');  // removes ` and tag information
+                        .replace(/`/gm, '').replace(/^\([\w\d\s,.\-+_/>]+\)\s/gm, '').replace(/"/gm, '\\"');  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
