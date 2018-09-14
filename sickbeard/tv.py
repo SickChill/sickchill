@@ -1173,7 +1173,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         helpers.update_anime_support()
 
-        if self.imdbid:
+        if self.imdbid and self.imdb_info:
             main_db_con = db.DBConnection()
             main_db_con.upsert("imdb_info", self.imdb_info, controlValueDict)
 
