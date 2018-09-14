@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-09-13 19:05+0000\n"
-"PO-Revision-Date: 2018-09-13 19:08\n"
+"PO-Revision-Date: 2018-09-14 14:25\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -137,7 +137,7 @@ msgstr "İndirme Başladı"
 
 #: sickbeard/common.py:80
 msgid "Finished Download"
-msgstr ""
+msgstr "Tamamlanmış İndirme"
 
 #: sickbeard/common.py:81
 msgid "Subtitle Download Finished"
@@ -241,27 +241,27 @@ msgstr "Altyazılı"
 
 #: sickbeard/db.py:86
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr ""
+msgstr "Lütfen, veritabanınızın sahip/izin kontrolünü yapın: {db_filename}"
 
 #: sickbeard/db.py:96
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr ""
+msgstr "{db_location} veritabanında {method} ile sıralama yapılırken {exception_severity} hatasıyla karşılaşıldı: "
 
 #: sickbeard/db.py:103
 msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
-msgstr ""
+msgstr "Eğer bu durum cache.db dosyasında oluştuysa, SickRage'i durdurup cache.db dosyasını silebilirsiniz ayrıca bunu yaptığınızda herhangi bir veri kaybı yaşamazsınız"
 
 #: sickbeard/db.py:106
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
-msgstr ""
+msgstr "Bu fonksiyona eklenen argümanlar şöyledir (Geliştiricilerin bilmek istedikleri şeyler bunlardır): {local_variables!s}"
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
-msgstr ""
+msgstr "veritabanı dosyası açılamadı"
 
 #: sickbeard/db.py:114
 msgid "database is locked"
-msgstr ""
+msgstr "veritabanı kilitlenmiş"
 
 #: sickbeard/db.py:208
 msgid "You passed a non-iterable to mass_action: {0!r}"
@@ -269,23 +269,23 @@ msgstr ""
 
 #: sickbeard/db.py:224
 msgid "{filename}: {query}"
-msgstr ""
+msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
 msgid "{filename}: {query} with args {args!s}"
-msgstr ""
+msgstr "{filename}: {query} with args {args!s}"
 
 #: sickbeard/db.py:232
 msgid "Transaction with {count!s} of queries executed successfully"
-msgstr ""
+msgstr "{count!s} adet istek aktarımı sorunsuz olarak tamamlandı"
 
 #: sickbeard/db.py:269
 msgid "Cannot fetch all and only one at the same time!"
-msgstr ""
+msgstr "Aynı anda hem tümü hem de sadece bir tanesi getirilemez!"
 
 #: sickbeard/db.py:353
 msgid "Control dict to upsert cannot have values of None!"
-msgstr ""
+msgstr "Denetim dict upsert için None değeri olamaz!"
 
 #: sickbeard/logger.py:473
 msgid "&lt;No Filter&gt;"
@@ -4890,11 +4890,11 @@ msgstr "Torrent ve NZB sağlayıcı durumları değiştirilebilir "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog or manual searches"
-msgstr ""
+msgstr "Sağlayıcı, arka plan biriktirme ve el ile arama yöntemlerini desteklemiyor"
 
 #: gui/slick/views/config_providers.mako:61
 msgid "Provider does not support daily rss searches"
-msgstr ""
+msgstr "Sağlayıcı, günlük rss arama özelliğini desteklemiyor"
 
 #: gui/slick/views/config_providers.mako:110
 msgid "Configure individual provider settings here."
@@ -4932,7 +4932,7 @@ msgstr "günlük aramaları gerçekleştirebilmek için sağlayıcıyı etkinle�
 #: gui/slick/views/config_providers.mako:301
 #: gui/slick/views/config_providers.mako:660
 msgid "Daily search is currently not working on this provider"
-msgstr ""
+msgstr "Günlük arama şu an bu sağlayıcı üzerinde çalışmıyor"
 
 #: gui/slick/views/config_providers.mako:197
 #: gui/slick/views/config_providers.mako:310
@@ -4950,7 +4950,7 @@ msgstr "backlog aramalarını gerçekleştirebilmek için sağlayıcıyı etkinl
 #: gui/slick/views/config_providers.mako:320
 #: gui/slick/views/config_providers.mako:680
 msgid "Backlog search is currently not working on this provider"
-msgstr ""
+msgstr "Arka plan araması şu an bu sağlayıcı üzerinde çalışmıyor"
 
 #: gui/slick/views/config_providers.mako:216
 #: gui/slick/views/config_providers.mako:329
@@ -7132,17 +7132,17 @@ msgstr "Şimdi"
 
 #: sickrage/providers/GenericProvider.py:56
 msgid "Not working"
-msgstr ""
+msgstr "Çalışmıyor"
 
 #: sickrage/providers/GenericProvider.py:57
 msgid "Daily/RSS only"
-msgstr ""
+msgstr "Sadece Günlük/RSS"
 
 #: sickrage/providers/GenericProvider.py:58
 msgid "Backlog/Manual Search only"
-msgstr ""
+msgstr "Sadece Arka Plan/El İle Arama"
 
 #: sickrage/providers/GenericProvider.py:59
 msgid "Daily/RSS and Backlog/Manual Searches working"
-msgstr ""
+msgstr "Günlük/RSS ve Arka Plan/El İle Aramalar çalışıyor"
 

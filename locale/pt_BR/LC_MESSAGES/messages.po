@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-09-13 19:05+0000\n"
-"PO-Revision-Date: 2018-09-13 19:07\n"
+"PO-Revision-Date: 2018-09-14 14:24\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -137,7 +137,7 @@ msgstr "Download iniciado"
 
 #: sickbeard/common.py:80
 msgid "Finished Download"
-msgstr ""
+msgstr "Download Terminado"
 
 #: sickbeard/common.py:81
 msgid "Subtitle Download Finished"
@@ -1565,15 +1565,15 @@ msgstr "URL para seu cliente rTorrent (por exemplo, scgi://localhost:5000 <br>ou
 
 #: gui/slick/js/core.js:1934
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
-msgstr ""
+msgstr "URL para seu cliente qBittorrent (por exemplo, http://localhost:8080/)"
 
 #: gui/slick/js/core.js:1944
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
-msgstr ""
+msgstr "URL para seu MLDonkey (por exemplo, http://localhost:4080)"
 
 #: gui/slick/js/core.js:1955
 msgid "URL to your putio client (e.g. http://localhost:8080)"
-msgstr ""
+msgstr "URL para seu cliente put.io (por exemplo, http://localhost:8080)"
 
 #: gui/slick/js/core.js:1958
 msgid "Create a new OAuth app for put.io"
@@ -1601,7 +1601,7 @@ msgstr "Escolher a localização do programa"
 
 #: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: gui/slick/js/core.js:2939
 msgid "Select Unprocessed Episode Folder"
@@ -1737,7 +1737,7 @@ msgstr "Série nome"
 
 #: gui/slick/views/addShows_newShow.mako:52
 msgid "Metadata language"
-msgstr ""
+msgstr "Linguagem de metadados"
 
 #: gui/slick/views/addShows_newShow.mako:65
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."

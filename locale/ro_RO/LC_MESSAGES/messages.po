@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-09-13 19:05+0000\n"
-"PO-Revision-Date: 2018-09-13 19:07\n"
+"PO-Revision-Date: 2018-09-14 14:24\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Romanian\n"
 "MIME-Version: 1.0\n"
@@ -137,7 +137,7 @@ msgstr "A început descărcarea"
 
 #: sickbeard/common.py:80
 msgid "Finished Download"
-msgstr ""
+msgstr "Descarcare terminata"
 
 #: sickbeard/common.py:81
 msgid "Subtitle Download Finished"
@@ -165,19 +165,19 @@ msgstr "Repetă"
 
 #: sickbeard/common.py:111
 msgid "Repeat (Separated)"
-msgstr ""
+msgstr "Repetati (separat)"
 
 #: sickbeard/common.py:113
 msgid "Extend"
-msgstr ""
+msgstr "Extinde"
 
 #: sickbeard/common.py:114
 msgid "Extend (Limited)"
-msgstr ""
+msgstr "Extinde (Limitat)"
 
 #: sickbeard/common.py:115
 msgid "Extend (Limited, E-prefixed)"
-msgstr ""
+msgstr "Extinde (Limitat, Cu Prefix)"
 
 #: gui/slick/views/history.mako:128 gui/slick/views/inc_home_showList.mako:74
 #: gui/slick/views/inc_home_showList.mako:279 sickbeard/common.py:219
