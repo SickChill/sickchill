@@ -810,11 +810,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
         if not sql_results:
-            logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
-            return
-        else:
-            self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
+            self.loadIMDbInfo()
+            sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
+            if not sql_results:
+                logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
+                return
 
+        self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
         self.dirty = False
         return True
 
@@ -868,10 +870,16 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         self.status = getattr(myEp, 'status', 'Unknown')
 
+    def check_imdbid(self):
+        try:
+            int(re.sub(r"[^0-9]", "", self.imdbid))
+        except (ValueError, TypeError):
+            self.imdbid = ""
+
     def loadIMDbInfo(self):  # pylint: disable=too-many-branches
 
         imdb_info = {
-            'imdb_id': self.imdbid,
+            'imdb_id': '',
             'title': '',
             'year': '',
             'akas': [],
@@ -890,16 +898,26 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         else:
             i = imdb.IMDb()
 
-        if not self.imdbid:
+        # Check that the imdbid we have is valid for searching
+        self.check_imdbid()
+
+        if self.name and not self.imdbid:
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
+
+        # Make sure the lib didn't give us back something bogus
+        self.check_imdbid()
 
         if not self.imdbid:
             logger.log(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid", logger.DEBUG)
+            # Set to empty to avoid Keyerrors
+            self.imdb_info = imdb_info
             return
 
         logger.log(str(self.indexerid) + ": Loading show info from IMDb", logger.DEBUG)
 
         imdbTv = i.get_movie(str(re.sub(r"[^0-9]", "", self.imdbid)))
+
+        imdb_info[b'imdb_id'] = self.imdbid
 
         for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
             # Store only the first value for string type
