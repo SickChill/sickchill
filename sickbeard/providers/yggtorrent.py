@@ -49,7 +49,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         # URLs
         self.custom_url = None
-        self.url = 'https://www.yggtorrent.is/'
+        self.url = 'https://yggtorrent.to/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
