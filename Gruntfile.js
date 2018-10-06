@@ -295,6 +295,7 @@ module.exports = function(grunt) {
                     stdout = stdout.trim();
                     if (/^v\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
                         grunt.config('last_tag', stdout);
+                        grunt.log.write(stdout);
                     } else {
                         grunt.fatal('Could not get the last tag name. We got: ' + stdout);
                     }
