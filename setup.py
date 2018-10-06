@@ -38,7 +38,7 @@ if babel:
     })
 
 setup(
-    name="sickrage",
+    name="sick-rage",
     version="0.0.1",
 
     description="Automatic Video Library Manager for TV Shows",

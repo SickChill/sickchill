@@ -1,21 +1,21 @@
-# Translations template for sickrage.
+# Translations template for sick-rage.
 # Copyright (C) 2018 SickRage
-# This file is distributed under the same license as the sickrage project.
+# This file is distributed under the same license as the sick-rage project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sickrage 0.0.1\n"
+"Project-Id-Version: sick-rage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-09-18 00:30+0000\n"
+"POT-Creation-Date: 2018-10-06 10:35-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: sickbeard/__init__.py:68
 msgid "Drama"
@@ -6441,8 +6441,8 @@ msgstr ""
 #: gui/slick/views/editShow.mako:384
 msgid ""
 "disabled entries come from a central file on github,<br/> if you think "
-"something is wrong please make an issue <a "
-"href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
+"something is wrong please make an issue <a href=\"//github.com/sickrage/sick-"
+"rage.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9
