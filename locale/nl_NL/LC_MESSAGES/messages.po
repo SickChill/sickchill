@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-09-13 19:05+0000\n"
-"PO-Revision-Date: 2018-09-14 14:22\n"
+"POT-Creation-Date: 2018-10-06 17:43+0000\n"
+"PO-Revision-Date: 2018-10-06 17:44\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -6206,7 +6206,7 @@ msgstr "deze lijst wordt aan de originele serienaam toegevoegd."
 
 #: gui/slick/views/editShow.mako:384
 msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
-msgstr "uitgeschakelde invoer komt van een centraal bestand op github,<br/> als je vindt dat er iets fout is meld dan een issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">hier</a>."
+msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"

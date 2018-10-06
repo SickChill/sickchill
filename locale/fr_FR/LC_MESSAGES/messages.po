@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-09-13 19:05+0000\n"
-"PO-Revision-Date: 2018-09-14 14:23\n"
+"POT-Creation-Date: 2018-10-06 17:43+0000\n"
+"PO-Revision-Date: 2018-10-06 17:45\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -137,7 +137,7 @@ msgstr "Téléchargement commencé"
 
 #: sickbeard/common.py:80
 msgid "Finished Download"
-msgstr ""
+msgstr "Téléchargement terminé"
 
 #: sickbeard/common.py:81
 msgid "Subtitle Download Finished"
@@ -241,43 +241,43 @@ msgstr "Sous-titré"
 
 #: sickbeard/db.py:86
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr ""
+msgstr "Veuillez vérifiez vos Droits/propriétaire sur base de données : {db_filename}"
 
 #: sickbeard/db.py:96
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr ""
+msgstr "{exception_severity} erreur lors de l’exécution d'une requête dans {method} sur la base de données {db_location}: "
 
 #: sickbeard/db.py:103
 msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
-msgstr ""
+msgstr "Si cela ce produit sur cache.db, vous pouvez arrêter SickRage et supprimer le fichier cache.db sans perte de données"
 
 #: sickbeard/db.py:106
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
-msgstr ""
+msgstr "Voici les arguments qui ont été passés à cette fonction (c’est ce que les développeurs doivent savoir) : {local_variables ! s}"
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
-msgstr ""
+msgstr "impossible d’ouvrir le fichier de base de données"
 
 #: sickbeard/db.py:114
 msgid "database is locked"
-msgstr ""
+msgstr "la base de données est verrouillée"
 
 #: sickbeard/db.py:208
 msgid "You passed a non-iterable to mass_action: {0!r}"
-msgstr ""
+msgstr "Vous avez passé un non-itérable à une action de masse : {0 ! r}"
 
 #: sickbeard/db.py:224
 msgid "{filename}: {query}"
-msgstr ""
+msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
 msgid "{filename}: {query} with args {args!s}"
-msgstr ""
+msgstr "{filename}: {query} avec les paramètres {args ! s}"
 
 #: sickbeard/db.py:232
 msgid "Transaction with {count!s} of queries executed successfully"
-msgstr ""
+msgstr "Transaction avec {comte ! s} requêtes exécutées avec succès"
 
 #: sickbeard/db.py:269
 msgid "Cannot fetch all and only one at the same time!"
@@ -424,21 +424,21 @@ msgstr "Aucune mise à jour nécessaire"
 
 #: sickbeard/versionChecker.py:418
 msgid "Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr ""
+msgstr "Impossible de trouver votre exécutable git - arrêtez SickRage et soit valoriser git_path dans votre fichier config.ini ou supprimez votre dossier .git et exécuter à partir des fichiers source pour permettre des mises à jour."
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
 msgid "(you're {num_commits} commit behind)"
 msgid_plural "(you're {num_commits} commits behind)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "(vous êtes {num_commits} commits derrière)"
+msgstr[1] "(vous êtes {num_commits} commits derrière)"
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
 msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Il y a une <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">version plus récente disponible</a> {commits_behind} &mdash; <a href=\"{update_url}\">mettre à jour maintenant</a>"
 
 #: sickbeard/versionChecker.py:761
 msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Numéro de version actuel inconnu : Si vous n’avez jamais utilisé le système de mise à niveau SickRage avant, alors la version actuelle n’est pas définie. &mdash; <a href=\"{update_url}\">mettre à jour maintenant</a>"
 
 #: sickbeard/webserve.py:164
 msgid "Mako Error"
@@ -1290,7 +1290,7 @@ msgstr "Configuration - Partages"
 
 #: sickbeard/webserve.py:3928
 msgid "Windows Shares Configuration"
-msgstr "Configuration des Partages Windows"
+msgstr "Configuration du Partage Windows"
 
 #: sickbeard/webserve.py:3956
 msgid "Saved Shares"
@@ -1421,19 +1421,19 @@ msgstr "Ceci est un message test de la part de SickRage"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches and backlog searches"
-msgstr ""
+msgstr "recherches quotidiennes et les recherches des épisodes désirés"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr ""
+msgstr "recherche quotidienne"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
-msgstr ""
+msgstr "recherche des épisodes désirés"
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
-msgstr ""
+msgstr "Aucun fournisseur de NZB/Torrent trouvé ou activé pour {searches}.<br/> <a href=\"{web_root}/config/providers/\">Vérifiez votre configuration</a>."
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
@@ -1441,15 +1441,15 @@ msgstr "Choisir un répertoire"
 
 #: gui/slick/js/core.js:429
 msgid "Select log file folder location"
-msgstr ""
+msgstr "Sélectionnez l’emplacement de dossier pour le fichier de log"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr ""
+msgstr "Sélectionnez l’Image de fond"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
-msgstr ""
+msgstr "Sélectionnez le fichier CSS"
 
 #: gui/slick/js/core.js:447
 msgid "select branch to use (restart required)"
@@ -1461,11 +1461,11 @@ msgstr "erreur : Aucune branche trouvée."
 
 #: gui/slick/js/core.js:476
 msgid "Select backup folder to save to"
-msgstr ""
+msgstr "Sélectionnez le dossier d'enregistrement de sauvegarde"
 
 #: gui/slick/js/core.js:477
 msgid "Select backup files to restore"
-msgstr ""
+msgstr "Sélectionnez les fichiers de sauvegarde à restaurer"
 
 #: gui/slick/js/core.js:486 gui/slick/js/core.js:507 gui/slick/js/core.js:529
 #: gui/slick/js/core.js:553 gui/slick/js/core.js:578 gui/slick/js/core.js:601
@@ -1478,7 +1478,7 @@ msgstr "Veuillez remplir les champs nécessaires ci-dessus."
 
 #: gui/slick/js/core.js:687
 msgid "<b>Step 1:</b> Confirm Authorization"
-msgstr ""
+msgstr "<b>étape 1 :</b> confirment l’autorisation"
 
 #: gui/slick/js/core.js:984
 msgid "Check blacklist name; the value needs to be a trakt slug"
@@ -1486,23 +1486,23 @@ msgstr ""
 
 #: gui/slick/js/core.js:1026
 msgid "You must provide a recipient email address!"
-msgstr ""
+msgstr "Vous devez fournir une adresse e-mail destinataire !"
 
 #: gui/slick/js/core.js:1111
 msgid "You didn't supply a Pushbullet api key"
-msgstr ""
+msgstr "Vous n'avez pas fourni une clé pour l’api Pushbullet"
 
 #: gui/slick/js/core.js:1139 gui/slick/js/core.js:1168
 msgid "Don't forget to save your new pushbullet settings."
-msgstr ""
+msgstr "N’oubliez pas de sauvegarder vos nouveaux paramètres de pushbullet."
 
 #: gui/slick/js/core.js:1277
 msgid "Select TV Download Directory"
-msgstr ""
+msgstr "Sélectionnez le répertoire de téléchargement TV"
 
 #: gui/slick/js/core.js:1278
 msgid "Select Unpack Directory"
-msgstr ""
+msgstr "Sélectionnez un répertoire de décompression"
 
 #: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390 gui/slick/js/core.js:1439
 #: gui/slick/js/core.js:1505
@@ -1529,63 +1529,63 @@ msgstr ""
 
 #: gui/slick/js/core.js:1801
 msgid "Select .torrent download location"
-msgstr ""
+msgstr "Sélectionnez l’emplacement de téléchargement des fichiers .torrent"
 
 #: gui/slick/js/core.js:1882
 msgid "Minimum seeding time is"
-msgstr ""
+msgstr "Minimum de temps de seed est"
 
 #: gui/slick/js/core.js:1884
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
-msgstr ""
+msgstr "URL de votre client uTorrent (par exemple, http://localhost:8000)"
 
 #: gui/slick/js/core.js:1887
 msgid "Stop seeding when inactive for"
-msgstr ""
+msgstr "Arrêter l’émission quand inactive pour"
 
 #: gui/slick/js/core.js:1893
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
-msgstr ""
+msgstr "URL à votre client Transmission (p. ex. http://localhost:9091)"
 
 #: gui/slick/js/core.js:1903
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
-msgstr ""
+msgstr "URL de votre client de déluge (p. ex. http://localhost:8112)"
 
 #: gui/slick/js/core.js:1912
 msgid "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
-msgstr ""
+msgstr "Adresse IP ou nom d’hôte de votre Daemon déluge (p. ex. scgi://localhost:58846)"
 
 #: gui/slick/js/core.js:1919
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
-msgstr ""
+msgstr "URL à votre client Synology DS (par exemple, http://localhost:5000)"
 
 #: gui/slick/js/core.js:1923
 msgid "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)"
-msgstr ""
+msgstr "URL de votre client rTorrent (scgi://localhost:5000 <br> ou https://localhost/rutorrent/plugins/httprpc/action.php)"
 
 #: gui/slick/js/core.js:1934
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
-msgstr ""
+msgstr "URL de votre client qBittorrent (par exemple, http://localhost:8080)"
 
 #: gui/slick/js/core.js:1944
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
-msgstr ""
+msgstr "URL devotre MLDonkey (p. ex. http://localhost:4080)"
 
 #: gui/slick/js/core.js:1955
 msgid "URL to your putio client (e.g. http://localhost:8080)"
-msgstr ""
+msgstr "URL de votre client putio (par exemple, http://localhost:8080)"
 
 #: gui/slick/js/core.js:1958
 msgid "Create a new OAuth app for put.io"
-msgstr ""
+msgstr "Créez une nouvelle application OAuth pour put.io"
 
 #: gui/slick/js/core.js:1959
 msgid "Put.io Parent Folder"
-msgstr ""
+msgstr "Dossier Parent put.io"
 
 #: gui/slick/js/core.js:1960
 msgid "Put.io OAuth Token"
-msgstr ""
+msgstr "Jeton d'authentification Put.io"
 
 #: gui/slick/js/core.js:2854 gui/slick/views/displayShow.mako:409
 msgid "Show Episodes"
@@ -1597,7 +1597,7 @@ msgstr "Cacher les épisodes"
 
 #: gui/slick/js/core.js:2864
 msgid "Select Show Location"
-msgstr ""
+msgstr "Sélectionnez l'emplacement de la série"
 
 #: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
 msgid "None"
@@ -1605,7 +1605,7 @@ msgstr ""
 
 #: gui/slick/js/core.js:2939
 msgid "Select Unprocessed Episode Folder"
-msgstr ""
+msgstr "Sélectionnez le dossier des épisodes non traités"
 
 #: gui/slick/js/core.js:3327
 msgid "DELETED"
@@ -1625,11 +1625,11 @@ msgstr ""
 
 #: gui/slick/js/core.js:3958
 msgid "searching {searchingFor}..."
-msgstr ""
+msgstr "recherche de {searchingFor}..."
 
 #: gui/slick/js/core.js:3971
 msgid "search timed out, try again or try another indexer"
-msgstr ""
+msgstr "recherche timed out, veuillez réessayez ou essayez un autre indexeur"
 
 #: gui/slick/js/core.js:4101
 msgid "loading folders..."
@@ -1724,7 +1724,7 @@ msgstr "Valider"
 
 #: gui/slick/views/addShows_newShow.mako:23
 msgid "Search for a Show"
-msgstr ""
+msgstr "Rechercher une série"
 
 #: gui/slick/views/addShows_newShow.mako:29
 msgid "Show retrieved from existing metadata"
@@ -1737,7 +1737,7 @@ msgstr "Afficher le nom"
 
 #: gui/slick/views/addShows_newShow.mako:52
 msgid "Metadata language"
-msgstr ""
+msgstr "Langue des métadonnées"
 
 #: gui/slick/views/addShows_newShow.mako:65
 msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
@@ -1763,7 +1763,7 @@ msgstr "Chercher"
 
 #: gui/slick/views/addShows_newShow.mako:101
 msgid "Pick the Folder"
-msgstr ""
+msgstr "Choisir le dossier"
 
 #: gui/slick/views/addShows_newShow.mako:105
 msgid "Pre-chosen Destination Folder"
@@ -2450,7 +2450,7 @@ msgstr "Chemin vers la feuille de style"
 
 #: gui/slick/views/config_general.mako:467
 msgid "Path to the stylesheet (.css) file"
-msgstr "Chemin vers le fichier (.css) de la feuille de style"
+msgstr "Chemin vers le fichier feuille de style (.css)"
 
 #: gui/slick/views/config_general.mako:476
 msgid "Show all seasons"
@@ -2766,11 +2766,11 @@ msgstr "Si désactivé, l'épisode aura le statut \"supprimé\" par défaut"
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
-msgstr ""
+msgstr "Ignorer les liens symboliques invalides"
 
 #: gui/slick/views/config_general.mako:1014
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
-msgstr ""
+msgstr "Si cochée, les liens symboliques invalides générerons un avertissements de niveau DEBUG lors du calcul de la taille d'une série"
 
 #: gui/slick/views/config_general.mako:1022
 msgid "Default deleted episode status"
@@ -3845,7 +3845,7 @@ msgstr "contactez @myidbot sur Telegram pour obtenir un ID"
 
 #: gui/slick/views/config_notifications.mako:2188
 msgid "Note: Don't forget to talk with your bot at least one time if you get a 403 error."
-msgstr ""
+msgstr "Remarque : N’oubliez pas de parler avec votre bot au moins une fois, si vous obtenez une erreur 403."
 
 #: gui/slick/views/config_notifications.mako:2196
 msgid "Bot API token"
@@ -4889,15 +4889,15 @@ msgstr "Au moins un fournisseur est requis mais deux sont recommandés."
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Torrent and NZB providers can be toggled in "
-msgstr ""
+msgstr "Fournisseurs de torrent et NZB peuvent être affiché/masqués dans "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog or manual searches"
-msgstr ""
+msgstr "Ce fournisseur ne supporte pas les recherches quotidiennes ou les recherches d'épisodes désirés"
 
 #: gui/slick/views/config_providers.mako:61
 msgid "Provider does not support daily rss searches"
-msgstr ""
+msgstr "Ce fournisseur ne supporte pas les recherches quotidiennes de rss"
 
 #: gui/slick/views/config_providers.mako:110
 msgid "Configure individual provider settings here."
@@ -4935,7 +4935,7 @@ msgstr "autoriser les fournisseurs à effectuer des recherches quotidiennes."
 #: gui/slick/views/config_providers.mako:301
 #: gui/slick/views/config_providers.mako:660
 msgid "Daily search is currently not working on this provider"
-msgstr ""
+msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:197
 #: gui/slick/views/config_providers.mako:310
@@ -4953,7 +4953,7 @@ msgstr "activer la recherche d'épisodes désirés pour ce fournisseur."
 #: gui/slick/views/config_providers.mako:320
 #: gui/slick/views/config_providers.mako:680
 msgid "Backlog search is currently not working on this provider"
-msgstr ""
+msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:216
 #: gui/slick/views/config_providers.mako:329
@@ -5666,7 +5666,7 @@ msgstr "Nom du partage"
 
 #: gui/slick/views/config_shares.mako:31
 msgid "Hostname or IP"
-msgstr "Adresse ou IP"
+msgstr "Nom d'hôte ou adresse IP"
 
 #: gui/slick/views/config_shares.mako:35
 msgid "Share path"
@@ -6173,7 +6173,7 @@ msgstr "Résultat de la recherche avec un ou plusieurs mots ignoré(s)."
 
 #: gui/slick/views/editShow.mako:293
 msgid "this option overrides the globally ignored words!"
-msgstr ""
+msgstr "cette option remplace les mots globalement ignorés !"
 
 #: gui/slick/views/editShow.mako:319
 msgid "search results with no words from this list will be ignored."
@@ -6181,7 +6181,7 @@ msgstr "Les résultats de recherche qui ne contiennent pas un des mots de cette 
 
 #: gui/slick/views/editShow.mako:320
 msgid "this option overrides the globally required words!"
-msgstr ""
+msgstr "cette option remplace les mots obligatoires globalement ignorés !"
 
 #: gui/slick/views/editShow.mako:328
 msgid "Scene Exception"
@@ -6196,7 +6196,7 @@ msgstr "Série"
 
 #: gui/slick/views/editShow.mako:339 gui/slick/views/editShow.mako:354
 msgid "Season "
-msgstr ""
+msgstr "Saison "
 
 #: gui/slick/views/editShow.mako:374
 msgid "this will affect episode search on NZB and torrent providers."
@@ -6357,7 +6357,7 @@ msgstr "Cette série utilise-t'elle la numérotation de la scène ?"
 
 #: gui/slick/views/inc_addShowOptions.mako:102
 msgid "Save as default"
-msgstr ""
+msgstr "Définir comme valeur par défaut"
 
 #: gui/slick/views/inc_addShowOptions.mako:106
 msgid "Use current values as the defaults"
@@ -6524,11 +6524,11 @@ msgstr "Nouveau"
 
 #: gui/slick/views/inc_rootDirs.mako:33
 msgid "Set as default"
-msgstr ""
+msgstr "Définir comme valeur par défaut"
 
 #: gui/slick/views/login.mako:33
 msgid "for 30 days"
-msgstr ""
+msgstr "pour 30 jours"
 
 #: gui/slick/views/login.mako:34
 msgid "Remember me"
@@ -6845,7 +6845,7 @@ msgstr "Affichés"
 
 #: gui/slick/views/schedule.mako:73
 msgid "View Snatched"
-msgstr ""
+msgstr "Voir les récupérés"
 
 #: gui/slick/views/schedule.mako:85
 msgid "Calendar"
@@ -7137,11 +7137,11 @@ msgstr "Actuellement"
 
 #: sickrage/providers/GenericProvider.py:56
 msgid "Not working"
-msgstr ""
+msgstr "Ne fonctionne ne pas"
 
 #: sickrage/providers/GenericProvider.py:57
 msgid "Daily/RSS only"
-msgstr ""
+msgstr "Quotidien/RSS uniquement"
 
 #: sickrage/providers/GenericProvider.py:58
 msgid "Backlog/Manual Search only"
