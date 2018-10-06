@@ -1,6 +1,6 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

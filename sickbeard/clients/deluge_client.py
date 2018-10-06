@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

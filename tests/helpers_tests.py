@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SickRage/SickRage
+# URL: http://github.com/Sick-Rage/Sick-Rage
 #
 # This file is part of SickRage.
 #

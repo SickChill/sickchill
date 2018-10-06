@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Frank Fenton
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

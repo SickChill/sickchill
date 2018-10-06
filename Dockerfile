@@ -15,7 +15,7 @@ RUN addgroup -g ${PGID} sickrage && \
     adduser -u ${PUID} -D -S -G sickrage sickrage
 
 RUN git config --global advice.detachedHead false && \
-    git clone --quiet https://github.com/SickRage/SickRage/ --branch $SICKRAGE_VERSION --single-branch --depth=1 /app/sickrage
+    git clone --quiet https://github.com/Sick-Rage/Sick-Rage/ --branch $SICKRAGE_VERSION --single-branch --depth=1 /app/sickrage
 
 RUN mkdir /var/run/sickrage/ && \
     chown sickrage. /var/run/sickrage/ && \

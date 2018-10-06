@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -64,7 +64,7 @@ class Notifier(object):
             "deviceId": id,
             "title": title,
             "text": message,
-            "icon": "https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage.png"
+            "icon": "https://raw.githubusercontent.com/Sick-Rage/Sick-Rage/master/gui/slick/images/sickrage.png"
         }
         payload = urllib.parse.urlencode(params)
         join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload

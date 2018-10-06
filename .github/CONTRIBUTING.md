@@ -36,14 +36,14 @@ Bugs in old versions of SickRage may have already been fixed. In order to avoid 
 
 ### Reporting the issue
 
-If the above steps fail and you are sure its a bug, issues are tracked in the [SickRage issue tracker](https://github.com/SickRage/SickRage). 
+If the above steps fail and you are sure its a bug, issues are tracked in the [SickRage issue tracker](https://github.com/Sick-Rage/Sick-Rage).
 
 ## Tips For Submitting Code
 
 
 ### Code
 
-**ALWAYS follow SickRage [Coding Standards](https://github.com/SickRage/sickrage.github.io/wiki/SickRage-Coding-Standards)**
+**ALWAYS follow SickRage [Coding Standards](https://github.com/Sick-Rage/sick-rage.github.io/wiki/SickRage-Coding-Standards)**
 
 Review regularly as they are subject to change and submissions will not be accepted until they meet our guidelines.
 
@@ -61,11 +61,6 @@ Please follow these guidelines before reporting a bug:
 2. **Use the search on SickRage** &mdash; check if the issue has already been reported. If it has been, please comment on the existing issue.
 
 3. **Provide a means to reproduce the problem** &mdash; Please provide as much details as possible, e.g. SickRage log files (obfuscate apikey/passwords), browser and operating system versions, how you started SickRage, and of course the steps to reproduce the problem.
-
-
-### Feature requests
-Please follow the bug guidelines above for feature requests, i.e. update to the latest version and search for existing requests on [FeatHub](http://feathub.com/SickRage/SickRage) before posting a new request..
-[![Feature Requests](https://cloud.githubusercontent.com/assets/390379/10127973/045b3a96-6560-11e5-9b20-31a2032956b2.png)](http://feathub.com/SickRage/SickRage)
 
 ### Pull requests
 
@@ -96,7 +91,7 @@ Please follow this process; it's the best way to get your work included in the p
    # navigate to the newly cloned directory
    cd SickRage
    # assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/SickRage/SickRage.git
+   git remote add upstream https://github.com/Sick-Rage/Sick-Rage.git
    ```
 
 - If you cloned a while ago, get the latest changes from upstream:
@@ -142,4 +137,4 @@ Please follow this process; it's the best way to get your work included in the p
 
 ## Code guidelines
 
-Read and follow the [SickRage Coding Standards](https://github.com/SickRage/sickrage.github.io/wiki/SickRage-Coding-Standards).  Review these regularly as they are subject to change and code will not be accepted if it does not adhere to the standards.
+Read and follow the [SickRage Coding Standards](https://github.com/Sick-Rage/sick-rage.github.io/wiki/SickRage-Coding-Standards).  Review these regularly as they are subject to change and code will not be accepted if it does not adhere to the standards.

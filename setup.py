@@ -44,8 +44,8 @@ setup(
     description="Automatic Video Library Manager for TV Shows",
     long_description=long_description,
 
-    url='https://sickrage.github.io',
-    download_url='https://github.com/SickRage/SickRage.git',
+    url='https://sick-rage.github.io',
+    download_url='https://github.com/Sick-Rage/Sick-Rage.git',
 
     author='miigotu',
     author_email='miigotu@gmail.com',

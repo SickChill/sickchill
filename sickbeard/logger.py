@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sick-rage.github.io
+# Git: https://github.com/Sick-Rage/Sick-Rage.git
 #
 # This file is part of SickRage.
 #
@@ -353,7 +353,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     'Operating System: **{0}**'.format(platform.platform()),
                     'Locale: {0}'.format(locale_name),
                     'Branch: **{0}**'.format(sickbeard.BRANCH),
-                    'Commit: SickRage/SickRage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
+                    'Commit: Sick-Rage/Sick-Rage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',

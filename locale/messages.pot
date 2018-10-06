@@ -6442,7 +6442,7 @@ msgstr ""
 msgid ""
 "disabled entries come from a central file on github,<br/> if you think "
 "something is wrong please make an issue <a "
-"href=\"//github.com/sickrage/sickrage.github.io/issues\">here</a>."
+"href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9

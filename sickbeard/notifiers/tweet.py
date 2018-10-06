@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -64,7 +64,7 @@ class Notifier(object):
     def test_notify(self):
         """
         Tests sending notification.
-        
+
         :return: True if succeeded, False otherwise
         """
         return self._notifyTwitter('This is a test notification from SickRage', force=True)
@@ -72,7 +72,7 @@ class Notifier(object):
     def _get_authorization(self):
         """
         Step 1 of authorization - get app authorization url.
-        
+
         :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
@@ -91,7 +91,7 @@ class Notifier(object):
     def _get_credentials(self, key):
         """
         Step 2 of authorization - poll server for access token.
-        
+
         :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
@@ -116,7 +116,7 @@ class Notifier(object):
     def _send_tweet(self, message=None):
         """
         Sends a tweet.
-        
+
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """
@@ -137,7 +137,7 @@ class Notifier(object):
     def _send_dm(self, message=None):
         """
         Sends a direct message.
-        
+
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """

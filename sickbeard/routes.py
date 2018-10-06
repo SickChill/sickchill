@@ -1,5 +1,5 @@
 # coding=utf-8
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sick-rage.github.io/
+# Git: https://github.com/Sick-Rage/Sick-Rage.git
 #
 # This file is part of SickRage.
 #

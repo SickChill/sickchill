@@ -461,7 +461,7 @@
                                     <div class="col-md-12">
                                         <label>
                                             ${_('see')}
-                                            <a href="https://github.com/SickRage/SickRage/wiki/Post-Processing#extra-scripts">
+                                            <a href="https://github.com/Sick-Rage/Sick-Rage/wiki/Post-Processing#extra-scripts">
                                                 <span style="color:red;">Wiki</span>
                                             </a>${_('for script arguments description and usage.')}
                                         </label>

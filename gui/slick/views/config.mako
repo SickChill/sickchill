@@ -27,7 +27,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             Branch:
-                            <a href="${anon_url('https://github.com/SickRage/SickRage/tree/%s' % sickbeard.BRANCH)}">
+                            <a href="${anon_url('https://github.com/Sick-Rage/Sick-Rage/tree/%s' % sickbeard.BRANCH)}">
                                 ${sickbeard.BRANCH}
                             </a>
                         </div>
@@ -35,7 +35,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             Commit:
-                            <a href="${anon_url('https://github.com/SickRage/SickRage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">
+                            <a href="${anon_url('https://github.com/Sick-Rage/Sick-Rage/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">
                                 ${sickbeard.CUR_COMMIT_HASH}
                             </a>
                         </div>
@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 Version:
-                                <a href="${anon_url('https://github.com/SickRage/SickRage/releases/tag/%s' % sr_version)}">
+                                <a href="${anon_url('https://github.com/Sick-Rage/Sick-Rage/releases/tag/%s' % sr_version)}">
                                     ${sr_version}
                                 </a>
                             </div>
@@ -179,8 +179,8 @@
                     <i class="icon16-config-web"></i>&nbsp;&nbsp;${_('Website')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('http://sickrage.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        http://sickrage.github.io/
+                    <a href="${anon_url('http://sick-rage.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        http://sick-rage.github.io/
                     </a>
                 </div>
             </div>
@@ -190,8 +190,8 @@
                     <i class="icon16-config-wiki"></i>&nbsp;&nbsp;${_('Wiki')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('https://github.com/SickRage/SickRage/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        https://github.com/SickRage/SickRage/wiki
+                    <a href="${anon_url('https://github.com/Sick-Rage/Sick-Rage/wiki')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        https://github.com/Sick-Rage/Sick-Rage/wiki
                     </a>
                 </div>
             </div>
@@ -201,8 +201,8 @@
                     <i class="icon16-config-github"></i>&nbsp;&nbsp;${_('Source')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('https://github.com/SickRage/SickRage/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        https://github.com/SickRage/SickRage/
+                    <a href="${anon_url('https://github.com/Sick-Rage/Sick-Rage/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        https://github.com/Sick-Rage/Sick-Rage/
                     </a>
                 </div>
             </div>

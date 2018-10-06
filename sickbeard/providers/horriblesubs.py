@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Panz3r
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -63,7 +63,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 if mode == 'RSS':
                     entries = self.__rssFeed()
                 else:
-                    entries = self.__getShow(search_string)    
+                    entries = self.__getShow(search_string)
 
                 items.extend(entries)
 
@@ -98,10 +98,10 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for item in items:
                 title = item.find('title').text
                 download_url = item.find('link').text
-                
+
                 entry = {'title': title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1, 'hash': ''}
                 logger.log('Found result: {0}'.format(title), logger.DEBUG)
-                
+
                 entries.append(entry)
 
         return entries
@@ -152,7 +152,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                 if not show_id:
                     logger.log('Could not find show ID', logger.DEBUG)
                     continue
-                
+
                 fetch_params = {
                     'method': 'getshows',
                     'type': 'show',
@@ -161,7 +161,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     'value': episode
                 }
 
-                entries = self.__fetchUrls(target_url, fetch_params, title) 
+                entries = self.__fetchUrls(target_url, fetch_params, title)
                 results.extend(entries)
 
         return results

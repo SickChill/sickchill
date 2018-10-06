@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: jkaberg <joel.kaberg@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

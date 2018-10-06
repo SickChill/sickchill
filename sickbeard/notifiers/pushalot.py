@@ -2,7 +2,7 @@
 
 # Author: Maciej Olesinski (https://github.com/molesinski/)
 # Based on prowl.py by Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

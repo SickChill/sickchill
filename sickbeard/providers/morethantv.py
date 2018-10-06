@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -239,6 +239,6 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             search_string['Season'].append(season_string.encode('utf-8').strip())
 
         return [search_string]
-		
+
 
 provider = MoreThanTVProvider()

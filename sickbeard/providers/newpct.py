@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: CristianBB
 # Greetings to Mr. Pine-apple
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Jordon Smith <smith@jordon.me.uk>
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

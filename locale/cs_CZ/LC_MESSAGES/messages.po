@@ -6202,7 +6202,7 @@ msgid "this list appends to the original show name."
 msgstr "tento seznam se připojí k původnímu názvu seriálu."
 
 #: gui/slick/views/editShow.mako:384
-msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sickrage.github.io/issues\">here</a>."
+msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9

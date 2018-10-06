@@ -6203,8 +6203,8 @@ msgid "this list appends to the original show name."
 msgstr "bu liste orijinal gösteri ismine eklenecek."
 
 #: gui/slick/views/editShow.mako:384
-msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sickrage.github.io/issues\">here</a>."
-msgstr "etkisiz kılınan girdiler github üzerinde merkezi bir dosyadan alınır,<br/> bir hata olduğunu düşünüyorsanız lütfen bunu <a href=\"//github.com/sickrage/sickrage.github.io/issues\">buradan</a> belirtin."
+msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
+msgstr "etkisiz kılınan girdiler github üzerinde merkezi bir dosyadan alınır,<br/> bir hata olduğunu düşünüyorsanız lütfen bunu <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">buradan</a> belirtin."
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"

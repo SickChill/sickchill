@@ -230,7 +230,7 @@
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
                                     <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
-                                    <li><a href="https://github.com/SickRage/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
+                                    <li><a href="https://github.com/Sick-Rage/Sick-Rage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
                                         <li><a href="${static_url("errorlogs/", include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>

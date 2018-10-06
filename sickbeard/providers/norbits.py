@@ -1,7 +1,7 @@
 # coding=utf-8
 """A Norbits (https://norbits.net) provider"""
 
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

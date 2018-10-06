@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -151,8 +151,8 @@ GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
 
-NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
-LOGO_URL = 'http://sickrage.github.io/images/ico/favicon-64.png'
+NEWS_URL = 'http://sick-rage.github.io/sickrage-news/news.md'
+LOGO_URL = 'http://sick-rage.github.io/images/ico/favicon-64.png'
 
 NEWS_LAST_READ = None
 NEWS_LATEST = None
@@ -504,7 +504,7 @@ DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
 DISCORD_WEBHOOK = None
 DISCORD_NAME = 'SickRage'
-DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
+DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/Sick-Rage/Sick-Rage/master/gui/slick/images/sickrage-shark-mascot.png'
 DISCORD_TTS = False
 
 USE_TRAKT = False
@@ -799,7 +799,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                                            'https://github.com/{0}/{1}.git'.format(GIT_ORG, GIT_REPO))
 
         if 'sickragetv' in GIT_REMOTE_URL.lower():
-            GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
+            GIT_REMOTE_URL = 'https://github.com/Sick-Rage/Sick-Rage.git'
 
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash')

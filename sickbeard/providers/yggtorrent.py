@@ -2,7 +2,7 @@
 # Author: adaur <adaur.underground@gmail.com>
 # Contributor: PHD <phd59fr@gmail.com>, pluzun <pluzun59@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

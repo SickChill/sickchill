@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -1360,7 +1360,7 @@ class Home(WebRoot):
     def displayShow(self, show=None):
         # todo: add more comprehensive show validation
         try:
-            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
+            show = int(show)  # fails if show id ends in a period Sick-Rage/Sick-Rage#65
             show_obj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
             return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
@@ -2453,11 +2453,11 @@ class HomeChangeLog(Home):
     def index(self, *args_, **kwargs_):
         # noinspection PyBroadException
         try:
-            changes = helpers.getURL('http://sickrage.github.io/sickrage-news/CHANGES.md', session=helpers.make_session(), returns='text')
+            changes = helpers.getURL('http://sick-rage.github.io/sickrage-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.log('Could not load changes from repo, giving a link!', logger.DEBUG)
             changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='http://sickrage.github.io/sickrage-news/CHANGES.md'
+                changes_url='http://sick-rage.github.io/sickrage-news/CHANGES.md'
             )
 
         t = PageTemplate(rh=self, filename="markdown.mako")

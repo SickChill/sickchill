@@ -2,7 +2,7 @@
 # Author: ellmout <ellmout@ellmout.net>
 # Inspired from : adaur <adaur.underground@gmail.com> (ABNormal)
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://sickrage.github.io
+# URL: http://sick-rage.github.io
 #
 # This file is part of SickRage.
 #

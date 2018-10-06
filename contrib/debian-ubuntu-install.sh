@@ -68,7 +68,7 @@ if [[ ! -d /opt/sickrage ]]; then
 	echo "Creating New SickRage Folder"
 	mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
 	echo "Git Cloning In Progress"
-	su -c "cd /opt && git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+	su -c "cd /opt && git clone -q https://github.com/Sick-Rage/Sick-Rage.git /opt/sickrage" -s /bin/bash sickrage
 else
 	whiptail --title 'Overwrite?' --yesno "/opt/sickrage already exists, do you want to overwrite it?" 8 40
 	choice=$?
@@ -76,7 +76,7 @@ else
 		echo "Removing Old SickRage Folder And Creating New SickRage Folder"
         	rm -rf /opt/sickrage && mkdir /opt/sickrage && chown sickrage:sickrage /opt/sickrage
 		echo "Git Cloning In Progress"
-        	su -c "cd /opt && git clone -q https://github.com/SickRage/SickRage.git /opt/sickrage" -s /bin/bash sickrage
+        	su -c "cd /opt && git clone -q https://github.com/Sick-Rage/Sick-Rage.git /opt/sickrage" -s /bin/bash sickrage
     	else
         	echo
         	exit 1

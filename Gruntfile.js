@@ -67,7 +67,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
-        var file = grunt.option('file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        var file = grunt.option('file'); // --file=path/to/sick-rage.github.io/sickrage-news/CHANGES.md
         if (!file) {
             file = process.env.SICKRAGE_CHANGES_FILE;
         }
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
             grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
         } else {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
-                '\t\tUse --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md\n' +
+                '\t\tUse --file=path/to/sick-rage.github.io/sickrage-news/CHANGES.md\n' +
                 '\t\tor set the path in SICKRAGE_CHANGES_FILE (environment variable)');
         }
         grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
@@ -420,7 +420,7 @@ module.exports = function(grunt) {
             grunt.fatal('No tags information was received.');
         }
 
-        var file = grunt.config('changesmd_file'); // --file=path/to/sickrage.github.io/sickrage-news/CHANGES.md
+        var file = grunt.config('changesmd_file'); // --file=path/to/sick-rage.github.io/sickrage-news/CHANGES.md
         if (!file) {
             grunt.fatal('Missing file path.');
         }
@@ -430,7 +430,7 @@ module.exports = function(grunt) {
             contents += '### ' + tag.tag + '\n';
             contents += '\n';
             if (tag.previous) {
-                contents += '[full changelog](https://github.com/SickRage/SickRage/compare/' +
+                contents += '[full changelog](https://github.com/Sick-Rage/Sick-Rage/compare/' +
                     tag.previous + '...' + tag.tag + ')\n';
             }
             contents += '\n';
@@ -441,7 +441,7 @@ module.exports = function(grunt) {
                         function(all, repoL, numL, repoR, typeR, numR) {
                             if (numL) { // repoL, numL = user/repo#1234 style
                                 return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
-                                (repoL ? repoL : 'SickRage/SickRage') + '/issues/' + numL + ')';
+                                (repoL ? repoL : 'Sick-Rage/Sick-Rage') + '/issues/' + numL + ')';
                             } else if (numR) { // repoR, type, numR = https://github/user/repo/issues/1234 style
                                 return '[#' + numR + ']' + '(https://github.com/' +
                                     repoR + '/' + typeR + '/' + numR + ')';
@@ -449,7 +449,7 @@ module.exports = function(grunt) {
                     })
                     // shorten and link commit hashes
                     .replace(/([a-f0-9]{40}(?![a-f0-9]))/g, function(sha1) {
-                        return '[' + sha1.substr(0, 7) + '](https://github.com/SickRage/SickRage/commit/' + sha1 + ')';
+                        return '[' + sha1.substr(0, 7) + '](https://github.com/Sick-Rage/Sick-Rage/commit/' + sha1 + ')';
                     })
                     // remove tag information
                     .replace(/^\([\w\d\s,.\-+/>]+\)\s/gm, '')

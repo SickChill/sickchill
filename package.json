@@ -4,12 +4,12 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SickRage/SickRage.git"
+    "url": "git+https://github.com/Sick-Rage/Sick-Rage.git"
   },
   "bugs": {
-    "url": "https://github.com/SickRage/SickRage/issues"
+    "url": "https://github.com/Sick-Rage/Sick-Rage/issues"
   },
-  "homepage": "https://github.com/SickRage/SickRage#readme",
+  "homepage": "https://github.com/Sick-Rage/Sick-Rage#readme",
   "scripts": {
     "test": "xo --verbose && ava --verbose",
     "security": "snyk test"

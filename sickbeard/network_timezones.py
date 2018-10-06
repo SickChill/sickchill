@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sick-rage.github.io
+# Git: https://github.com/Sick-Rage/Sick-Rage.git
 #
 # This file is part of SickRage.
 #
@@ -45,7 +45,7 @@ missing_network_timezones = set()
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
-    url = 'http://sickrage.github.io/sb_network_timezones/network_timezones.txt'
+    url = 'http://sick-rage.github.io/sb_network_timezones/network_timezones.txt'
     data = helpers.getURL(url, session=helpers.make_session(), returns='text')
     if not data:
         logger.log('Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)

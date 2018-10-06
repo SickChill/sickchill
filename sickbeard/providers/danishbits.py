@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sick-rage.github.io
 #
 # This file is part of SickRage.
 #
@@ -122,7 +122,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         logger.log("Found result: {0} with {1} seeders and {2} leechers".format
                                                     (title, seeders, leechers), logger.DEBUG)
                         items.append(item)
-                        
+
                 if 'error' in result:
                     logger.log(result['error'], logger.WARNING)
 
