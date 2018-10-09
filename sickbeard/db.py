@@ -103,7 +103,7 @@ class DBConnection(object):
             logger.log(_("If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"))
             # noinspection PyUnresolvedReferences
             logger.log(
-                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}").format(
+                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}").format(
                     local_variables=local_variables
                 )
             )
@@ -225,7 +225,7 @@ class DBConnection(object):
                             sql_results.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(_("{filename}: {query} with args {args!s}").format(filename=self.filename, query=qu[0], args=qu[1]), log_level)
+                            logger.log(_("{filename}: {query} with args {args:s}").format(filename=self.filename, query=qu[0], args=qu[1]), log_level)
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     # noinspection PyUnresolvedReferences
@@ -278,7 +278,7 @@ class DBConnection(object):
                     if args is None:
                         logger.log(self.filename + ": " + query, logger.DB)
                     else:
-                        logger.log("{filename}: {query} with args {args!s}".format(filename=self.filename, query=query, args=args), logger.DB)
+                        logger.log("{filename}: {query} with args {args:s}".format(filename=self.filename, query=query, args=args), logger.DB)
 
                     sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
