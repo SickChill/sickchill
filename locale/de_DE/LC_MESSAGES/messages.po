@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-06 17:43+0000\n"
-"PO-Revision-Date: 2018-10-06 17:45\n"
+"POT-Creation-Date: 2018-10-10 07:45+0000\n"
+"PO-Revision-Date: 2018-10-10 07:47\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -252,7 +252,7 @@ msgid "If this happened in cache.db, you can safely stop SickRage, and delete th
 msgstr ""
 
 #: sickbeard/db.py:106
-msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
+msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
 msgstr ""
 
 #: sickbeard/db.py:114
@@ -272,11 +272,11 @@ msgid "{filename}: {query}"
 msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
-msgid "{filename}: {query} with args {args!s}"
+msgid "{filename}: {query} with args {args:s}"
 msgstr ""
 
 #: sickbeard/db.py:232
-msgid "Transaction with {count!s} of queries executed successfully"
+msgid "Transaction with {count:d} of queries executed successfully"
 msgstr ""
 
 #: sickbeard/db.py:269

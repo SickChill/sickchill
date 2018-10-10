@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sick-rage 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-06 18:29+0000\n"
+"POT-Creation-Date: 2018-10-10 07:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -258,7 +258,7 @@ msgstr ""
 #: sickbeard/db.py:106
 msgid ""
 "Here is the arguments that were passed to this function (This is what the "
-"developers need to know): {local_variables!s}"
+"developers need to know): {local_variables:s}"
 msgstr ""
 
 #: sickbeard/db.py:114
@@ -278,11 +278,11 @@ msgid "{filename}: {query}"
 msgstr ""
 
 #: sickbeard/db.py:228
-msgid "{filename}: {query} with args {args!s}"
+msgid "{filename}: {query} with args {args:s}"
 msgstr ""
 
 #: sickbeard/db.py:232
-msgid "Transaction with {count!s} of queries executed successfully"
+msgid "Transaction with {count:d} of queries executed successfully"
 msgstr ""
 
 #: sickbeard/db.py:269

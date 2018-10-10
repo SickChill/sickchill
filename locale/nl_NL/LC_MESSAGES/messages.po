@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-06 17:43+0000\n"
-"PO-Revision-Date: 2018-10-06 17:44\n"
+"POT-Creation-Date: 2018-10-10 07:45+0000\n"
+"PO-Revision-Date: 2018-10-10 07:46\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -252,8 +252,8 @@ msgid "If this happened in cache.db, you can safely stop SickRage, and delete th
 msgstr "Als dit gebeurde in cache.db, dan kun je veilig SickRage stoppen en het bestand cache.db verwijderen zonder data kwijt te raken"
 
 #: sickbeard/db.py:106
-msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
-msgstr "Hier zijn de argumenten die we naar deze functie hebben gestuurd (Dit is wat de ontwikkelaars willen weten): {local_variables!s}"
+msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
+msgstr ""
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
@@ -272,12 +272,12 @@ msgid "{filename}: {query}"
 msgstr "{filename}: {query}"
 
 #: sickbeard/db.py:228
-msgid "{filename}: {query} with args {args!s}"
-msgstr "{filename}: {query} met argumenten {args!s}"
+msgid "{filename}: {query} with args {args:s}"
+msgstr ""
 
 #: sickbeard/db.py:232
-msgid "Transaction with {count!s} of queries executed successfully"
-msgstr "Transactie met {count!s} queries succesvol uitgevoerd"
+msgid "Transaction with {count:d} of queries executed successfully"
+msgstr ""
 
 #: sickbeard/db.py:269
 msgid "Cannot fetch all and only one at the same time!"
@@ -6206,7 +6206,7 @@ msgstr "deze lijst wordt aan de originele serienaam toegevoegd."
 
 #: gui/slick/views/editShow.mako:384
 msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
-msgstr ""
+msgstr "uitgeschakelde invoervelden komen vanaf een centraal bestand op github,<br/> als je denkt dat er iets mis is, maak dan <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">hier</a> een issue."
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"

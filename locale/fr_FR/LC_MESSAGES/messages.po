@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-06 17:43+0000\n"
-"PO-Revision-Date: 2018-10-06 17:45\n"
+"POT-Creation-Date: 2018-10-10 07:45+0000\n"
+"PO-Revision-Date: 2018-10-10 07:47\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -241,7 +241,7 @@ msgstr "Sous-titré"
 
 #: sickbeard/db.py:86
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr "Veuillez vérifiez vos Droits/propriétaire sur base de données : {db_filename}"
+msgstr "Veuillez vérifier vos droits d'accès sur la base de données : {db_filename}"
 
 #: sickbeard/db.py:96
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
@@ -249,11 +249,11 @@ msgstr "{exception_severity} erreur lors de l’exécution d'une requête dans {
 
 #: sickbeard/db.py:103
 msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
-msgstr "Si cela ce produit sur cache.db, vous pouvez arrêter SickRage et supprimer le fichier cache.db sans perte de données"
+msgstr "Si ça se produit dans cache.db, vous pouvez arrêter SickRage et supprimer le fichier cache.db en toute sécurité sans perte de données"
 
 #: sickbeard/db.py:106
-msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables!s}"
-msgstr "Voici les arguments qui ont été passés à cette fonction (c’est ce que les développeurs doivent savoir) : {local_variables ! s}"
+msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
+msgstr ""
 
 #: sickbeard/db.py:114
 msgid "unable to open database file"
@@ -265,23 +265,23 @@ msgstr "la base de données est verrouillée"
 
 #: sickbeard/db.py:208
 msgid "You passed a non-iterable to mass_action: {0!r}"
-msgstr "Vous avez passé un non-itérable à une action de masse : {0 ! r}"
+msgstr "Vous avez passé un élément non parcourable par itérateur à une mass_action : {0!r}"
 
 #: sickbeard/db.py:224
 msgid "{filename}: {query}"
-msgstr "{filename}: {query}"
+msgstr "{filename} : {query}"
 
 #: sickbeard/db.py:228
-msgid "{filename}: {query} with args {args!s}"
-msgstr "{filename}: {query} avec les paramètres {args ! s}"
+msgid "{filename}: {query} with args {args:s}"
+msgstr ""
 
 #: sickbeard/db.py:232
-msgid "Transaction with {count!s} of queries executed successfully"
-msgstr "Transaction avec {comte ! s} requêtes exécutées avec succès"
+msgid "Transaction with {count:d} of queries executed successfully"
+msgstr ""
 
 #: sickbeard/db.py:269
 msgid "Cannot fetch all and only one at the same time!"
-msgstr ""
+msgstr "Impossible de récupérer tout et seulement un seul élément à la fois !"
 
 #: sickbeard/db.py:353
 msgid "Control dict to upsert cannot have values of None!"
@@ -424,21 +424,21 @@ msgstr "Aucune mise à jour nécessaire"
 
 #: sickbeard/versionChecker.py:418
 msgid "Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr "Impossible de trouver votre exécutable git - arrêtez SickRage et soit valoriser git_path dans votre fichier config.ini ou supprimez votre dossier .git et exécuter à partir des fichiers source pour permettre des mises à jour."
+msgstr "Impossible de trouver l'exécutable de git - Arrêtez SickRage et SOIT ajouter git_path dans le fichier config.ini OU supprimez votre dossier .git et exécuter à partir des source pour effectuer les mises à jour."
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
 msgid "(you're {num_commits} commit behind)"
 msgid_plural "(you're {num_commits} commits behind)"
-msgstr[0] "(vous êtes {num_commits} commits derrière)"
-msgstr[1] "(vous êtes {num_commits} commits derrière)"
+msgstr[0] "(vous êtes en retard de {num_commits} commits)"
+msgstr[1] "(vous êtes en retard de {num_commits} commits)"
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
 msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr "Il y a une <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">version plus récente disponible</a> {commits_behind} &mdash; <a href=\"{update_url}\">mettre à jour maintenant</a>"
+msgstr "Il y a une <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">version plus récente disponible</a> {commits_behind} &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickbeard/versionChecker.py:761
 msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr "Numéro de version actuel inconnu : Si vous n’avez jamais utilisé le système de mise à niveau SickRage avant, alors la version actuelle n’est pas définie. &mdash; <a href=\"{update_url}\">mettre à jour maintenant</a>"
+msgstr "Numéro de version actuel inconnu : Si vous n’avez jamais utilisé le système de mise à niveau SickRage avant, alors la version actuelle n’est pas définie. &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickbeard/webserve.py:164
 msgid "Mako Error"
@@ -1421,19 +1421,19 @@ msgstr "Ceci est un message test de la part de SickRage"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches and backlog searches"
-msgstr "recherches quotidiennes et les recherches des épisodes désirés"
+msgstr "recherches quotidiennes et recherches en arrière-plan"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches"
-msgstr "recherche quotidienne"
+msgstr "recherches quotidienne"
 
 #: sickbeard/providers/__init__.py:110
 msgid "backlog searches"
-msgstr "recherche des épisodes désirés"
+msgstr "recherches des épisodes désirés"
 
 #: sickbeard/providers/__init__.py:111
 msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
-msgstr "Aucun fournisseur de NZB/Torrent trouvé ou activé pour {searches}.<br/> <a href=\"{web_root}/config/providers/\">Vérifiez votre configuration</a>."
+msgstr "Aucun fournisseur de NZB/Torrent trouvé ou activé pour les {searches}.<br/> <a href=\"{web_root}/config/providers/\">Vérifiez votre configuration</a>."
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
@@ -1441,15 +1441,15 @@ msgstr "Choisir un répertoire"
 
 #: gui/slick/js/core.js:429
 msgid "Select log file folder location"
-msgstr "Sélectionnez l’emplacement de dossier pour le fichier de log"
+msgstr "Sélectionnez l’emplacement du dossier du fichier de log"
 
 #: gui/slick/js/core.js:430
 msgid "Select Background Image"
-msgstr "Sélectionnez l’Image de fond"
+msgstr "Sélection de l'arrière-plan"
 
 #: gui/slick/js/core.js:431
 msgid "Select CSS file"
-msgstr "Sélectionnez le fichier CSS"
+msgstr "Sélection du fichier CSS"
 
 #: gui/slick/js/core.js:447
 msgid "select branch to use (restart required)"
@@ -1461,11 +1461,11 @@ msgstr "erreur : Aucune branche trouvée."
 
 #: gui/slick/js/core.js:476
 msgid "Select backup folder to save to"
-msgstr "Sélectionnez le dossier d'enregistrement de sauvegarde"
+msgstr "Sélection du dossier de sauvegarde"
 
 #: gui/slick/js/core.js:477
 msgid "Select backup files to restore"
-msgstr "Sélectionnez les fichiers de sauvegarde à restaurer"
+msgstr "Sélection des sauvegardes à restaurer"
 
 #: gui/slick/js/core.js:486 gui/slick/js/core.js:507 gui/slick/js/core.js:529
 #: gui/slick/js/core.js:553 gui/slick/js/core.js:578 gui/slick/js/core.js:601
@@ -1478,7 +1478,7 @@ msgstr "Veuillez remplir les champs nécessaires ci-dessus."
 
 #: gui/slick/js/core.js:687
 msgid "<b>Step 1:</b> Confirm Authorization"
-msgstr "<b>étape 1 :</b> confirment l’autorisation"
+msgstr "<b>Étape 1 : </b> confirmer l’autorisation"
 
 #: gui/slick/js/core.js:984
 msgid "Check blacklist name; the value needs to be a trakt slug"
@@ -1486,11 +1486,11 @@ msgstr ""
 
 #: gui/slick/js/core.js:1026
 msgid "You must provide a recipient email address!"
-msgstr "Vous devez fournir une adresse e-mail destinataire !"
+msgstr "Vous devez fournir une adresse e-mail pour le destinataire !"
 
 #: gui/slick/js/core.js:1111
 msgid "You didn't supply a Pushbullet api key"
-msgstr "Vous n'avez pas fourni une clé pour l’api Pushbullet"
+msgstr "Vous n'avez pas fourni la clé de l’api Pushbullet"
 
 #: gui/slick/js/core.js:1139 gui/slick/js/core.js:1168
 msgid "Don't forget to save your new pushbullet settings."
@@ -1502,7 +1502,7 @@ msgstr "Sélectionnez le répertoire de téléchargement TV"
 
 #: gui/slick/js/core.js:1278
 msgid "Select Unpack Directory"
-msgstr "Sélectionnez un répertoire de décompression"
+msgstr "Sélectionnez le répertoire de décompression"
 
 #: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390 gui/slick/js/core.js:1439
 #: gui/slick/js/core.js:1505
@@ -1533,59 +1533,59 @@ msgstr "Sélectionnez l’emplacement de téléchargement des fichiers .torrent"
 
 #: gui/slick/js/core.js:1882
 msgid "Minimum seeding time is"
-msgstr "Minimum de temps de seed est"
+msgstr "Le minimum de temps de seed est"
 
 #: gui/slick/js/core.js:1884
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
-msgstr "URL de votre client uTorrent (par exemple, http://localhost:8000)"
+msgstr "L'URL de votre client uTorrent (ex : http://localhost:8000)"
 
 #: gui/slick/js/core.js:1887
 msgid "Stop seeding when inactive for"
-msgstr "Arrêter l’émission quand inactive pour"
+msgstr "Arrêter l’envoi durant une période d'inactivité de"
 
 #: gui/slick/js/core.js:1893
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
-msgstr "URL à votre client Transmission (p. ex. http://localhost:9091)"
+msgstr "L'URL de votre client Transmission (ex : http://localhost:9091)"
 
 #: gui/slick/js/core.js:1903
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
-msgstr "URL de votre client de déluge (p. ex. http://localhost:8112)"
+msgstr "L'URL de votre client Deluge (ex : http://localhost:8112)"
 
 #: gui/slick/js/core.js:1912
 msgid "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
-msgstr "Adresse IP ou nom d’hôte de votre Daemon déluge (p. ex. scgi://localhost:58846)"
+msgstr "L'adresse IP ou nom d’hôte du service Deluge (ex : scgi://localhost:58846)"
 
 #: gui/slick/js/core.js:1919
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
-msgstr "URL à votre client Synology DS (par exemple, http://localhost:5000)"
+msgstr "L'URL du client Synology DS (ex : http://localhost:5000)"
 
 #: gui/slick/js/core.js:1923
 msgid "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)"
-msgstr "URL de votre client rTorrent (scgi://localhost:5000 <br> ou https://localhost/rutorrent/plugins/httprpc/action.php)"
+msgstr "L'URL du client rTorrent (ex : scgi://localhost:5000 <br> ou https://localhost/rutorrent/plugins/httprpc/action.php)"
 
 #: gui/slick/js/core.js:1934
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
-msgstr "URL de votre client qBittorrent (par exemple, http://localhost:8080)"
+msgstr "L'URL du client qBittorrent (ex : http://localhost:8080)"
 
 #: gui/slick/js/core.js:1944
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
-msgstr "URL devotre MLDonkey (p. ex. http://localhost:4080)"
+msgstr "L'URL de MLDonkey (p. ex. http://localhost:4080)"
 
 #: gui/slick/js/core.js:1955
 msgid "URL to your putio client (e.g. http://localhost:8080)"
-msgstr "URL de votre client putio (par exemple, http://localhost:8080)"
+msgstr "L'URL du client putio (ex : http://localhost:8080)"
 
 #: gui/slick/js/core.js:1958
 msgid "Create a new OAuth app for put.io"
-msgstr "Créez une nouvelle application OAuth pour put.io"
+msgstr "Créer une nouvelle application OAuth pour put.io"
 
 #: gui/slick/js/core.js:1959
 msgid "Put.io Parent Folder"
-msgstr "Dossier Parent put.io"
+msgstr "Dossier Parent de put.io"
 
 #: gui/slick/js/core.js:1960
 msgid "Put.io OAuth Token"
-msgstr "Jeton d'authentification Put.io"
+msgstr "Jeton d'authentification de Put.io"
 
 #: gui/slick/js/core.js:2854 gui/slick/views/displayShow.mako:409
 msgid "Show Episodes"
@@ -1597,7 +1597,7 @@ msgstr "Cacher les épisodes"
 
 #: gui/slick/js/core.js:2864
 msgid "Select Show Location"
-msgstr "Sélectionnez l'emplacement de la série"
+msgstr "Sélectionner l'emplacement de la série"
 
 #: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
 msgid "None"
@@ -1605,7 +1605,7 @@ msgstr ""
 
 #: gui/slick/js/core.js:2939
 msgid "Select Unprocessed Episode Folder"
-msgstr "Sélectionnez le dossier des épisodes non traités"
+msgstr "Sélectionner le dossier des épisodes non traités"
 
 #: gui/slick/js/core.js:3327
 msgid "DELETED"
@@ -1629,7 +1629,7 @@ msgstr "recherche de {searchingFor}..."
 
 #: gui/slick/js/core.js:3971
 msgid "search timed out, try again or try another indexer"
-msgstr "recherche timed out, veuillez réessayez ou essayez un autre indexeur"
+msgstr "temps de recherche expiré, veuillez réessayer ou essayer un autre indexeur"
 
 #: gui/slick/js/core.js:4101
 msgid "loading folders..."
@@ -7145,7 +7145,7 @@ msgstr "Quotidien/RSS uniquement"
 
 #: sickrage/providers/GenericProvider.py:58
 msgid "Backlog/Manual Search only"
-msgstr ""
+msgstr "Recherche en arrière-plan/manuelle uniquement"
 
 #: sickrage/providers/GenericProvider.py:59
 msgid "Daily/RSS and Backlog/Manual Searches working"
