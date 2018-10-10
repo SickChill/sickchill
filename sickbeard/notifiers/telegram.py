@@ -4,20 +4,20 @@
 # Author: Aaron Bieber <deftly@gmail.com>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -27,7 +27,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
-from sickrage.helper import HTTP_STATUS_CODES
+from sickchill.helper import HTTP_STATUS_CODES
 
 
 class Notifier(object):
@@ -43,7 +43,7 @@ class Notifier(object):
         :param api_key: Your Telegram bot API token
         :returns: the notification
         """
-        return self._notify_telegram('Test', 'This is a test notification from SickRage', id, api_key, force=True)
+        return self._notify_telegram('Test', 'This is a test notification from SickChill', id, api_key, force=True)
 
     def _send_telegram_msg(self, title, msg, id=None, api_key=None):
         """

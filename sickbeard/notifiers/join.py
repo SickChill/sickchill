@@ -2,20 +2,20 @@
 # Author: Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -40,7 +40,7 @@ class Notifier(object):
         :param id: The User's API Key
         :returns: the notification
         """
-        return self._notify_join('Test', 'This is a test notification from SickRage', id, apikey, force=True)
+        return self._notify_join('Test', 'This is a test notification from SickChill', id, apikey, force=True)
 
     def _send_join_msg(self, title, msg, id=None, apikey=None):
         """
@@ -64,7 +64,7 @@ class Notifier(object):
             "deviceId": id,
             "title": title,
             "text": message,
-            "icon": "https://raw.githubusercontent.com/Sick-Rage/Sick-Rage/master/gui/slick/images/sickrage.png"
+            "icon": "https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill.png"
         }
         payload = urllib.parse.urlencode(params)
         join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload

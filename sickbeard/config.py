@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -33,8 +33,8 @@ from tornado.escape import xhtml_unescape
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
-from sickrage.helper.common import try_int
-from sickrage.helper.encoding import ek
+from sickchill.helper.common import try_int
+from sickchill.helper.encoding import ek
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
@@ -194,7 +194,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     return test
 
 
-def change_sickrage_background(background):
+def change_sickchill_background(background):
     """
     Replace background image file path
 
@@ -202,7 +202,7 @@ def change_sickrage_background(background):
     :return: True on success, False on failure
     """
     if not background:
-        sickbeard.SICKRAGE_BACKGROUND_PATH = ''
+        sickbeard.SICKCHILL_BACKGROUND_PATH = ''
         return True
 
     background = ek(os.path.normpath, background)
@@ -210,7 +210,7 @@ def change_sickrage_background(background):
         logger.log("Background image does not exist: {0}".format(background))
         return False
 
-    sickbeard.SICKRAGE_BACKGROUND_PATH = background
+    sickbeard.SICKCHILL_BACKGROUND_PATH = background
 
     return True
 
@@ -952,8 +952,8 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                """Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
-                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(
+                """Your config version ({0:d}) has been incremented past what this version of SickChill supports ({1:d}).
+                If you have used other forks or a newer version of SickChill, your config file may be unusable due to their modifications.""".format(
                     self.config_version, self.expected_config_version
                 )
             )

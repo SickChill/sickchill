@@ -34,7 +34,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="use_anidb"
                                        id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
-                                <label for="use_anidb">${_('should SickRage use data from AniDB?')}</label>
+                                <label for="use_anidb">${_('should SickChill use data from AniDB?')}</label>
                             </div>
                         </div>
 

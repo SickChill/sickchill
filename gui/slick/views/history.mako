@@ -9,9 +9,9 @@
     from sickbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
     from sickbeard.common import Quality, statusStrings
 
-    from sickrage.show.History import History
-    from sickrage.helper.encoding import ek
-    from sickrage.providers.GenericProvider import GenericProvider
+    from sickchill.show.History import History
+    from sickchill.helper.encoding import ek
+    from sickchill.providers.GenericProvider import GenericProvider
 %>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>

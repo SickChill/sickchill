@@ -3,20 +3,20 @@
 #
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -27,7 +27,7 @@ from six.moves import urllib
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
-from sickrage.helper.common import dateTimeFormat
+from sickchill.helper.common import dateTimeFormat
 
 
 class SickBeardURLopener(urllib.request.FancyURLopener, object):
@@ -132,7 +132,7 @@ class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
 
     Instead of prompting with a UI to pick the desired result out of a
     list of shows it tries to be smart about it based on what shows
-    are in SickRage.
+    are in SickChill.
     """
 
     def __init__(self, config, log=None):
@@ -173,7 +173,7 @@ class ShowListUI(object):  # pylint: disable=too-few-public-methods
 
     Instead of prompting with a UI to pick the desired result out of a
     list of shows it tries to be smart about it based on what shows
-    are in SickRage.
+    are in SickChill.
     """
 
     def __init__(self, config, log=None):

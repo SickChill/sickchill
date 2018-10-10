@@ -3,7 +3,7 @@
     import sickbeard
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
-    from sickrage.providers.GenericProvider import GenericProvider
+    from sickchill.providers.GenericProvider import GenericProvider
 %>
 
 <%block name="scripts">
@@ -530,7 +530,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="${curTorrentProvider.get_id("_ratio")}">${_('stop transfer when ratio is reached<br>(-1 SickRage default to seed forever, or leave blank for downloader default)')}</label>
+                                                    <label for="${curTorrentProvider.get_id("_ratio")}">${_('stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)')}</label>
                                                 </div>
                                             </div>
                                         </div>

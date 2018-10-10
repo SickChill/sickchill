@@ -2,20 +2,20 @@
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test post processing
@@ -94,14 +94,14 @@ class ListAssociatedFiles(unittest.TestCase):
         self.test_tree = os.path.join('Show Name', 'associated_files', 'random', 'recursive', 'subdir')
 
         file_names = [
-            'Show Name [SickRage].avi',
-            'Show Name [SickRage].srt',
-            'Show Name [SickRage].nfo',
-            'Show Name [SickRage].en.srt',
-            'Non-Associated Show [SickRage].srt',
-            'Non-Associated Show [SickRage].en.srt',
-            'Show [SickRage] Non-Associated.en.srt',
-            'Show [SickRage] Non-Associated.srt',
+            'Show Name [SickChill].avi',
+            'Show Name [SickChill].srt',
+            'Show Name [SickChill].nfo',
+            'Show Name [SickChill].en.srt',
+            'Non-Associated Show [SickChill].srt',
+            'Non-Associated Show [SickChill].en.srt',
+            'Show [SickChill] Non-Associated.en.srt',
+            'Show [SickChill] Non-Associated.srt',
         ]
         self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
         self.post_processor = PostProcessor('Show Name')

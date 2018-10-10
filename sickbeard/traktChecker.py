@@ -2,20 +2,20 @@
 # Author: Frank Fenton
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -29,10 +29,10 @@ from libtrakt.exceptions import traktException
 import sickbeard
 from sickbeard import db, helpers, logger, search_queue
 from sickbeard.common import Quality, SKIPPED, UNKNOWN, WANTED
-from sickrage.helper.common import episode_num, sanitize_filename
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
-from sickrage.show.Show import Show
+from sickchill.helper.common import episode_num, sanitize_filename
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
+from sickchill.show.Show import Show
 
 
 def setEpisodeToWanted(show, s, e):
@@ -86,7 +86,7 @@ class TraktChecker(object):
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
             try:
-                # sync trakt.tv library with sickrage library
+                # sync trakt.tv library with sickchill library
                 self.syncLibrary()
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)
@@ -172,7 +172,7 @@ class TraktChecker(object):
 
     def syncLibrary(self):
         if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
-            logger.log("Sync SickRage with Trakt Collection", logger.DEBUG)
+            logger.log("Sync SickChill with Trakt Collection", logger.DEBUG)
 
             if self._getShowCollection():
                 self.addEpisodeToTraktCollection()
@@ -244,9 +244,9 @@ class TraktChecker(object):
 
     def syncWatchlist(self):
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
-            logger.log("Sync SickRage with Trakt Watchlist", logger.DEBUG)
+            logger.log("Sync SickChill with Trakt Watchlist", logger.DEBUG)
 
-            self.removeShowFromSickRage()
+            self.removeShowFromSickChill()
 
             if self._getShowWatchlist():
                 self.addShowToTraktWatchList()
@@ -350,9 +350,9 @@ class TraktChecker(object):
 
             logger.log("SHOW_WATCHLIST::ADD::FINISH - Look for Shows to Add to Trakt Watchlist", logger.DEBUG)
 
-    def removeShowFromSickRage(self):
-        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT and sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE:
-            logger.log("SHOW_SICKRAGE::REMOVE::START - Look for Shows to remove from SickRage", logger.DEBUG)
+    def removeShowFromSickChill(self):
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT and sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL:
+            logger.log("SHOW_SICKCHILL::REMOVE::START - Look for Shows to remove from SickChill", logger.DEBUG)
 
             if sickbeard.showList:
                 for show in sickbeard.showList:
@@ -365,7 +365,7 @@ class TraktChecker(object):
                         try:
                             progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or []
                         except traktException as e:
-                            logger.log("Could not connect to Trakt service. Aborting removing show {0} from SickRage. Error: {1}".format(show.name, repr(e)), logger.WARNING)
+                            logger.log("Could not connect to Trakt service. Aborting removing show {0} from SickChill. Error: {1}".format(show.name, repr(e)), logger.WARNING)
                             continue
 
                         if not progress:
@@ -373,9 +373,9 @@ class TraktChecker(object):
 
                         if progress.get('aired', True) == progress.get('completed', False):
                             sickbeard.showQueueScheduler.action.remove_show(show, full=True)
-                            logger.log("Show: {0} has been removed from SickRage".format(show.name), logger.DEBUG)
+                            logger.log("Show: {0} has been removed from SickChill".format(show.name), logger.DEBUG)
 
-            logger.log("SHOW_SICKRAGE::REMOVE::FINISH - Trakt Show Watchlist", logger.DEBUG)
+            logger.log("SHOW_SICKCHILL::REMOVE::FINISH - Trakt Show Watchlist", logger.DEBUG)
 
     def updateShows(self):
         logger.log("SHOW_WATCHLIST::CHECK::START - Trakt Show Watchlist", logger.DEBUG)

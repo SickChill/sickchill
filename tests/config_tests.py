@@ -21,7 +21,7 @@ Methods
     change_https_cert
     change_https_key
     change_unrar_tool
-    change_sickrage_background
+    change_sickchill_background
     change_custom_css
     change_log_dir
     change_nzb_dir
@@ -315,7 +315,7 @@ class ConfigTestChanges(unittest.TestCase):
         with my_environ:
             self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
 
-        sickbeard.PROG_DIR = 'C:\\SickRage'
+        sickbeard.PROG_DIR = 'C:\\SickChill'
         my_environ = mock.patch.dict(os.environ,
                                      {'ProgramFiles': 'C:\\Program Files (x86)\\',
                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
@@ -327,14 +327,14 @@ class ConfigTestChanges(unittest.TestCase):
         with custom_check_mock, isfile_mock, my_environ:
             self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
 
-    def test_change_sickrage_background(self):
+    def test_change_sickchill_background(self):
         """
-        Test change_sickrage_background
+        Test change_sickchill_background
         """
-        sickbeard.SICKRAGE_BACKGROUND_PATH = ''  # Initialize
-        self.assertTrue(config.change_sickrage_background(__file__))
-        self.assertFalse(config.change_sickrage_background('not_real.jpg'))
-        self.assertTrue(config.change_sickrage_background(''))
+        sickbeard.SICKCHILL_BACKGROUND_PATH = ''  # Initialize
+        self.assertTrue(config.change_sickchill_background(__file__))
+        self.assertFalse(config.change_sickchill_background('not_real.jpg'))
+        self.assertTrue(config.change_sickchill_background(''))
 
     def test_change_custom_css(self):
         """
@@ -343,7 +343,7 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.CUSTOM_CSS_PATH = ''  # Initialize
         self.assertFalse(config.change_custom_css(__file__)) # not a css file
         self.assertFalse(config.change_custom_css('not_real.jpg')) # doesn't exist
-        self.assertFalse(config.change_custom_css('sickrage_tests')) # isn't a file
+        self.assertFalse(config.change_custom_css('sickchill_tests')) # isn't a file
         css_file = os.path.join(os.path.dirname(__file__), 'custom.css')
         with open(css_file, 'w') as f:
             f.write('table.main {\n    width: 100%;\n}')

@@ -3,7 +3,7 @@
     import calendar
     from sickbeard import sbdatetime
     from sickbeard import network_timezones
-    from sickrage.helper.common import pretty_file_size
+    from sickchill.helper.common import pretty_file_size
     import os
     import re
 

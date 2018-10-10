@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -32,8 +32,8 @@ import six
 
 import sickbeard
 from sickbeard import logger
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
 
 db_cons = {}
 db_locks = {}
@@ -100,7 +100,7 @@ class DBConnection(object):
 
             # Lets print out all of the arguments so we can debug this better
             # noinspection PyUnresolvedReferences
-            logger.log(_("If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"))
+            logger.log(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
             # noinspection PyUnresolvedReferences
             logger.log(
                 _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}").format(

@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Tests for SickRage media
+Tests for SickChill media
 """
 
 import unittest
@@ -12,7 +12,7 @@ from show_network_logo_tests import ShowNetworkLogoTests
 from show_poster_tests import ShowPosterTests
 
 if __name__ == '__main__':
-    print('=====> Running all test in "sickrage_tests.media" <=====')
+    print('=====> Running all test in "sickchill_tests.media" <=====')
 
     TEST_CLASSES = [
         GenericMediaTests,

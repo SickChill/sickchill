@@ -5,7 +5,7 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode 'Sick-Rage.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
+      User-Agent: [!!python/unicode 'SickChill.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
     method: GET
     uri: https://torrentz2.eu/feed?f=
   response:
@@ -35,7 +35,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [STYLE=torrentz.eu; __cfduid=d4f51953318d22bc5e93cc02d79f375af1473291967]
-      User-Agent: [!!python/unicode 'Sick-Rage.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
+      User-Agent: [!!python/unicode 'SickChill.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
     method: GET
     uri: https://torrentz2.eu/feed?f=Game+of+Thrones+S05E08
   response:
@@ -86,7 +86,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [STYLE=torrentz.eu; __cfduid=d4f51953318d22bc5e93cc02d79f375af1473291967]
-      User-Agent: [!!python/unicode 'Sick-Rage.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
+      User-Agent: [!!python/unicode 'SickChill.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)']
     method: GET
     uri: https://torrentz2.eu/feed?f=Game+of+Thrones+S05
   response:

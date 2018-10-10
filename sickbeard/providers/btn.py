@@ -3,20 +3,20 @@
 #
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -32,9 +32,9 @@ import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
-from sickrage.helper.common import episode_num
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import episode_num
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):
@@ -168,7 +168,7 @@ class BTNProvider(TorrentProvider):
     def _get_title_and_url(self, parsed_json):
 
         # The BTN API gives a lot of information in response,
-        # however SickRage is built mostly around Scene or
+        # however SickChill is built mostly around Scene or
         # release names, which is why we are using them here.
 
         if 'ReleaseName' in parsed_json and parsed_json['ReleaseName']:

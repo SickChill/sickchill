@@ -833,7 +833,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology NAS.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -878,7 +878,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology NAS.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1112,7 +1112,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="growl_password">${_('may leave blank if SickRage is on the same host.')}</label>
+                                            <label for="growl_password">${_('may leave blank if SickChill is on the same host.')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1280,7 +1280,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="prowl_priority">${_('priority of Prowl messages from SickRage.')}</label>
+                                            <label for="prowl_priority">${_('priority of Prowl messages from SickChill.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1376,7 +1376,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushover" title="${_('Pushover')}"></span>
-                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
+                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
                         <p>${_('Pushover makes it easy to send real-time notifications to your Android and iOS devices.')}</p>
                     </div>
                 </div>
@@ -1456,7 +1456,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
+                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1749,7 +1749,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="nma_priority">${_('priority of NMA messages from SickRage.')}</label>
+                                            <label for="nma_priority">${_('priority of NMA messages from SickChill.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -2361,7 +2361,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(sickbeard.USE_TWILIO)]}/>
-                                        <label for="use_twilio">${_('should SickRage text your mobile device?')}</label>
+                                        <label for="use_twilio">${_('should SickChill text your mobile device?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -2513,7 +2513,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(sickbeard.USE_TWITTER)]}/>
-                                        <label for="use_twitter">${_('should SickRage post tweets on Twitter?')}</label>
+                                        <label for="use_twitter">${_('should SickChill post tweets on Twitter?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -2693,12 +2693,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="trakt_pin">${_('PIN code to authorize SickRage to access Trakt on your behalf.')}</label>
+                                            <label for="trakt_pin">${_('PIN code to authorize SickChill to access Trakt on your behalf.')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />
+                                            <input type="button" class="btn hide" value="Authorize SickChill" id="authTrakt" />
                                         </div>
                                     </div>
                                 </div>
@@ -2742,7 +2742,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC)]}/>
-                                    <label for="trakt_sync">${_('sync your SickRage show library with your trakt show library.')}</label>
+                                    <label for="trakt_sync">${_('sync your SickChill show library with your trakt show library.')}</label>
                                 </div>
                             </div>
 
@@ -2754,7 +2754,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_REMOVE)]}/>
-                                        <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickRage Library.')}</label>
+                                        <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickChill Library.')}</label>
                                     </div>
                                 </div>
 
@@ -2768,7 +2768,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_WATCHLIST)]}/>
-                                            <label for="trakt_sync_watchlist">${_('sync your SickRage show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
+                                            <label for="trakt_sync_watchlist">${_('sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2828,8 +2828,8 @@
                                         <label class="component-title">${_('Remove watched show')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE)]}/>
-                                        <label for="trakt_remove_show_from_sickrage">${_('remove the show from sickrage if it\'s ended and completely watched')}</label>
+                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)]}/>
+                                        <label for="trakt_remove_show_from_sickchill">${_('remove the show from sickchill if it\'s ended and completely watched')}</label>
                                     </div>
                                 </div>
 
@@ -3070,7 +3070,7 @@
                                         <div class="col-md-12">
                                             <label for="email_subject">
                                                 ${_('use a custom subject for some privacy protection?')}<br>
-                                                ${_('(leave blank for the default SickRage subject)')}
+                                                ${_('(leave blank for the default SickChill subject)')}
                                             </label>
                                         </div>
                                     </div>
@@ -3151,7 +3151,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${('', 'checked="checked"')[bool(sickbeard.USE_SLACK)]}/>
-                                        <label for="use_slack">${_('should SickRage post messages on Slack?')}</label>
+                                        <label for="use_slack">${_('should SickChill post messages on Slack?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -3228,7 +3228,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(sickbeard.USE_DISCORD)]}/>
-                                        <label for="use_discord">${_('Should SickRage post messages on Discord?')}</label>
+                                        <label for="use_discord">${_('Should SickChill post messages on Discord?')}</label>
                                     </div>
                                 </div>
                             </div>

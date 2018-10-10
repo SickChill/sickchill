@@ -2,20 +2,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -34,8 +34,8 @@ import six
 
 import sickbeard
 from sickbeard import db, helpers, logger, notifiers, ui
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
 
 
 class CheckVersion(object):
@@ -66,8 +66,8 @@ class CheckVersion(object):
 
             if self.check_for_new_version(force):
                 if sickbeard.AUTO_UPDATE:
-                    logger.log("New update found for SickRage, starting auto-updater ...")
-                    ui.notifications.message(_('New update found for SickRage, starting auto-updater'))
+                    logger.log("New update found for SickChill, starting auto-updater ...")
+                    ui.notifications.message(_('New update found for SickChill, starting auto-updater'))
                     if self.run_backup_if_safe():
                         if sickbeard.versionCheckScheduler.action.update():
                             logger.log("Update was successful!")
@@ -111,7 +111,7 @@ class CheckVersion(object):
         if not backupDir:
             return False
 
-        from sickrage.helper import glob
+        from sickchill.helper import glob
         files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
         if not files:
             return True
@@ -139,7 +139,7 @@ class CheckVersion(object):
             ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
             ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')
         ]
-        target = ek(os.path.join, backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+        target = ek(os.path.join, backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
         for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
             for dirname in dirs:
@@ -415,7 +415,7 @@ class GitUpdateManager(UpdateManager):
 
         # Still haven't found a working git
         helpers.add_site_message(
-            _('Unable to find your git executable - Shutdown SickRage and EITHER set git_path in '
+            _('Unable to find your git executable - Shutdown SickChill and EITHER set git_path in '
               'your config.ini OR delete your .git folder and run from source to enable updates.'),
             tag='unable_to_find_git', level='danger')
         return None
@@ -467,7 +467,7 @@ class GitUpdateManager(UpdateManager):
 
     def _find_installed_version(self):
         """
-        Attempts to find the currently installed version of SickRage.
+        Attempts to find the currently installed version of SickChill.
 
         Uses git show to get commit version.
 
@@ -601,7 +601,7 @@ class GitUpdateManager(UpdateManager):
 
     def update(self):
         """
-        Calls git pull origin <branch> in order to update SickRage. Returns a bool depending
+        Calls git pull origin <branch> in order to update SickChill. Returns a bool depending
         on the call's success.
         """
 
@@ -715,7 +715,7 @@ class SourceUpdateManager(UpdateManager):
     def _check_github_for_update(self):
         """
         Uses pygithub to ask github if there is a newer version that the provided
-        commit hash. If there is a newer version it sets SickRage's version text.
+        commit hash. If there is a newer version it sets SickChill's version text.
 
         commit_hash: hash that we're checking against
         """
@@ -759,7 +759,7 @@ class SourceUpdateManager(UpdateManager):
 
             newest_tag = 'unknown_current_version'
             newest_text = _('Unknown current version number: '
-                            'If you\'ve never used the SickRage upgrade system before then current version is not set. '
+                            'If you\'ve never used the SickChill upgrade system before then current version is not set. '
                             '&mdash; <a href="{update_url}">Update Now</a>').format(update_url=self.get_update_url())
 
         elif self._num_commits_behind > 0:

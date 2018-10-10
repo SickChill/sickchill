@@ -1,21 +1,21 @@
 # coding=utf-8
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test GenericProvider
@@ -33,7 +33,7 @@ import six
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickrage.providers.GenericProvider import GenericProvider
+from sickchill.providers.GenericProvider import GenericProvider
 
 
 class GenericProviderTests(unittest.TestCase):
@@ -342,8 +342,8 @@ class GenericProviderTests(unittest.TestCase):
         self.assertTrue(GenericProvider('Test Provider')._verify_download())
 
 
-    @patch('sickrage.providers.GenericProvider.download_file')
-    @patch('sickrage.providers.GenericProvider.remove_file_failed')
+    @patch('sickchill.providers.GenericProvider.download_file')
+    @patch('sickchill.providers.GenericProvider.remove_file_failed')
     def test_download_file(self, remove_file_mock, df_mock):
         """
         Test download_result

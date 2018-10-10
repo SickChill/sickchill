@@ -1,21 +1,21 @@
 # coding=utf-8
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test ShowPoster
@@ -30,7 +30,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickrage.media.ShowPoster import ShowPoster
+from sickchill.media.ShowPoster import ShowPoster
 
 
 class ShowPosterTests(GenericMediaTests):

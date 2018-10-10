@@ -2,20 +2,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
 from __future__ import unicode_literals
@@ -39,13 +39,13 @@ from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPL
                               NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper import glob
-from sickrage.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, ex, MultipleEpisodesInDatabaseException,
-                                        MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
-                                        ShowNotFoundException)
-from sickrage.show.Show import Show
+from sickchill.helper import glob
+from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, ex, MultipleEpisodesInDatabaseException,
+                                         MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
+                                         ShowNotFoundException)
+from sickchill.show.Show import Show
 
 try:
     import xml.etree.cElementTree as etree
@@ -2122,7 +2122,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # try to get the release group
         rel_grp = {
-            "SickRage": 'SickRage'
+            "SickChill": 'SickChill'
         }
         if hasattr(self, 'location'):  # from the location name
             rel_grp[b'location'] = release_group(self.show, self.location)
@@ -2145,7 +2145,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         elif 'location' in rel_grp:
             relgrp = 'location'
         else:
-            relgrp = 'SickRage'
+            relgrp = 'SickChill'
 
         # try to get the release encoder to comply with scene naming standards
         encoder = Quality.sceneQualityFromName(self.release_name.replace(rel_grp[relgrp], ""), epQual)
@@ -2231,7 +2231,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map[b'%RG'] and replace_map[b'%RG'] != 'SickRage':
+        if replace_map[b'%RG'] and replace_map[b'%RG'] != 'SickChill':
             if not hasattr(self, '_release_group'):
                 logger.log("Episode has no release group, replacing it with '" + replace_map[b'%RG'] + "'", logger.DEBUG)
                 self._release_group = replace_map[b'%RG']  # if release_group is not in the db, put it there

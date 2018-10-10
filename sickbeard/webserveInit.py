@@ -15,7 +15,7 @@ from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.routes import route
 from sickbeard.webapi import ApiHandler
 from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
@@ -146,7 +146,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             protocol = "http"
             ssl_options = None
 
-        logger.log("Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
+        logger.log("Starting SickChill on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
         try:

@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
 # Created on Sep 20, 2012
 # @author: Dermot Buckley <dermot@buckley.ie>
@@ -32,8 +32,8 @@ import traceback
 import sickbeard
 from sickbeard import db, logger
 from sickbeard.scene_exceptions import xem_session
-from sickrage.helper.exceptions import ex
-from sickrage.show.Show import Show
+from sickchill.helper.exceptions import ex
+from sickchill.show.Show import Show
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):

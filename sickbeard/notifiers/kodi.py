@@ -3,20 +3,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -29,8 +29,8 @@ from six.moves import http_client, urllib
 
 import sickbeard
 from sickbeard import common, logger
-from sickrage.helper.encoding import ss
-from sickrage.helper.exceptions import ex
+from sickchill.helper.encoding import ss
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -94,7 +94,7 @@ class Notifier(object):
             else:
                 return False
 
-    def _notify_kodi(self, message, title="SickRage", host=None, username=None, password=None, force=False, dest_app="KODI"):  # pylint: disable=too-many-arguments
+    def _notify_kodi(self, message, title="SickChill", host=None, username=None, password=None, force=False, dest_app="KODI"):  # pylint: disable=too-many-arguments
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Detects JSON-RPC version then branches the logic for either the JSON-RPC or legacy HTTP API methods.
@@ -439,7 +439,7 @@ class Notifier(object):
             logger.log("Updating library in KODI via JSON method for show " + showName, logger.DEBUG)
 
             # let's try letting kodi filter the shows
-            showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"filter":{"field":"title","operator":"is","value":"%s"},"properties":["title"]},"id":"SickRage"}'
+            showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"filter":{"field":"title","operator":"is","value":"%s"},"properties":["title"]},"id":"SickChill"}'
 
             # get tvshowid by showName
             showsResponse = self._send_to_kodi_json(showsCommand % showName, host)
@@ -541,7 +541,7 @@ class Notifier(object):
             self._notify_kodi(update_text.format(ipaddress), title)
 
     def test_notify(self, host, username, password):
-        return self._notify_kodi("Testing KODI notifications from SickRage", "Test Notification", host, username, password, force=True)
+        return self._notify_kodi("Testing KODI notifications from SickChill", "Test Notification", host, username, password, force=True)
 
     def update_library(self, showName=None):
         """Public wrapper for the update library functions to branch the logic for JSON-RPC or legacy HTTP API

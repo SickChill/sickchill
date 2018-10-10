@@ -5,20 +5,20 @@
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -31,8 +31,8 @@ class Notifier(object):
         self.session = sickbeard.helpers.make_session()
         self.url = 'https://new.boxcar.io/api/notifications'
 
-    def test_notify(self, accesstoken, title='SickRage : Test'):
-        return self._sendBoxcar2('This is a test notification from SickRage', title, accesstoken)
+    def test_notify(self, accesstoken, title='SickChill : Test'):
+        return self._sendBoxcar2('This is a test notification from SickChill', title, accesstoken)
 
     def _sendBoxcar2(self, msg, title, accesstoken):
         '''
@@ -48,10 +48,10 @@ class Notifier(object):
 
         post_data = {
             'user_credentials': accesstoken,
-            'notification[title]': 'SickRage : {0}: {1}'.format(title, msg),
+            'notification[title]': 'SickChill : {0}: {1}'.format(title, msg),
             'notification[long_message]': msg,
             'notification[sound]': 'notifier-2',
-            'notification[source_name]': 'SickRage',
+            'notification[source_name]': 'SickChill',
             'notification[icon_url]': sickbeard.LOGO_URL
         }
 

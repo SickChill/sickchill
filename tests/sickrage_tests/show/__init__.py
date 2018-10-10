@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Tests for SickRage show
+Tests for SickChill show
 """
 
 import unittest
@@ -10,7 +10,7 @@ from history_tests import HistoryTests
 from show_tests import ShowTests
 
 if __name__ == '__main__':
-    print('=====> Running all test in "sickrage_tests.show" <=====')
+    print('=====> Running all test in "sickchill_tests.show" <=====')
 
     TEST_CLASSES = [
         ComingEpisodesTests,

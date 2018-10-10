@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Tests for SickRage helpers
+Tests for SickChill helpers
 """
 
 import unittest
@@ -9,7 +9,7 @@ from common_tests import CommonTests
 from quality_tests import QualityTests
 
 if __name__ == '__main__':
-    print('=====> Running all test in "sickrage_tests.helper" <=====')
+    print('=====> Running all test in "sickchill_tests.helper" <=====')
 
     TEST_CLASSES = [
         CommonTests,

@@ -1,26 +1,26 @@
 # coding=utf-8
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
 # URL: https://sick-rage.github.io
-# Git: https://github.com/Sick-Rage/Sick-Rage.git
+# Git: https://github.com/SickChill/SickChill.git
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
 """
-Test sickrage.common
+Test sickchill.common
 """
 
 from __future__ import print_function, unicode_literals
@@ -33,9 +33,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 import sickbeard
-from sickrage.helper import glob
-from sickrage.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickrage.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
+from sickchill.helper import glob
+from sickchill.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
+from sickchill.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
 
 
 import six
@@ -474,10 +474,10 @@ class CommonTests(unittest.TestCase):
         self.assertEqual(episode_num(1, 1, numbering='absolute'), None)
 
     def test_glob_escape(self):
-        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
-        self.assertEqual(glob.escape('S01E01 - Show Name [SickRage].avi'), 'S01E01 - Show Name [[]SickRage].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickChill].avi'), 'S01E01 - Show Name [[]SickChill].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickChill].avi'), 'S01E01 - Show Name [[]SickChill].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickChill].avi'), 'S01E01 - Show Name [[]SickChill].avi')
+        self.assertEqual(glob.escape('S01E01 - Show Name [SickChill].avi'), 'S01E01 - Show Name [[]SickChill].avi')
 
 
 if __name__ == '__main__':

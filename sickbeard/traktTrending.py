@@ -11,8 +11,8 @@ from libtrakt.trakt import TraktAPI
 import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.indexers.indexer_config import INDEXER_TVDB
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex, MultipleShowObjectsException
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex, MultipleShowObjectsException
 
 
 class traktTrending(object):

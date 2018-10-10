@@ -5,7 +5,7 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 6cf05a34-fc8f-11e5-9f9c-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 6cf05a34-fc8f-11e5-9f9c-446d57bd4634)]
     method: GET
     uri: https://torrentproject.se/?filter=2101&s=0day&num=150&out=json
   response:
@@ -72,7 +72,7 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)]
     method: GET
     uri: https://torrentproject.se/?filter=2101&s=0day&showmagnets=on&num=50&out=json
   response:
@@ -146,7 +146,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=d8a73f241a18f118a9ac7fb64ca4769991473291966]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-9136-generic; 1cd8f990-7555-11e6-8834-94659ccb69ac)]
     method: GET
     uri: https://torrentproject.se/?filter=2101&s=Game+of+Thrones+S05E08&showmagnets=on&num=50&out=json
   response:

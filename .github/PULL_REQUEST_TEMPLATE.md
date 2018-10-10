@@ -7,4 +7,4 @@ Proposed changes in this pull request:
 
 - [ ] PR is based on the DEVELOP branch
 - [ ] Don't send big changes all at once. Split up big PRs into multiple smaller PRs that are easier to manage and review
-- [ ] Read [contribution guide](https://github.com/Sick-Rage/Sick-Rage/blob/master/.github/CONTRIBUTING.md)
+- [ ] Read [contribution guide](https://github.com/SickChill/SickChill/blob/master/.github/CONTRIBUTING.md)

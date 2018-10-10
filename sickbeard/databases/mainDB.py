@@ -3,20 +3,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sick-rage.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=line-too-long
 
 from __future__ import print_function, unicode_literals
@@ -30,8 +30,8 @@ import six
 import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper.common import dateTimeFormat, episode_num
-from sickrage.helper.encoding import ek
+from sickchill.helper.common import dateTimeFormat, episode_num
+from sickchill.helper.encoding import ek
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44
@@ -346,14 +346,14 @@ class InitialSchema(db.SchemaUpgrade):
 
             if cur_db_version < MIN_DB_VERSION:
                 logger.log_error_and_exit(
-                    "Your database version ({cur_db_version}) is too old to migrate from what this version of SickRage supports ({min_db_version}).\n"
-                    "Upgrade using a previous version (tag) build 496 to build 501 of SickRage first or remove database file to begin fresh.".format
+                    "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({min_db_version}).\n"
+                    "Upgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh.".format
                     (cur_db_version=str(cur_db_version), min_db_version=str(MIN_DB_VERSION)))
 
             if cur_db_version > MAX_DB_VERSION:
                 logger.log_error_and_exit(
-                    "Your database version ({cur_db_version}) has been incremented past what this version of SickRage supports ({max_db_version}).\n"
-                    "If you have used other forks of SickRage, your database may be unusable due to their modifications.".format
+                    "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({max_db_version}).\n"
+                    "If you have used other forks of SickChill, your database may be unusable due to their modifications.".format
                     (cur_db_version=str(cur_db_version), max_db_version=str(MAX_DB_VERSION)))
 
 
@@ -1144,7 +1144,7 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
         logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
 
 
-class UseSickRageMetadataForSubtitle(AlterTVShowsFieldTypes):
+class UseSickChillMetadataForSubtitle(AlterTVShowsFieldTypes):
     """
     Add a minor version for adding a show setting to use SR metadata for subtitles
     """
@@ -1156,7 +1156,7 @@ class UseSickRageMetadataForSubtitle(AlterTVShowsFieldTypes):
         self.add_column('tv_shows', 'sub_use_sr_metadata', "NUMERIC", "0")
 
 
-class ResetDBVersion(UseSickRageMetadataForSubtitle):
+class ResetDBVersion(UseSickChillMetadataForSubtitle):
     def test(self):
         return False
 

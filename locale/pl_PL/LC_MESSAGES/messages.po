@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickrage\n"
+"Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-10-10 07:45+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Generated-By: Babel 2.6.0\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickrage\n"
+"X-Crowdin-Project: sickchill\n"
 "X-Crowdin-Language: pl\n"
 "X-Crowdin-File: messages.pot\n"
 "Language: pl_PL\n"
@@ -144,16 +144,16 @@ msgid "Subtitle Download Finished"
 msgstr "Pobieranie napisów zakończono"
 
 #: sickbeard/common.py:82
-msgid "SickRage Updated"
-msgstr "Zaktualizowano SickRage"
+msgid "SickChill Updated"
+msgstr "Zaktualizowano SickChill"
 
 #: sickbeard/common.py:83
-msgid "SickRage Updated To Commit#: "
-msgstr "SickRage zaktualizowany do Commit#: "
+msgid "SickChill Updated To Commit#: "
+msgstr "SickChill zaktualizowany do Commit#: "
 
 #: sickbeard/common.py:84
-msgid "SickRage new login"
-msgstr "Nowy login SickRage"
+msgid "SickChill new login"
+msgstr "Nowy login SickChill"
 
 #: sickbeard/common.py:85
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
@@ -248,7 +248,7 @@ msgid "{exception_severity} error executing query with {method} in database {db_
 msgstr ""
 
 #: sickbeard/db.py:103
-msgid "If this happened in cache.db, you can safely stop SickRage, and delete the cache.db file without losing any data"
+msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
 msgstr ""
 
 #: sickbeard/db.py:106
@@ -388,8 +388,8 @@ msgid "Loading"
 msgstr "Wczytywanie"
 
 #: sickbeard/versionChecker.py:70
-msgid "New update found for SickRage, starting auto-updater"
-msgstr "Znaleziono nową wersję SickRage, uruchamianie automatycznej aktualizacji"
+msgid "New update found for SickChill, starting auto-updater"
+msgstr "Znaleziono nową wersję SickChill, uruchamianie automatycznej aktualizacji"
 
 #: sickbeard/versionChecker.py:74
 msgid "Update was successful"
@@ -423,7 +423,7 @@ msgid "No update needed"
 msgstr "Aktualizacja nie jest potrzebna"
 
 #: sickbeard/versionChecker.py:418
-msgid "Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
+msgid "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
 msgstr ""
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
@@ -439,7 +439,7 @@ msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); re
 msgstr ""
 
 #: sickbeard/versionChecker.py:761
-msgid "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
+msgid "Unknown current version number: If you've never used the SickChill upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
 #: sickbeard/webserve.py:164
@@ -757,8 +757,8 @@ msgid "Status"
 msgstr "Stan"
 
 #: sickbeard/webserve.py:1273 sickbeard/webserve.py:1303
-msgid "Restarting SickRage"
-msgstr "Restartowanie SickRage"
+msgid "Restarting SickChill"
+msgstr "Restartowanie SickChill"
 
 #: sickbeard/webserve.py:1306
 msgid "Update Failed"
@@ -1283,8 +1283,8 @@ msgid "Anime"
 msgstr "Anime"
 
 #: sickbeard/webserve.py:3912 sickbeard/webserve.py:3913
-msgid "SickRage Configuration"
-msgstr "Konfiguracja SickRage"
+msgid "SickChill Configuration"
+msgstr "Konfiguracja SickChill"
 
 #: sickbeard/webserve.py:3928
 msgid "Config - Shares"
@@ -1418,8 +1418,8 @@ msgid "Logs"
 msgstr "Dziennik"
 
 #: sickbeard/notifiers/twilio_notify.py:68
-msgid "This is a test notification from SickRage"
-msgstr "To jest powiadomienie tekstowe z SickRage"
+msgid "This is a test notification from SickChill"
+msgstr "To jest powiadomienie tekstowe z SickChill"
 
 #: sickbeard/providers/__init__.py:109
 msgid "daily searches and backlog searches"
@@ -1666,16 +1666,16 @@ msgid "Add New Show"
 msgstr "Dodaj nowy serial"
 
 #: gui/slick/views/addShows.mako:19
-msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickRage."
-msgstr "W przypadku seriali które nie zostały jeszcze pobrane, opcja ta znajdzie go na TVDB.com, utworzy nowe katalogi dla epizodów i doda go do SickRage."
+msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickChill."
+msgstr "W przypadku seriali które nie zostały jeszcze pobrane, opcja ta znajdzie go na TVDB.com, utworzy nowe katalogi dla epizodów i doda go do SickChill."
 
 #: gui/slick/views/addShows.mako:30
 msgid "Add From Trakt Lists"
 msgstr "Dodaj z listy Trakt"
 
 #: gui/slick/views/addShows.mako:31
-msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickRage."
-msgstr "W przypadku programów, które nie zostały jeszcze pobrane, opcja ta pozwala wybrać z program z listy Trakt do SickRage."
+msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill."
+msgstr "W przypadku programów, które nie zostały jeszcze pobrane, opcja ta pozwala wybrać z program z listy Trakt do SickChill."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add From IMDB's Popular Shows"
@@ -1690,8 +1690,8 @@ msgid "Add Existing Shows"
 msgstr "Dodaj istniejące seriale"
 
 #: gui/slick/views/addShows.mako:55
-msgid "Use this option to add shows that already have a folder created on your hard drive. SickRage will scan your existing metadata/episodes and add the show accordingly."
-msgstr "Użyj tej opcji, aby dodać programy które mają już utworzony folder na dysku twardym. SickRage skanuje istniejące metadane/epizody i dodaje odpowiednio serial."
+msgid "Use this option to add shows that already have a folder created on your hard drive. SickChill will scan your existing metadata/episodes and add the show accordingly."
+msgstr "Użyj tej opcji, aby dodać programy które mają już utworzony folder na dysku twardym. SickChill skanuje istniejące metadane/epizody i dodaje odpowiednio serial."
 
 #: gui/slick/views/addShows_addExistingShow.mako:21
 msgid "Add Existing Show"
@@ -1708,8 +1708,8 @@ msgid "Customize Options"
 msgstr "Dostosuj opcje"
 
 #: gui/slick/views/addShows_addExistingShow.mako:43
-msgid "SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below."
-msgstr "SickRage może dodać istniejące seriale wykorzystując lokalnie przechowywane metadane NFO/XML w celu wyeliminowania interakcji z użytkownikiem.\n"
+msgid "SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below."
+msgstr "SickChill może dodać istniejące seriale wykorzystując lokalnie przechowywane metadane NFO/XML w celu wyeliminowania interakcji z użytkownikiem.\n"
 " Jeżeli wolisz sam dostosować każdy serial, zaznacz poniższe pole wyboru."
 
 #: gui/slick/views/addShows_addExistingShow.mako:49
@@ -1717,8 +1717,8 @@ msgid "Prompt me to set settings for each show"
 msgstr "Monituj mnie do ustawienia opcji dla każdego serialu"
 
 #: gui/slick/views/addShows_addExistingShow.mako:55
-msgid "Displaying folders within these directories which aren't already added to SickRage"
-msgstr "Wyświetlanie folderów w obrębie tych katalogów, które nie zostały jeszcze dodane do SickRage"
+msgid "Displaying folders within these directories which aren't already added to SickChill"
+msgstr "Wyświetlanie folderów w obrębie tych katalogów, które nie zostały jeszcze dodane do SickChill"
 
 #: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:16
 #: gui/slick/views/manage.mako:116 gui/slick/views/manage_failedDownloads.mako:78
@@ -1747,7 +1747,7 @@ msgid "This will only affect the language of the retrieved metadata file content
 msgstr "Będzie miało wpływ tylko na język pobieranych metadanych i nazwę odcinku."
 
 #: gui/slick/views/addShows_newShow.mako:67
-msgid "This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!"
+msgid "This <b>DOES NOT</b> allow SickChill to download non-english TV episodes!"
 msgstr "To <b>NIE</b> pozwala na pobieranie nie anglojęzycznych odcinków!"
 
 #: gui/slick/views/addShows_newShow.mako:74
@@ -1909,8 +1909,8 @@ msgid "JSONP"
 msgstr "JSONP"
 
 #: gui/slick/views/apiBuilder.mako:112
-msgid "Back to SickRage"
-msgstr "Powrót do SickRage"
+msgid "Back to SickChill"
+msgstr "Powrót do SickChill"
 
 #: gui/slick/views/apiBuilder.mako:148
 msgid "Parameters"
@@ -2082,8 +2082,8 @@ msgid "Enable"
 msgstr "Włącz"
 
 #: gui/slick/views/config_anime.mako:37
-msgid "should SickRage use data from AniDB?"
-msgstr "czy SickRage ma używać danych z AniDB?"
+msgid "should SickChill use data from AniDB?"
+msgstr "czy SickChill ma używać danych z AniDB?"
 
 #: gui/slick/views/config_anime.mako:45
 msgid "AniDB Username"
@@ -2189,8 +2189,8 @@ msgid "Launch browser"
 msgstr "Uruchom przeglądarkę"
 
 #: gui/slick/views/config_general.mako:63
-msgid "open the SickRage home page on startup"
-msgstr "uruchom stronę domową SickRage przy uruchomieniu"
+msgid "open the SickChill home page on startup"
+msgstr "uruchom stronę domową SickChill przy uruchomieniu"
 
 #: gui/slick/views/config_general.mako:69
 msgid "Initial page"
@@ -2202,8 +2202,8 @@ msgid "Shows"
 msgstr "Serial"
 
 #: gui/slick/views/config_general.mako:85
-msgid "when launching SickRage interface"
-msgstr "przy uruchamianiu interfejsu SickRage"
+msgid "when launching SickChill interface"
+msgstr "przy uruchamianiu interfejsu SickChill"
 
 #: gui/slick/views/config_general.mako:94
 msgid "Choose hour to update shows"
@@ -2240,8 +2240,8 @@ msgid "note"
 msgstr "notatka"
 
 #: gui/slick/views/config_general.mako:109
-msgid "minutes are randomized each time SickRage is started"
-msgstr "minuty są losowe przy każdym uruchomieni SickRage"
+msgid "minutes are randomized each time SickChill is started"
+msgstr "minuty są losowe przy każdym uruchomieni SickChill"
 
 #: gui/slick/views/config_general.mako:117
 msgid "Send to trash for actions"
@@ -2372,8 +2372,8 @@ msgid "Notify on software update"
 msgstr "Powiadomienia o aktualizacji oprogramowania"
 
 #: gui/slick/views/config_general.mako:311
-msgid "send a message to all enabled notifiers when SickRage has been updated"
-msgstr "wyślij wiadomość do wszystkich włączonych powiadamiaczy, po aktualizacji SickRage"
+msgid "send a message to all enabled notifiers when SickChill has been updated"
+msgstr "wyślij wiadomość do wszystkich włączonych powiadamiaczy, po aktualizacji SickChill"
 
 #: gui/slick/views/config_general.mako:331
 msgid "User Interface"
@@ -2412,8 +2412,8 @@ msgid "Use a background image"
 msgstr "Użyj obrazu tła"
 
 #: gui/slick/views/config_general.mako:390
-msgid "use a custom image as background for SickRage"
-msgstr "użyj niestandardowy obraz jako tło dla SickRage"
+msgid "use a custom image as background for SickChill"
+msgstr "użyj niestandardowy obraz jako tło dla SickChill"
 
 #: gui/slick/views/config_general.mako:396
 msgid "Background Path"
@@ -2444,8 +2444,8 @@ msgid "Use a custom stylesheet file"
 msgstr "Użyj pliku niestandardowego arkusza stylów"
 
 #: gui/slick/views/config_general.mako:450
-msgid "use a custom .css file to style SickRage (for advanced users)"
-msgstr "użyj niestandardowego pliku .css do stylu SickRage (dla zaawansowanych użytkowników)"
+msgid "use a custom .css file to style SickChill (for advanced users)"
+msgstr "użyj niestandardowego pliku .css do stylu SickChill (dla zaawansowanych użytkowników)"
 
 #: gui/slick/views/config_general.mako:456
 msgid "Stylesheet File Path"
@@ -2542,8 +2542,8 @@ msgid "Web Interface"
 msgstr "Interfejs www"
 
 #: gui/slick/views/config_general.mako:640
-msgid "it is recommended that you enable a username and password to secure SickRage from being tampered with remotely."
-msgstr "rekomendowane jest włączenie identyfikacji loginem i hasłem dla zabezpieczenia SickRage przed nieautoryzowanym zdalnym dostępem."
+msgid "it is recommended that you enable a username and password to secure SickChill from being tampered with remotely."
+msgstr "rekomendowane jest włączenie identyfikacji loginem i hasłem dla zabezpieczenia SickChill przed nieautoryzowanym zdalnym dostępem."
 
 #: gui/slick/views/config_general.mako:641
 msgid "these options require a manual restart to take effect."
@@ -2558,8 +2558,8 @@ msgid "API key"
 msgstr "Klucz API"
 
 #: gui/slick/views/config_general.mako:660
-msgid "used to give 3rd party programs limited access to SickRage"
-msgstr "wykorzystywany do dawanie programom trzecim ograniczonego dostępu do SickRage"
+msgid "used to give 3rd party programs limited access to SickChill"
+msgstr "wykorzystywany do dawanie programom trzecim ograniczonego dostępu do SickChill"
 
 #: gui/slick/views/config_general.mako:665
 msgid "you can try all the features of the API"
@@ -2602,8 +2602,8 @@ msgid "HTTP port"
 msgstr "HTTP port"
 
 #: gui/slick/views/config_general.mako:731
-msgid "web port to browse and access SickRage (default:8081)"
-msgstr "port webowy do przeglądania i dostępu do SickRage (domyślnie: 8081)"
+msgid "web port to browse and access SickChill (default:8081)"
+msgstr "port webowy do przeglądania i dostępu do SickChill (domyślnie: 8081)"
 
 #: gui/slick/views/config_general.mako:739
 msgid "Notify on login"
@@ -3320,8 +3320,8 @@ msgstr "wyślij powiadomienia do Synology?"
 
 #: gui/slick/views/config_notifications.mako:836
 #: gui/slick/views/config_notifications.mako:881
-msgid "requires SickRage to be running on your Synology NAS."
-msgstr "wymaga działającego Sickrage na twoim Synology."
+msgid "requires SickChill to be running on your Synology NAS."
+msgstr "wymaga działającego SickChill na twoim Synology."
 
 #: gui/slick/views/config_notifications.mako:860
 msgid "Synology Indexer"
@@ -3396,8 +3396,8 @@ msgid "host running Growl (eg. 192.168.1.100:23053)"
 msgstr "host na którym działa Growl (np. 192.168.1.100:23053)"
 
 #: gui/slick/views/config_notifications.mako:1115
-msgid "may leave blank if SickRage is on the same host."
-msgstr "można zostawić puste gdy SickRage działa na tym samym hoście."
+msgid "may leave blank if SickChill is on the same host."
+msgstr "można zostawić puste gdy SickChill działa na tym samym hoście."
 
 #: gui/slick/views/config_notifications.mako:1120
 msgid "otherwise Growl <b>requires</b> a password to be used."
@@ -3499,8 +3499,8 @@ msgid "Emergency"
 msgstr "Awaryjny"
 
 #: gui/slick/views/config_notifications.mako:1283
-msgid "priority of Prowl messages from SickRage."
-msgstr "priorytet wiadomości Prowl od SickRage."
+msgid "priority of Prowl messages from SickChill."
+msgstr "priorytet wiadomości Prowl od SickChill."
 
 #: gui/slick/views/config_notifications.mako:1303
 msgid "Libnotify"
@@ -3709,8 +3709,8 @@ msgid "NMA priority"
 msgstr "Priorytet NMA"
 
 #: gui/slick/views/config_notifications.mako:1752
-msgid "priority of NMA messages from SickRage."
-msgstr "priorytet wiadomości NMA od SickRage."
+msgid "priority of NMA messages from SickChill."
+msgstr "priorytet wiadomości NMA od SickChill."
 
 #: gui/slick/views/config_notifications.mako:1782
 msgid "Pushalot"
@@ -3892,7 +3892,7 @@ msgid "Twilio is a webservice API that allows you to communicate directly with a
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2364
-msgid "should SickRage text your mobile device?"
+msgid "should SickChill text your mobile device?"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2404
@@ -3933,7 +3933,7 @@ msgid "A social networking and microblogging service, enabling its users to send
 msgstr "Serwis społecznościowy udostępniający usługę mikroblogowania, umożliwiająca swoim użytkownikom wysyłanie i odbieranie wiadomości (zwane tweetami) od innych użytkowników."
 
 #: gui/slick/views/config_notifications.mako:2516
-msgid "should SickRage post tweets on Twitter?"
+msgid "should SickChill post tweets on Twitter?"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2521
@@ -4001,8 +4001,8 @@ msgid "Get Trakt PIN"
 msgstr "Pobierz Trakt PIN"
 
 #: gui/slick/views/config_notifications.mako:2696
-msgid "PIN code to authorize SickRage to access Trakt on your behalf."
-msgstr "Kod PIN do autoryzacji dostępu SickRage do Trakt w Twoim imieniu."
+msgid "PIN code to authorize SickChill to access Trakt on your behalf."
+msgstr "Kod PIN do autoryzacji dostępu SickChill do Trakt w Twoim imieniu."
 
 #: gui/slick/views/config_notifications.mako:2710
 msgid "API Timeout"
@@ -4021,15 +4021,15 @@ msgid "Sync libraries"
 msgstr "Synchronizuj biblioteke"
 
 #: gui/slick/views/config_notifications.mako:2745
-msgid "sync your SickRage show library with your trakt show library."
-msgstr "synchronizuj swoją bibliotekę programów SickRage ze swoją biblioteką programów trakt."
+msgid "sync your SickChill show library with your trakt show library."
+msgstr "synchronizuj swoją bibliotekę programów SickChill ze swoją biblioteką programów trakt."
 
 #: gui/slick/views/config_notifications.mako:2753
 msgid "Remove Episodes From Collection"
 msgstr "Usuń odcinki z kolekcji"
 
 #: gui/slick/views/config_notifications.mako:2757
-msgid "remove an episode from your Trakt Collection if it is not in your SickRage Library."
+msgid "remove an episode from your Trakt Collection if it is not in your SickChill Library."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2765
@@ -4037,8 +4037,8 @@ msgid "Sync watchlist"
 msgstr "Synchronizuj listę obserwowanych"
 
 #: gui/slick/views/config_notifications.mako:2771
-msgid "sync your SickRage show watchlist with your trakt show watchlist (either Show and Episode)."
-msgstr "synchronizuj listę obserwowanych programów w Sickrage z listą obserwowanych programów w trakt (zarówno całe programy jak i odcinki)."
+msgid "sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode)."
+msgstr "synchronizuj listę obserwowanych programów w SickChill z listą obserwowanych programów w trakt (zarówno całe programy jak i odcinki)."
 
 #: gui/slick/views/config_notifications.mako:2776
 msgid "episode will be added on watch list when wanted or snatched and will be removed when downloaded "
@@ -4085,8 +4085,8 @@ msgid "Remove watched show"
 msgstr "Usuń obejrzane programy"
 
 #: gui/slick/views/config_notifications.mako:2832
-msgid "remove the show from sickrage if it's ended and completely watched"
-msgstr "usuń program z SickRage, gdy zakończył się i został całkowicie obejrzany"
+msgid "remove the show from sickchill if it's ended and completely watched"
+msgstr "usuń program z SickChill, gdy zakończył się i został całkowicie obejrzany"
 
 #: gui/slick/views/config_notifications.mako:2838
 msgid "Start paused"
@@ -4185,7 +4185,7 @@ msgid "use a custom subject for some privacy protection?"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3073
-msgid "(leave blank for the default SickRage subject)"
+msgid "(leave blank for the default SickChill subject)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3100
@@ -4209,7 +4209,7 @@ msgid "Slack brings all your communication together in one place. It's real-time
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3154
-msgid "should SickRage post messages on Slack?"
+msgid "should SickChill post messages on Slack?"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3184
@@ -4225,7 +4225,7 @@ msgid "All-in-one voice and text chat for gamers that's free, secure, and works 
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3231
-msgid "Should SickRage post messages on Discord?"
+msgid "Should SickChill post messages on Discord?"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3261
@@ -4276,8 +4276,8 @@ msgid "Metadata"
 msgstr "Metadata"
 
 #: gui/slick/views/config_postProcessing.mako:28
-msgid "Settings that dictate how SickRage should process completed downloads."
-msgstr "Ustawienia, które mówią jak SickRage powinien procesować zakończone pobrania."
+msgid "Settings that dictate how SickChill should process completed downloads."
+msgstr "Ustawienia, które mówią jak SickChill powinien procesować zakończone pobrania."
 
 #: gui/slick/views/config_postProcessing.mako:42
 msgid "enable the automatic post processor to scan and process any files in your Post Processing Dir"
@@ -4332,8 +4332,8 @@ msgid "Sync File Extensions"
 msgstr "Synchronizuj rozszerzenia plików"
 
 #: gui/slick/views/config_postProcessing.mako:144
-msgid "comma seperated list of extensions or filename globs SickRage ignores when Post Processing"
-msgstr "lista rozszerzeń lub nazw plików rozdzielonych przecinkami, które SickRage ma ignorować podczas przetwarzania końcowego"
+msgid "comma seperated list of extensions or filename globs SickChill ignores when Post Processing"
+msgstr "lista rozszerzeń lub nazw plików rozdzielonych przecinkami, które SickChill ma ignorować podczas przetwarzania końcowego"
 
 #: gui/slick/views/config_postProcessing.mako:152
 msgid "Rename Episodes"
@@ -4380,8 +4380,8 @@ msgid "Associated file extensions"
 msgstr "Powiązane rozszerzenia plików"
 
 #: gui/slick/views/config_postProcessing.mako:208
-msgid "comma separated list of associated file extensions SickRage should keep while post processing."
-msgstr "oddzielona przecinkami lista rozszerzeń plików skojarzonych, które powinien przechowywać SickRage podczas przetwarzania końcowego."
+msgid "comma separated list of associated file extensions SickChill should keep while post processing."
+msgstr "oddzielona przecinkami lista rozszerzeń plików skojarzonych, które powinien przechowywać SickChill podczas przetwarzania końcowego."
 
 #: gui/slick/views/config_postProcessing.mako:213
 msgid "leaving it empty means no associated files will be post processed"
@@ -4541,8 +4541,8 @@ msgid "for script arguments description and usage."
 msgstr "dla opisu argumentów skryptu i jego stosowania."
 
 #: gui/slick/views/config_postProcessing.mako:484
-msgid "How SickRage will name and sort your episodes."
-msgstr "Jak SickRage bedzie nazywal i sortowal Twoje odcinki."
+msgid "How SickChill will name and sort your episodes."
+msgstr "Jak SickChill bedzie nazywal i sortowal Twoje odcinki."
 
 #: gui/slick/views/config_postProcessing.mako:492
 #: gui/slick/views/config_postProcessing.mako:764
@@ -4683,8 +4683,8 @@ msgstr "Nazwa wydania"
 #: gui/slick/views/config_postProcessing.mako:905
 #: gui/slick/views/config_postProcessing.mako:1090
 #: gui/slick/views/config_postProcessing.mako:1271
-msgid "SickRage' is used in place of RLSGROUP if it could not be properly detected"
-msgstr "SickRage jest używany zamiast RLSGROUP, w sytuacji której nie mógł zostać poprawnie wykryty"
+msgid "SickChill' is used in place of RLSGROUP if it could not be properly detected"
+msgstr "SickChill jest używany zamiast RLSGROUP, w sytuacji której nie mógł zostać poprawnie wykryty"
 
 #: gui/slick/views/config_postProcessing.mako:680
 #: gui/slick/views/config_postProcessing.mako:905
@@ -5031,8 +5031,8 @@ msgid "Seed ratio"
 msgstr "Współczynnik udostępniania"
 
 #: gui/slick/views/config_providers.mako:533
-msgid "stop transfer when ratio is reached<br>(-1 SickRage default to seed forever, or leave blank for downloader default)"
-msgstr "zatrzymaj transfer po osiągnięciu współczynnika<br>(-1 by domyślnie SickRage zawsze udostępniał lub pozostaw puste dla domyślnych wartości programu pobierającego)"
+msgid "stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)"
+msgstr "zatrzymaj transfer po osiągnięciu współczynnika<br>(-1 by domyślnie SickChill zawsze udostępniał lub pozostaw puste dla domyślnych wartości programu pobierającego)"
 
 #: gui/slick/views/config_providers.mako:543
 msgid "Minimum seeders"
@@ -5685,8 +5685,8 @@ msgid "Plugin Settings"
 msgstr "Ustawienia wtyczki"
 
 #: gui/slick/views/config_subtitles.mako:45
-msgid "Settings that dictate how SickRage handles subtitles search results."
-msgstr "Ustawienia które narzucają jak SickRage obsługuje wyniki wyszukiwania napisów."
+msgid "Settings that dictate how SickChill handles subtitles search results."
+msgstr "Ustawienia które narzucają jak SickChill obsługuje wyniki wyszukiwania napisów."
 
 #: gui/slick/views/config_subtitles.mako:52
 msgid "Search Subtitles"
@@ -5701,7 +5701,7 @@ msgid "Subtitle Directory"
 msgstr "Katalog napisów"
 
 #: gui/slick/views/config_subtitles.mako:87
-msgid "the directory where SickRage should store your <i>Subtitles</i> files."
+msgid "the directory where SickChill should store your <i>Subtitles</i> files."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:92
@@ -6111,12 +6111,12 @@ msgid "Use SR Metdata"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:133
-msgid "use SickRage metadata when searching for subtitle, this will override the autodiscovered metadata"
+msgid "use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:144
-msgid "pause this show (SickRage will not download episodes)"
-msgstr "wstrzymaj ten program (SickRage nie będzie pobierał odcinków)"
+msgid "pause this show (SickChill will not download episodes)"
+msgstr "wstrzymaj ten program (SickChill nie będzie pobierał odcinków)"
 
 #: gui/slick/views/editShow.mako:155
 msgid "Format Settings"
@@ -6206,7 +6206,7 @@ msgid "this list appends to the original show name."
 msgstr ""
 
 #: gui/slick/views/editShow.mako:384
-msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickrage/sick-rage.github.io/issues\">here</a>."
+msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickchill/sick-rage.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9
@@ -6331,8 +6331,8 @@ msgid "Download subtitles for this show?"
 msgstr "Pobierz napisy do tego programu?"
 
 #: gui/slick/views/inc_addShowOptions.mako:31
-msgid "use SickRage metadata when searching for subtitle, <br />this will override the autodiscovered metadata"
-msgstr "Podczas szukania napisów użyj metadanych SickRage.<br />\n"
+msgid "use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata"
+msgstr "Podczas szukania napisów użyj metadanych SickChill.<br />\n"
 "To ustawienie zastąpi automatycznie wykryte metadane"
 
 #: gui/slick/views/inc_addShowOptions.mako:39
@@ -6730,8 +6730,8 @@ msgid "Group episodes by season folder (set to \"No\" to store in a single folde
 msgstr "Grupuj odcinki po folderach sezonów (ustaw \"Nie\" żeby przechowywać w jednym folderze)."
 
 #: gui/slick/views/manage_massEdit.mako:167
-msgid "Pause these shows (SickRage will not download episodes)."
-msgstr "Wstrzymaj te programy (SickRage nie będzie ściągał odcinków)."
+msgid "Pause these shows (SickChill will not download episodes)."
+msgstr "Wstrzymaj te programy (SickChill nie będzie ściągał odcinków)."
 
 #: gui/slick/views/manage_massEdit.mako:182
 msgid "This will set the status for future episodes."
@@ -6788,20 +6788,20 @@ msgid "Performing Restart"
 msgstr "Wykonuje restart"
 
 #: gui/slick/views/restart.mako:27
-msgid "Waiting for SickRage to shut down"
-msgstr "Czekam na zamknięcie SickRage"
+msgid "Waiting for SickChill to shut down"
+msgstr "Czekam na zamknięcie SickChill"
 
 #: gui/slick/views/restart.mako:33
-msgid "Waiting for SickRage to start again"
-msgstr "Czekam na ponowny start SickRage"
+msgid "Waiting for SickChill to start again"
+msgstr "Czekam na ponowny start SickChill"
 
 #: gui/slick/views/restart.mako:40
 msgid "Loading the default page"
 msgstr "Ładowanie strony domyślnej"
 
 #: gui/slick/views/restart.mako:45
-msgid "Error: The restart has timed out, perhaps something prevented SickRage from starting again?"
-msgstr "Błąd: Upłyną limit czasu restartu, może coś uniemożliwia ponowne uruchomienie SickRage?"
+msgid "Error: The restart has timed out, perhaps something prevented SickChill from starting again?"
+msgstr "Błąd: Upłyną limit czasu restartu, może coś uniemożliwia ponowne uruchomienie SickChill?"
 
 #: gui/slick/views/schedule.mako:25
 msgid "Key"
@@ -7076,8 +7076,8 @@ msgid "Tools"
 msgstr "Narzędzia"
 
 #: gui/slick/views/layouts/main.mako:233
-msgid "Support SickRage"
-msgstr "Wesprzyj SickRage"
+msgid "Support SickChill"
+msgstr "Wesprzyj SickChill"
 
 #: gui/slick/views/layouts/main.mako:236
 msgid "View Errors"
@@ -7135,19 +7135,19 @@ msgstr "Branch"
 msgid "Now"
 msgstr "Teraz"
 
-#: sickrage/providers/GenericProvider.py:56
+#: sickchill/providers/GenericProvider.py:56
 msgid "Not working"
 msgstr ""
 
-#: sickrage/providers/GenericProvider.py:57
+#: sickchill/providers/GenericProvider.py:57
 msgid "Daily/RSS only"
 msgstr ""
 
-#: sickrage/providers/GenericProvider.py:58
+#: sickchill/providers/GenericProvider.py:58
 msgid "Backlog/Manual Search only"
 msgstr ""
 
-#: sickrage/providers/GenericProvider.py:59
+#: sickchill/providers/GenericProvider.py:59
 msgid "Daily/RSS and Backlog/Manual Searches working"
 msgstr ""
 

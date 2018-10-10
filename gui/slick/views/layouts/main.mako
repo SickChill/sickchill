@@ -4,8 +4,8 @@
     from requests.compat import urljoin
     import sickbeard
     from sickbeard.filters import hide
-    from sickrage.helper.common import pretty_file_size
-    from sickrage.show.Show import Show
+    from sickchill.helper.common import pretty_file_size
+    from sickchill.show.Show import Show
     from time import time
 
     # resource module is unix only
@@ -34,7 +34,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
 
-        <title>SickRage - ${title}</title>
+        <title>SickChill - ${title}</title>
 
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -64,7 +64,7 @@
         <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
         <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
         <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
-        <meta data-var="sickbeard.SICKRAGE_BACKGROUND" data-content="${sickbeard.SICKRAGE_BACKGROUND}">
+        <meta data-var="sickbeard.SICKCHILL_BACKGROUND" data-content="${sickbeard.SICKCHILL_BACKGROUND}">
         <meta data-var="sickbeard.FANART_BACKGROUND" data-content="${sickbeard.FANART_BACKGROUND}">
         <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
@@ -129,7 +129,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${static_url("home/", include_version=False)}" title="SickRage"><img alt="SickRage" src="${static_url('images/sickrage.png')}"
+                    <a class="navbar-brand" href="${static_url("home/", include_version=False)}" title="SickChill"><img alt="SickChill" src="${static_url('images/sickchill.png')}"
                                                                                          style="height: 50px;padding: 3px;"
                                                                                  class="img-responsive pull-left" /></a>
                 </div>
@@ -230,7 +230,7 @@
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
                                     <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
-                                    <li><a href="https://github.com/Sick-Rage/Sick-Rage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickRage')}</a></li>
+                                    <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
                                         <li><a href="${static_url("errorlogs/", include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>

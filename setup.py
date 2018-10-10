@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 """
-Use setup tools to install sickrage
+Use setup tools to install sickchill
 """
 import os
 
@@ -45,7 +45,7 @@ setup(
     long_description=long_description,
 
     url='https://sick-rage.github.io',
-    download_url='https://github.com/Sick-Rage/Sick-Rage.git',
+    download_url='https://github.com/SickChill/SickChill.git',
 
     author='miigotu',
     author_email='miigotu@gmail.com',
@@ -88,7 +88,7 @@ setup(
             ('**/js/*.min.js', 'ignore', None),
             ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
         ],
-        'sickrage': [('**.py', 'python', None)],
+        'sickchill': [('**.py', 'python', None)],
         'sickbeard': [('**.py', 'python', None)],
     },
 )

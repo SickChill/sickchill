@@ -5,7 +5,7 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05E08
   response:
@@ -29,7 +29,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: http://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05E08/
   response:
@@ -51,7 +51,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05E08/
   response:
@@ -73,7 +73,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05E08/
   response:
@@ -177,7 +177,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://www.limetorrents.cc/rss/20/
   response:
@@ -323,7 +323,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05
   response:
@@ -345,7 +345,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: http://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05/
   response:
@@ -367,7 +367,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05/
   response:
@@ -389,7 +389,7 @@ interactions:
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
       Cookie: [__cfduid=da20edb314f02bbc71fe05c48242591b71459790035]
-      User-Agent: [!!python/unicode Sick-Rage.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
+      User-Agent: [!!python/unicode SickChill.CE.1/(Linux; 4.4.0-17-generic; 8144fb38-fa88-11e5-816b-446d57bd4634)]
     method: GET
     uri: https://www.limetorrents.cc/searchrss/20/Game%20of%20Thrones%20S05/
   response:

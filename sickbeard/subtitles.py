@@ -2,22 +2,22 @@
 # Author: medariox <dariox@gmx.com>,
 # based on Antoine Bertin's <diaoulael@gmail.com> work
 # and originally written by Nyaran <nyayukko@gmail.com>
-# URL: https://github.com/Sick-Rage/Sick-Rage/
+# URL: https://github.com/SickChill/SickChill/
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -38,22 +38,22 @@ import sickbeard
 from sickbeard import db, history, logger
 from sickbeard.common import Quality
 from sickbeard.helpers import is_media_file
-from sickrage.helper.common import dateTimeFormat, episode_num
-from sickrage.helper.exceptions import ex
-from sickrage.show.Show import Show
+from sickchill.helper.common import dateTimeFormat, episode_num
+from sickchill.helper.exceptions import ex
+from sickchill.show.Show import Show
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 if 'legendastv' not in provider_manager.names():
     provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in provider_manager.names():
-    provider_manager.register('itasa = sickrage.providers.subtitle.itasa:ItaSAProvider')
+    provider_manager.register('itasa = sickchill.providers.subtitle.itasa:ItaSAProvider')
 if 'wizdom' not in provider_manager.names():
-    provider_manager.register('wizdom = sickrage.providers.subtitle.wizdom:WizdomProvider')
+    provider_manager.register('wizdom = sickchill.providers.subtitle.wizdom:WizdomProvider')
 # We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
 # Until it gets an update in subliminal, we'll use a fixed provider.
 if 'subscenter' not in provider_manager.names():
-    provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
+    provider_manager.register('subscenter = sickchill.providers.subtitle.subscenter:SubsCenterProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
@@ -346,7 +346,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
         if embedded_subtitles is None:
             embedded_subtitles = bool(not sickbeard.EMBEDDED_SUBTITLES_ALL and video_path.endswith('.mkv'))
 
-        # Let sickrage add more information to video file, based on the metadata.
+        # Let sickchill add more information to video file, based on the metadata.
         if episode:
             refine_video(video, episode)
 
