@@ -43,7 +43,7 @@ If the above steps fail and you are sure its a bug, issues are tracked in the [S
 
 ### Code
 
-**ALWAYS follow SickChill [Coding Standards](https://github.com/SickChill/sick-rage.github.io/wiki/SickChill-Coding-Standards)**
+**ALWAYS follow SickChill [Coding Standards](https://github.com/SickChill/sickchill.github.io/wiki/SickChill-Coding-Standards)**
 
 Review regularly as they are subject to change and submissions will not be accepted until they meet our guidelines.
 
@@ -137,4 +137,4 @@ Please follow this process; it's the best way to get your work included in the p
 
 ## Code guidelines
 
-Read and follow the [SickChill Coding Standards](https://github.com/SickChill/sick-rage.github.io/wiki/SickChill-Coding-Standards).  Review these regularly as they are subject to change and code will not be accepted if it does not adhere to the standards.
+Read and follow the [SickChill Coding Standards](https://github.com/SickChill/sickchill.github.io/wiki/SickChill-Coding-Standards).  Review these regularly as they are subject to change and code will not be accepted if it does not adhere to the standards.

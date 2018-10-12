@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #
@@ -2453,11 +2453,11 @@ class HomeChangeLog(Home):
     def index(self, *args_, **kwargs_):
         # noinspection PyBroadException
         try:
-            changes = helpers.getURL('http://sick-rage.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
+            changes = helpers.getURL('http://sickchill.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.log('Could not load changes from repo, giving a link!', logger.DEBUG)
             changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='http://sick-rage.github.io/sickchill-news/CHANGES.md'
+                changes_url='http://sickchill.github.io/sickchill-news/CHANGES.md'
             )
 
         t = PageTemplate(rh=self, filename="markdown.mako")

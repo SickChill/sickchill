@@ -381,7 +381,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickchill/sick-rage.github.io/issues">here</a>.')}</label>
+                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickchill/sickchill.github.io/issues">here</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>

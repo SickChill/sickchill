@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 # Git: https://github.com/SickChill/SickChill.git
 #
 # This file is part of SickChill.
@@ -45,7 +45,7 @@ missing_network_timezones = set()
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
-    url = 'http://sick-rage.github.io/sb_network_timezones/network_timezones.txt'
+    url = 'http://sickchill.github.io/sb_network_timezones/network_timezones.txt'
     data = helpers.getURL(url, session=helpers.make_session(), returns='text')
     if not data:
         logger.log('Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)

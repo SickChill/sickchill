@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: seedboy
 #
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

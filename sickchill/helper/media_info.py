@@ -2,7 +2,7 @@
 # This file is part of SickChill.
 #
 # Author: Dustyn Gibson (miigotu) <miigotu@gmail.com>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 # Git: https://github.com/SickChill/SickChill.git
 #
 # SickChill is free software: you can redistribute it and/or modify
