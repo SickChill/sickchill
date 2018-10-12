@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #
