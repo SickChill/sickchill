@@ -1,7 +1,7 @@
 # coding=utf-8
 # Author: medariox <dariox@gmx.com>
 # based on Dustyn Gibson's <miigotu@gmail.com> work
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #
@@ -151,8 +151,8 @@ GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
 
-NEWS_URL = 'http://sick-rage.github.io/sickchill-news/news.md'
-LOGO_URL = 'http://sick-rage.github.io/images/ico/favicon-64.png'
+NEWS_URL = 'http://sickchill.github.io/sickchill-news/news.md'
+LOGO_URL = 'http://sickchill.github.io/images/ico/favicon-64.png'
 
 NEWS_LAST_READ = None
 NEWS_LATEST = None

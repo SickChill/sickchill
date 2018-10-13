@@ -2,7 +2,7 @@
 # Author: Dustyn Gibson <miigotu@gmail.com>
 # Contributor: pluzun <pluzun59@gmail.com>
 #
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

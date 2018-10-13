@@ -1,7 +1,7 @@
 # coding=utf-8
 
 # Author: Sebastien Erard <sebastien_erard@hotmail.com>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

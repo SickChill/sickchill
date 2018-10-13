@@ -1,14 +1,14 @@
-# Translations template for sick-rage.
+# Translations template for sickchill.
 # Copyright (C) 2018 SickChill
-# This file is distributed under the same license as the sick-rage project.
+# This file is distributed under the same license as the sickchill project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sick-rage 0.0.1\n"
+"Project-Id-Version: sickchill 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 05:33-0700\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6442,8 +6442,8 @@ msgstr ""
 #: gui/slick/views/editShow.mako:384
 msgid ""
 "disabled entries come from a central file on github,<br/> if you think "
-"something is wrong please make an issue <a href=\"//github.com/sickchill"
-"/sick-rage.github.io/issues\">here</a>."
+"something is wrong please make an issue <a "
+"href=\"//github.com/sickchill/sickchill.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9
