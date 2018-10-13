@@ -67,7 +67,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
-        var file = grunt.option('file'); // --file=path/to/sick-rage.github.io/sickchill-news/CHANGES.md
+        var file = grunt.option('file'); // --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md
         if (!file) {
             file = process.env.SICKCHILL_CHANGES_FILE;
         }
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
             grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
         } else {
             grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
-                '\t\tUse --file=path/to/sick-rage.github.io/sickchill-news/CHANGES.md\n' +
+                '\t\tUse --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md\n' +
                 '\t\tor set the path in SICKCHILL_CHANGES_FILE (environment variable)');
         }
         grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
@@ -421,7 +421,7 @@ module.exports = function(grunt) {
             grunt.fatal('No tags information was received.');
         }
 
-        var file = grunt.config('changesmd_file'); // --file=path/to/sick-rage.github.io/sickchill-news/CHANGES.md
+        var file = grunt.config('changesmd_file'); // --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md
         if (!file) {
             grunt.fatal('Missing file path.');
         }

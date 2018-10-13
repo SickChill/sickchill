@@ -179,8 +179,8 @@
                     <i class="icon16-config-web"></i>&nbsp;&nbsp;${_('Website')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('http://sick-rage.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        http://sick-rage.github.io/
+                    <a href="${anon_url('http://sickchill.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        http://sickchill.github.io/
                     </a>
                 </div>
             </div>

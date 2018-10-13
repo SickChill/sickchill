@@ -2,7 +2,7 @@
 # Author: Idan Gutman
 # Modified by jkaberg, https://github.com/jkaberg for SceneAccess
 # Modified by 7ca for HDSpace
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

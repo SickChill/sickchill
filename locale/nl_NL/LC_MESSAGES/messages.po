@@ -6205,8 +6205,8 @@ msgid "this list appends to the original show name."
 msgstr "deze lijst wordt aan de originele serienaam toegevoegd."
 
 #: gui/slick/views/editShow.mako:384
-msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickchill/sick-rage.github.io/issues\">here</a>."
-msgstr "uitgeschakelde invoervelden komen vanaf een centraal bestand op github,<br/> als je denkt dat er iets mis is, maak dan <a href=\"//github.com/sickchill/sick-rage.github.io/issues\">hier</a> een issue."
+msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickchill/sickchill.github.io/issues\">here</a>."
+msgstr "uitgeschakelde invoervelden komen vanaf een centraal bestand op github,<br/> als je denkt dat er iets mis is, maak dan <a href=\"//github.com/sickchill/sickchill.github.io/issues\">hier</a> een issue."
 
 #: gui/slick/views/errorlogs.mako:9
 msgid "WARNING logs"

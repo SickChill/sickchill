@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Tyler Fenby <tylerfenby@gmail.com>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 # Git: https://github.com/SickChill/SickChill.git
 #
 # This file is part of SickChill.

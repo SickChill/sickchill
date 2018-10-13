@@ -2,7 +2,7 @@
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # Author: Gordon Turner <gordonturner@gordonturner.ca>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #

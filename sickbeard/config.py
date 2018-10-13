@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sick-rage.github.io
+# URL: https://sickchill.github.io
 # Git: https://github.com/SickChill/SickChill.git
 #
 # This file is part of SickChill.
@@ -161,7 +161,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                 unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
 
                 if (helpers.download_file(
-                    "http://sick-rage.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+                    "http://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
                 ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
                     try:
                         ek(os.remove, unrar_zip)

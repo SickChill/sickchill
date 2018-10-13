@@ -38,13 +38,13 @@ if babel:
     })
 
 setup(
-    name="sick-rage",
+    name="sickchill",
     version="0.0.1",
 
     description="Automatic Video Library Manager for TV Shows",
     long_description=long_description,
 
-    url='https://sick-rage.github.io',
+    url='https://sickchill.github.io',
     download_url='https://github.com/SickChill/SickChill.git',
 
     author='miigotu',
