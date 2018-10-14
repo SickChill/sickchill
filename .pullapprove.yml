@@ -7,7 +7,13 @@ groups:
       reject_regex: ^Rejected
     required: 1
     reset_on_push:
-      enabled: false
-    users:
-    - collaborators
-    - moderators
+      enabled: true
+    reset_on_reopened:
+      enabled: true
+    author_approval:
+      ignored: true
+    reject_value: -100  # any rejection means a failure
+    teams:
+      - collaborators
+      - moderators
+
