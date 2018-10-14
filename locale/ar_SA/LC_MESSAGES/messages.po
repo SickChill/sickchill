@@ -1,20 +1,20 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:46\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:08\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: ar\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /master/locale/messages.pot\n"
 "Language: ar_SA\n"
 
 #: sickbeard/__init__.py:68
@@ -67,7 +67,7 @@ msgstr "رعب"
 
 #: sickbeard/__init__.py:70
 msgid "Film-Noir"
-msgstr "Film-Noir"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Sci-Fi"
@@ -371,7 +371,7 @@ msgstr "خطأ"
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -938,7 +938,7 @@ msgstr "مهمل"
 
 #: sickbeard/webserve.py:1787
 msgid "(media untouched)"
-msgstr "(media untouched)"
+msgstr ""
 
 #: sickbeard/webserve.py:1787
 msgid "(with all related media)"
@@ -1025,7 +1025,7 @@ msgstr "لم يتم تحميل الترجمة"
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -1908,7 +1908,7 @@ msgstr "الملفّ الشخصيّ"
 
 #: gui/slick/views/apiBuilder.mako:107
 msgid "JSONP"
-msgstr "JSONP"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:112
 msgid "Back to SickChill"
@@ -1940,7 +1940,7 @@ msgstr "القيم المسموح بها"
 
 #: gui/slick/views/apiBuilder.mako:171
 msgid "Playground"
-msgstr "Playground"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:212
 msgid "Clear"
@@ -2018,7 +2018,7 @@ msgstr "مجلد السجل"
 
 #: gui/slick/views/config.mako:156
 msgid "Arguments"
-msgstr "Arguments"
+msgstr ""
 
 #: gui/slick/views/config.mako:167
 msgid "Web Root"
@@ -3145,7 +3145,7 @@ msgstr "مضيف واحد أو أكثر تعمل بـ Plex Media Server <br/>(م
 
 #: gui/slick/views/config_notifications.mako:318
 msgid "HTTPS"
-msgstr "HTTPS"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:322
 msgid "use https for plex media server requests?"
@@ -3161,7 +3161,7 @@ msgstr "التحقق من Plex Media Server"
 
 #: gui/slick/views/config_notifications.mako:350
 msgid "Plex Home Theater"
-msgstr "Plex Home Theater"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:363
 msgid "send Plex Home Theater notifications?"
@@ -3189,7 +3189,7 @@ msgstr "بعض Plex Home Theaters هي <b class=\"boldest\">لا تدعم</b> ا
 
 #: gui/slick/views/config_notifications.mako:486
 msgid "Emby"
-msgstr "Emby"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:488
 msgid "A home media server built using other popular open source technologies."
@@ -3307,7 +3307,7 @@ msgstr "ملء تلقائياً عن طريق الزر \"العثور على ق�
 
 #: gui/slick/views/config_notifications.mako:814
 msgid "Synology"
-msgstr "Synology"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:816
 msgid "The Synology DiskStation NAS."
@@ -3340,7 +3340,7 @@ msgstr "إرسال إشعارات إلى Synology Notifier؟"
 
 #: gui/slick/views/config_notifications.mako:935
 msgid "pyTivo"
-msgstr "pyTivo"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:937
 msgid "pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo."
@@ -3380,7 +3380,7 @@ msgstr "(رسائل &amp; إعدادات > الحساب &amp; معلومات ا�
 
 #: gui/slick/views/config_notifications.mako:1038
 msgid "Growl"
-msgstr "Growl"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1040
 msgid "A cross-platform unobtrusive global notification system."
@@ -3416,7 +3416,7 @@ msgstr "سجل Growl"
 
 #: gui/slick/views/config_notifications.mako:1150
 msgid "Prowl"
-msgstr "Prowl"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1152
 msgid "A Growl client for iOS."
@@ -3507,7 +3507,7 @@ msgstr "الأولوية في Prowl للرسائل من SickChill."
 
 #: gui/slick/views/config_notifications.mako:1303
 msgid "Libnotify"
-msgstr "Libnotify"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1305
 msgid "The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href=\"apt:python-notify\">python-notify</a>)."
@@ -3520,7 +3520,7 @@ msgstr "إرسال إشعارات Libnotify؟"
 #: gui/slick/views/config_notifications.mako:1378
 #: gui/slick/views/config_notifications.mako:1491
 msgid "Pushover"
-msgstr "Pushover"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1380
 msgid "Pushover makes it easy to send real-time notifications to your Android and iOS devices."
@@ -3581,7 +3581,7 @@ msgstr "كلاسيكي"
 
 #: gui/slick/views/config_notifications.mako:1496
 msgid "Cosmic"
-msgstr "Cosmic"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1497
 msgid "Falling"
@@ -3589,7 +3589,7 @@ msgstr "السقوط"
 
 #: gui/slick/views/config_notifications.mako:1498
 msgid "Gamelan"
-msgstr "Gamelan"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1499
 msgid "Incoming"
@@ -3665,7 +3665,7 @@ msgstr "اختر أولوية للإستخدام"
 
 #: gui/slick/views/config_notifications.mako:1573
 msgid "Boxcar 2"
-msgstr "Boxcar 2"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1575
 msgid "Read your messages where and when you want them!"
@@ -3685,11 +3685,11 @@ msgstr "رمز مصادقة الوصول لحسابك في Boxcar."
 
 #: gui/slick/views/config_notifications.mako:1666
 msgid "NMA"
-msgstr "NMA"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1667
 msgid "Notify My Android"
-msgstr "Notify My Android"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1668
 msgid "Notify My Android is a Prowl-like Android App and API that offers an easy way to send notifications from your application directly to your Android device."
@@ -3717,7 +3717,7 @@ msgstr "الأولوية في NMA للرسائل من SickChill."
 
 #: gui/slick/views/config_notifications.mako:1782
 msgid "Pushalot"
-msgstr "Pushalot"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1784
 msgid "Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8."
@@ -3737,7 +3737,7 @@ msgstr "رمز مصادقة التفويض لحسابك في Pushalot."
 
 #: gui/slick/views/config_notifications.mako:1875
 msgid "Pushbullet"
-msgstr "Pushbullet"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1877
 msgid "Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera."
@@ -3769,7 +3769,7 @@ msgstr "قنوات Pushbullet"
 
 #: gui/slick/views/config_notifications.mako:2009
 msgid "Free Mobile"
-msgstr "Free Mobile"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2011
 msgid "Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API."
@@ -3864,7 +3864,7 @@ msgstr "تواصل مع @BotFather على تليغرام للحصول على و�
 #: gui/slick/views/config_notifications.mako:2236
 #: gui/slick/views/config_notifications.mako:2237
 msgid "Join"
-msgstr "Join"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2238
 msgid "Join all of your devices together!"
@@ -3888,7 +3888,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2348
 msgid "Twilio"
-msgstr "Twilio"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2350
 msgid "Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device."
@@ -3981,7 +3981,7 @@ msgstr "أدخل المفتاح اللذي أعطاك إياه تويتر أدن
 
 #: gui/slick/views/config_notifications.mako:2640
 msgid "Trakt"
-msgstr "Trakt"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2642
 msgid "Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you'll enjoy!"
@@ -5006,11 +5006,11 @@ msgstr "مفتاح Api"
 
 #: gui/slick/views/config_providers.mako:408
 msgid "Digest"
-msgstr "Digest"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:422
 msgid "Hash"
-msgstr "Hash"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:464
 msgid "Passkey"
@@ -5083,7 +5083,7 @@ msgstr "فرز النتائج حسب"
 
 #: gui/slick/views/config_providers.mako:637
 msgid "Freeleech"
-msgstr "Freeleech"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:642
 msgid "only download <b>\"FreeLeech\"</b> torrents."
@@ -5997,11 +5997,11 @@ msgstr "حدد الأعمدة"
 
 #: gui/slick/views/displayShow.mako:423
 msgid "NFO"
-msgstr "NFO"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:424
 msgid "TBN"
-msgstr "TBN"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:425 gui/slick/views/history.mako:61
 #: gui/slick/views/history.mako:126 gui/slick/views/manage_backlogOverview.mako:92
@@ -6129,7 +6129,7 @@ msgstr "إعدادات التنسيق"
 
 #: gui/slick/views/editShow.mako:162 gui/slick/views/manage_massEdit.mako:239
 msgid "Air by date"
-msgstr "Air by date"
+msgstr ""
 
 #: gui/slick/views/editShow.mako:168
 msgid "check if the show is released as Show.03.02.2010 rather than Show.S02E03."
@@ -6625,15 +6625,15 @@ msgstr "مسح الكل"
 
 #: gui/slick/views/manage_failedDownloads.mako:13
 msgid "100"
-msgstr "100"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:14
 msgid "250"
-msgstr "250"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:15
 msgid "500"
-msgstr "500"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:37
 msgid "Release"
