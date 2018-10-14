@@ -212,8 +212,8 @@
                     <i class="icon16-config-mirc"></i>&nbsp;&nbsp;${_('IRC Chat')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="irc://irc.freenode.net/#sickchill-issues" rel="noreferrer">
-                        <i>#sickchill-issues</i> on <i>irc.freenode.net</i>
+                    <a href="irc://irc.freenode.net/#sickchill" rel="noreferrer">
+                        <i>#sickchill</i> on <i>irc.freenode.net</i>
                     </a>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 ### Questions about SickChill?
 
-To get your questions answered, please ask on the [#sickchill-issues](http://webchat.freenode.net/?channels=sickchill-issues) IRC channel on irc.freenode.net
+To get your questions answered, please ask on the [#sickchill](http://webchat.freenode.net/?channels=sickchill) IRC channel on irc.freenode.net
 
 # Contributing to SickChill
 
@@ -19,7 +19,7 @@ The goal of this guide is to provide the best way to contribute to the official 
 
 If you think you've found a bug please [file it in the bug tracker](#how-to-report-bugs).
 
-Most of the SickChill development team can be found in the [#sickchill-issues](http://webchat.freenode.net/?channels=sickchill-issues) IRC channel on irc.freenode.net.
+Most of the SickChill development team can be found in the [#sickchill](http://webchat.freenode.net/?channels=sickchill) IRC channel on irc.freenode.net.
 
 
 ## How to Report Bugs
@@ -28,7 +28,7 @@ Most of the SickChill development team can be found in the [#sickchill-issues](h
 
 Many bugs reported are actually issues with the user mis-understanding of how something works (there are a bit of moving parts to an ideal setup) and most of the time can be fixed by just changing some settings to fit the users needs.
 
-If you are new to SickChill, it is usually a much better idea to ask for help first in the [SickChill IRC channel](http://webchat.freenode.net/?channels=sickchill-issues). You will get much quicker support, and you will help avoid tying up the SickChill team with invalid bug reports.
+If you are new to SickChill, it is usually a much better idea to ask for help first in the [SickChill IRC channel](http://webchat.freenode.net/?channels=sickchill). You will get much quicker support, and you will help avoid tying up the SickChill team with invalid bug reports.
 
 ### Try the latest version of SickChill
 
