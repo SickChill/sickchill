@@ -1,25 +1,25 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:48\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:23\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Romanian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100>0 && n%100<20)) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: ro\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /develop/locale/messages.pot\n"
 "Language: ro_RO\n"
 
 #: sickbeard/__init__.py:68
 msgid "Drama"
-msgstr "Drama"
+msgstr ""
 
 #: sickbeard/__init__.py:68
 msgid "Mystery"
@@ -27,7 +27,7 @@ msgstr "Mister"
 
 #: sickbeard/__init__.py:68 sickbeard/__init__.py:73
 msgid "Science-Fiction"
-msgstr "Science-Fiction"
+msgstr ""
 
 #: sickbeard/__init__.py:68
 msgid "Crime"
@@ -63,15 +63,15 @@ msgstr "Aventură"
 
 #: sickbeard/__init__.py:70
 msgid "Horror"
-msgstr "Horror"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Film-Noir"
-msgstr "Film-Noir"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Sci-Fi"
-msgstr "Sci-Fi"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Romance"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: sickbeard/__init__.py:71
 msgid "Sport"
-msgstr "Sport"
+msgstr ""
 
 #: sickbeard/__init__.py:71
 msgid "War"
@@ -100,7 +100,7 @@ msgstr "Muzică"
 
 #: sickbeard/__init__.py:71
 msgid "Western"
-msgstr "Western"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:230
 #: sickbeard/__init__.py:72 sickbeard/webserve.py:2445
@@ -109,11 +109,11 @@ msgstr "Ştiri"
 
 #: sickbeard/__init__.py:72
 msgid "Sitcom"
-msgstr "Sitcom"
+msgstr ""
 
 #: sickbeard/__init__.py:72
 msgid "Reality-TV"
-msgstr "Reality-TV"
+msgstr ""
 
 #: sickbeard/__init__.py:72
 msgid "Documentary"
@@ -129,7 +129,7 @@ msgstr "Muzical"
 
 #: sickbeard/__init__.py:73
 msgid "Talk-Show"
-msgstr "Talk-Show"
+msgstr ""
 
 #: sickbeard/common.py:79
 msgid "Started Download"
@@ -447,7 +447,7 @@ msgstr "Eroare de mako"
 
 #: sickbeard/webserve.py:193
 msgid "Oops"
-msgstr "Oops"
+msgstr ""
 
 #: sickbeard/webserve.py:195
 msgid "Wrong API key used"
@@ -455,7 +455,7 @@ msgstr "Cheie greșită pentru API"
 
 #: gui/slick/views/login.mako:36 sickbeard/webserve.py:305
 msgid "Login"
-msgstr "Login"
+msgstr ""
 
 #: sickbeard/webserve.py:380
 msgid "API Key not generated"
@@ -463,7 +463,7 @@ msgstr "Cheia pentru API nu este generată"
 
 #: sickbeard/webserve.py:383
 msgid "API Builder"
-msgstr "API Builder"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:158
 #: sickbeard/webserve.py:492
@@ -472,7 +472,7 @@ msgstr "Program"
 
 #: sickbeard/webserve.py:605
 msgid "Test 1"
-msgstr "Test 1"
+msgstr ""
 
 #: sickbeard/webserve.py:605
 msgid "This is test number 1"
@@ -480,7 +480,7 @@ msgstr "Acesta este testul numărul 1"
 
 #: sickbeard/webserve.py:606
 msgid "Test 2"
-msgstr "Test 2"
+msgstr ""
 
 #: sickbeard/webserve.py:606
 msgid "This is test number 2"
@@ -6420,7 +6420,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:36 gui/slick/views/schedule.mako:84
 msgid "Poster"
-msgstr "Poster"
+msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:37
 msgid "Small Poster"
@@ -6428,7 +6428,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
 msgid "Banner"
-msgstr "Banner"
+msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:39
 msgid "Simple"
@@ -6836,7 +6836,7 @@ msgstr ""
 
 #: gui/slick/views/schedule.mako:85
 msgid "Calendar"
-msgstr "Calendar"
+msgstr ""
 
 #: gui/slick/views/schedule.mako:87
 msgid "List"
