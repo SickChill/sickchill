@@ -1,25 +1,25 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:48\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:08\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: sl\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /master/locale/messages.pot\n"
 "Language: sl_SI\n"
 
 #: sickbeard/__init__.py:68
 msgid "Drama"
-msgstr "Drama"
+msgstr ""
 
 #: sickbeard/__init__.py:68
 msgid "Mystery"
@@ -71,7 +71,7 @@ msgstr "Psihološka kriminalka"
 
 #: sickbeard/__init__.py:70
 msgid "Sci-Fi"
-msgstr "Sci-Fi"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Romance"
@@ -289,7 +289,7 @@ msgstr ""
 
 #: sickbeard/logger.py:473
 msgid "&lt;No Filter&gt;"
-msgstr "&lt;No Filter&gt;"
+msgstr ""
 
 #: sickbeard/logger.py:474
 msgid "Daily Searcher"
@@ -371,7 +371,7 @@ msgstr "Napaka"
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -444,11 +444,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:164
 msgid "Mako Error"
-msgstr "Mako Error"
+msgstr ""
 
 #: sickbeard/webserve.py:193
 msgid "Oops"
-msgstr "Oops"
+msgstr ""
 
 #: sickbeard/webserve.py:195
 msgid "Wrong API key used"
@@ -725,7 +725,7 @@ msgstr "Testni e-poštni naslov je bil uspešno poslan Preverite Prejeto."
 
 #: sickbeard/webserve.py:1191
 msgid "ERROR: {last_error}"
-msgstr "ERROR: {last_error}"
+msgstr ""
 
 #: sickbeard/webserve.py:1198
 msgid "Test NMA notice sent successfully"
@@ -754,7 +754,7 @@ msgstr "Napaka pri pošiljanju obvestila Pushbullet"
 #: gui/slick/views/displayShow.mako:435 gui/slick/views/inc_home_showList.mako:178
 #: gui/slick/views/manage.mako:49 sickbeard/webserve.py:1254
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: sickbeard/webserve.py:1273 sickbeard/webserve.py:1303
 msgid "Restarting SickChill"
@@ -1023,7 +1023,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -3300,7 +3300,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:814
 msgid "Synology"
-msgstr "Synology"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:816
 msgid "The Synology DiskStation NAS."
@@ -3972,7 +3972,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2640
 msgid "Trakt"
-msgstr "Trakt"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2642
 msgid "Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you'll enjoy!"
@@ -4913,7 +4913,7 @@ msgstr "noben ponudnik ni na voljo za konfiguriranje."
 
 #: gui/slick/views/config_providers.mako:153
 msgid "URL"
-msgstr "URL"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:178
 #: gui/slick/views/config_providers.mako:291
@@ -5001,7 +5001,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:422
 msgid "Hash"
-msgstr "Hash"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:464
 msgid "Passkey"
@@ -5018,7 +5018,7 @@ msgstr "primer: uid = 1234; pass = 567845439634987<br>opomba: uid in pass nista 
 
 #: gui/slick/views/config_providers.mako:506
 msgid "Pin"
-msgstr "Pin"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:521
 msgid "Seed ratio"
@@ -5325,7 +5325,7 @@ msgstr "Pošljite datoteke .nzb v"
 
 #: gui/slick/views/config_search.mako:335
 msgid "SABnzbd server URL"
-msgstr "SABnzbd server URL"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:346
 msgid "URL to your SABnzbd server (e.g. http://localhost:8080/)"
@@ -5411,11 +5411,11 @@ msgstr "omogočite varno kontrolo v NZBGet in nastavite pravilni varni priključ
 
 #: gui/slick/views/config_search.mako:554
 msgid "NZBget host:port"
-msgstr "NZBget host:port"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:566
 msgid "(e.g. localhost:6789)"
-msgstr "(e.g. localhost:6789)"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:571
 msgid "NZBget RPC host name and port number (not NZBgetweb!)"
@@ -5499,7 +5499,7 @@ msgstr "prednost za dnevne potege (brez zaostankov)"
 
 #: gui/slick/views/config_search.mako:729 gui/slick/views/config_search.mako:912
 msgid "Torrent host:port"
-msgstr "Torrent host:port"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:741
 msgid "URL to your Synology DSM (e.g. http://localhost:5000/)"
@@ -5556,7 +5556,7 @@ msgstr "URL na tvoj torrent client (e.g. http://localhost:8000/)"
 
 #: gui/slick/views/config_search.mako:932
 msgid "Torrent RPC URL"
-msgstr "Torrent RPC URL"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:944
 msgid "the path without leading and trailing slashes (e.g. transmission)"
@@ -5988,11 +5988,11 @@ msgstr "Izberite stolpce"
 
 #: gui/slick/views/displayShow.mako:423
 msgid "NFO"
-msgstr "NFO"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:424
 msgid "TBN"
-msgstr "TBN"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:425 gui/slick/views/history.mako:61
 #: gui/slick/views/history.mako:126 gui/slick/views/manage_backlogOverview.mako:92
@@ -6612,15 +6612,15 @@ msgstr "Počisti vse"
 
 #: gui/slick/views/manage_failedDownloads.mako:13
 msgid "100"
-msgstr "100"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:14
 msgid "250"
-msgstr "250"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:15
 msgid "500"
-msgstr "500"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:37
 msgid "Release"
@@ -6928,11 +6928,11 @@ msgstr "Pravilno"
 
 #: gui/slick/views/status.mako:86 gui/slick/views/status.mako:94
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: gui/slick/views/status.mako:130
 msgid "Show id"
-msgstr "Show id"
+msgstr ""
 
 #: gui/slick/views/status.mako:133
 msgid "Priority"
@@ -7020,7 +7020,7 @@ msgstr "Stopnja"
 
 #: gui/slick/views/viewlogs.mako:33
 msgid "Filter"
-msgstr "Filter"
+msgstr ""
 
 #: gui/slick/views/layouts/config.mako:47
 msgid "All non-absolute folder locations are relative to "
