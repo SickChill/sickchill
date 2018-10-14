@@ -1,4 +1,4 @@
-project_identifier: sickchill
+project_identifier: sickrage
 api_key_env: CROWDIN_API_KEY
 base_url: https://api.crowdin.com
 base_path: .
