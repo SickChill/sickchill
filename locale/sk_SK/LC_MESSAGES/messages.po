@@ -1,20 +1,20 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:48\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:08\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: sk\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /master/locale/messages.pot\n"
 "Language: sk_SK\n"
 
 #: sickbeard/__init__.py:68
@@ -43,7 +43,7 @@ msgstr "Komédia"
 
 #: sickbeard/__init__.py:69
 msgid "Thriller"
-msgstr "Thriller"
+msgstr ""
 
 #: sickbeard/__init__.py:69
 msgid "Animation"
@@ -55,7 +55,7 @@ msgstr "Rodinný"
 
 #: sickbeard/__init__.py:69
 msgid "Fantasy"
-msgstr "Fantasy"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Adventure"
@@ -67,11 +67,11 @@ msgstr "Horor"
 
 #: sickbeard/__init__.py:70
 msgid "Film-Noir"
-msgstr "Film-Noir"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Sci-Fi"
-msgstr "Sci-Fi"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Romance"
@@ -100,7 +100,7 @@ msgstr "Hudobný"
 
 #: sickbeard/__init__.py:71
 msgid "Western"
-msgstr "Western"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:230
 #: sickbeard/__init__.py:72 sickbeard/webserve.py:2445
@@ -113,7 +113,7 @@ msgstr "Situačná komédia"
 
 #: sickbeard/__init__.py:72
 msgid "Reality-TV"
-msgstr "Reality-TV"
+msgstr ""
 
 #: sickbeard/__init__.py:72
 msgid "Documentary"
@@ -129,7 +129,7 @@ msgstr "Muzikál"
 
 #: sickbeard/__init__.py:73
 msgid "Talk-Show"
-msgstr "Talk-Show"
+msgstr ""
 
 #: sickbeard/common.py:79
 msgid "Started Download"
@@ -371,7 +371,7 @@ msgstr "Chyba"
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -464,7 +464,7 @@ msgstr "API kľúč nebol generovaný"
 
 #: sickbeard/webserve.py:383
 msgid "API Builder"
-msgstr "API Builder"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:158
 #: sickbeard/webserve.py:492
@@ -473,7 +473,7 @@ msgstr "Rozvrh"
 
 #: sickbeard/webserve.py:605
 msgid "Test 1"
-msgstr "Test 1"
+msgstr ""
 
 #: sickbeard/webserve.py:605
 msgid "This is test number 1"
@@ -481,7 +481,7 @@ msgstr "Toto je test číslo 1"
 
 #: sickbeard/webserve.py:606
 msgid "Test 2"
-msgstr "Test 2"
+msgstr ""
 
 #: sickbeard/webserve.py:606
 msgid "This is test number 2"
@@ -1023,7 +1023,7 @@ msgstr "Žiadne titulky neboli stiahnuté"
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -1039,7 +1039,7 @@ msgstr "Nepodarilo sa načítať zmeny z repo. [Kliknite tu pre CHANGES.md]({cha
 
 #: gui/slick/views/layouts/main.mako:232 sickbeard/webserve.py:2466
 msgid "Changelog"
-msgstr "Changelog"
+msgstr ""
 
 #: gui/slick/views/layouts/main.mako:207 sickbeard/webserve.py:2477
 #: sickbeard/webserve.py:3870 sickbeard/webserve.py:4368
@@ -1280,7 +1280,7 @@ msgstr "Oznámenia"
 #: gui/slick/views/manage.mako:44 gui/slick/views/manage_massEdit.mako:202
 #: sickbeard/webserve.py:3872 sickbeard/webserve.py:5205
 msgid "Anime"
-msgstr "Anime"
+msgstr ""
 
 #: sickbeard/webserve.py:3912 sickbeard/webserve.py:3913
 msgid "SickChill Configuration"
@@ -1903,7 +1903,7 @@ msgstr "Profil"
 
 #: gui/slick/views/apiBuilder.mako:107
 msgid "JSONP"
-msgstr "JSONP"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:112
 msgid "Back to SickChill"
@@ -1981,7 +1981,7 @@ msgstr "Verzia SSL"
 
 #: gui/slick/views/config.mako:81
 msgid "OS"
-msgstr "OS"
+msgstr ""
 
 #: gui/slick/views/config.mako:90
 msgid "Locale"
@@ -2025,7 +2025,7 @@ msgstr "Web stránka"
 
 #: gui/slick/views/config.mako:190
 msgid "Wiki"
-msgstr "Wiki"
+msgstr ""
 
 #: gui/slick/views/config.mako:201
 msgid "Source"
@@ -2033,7 +2033,7 @@ msgstr "Zdroj"
 
 #: gui/slick/views/config.mako:212
 msgid "IRC Chat"
-msgstr "IRC Chat"
+msgstr ""
 
 #: gui/slick/views/config_anime.mako:9
 msgid "AnimeDB Settings"
@@ -2100,7 +2100,7 @@ msgstr "heslo k AniDB účtu"
 
 #: gui/slick/views/config_anime.mako:87
 msgid "AniDB MyList"
-msgstr "AniDB MyList"
+msgstr ""
 
 #: gui/slick/views/config_anime.mako:92
 msgid "do you want to add the PostProcessed episodes to the MyList?"
@@ -2596,7 +2596,7 @@ msgstr "prázdne = bez overenia"
 
 #: gui/slick/views/config_general.mako:721
 msgid "HTTP port"
-msgstr "HTTP port"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:731
 msgid "web port to browse and access SickChill (default:8081)"
@@ -6429,7 +6429,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
 msgid "Banner"
-msgstr "Banner"
+msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:39
 msgid "Simple"
@@ -6925,7 +6925,7 @@ msgstr "Pravda"
 
 #: gui/slick/views/status.mako:86 gui/slick/views/status.mako:94
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: gui/slick/views/status.mako:130
 msgid "Show id"
