@@ -60,7 +60,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         login_params = {
             "get_token": "get_token",
             "format": "json",
-            "app_id": "sickchill2"
+            "app_id": "sickchill"
         }
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
@@ -78,7 +78,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
             return results
 
         search_params = {
-            "app_id": "sickchill2",
+            "app_id": "sickchill",
             "category": "tv",
             "min_seeders": try_int(self.minseed),
             "min_leechers": try_int(self.minleech),
