@@ -2,11 +2,12 @@ version: '2'
 
 services:
   sickchill:
-    image: sickchill:v2017.06.05-1
+    image: sickchill/sickchill:latest
     container_name: sickchill
     restart: unless-stopped
     ports:
       - 8081:8081
     volumes:
-      - /docker/sickchill/config:/config
       - /docker/sickchill/data:/data
+      - /docker/sickchill/downloads:/downloads
+      - /docker/sickchill/tv:/tv
