@@ -1,25 +1,25 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:46\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:24\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: ca\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /develop/locale/messages.pot\n"
 "Language: ca_ES\n"
 
 #: sickbeard/__init__.py:68
 msgid "Drama"
-msgstr "Drama"
+msgstr ""
 
 #: sickbeard/__init__.py:68
 msgid "Mystery"
@@ -100,7 +100,7 @@ msgstr "Música"
 
 #: sickbeard/__init__.py:71
 msgid "Western"
-msgstr "Western"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:230
 #: sickbeard/__init__.py:72 sickbeard/webserve.py:2445
@@ -125,7 +125,7 @@ msgstr "Concurs"
 
 #: sickbeard/__init__.py:72
 msgid "Musical"
-msgstr "Musical"
+msgstr ""
 
 #: sickbeard/__init__.py:73
 msgid "Talk-Show"
@@ -298,7 +298,7 @@ msgstr "Cercador diari"
 #: gui/slick/views/manage_manageSearches.mako:52 gui/slick/views/status.mako:13
 #: sickbeard/logger.py:475
 msgid "Backlog"
-msgstr "Backlog"
+msgstr ""
 
 #: sickbeard/logger.py:476
 msgid "Show Updater"
@@ -351,7 +351,7 @@ msgstr "Trobar subtítols"
 
 #: gui/slick/views/status.mako:21 sickbeard/logger.py:488
 msgid "Trakt Checker"
-msgstr "Trakt Checker"
+msgstr ""
 
 #: sickbeard/logger.py:489
 msgid "Event"
@@ -367,11 +367,11 @@ msgstr "Esdeveniment"
 #: sickbeard/webserve.py:2066 sickbeard/webserve.py:2093 sickbeard/webserve.py:2097
 #: sickbeard/webserve.py:2102
 msgid "Error"
-msgstr "Error"
+msgstr ""
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -723,7 +723,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:1191
 msgid "ERROR: {last_error}"
-msgstr "ERROR: {last_error}"
+msgstr ""
 
 #: sickbeard/webserve.py:1198
 msgid "Test NMA notice sent successfully"
@@ -1021,7 +1021,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -1247,7 +1247,7 @@ msgstr ""
 
 #: gui/slick/views/layouts/main.mako:202 sickbeard/webserve.py:3865
 msgid "General"
-msgstr "General"
+msgstr ""
 
 #: sickbeard/webserve.py:3866 sickbeard/webserve.py:4166
 msgid "Backup/Restore"
@@ -1278,7 +1278,7 @@ msgstr "Notificacions"
 #: gui/slick/views/manage.mako:44 gui/slick/views/manage_massEdit.mako:202
 #: sickbeard/webserve.py:3872 sickbeard/webserve.py:5205
 msgid "Anime"
-msgstr "Anime"
+msgstr ""
 
 #: sickbeard/webserve.py:3912 sickbeard/webserve.py:3913
 msgid "SickChill Configuration"
@@ -1302,7 +1302,7 @@ msgstr ""
 
 #: sickbeard/webserve.py:3968
 msgid "Config - General"
-msgstr "Config - General"
+msgstr ""
 
 #: sickbeard/webserve.py:3968
 msgid "General Configuration"
@@ -1818,7 +1818,7 @@ msgstr "Nom"
 #: gui/slick/views/addShows_popularShows.mako:18
 #: gui/slick/views/addShows_trendingShows.mako:41
 msgid "Original"
-msgstr "Original"
+msgstr ""
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:42
@@ -1844,12 +1844,12 @@ msgstr "Criteri d'ordenació"
 #: gui/slick/views/addShows_popularShows.mako:28
 #: gui/slick/views/addShows_trendingShows.mako:51
 msgid "Asc"
-msgstr "Asc"
+msgstr ""
 
 #: gui/slick/views/addShows_popularShows.mako:29
 #: gui/slick/views/addShows_trendingShows.mako:52
 msgid "Desc"
-msgstr "Desc"
+msgstr ""
 
 #: gui/slick/views/addShows_popularShows.mako:48
 msgid "Fetching of IMDB Data failed. Are you online?"
@@ -1873,7 +1873,7 @@ msgstr "Tendències"
 
 #: gui/slick/views/addShows_trendingShows.mako:63
 msgid "Popular"
-msgstr "Popular"
+msgstr ""
 
 #: gui/slick/views/addShows_trendingShows.mako:64
 msgid "Most Watched"
@@ -1901,7 +1901,7 @@ msgstr "Perfil"
 
 #: gui/slick/views/apiBuilder.mako:107
 msgid "JSONP"
-msgstr "JSONP"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:112
 msgid "Back to SickChill"
@@ -1959,7 +1959,7 @@ msgstr "Sí­"
 #: gui/slick/views/manage_massEdit.mako:247
 #: gui/slick/views/manage_massEdit.mako:268
 msgid "No"
-msgstr "No"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:295
 msgid "season"
@@ -2508,7 +2508,7 @@ msgstr "Fus horari"
 
 #: gui/slick/views/config_general.mako:582
 msgid "Local"
-msgstr "Local"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:588 gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:173 gui/slick/views/manage.mako:40
@@ -2878,7 +2878,7 @@ msgstr "Dispositius"
 
 #: gui/slick/views/config_notifications.mako:12
 msgid "Social"
-msgstr "Social"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:27
 msgid "A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV."
@@ -3136,7 +3136,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:318
 msgid "HTTPS"
-msgstr "HTTPS"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:322
 msgid "use https for plex media server requests?"
@@ -6427,7 +6427,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
 msgid "Banner"
-msgstr "Banner"
+msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:39
 msgid "Simple"

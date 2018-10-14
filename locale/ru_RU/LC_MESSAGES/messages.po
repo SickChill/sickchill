@@ -1,20 +1,20 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-10 07:45+0000\n"
-"PO-Revision-Date: 2018-10-10 07:48\n"
+"POT-Creation-Date: 2018-10-13 00:14-0700\n"
+"PO-Revision-Date: 2018-10-14 01:23\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.3.4\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Generator: crowdin.com\n"
-"X-Crowdin-Project: sickchill\n"
+"X-Crowdin-Project: sickrage\n"
 "X-Crowdin-Language: ru\n"
-"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File: /develop/locale/messages.pot\n"
 "Language: ru_RU\n"
 
 #: sickbeard/__init__.py:68
@@ -371,7 +371,7 @@ msgstr "Ошибка"
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -464,7 +464,7 @@ msgstr "API ключ не создан"
 
 #: sickbeard/webserve.py:383
 msgid "API Builder"
-msgstr "API Builder"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:158
 #: sickbeard/webserve.py:492
@@ -1023,7 +1023,7 @@ msgstr "Субтитры не загружены"
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -1903,7 +1903,7 @@ msgstr "Профиль"
 
 #: gui/slick/views/apiBuilder.mako:107
 msgid "JSONP"
-msgstr "JSONP"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:112
 msgid "Back to SickChill"
@@ -1981,11 +1981,11 @@ msgstr "Версия SSL"
 
 #: gui/slick/views/config.mako:81
 msgid "OS"
-msgstr "OS"
+msgstr ""
 
 #: gui/slick/views/config.mako:90
 msgid "Locale"
-msgstr "Locale"
+msgstr ""
 
 #: gui/slick/views/config.mako:101
 msgid "User"
@@ -2100,7 +2100,7 @@ msgstr "пароль вашей учетной записи AniDB"
 
 #: gui/slick/views/config_anime.mako:87
 msgid "AniDB MyList"
-msgstr "AniDB MyList"
+msgstr ""
 
 #: gui/slick/views/config_anime.mako:92
 msgid "do you want to add the PostProcessed episodes to the MyList?"
@@ -2644,15 +2644,15 @@ msgstr "имя файла или путь к ключу HTTPS"
 
 #: gui/slick/views/config_general.mako:793
 msgid "Reverse proxy headers"
-msgstr "Reverse proxy headers"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:799
 msgid "accept the following reverse proxy headers (advanced)..."
-msgstr "accept the following reverse proxy headers (advanced)..."
+msgstr ""
 
 #: gui/slick/views/config_general.mako:804
 msgid "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
-msgstr "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:836
 msgid "CPU throttling"
@@ -3043,7 +3043,7 @@ msgstr "отправить только обновления библиотек�
 
 #: gui/slick/views/config_notifications.mako:117
 msgid "KODI IP:Port"
-msgstr "KODI IP:Port"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:127
 msgid "host running KODI (eg. 192.168.1.100:8080)"
@@ -3114,7 +3114,7 @@ msgstr "отправить обновления библиотеки Plex Media 
 
 #: gui/slick/views/config_notifications.mako:223
 msgid "Plex Media Server Auth Token"
-msgstr "Plex Media Server Auth Token"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:233
 msgid "auth token used by Plex"
@@ -3138,7 +3138,7 @@ msgstr "один или несколько узлов под управлени�
 
 #: gui/slick/views/config_notifications.mako:318
 msgid "HTTPS"
-msgstr "HTTPS"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:322
 msgid "use https for plex media server requests?"
@@ -3182,7 +3182,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:486
 msgid "Emby"
-msgstr "Emby"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:488
 msgid "A home media server built using other popular open source technologies."
@@ -3194,7 +3194,7 @@ msgstr "Отправить команду обновления Emby?"
 
 #: gui/slick/views/config_notifications.mako:508
 msgid "Emby IP:Port"
-msgstr "Emby IP:Port"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:518
 msgid "host running Emby (eg. 192.168.1.100:8096)"
@@ -3300,11 +3300,11 @@ msgstr "автоматически заполняется через кнопк�
 
 #: gui/slick/views/config_notifications.mako:814
 msgid "Synology"
-msgstr "Synology"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:816
 msgid "The Synology DiskStation NAS."
-msgstr "The Synology DiskStation NAS."
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:817
 msgid "Synology Indexer is the daemon running on the Synology NAS to build its media database."
@@ -3333,7 +3333,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:935
 msgid "pyTivo"
-msgstr "pyTivo"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:937
 msgid "pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo."
@@ -3373,7 +3373,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1038
 msgid "Growl"
-msgstr "Growl"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1040
 msgid "A cross-platform unobtrusive global notification system."
@@ -3385,7 +3385,7 @@ msgstr "Отправлять уведомления в Growl?"
 
 #: gui/slick/views/config_notifications.mako:1085
 msgid "Growl IP:Port"
-msgstr "Growl IP:Port"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1095
 msgid "host running Growl (eg. 192.168.1.100:23053)"
@@ -3409,7 +3409,7 @@ msgstr "Зарегистрировать Growl"
 
 #: gui/slick/views/config_notifications.mako:1150
 msgid "Prowl"
-msgstr "Prowl"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1152
 msgid "A Growl client for iOS."
@@ -3498,7 +3498,7 @@ msgstr "приоритет сообщений Prowl от SickChill."
 
 #: gui/slick/views/config_notifications.mako:1303
 msgid "Libnotify"
-msgstr "Libnotify"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1305
 msgid "The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href=\"apt:python-notify\">python-notify</a>)."
@@ -3511,7 +3511,7 @@ msgstr "отправлять уведомления Libnotify?"
 #: gui/slick/views/config_notifications.mako:1378
 #: gui/slick/views/config_notifications.mako:1491
 msgid "Pushover"
-msgstr "Pushover"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1380
 msgid "Pushover makes it easy to send real-time notifications to your Android and iOS devices."
@@ -3556,39 +3556,39 @@ msgstr "Pushover звук уведомлений"
 
 #: gui/slick/views/config_notifications.mako:1492
 msgid "Bike"
-msgstr "Bike"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1493
 msgid "Bugle"
-msgstr "Bugle"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1494
 msgid "Cash Register"
-msgstr "Cash Register"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1495
 msgid "Classical"
-msgstr "Classical"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1496
 msgid "Cosmic"
-msgstr "Cosmic"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1497
 msgid "Falling"
-msgstr "Falling"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1498
 msgid "Gamelan"
-msgstr "Gamelan"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1499
 msgid "Incoming"
-msgstr "Incoming"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1500
 msgid "Intermission"
-msgstr "Intermission"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1501
 msgid "Magic"
@@ -3600,39 +3600,39 @@ msgstr "Механические"
 
 #: gui/slick/views/config_notifications.mako:1503
 msgid "Piano Bar"
-msgstr "Piano Bar"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1504
 msgid "Siren"
-msgstr "Siren"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1505
 msgid "Space Alarm"
-msgstr "Space Alarm"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1506
 msgid "Tug Boat"
-msgstr "Tug Boat"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1507
 msgid "Alien Alarm (long)"
-msgstr "Alien Alarm (long)"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1508
 msgid "Climb (long)"
-msgstr "Climb (long)"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1509
 msgid "Persistent (long)"
-msgstr "Persistent (long)"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1510
 msgid "Pushover Echo (long)"
-msgstr "Pushover Echo (long)"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1511
 msgid "Up Down (long)"
-msgstr "Up Down (long)"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1512
 msgid "None (silent)"
@@ -3656,7 +3656,7 @@ msgstr "Выберите приоритет для использования"
 
 #: gui/slick/views/config_notifications.mako:1573
 msgid "Boxcar 2"
-msgstr "Boxcar 2"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1575
 msgid "Read your messages where and when you want them!"
@@ -3668,7 +3668,7 @@ msgstr "отправлять уведомления Boxcar?"
 
 #: gui/slick/views/config_notifications.mako:1626
 msgid "Boxcar2 access token"
-msgstr "Boxcar2 access token"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1636
 msgid "access token for your Boxcar account."
@@ -3676,7 +3676,7 @@ msgstr "access token для учетной записи Boxcar."
 
 #: gui/slick/views/config_notifications.mako:1666
 msgid "NMA"
-msgstr "NMA"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1667
 msgid "Notify My Android"
@@ -3708,7 +3708,7 @@ msgstr "приоритет сообщения NMA от SickChill."
 
 #: gui/slick/views/config_notifications.mako:1782
 msgid "Pushalot"
-msgstr "Pushalot"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1784
 msgid "Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8."
@@ -3728,7 +3728,7 @@ msgstr "Токен авторизации вашей учетной записи
 
 #: gui/slick/views/config_notifications.mako:1875
 msgid "Pushbullet"
-msgstr "Pushbullet"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1877
 msgid "Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera."
@@ -3760,7 +3760,7 @@ msgstr "Pushbullet каналы"
 
 #: gui/slick/views/config_notifications.mako:2009
 msgid "Free Mobile"
-msgstr "Free Mobile"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2011
 msgid "Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API."
@@ -3807,7 +3807,7 @@ msgstr "Нажмите ниже, чтобы проверить настройк�
 #: gui/slick/views/config_notifications.mako:2120
 #: gui/slick/views/config_notifications.mako:2121
 msgid "Telegram"
-msgstr "Telegram"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2122
 msgid "Telegram is a cloud-based instant messaging service."
@@ -3879,7 +3879,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2348
 msgid "Twilio"
-msgstr "Twilio"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2350
 msgid "Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device."
@@ -3900,7 +3900,7 @@ msgstr "Учетная запись SID учетной записи Twilio."
 
 #: gui/slick/views/config_notifications.mako:2422
 msgid "Twilio Auth Token"
-msgstr "Twilio Auth Token"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2440
 msgid "Twilio Phone SID"
@@ -4196,7 +4196,7 @@ msgstr "кнопку ниже после каждой записи."
 
 #: gui/slick/views/config_notifications.mako:3138
 msgid "Slack"
-msgstr "Slack"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3140
 msgid "Slack brings all your communication together in one place. It's real-time messaging, archiving and search for modern teams."
@@ -4212,7 +4212,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3215
 msgid "Discord"
-msgstr "Discord"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3217
 msgid "All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone."
@@ -4443,7 +4443,7 @@ msgstr "«Распаковать» работает только с RAR архи
 
 #: gui/slick/views/config_postProcessing.mako:304
 msgid "Windows"
-msgstr "Windows"
+msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:304
 msgid "WinRar is required on windows"
@@ -4459,7 +4459,7 @@ msgstr "Выберите путь для распаковки файлов, ос
 
 #: gui/slick/views/config_postProcessing.mako:332
 msgid "Unrar Location"
-msgstr "Unrar Location"
+msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:343
 msgid "add the path to unrar if it is not in the system path"
@@ -5074,7 +5074,7 @@ msgstr "Сортировка результатов по"
 
 #: gui/slick/views/config_providers.mako:637
 msgid "Freeleech"
-msgstr "Freeleech"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:642
 msgid "only download <b>\"FreeLeech\"</b> torrents."
@@ -5409,7 +5409,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:554
 msgid "NZBget host:port"
-msgstr "NZBget host:port"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:566
 msgid "(e.g. localhost:6789)"
@@ -5986,11 +5986,11 @@ msgstr "Выбрать столбцы"
 
 #: gui/slick/views/displayShow.mako:423
 msgid "NFO"
-msgstr "NFO"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:424
 msgid "TBN"
-msgstr "TBN"
+msgstr ""
 
 #: gui/slick/views/displayShow.mako:425 gui/slick/views/history.mako:61
 #: gui/slick/views/history.mako:126 gui/slick/views/manage_backlogOverview.mako:92
@@ -6609,15 +6609,15 @@ msgstr "Очистить все"
 
 #: gui/slick/views/manage_failedDownloads.mako:13
 msgid "100"
-msgstr "100"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:14
 msgid "250"
-msgstr "250"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:15
 msgid "500"
-msgstr "500"
+msgstr ""
 
 #: gui/slick/views/manage_failedDownloads.mako:37
 msgid "Release"
@@ -6921,7 +6921,7 @@ msgstr "Тихий"
 
 #: gui/slick/views/status.mako:80
 msgid "True"
-msgstr "True"
+msgstr ""
 
 #: gui/slick/views/status.mako:86 gui/slick/views/status.mako:94
 msgid "N/A"
