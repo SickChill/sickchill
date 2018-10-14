@@ -1,18 +1,21 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version:  sickchill\n"
+"Project-Id-Version: sickrage\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2018-10-14 01:35+0000\n"
-"PO-Revision-Date: 2018-10-10 07:48+0000\n"
+"PO-Revision-Date: 2018-10-14 01:41\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
-"Language: sk_SK\n"
 "Language-Team: Slovak\n"
-"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: sickrage\n"
+"X-Crowdin-Language: sk\n"
+"X-Crowdin-File: /develop/locale/messages.pot\n"
+"Language: sk_SK\n"
 
 #: sickbeard/__init__.py:68
 msgid "Drama"
@@ -40,7 +43,7 @@ msgstr "Komédia"
 
 #: sickbeard/__init__.py:69
 msgid "Thriller"
-msgstr "Thriller"
+msgstr ""
 
 #: sickbeard/__init__.py:69
 msgid "Animation"
@@ -52,7 +55,7 @@ msgstr "Rodinný"
 
 #: sickbeard/__init__.py:69
 msgid "Fantasy"
-msgstr "Fantasy"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Adventure"
@@ -64,11 +67,11 @@ msgstr "Horor"
 
 #: sickbeard/__init__.py:70
 msgid "Film-Noir"
-msgstr "Film-Noir"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Sci-Fi"
-msgstr "Sci-Fi"
+msgstr ""
 
 #: sickbeard/__init__.py:70
 msgid "Romance"
@@ -97,7 +100,7 @@ msgstr "Hudobný"
 
 #: sickbeard/__init__.py:71
 msgid "Western"
-msgstr "Western"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:230
 #: sickbeard/__init__.py:72 sickbeard/webserve.py:2445
@@ -110,7 +113,7 @@ msgstr "Situačná komédia"
 
 #: sickbeard/__init__.py:72
 msgid "Reality-TV"
-msgstr "Reality-TV"
+msgstr ""
 
 #: sickbeard/__init__.py:72
 msgid "Documentary"
@@ -126,7 +129,7 @@ msgstr "Muzikál"
 
 #: sickbeard/__init__.py:73
 msgid "Talk-Show"
-msgstr "Talk-Show"
+msgstr ""
 
 #: sickbeard/common.py:79
 msgid "Started Download"
@@ -184,10 +187,9 @@ msgstr "Stiahnuté"
 
 #: gui/slick/views/displayShow.mako:313 gui/slick/views/history.mako:127
 #: gui/slick/views/inc_home_showList.mako:78
-#: gui/slick/views/inc_home_showList.mako:283
-#: gui/slick/views/layouts/main.mako:339 gui/slick/views/schedule.mako:28
-#: gui/slick/views/schedule.mako:304 sickbeard/common.py:220
-#: sickbeard/common.py:605
+#: gui/slick/views/inc_home_showList.mako:283 gui/slick/views/layouts/main.mako:339
+#: gui/slick/views/schedule.mako:28 gui/slick/views/schedule.mako:304
+#: sickbeard/common.py:220 sickbeard/common.py:605
 msgid "Snatched"
 msgstr "Chňapnuté"
 
@@ -242,21 +244,15 @@ msgid "Please check your database owner/permissions: {db_filename}"
 msgstr ""
 
 #: sickbeard/db.py:96
-msgid ""
-"{exception_severity} error executing query with {method} in database "
-"{db_location}: "
+msgid "{exception_severity} error executing query with {method} in database {db_location}: "
 msgstr ""
 
 #: sickbeard/db.py:103
-msgid ""
-"If this happened in cache.db, you can safely stop SickChill, and delete "
-"the cache.db file without losing any data"
+msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
 msgstr ""
 
 #: sickbeard/db.py:106
-msgid ""
-"Here is the arguments that were passed to this function (This is what the"
-" developers need to know): {local_variables:s}"
+msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
 msgstr ""
 
 #: sickbeard/db.py:114
@@ -361,25 +357,21 @@ msgstr "Kontrola Traktu"
 msgid "Event"
 msgstr "Udalosť"
 
-#: sickbeard/logger.py:490 sickbeard/webserve.py:1366
-#: sickbeard/webserve.py:1369 sickbeard/webserve.py:1554
-#: sickbeard/webserve.py:1561 sickbeard/webserve.py:1768
-#: sickbeard/webserve.py:1781 sickbeard/webserve.py:1804
-#: sickbeard/webserve.py:1817 sickbeard/webserve.py:1822
-#: sickbeard/webserve.py:1838 sickbeard/webserve.py:1843
-#: sickbeard/webserve.py:1907 sickbeard/webserve.py:1910
-#: sickbeard/webserve.py:1916 sickbeard/webserve.py:1919
-#: sickbeard/webserve.py:1926 sickbeard/webserve.py:1929
-#: sickbeard/webserve.py:1951 sickbeard/webserve.py:2056
-#: sickbeard/webserve.py:2061 sickbeard/webserve.py:2066
-#: sickbeard/webserve.py:2093 sickbeard/webserve.py:2097
+#: sickbeard/logger.py:490 sickbeard/webserve.py:1366 sickbeard/webserve.py:1369
+#: sickbeard/webserve.py:1554 sickbeard/webserve.py:1561 sickbeard/webserve.py:1768
+#: sickbeard/webserve.py:1781 sickbeard/webserve.py:1804 sickbeard/webserve.py:1817
+#: sickbeard/webserve.py:1822 sickbeard/webserve.py:1838 sickbeard/webserve.py:1843
+#: sickbeard/webserve.py:1907 sickbeard/webserve.py:1910 sickbeard/webserve.py:1916
+#: sickbeard/webserve.py:1919 sickbeard/webserve.py:1926 sickbeard/webserve.py:1929
+#: sickbeard/webserve.py:1951 sickbeard/webserve.py:2056 sickbeard/webserve.py:2061
+#: sickbeard/webserve.py:2066 sickbeard/webserve.py:2093 sickbeard/webserve.py:2097
 #: sickbeard/webserve.py:2102
 msgid "Error"
 msgstr "Chyba"
 
 #: sickbeard/logger.py:491
 msgid "Tornado"
-msgstr "Tornado"
+msgstr ""
 
 #: sickbeard/logger.py:492
 msgid "Thread"
@@ -431,10 +423,7 @@ msgid "No update needed"
 msgstr "Žiadna aktualizácia"
 
 #: sickbeard/versionChecker.py:418
-msgid ""
-"Unable to find your git executable - Shutdown SickChill and EITHER set "
-"git_path in your config.ini OR delete your .git folder and run from "
-"source to enable updates."
+msgid "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
 msgstr ""
 
 #: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
@@ -446,17 +435,11 @@ msgstr[2] ""
 msgstr[3] ""
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
-msgid ""
-"There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); "
-"return false;\">newer version available</a> {commits_behind} &mdash; <a "
-"href=\"{update_url}\">Update Now</a>"
+msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
 #: sickbeard/versionChecker.py:761
-msgid ""
-"Unknown current version number: If you've never used the SickChill "
-"upgrade system before then current version is not set. &mdash; <a "
-"href=\"{update_url}\">Update Now</a>"
+msgid "Unknown current version number: If you've never used the SickChill upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
 #: sickbeard/webserve.py:164
@@ -481,7 +464,7 @@ msgstr "API kľúč nebol generovaný"
 
 #: sickbeard/webserve.py:383
 msgid "API Builder"
-msgstr "API Builder"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:158
 #: sickbeard/webserve.py:492
@@ -490,7 +473,7 @@ msgstr "Rozvrh"
 
 #: sickbeard/webserve.py:605
 msgid "Test 1"
-msgstr "Test 1"
+msgstr ""
 
 #: sickbeard/webserve.py:605
 msgid "This is test number 1"
@@ -498,19 +481,15 @@ msgstr "Toto je test číslo 1"
 
 #: sickbeard/webserve.py:606
 msgid "Test 2"
-msgstr "Test 2"
+msgstr ""
 
 #: sickbeard/webserve.py:606
 msgid "This is test number 2"
 msgstr "Toto je test číslo 2"
 
 #: sickbeard/webserve.py:631
-msgid ""
-"You're using the {branch} branch. Please use 'master' unless specifically"
-" asked"
-msgstr ""
-"Používate {branch} vetvu. Prosím použite 'master' vetvu pokým nie ste "
-"požiadaný inak"
+msgid "You're using the {branch} branch. Please use 'master' unless specifically asked"
+msgstr "Používate {branch} vetvu. Prosím použite 'master' vetvu pokým nie ste požiadaný inak"
 
 #: sickbeard/webserve.py:696 sickbeard/webserve.py:701
 msgid "Invalid show parameters"
@@ -524,8 +503,7 @@ msgstr "Neplatné parametre"
 msgid "Episode couldn't be retrieved"
 msgstr "Epizódu sa nepodarilo získať"
 
-#: sickbeard/webserve.py:759 sickbeard/webserve.py:1273
-#: sickbeard/webserve.py:1303
+#: sickbeard/webserve.py:759 sickbeard/webserve.py:1273 sickbeard/webserve.py:1303
 msgid "Home"
 msgstr "Úvod"
 
@@ -534,9 +512,7 @@ msgid "Show List"
 msgstr "Zoznam relácií"
 
 #: sickbeard/webserve.py:809
-msgid ""
-"Error: Unsupported Request. Send jsonp request with 'callback' variable "
-"in the query string."
+msgid "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
 msgstr ""
 
 #: sickbeard/webserve.py:854
@@ -564,9 +540,7 @@ msgid "Problem sending SMS: {message}"
 msgstr "Problém s odosielaním SMS: {message}"
 
 #: sickbeard/webserve.py:887
-msgid ""
-"Telegram notification succeeded. Check your Telegram clients to make sure"
-" it worked"
+msgid "Telegram notification succeeded. Check your Telegram clients to make sure it worked"
 msgstr "Telegram oznámenie odoslané. Skontrolujte Telegram klientov, či fungovalo"
 
 #: sickbeard/webserve.py:889
@@ -574,9 +548,7 @@ msgid "Error sending Telegram notification: {message}"
 msgstr "Chyba pri odosielaní Telegram oznámenia: {message}"
 
 #: sickbeard/webserve.py:896
-msgid ""
-"join notification succeeded. Check your join clients to make sure it "
-"worked"
+msgid "join notification succeeded. Check your join clients to make sure it worked"
 msgstr "join oznámenie odoslané. Skontrolujte join klientov, či fungovalo"
 
 #: sickbeard/webserve.py:898
@@ -604,9 +576,7 @@ msgid "Test prowl notice failed"
 msgstr "Test prowl - oznámenie zlyhalo"
 
 #: sickbeard/webserve.py:928
-msgid ""
-"Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure "
-"it worked"
+msgid "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked"
 msgstr "Boxcar2 oznámenie odoslané. Skontrolujte Boxcar2 klientov, či fungovalo"
 
 #: sickbeard/webserve.py:930
@@ -614,9 +584,7 @@ msgid "Error sending Boxcar2 notification"
 msgstr "Chyba pri odosielaní oznámení Boxcar2"
 
 #: sickbeard/webserve.py:937
-msgid ""
-"Pushover notification succeeded. Check your Pushover clients to make sure"
-" it worked"
+msgid "Pushover notification succeeded. Check your Pushover clients to make sure it worked"
 msgstr "Pushover oznámenie odoslané. Skontrolujte Pushover klientov, či fungovalo"
 
 #: sickbeard/webserve.py:939
@@ -768,9 +736,7 @@ msgid "Test NMA notice failed"
 msgstr "Test NMA oznámenie zlyhalo"
 
 #: sickbeard/webserve.py:1207
-msgid ""
-"Pushalot notification succeeded. Check your Pushalot clients to make sure"
-" it worked"
+msgid "Pushalot notification succeeded. Check your Pushalot clients to make sure it worked"
 msgstr ""
 
 #: sickbeard/webserve.py:1209
@@ -778,21 +744,15 @@ msgid "Error sending Pushalot notification"
 msgstr "Chyba pri odosielaní oznámení Pushalot"
 
 #: sickbeard/webserve.py:1216
-msgid ""
-"Pushbullet notification succeeded. Check your device to make sure it "
-"worked"
-msgstr ""
-"Pushbullet oznámenie odoslané. Skontrolujte svoje zariadenie aby ste sa "
-"presvedčili, že to fungovalo"
+msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
+msgstr "Pushbullet oznámenie odoslané. Skontrolujte svoje zariadenie aby ste sa presvedčili, že to fungovalo"
 
-#: sickbeard/webserve.py:1218 sickbeard/webserve.py:1228
-#: sickbeard/webserve.py:1237
+#: sickbeard/webserve.py:1218 sickbeard/webserve.py:1228 sickbeard/webserve.py:1237
 msgid "Error sending Pushbullet notification"
 msgstr "Chyba pri odosielaní oznámení Pushbullet"
 
-#: gui/slick/views/displayShow.mako:435
-#: gui/slick/views/inc_home_showList.mako:178 gui/slick/views/manage.mako:49
-#: sickbeard/webserve.py:1254
+#: gui/slick/views/displayShow.mako:435 gui/slick/views/inc_home_showList.mako:178
+#: gui/slick/views/manage.mako:49 sickbeard/webserve.py:1254
 msgid "Status"
 msgstr "Stav"
 
@@ -805,9 +765,7 @@ msgid "Update Failed"
 msgstr "Aktualizácia zlyhala"
 
 #: sickbeard/webserve.py:1307
-msgid ""
-"Update wasn't successful, not restarting. Check your log for more "
-"information."
+msgid "Update wasn't successful, not restarting. Check your log for more information."
 msgstr ""
 
 #: sickbeard/webserve.py:1335
@@ -822,8 +780,8 @@ msgstr "Vybraná vetva je použitá"
 msgid "Invalid show ID: {show}"
 msgstr "Neplatné ID relácie: {show}"
 
-#: sickbeard/webserve.py:1369 sickbeard/webserve.py:1924
-#: sickbeard/webserve.py:2061 sickbeard/webserve.py:2097
+#: sickbeard/webserve.py:1369 sickbeard/webserve.py:1924 sickbeard/webserve.py:2061
+#: sickbeard/webserve.py:2097
 msgid "Show not in show list"
 msgstr "Relácia nie je v zozname relácií"
 
@@ -834,9 +792,7 @@ msgid "Edit"
 msgstr "Upraviť"
 
 #: sickbeard/webserve.py:1396
-msgid ""
-"This show is in the process of being downloaded - the info below is "
-"incomplete."
+msgid "This show is in the process of being downloaded - the info below is incomplete."
 msgstr ""
 
 #: sickbeard/webserve.py:1399
@@ -902,8 +858,7 @@ msgstr "Skryť špeciály"
 msgid "Show specials"
 msgstr "Zobraziť špeciály"
 
-#: sickbeard/webserve.py:1440 sickbeard/webserve.py:2087
-#: sickbeard/webserve.py:2088
+#: sickbeard/webserve.py:1440 sickbeard/webserve.py:2087 sickbeard/webserve.py:2088
 msgid "Preview Rename"
 msgstr "Ukážka premenovania"
 
@@ -915,13 +870,11 @@ msgstr "Stiahnuť titulky"
 msgid "No scene exceptions"
 msgstr "Žiadne \"scene exceptions\""
 
-#: sickbeard/webserve.py:1550 sickbeard/webserve.py:1817
-#: sickbeard/webserve.py:1838
+#: sickbeard/webserve.py:1550 sickbeard/webserve.py:1817 sickbeard/webserve.py:1838
 msgid "Invalid show ID"
 msgstr "Neplatné ID relácie"
 
-#: sickbeard/webserve.py:1557 sickbeard/webserve.py:1822
-#: sickbeard/webserve.py:1843
+#: sickbeard/webserve.py:1557 sickbeard/webserve.py:1822 sickbeard/webserve.py:1843
 msgid "Unable to find the specified show"
 msgstr "Nepodarilo sa nájsť zadanú reláciu"
 
@@ -1007,9 +960,7 @@ msgstr "Nemožno kontaktovať jedného alebo viacerých KODI host(s)): {kodi_hos
 
 #: sickbeard/webserve.py:1878
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
-msgstr ""
-"Príkaz na aktualizáciu knižnice bol zaslaný do Plex Media Server: "
-"{plex_server}"
+msgstr "Príkaz na aktualizáciu knižnice bol zaslaný do Plex Media Server: {plex_server}"
 
 #: sickbeard/webserve.py:1881
 msgid "Unable to contact Plex Media Server host: {plex_server}"
@@ -1032,12 +983,8 @@ msgid "Invalid status"
 msgstr "Neplatný status"
 
 #: sickbeard/webserve.py:2013
-msgid ""
-"Backlog was automatically started for the following seasons of "
-"<b>{show_name}</b>"
-msgstr ""
-"Vyhľadávanie chýbajúcich bolo automaticky začaté pre nasledovné sezóny "
-"seriálu <b>{show_name}</b>"
+msgid "Backlog was automatically started for the following seasons of <b>{show_name}</b>"
+msgstr "Vyhľadávanie chýbajúcich bolo automaticky začaté pre nasledovné sezóny seriálu <b>{show_name}</b>"
 
 #: gui/slick/views/displayShow.mako:73 gui/slick/views/displayShow.mako:78
 #: gui/slick/views/displayShow.mako:403 sickbeard/webserve.py:2020
@@ -1050,12 +997,8 @@ msgid "Backlog started"
 msgstr "Vyhľadávanie chýbajúcich začalo"
 
 #: sickbeard/webserve.py:2032
-msgid ""
-"Retrying Search was automatically started for the following season of "
-"<b>{show_name}</b>"
-msgstr ""
-"Opakované hľadanie bolo automaticky začaté pre nasledovnú sezónu seriálu "
-"<b>{show_name}</b>"
+msgid "Retrying Search was automatically started for the following season of <b>{show_name}</b>"
+msgstr "Opakované hľadanie bolo automaticky začaté pre nasledovnú sezónu seriálu <b>{show_name}</b>"
 
 #: sickbeard/webserve.py:2046
 msgid "Retry Search started"
@@ -1080,29 +1023,23 @@ msgstr "Žiadne titulky neboli stiahnuté"
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:231
 #: sickbeard/webserve.py:2422
 msgid "IRC"
-msgstr "IRC"
+msgstr ""
 
 #: sickbeard/webserve.py:2436
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
-msgstr ""
-"Nepodarilo sa načítať novinky z repo. [Kliknite tu pre "
-"news.md]({news_url})"
+msgstr "Nepodarilo sa načítať novinky z repo. [Kliknite tu pre news.md]({news_url})"
 
 #: sickbeard/webserve.py:2443 sickbeard/webserve.py:2464
 msgid "The was a problem connecting to github, please refresh and try again"
 msgstr "Problém s pripojením na github, prosím obnoviť a skúste to znova"
 
 #: sickbeard/webserve.py:2459
-msgid ""
-"Could not load changes from the repo. [Click here for "
-"CHANGES.md]({changes_url})"
-msgstr ""
-"Nepodarilo sa načítať zmeny z repo. [Kliknite tu pre "
-"CHANGES.md]({changes_url})"
+msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
+msgstr "Nepodarilo sa načítať zmeny z repo. [Kliknite tu pre CHANGES.md]({changes_url})"
 
 #: gui/slick/views/layouts/main.mako:232 sickbeard/webserve.py:2466
 msgid "Changelog"
-msgstr "Changelog"
+msgstr ""
 
 #: gui/slick/views/layouts/main.mako:207 sickbeard/webserve.py:2477
 #: sickbeard/webserve.py:3870 sickbeard/webserve.py:4368
@@ -1163,12 +1100,9 @@ msgstr "Existujúci seriál"
 
 #: sickbeard/webserve.py:2900
 msgid "No root directories setup, please go back and add one."
-msgstr ""
-"Neboli nastavené koreňové priečinky, prosím vráťte sa späť a jeden "
-"pridajte."
+msgstr "Neboli nastavené koreňové priečinky, prosím vráťte sa späť a jeden pridajte."
 
-#: sickbeard/webserve.py:2906 sickbeard/webserve.py:2990
-#: sickbeard/webserve.py:3000
+#: sickbeard/webserve.py:2906 sickbeard/webserve.py:2990 sickbeard/webserve.py:3000
 msgid "Unable to add show"
 msgstr "Nepodarilo sa pridať seriál"
 
@@ -1181,18 +1115,12 @@ msgid "Adding the specified show {show_name}"
 msgstr "Pridávam vybraný seriál {show_name}"
 
 #: sickbeard/webserve.py:2957
-msgid ""
-"Missing params, no Indexer ID or folder: {show_to_add} and "
-"{root_dir}/{show_path}"
-msgstr ""
-"Chýbajúce parametre, žiadne index ID alebo priečinok: {show_to_add} a "
-"{root_dir}/{show_path}"
+msgid "Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}"
+msgstr "Chýbajúce parametre, žiadne index ID alebo priečinok: {show_to_add} a {root_dir}/{show_path}"
 
 #: sickbeard/webserve.py:2966
 msgid "Unknown error. Unable to add show due to problem with show selection."
-msgstr ""
-"Neznáma chyba. Nie je možné pridať seriál kvôli problému s výberom "
-"seriálu."
+msgstr "Neznáma chyba. Nie je možné pridať seriál kvôli problému s výberom seriálu."
 
 #: sickbeard/webserve.py:2990
 msgid "Folder {show_dir} exists already"
@@ -1218,8 +1146,8 @@ msgstr "Automaticky pridané {num_shows} na základe existujúcich súborov meta
 msgid "Mass Update"
 msgstr "Hromadná aktualizácia"
 
-#: sickbeard/webserve.py:3167 sickbeard/webserve.py:3194
-#: sickbeard/webserve.py:3270 sickbeard/webserve.py:3271
+#: sickbeard/webserve.py:3167 sickbeard/webserve.py:3194 sickbeard/webserve.py:3270
+#: sickbeard/webserve.py:3271
 msgid "Episode Overview"
 msgstr "Prehľad epizódy"
 
@@ -1348,12 +1276,11 @@ msgstr "Oznámenia"
 
 #: gui/slick/views/displayShow.mako:284 gui/slick/views/editShow.mako:181
 #: gui/slick/views/home.mako:35 gui/slick/views/inc_addShowOptions.mako:79
-#: gui/slick/views/inc_home_showList.mako:183
-#: gui/slick/views/layouts/main.mako:209 gui/slick/views/manage.mako:44
-#: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3872
-#: sickbeard/webserve.py:5205
+#: gui/slick/views/inc_home_showList.mako:183 gui/slick/views/layouts/main.mako:209
+#: gui/slick/views/manage.mako:44 gui/slick/views/manage_massEdit.mako:202
+#: sickbeard/webserve.py:3872 sickbeard/webserve.py:5205
 msgid "Anime"
-msgstr "Anime"
+msgstr ""
 
 #: sickbeard/webserve.py:3912 sickbeard/webserve.py:3913
 msgid "SickChill Configuration"
@@ -1397,24 +1324,19 @@ msgstr "Nedá sa vytvoriť priečinok {directory}, priečinok logu nebol zmenen�
 
 #: sickbeard/webserve.py:4125
 msgid "Unable to create directory {directory}, https cert directory not changed."
-msgstr ""
-"Nedá sa vytvoriť priečinok {directory}, priečinok pre https certifikát "
-"nebol zmenený."
+msgstr "Nedá sa vytvoriť priečinok {directory}, priečinok pre https certifikát nebol zmenený."
 
 #: sickbeard/webserve.py:4129
 msgid "Unable to create directory {directory}, https key directory not changed."
-msgstr ""
-"Nedá sa vytvoriť priečinok {directory}, priečinok pre https kľúč nebol "
-"zmenený."
+msgstr "Nedá sa vytvoriť priečinok {directory}, priečinok pre https kľúč nebol zmenený."
 
-#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4350
-#: sickbeard/webserve.py:4483 sickbeard/webserve.py:5116
+#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4350 sickbeard/webserve.py:4483
+#: sickbeard/webserve.py:5116
 msgid "Error(s) Saving Configuration"
 msgstr "Chyba pri ukladaní nastavení"
 
-#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4353
-#: sickbeard/webserve.py:4485 sickbeard/webserve.py:4839
-#: sickbeard/webserve.py:5119 sickbeard/webserve.py:5189
+#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4353 sickbeard/webserve.py:4485
+#: sickbeard/webserve.py:4839 sickbeard/webserve.py:5119 sickbeard/webserve.py:5189
 #: sickbeard/webserve.py:5219
 msgid "Configuration Saved"
 msgstr "Nastavenia uložené"
@@ -1436,18 +1358,12 @@ msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "Rozbaľovanie nepodporované, vypínam nastavenia rozbalenia"
 
 #: sickbeard/webserve.py:4458
-msgid ""
-"You tried saving an invalid normal naming config, not saving your naming "
-"settings"
+msgid "You tried saving an invalid normal naming config, not saving your naming settings"
 msgstr ""
 
 #: sickbeard/webserve.py:4466
-msgid ""
-"You tried saving an invalid anime naming config, not saving your naming "
-"settings"
-msgstr ""
-"Pokúsili ste sa uložiť nesprávne nastavenia pomenovania anime, nastavenia"
-" neboli uložené"
+msgid "You tried saving an invalid anime naming config, not saving your naming settings"
+msgstr "Pokúsili ste sa uložiť nesprávne nastavenia pomenovania anime, nastavenia neboli uložené"
 
 #: sickbeard/webserve.py:4545
 msgid "Config - Providers"
@@ -1518,9 +1434,7 @@ msgid "backlog searches"
 msgstr ""
 
 #: sickbeard/providers/__init__.py:111
-msgid ""
-"No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a "
-"href=\"{web_root}/config/providers/\">check your settings</a>."
+msgid "No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href=\"{web_root}/config/providers/\">check your settings</a>."
 msgstr ""
 
 #: gui/slick/js/browser.js:6
@@ -1560,8 +1474,7 @@ msgstr ""
 #: gui/slick/js/core.js:630 gui/slick/js/core.js:650 gui/slick/js/core.js:695
 #: gui/slick/js/core.js:774 gui/slick/js/core.js:834 gui/slick/js/core.js:854
 #: gui/slick/js/core.js:884 gui/slick/js/core.js:914 gui/slick/js/core.js:974
-#: gui/slick/js/core.js:1048 gui/slick/js/core.js:1068
-#: gui/slick/js/core.js:1087
+#: gui/slick/js/core.js:1048 gui/slick/js/core.js:1068 gui/slick/js/core.js:1087
 msgid "Please fill out the necessary fields above."
 msgstr ""
 
@@ -1593,20 +1506,18 @@ msgstr ""
 msgid "Select Unpack Directory"
 msgstr ""
 
-#: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390
-#: gui/slick/js/core.js:1439 gui/slick/js/core.js:1505
+#: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390 gui/slick/js/core.js:1439
+#: gui/slick/js/core.js:1505
 msgid "This pattern is invalid."
 msgstr "Tento vzor je neplatný."
 
-#: gui/slick/js/core.js:1349 gui/slick/js/core.js:1398
-#: gui/slick/js/core.js:1447 gui/slick/js/core.js:1513
-msgid ""
-"This pattern would be invalid without the folders, using it will force "
-"\"Season Folders\" on for all shows."
+#: gui/slick/js/core.js:1349 gui/slick/js/core.js:1398 gui/slick/js/core.js:1447
+#: gui/slick/js/core.js:1513
+msgid "This pattern would be invalid without the folders, using it will force \"Season Folders\" on for all shows."
 msgstr ""
 
-#: gui/slick/js/core.js:1357 gui/slick/js/core.js:1406
-#: gui/slick/js/core.js:1455 gui/slick/js/core.js:1521
+#: gui/slick/js/core.js:1357 gui/slick/js/core.js:1406 gui/slick/js/core.js:1455
+#: gui/slick/js/core.js:1521
 msgid "This pattern is valid."
 msgstr "Tento vzor je platný."
 
@@ -1651,9 +1562,7 @@ msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
 msgstr ""
 
 #: gui/slick/js/core.js:1923
-msgid ""
-"URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
-"https://localhost/rutorrent/plugins/httprpc/action.php)"
+msgid "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or https://localhost/rutorrent/plugins/httprpc/action.php)"
 msgstr ""
 
 #: gui/slick/js/core.js:1934
@@ -1741,12 +1650,9 @@ msgid "You have reached this page by accident, please check the url."
 msgstr "Na túto stránku ste sa dostali omylom, skontrolujte správnosť url."
 
 #: gui/slick/views/500.mako:6
-msgid ""
-"A mako error has occured.<br>\n"
-"            If this happened during an update a simple page refresh may "
-"be the solution.<br>\n"
-"            Mako errors that happen during updates may be a one time "
-"error if there were significant ui changes."
+msgid "A mako error has occured.<br>\n"
+"            If this happened during an update a simple page refresh may be the solution.<br>\n"
+"            Mako errors that happen during updates may be a one time error if there were significant ui changes."
 msgstr ""
 
 #: gui/slick/views/500.mako:12
@@ -1758,51 +1664,32 @@ msgid "Add New Show"
 msgstr "Pridať nový seriál"
 
 #: gui/slick/views/addShows.mako:19
-msgid ""
-"For shows that you haven't downloaded yet, this option finds a show on "
-"theTVDB.com, creates a directory for it's episodes, and adds it to "
-"SickChill."
-msgstr ""
-"Pre seriály, ktoré ste ešte nesťahovali, táto možnosť nájde seriál na "
-"theTVDB.com, vytvorí adresár pre epizódy a pridá ho do SickChill."
+msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for it's episodes, and adds it to SickChill."
+msgstr "Pre seriály, ktoré ste ešte nesťahovali, táto možnosť nájde seriál na theTVDB.com, vytvorí adresár pre epizódy a pridá ho do SickChill."
 
 #: gui/slick/views/addShows.mako:30
 msgid "Add From Trakt Lists"
 msgstr "Pridať z Trakt zoznamov"
 
 #: gui/slick/views/addShows.mako:31
-msgid ""
-"For shows that you haven't downloaded yet, this option lets you choose "
-"from a show from one of the Trakt lists to add to SickChill."
-msgstr ""
-"Pre seriály, ktoré ste ešte nesťahovali, táto možnosť umožní pridať "
-"seriál do SickChill z Trakt zoznamov."
+msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill."
+msgstr "Pre seriály, ktoré ste ešte nesťahovali, táto možnosť umožní pridať seriál do SickChill z Trakt zoznamov."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add From IMDB's Popular Shows"
 msgstr "Pridať z populárnych seriálov IMDB"
 
 #: gui/slick/views/addShows.mako:43
-msgid ""
-"View IMDB's list of the most popular shows. This feature uses IMDB's "
-"MOVIEMeter algorithm to identify popular TV Series."
-msgstr ""
-"Zobraziť IMDB zoznam najpopulárnejších seriálov. Táto funkcia používa "
-"IMDB MOVIEMeter na identifikáciu populárnych seriálov."
+msgid "View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series."
+msgstr "Zobraziť IMDB zoznam najpopulárnejších seriálov. Táto funkcia používa IMDB MOVIEMeter na identifikáciu populárnych seriálov."
 
 #: gui/slick/views/addShows.mako:54
 msgid "Add Existing Shows"
 msgstr "Pridať existujúce seriály"
 
 #: gui/slick/views/addShows.mako:55
-msgid ""
-"Use this option to add shows that already have a folder created on your "
-"hard drive. SickChill will scan your existing metadata/episodes and add "
-"the show accordingly."
-msgstr ""
-"Túto možnosť použite na pridanie seriálov, ktoré už majú vytvorený "
-"priečinok na disku. SickChill preskenuje existujúce metadáta/epizódy a "
-"podľa toho pridá seriály."
+msgid "Use this option to add shows that already have a folder created on your hard drive. SickChill will scan your existing metadata/episodes and add the show accordingly."
+msgstr "Túto možnosť použite na pridanie seriálov, ktoré už majú vytvorený priečinok na disku. SickChill preskenuje existujúce metadáta/epizódy a podľa toho pridá seriály."
 
 #: gui/slick/views/addShows_addExistingShow.mako:21
 msgid "Add Existing Show"
@@ -1819,11 +1706,7 @@ msgid "Customize Options"
 msgstr "Prispôsobenie možností"
 
 #: gui/slick/views/addShows_addExistingShow.mako:43
-msgid ""
-"SickChill can add existing shows, using the current options, by using "
-"locally stored NFO/XML metadata to eliminate user interaction. If you "
-"would rather have SickChill prompt you to customize each show, then use "
-"the checkbox below."
+msgid "SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below."
 msgstr ""
 
 #: gui/slick/views/addShows_addExistingShow.mako:49
@@ -1831,14 +1714,11 @@ msgid "Prompt me to set settings for each show"
 msgstr "Vyzvať na úpravu parametrov pre každý seriál"
 
 #: gui/slick/views/addShows_addExistingShow.mako:55
-msgid ""
-"Displaying folders within these directories which aren't already added to"
-" SickChill"
+msgid "Displaying folders within these directories which aren't already added to SickChill"
 msgstr "Zoznam priečinkov v adresároch, ktoré ešte neboli pridané do SickChill"
 
-#: gui/slick/views/addShows_addExistingShow.mako:71
-#: gui/slick/views/manage.mako:16 gui/slick/views/manage.mako:116
-#: gui/slick/views/manage_failedDownloads.mako:78
+#: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:16
+#: gui/slick/views/manage.mako:116 gui/slick/views/manage_failedDownloads.mako:78
 msgid "Submit"
 msgstr "Potvrdiť"
 
@@ -1860,9 +1740,7 @@ msgid "Metadata language"
 msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:65
-msgid ""
-"This will only affect the language of the retrieved metadata file "
-"contents and episode filenames."
+msgid "This will only affect the language of the retrieved metadata file contents and episode filenames."
 msgstr "Toto ovplyvní iba jazyk popisu obsahu a názvy súborov epizód."
 
 #: gui/slick/views/addShows_newShow.mako:67
@@ -1874,14 +1752,12 @@ msgstr "Toto <b>NEUMOŽNÍ</b> sťahovanie neanglických TV epizód!"
 msgid "Indexer"
 msgstr ""
 
-#: gui/slick/views/addShows_newShow.mako:79
-#: gui/slick/views/config_general.mako:193
+#: gui/slick/views/addShows_newShow.mako:79 gui/slick/views/config_general.mako:193
 msgid "All Indexers"
 msgstr "Všetky indexové weby"
 
-#: gui/slick/views/addShows_newShow.mako:91
-#: gui/slick/views/displayShow.mako:436 gui/slick/views/schedule.mako:115
-#: gui/slick/views/viewlogs.mako:41
+#: gui/slick/views/addShows_newShow.mako:91 gui/slick/views/displayShow.mako:436
+#: gui/slick/views/schedule.mako:115 gui/slick/views/viewlogs.mako:41
 msgid "Search"
 msgstr "Hľadať"
 
@@ -2027,7 +1903,7 @@ msgstr "Profil"
 
 #: gui/slick/views/apiBuilder.mako:107
 msgid "JSONP"
-msgstr "JSONP"
+msgstr ""
 
 #: gui/slick/views/apiBuilder.mako:112
 msgid "Back to SickChill"
@@ -2066,8 +1942,7 @@ msgid "Clear"
 msgstr "Vyčistiť"
 
 #: gui/slick/views/apiBuilder.mako:248 gui/slick/views/apiBuilder.mako:277
-#: gui/slick/views/displayShow.mako:620
-#: gui/slick/views/manage_massEdit.mako:150
+#: gui/slick/views/displayShow.mako:620 gui/slick/views/manage_massEdit.mako:150
 #: gui/slick/views/manage_massEdit.mako:164
 #: gui/slick/views/manage_massEdit.mako:193
 #: gui/slick/views/manage_massEdit.mako:207
@@ -2078,8 +1953,7 @@ msgid "Yes"
 msgstr "Áno"
 
 #: gui/slick/views/apiBuilder.mako:250 gui/slick/views/apiBuilder.mako:276
-#: gui/slick/views/displayShow.mako:619
-#: gui/slick/views/manage_massEdit.mako:151
+#: gui/slick/views/displayShow.mako:619 gui/slick/views/manage_massEdit.mako:151
 #: gui/slick/views/manage_massEdit.mako:165
 #: gui/slick/views/manage_massEdit.mako:194
 #: gui/slick/views/manage_massEdit.mako:208
@@ -2107,7 +1981,7 @@ msgstr "Verzia SSL"
 
 #: gui/slick/views/config.mako:81
 msgid "OS"
-msgstr "OS"
+msgstr ""
 
 #: gui/slick/views/config.mako:90
 msgid "Locale"
@@ -2151,7 +2025,7 @@ msgstr "Web stránka"
 
 #: gui/slick/views/config.mako:190
 msgid "Wiki"
-msgstr "Wiki"
+msgstr ""
 
 #: gui/slick/views/config.mako:201
 msgid "Source"
@@ -2159,7 +2033,7 @@ msgstr "Zdroj"
 
 #: gui/slick/views/config.mako:212
 msgid "IRC Chat"
-msgstr "IRC Chat"
+msgstr ""
 
 #: gui/slick/views/config_anime.mako:9
 msgid "AnimeDB Settings"
@@ -2170,12 +2044,8 @@ msgid "Look &amp; Feel"
 msgstr "Vzhľad a správanie"
 
 #: gui/slick/views/config_anime.mako:24
-msgid ""
-"AniDB is non-profit database of anime information that is freely open to "
-"the public"
-msgstr ""
-"AniDB je nezisková databáza anime dát, ktoré sú voľne prístupné pre "
-"verejnosť"
+msgid "AniDB is non-profit database of anime information that is freely open to the public"
+msgstr "AniDB je nezisková databáza anime dát, ktoré sú voľne prístupné pre verejnosť"
 
 #: gui/slick/views/config_anime.mako:32
 #: gui/slick/views/config_notifications.mako:34
@@ -2230,7 +2100,7 @@ msgstr "heslo k AniDB účtu"
 
 #: gui/slick/views/config_anime.mako:87
 msgid "AniDB MyList"
-msgstr "AniDB MyList"
+msgstr ""
 
 #: gui/slick/views/config_anime.mako:92
 msgid "do you want to add the PostProcessed episodes to the MyList?"
@@ -2282,8 +2152,7 @@ msgstr "Obnova vašej hlavnej databázy a nastavení."
 msgid "Select the backup file you wish to restore"
 msgstr "Vyberte záložný súbor, ktorý chcete obnoviť"
 
-#: gui/slick/views/config_general.mako:17
-#: gui/slick/views/config_general.mako:31
+#: gui/slick/views/config_general.mako:17 gui/slick/views/config_general.mako:31
 msgid "Misc"
 msgstr "Rôzne"
 
@@ -2291,16 +2160,14 @@ msgstr "Rôzne"
 msgid "Interface"
 msgstr "Rozhranie"
 
-#: gui/slick/views/config_general.mako:19
-#: gui/slick/views/config_general.mako:828 gui/slick/views/editShow.mako:267
+#: gui/slick/views/config_general.mako:19 gui/slick/views/config_general.mako:828
+#: gui/slick/views/editShow.mako:267
 msgid "Advanced Settings"
 msgstr "Pokročilé Nastavenia"
 
 #: gui/slick/views/config_general.mako:32
 msgid "Startup options. Indexer options. Log and show file locations."
-msgstr ""
-"Možnosti spustenia. Možnosti indexovania. Umiestnenie súborov denníka a "
-"seriálov."
+msgstr "Možnosti spustenia. Možnosti indexovania. Umiestnenie súborov denníka a seriálov."
 
 #: gui/slick/views/config_general.mako:33
 msgid "Some options may require a manual restart to take effect."
@@ -2340,15 +2207,11 @@ msgid "Choose hour to update shows"
 msgstr "Zvoľte v ktorú hodinu aktualizovať seriály"
 
 #: gui/slick/views/config_general.mako:104
-msgid ""
-"with information such as next air dates, show ended, etc. Use 15 for 3pm,"
-" 4 for 4am etc."
+msgid "with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc."
 msgstr "údaje o vysielacích časoch, ukončení seriálu, atď."
 
-#: gui/slick/views/config_general.mako:109
-#: gui/slick/views/config_general.mako:568
-#: gui/slick/views/config_general.mako:598
-#: gui/slick/views/config_general.mako:1050
+#: gui/slick/views/config_general.mako:109 gui/slick/views/config_general.mako:568
+#: gui/slick/views/config_general.mako:598 gui/slick/views/config_general.mako:1050
 #: gui/slick/views/config_general.mako:1124
 #: gui/slick/views/config_notifications.mako:470
 #: gui/slick/views/config_notifications.mako:836
@@ -2363,14 +2226,10 @@ msgstr "údaje o vysielacích časoch, ukončení seriálu, atď."
 #: gui/slick/views/config_postProcessing.mako:381
 #: gui/slick/views/config_postProcessing.mako:402
 #: gui/slick/views/config_postProcessing.mako:522
-#: gui/slick/views/config_search.mako:277
-#: gui/slick/views/config_search.mako:546
-#: gui/slick/views/config_search.mako:808
-#: gui/slick/views/config_search.mako:1035
-#: gui/slick/views/config_search.mako:1039
-#: gui/slick/views/config_search.mako:1062
-#: gui/slick/views/config_search.mako:1066
-#: gui/slick/views/config_search.mako:1092
+#: gui/slick/views/config_search.mako:277 gui/slick/views/config_search.mako:546
+#: gui/slick/views/config_search.mako:808 gui/slick/views/config_search.mako:1035
+#: gui/slick/views/config_search.mako:1039 gui/slick/views/config_search.mako:1062
+#: gui/slick/views/config_search.mako:1066 gui/slick/views/config_search.mako:1092
 #: gui/slick/views/config_subtitles.mako:92
 #: gui/slick/views/config_subtitles.mako:180 gui/slick/views/editShow.mako:293
 #: gui/slick/views/editShow.mako:320
@@ -2394,9 +2253,7 @@ msgid "on scheduled deletes of the oldest log files"
 msgstr "pri plánovanom mazaní starých súborov denníka"
 
 #: gui/slick/views/config_general.mako:134
-msgid ""
-"selected actions use trash (recycle bin) instead of the default permanent"
-" delete"
+msgid "selected actions use trash (recycle bin) instead of the default permanent delete"
 msgstr "pri vybraných akciách sa súbory presunú do Kôša namiesto trvalého zmazania"
 
 #: gui/slick/views/config_general.mako:142
@@ -2408,12 +2265,8 @@ msgid "Number of Log files saved"
 msgstr "Počet posledných súborov denníka"
 
 #: gui/slick/views/config_general.mako:161
-msgid ""
-"number of log files saved when rotating logs (default: 5) (REQUIRES "
-"RESTART)"
-msgstr ""
-"počet súborov denníka ktoré budú na disku pri vytváraní nového súboru "
-"(predvolené: 5) (POŽADUJE REŠTART)"
+msgid "number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)"
+msgstr "počet súborov denníka ktoré budú na disku pri vytváraní nového súboru (predvolené: 5) (POŽADUJE REŠTART)"
 
 #: gui/slick/views/config_general.mako:169
 msgid "Size of Log files saved"
@@ -2447,10 +2300,8 @@ msgstr ""
 msgid "where the files of shows are located"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:246
-#: gui/slick/views/config_general.mako:317
-#: gui/slick/views/config_general.mako:624
-#: gui/slick/views/config_general.mako:812
+#: gui/slick/views/config_general.mako:246 gui/slick/views/config_general.mako:317
+#: gui/slick/views/config_general.mako:624 gui/slick/views/config_general.mako:812
 #: gui/slick/views/config_general.mako:1063
 #: gui/slick/views/config_general.mako:1250
 #: gui/slick/views/config_notifications.mako:185
@@ -2479,8 +2330,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:3123
 #: gui/slick/views/config_notifications.mako:3200
 #: gui/slick/views/config_notifications.mako:3326
-#: gui/slick/views/config_search.mako:825
-#: gui/slick/views/config_search.mako:902
+#: gui/slick/views/config_search.mako:825 gui/slick/views/config_search.mako:902
 #: gui/slick/views/config_search.mako:1161 gui/slick/views/editShow.mako:398
 #: gui/slick/views/layouts/config.mako:41
 msgid "Save Changes"
@@ -2495,9 +2345,7 @@ msgid "Check software updates"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:273
-msgid ""
-"and display notifications when updates are available. Checks are run on "
-"startup and at the frequency set below*"
+msgid "and display notifications when updates are available. Checks are run on startup and at the frequency set below*"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:279
@@ -2505,9 +2353,7 @@ msgid "Automatically update"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:283
-msgid ""
-"fetch and install software updates. Updates are run on startup and in the"
-" background at the frequency set below*"
+msgid "fetch and install software updates. Updates are run on startup and in the background at the frequency set below*"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:289
@@ -2542,8 +2388,7 @@ msgstr "Jazyk rozhrania"
 msgid "System Language"
 msgstr "Jazyk systému"
 
-#: gui/slick/views/config_general.mako:356
-#: gui/slick/views/config_general.mako:377
+#: gui/slick/views/config_general.mako:356 gui/slick/views/config_general.mako:377
 msgid "for appearance to take effect, save then refresh your browser"
 msgstr ""
 
@@ -2579,8 +2424,7 @@ msgstr ""
 msgid "Show fanart in the background"
 msgstr "Zobraziť fanart v pozadí"
 
-#: gui/slick/views/config_general.mako:420
-#: gui/slick/views/config_general.mako:480
+#: gui/slick/views/config_general.mako:420 gui/slick/views/config_general.mako:480
 msgid "on the show summary page"
 msgstr "Na hlavnej stránke seriálu"
 
@@ -2633,9 +2477,7 @@ msgid "Display fuzzy dates"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:519
-msgid ""
-"move absolute dates into tooltips and display e.g. \"Last Thu\", \"On "
-"Tue\""
+msgid "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On Tue\""
 msgstr ""
 
 #: gui/slick/views/config_general.mako:525
@@ -2670,23 +2512,18 @@ msgstr ""
 msgid "Local"
 msgstr "Miestne"
 
-#: gui/slick/views/config_general.mako:588
-#: gui/slick/views/inc_home_menu.mako:48
+#: gui/slick/views/config_general.mako:588 gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:173 gui/slick/views/manage.mako:40
 #: gui/slick/views/schedule.mako:57 gui/slick/views/schedule.mako:111
 msgid "Network"
 msgstr "Sieť"
 
 #: gui/slick/views/config_general.mako:593
-msgid ""
-"display dates and times in either your timezone or the shows network "
-"timezone"
+msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:598
-msgid ""
-"use local timezone to start searching for episodes minutes after show "
-"ends (depends on your dailysearch frequency)"
+msgid "use local timezone to start searching for episodes minutes after show ends (depends on your dailysearch frequency)"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:606
@@ -2702,9 +2539,7 @@ msgid "Web Interface"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:640
-msgid ""
-"it is recommended that you enable a username and password to secure "
-"SickChill from being tampered with remotely."
+msgid "it is recommended that you enable a username and password to secure SickChill from being tampered with remotely."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:641
@@ -2761,7 +2596,7 @@ msgstr "prázdne = bez overenia"
 
 #: gui/slick/views/config_general.mako:721
 msgid "HTTP port"
-msgstr "HTTP port"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:731
 msgid "web port to browse and access SickChill (default:8081)"
@@ -2825,9 +2660,7 @@ msgstr "Obmedzovanie CPU"
 
 #: gui/slick/views/config_general.mako:850
 msgid "Normal (default). High is lower and Low is higher CPU use"
-msgstr ""
-"Normálne (predvolené). Vysoké = nižšie zaťaženie a Nízke = vyššie "
-"zaťaženie CPU"
+msgstr "Normálne (predvolené). Vysoké = nižšie zaťaženie a Nízke = vyššie zaťaženie CPU"
 
 #: gui/slick/views/config_general.mako:858
 msgid "Anonymous redirect"
@@ -2851,9 +2684,7 @@ msgstr "Overovať SSL Certifikáty"
 
 #: gui/slick/views/config_general.mako:890
 msgid "verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
-msgstr ""
-"overovať SSL Certifikáty (Vypnite pri zariadeniach kde SSL nie je "
-"inštalované správne (napr. QNAP))"
+msgstr "overovať SSL Certifikáty (Vypnite pri zariadeniach kde SSL nie je inštalované správne (napr. QNAP))"
 
 #: gui/slick/views/config_general.mako:896
 msgid "No Restart"
@@ -2864,12 +2695,8 @@ msgid "only shutdown when restarting SR"
 msgstr "pri zvolení možnosti reštartu sa SickChill vypne"
 
 #: gui/slick/views/config_general.mako:907
-msgid ""
-"only select this when you have external software restarting SR "
-"automatically when it stops (like FireDaemon)"
-msgstr ""
-"použite iba v prípade, že používate iný nástroj na automatický reštart "
-"SR, keď sa ukončí (napr. FireDaemon)"
+msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
+msgstr "použite iba v prípade, že používate iný nástroj na automatický reštart SR, keď sa ukončí (napr. FireDaemon)"
 
 #: gui/slick/views/config_general.mako:915
 msgid "Encrypt passwords"
@@ -2919,9 +2746,7 @@ msgstr "Hostiteľ proxy"
 
 #: gui/slick/views/config_general.mako:974
 msgid "blank to disable or proxy to use when connecting to providers"
-msgstr ""
-"zadajte názov proxy servera ktorý sa má použiť pri kontaktovaní zdrojov "
-"alebo nechajte prázdne"
+msgstr "zadajte názov proxy servera ktorý sa má použiť pri kontaktovaní zdrojov alebo nechajte prázdne"
 
 #: gui/slick/views/config_general.mako:980
 msgid "also use global proxy setting for indexers (tvdb, xem, anidb, etc.)"
@@ -2937,18 +2762,14 @@ msgstr "preskočí detekciu odstránených súborov"
 
 #: gui/slick/views/config_general.mako:1000
 msgid "if disabled the episode will be set to the default deleted status"
-msgstr ""
-"ak je vypnuté, stav epizódy bude nastavený na predvolenú hodnotu pre "
-"vymazané"
+msgstr "ak je vypnuté, stav epizódy bude nastavený na predvolenú hodnotu pre vymazané"
 
 #: gui/slick/views/config_general.mako:1008
 msgid "Ignore Broken Symbolic Links"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:1014
-msgid ""
-"If checked, broken symbolic links warnings generated when calculating "
-"show size will be logged as debug"
+msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:1022
@@ -2988,9 +2809,7 @@ msgid "Personal access token"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:1124
-msgid ""
-"You must use a personal access token if you're using \"two-factor "
-"authentication\" on GitHub."
+msgid "You must use a personal access token if you're using \"two-factor authentication\" on GitHub."
 msgstr ""
 
 #: gui/slick/views/config_general.mako:1133
@@ -3048,9 +2867,7 @@ msgid "Git reset"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:1244
-msgid ""
-"removes untracked files and performs a hard reset on git branch "
-"automatically to help resolve update issues"
+msgid "removes untracked files and performs a hard reset on git branch automatically to help resolve update issues"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:10
@@ -3066,10 +2883,7 @@ msgid "Social"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:27
-msgid ""
-"A free and open source cross-platform media center and home entertainment"
-" system software with a 10-foot user interface designed for the living-"
-"room TV."
+msgid "A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:38
@@ -3287,16 +3101,11 @@ msgid "Click below to test."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:202
-msgid ""
-"Experience your media on a visually stunning, easy to use interface on "
-"your Mac connected to your TV. Your media library has never looked this "
-"good!"
+msgid "Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:203
-msgid ""
-"For sending notifications to Plex Home Theater (PHT) clients, use the "
-"KODI notifier with port <b>3005</b>."
+msgid "For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:215
@@ -3324,9 +3133,7 @@ msgid "Plex Media Server IP:Port"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:310
-msgid ""
-"one or more hosts running Plex Media Server<br/>(eg. 192.168.1.1:32400, "
-"192.168.1.2:32400)"
+msgid "one or more hosts running Plex Media Server<br/>(eg. 192.168.1.1:32400, 192.168.1.2:32400)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:318
@@ -3358,9 +3165,7 @@ msgid "Plex Home Theater IP:Port"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:411
-msgid ""
-"one or more hosts running Plex Home Theater<br>(eg. 192.168.1.100:3000, "
-"192.168.1.101:3000)"
+msgid "one or more hosts running Plex Home Theater<br>(eg. 192.168.1.100:3000, 192.168.1.101:3000)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:459
@@ -3372,9 +3177,7 @@ msgid "Test Plex Home Theater"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:470
-msgid ""
-"some Plex Home Theaters <b class=\"boldest\">do not</b> support "
-"notifications e.g. Plexapp for Samsung TVs"
+msgid "some Plex Home Theaters <b class=\"boldest\">do not</b> support notifications e.g. Plexapp for Samsung TVs"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:486
@@ -3406,9 +3209,7 @@ msgid "Networked Media Jukebox"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:556
-msgid ""
-"The Networked Media Jukebox, or NMJ, is the official media jukebox "
-"interface made available for the Popcorn Hour 200-series."
+msgid "The Networked Media Jukebox, or NMJ, is the official media jukebox interface made available for the Popcorn Hour 200-series."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:568
@@ -3454,9 +3255,7 @@ msgid "Networked Media Jukebox v2"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:672
-msgid ""
-"The Networked Media Jukebox, or NMJv2, is the official media jukebox "
-"interface made available for the Popcorn Hour 300 & 400-series."
+msgid "The Networked Media Jukebox, or NMJv2, is the official media jukebox interface made available for the Popcorn Hour 300 & 400-series."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:684
@@ -3508,9 +3307,7 @@ msgid "The Synology DiskStation NAS."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:817
-msgid ""
-"Synology Indexer is the daemon running on the Synology NAS to build its "
-"media database."
+msgid "Synology Indexer is the daemon running on the Synology NAS to build its media database."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:831
@@ -3539,9 +3336,7 @@ msgid "pyTivo"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:937
-msgid ""
-"pyTivo is both an HMO and GoBack server. This notifier will load the "
-"completed downloads to your Tivo."
+msgid "pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:951
@@ -3573,9 +3368,7 @@ msgid "Tivo name"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1012
-msgid ""
-"(Messages &amp; Settings > Account &amp; System Information > System "
-"Information > DVR name)"
+msgid "(Messages &amp; Settings > Account &amp; System Information > System Information > DVR name)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1038
@@ -3607,9 +3400,7 @@ msgid "otherwise Growl <b>requires</b> a password to be used."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1128
-msgid ""
-"Click below to register and test Growl, this is required for Growl "
-"notifications to work."
+msgid "Click below to register and test Growl, this is required for Growl notifications to work."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1133
@@ -3637,10 +3428,7 @@ msgid "Global Prowl API key(s)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1222
-msgid ""
-"Prowl API(s) listed here, separated by commas if applicable, will<br> "
-"receive notifications for <b>all</b> shows. Your Prowl API key is "
-"available at:"
+msgid "Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows. Your Prowl API key is available at:"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1226
@@ -3658,13 +3446,9 @@ msgid "-- Select a Show --"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1252
-msgid ""
-"Configure per-show notifications here by entering Prowl API key(s), "
-"separated by commas, '\n"
-"                                                'after selecting a show "
-"in the drop-down box.   Be sure to activate the 'Save for this show' '\n"
-"                                                'button below after each "
-"entry."
+msgid "Configure per-show notifications here by entering Prowl API key(s), separated by commas, '\n"
+"                                                'after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show' '\n"
+"                                                'button below after each entry."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1260
@@ -3717,10 +3501,7 @@ msgid "Libnotify"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1305
-msgid ""
-"The standard desktop notification API for Linux/*nix systems.  This "
-"notifier will only function if the pynotify module is installed "
-"(Ubuntu/Debian package <a href=\"apt:python-notify\">python-notify</a>)."
+msgid "The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href=\"apt:python-notify\">python-notify</a>)."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1318
@@ -3733,9 +3514,7 @@ msgid "Pushover"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1380
-msgid ""
-"Pushover makes it easy to send real-time notifications to your Android "
-"and iOS devices."
+msgid "Pushover makes it easy to send real-time notifications to your Android and iOS devices."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1393
@@ -3904,10 +3683,7 @@ msgid "Notify My Android"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1668
-msgid ""
-"Notify My Android is a Prowl-like Android App and API that offers an easy"
-" way to send notifications from your application directly to your Android"
-" device."
+msgid "Notify My Android is a Prowl-like Android App and API that offers an easy way to send notifications from your application directly to your Android device."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1681
@@ -3935,9 +3711,7 @@ msgid "Pushalot"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1784
-msgid ""
-"Pushalot is a platform for receiving custom push notifications to "
-"connected devices running Windows Phone or Windows 8."
+msgid "Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1797
@@ -3957,10 +3731,7 @@ msgid "Pushbullet"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1877
-msgid ""
-"Pushbullet is a platform for receiving custom push notifications to "
-"connected devices running Android/iOS and desktop browsers such as "
-"Chrome, Firefox or Opera."
+msgid "Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1890
@@ -3992,9 +3763,7 @@ msgid "Free Mobile"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2011
-msgid ""
-"Free Mobile is a famous French cellular network provider.<br> It provides"
-" to their customer a free SMS API."
+msgid "Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2024
@@ -4072,9 +3841,7 @@ msgid "contact @myidbot on Telegram to get an ID"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2188
-msgid ""
-"Note: Don't forget to talk with your bot at least one time if you get a "
-"403 error."
+msgid "Note: Don't forget to talk with your bot at least one time if you get a 403 error."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2196
@@ -4115,10 +3882,7 @@ msgid "Twilio"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2350
-msgid ""
-"Twilio is a webservice API that allows you to communicate directly with a"
-" mobile number. This notifier will send a text directly to your mobile "
-"device."
+msgid "Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2364
@@ -4151,9 +3915,7 @@ msgid "Your phone number"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2468
-msgid ""
-"phone number that will receive the sms. Please use the format "
-"+1-###-###-####"
+msgid "phone number that will receive the sms. Please use the format +1-###-###-####"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2500
@@ -4161,9 +3923,7 @@ msgid "Twitter"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2502
-msgid ""
-"A social networking and microblogging service, enabling its users to send"
-" and read other users' messages called tweets."
+msgid "A social networking and microblogging service, enabling its users to send and read other users' messages called tweets."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2516
@@ -4199,10 +3959,7 @@ msgid "Request Authorization"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2593
-msgid ""
-"Click the \"Request Authorization\" button.<br> This will open a new page"
-" containing an auth key.<br> <b>note:</b> if nothing happens check your "
-"popup blocker."
+msgid "Click the \"Request Authorization\" button.<br> This will open a new page containing an auth key.<br> <b>note:</b> if nothing happens check your popup blocker."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2599
@@ -4218,10 +3975,7 @@ msgid "Trakt"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2642
-msgid ""
-"Trakt helps keep a record of what TV shows and movies you are watching. "
-"Based on your favorites, Trakt recommends additional shows and movies "
-"you'll enjoy!"
+msgid "Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you'll enjoy!"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2654
@@ -4269,9 +4023,7 @@ msgid "Remove Episodes From Collection"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2757
-msgid ""
-"remove an episode from your Trakt Collection if it is not in your "
-"SickChill Library."
+msgid "remove an episode from your Trakt Collection if it is not in your SickChill Library."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2765
@@ -4279,15 +4031,11 @@ msgid "Sync watchlist"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2771
-msgid ""
-"sync your SickChill show watchlist with your trakt show watchlist (either"
-" Show and Episode)."
+msgid "sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode)."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2776
-msgid ""
-"episode will be added on watch list when wanted or snatched and will be "
-"removed when downloaded "
+msgid "episode will be added on watch list when wanted or snatched and will be removed when downloaded "
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2786
@@ -4347,9 +4095,7 @@ msgid "Trakt blackList name"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2860
-msgid ""
-"name (slug) of list on Trakt for blacklisting show on 'Add Trending Show'"
-" & 'Add Recommended Shows' pages"
+msgid "name (slug) of list on Trakt for blacklisting show on 'Add Trending Show' & 'Add Recommended Shows' pages"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:2889
@@ -4417,9 +4163,7 @@ msgid "Global email list"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3053
-msgid ""
-"email addresses listed here, separated by commas if applicable, will<br> "
-"receive notifications for <b>all</b> shows."
+msgid "email addresses listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3053
@@ -4439,15 +4183,11 @@ msgid "(leave blank for the default SickChill subject)"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3100
-msgid ""
-"configure per-show notifications here by entering email address(es), "
-"separated by commas,"
+msgid "configure per-show notifications here by entering email address(es), separated by commas,"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3101
-msgid ""
-"after selecting a show in the drop-down box.  Be sure to activate the "
-"'Save for this show'"
+msgid "after selecting a show in the drop-down box.  Be sure to activate the 'Save for this show'"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3102
@@ -4459,9 +4199,7 @@ msgid "Slack"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3140
-msgid ""
-"Slack brings all your communication together in one place. It's real-time"
-" messaging, archiving and search for modern teams."
+msgid "Slack brings all your communication together in one place. It's real-time messaging, archiving and search for modern teams."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3154
@@ -4477,9 +4215,7 @@ msgid "Discord"
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3217
-msgid ""
-"All-in-one voice and text chat for gamers that's free, secure, and works "
-"on both your desktop and phone."
+msgid "All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone."
 msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3231
@@ -4538,9 +4274,7 @@ msgid "Settings that dictate how SickChill should process completed downloads."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:42
-msgid ""
-"enable the automatic post processor to scan and process any files in your"
-" Post Processing Dir"
+msgid "enable the automatic post processor to scan and process any files in your Post Processing Dir"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:47
@@ -4556,9 +4290,7 @@ msgid "the folder where your download client puts the completed TV downloads."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:70
-msgid ""
-"please use seperate downloading and completed folders in your download "
-"client if possible."
+msgid "please use seperate downloading and completed folders in your download client if possible."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:78
@@ -4570,9 +4302,7 @@ msgid "what method should be used to put files into the library?"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:98
-msgid ""
-"if you keep seeding torrents after they finish, please avoid the 'move' "
-"processing method to prevent errors."
+msgid "if you keep seeding torrents after they finish, please avoid the 'move' processing method to prevent errors."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:106
@@ -4596,9 +4326,7 @@ msgid "Sync File Extensions"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:144
-msgid ""
-"comma seperated list of extensions or filename globs SickChill ignores "
-"when Post Processing"
+msgid "comma seperated list of extensions or filename globs SickChill ignores when Post Processing"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:152
@@ -4646,9 +4374,7 @@ msgid "Associated file extensions"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:208
-msgid ""
-"comma separated list of associated file extensions SickChill should keep "
-"while post processing."
+msgid "comma separated list of associated file extensions SickChill should keep while post processing."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:213
@@ -4780,9 +4506,7 @@ msgid "follow down symbolic links in download directory?"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:423
-msgid ""
-"<b>EXPERTS ONLY.</b><br>Enable only if you know what <b>circular symbolic"
-" links</b> are,<br>and can <b>verify that you have none</b>."
+msgid "<b>EXPERTS ONLY.</b><br>Enable only if you know what <b>circular symbolic links</b> are,<br>and can <b>verify that you have none</b>."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:433
@@ -4826,9 +4550,7 @@ msgid "Toggle Naming Legend"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:522
-msgid ""
-"don't forget to add quality pattern. Otherwise after post-processing the "
-"episode will have UNKNOWN quality"
+msgid "don't forget to add quality pattern. Otherwise after post-processing the episode will have UNKNOWN quality"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:533
@@ -4866,8 +4588,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:995
 #: gui/slick/views/config_postProcessing.mako:997
 #: gui/slick/views/config_postProcessing.mako:1181
-#: gui/slick/views/config_postProcessing.mako:1183
-#: gui/slick/views/manage.mako:39
+#: gui/slick/views/config_postProcessing.mako:1183 gui/slick/views/manage.mako:39
 msgid "Show Name"
 msgstr ""
 
@@ -4956,9 +4677,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:905
 #: gui/slick/views/config_postProcessing.mako:1090
 #: gui/slick/views/config_postProcessing.mako:1271
-msgid ""
-"SickChill' is used in place of RLSGROUP if it could not be properly "
-"detected"
+msgid "SickChill' is used in place of RLSGROUP if it could not be properly detected"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:680
@@ -5118,10 +4837,7 @@ msgid "don't include the absolute number"
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1396
-msgid ""
-"The data associated to the data. These are files associated to a TV show "
-"in the form of images and text that, when supported, will enhance the "
-"viewing experience."
+msgid "The data associated to the data. These are files associated to a TV show in the form of images and text that, when supported, will enhance the viewing experience."
 msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:1405
@@ -5244,10 +4960,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:221
 #: gui/slick/views/config_providers.mako:334
 #: gui/slick/views/config_providers.mako:694
-msgid ""
-"when searching for complete seasons you can choose to have it look for "
-"season packs only, or choose to have it build a complete season from just"
-" single episodes."
+msgid "when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes."
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:229
@@ -5267,10 +4980,7 @@ msgstr ""
 #: gui/slick/views/config_providers.mako:252
 #: gui/slick/views/config_providers.mako:365
 #: gui/slick/views/config_providers.mako:725
-msgid ""
-"when searching for a complete season depending on search mode you may "
-"return no results, this helps by restarting the search using the opposite"
-" search mode."
+msgid "when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode."
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:379
@@ -5278,9 +4988,7 @@ msgid "Custom URL"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:386
-msgid ""
-"the URL should include the protocol (and port if applicable).  Examples:"
-"  http://192.168.1.4/ or http://localhost:3000/"
+msgid "the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:394
@@ -5305,10 +5013,7 @@ msgid "Cookies"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:493
-msgid ""
-"example: uid=1234;pass=567845439634987<br>note: uid and pass are not your"
-" username/password.<br>use DevTools or Firebug to get these values after "
-"logging in on your browser."
+msgid "example: uid=1234;pass=567845439634987<br>note: uid and pass are not your username/password.<br>use DevTools or Firebug to get these values after logging in on your browser."
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:506
@@ -5320,9 +5025,7 @@ msgid "Seed ratio"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:533
-msgid ""
-"stop transfer when ratio is reached<br>(-1 SickChill default to seed "
-"forever, or leave blank for downloader default)"
+msgid "stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:543
@@ -5362,9 +5065,7 @@ msgid "For Spanish torrents"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:614
-msgid ""
-"ONLY search on this provider if show info is defined as \"Spanish\" "
-"(avoid provider's use for VOS shows)"
+msgid "ONLY search on this provider if show info is defined as \"Spanish\" (avoid provider's use for VOS shows)"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:622
@@ -5419,10 +5120,7 @@ msgid "Newznab search categories"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:846
-msgid ""
-"select your Newznab categories on the left, and click the \"update "
-"categories\" button to use them for searching.) <b>don't forget to to "
-"save the form!"
+msgid "select your Newznab categories on the left, and click the \"update categories\" button to use them for searching.) <b>don't forget to to save the form!"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:851
@@ -5436,9 +5134,8 @@ msgid "Add"
 msgstr ""
 
 #: gui/slick/views/config_providers.mako:863
-#: gui/slick/views/config_providers.mako:960
-#: gui/slick/views/inc_rootDirs.mako:32 gui/slick/views/manage.mako:57
-#: gui/slick/views/manage_massEdit.mako:75
+#: gui/slick/views/config_providers.mako:960 gui/slick/views/inc_rootDirs.mako:32
+#: gui/slick/views/manage.mako:57 gui/slick/views/manage_massEdit.mako:75
 msgid "Delete"
 msgstr ""
 
@@ -5519,17 +5216,14 @@ msgid "Backlog search day(s)"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:86
-msgid ""
-"number of day(s) that the \"Forced Backlog Search\" will cover (e.g. 7 "
-"Days)"
+msgid "number of day(s) that the \"Forced Backlog Search\" will cover (e.g. 7 Days)"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:94
 msgid "Backlog search frequency"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:106
-#: gui/slick/views/config_search.mako:126
+#: gui/slick/views/config_search.mako:106 gui/slick/views/config_search.mako:126
 msgid "time in minutes between searches (min."
 msgstr ""
 
@@ -5550,9 +5244,7 @@ msgid "Ignore words"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:165
-msgid ""
-"results with one or more word from this list will be ignored<br>separate "
-"words with a comma, e.g. \"word1,word2,word3\""
+msgid "results with one or more word from this list will be ignored<br>separate words with a comma, e.g. \"word1,word2,word3\""
 msgstr ""
 
 #: gui/slick/views/config_search.mako:173
@@ -5560,9 +5252,7 @@ msgid "Require words"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:184
-msgid ""
-"results with no word from this list will be ignored<br>separate words "
-"with a comma, e.g. \"word1,word2,word3\""
+msgid "results with no word from this list will be ignored<br>separate words with a comma, e.g. \"word1,word2,word3\""
 msgstr ""
 
 #: gui/slick/views/config_search.mako:192
@@ -5570,9 +5260,7 @@ msgid "Trackers list"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:203
-msgid ""
-"trackers that will be added to magnets without trackers<br>separate "
-"trackers with a comma, e.g. \"tracker1,tracker2,tracker3\""
+msgid "trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. \"tracker1,tracker2,tracker3\""
 msgstr ""
 
 #: gui/slick/views/config_search.mako:211
@@ -5580,12 +5268,9 @@ msgid "Ignore language names in subbed results"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:222
-msgid ""
-"ignore subbed releases based on language names <br>\n"
-"                            Example: \"dk\" will ignore words: dksub, "
-"dksubs, dksubbed, dksubed <br>\n"
-"                            separate languages with a comma, e.g. "
-"\"lang1,lang2,lang3"
+msgid "ignore subbed releases based on language names <br>\n"
+"                            Example: \"dk\" will ignore words: dksub, dksubs, dksubbed, dksubed <br>\n"
+"                            separate languages with a comma, e.g. \"lang1,lang2,lang3"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:232
@@ -5648,12 +5333,9 @@ msgstr ""
 msgid "SABnzbd username"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:366
-#: gui/slick/views/config_search.mako:387
-#: gui/slick/views/config_search.mako:762
-#: gui/slick/views/config_search.mako:783
-#: gui/slick/views/config_search.mako:992
-#: gui/slick/views/config_search.mako:1013
+#: gui/slick/views/config_search.mako:366 gui/slick/views/config_search.mako:387
+#: gui/slick/views/config_search.mako:762 gui/slick/views/config_search.mako:783
+#: gui/slick/views/config_search.mako:992 gui/slick/views/config_search.mako:1013
 msgid "(blank for none)"
 msgstr ""
 
@@ -5709,15 +5391,12 @@ msgstr ""
 msgid "enable to change priority from HIGH to FORCED"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:513
-#: gui/slick/views/config_search.mako:882
+#: gui/slick/views/config_search.mako:513 gui/slick/views/config_search.mako:882
 msgid "Black hole folder location"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:524
-msgid ""
-"<b>.nzb</b> files are stored at this location for external software to "
-"find and use"
+msgid "<b>.nzb</b> files are stored at this location for external software to find and use"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:535
@@ -5816,8 +5495,7 @@ msgstr ""
 msgid "priority for daily snatches (no backlog)"
 msgstr "priorita denných sťahovaní (okrem backlogu)"
 
-#: gui/slick/views/config_search.mako:729
-#: gui/slick/views/config_search.mako:912
+#: gui/slick/views/config_search.mako:729 gui/slick/views/config_search.mako:912
 msgid "Torrent host:port"
 msgstr ""
 
@@ -5825,33 +5503,27 @@ msgstr ""
 msgid "URL to your Synology DSM (e.g. http://localhost:5000/)"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:749
-#: gui/slick/views/config_search.mako:979
+#: gui/slick/views/config_search.mako:749 gui/slick/views/config_search.mako:979
 msgid "Client username"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:770
-#: gui/slick/views/config_search.mako:1000
+#: gui/slick/views/config_search.mako:770 gui/slick/views/config_search.mako:1000
 msgid "Client password"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:791
-#: gui/slick/views/config_search.mako:1075
+#: gui/slick/views/config_search.mako:791 gui/slick/views/config_search.mako:1075
 msgid "Downloaded files location"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:803
-msgid ""
-"where Synology Download Station will save downloaded files (blank for "
-"client default)"
+msgid "where Synology Download Station will save downloaded files (blank for client default)"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:808
 msgid "the destination has to be a shared folder for Synology DS"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:817
-#: gui/slick/views/config_search.mako:818
+#: gui/slick/views/config_search.mako:817 gui/slick/views/config_search.mako:818
 #: gui/slick/views/config_search.mako:1154
 msgid "Click below to test"
 msgstr ""
@@ -5873,9 +5545,7 @@ msgid "Send .torrent files to"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:894
-msgid ""
-"<b>.torrent</b> files are stored at this location for external software "
-"to find and use"
+msgid "<b>.torrent</b> files are stored at this location for external software to find and use"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:924
@@ -5910,15 +5580,12 @@ msgstr ""
 msgid "Add label to torrent"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:1034
-#: gui/slick/views/config_search.mako:1038
-#: gui/slick/views/config_search.mako:1061
-#: gui/slick/views/config_search.mako:1065
+#: gui/slick/views/config_search.mako:1034 gui/slick/views/config_search.mako:1038
+#: gui/slick/views/config_search.mako:1061 gui/slick/views/config_search.mako:1065
 msgid "(blank spaces are not allowed)"
 msgstr ""
 
-#: gui/slick/views/config_search.mako:1035
-#: gui/slick/views/config_search.mako:1062
+#: gui/slick/views/config_search.mako:1035 gui/slick/views/config_search.mako:1062
 msgid "label plugin must be enabled in Deluge clients"
 msgstr ""
 
@@ -5935,9 +5602,7 @@ msgid "for QBitTorrent 3.3.1 and up "
 msgstr ""
 
 #: gui/slick/views/config_search.mako:1087
-msgid ""
-"where <span id=\"torrent_client\">the torrent client</span> will save "
-"downloaded files (blank for client default)"
+msgid "where <span id=\"torrent_client\">the torrent client</span> will save downloaded files (blank for client default)"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:1092
@@ -5961,9 +5626,7 @@ msgid "Start torrent paused"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:1131
-msgid ""
-"add .torrent to client but do <b style=\"font-weight:900\">not</b> start "
-"downloading"
+msgid "add .torrent to client but do <b style=\"font-weight:900\">not</b> start downloading"
 msgstr ""
 
 #: gui/slick/views/config_search.mako:1139
@@ -5983,9 +5646,7 @@ msgid "Windows Shares"
 msgstr ""
 
 #: gui/slick/views/config_shares.mako:12
-msgid ""
-"Defines your existing windows shares so that we can add them to the "
-"browse dialog"
+msgid "Defines your existing windows shares so that we can add them to the browse dialog"
 msgstr ""
 
 #: gui/slick/views/config_shares.mako:22
@@ -6062,9 +5723,7 @@ msgid "Perfect matches"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:144
-msgid ""
-"only download subtitles that match: release group, video codec, audio "
-"codec and resolution"
+msgid "only download subtitles that match: release group, video codec, audio codec and resolution"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:149
@@ -6132,15 +5791,11 @@ msgid "Additional scripts separated by <b>|</b>."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:255
-msgid ""
-"Scripts are called after each episode has searched and downloaded "
-"subtitles."
+msgid "Scripts are called after each episode has searched and downloaded subtitles."
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:256
-msgid ""
-"For any scripted languages, include the interpreter executable before the"
-" script. See the following example"
+msgid "For any scripted languages, include the interpreter executable before the script. See the following example"
 msgstr ""
 
 #: gui/slick/views/config_subtitles.mako:259
@@ -6283,8 +5938,7 @@ msgstr ""
 msgid "Subtitles SR Metadata"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:268
-#: gui/slick/views/inc_addShowOptions.mako:67
+#: gui/slick/views/displayShow.mako:268 gui/slick/views/inc_addShowOptions.mako:67
 msgid "Season Folders"
 msgstr ""
 
@@ -6339,8 +5993,7 @@ msgid "TBN"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:425 gui/slick/views/history.mako:61
-#: gui/slick/views/history.mako:126
-#: gui/slick/views/manage_backlogOverview.mako:92
+#: gui/slick/views/history.mako:126 gui/slick/views/manage_backlogOverview.mako:92
 #: gui/slick/views/testRename.mako:88
 msgid "Episode"
 msgstr ""
@@ -6362,8 +6015,7 @@ msgid "File Name"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:432
-#: gui/slick/views/manage_backlogOverview.mako:92
-#: gui/slick/views/schedule.mako:106
+#: gui/slick/views/manage_backlogOverview.mako:92 gui/slick/views/schedule.mako:106
 msgid "Airdate"
 msgstr ""
 
@@ -6372,15 +6024,11 @@ msgid "Download"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:468
-msgid ""
-"Change the value here if scene numbering differs from the indexer episode"
-" numbering"
+msgid "Change the value here if scene numbering differs from the indexer episode numbering"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:480
-msgid ""
-"Change the value here if scene absolute numbering differs from the "
-"indexer absolute numbering"
+msgid "Change the value here if scene absolute numbering differs from the indexer absolute numbering"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:574 gui/slick/views/displayShow.mako:593
@@ -6392,9 +6040,7 @@ msgid "Do you want to mark this episode as failed?"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:578
-msgid ""
-"The episode release name will be added to the failed history, preventing "
-"it to be downloaded again."
+msgid "The episode release name will be added to the failed history, preventing it to be downloaded again."
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:596
@@ -6402,12 +6048,8 @@ msgid "Do you want to include the current episode quality in the search?"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:597
-msgid ""
-"Choosing No will ignore any releases with the same episode quality as the"
-" one currently downloaded/snatched."
-msgstr ""
-"Výberom \"Nie\" bude ignorovať verzie s rovnakou kvalitou ako tá ktorá sa"
-" stiahla / sťahuje sa."
+msgid "Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched."
+msgstr "Výberom \"Nie\" bude ignorovať verzie s rovnakou kvalitou ako tá ktorá sa stiahla / sťahuje sa."
 
 #: gui/slick/views/displayShow.mako:612
 msgid "Download subtitle"
@@ -6463,9 +6105,7 @@ msgid "Use SR Metdata"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:133
-msgid ""
-"use SickChill metadata when searching for subtitle, this will override "
-"the autodiscovered metadata"
+msgid "use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:144
@@ -6485,21 +6125,15 @@ msgid "check if the show is released as Show.03.02.2010 rather than Show.S02E03.
 msgstr ""
 
 #: gui/slick/views/editShow.mako:173 gui/slick/views/editShow.mako:214
-msgid ""
-"in case of an air date conflict between regular and special episodes, the"
-" later will be ignored."
+msgid "in case of an air date conflict between regular and special episodes, the later will be ignored."
 msgstr ""
 
 #: gui/slick/views/editShow.mako:188
-msgid ""
-"check if the show is Anime and episodes are released as Show.265 rather "
-"than Show.S02E03"
+msgid "check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:209
-msgid ""
-"check if the show is a sporting or MMA event released as Show.03.02.2010 "
-"rather than Show.S02E03"
+msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:222 gui/slick/views/manage.mako:45
@@ -6519,9 +6153,7 @@ msgid "use the DVD order instead of the air order"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:253
-msgid ""
-"a \"Force Full Update\" is necessary, and if you have existing episodes "
-"you need to sort them manually."
+msgid "a \"Force Full Update\" is necessary, and if you have existing episodes you need to sort them manually."
 msgstr ""
 
 #: gui/slick/views/editShow.mako:287 gui/slick/views/editShow.mako:314
@@ -6568,10 +6200,7 @@ msgid "this list appends to the original show name."
 msgstr ""
 
 #: gui/slick/views/editShow.mako:384
-msgid ""
-"disabled entries come from a central file on github,<br/> if you think "
-"something is wrong please make an issue <a "
-"href=\"//github.com/sickchill/sickchill.github.io/issues\">here</a>."
+msgid "disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href=\"//github.com/sickchill/sickchill.github.io/issues\">here</a>."
 msgstr ""
 
 #: gui/slick/views/errorlogs.mako:9
@@ -6586,8 +6215,7 @@ msgstr ""
 msgid "There are no events to display."
 msgstr ""
 
-#: gui/slick/views/history.mako:22
-#: gui/slick/views/manage_failedDownloads.mako:11
+#: gui/slick/views/history.mako:22 gui/slick/views/manage_failedDownloads.mako:11
 msgid "Limit"
 msgstr ""
 
@@ -6681,9 +6309,7 @@ msgid "Don't use processing queue"
 msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:68
-msgid ""
-"(If checked this will return the result of the process here, but may be "
-"slow!)"
+msgid "(If checked this will return the result of the process here, but may be slow!)"
 msgstr ""
 
 #: gui/slick/views/home_postprocess.mako:74
@@ -6699,9 +6325,7 @@ msgid "Download subtitles for this show?"
 msgstr ""
 
 #: gui/slick/views/inc_addShowOptions.mako:31
-msgid ""
-"use SickChill metadata when searching for subtitle, <br />this will "
-"override the autodiscovered metadata"
+msgid "use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata"
 msgstr ""
 
 #: gui/slick/views/inc_addShowOptions.mako:39
@@ -6733,20 +6357,12 @@ msgid "Use current values as the defaults"
 msgstr ""
 
 #: gui/slick/views/inc_blackwhitelist.mako:12
-msgid ""
-"<p>Select your preferred fansub groups from the <b>Available Groups</b> "
-"and add them to the <b>Whitelist</b>. Add groups to the <b>Blacklist</b> "
-"to ignore them.</p>\n"
-"            <p>The <b>Whitelist</b> is checked <i>before</i> the "
-"<b>Blacklist</b>.</p>\n"
-"            <p>Groups are shown as <b>Name</b> | <b>Rating</b> | "
-"<b>Number of subbed episodes</b>.</p>\n"
-"            <p>You may also add any fansub group not listed to either "
-"list manually.</p>\n"
-"            <p>When doing this please note that you can only use groups "
-"listed on anidb for this anime.\n"
-"            <br>If a group is not listed on anidb but subbed this anime, "
-"please correct anidb's data.</p>"
+msgid "<p>Select your preferred fansub groups from the <b>Available Groups</b> and add them to the <b>Whitelist</b>. Add groups to the <b>Blacklist</b> to ignore them.</p>\n"
+"            <p>The <b>Whitelist</b> is checked <i>before</i> the <b>Blacklist</b>.</p>\n"
+"            <p>Groups are shown as <b>Name</b> | <b>Rating</b> | <b>Number of subbed episodes</b>.</p>\n"
+"            <p>You may also add any fansub group not listed to either list manually.</p>\n"
+"            <p>When doing this please note that you can only use groups listed on anidb for this anime.\n"
+"            <br>If a group is not listed on anidb but subbed this anime, please correct anidb's data.</p>"
 msgstr ""
 
 #: gui/slick/views/inc_blackwhitelist.mako:26
@@ -6813,7 +6429,7 @@ msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
 msgid "Banner"
-msgstr "Banner"
+msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:39
 msgid "Simple"
@@ -6877,8 +6493,8 @@ msgstr ""
 msgid "Downloads"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:177
-#: gui/slick/views/layouts/main.mako:330 gui/slick/views/status.mako:45
+#: gui/slick/views/inc_home_showList.mako:177 gui/slick/views/layouts/main.mako:330
+#: gui/slick/views/status.mako:45
 msgid "Active"
 msgstr ""
 
@@ -6887,9 +6503,7 @@ msgid "loading"
 msgstr ""
 
 #: gui/slick/views/inc_qualityChooser.mako:31
-msgid ""
-"<p><b><u>Preferred</u></b> qualities will replace those in "
-"<b><u>allowed</u></b>, even if they are lower.</p>"
+msgid "<p><b><u>Preferred</u></b> qualities will replace those in <b><u>allowed</u></b>, even if they are lower.</p>"
 msgstr ""
 
 #: gui/slick/views/inc_rootDirs.mako:30 gui/slick/views/manage_massEdit.mako:63
@@ -7024,8 +6638,7 @@ msgstr ""
 #: gui/slick/views/manage_manageSearches.mako:19
 #: gui/slick/views/manage_manageSearches.mako:27
 #: gui/slick/views/manage_manageSearches.mako:35
-#: gui/slick/views/manage_manageSearches.mako:43
-#: gui/slick/views/status.mako:132
+#: gui/slick/views/manage_manageSearches.mako:43 gui/slick/views/status.mako:132
 msgid "In Progress"
 msgstr ""
 
@@ -7070,9 +6683,7 @@ msgid "Manual"
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:32
-msgid ""
-"Changing any settings marked with (<span class=\"separator\">*</span>) "
-"will force a refresh of the selected shows."
+msgid "Changing any settings marked with (<span class=\"separator\">*</span>) will force a refresh of the selected shows."
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:41
@@ -7103,9 +6714,7 @@ msgid "Custom"
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:153
-msgid ""
-"Group episodes by season folder (set to \"No\" to store in a single "
-"folder)."
+msgid "Group episodes by season folder (set to \"No\" to store in a single folder)."
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:167
@@ -7121,28 +6730,20 @@ msgid "Search by scene numbering (set to \"No\" to search by indexer numbering).
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:210
-msgid ""
-"Set if these shows are Anime and episodes are released as Show.265 rather"
-" than Show.S02E03"
+msgid "Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03"
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:226
-msgid ""
-"Set if these shows are sporting or MMA events released as Show.03.02.2010"
-" rather than Show.S02E03."
+msgid "Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03."
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:231
 #: gui/slick/views/manage_massEdit.mako:254
-msgid ""
-"In case of an air date conflict between regular and special episodes, the"
-" later will be ignored."
+msgid "In case of an air date conflict between regular and special episodes, the later will be ignored."
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:249
-msgid ""
-"Set if these shows are released as Show.03.02.2010 rather than "
-"Show.S02E03."
+msgid "Set if these shows are released as Show.03.02.2010 rather than Show.S02E03."
 msgstr ""
 
 #: gui/slick/views/manage_massEdit.mako:270
@@ -7187,9 +6788,7 @@ msgid "Loading the default page"
 msgstr "Načítanie predvolenej stránky"
 
 #: gui/slick/views/restart.mako:45
-msgid ""
-"Error: The restart has timed out, perhaps something prevented SickChill "
-"from starting again?"
+msgid "Error: The restart has timed out, perhaps something prevented SickChill from starting again?"
 msgstr ""
 
 #: gui/slick/views/schedule.mako:25
@@ -7326,7 +6925,7 @@ msgstr "Pravda"
 
 #: gui/slick/views/status.mako:86 gui/slick/views/status.mako:94
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: gui/slick/views/status.mako:130
 msgid "Show id"
