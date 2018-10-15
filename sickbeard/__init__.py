@@ -504,7 +504,7 @@ DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
 DISCORD_WEBHOOK = None
 DISCORD_NAME = 'SickChill'
-DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill-shark-mascot.png'
+DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill-sc.png'
 DISCORD_TTS = False
 
 USE_TRAKT = False
