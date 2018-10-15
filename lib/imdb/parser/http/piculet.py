@@ -257,15 +257,18 @@ def html_to_xhtml(document, omit_tags=None, omit_attrs=None):
 # sigalias: XPathResult = Union[Sequence[str], Sequence[Element]]
 
 
-_USE_LXML = find_loader('lxml') is not None
-if _USE_LXML:
-    _logger.info('using lxml')
+_USE_LXML = False
+
+try:
     from lxml import etree as ElementTree
     from lxml.etree import Element
 
     XPath = ElementTree.XPath
     xpath = ElementTree._Element.xpath
-else:
+
+    _logger.info('using lxml')
+    _USE_LXML = True
+except ImportError:
     from xml.etree import ElementTree
     from xml.etree.ElementTree import Element
 
