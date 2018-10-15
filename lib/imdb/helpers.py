@@ -1,48 +1,52 @@
-# Copyright 2006-2018 Davide Alberani <da@erlug.linux.it>
-#                2012 Alberto Malagoli <albemala AT gmail.com>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 """
+helpers module (imdb package).
+
 This module provides functions not used directly by the imdb package,
 but useful for IMDbPY-based programs.
+
+Copyright 2006-2012 Davide Alberani <da@erlug.linux.it>
+               2012 Alberto Malagoli <albemala AT gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-# XXX: Find better names for the functions in this module.
+# XXX: find better names for the functions in this modules.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-import difflib
-import gettext
 import re
+import difflib
 from cgi import escape
+import gettext
 from gettext import gettext as _
+gettext.textdomain('imdbpy')
 
 # The modClearRefs can be used to strip names and titles references from
 # the strings in Movie and Person objects.
-from imdb import IMDb, imdbURL_character_base, imdbURL_movie_base, imdbURL_person_base
-from imdb.Character import Character
-from imdb.Company import Company
+from imdb.utils import modClearRefs, re_titleRef, re_nameRef, \
+                    re_characterRef, _tagAttr, _Container, TAGS_TO_MODIFY
+from imdb import IMDb, imdbURL_movie_base, imdbURL_person_base, \
+                    imdbURL_character_base
+
+import imdb.locale
 from imdb.linguistics import COUNTRY_LANG
 from imdb.Movie import Movie
 from imdb.Person import Person
-from imdb.utils import _tagAttr, re_characterRef, re_nameRef, re_titleRef
-from imdb.utils import TAGS_TO_MODIFY
-
-
-gettext.textdomain('imdbpy')
+from imdb.Character import Character
+from imdb.Company import Company
+from imdb.parser.http.utils import re_entcharrefssub, entcharrefs, \
+                                    subXMLRefs, subSGMLRefs
+from imdb.parser.http.bsouplxml.etree import BeautifulSoup
 
 
 # An URL, more or less.
@@ -56,14 +60,13 @@ def makeCgiPrintEncoding(encoding):
         """Encode the given string using the %s encoding, and replace
         chars outside the given charset with XML char references.""" % encoding
         s = escape(s, quote=1)
-        if isinstance(s, str):
+        if isinstance(s, unicode):
             s = s.encode(encoding, 'xmlcharrefreplace')
         return s
     return cgiPrint
 
-
-# cgiPrint uses the utf8 encoding.
-cgiPrint = makeCgiPrintEncoding('utf8')
+# cgiPrint uses the latin_1 encoding.
+cgiPrint = makeCgiPrintEncoding('latin_1')
 
 # Regular expression for %(varname)s substitutions.
 re_subst = re.compile(r'%\((.+?)\)s')
@@ -82,7 +85,7 @@ def makeTextNotes(replaceTxtNotes):
     of the makeObject2Txt function."""
     def _replacer(s):
         outS = replaceTxtNotes
-        if not isinstance(s, str):
+        if not isinstance(s, (unicode, str)):
             return s
         ssplit = s.split('::', 1)
         text = ssplit[0]
@@ -95,14 +98,12 @@ def makeTextNotes(replaceTxtNotes):
             keysDict['notes'] = True
             outS = outS.replace('%(notes)s', ssplit[1])
         else:
-            outS = outS.replace('%(notes)s', '')
-
+            outS = outS.replace('%(notes)s', u'')
         def _excludeFalseConditionals(matchobj):
             # Return an empty string if the conditional is false/empty.
             if matchobj.group(1) in keysDict:
                 return matchobj.group(2)
-            return ''
-
+            return u''
         while re_conditional.search(outS):
             outS = re_conditional.sub(_excludeFalseConditionals, outS)
         return outS
@@ -110,8 +111,8 @@ def makeTextNotes(replaceTxtNotes):
 
 
 def makeObject2Txt(movieTxt=None, personTxt=None, characterTxt=None,
-                   companyTxt=None, joiner=' / ',
-                   applyToValues=lambda x: x, _recurse=True):
+               companyTxt=None, joiner=' / ',
+               applyToValues=lambda x: x, _recurse=True):
     """"Return a function useful to pretty-print Movie, Person,
     Character and Company instances.
 
@@ -132,25 +133,23 @@ def makeObject2Txt(movieTxt=None, personTxt=None, characterTxt=None,
         characterTxt = '%(long imdb name)s'
     if companyTxt is None:
         companyTxt = '%(long imdb name)s'
-
     def object2txt(obj, _limitRecursion=None):
         """Pretty-print objects."""
         # Prevent unlimited recursion.
         if _limitRecursion is None:
             _limitRecursion = 0
         elif _limitRecursion > 5:
-            return ''
+            return u''
         _limitRecursion += 1
         if isinstance(obj, (list, tuple)):
             return joiner.join([object2txt(o, _limitRecursion=_limitRecursion)
                                 for o in obj])
         elif isinstance(obj, dict):
             # XXX: not exactly nice, neither useful, I fear.
-            return joiner.join(
-                ['%s::%s' % (object2txt(k, _limitRecursion=_limitRecursion),
-                             object2txt(v, _limitRecursion=_limitRecursion))
-                 for k, v in list(obj.items())]
-            )
+            return joiner.join([u'%s::%s' %
+                            (object2txt(k, _limitRecursion=_limitRecursion),
+                            object2txt(v, _limitRecursion=_limitRecursion))
+                            for k, v in obj.items()])
         objData = {}
         if isinstance(obj, Movie):
             objData['movieID'] = obj.movieID
@@ -166,7 +165,6 @@ def makeObject2Txt(movieTxt=None, personTxt=None, characterTxt=None,
             outs = companyTxt
         else:
             return obj
-
         def _excludeFalseConditionals(matchobj):
             # Return an empty string if the conditional is false/empty.
             condition = matchobj.group(1)
@@ -174,64 +172,61 @@ def makeObject2Txt(movieTxt=None, personTxt=None, characterTxt=None,
             if proceed:
                 return matchobj.group(2)
             else:
-                return ''
+                return u''
+            return matchobj.group(2)
         while re_conditional.search(outs):
             outs = re_conditional.sub(_excludeFalseConditionals, outs)
         for key in re_subst.findall(outs):
             value = obj.get(key) or getattr(obj, key, None)
-            if not isinstance(value, str):
+            if not isinstance(value, (unicode, str)):
                 if not _recurse:
                     if value:
-                        value = str(value)
+                        value =  unicode(value)
                 if value:
                     value = object2txt(value, _limitRecursion=_limitRecursion)
             elif value:
-                value = applyToValues(str(value))
+                value = applyToValues(unicode(value))
             if not value:
-                value = ''
-            elif not isinstance(value, str):
-                value = str(value)
-            outs = outs.replace('%(' + key + ')s', value)
+                value = u''
+            elif not isinstance(value, (unicode, str)):
+                value = unicode(value)
+            outs = outs.replace(u'%(' + key + u')s', value)
         return outs
     return object2txt
 
 
-def makeModCGILinks(movieTxt, personTxt, characterTxt=None, encoding='utf8'):
+def makeModCGILinks(movieTxt, personTxt, characterTxt=None,
+                    encoding='latin_1'):
     """Make a function used to pretty-print movies and persons refereces;
     movieTxt and personTxt are the strings used for the substitutions.
     movieTxt must contains %(movieID)s and %(title)s, while personTxt
     must contains %(personID)s and %(name)s and characterTxt %(characterID)s
     and %(name)s; characterTxt is optional, for backward compatibility."""
     _cgiPrint = makeCgiPrintEncoding(encoding)
-
     def modCGILinks(s, titlesRefs, namesRefs, characterRefs=None):
         """Substitute movies and persons references."""
-        if characterRefs is None:
-            characterRefs = {}
-
+        if characterRefs is None: characterRefs = {}
         # XXX: look ma'... more nested scopes! <g>
         def _replaceMovie(match):
             to_replace = match.group(1)
             item = titlesRefs.get(to_replace)
             if item:
                 movieID = item.movieID
-                to_replace = movieTxt % {
-                    'movieID': movieID,
-                    'title': str(_cgiPrint(to_replace), encoding, 'xmlcharrefreplace')
-                }
+                to_replace = movieTxt % {'movieID': movieID,
+                                        'title': unicode(_cgiPrint(to_replace),
+                                                        encoding,
+                                                        'xmlcharrefreplace')}
             return to_replace
-
         def _replacePerson(match):
             to_replace = match.group(1)
             item = namesRefs.get(to_replace)
             if item:
                 personID = item.personID
-                to_replace = personTxt % {
-                    'personID': personID,
-                    'name': str(_cgiPrint(to_replace), encoding, 'xmlcharrefreplace')
-                }
+                to_replace = personTxt % {'personID': personID,
+                                        'name': unicode(_cgiPrint(to_replace),
+                                                        encoding,
+                                                        'xmlcharrefreplace')}
             return to_replace
-
         def _replaceCharacter(match):
             to_replace = match.group(1)
             if characterTxt is None:
@@ -241,10 +236,10 @@ def makeModCGILinks(movieTxt, personTxt, characterTxt=None, encoding='utf8'):
                 characterID = item.characterID
                 if characterID is None:
                     return to_replace
-                to_replace = characterTxt % {
-                    'characterID': characterID,
-                    'name': str(_cgiPrint(to_replace), encoding, 'xmlcharrefreplace')
-                }
+                to_replace = characterTxt % {'characterID': characterID,
+                                        'name': unicode(_cgiPrint(to_replace),
+                                                        encoding,
+                                                        'xmlcharrefreplace')}
             return to_replace
         s = s.replace('<', '&lt;').replace('>', '&gt;')
         s = _re_hrefsub(r'<a href="\1">\1</a>', s)
@@ -257,22 +252,47 @@ def makeModCGILinks(movieTxt, personTxt, characterTxt=None, encoding='utf8'):
     modCGILinks.characterTxt = characterTxt
     return modCGILinks
 
-
 # links to the imdb.com web site.
 _movieTxt = '<a href="' + imdbURL_movie_base + 'tt%(movieID)s">%(title)s</a>'
 _personTxt = '<a href="' + imdbURL_person_base + 'nm%(personID)s">%(name)s</a>'
 _characterTxt = '<a href="' + imdbURL_character_base + \
                 'ch%(characterID)s">%(name)s</a>'
 modHtmlLinks = makeModCGILinks(movieTxt=_movieTxt, personTxt=_personTxt,
-                               characterTxt=_characterTxt)
+                                characterTxt=_characterTxt)
 modHtmlLinksASCII = makeModCGILinks(movieTxt=_movieTxt, personTxt=_personTxt,
                                     characterTxt=_characterTxt,
                                     encoding='ascii')
 
 
+everyentcharrefs = entcharrefs.copy()
+for k, v in {'lt':u'<','gt':u'>','amp':u'&','quot':u'"','apos':u'\''}.items():
+    everyentcharrefs[k] = v
+    everyentcharrefs['#%s' % ord(v)] = v
+everyentcharrefsget = everyentcharrefs.get
+re_everyentcharrefs = re.compile('&(%s|\#160|\#\d{1,5});' %
+                            '|'.join(map(re.escape, everyentcharrefs)))
+re_everyentcharrefssub = re_everyentcharrefs.sub
+
+def _replAllXMLRef(match):
+    """Replace the matched XML reference."""
+    ref = match.group(1)
+    value = everyentcharrefsget(ref)
+    if value is None:
+        if ref[0] == '#':
+            return unichr(int(ref[1:]))
+        else:
+            return ref
+    return value
+
+def subXMLHTMLSGMLRefs(s):
+    """Return the given string with XML/HTML/SGML entity and char references
+    replaced."""
+    return re_everyentcharrefssub(_replAllXMLRef, s)
+
+
 def sortedSeasons(m):
     """Return a sorted list of seasons of the given series."""
-    seasons = list(m.get('episodes', {}).keys())
+    seasons = m.get('episodes', {}).keys()
     seasons.sort()
     return seasons
 
@@ -288,7 +308,7 @@ def sortedEpisodes(m, season=None):
         if not isinstance(season, (tuple, list)):
             seasons = [season]
     for s in seasons:
-        eps_indx = list(m.get('episodes', {}).get(s, {}).keys())
+        eps_indx = m.get('episodes', {}).get(s, {}).keys()
         eps_indx.sort()
         for e in eps_indx:
             episodes.append(m['episodes'][s][e])
@@ -297,18 +317,14 @@ def sortedEpisodes(m, season=None):
 
 # Idea and portions of the code courtesy of none none (dclist at gmail.com)
 _re_imdbIDurl = re.compile(r'\b(nm|tt|ch|co)([0-9]{7})\b')
-
-
 def get_byURL(url, info=None, args=None, kwds=None):
     """Return a Movie, Person, Character or Company object for the given URL;
     info is the info set to retrieve, args and kwds are respectively a list
     and a dictionary or arguments to initialize the data access system.
     Returns None if unable to correctly parse the url; can raise
     exceptions if unable to retrieve the data."""
-    if args is None:
-        args = []
-    if kwds is None:
-        kwds = {}
+    if args is None: args = []
+    if kwds is None: kwds = {}
     ia = IMDb(*args, **kwds)
     match = _re_imdbIDurl.search(url)
     if not match:
@@ -335,7 +351,15 @@ def fullSizeCoverURL(obj):
     or None otherwise.  This function is obsolete: the same information
     are available as keys: 'full-size cover url' and 'full-size headshot',
     respectively for movies and persons/characters."""
-    return obj.get_fullsizeURL()
+    if isinstance(obj, Movie):
+        coverUrl = obj.get('cover url')
+    elif isinstance(obj, (Person, Character)):
+        coverUrl = obj.get('headshot')
+    else:
+        coverUrl = obj
+    if not coverUrl:
+        return None
+    return _Container._re_fullsizeURL.sub('', coverUrl)
 
 
 def keyToXML(key):
@@ -358,9 +382,8 @@ _MAP_TOP_OBJ = {
 }
 
 # Tags to be converted to lists.
-_TAGS_TO_LIST = dict([(x[0], None) for x in list(TAGS_TO_MODIFY.values())])
+_TAGS_TO_LIST = dict([(x[0], None) for x in TAGS_TO_MODIFY.values()])
 _TAGS_TO_LIST.update(_MAP_TOP_OBJ)
-
 
 def tagToKey(tag):
     """Return the name of the tag, taking it from the 'key' attribute,
@@ -370,7 +393,7 @@ def tagToKey(tag):
         if tag.get('keytype') == 'int':
             keyAttr = int(keyAttr)
         return keyAttr
-    return tag.tag
+    return tag.name
 
 
 def _valueWithType(tag, tagValue):
@@ -385,11 +408,11 @@ def _valueWithType(tag, tagValue):
 
 # Extra tags to get (if values were not already read from title/name).
 _titleTags = ('imdbindex', 'kind', 'year')
-_nameTags = ('imdbindex',)
+_nameTags = ('imdbindex')
 _companyTags = ('imdbindex', 'country')
 
-
-def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None, _key2infoset=None):
+def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None,
+            _key2infoset=None):
     """Recursively parse a tree of tags."""
     # The returned object (usually a _Container subclass, but it can
     # be a string, an int, a float, a list or a dictionary).
@@ -399,19 +422,20 @@ def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None, _key2infoset=No
     if _key2infoset is None:
         _key2infoset = {}
     name = tagToKey(tag)
-    firstChild = (tag.getchildren() or [None])[0]
-    tagStr = (tag.text or '').strip()
+    firstChild = tag.find(recursive=False)
+    tagStr = (tag.string or u'').strip()
     if not tagStr and name == 'item':
         # Handles 'item' tags containing text and a 'notes' sub-tag.
-        tagContent = tag.getchildren()
-        if tagContent and tagContent[0].text:
-            tagStr = (tagContent[0].text or '').strip()
+        tagContent = tag.contents[0]
+        if isinstance(tagContent, BeautifulSoup.NavigableString):
+            tagStr = (unicode(tagContent) or u'').strip()
+    tagType = tag.get('type')
     infoset = tag.get('infoset')
     if infoset:
         _key2infoset[name] = infoset
         _infoset2keys.setdefault(infoset, []).append(name)
     # Here we use tag.name to avoid tags like <item title="company">
-    if tag.tag in _MAP_TOP_OBJ:
+    if tag.name in _MAP_TOP_OBJ:
         # One of the subclasses of _Container.
         item = _MAP_TOP_OBJ[name]()
         itemAs = tag.get('access-system')
@@ -426,67 +450,67 @@ def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None, _key2infoset=No
         if name == 'movie':
             item.movieID = theID
             tagsToGet = _titleTags
-            ttitle = tag.find('title')
-            if ttitle is not None:
-                item.set_title(ttitle.text)
-                tag.remove(ttitle)
+            theTitle = tag.find('title', recursive=False)
+            if tag.title:
+                item.set_title(tag.title.string)
+                tag.title.extract()
         else:
             if name == 'person':
                 item.personID = theID
                 tagsToGet = _nameTags
-                theName = tag.find('long imdb canonical name')
+                theName = tag.find('long imdb canonical name', recursive=False)
                 if not theName:
-                    theName = tag.find('name')
+                    theName = tag.find('name', recursive=False)
             elif name == 'character':
                 item.characterID = theID
                 tagsToGet = _nameTags
-                theName = tag.find('name')
+                theName = tag.find('name', recursive=False)
             elif name == 'company':
                 item.companyID = theID
                 tagsToGet = _companyTags
-                theName = tag.find('name')
-            if theName is not None:
-                item.set_name(theName.text)
-                tag.remove(theName)
+                theName = tag.find('name', recursive=False)
+            if theName:
+                item.set_name(theName.string)
+            if theName:
+                theName.extract()
         for t in tagsToGet:
             if t in item.data:
                 continue
-            dataTag = tag.find(t)
-            if dataTag is not None:
-                item.data[tagToKey(dataTag)] = _valueWithType(dataTag, dataTag.text)
-        notesTag = tag.find('notes')
-        if notesTag is not None:
-            item.notes = notesTag.text
-            tag.remove(notesTag)
-        episodeOf = tag.find('episode-of')
-        if episodeOf is not None:
+            dataTag = tag.find(t, recursive=False)
+            if dataTag:
+                item.data[tagToKey(dataTag)] = _valueWithType(dataTag,
+                                                            dataTag.string)
+        if tag.notes:
+            item.notes = tag.notes.string
+            tag.notes.extract()
+        episodeOf = tag.find('episode-of', recursive=False)
+        if episodeOf:
             item.data['episode of'] = parseTags(episodeOf, _topLevel=False,
-                                                _as=_as, _infoset2keys=_infoset2keys,
-                                                _key2infoset=_key2infoset)
-            tag.remove(episodeOf)
-        cRole = tag.find('current-role')
-        if cRole is not None:
+                                        _as=_as, _infoset2keys=_infoset2keys,
+                                        _key2infoset=_key2infoset)
+            episodeOf.extract()
+        cRole = tag.find('current-role', recursive=False)
+        if cRole:
             cr = parseTags(cRole, _topLevel=False, _as=_as,
-                           _infoset2keys=_infoset2keys, _key2infoset=_key2infoset)
+                        _infoset2keys=_infoset2keys, _key2infoset=_key2infoset)
             item.currentRole = cr
-            tag.remove(cRole)
+            cRole.extract()
         # XXX: big assumption, here.  What about Movie instances used
         #      as keys in dictionaries?  What about other keys (season and
         #      episode number, for example?)
         if not _topLevel:
-            # tag.extract()
+            #tag.extract()
             return item
         _adder = lambda key, value: item.data.update({key: value})
     elif tagStr:
-        tagNotes = tag.find('notes')
-        if tagNotes is not None:
-            notes = (tagNotes.text or '').strip()
+        if tag.notes:
+            notes = (tag.notes.string or u'').strip()
             if notes:
-                tagStr += '::%s' % notes
+                tagStr += u'::%s' % notes
         else:
             tagStr = _valueWithType(tag, tagStr)
         return tagStr
-    elif firstChild is not None:
+    elif firstChild:
         firstChildName = tagToKey(firstChild)
         if firstChildName in _TAGS_TO_LIST:
             item = []
@@ -497,33 +521,37 @@ def parseTags(tag, _topLevel=True, _as=None, _infoset2keys=None, _key2infoset=No
     else:
         item = {}
         _adder = lambda key, value: item.update({name: value})
-    for subTag in tag.getchildren():
+    for subTag in tag(recursive=False):
         subTagKey = tagToKey(subTag)
         # Exclude dinamically generated keys.
-        if tag.tag in _MAP_TOP_OBJ and subTagKey in item._additional_keys():
+        if tag.name in _MAP_TOP_OBJ and subTagKey in item._additional_keys():
             continue
         subItem = parseTags(subTag, _topLevel=False, _as=_as,
-                            _infoset2keys=_infoset2keys, _key2infoset=_key2infoset)
+                        _infoset2keys=_infoset2keys, _key2infoset=_key2infoset)
         if subItem:
             _adder(subTagKey, subItem)
     if _topLevel and name in _MAP_TOP_OBJ:
         # Add information about 'info sets', but only to the top-level object.
         item.infoset2keys = _infoset2keys
         item.key2infoset = _key2infoset
-        item.current_info = list(_infoset2keys.keys())
+        item.current_info = _infoset2keys.keys()
     return item
 
 
 def parseXML(xml):
     """Parse a XML string, returning an appropriate object (usually an
     instance of a subclass of _Container."""
-    import lxml.etree
-    return parseTags(lxml.etree.fromstring(xml))
+    xmlObj = BeautifulSoup.BeautifulStoneSoup(xml,
+                convertEntities=BeautifulSoup.BeautifulStoneSoup.XHTML_ENTITIES)
+    if xmlObj:
+        mainTag = xmlObj.find()
+        if mainTag:
+            return parseTags(mainTag)
+    return None
 
 
 _re_akas_lang = re.compile('(?:[(])([a-zA-Z]+?)(?: title[)])')
 _re_akas_country = re.compile('\(.*?\)')
-
 
 # akasLanguages, sortAKAsBySimilarity and getAKAsInLanguage code
 # copyright of Alberto Malagoli (refactoring by Davide Alberani).
@@ -531,10 +559,11 @@ def akasLanguages(movie):
     """Given a movie, return a list of tuples in (lang, AKA) format;
     lang can be None, if unable to detect."""
     lang_and_aka = []
-    akas = set((movie.get('akas') or []) + (movie.get('akas from release info') or []))
+    akas = set((movie.get('akas') or []) +
+                (movie.get('akas from release info') or []))
     for aka in akas:
         # split aka
-        aka = aka.split('::')
+        aka = aka.encode('utf8').split('::')
         # sometimes there is no countries information
         if len(aka) == 2:
             # search for something like "(... title)" where ... is a language
@@ -550,7 +579,7 @@ def akasLanguages(movie):
                 language = COUNTRY_LANG.get(country)
         else:
             language = None
-        lang_and_aka.append((language, aka[0]))
+        lang_and_aka.append((language, aka[0].decode('utf8')))
     return lang_and_aka
 
 
@@ -565,13 +594,17 @@ def sortAKAsBySimilarity(movie, title, _titlesOnly=True, _preferredLang=None):
     # estimate string distance between current title and given title
     m_title = movie['title'].lower()
     l_title = title.lower()
+    if isinstance(l_title, unicode):
+        l_title = l_title.encode('utf8')
     scores = []
-    score = difflib.SequenceMatcher(None, m_title, l_title).ratio()
+    score = difflib.SequenceMatcher(None, m_title.encode('utf8'), l_title).ratio()
     # set original title and corresponding score as the best match for given title
     scores.append((score, movie['title'], None))
     for language, aka in akasLanguages(movie):
         # estimate string distance between current title and given title
         m_title = aka.lower()
+        if isinstance(m_title, unicode):
+            m_title = m_title.encode('utf8')
         score = difflib.SequenceMatcher(None, m_title, l_title).ratio()
         # if current language is the same as the given one, increase score
         if _preferredLang and _preferredLang == language:
@@ -593,9 +626,15 @@ def getAKAsInLanguage(movie, lang, _searchedTitle=None):
             akas.append(aka)
     if _searchedTitle:
         scores = []
+        if isinstance(_searchedTitle, unicode):
+            _searchedTitle = _searchedTitle.encode('utf8')
         for aka in akas:
-            scores.append(difflib.SequenceMatcher(None, aka.lower(),
-                                                  _searchedTitle.lower()), aka)
+            m_aka = aka
+            if isinstance(m_aka):
+                m_aka = m_aka.encode('utf8')
+            scores.append(difflib.SequenceMatcher(None, m_aka.lower(),
+                            _searchedTitle.lower()), aka)
         scores.sort(reverse=True)
         akas = [x[1] for x in scores]
     return akas
+

@@ -1,29 +1,27 @@
-# -*- coding: utf-8 -*-
-
-#  Copyright 2009-2017 Davide Alberani <da@erlug.linux.it>
-#           2012 Alberto Malagoli <albemala AT gmail.com>
-#           2009 H. Turgut Uyar <uyar@tekir.org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 """
-This module provides functions and data to handle languages and articles
-(in various languages) at the beginning of movie titles in a smart way.
-"""
+linguistics module (imdb package).
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+This module provides functions and data to handle in a smart way
+languages and articles (in various languages) at the beginning of movie titles.
+
+Copyright 2009-2012 Davide Alberani <da@erlug.linux.it>
+          2012 Alberto Malagoli <albemala AT gmail.com>
+          2009 H. Turgut Uyar <uyar@tekir.org>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+"""
 
 # List of generic articles used when the language of the title is unknown (or
 # we don't have information about articles in that language).
@@ -48,28 +46,30 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # I've left in the list 'i' (1939 vs 2151) and 'uno' (52 vs 56)
 # I'm not sure what '-al' is, and so I've left it out...
 #
-# Generic list of articles in unicode:
-GENERIC_ARTICLES = (
-    'the', 'la', 'a', 'die', 'der', 'le', 'el', "l'", 'il', 'das', 'les', 'i', 'o', 'ein',
-    'un', 'de', 'los', 'an', 'una', 'las', 'eine', 'den', 'het', 'gli', 'lo', 'os', 'ang',
-    'oi', 'az', 'een', 'ha-', 'det', 'ta', 'al-', 'mga', "un'", 'uno', 'ett', 'dem', 'egy',
-    'els', 'eines', 'Ï', 'Ç', 'Ôï', 'Ïé'
-)
+# Generic list of articles in utf-8 encoding:
+GENERIC_ARTICLES = ('the', 'la', 'a', 'die', 'der', 'le', 'el',
+            "l'", 'il', 'das', 'les', 'i', 'o', 'ein', 'un', 'de', 'los',
+            'an', 'una', 'las', 'eine', 'den', 'het', 'gli', 'lo', 'os',
+            'ang', 'oi', 'az', 'een', 'ha-', 'det', 'ta', 'al-',
+            'mga', "un'", 'uno', 'ett', 'dem', 'egy', 'els', 'eines',
+            '\xc3\x8f', '\xc3\x87', '\xc3\x94\xc3\xaf', '\xc3\x8f\xc3\xa9')
 
 
 # Lists of articles separated by language.  If possible, the list should
 # be sorted by frequency (not very important, but...)
 # If you want to add a list of articles for another language, mail it
-# it at imdbpy-devel@lists.sourceforge.net
+# it at imdbpy-devel@lists.sourceforge.net; non-ascii articles must be utf-8
+# encoded.
 LANG_ARTICLES = {
     'English': ('the', 'a', 'an'),
-    'Italian': ('la', 'le', "l'", 'il', 'i', 'un', 'una', 'gli', 'lo', "un'", 'uno'),
-    'Spanish': (
-        'la', 'lo', 'el', 'las', 'un', 'los', 'una', 'al', 'del', 'unos', 'unas', 'uno'
-    ),
-    'French': ('le', "l'", 'la', 'les', 'un', 'une', 'des', 'au', 'du', 'à la', 'de la', 'aux'),
+    'Italian': ('la', 'le', "l'", 'il', 'i', 'un', 'una', 'gli', 'lo', "un'",
+                'uno'),
+    'Spanish': ('la', 'lo', 'el', 'las', 'un', 'los', 'una', 'al', 'del',
+                'unos', 'unas', 'uno'),
+    'French': ('le', "l'", 'la', 'les', 'un', 'une', 'des', 'au', 'du', '\xc3\xa0 la',
+                'de la', 'aux'),
     'Portuguese': ('a', 'as', 'o', 'os', 'um', 'uns', 'uma', 'umas'),
-    'Turkish': ()   # Some languages doesn't have articles.
+    'Turkish': (), # Some languages doesn't have articles.
 }
 LANG_ARTICLESget = LANG_ARTICLES.get
 
@@ -78,40 +78,13 @@ LANG_ARTICLESget = LANG_ARTICLES.get
 # If you want to add an entry for another language or country, mail it at
 # imdbpy-devel@lists.sourceforge.net .
 LANG_COUNTRIES = {
-    'English': (
-        'Canada', 'Swaziland', 'Ghana', 'St. Lucia', 'Liberia', 'Jamaica', 'Bahamas',
-        'New Zealand', 'Lesotho', 'Kenya', 'Solomon Islands', 'United States', 'South Africa',
-        'St. Vincent and the Grenadines', 'Fiji', 'UK', 'Nigeria', 'Australia', 'USA',
-        'St. Kitts and Nevis', 'Belize', 'Sierra Leone', 'Gambia', 'Namibia', 'Micronesia',
-        'Kiribati', 'Grenada', 'Antigua and Barbuda', 'Barbados', 'Malta', 'Zimbabwe',
-        'Ireland', 'Uganda', 'Trinidad and Tobago', 'South Sudan', 'Guyana', 'Botswana',
-        'United Kingdom', 'Zambia'
-    ),
+    'English': ('Canada', 'Swaziland', 'Ghana', 'St. Lucia', 'Liberia', 'Jamaica', 'Bahamas', 'New Zealand', 'Lesotho', 'Kenya', 'Solomon Islands', 'United States', 'South Africa', 'St. Vincent and the Grenadines', 'Fiji', 'UK', 'Nigeria', 'Australia', 'USA', 'St. Kitts and Nevis', 'Belize', 'Sierra Leone', 'Gambia', 'Namibia', 'Micronesia', 'Kiribati', 'Grenada', 'Antigua and Barbuda', 'Barbados', 'Malta', 'Zimbabwe', 'Ireland', 'Uganda', 'Trinidad and Tobago', 'South Sudan', 'Guyana', 'Botswana', 'United Kingdom', 'Zambia'),
     'Italian': ('Italy', 'San Marino', 'Vatican City'),
-    'Spanish': (
-        'Spain', 'Mexico', 'Argentina', 'Bolivia', 'Guatemala', 'Uruguay', 'Peru', 'Cuba',
-        'Dominican Republic', 'Panama', 'Costa Rica', 'Ecuador', 'El Salvador', 'Chile',
-        'Equatorial Guinea', 'Spain', 'Colombia', 'Nicaragua', 'Venezuela', 'Honduras',
-        'Paraguay'
-    ),
-    'French': (
-        'Cameroon', 'Burkina Faso', 'Dominica', 'Gabon', 'Monaco', 'France', "Cote d'Ivoire",
-        'Benin', 'Togo', 'Central African Republic', 'Mali', 'Niger', 'Congo, Republic of',
-        'Guinea', 'Congo, Democratic Republic of the', 'Luxembourg', 'Haiti', 'Chad',
-        'Burundi', 'Madagascar', 'Comoros', 'Senegal'
-    ),
-    'Portuguese': (
-        'Portugal', 'Brazil', 'Sao Tome and Principe', 'Cape Verde', 'Angola', 'Mozambique',
-        'Guinea-Bissau'
-    ),
-    'German': (
-        'Liechtenstein', 'Austria', 'West Germany', 'Switzerland', 'East Germany', 'Germany'
-    ),
-    'Arabic': (
-        'Saudi Arabia', 'Kuwait', 'Jordan', 'Oman', 'Yemen', 'United Arab Emirates',
-        'Mauritania', 'Lebanon', 'Bahrain', 'Libya', 'Palestinian State (proposed)', 'Qatar',
-        'Algeria', 'Morocco', 'Iraq', 'Egypt', 'Djibouti', 'Sudan', 'Syria', 'Tunisia'
-    ),
+    'Spanish': ('Spain', 'Mexico', 'Argentina', 'Bolivia', 'Guatemala', 'Uruguay', 'Peru', 'Cuba', 'Dominican Republic', 'Panama', 'Costa Rica', 'Ecuador', 'El Salvador', 'Chile', 'Equatorial Guinea', 'Spain', 'Colombia', 'Nicaragua', 'Venezuela', 'Honduras', 'Paraguay'),
+    'French': ('Cameroon', 'Burkina Faso', 'Dominica', 'Gabon', 'Monaco', 'France', "Cote d'Ivoire", 'Benin', 'Togo', 'Central African Republic', 'Mali', 'Niger', 'Congo, Republic of', 'Guinea', 'Congo, Democratic Republic of the', 'Luxembourg', 'Haiti', 'Chad', 'Burundi', 'Madagascar', 'Comoros', 'Senegal'),
+    'Portuguese': ('Portugal', 'Brazil', 'Sao Tome and Principe', 'Cape Verde', 'Angola',  'Mozambique', 'Guinea-Bissau'),
+    'German': ('Liechtenstein', 'Austria', 'West Germany', 'Switzerland', 'East Germany', 'Germany'),
+    'Arabic': ('Saudi Arabia', 'Kuwait', 'Jordan', 'Oman', 'Yemen', 'United Arab Emirates', 'Mauritania', 'Lebanon', 'Bahrain', 'Libya', 'Palestinian State (proposed)', 'Qatar', 'Algeria', 'Morocco', 'Iraq', 'Egypt', 'Djibouti', 'Sudan', 'Syria', 'Tunisia'),
     'Turkish': ('Turkey', 'Azerbaijan'),
     'Swahili': ('Tanzania',),
     'Swedish': ('Sweden',),
@@ -181,20 +154,20 @@ for lang in LANG_COUNTRIES:
         COUNTRY_LANG[country] = lang
 
 
-def toUTF8(articles):
-    """Convert a list of unicode articles to utf-8 encoded strings."""
-    return tuple([art.encode('utf8') for art in articles])
+def toUnicode(articles):
+    """Convert a list of articles utf-8 encoded to unicode strings."""
+    return tuple([art.decode('utf_8') for art in articles])
 
 
 def toDicts(articles):
-    """Given a list of unicode encoded articles, build two dictionary (one
+    """Given a list of utf-8 encoded articles, build two dictionary (one
     utf-8 encoded and another one with unicode keys) for faster matches."""
-    utf8Articles = toUTF8(articles)
-    return dict([(x, x) for x in utf8Articles]), dict([(x, x) for x in articles])
+    uArticles = toUnicode(articles)
+    return dict([(x, x) for x in articles]), dict([(x, x) for x in uArticles])
 
 
 def addTrailingSpace(articles):
-    """From the given list of unicode articles, return two
+    """From the given list of utf-8 encoded articles, return two
     lists (one utf-8 encoded and another one in unicode) where a space
     is added at the end - if the last char is not ' or -."""
     _spArticles = []
@@ -202,15 +175,14 @@ def addTrailingSpace(articles):
     for article in articles:
         if article[-1] not in ("'", '-'):
             article += ' '
-        _spArticles.append(article.encode('utf8'))
-        _spUnicodeArticles.append(article)
+        _spArticles.append(article)
+        _spUnicodeArticles.append(article.decode('utf_8'))
     return _spArticles, _spUnicodeArticles
 
 
 # Caches.
 _ART_CACHE = {}
 _SP_ART_CACHE = {}
-
 
 def articlesDictsForLang(lang):
     """Return dictionaries of articles specific for the given language, or the
@@ -230,3 +202,4 @@ def spArticlesForLang(lang):
     spArticles = addTrailingSpace(LANG_ARTICLESget(lang, GENERIC_ARTICLES))
     _SP_ART_CACHE[lang] = spArticles
     return spArticles
+

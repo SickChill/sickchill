@@ -1,29 +1,32 @@
-# Copyright 2009 H. Turgut Uyar <uyar@tekir.org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
+#!/usr/bin/env python
 """
+generatepot.py script.
+
 This script generates the imdbpy.pot file, from the DTD.
+
+Copyright 2009 H. Turgut Uyar <uyar@tekir.org>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import re
 import sys
+
 from datetime import datetime as dt
 
-
-DEFAULT_MESSAGES = {}
+DEFAULT_MESSAGES = { }
 
 ELEMENT_PATTERN = r"""<!ELEMENT\s+([^\s]+)"""
 re_element = re.compile(ELEMENT_PATTERN)
@@ -47,7 +50,7 @@ msgstr ""
 """
 
 if len(sys.argv) != 2:
-    print("Usage: %s dtd_file" % sys.argv[0])
+    print "Usage: %s dtd_file" % sys.argv[0]
     sys.exit()
 
 dtdfilename = sys.argv[1]
@@ -56,19 +59,20 @@ elements = re_element.findall(dtd)
 uniq = set(elements)
 elements = list(uniq)
 
-print(POT_HEADER_TEMPLATE % {
+print POT_HEADER_TEMPLATE % {
     'now': dt.strftime(dt.now(), "%Y-%m-%d %H:%M+0000")
-})
+}
 for element in sorted(elements):
     if element in DEFAULT_MESSAGES:
-        print('# Default: %s' % DEFAULT_MESSAGES[element])
+        print '# Default: %s' % DEFAULT_MESSAGES[element]
     else:
-        print('# Default: %s' % element.replace('-', ' ').capitalize())
-    print('msgid "%s"' % element)
-    print('msgstr ""')
+        print '# Default: %s' % element.replace('-', ' ').capitalize()
+    print 'msgid "%s"' % element
+    print 'msgstr ""'
     # use this part instead of the line above to generate the po file for English
-    # if element in DEFAULT_MESSAGES:
-    #     print 'msgstr "%s"' % DEFAULT_MESSAGES[element]
-    # else:
-    #     print 'msgstr "%s"' % element.replace('-', ' ').capitalize()
-    print()
+    #if element in DEFAULT_MESSAGES:
+    #    print 'msgstr "%s"' % DEFAULT_MESSAGES[element]
+    #else:
+    #    print 'msgstr "%s"' % element.replace('-', ' ').capitalize()
+    print
+
