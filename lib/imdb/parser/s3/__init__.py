@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
+# Copyright 2017-2018 Davide Alberani <da@erlug.linux.it>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 """
-parser.s3 package (imdb package).
+This package provides the IMDbS3AccessSystem class used to access IMDb's data
+through the Amazon S3 dataset.
 
-This package provides the IMDbS3AccessSystem class used to access
-IMDb's data through the web interface.
-the imdb.IMDb function will return an instance of this class when
-called with the 'accessSystem' argument set to "s3" or "s3dataset".
-
-Copyright 2017-2018 Davide Alberani <da@erlug.linux.it>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+The :func:`imdb.IMDb` function will return an instance of this class when
+called with the ``accessSystem`` parameter is set to "s3" or "s3dataset".
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 import sqlalchemy
@@ -31,6 +32,21 @@ from .utils import DB_TRANSFORM, title_soundex, name_soundexes, scan_titles, sca
 
 from imdb.Movie import Movie
 from imdb.Person import Person
+
+
+def split_array(text):
+    """Split a string assuming it's an array.
+
+    :param text: the text to split
+    :type text: str
+    :returns: list of splitted strings
+    :rtype: list
+    """
+    if not isinstance(text, str):
+        return text
+    # for some reason, titles.akas.tsv.gz contains \x02 as a separator
+    sep = ',' if ',' in text else '\x02'
+    return text.split(sep)
 
 
 class IMDbS3AccessSystem(IMDbBase):
@@ -80,7 +96,7 @@ class IMDbS3AccessSystem(IMDbBase):
         if 'endYear' in data and data['endYear']:
             data['year'] += '-%s' % data['endYear']
         genres = data.get('genres') or ''
-        data['genres'] = genres.lower().split(',')
+        data['genres'] = split_array(genres.lower())
         if 'runtimes' in data and data['runtimes']:
             data['runtimes'] = [data['runtimes']]
         self._clean(data, ('startYear', 'endYear', 'movieID'))
@@ -98,7 +114,9 @@ class IMDbS3AccessSystem(IMDbBase):
         person = nb.select(nb.c.nconst == personID).execute().fetchone() or {}
         data = self._rename('name_basics', dict(person))
         movies = []
-        for movieID in (data.get('known for') or '').split(','):
+        for movieID in split_array(data.get('known for') or ''):
+            if not movieID:
+                continue
             movieID = int(movieID)
             movie_data = self._base_title_info(movieID, movies_cache=movies_cache, persons_cache=persons_cache)
             movie = Movie(movieID=movieID, data=movie_data, accessSystem=self.accessSystem)
@@ -120,7 +138,9 @@ class IMDbS3AccessSystem(IMDbBase):
         writers = []
         directors = []
         for key, target in (('director', directors), ('writer', writers)):
-            for personID in (tc_data.get(key) or '').split(','):
+            for personID in split_array(tc_data.get(key) or ''):
+                if not personID:
+                    continue
                 personID = int(personID)
                 person_data = self._base_person_info(personID,
                                                      movies_cache=_movies_cache,
@@ -143,7 +163,9 @@ class IMDbS3AccessSystem(IMDbBase):
         movie = tp.select(tp.c.tconst == movieID).execute().fetchone() or {}
         tp_data = self._rename('title_principals', dict(movie))
         cast = []
-        for personID in (tp_data.get('cast') or '').split(','):
+        for personID in split_array(tp_data.get('cast') or ''):
+            if not personID:
+                continue
             personID = int(personID)
             person_data = self._base_person_info(personID,
                                                     movies_cache=_movies_cache,
@@ -158,8 +180,27 @@ class IMDbS3AccessSystem(IMDbBase):
         tr_data = self._rename('title_ratings', dict(movie))
         data.update(tr_data)
 
+        ta = self.T['title_akas']
+        akas = ta.select(ta.c.titleId == movieID).execute()
+        akas_list = []
+        for aka in akas:
+            ta_data = self._rename('title_akas', dict(aka)) or {}
+            for key in list(ta_data.keys()):
+                if not ta_data[key]:
+                    del ta_data[key]
+            for key in 't_soundex', 'movieID':
+                if key in ta_data:
+                    del ta_data[key]
+            for key in 'types', 'attributes':
+                if key not in ta_data:
+                    continue
+                ta_data[key] = split_array(ta_data[key])
+            akas_list.append(ta_data)
+        if akas_list:
+            data['akas'] = akas_list
+
         self._clean(data, ('movieID', 't_soundex'))
-        return {'data': data, 'infosets': self.get_movie_infoset()}
+        return {'data': data, 'info sets': self.get_movie_infoset()}
 
     # we don't really have plot information, yet
     get_movie_plot = get_movie_main
@@ -168,7 +209,7 @@ class IMDbS3AccessSystem(IMDbBase):
         personID = int(personID)
         data = self._base_person_info(personID)
         self._clean(data, ('personID',))
-        return {'data': data, 'infosets': self.get_person_infoset()}
+        return {'data': data, 'info sets': self.get_person_infoset()}
 
     get_person_filmography = get_person_main
     get_person_biography = get_person_main
@@ -183,9 +224,18 @@ class IMDbS3AccessSystem(IMDbBase):
         conditions = [tb.c.t_soundex == t_soundex]
         if _episodes:
             conditions.append(tb.c.titleType == 'episode')
-        results = tb.select(sqlalchemy.and_(*conditions)).execute().fetchall()
+        results = tb.select(sqlalchemy.and_(*conditions)).execute()
         results = [(x['tconst'], self._clean(self._rename('title_basics', dict(x)), ('t_soundex',)))
                    for x in results]
+
+        # Also search the AKAs
+        ta = self.T['title_akas']
+        ta_conditions = [ta.c.t_soundex == t_soundex]
+        ta_results = ta.select(sqlalchemy.and_(*ta_conditions)).execute()
+        ta_results = [(x['titleId'], self._clean(self._rename('title_akas', dict(x)), ('t_soundex',)))
+                      for x in ta_results]
+        results += ta_results
+
         results = scan_titles(results, title)
         results = [x[1] for x in results]
         return results
@@ -205,7 +255,7 @@ class IMDbS3AccessSystem(IMDbBase):
             conditions.append(nb.c.sn_soundex == sn_soundex)
         if s_soundex:
             conditions.append(nb.c.s_soundex == s_soundex)
-        results = nb.select(sqlalchemy.or_(*conditions)).execute().fetchall()
+        results = nb.select(sqlalchemy.or_(*conditions)).execute()
         results = [(x['nconst'], self._clean(self._rename('name_basics', dict(x)),
                                              ('ns_soundex', 'sn_soundex', 's_soundex')))
                    for x in results]

@@ -1,25 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-parser.s3.utils module (imdb.parser.s3 package).
+# Copyright 2018 Davide Alberani <da@erlug.linux.it>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+"""
 This package provides utilities for the s3 dataset.
-
-Copyright 2018 Davide Alberani <da@erlug.linux.it>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
 import sqlalchemy
@@ -109,6 +108,19 @@ DB_TRANSFORM = {
         'ns_soundex': {'type': sqlalchemy.String, 'length': 5, 'index': True},
         'sn_soundex': {'type': sqlalchemy.String, 'length': 5, 'index': True},
         's_soundex': {'type': sqlalchemy.String, 'length': 5, 'index': True},
+    },
+    'title_akas': {
+        'titleId': {'type': sqlalchemy.Integer, 'transform': transf_imdbid,
+                   'rename': 'movieID', 'index': True},
+        'ordering': {'type': sqlalchemy.Integer, 'transform': transf_int},
+        'title': {'index': True},
+        'region': {'type': sqlalchemy.String, 'length': 5, 'index': True},
+        'language': {'type': sqlalchemy.String, 'length': 5, 'index': True},
+        'types': {'type': sqlalchemy.String, 'length': 31, 'index': True},
+        'attributes': {'type': sqlalchemy.String, 'length': 127},
+        'isOriginalTitle': {'type': sqlalchemy.Boolean, 'transform': transf_bool,
+                            'rename': 'original', 'index': True},
+        't_soundex': {'type': sqlalchemy.String, 'length': 5, 'index': True}
     },
     'title_crew': {
         'tconst': {'type': sqlalchemy.Integer, 'transform': transf_imdbid,

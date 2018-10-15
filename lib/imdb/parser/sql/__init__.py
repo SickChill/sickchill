@@ -1,28 +1,30 @@
-"""
-parser.sql package (imdb package).
+# Copyright 2005-2017 Davide Alberani <da@erlug.linux.it>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+"""
 This package provides the IMDbSqlAccessSystem class used to access
-IMDb's data through a SQL database.  Every database supported by
-the SQLObject _AND_ SQLAlchemy Object Relational Managers is available.
-the imdb.IMDb function will return an instance of this class when
-called with the 'accessSystem' argument set to "sql", "database" or "db".
+IMDb's data through a SQL database. Every database supported by the SQLAlchemy
+object relational mapper is available.
 
-Copyright 2005-2017 Davide Alberani <da@erlug.linux.it>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+The :func:`imdb.IMDb` function will return an instance of this class
+when called with the ``accessSystem`` parameter is set to "sql",
+"database" or "db".
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
 import logging
@@ -137,8 +139,20 @@ def merge_roles(mop):
     """Merge multiple roles."""
     new_list = []
     for m in mop:
-        if m in new_list:
-            keep_this = new_list[new_list.index(m)]
+        m_isinnewlist = False
+        m_indexinnewlist = None
+        if isinstance(m, Person):
+            for i, person in enumerate(new_list):
+                if person.isSamePerson(m):
+                    m_isinnewlist = True
+                    m_indexinnewlist = i
+                    break
+        else:
+            if m in new_list:
+                m_isinnewlist = True
+                m_indexinnewlist = new_list.index(m)
+        if m_isinnewlist:
+            keep_this = new_list[m_indexinnewlist]
             if not isinstance(keep_this.currentRole, list):
                 keep_this.currentRole = [keep_this.currentRole]
             keep_this.currentRole.append(m.currentRole)
