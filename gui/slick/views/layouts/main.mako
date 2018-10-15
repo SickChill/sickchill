@@ -27,6 +27,7 @@
         <% themeColors = { "dark": "#15528F", "light": "#333333" } %>
         <!-- Android -->
         <meta name="theme-color" content="${themeColors[sickbeard.THEME_NAME]}">
+
         <!-- Windows Phone -->
         <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
         <!-- iOS -->
@@ -41,9 +42,9 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-        <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${static_url('images/ico/favicon-144.png')}">
-        <meta name="msapplication-config" content="${static_url('css/browserconfig.xml')}">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="msapplication-TileImage" content="${static_url('images/ico/mstile-144x144.png')}">
+        <meta name="msapplication-config" content="${static_url('images/ico/browserconfig.xml')}">
 
         <meta data-var="srRoot" data-content="${sickbeard.WEB_ROOT}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
@@ -70,21 +71,25 @@
         <%block name="metas" />
 
         <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${static_url('images/ico/favicon.ico')}">
-        <link rel="icon" type="image/png" sizes="196x196" href="${static_url('images/ico/favicon-196.png')}">
-        <link rel="icon" type="image/png" sizes="160x160" href="${static_url('images/ico/favicon-160.png')}">
-        <link rel="icon" type="image/png" sizes="96x96" href="${static_url('images/ico/favicon-96.png')}">
-        <link rel="icon" type="image/png" sizes="64x64" href="${static_url('images/ico/favicon-64.png')}">
-        <link rel="icon" type="image/png" sizes="32x32" href="${static_url('images/ico/favicon-32.png')}">
-        <link rel="icon" type="image/png" sizes="16x16" href="${static_url('images/ico/favicon-16.png')}">
-        <link rel="apple-touch-icon" sizes="152x152" href="${static_url('images/ico/favicon-152.png')}">
-        <link rel="apple-touch-icon" sizes="144x144" href="${static_url('images/ico/favicon-144.png')}">
-        <link rel="apple-touch-icon" sizes="120x120" href="${static_url('images/ico/favicon-120.png')}">
-        <link rel="apple-touch-icon" sizes="114x114" href="${static_url('images/ico/favicon-114.png')}">
-        <link rel="apple-touch-icon" sizes="76x76" href="${static_url('images/ico/favicon-76.png')}">
-        <link rel="apple-touch-icon" sizes="72x72" href="${static_url('images/ico/favicon-72.png')}">
-        <link rel="apple-touch-icon" href="${static_url('images/ico/favicon-57.png')}">
-        <link rel="mask-icon" href="${static_url('images/ico/safari-pinned-tab.svg')}" color="#15528F">
+
+        <link rel="mask-icon" href="${static_url('images/ico/safari-pinned-tab.svg" color="#5bbad5')}">
+
+        <link rel="apple-touch-icon" href="${static_url('images/ico/apple-touch-icon-57x57.png')}">
+        <link rel="apple-touch-icon" sizes="180x180" href="${static_url('images/ico/apple-touch-icon.png')}">
+        <link rel="apple-touch-icon" sizes="152x152" href="${static_url('images/ico/apple-touch-icon-152x152.png')}">
+        <link rel="apple-touch-icon" sizes="144x144" href="${static_url('images/ico/apple-touch-icon-144x144.png')}">
+        <link rel="apple-touch-icon" sizes="120x120" href="${static_url('images/ico/apple-touch-icon-120x120.png')}">
+        <link rel="apple-touch-icon" sizes="114x114" href="${static_url('images/ico/apple-touch-icon-114x114.png')}">
+        <link rel="apple-touch-icon" sizes="76x76" href="${static_url('images/ico/apple-touch-icon-76x76.png')}">
+        <link rel="apple-touch-icon" sizes="72x72" href="${static_url('images/ico/apple-touch-icon-72x72.png')}">
+
+        <link rel="icon" type="image/png" sizes="16x16" href="${static_url('images/ico/favicon-16x16.png')}">
+        <link rel="icon" type="image/png" sizes="32x32" href="${static_url('images/ico/favicon-32x32.png')}">
+        <link rel="icon" type="image/png" sizes="32x32" href="${static_url('images/ico/favicon-32x32.png')}">
+        <link rel="icon" type="image/png" sizes="192x192" href="${static_url('images/ico/android-chrome-192x192.png')}">
+
+        <link rel="manifest" href="${static_url('images/ico/site.webmanifest')}">
+
 
         <link rel="stylesheet" type="text/css" href="${static_url('css/vender.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
