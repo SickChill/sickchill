@@ -27,13 +27,14 @@ import os
 import re
 import time
 import traceback
+# noinspection PyCompatibility
+from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 
 import adba
 import markdown2
 import six
-from concurrent.futures import ThreadPoolExecutor
 from dateutil import tz
 from github.GithubException import GithubException
 from libtrakt import TraktAPI
@@ -42,23 +43,26 @@ from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
 from requests.compat import urljoin
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import unquote_plus
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
-from tornado.web import HTTPError, RequestHandler, addslash, authenticated
+from tornado.web import addslash, authenticated, HTTPError, RequestHandler
 
 import sickbeard
 from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
                        subtitles as subtitle_module, ui)
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
-from sickbeard.common import FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, UNAIRED, WANTED, cpu_presets, \
-    statusStrings
+from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, statusStrings, UNAIRED,
+                              WANTED)
 from sickbeard.helpers import get_showname_from_indexer
+from sickbeard.imdbPopular import imdb_popular
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.routes import route
 from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
@@ -69,7 +73,7 @@ from sickbeard.webapi import function_mapper
 from sickchill.helper import episode_num, sanitize_filename, setup_github, try_int
 from sickchill.helper.common import pretty_file_size
 from sickchill.helper.encoding import ek, ss
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException, ex
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.media.ShowBanner import ShowBanner
 from sickchill.media.ShowFanArt import ShowFanArt
 from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
@@ -78,7 +82,6 @@ from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History as HistoryTool
 from sickchill.show.Show import Show
-from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
