@@ -72,7 +72,7 @@
 
         <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
 
-        <link rel="mask-icon" href="${static_url('images/ico/safari-pinned-tab.svg" color="#5bbad5')}">
+        <link rel="mask-icon" href="${static_url('images/ico/safari-pinned-tab.svg')}" color="#5bbad5">
 
         <link rel="apple-touch-icon" href="${static_url('images/ico/apple-touch-icon-57x57.png')}">
         <link rel="apple-touch-icon" sizes="180x180" href="${static_url('images/ico/apple-touch-icon.png')}">
