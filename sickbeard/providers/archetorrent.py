@@ -75,13 +75,13 @@ class ArcheTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if response:
+        if not response:
             logger.log('Unable to connect to provider', logger.WARNING)
             return False
 
         search = self.get_url(self.urls['search'])
 
-        if not re.search('torrents.php', search):
+        if not search or not re.search('torrents.php', search):
             logger.log('Invalid username or password. Check your settings', logger.WARNING)
             return False
 
