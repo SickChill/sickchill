@@ -211,7 +211,7 @@ class CheckVersion(object):
             cur_hash = str(self.updater.get_newest_commit_hash())
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "http://cdn.rawgit.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
+            check_url = "http://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
             response = helpers.getURL(check_url, session=self.session, returns='text')
             assert response, "Empty response from {0}".format(check_url)
 
@@ -566,8 +566,7 @@ class GitUpdateManager(UpdateManager):
                 url = base_url + '/commits/'
 
             newest_tag = 'newer_version_available'
-            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
-                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            commits_behind = _("(you're {num_commits} commit behind)").format(num_commits=self._num_commits_behind)
             newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
                             'newer version available</a> {commits_behind} &mdash; '
                             '<a href="{update_url}">Update Now</a>').format(
@@ -770,8 +769,7 @@ class SourceUpdateManager(UpdateManager):
                 url = base_url + '/commits/'
 
             newest_tag = 'newer_version_available'
-            commits_behind = ngettext("(you're {num_commits} commit behind)", "(you're {num_commits} commits behind)",
-                                      self._num_commits_behind).format(num_commits=self._num_commits_behind)
+            commits_behind = _("(you're {num_commits} commit behind)").format(num_commits=self._num_commits_behind)
             newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
                             'newer version available</a> {commits_behind} &mdash; '
                             '<a href="{update_url}">Update Now</a>').format(
