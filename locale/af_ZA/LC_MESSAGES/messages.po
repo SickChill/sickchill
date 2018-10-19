@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-16 13:11+0000\n"
+"POT-Creation-Date: 2018-10-17 02:05+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: af_ZA\n"
@@ -437,20 +437,19 @@ msgid ""
 "source to enable updates."
 msgstr ""
 
-#: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:773
+#: sickbeard/versionChecker.py:569 sickbeard/versionChecker.py:772
+#, fuzzy
 msgid "(you're {num_commits} commit behind)"
-msgid_plural "(you're {num_commits} commits behind)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
 
-#: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:775
+#: sickbeard/versionChecker.py:570 sickbeard/versionChecker.py:773
 msgid ""
 "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); "
 "return false;\">newer version available</a> {commits_behind} &mdash; <a "
 "href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
-#: sickbeard/versionChecker.py:761
+#: sickbeard/versionChecker.py:760
 msgid ""
 "Unknown current version number: If you've never used the SickChill "
 "upgrade system before then current version is not set. &mdash; <a "
