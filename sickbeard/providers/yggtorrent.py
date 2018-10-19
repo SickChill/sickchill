@@ -48,7 +48,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://ww3.yggtorrent.is/'
+        self.url = 'https://www6.yggtorrent.to/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
@@ -113,7 +113,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 try:
                     search_params = {
                         'category': "2145",
-                        'sub_category' : "2184",
+                        'sub_category' : "all",
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
