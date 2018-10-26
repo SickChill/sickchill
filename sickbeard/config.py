@@ -112,86 +112,83 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     if os.path.exists(bad_unrar) and os.path.getsize(bad_unrar) == 447440:
         try:
             os.remove(bad_unrar)
+            logger.log('Removed a bad copy of unrar')
         except OSError as e:
             logger.log("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror), logger.WARNING)
 
-    try:
-        rarfile.custom_check(unrar_tool)
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        # Let's just return right now if the defaults work
+    for tool in (unrar_tool, alt_unrar_tool, rarfile.UNRAR_TOOL, rarfile.ALT_TOOL):
         try:
+            rarfile.custom_check([tool])
+            set_requested = tool in (unrar_tool, alt_unrar_tool)
+            sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = rarfile.ORIG_UNRAR_TOOL = tool
             # noinspection PyProtectedMember
-            test = rarfile._check_unrar_tool()
-            if test:
-                # These must always be set to something before returning
-                sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL
-                sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL
-                return True
+            rarfile._check_unrar_tool()
+            if not set_requested:
+                logger.log('Unrar tool set to `{}`. Your selection was not found so we reverted to a working default.'.format(tool))
+            return True
         except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
             pass
 
-        if platform.system() == 'Windows':
-            # Look for WinRAR installations
-            found = False
-            winrar_path = 'WinRAR\\UnRAR.exe'
-            # Make a set of unique paths to check from existing environment variables
-            check_locations = {
-                os.path.join(location, winrar_path) for location in (
-                    os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
-                    os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
-                ) if location
-            }
-            check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+    if platform.system() == 'Windows':
+        # Look for WinRAR installations
+        found = False
+        winrar_path = 'WinRAR\\UnRAR.exe'
+        # Make a set of unique paths to check from existing environment variables
+        check_locations = {
+            os.path.join(location, winrar_path) for location in (
+                os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
+                os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
+            ) if location
+        }
+        check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
 
-            for check in check_locations:
-                if ek(os.path.isfile, check):
-                    # Can use it?
-                    try:
-                        rarfile.custom_check(check)
-                        unrar_tool = check
-                        found = True
-                        break
-                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                        found = False
+        for check in check_locations:
+            if ek(os.path.isfile, check):
+                # Can use it?
+                try:
+                    rarfile.custom_check(check)
+                    unrar_tool = check
+                    found = True
+                    break
+                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    found = False
 
-            # Download
-            if not found:
-                logger.log('Trying to download unrar.exe and set the path')
-                unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
-                unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+        # Download
+        if not found:
+            logger.log('Trying to download unrar.exe and set the path')
+            unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
+            unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
 
-                if (helpers.download_file(
-                    "http://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
-                ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
-                    try:
-                        ek(os.remove, unrar_zip)
-                    except OSError as e:
-                        logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+            if (helpers.download_file(
+                "http://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+            ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
+                try:
+                    ek(os.remove, unrar_zip)
+                except OSError as e:
+                    logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
 
-                    check = os.path.join(unrar_store, "unrar.exe")
-                    try:
-                        rarfile.custom_check(check)
-                        unrar_tool = check
-                        logger.log('Successfully downloaded unrar.exe and set as unrar tool', )
-                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                        logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-                else:
-                    logger.log('Unable to download unrar.exe')
+                check = os.path.join(unrar_store, "unrar.exe")
+                try:
+                    rarfile.custom_check(check)
+                    unrar_tool = check
+                    logger.log('Successfully downloaded unrar.exe and set as unrar tool')
+                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+            else:
+                logger.log('Unable to download unrar.exe')
 
     # These must always be set to something before returning
     sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = unrar_tool
     sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
     try:
-        # noinspection PyProtectedMember
-        test = rarfile._check_unrar_tool()
+        rarfile.custom_check([rarfile.UNRAR_TOOL])
+        return True
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if sickbeard.UNPACK == 1:
             logger.log('Disabling UNPACK setting because no unrar is installed.')
             sickbeard.UNPACK = 0
-        test = False
-
-    return test
+        return False
 
 
 def change_sickchill_background(background):
