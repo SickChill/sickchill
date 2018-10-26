@@ -1563,7 +1563,7 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log(default.format(error))
     except requests.exceptions.URLRequired as error:
         logger.log(default.format(error))
-    except TypeError as error:
+    except (TypeError, ValueError) as error:
         logger.log(default.format(error), logger.ERROR)
         logger.log('url is {0}'.format(repr(requests_exception.request.url)))
         logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
