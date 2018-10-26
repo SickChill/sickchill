@@ -56,6 +56,8 @@ def update_network_dict():
     try:
         for line in data.splitlines():
             (key, val) = line.strip().rsplit(':', 1)
+            if not val:  # n Lets set a default
+                val = 'US/Eastern'
             if key and val:
                 d[key.lower()] = val
     except (IOError, OSError):

@@ -20,6 +20,7 @@
 """
 Test the post processor queue
 """
+from __future__ import absolute_import
 
 import datetime
 import os.path
@@ -62,6 +63,7 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
         super(PostProcessorQueueTests, self).tearDown()
 
     def test_post_processor_queue_spam(self):
+        sickbeard.TV_DOWNLOAD_DIR = os.path.abspath('.')
         for i in range(100):
             result = self.queue.action.add_item(sickbeard.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
             self.assertIsNotNone(result)
