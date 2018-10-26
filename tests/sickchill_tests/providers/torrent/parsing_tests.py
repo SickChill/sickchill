@@ -28,6 +28,7 @@ When recording new cassettes:
 from __future__ import print_function, unicode_literals
 from functools import wraps
 
+import os
 import re
 import sys
 
@@ -36,6 +37,7 @@ from vcr_unittest import VCRTestCase
 
 # Have to do this before importing sickbeard
 sys.path.insert(1, 'lib')
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../lib')))
 
 import sickbeard
 sickbeard.CPU_PRESET = 'NORMAL'

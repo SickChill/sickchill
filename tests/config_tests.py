@@ -388,7 +388,9 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.TV_DOWNLOAD_DIR = ''
         self.assertTrue(config.change_tv_download_dir('cache'))
         self.assertFalse(config.change_tv_download_dir('/:/Downloads/Completed')) # INVALID
+
         self.assertTrue(config.change_tv_download_dir(''))
+        self.assertEqual(sickbeard.TV_DOWNLOAD_DIR, '')
 
     def test_change_unpack_dir(self):
         """
