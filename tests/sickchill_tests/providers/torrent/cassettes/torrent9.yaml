@@ -8,7 +8,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/search_torrent/Arrow-S05E01.html
+    uri: http://www.torrent9.ph/search_torrent/Arrow-S05E01.html
   response:
     body:
       string: !!binary |
@@ -107,7 +107,7 @@ interactions:
       expires: ['Mon, 21 May 2018 17:03:48 GMT']
       server: [cloudflare]
       set-cookie: ['__cfduid=d83e0fe360748b1a09e41f3080590c56a1526911428; expires=Tue,
-          21-May-19 14:03:48 GMT; path=/; domain=.torrent9.red; HttpOnly']
+          21-May-19 14:03:48 GMT; path=/; domain=.torrent9.ph; HttpOnly']
       vary: [Accept-Encoding]
       via: [1.1 varnish]
       x-varnish: ['1616197814']
@@ -122,7 +122,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/55417/arrow-s05e01-french-hdtv
+    uri: http://www.torrent9.ph/torrent/55417/arrow-s05e01-french-hdtv
   response:
     body:
       string: !!binary |
@@ -263,7 +263,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/55414/arrow-s05e01-french-bluray-720p-hdtv
+    uri: http://www.torrent9.ph/torrent/55414/arrow-s05e01-french-bluray-720p-hdtv
   response:
     body:
       string: !!binary |
@@ -402,7 +402,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/50597/arrow-s05e01-vostfr-hdtv
+    uri: http://www.torrent9.ph/torrent/50597/arrow-s05e01-vostfr-hdtv
   response:
     body:
       string: !!binary |
@@ -543,7 +543,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/50596/arrow-s05e01-vostfr-bluray-720p-hdtv
+    uri: http://www.torrent9.ph/torrent/50596/arrow-s05e01-vostfr-bluray-720p-hdtv
   response:
     body:
       string: !!binary |
@@ -682,7 +682,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrents_series.html
+    uri: http://www.torrent9.ph/torrents_series.html
   response:
     body:
       string: !!binary |
@@ -829,7 +829,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/61232/the-handmaid-s-tale-la-servante-ecarlate-s02e05-french-hdtv
+    uri: http://www.torrent9.ph/torrent/61232/the-handmaid-s-tale-la-servante-ecarlate-s02e05-french-hdtv
   response:
     body:
       string: !!binary |
@@ -970,7 +970,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/61260/the-americans-s06e08-vostfr-hdtv
+    uri: http://www.torrent9.ph/torrent/61260/the-americans-s06e08-vostfr-hdtv
   response:
     body:
       string: !!binary |
@@ -1109,7 +1109,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/61251/arrow-s06e23-vostfr-hdtv
+    uri: http://www.torrent9.ph/torrent/61251/arrow-s06e23-vostfr-hdtv
   response:
     body:
       string: !!binary |
@@ -1250,7 +1250,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/search_torrent/Arrow-Saison-5.html
+    uri: http://www.torrent9.ph/search_torrent/Arrow-Saison-5.html
   response:
     body:
       string: !!binary |
@@ -1362,7 +1362,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/34.0.1866.237 Safari/537.36']
     method: GET
-    uri: http://www.torrent9.red/torrent/55427/arrow-saison-5-french-hdtv
+    uri: http://www.torrent9.ph/torrent/55427/arrow-saison-5-french-hdtv
   response:
     body:
       string: !!binary |
