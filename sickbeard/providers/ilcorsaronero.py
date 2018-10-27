@@ -48,7 +48,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
 
         self.url = 'https://ilcorsaronero.ch'
         self.urls = {
-            'search': urljoin(self.url, 'advsearch.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
+            'search': urljoin(self.url, 'argh.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
         }
 
         self.public = True

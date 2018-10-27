@@ -50,12 +50,12 @@ disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # api_maintenance still
-    'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     # Have to trick it into thinking is an anime search, and add string overrides
     'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update'],
+    'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
+    'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
@@ -159,12 +159,14 @@ class BaseParser(type):
         @magic_skip
         def test_cache_update(self):
             """Check that the provider's cache parses rss search results"""
-            self.provider.cache.update_cache()
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+                self.provider.cache.update_cache()
 
         @magic_skip
         def test_result_values(self):
             """Check that the provider returns results in proper format"""
-            results = self.provider.search(self.search_strings('Episode'))
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+                results = self.provider.search(self.search_strings('Episode'))
             for result in results:
                 self.assertIsInstance(result, dict)
                 self.assertEqual(sorted(result.keys()), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
