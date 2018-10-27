@@ -312,9 +312,10 @@ class ConfigTestChanges(unittest.TestCase):
              mock.patch('os.remove'):
             self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
 
-        custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), RarExecError(), RarExecError(), True]
-        with custom_check_mock:
-            self.assertTrue(config.change_unrar_tool('UNKNOWN', 'UNKNOWN'))
+        if platform.system() != 'Windows':
+            custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), RarExecError(), RarExecError(), True]
+            with custom_check_mock:
+                self.assertTrue(config.change_unrar_tool('UNKNOWN', 'UNKNOWN'))
 
         # Test when none are installed, even defaults, that we return false
         custom_check_mock.new.side_effect = RarExecError()
