@@ -21,6 +21,7 @@
 from __future__ import print_function, unicode_literals
 
 import re
+
 from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
