@@ -6,7 +6,7 @@ SickChill [![Build Status](https://travis-ci.org/SickChill/SickChill.svg?branch=
 #### We will never store your information, especially site logins to private trackers.
 #### We believe in honesty and loyalty and privacy.
 
-Automatic Video Library Manager for TV Shows. Watches for new episodes of your favorite shows, and sends them to your downloader whenever they're available.
+Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
 #### Features
  - Kodi/XBMC library updates, poster/banner/fanart downloads, and NFO/TBN generation
@@ -38,7 +38,7 @@ Visit the [Installation & Configuration guides page](https://github.com/SickChil
 
 #### Dependencies
 
-To run SickChill from source you will need Python 2.7.10
+To run SickChill you will need Python 2.7.10
 
 #### More info
 
