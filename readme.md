@@ -27,10 +27,6 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
  - Real SSL certificate validation
  - Supports Anime shows
 
-#### Screenshots
-- [Desktop (Full-HD)](http://imgur.com/a/4fpBk)
-- [Mobile](http://imgur.com/a/WPyG6)
-
 #### Dependencies
  To run SickChill from source you will need Python 2.7.10
 
